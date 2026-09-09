@@ -1,10 +1,12 @@
-import { describe, expect, it } from 'vitest';
+﻿import { describe, expect, it } from 'vitest';
 import { getServerEnv } from '@/config/env';
 
-const base = {
+const base: NodeJS.ProcessEnv = {
+  ...process.env,
+  NODE_ENV: 'production',
   APP_ENV: 'production',
   DATABASE_URL: 'postgresql://user:pass@example.invalid/db',
-} as NodeJS.ProcessEnv;
+};
 
 describe('Vercel origin compatibility', () => {
   it('trusts current, branch and production Vercel hosts', () => {
@@ -37,3 +39,4 @@ describe('Vercel origin compatibility', () => {
     expect(env.TRUSTED_ORIGINS).toContain('https://noor-preview.vercel.app');
   });
 });
+
