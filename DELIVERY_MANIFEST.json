@@ -1,0 +1,19 @@
+{
+  "product": "مستقبلي",
+  "delivery_type": "complete source delivery",
+  "page_routes": 67,
+  "includes": [
+    "Next.js application source",
+    "all src/app page routes",
+    "public assets and official brand logo",
+    "database/schema/migrations present in source",
+    "scripts and tests present in source",
+    "full route inventory",
+    "interactive design preview"
+  ],
+  "excluded": [
+    "node_modules",
+    ".next",
+    ".git"
+  ]
+}

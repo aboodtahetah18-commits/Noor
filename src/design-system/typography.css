@@ -1,0 +1,6 @@
+html, body, button, input, select, textarea { font-family:var(--ux-font-family-base); }
+body { font-size:var(--ux-type-body-size); line-height:var(--ux-type-body-line); }
+h1 { font-size:var(--ux-type-page-title-size); line-height:var(--ux-type-page-title-line); font-weight:var(--ux-type-page-title-weight); }
+h2 { font-size:var(--ux-type-section-title-size); line-height:var(--ux-type-section-title-line); font-weight:var(--ux-type-section-title-weight); }
+h3 { font-size:var(--ux-type-card-title-size); line-height:var(--ux-type-card-title-line); font-weight:var(--ux-type-card-title-weight); }
+.ux-number { font-variant-numeric:tabular-nums; unicode-bidi:isolate; }

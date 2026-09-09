@@ -1,0 +1,11 @@
+import fs from 'node:fs';
+const must=(p,t)=>{const s=fs.readFileSync(p,'utf8');if(!s.includes(t))throw new Error(`${p} missing ${t}`)};
+must('database/migrations/20260903_049_bank_decision_audit_and_alias_context.sql','bank_decision_events');
+must('src/features/bank-decisions/services/record-bank-decision.ts','impact_summary');
+must('src/app/(protected)/decision-log/page.tsx','سجل القرارات والأثر المالي');
+must('src/app/(protected)/merchants/page.tsx','التجار والمسميات البنكية');
+must('src/features/bank-statements/commands/import-message.ts',"eventType:'AUTO_POST'");
+must('src/app/(protected)/bank-statements/actions.ts',"eventType:'BATCH_MERCHANT_APPLY'");
+must('src/features/bank-statements/services/safe-message-auto-post.ts',"exact.approvalMode!=='AUTO'");
+must('src/features/bank-statements/services/safe-message-auto-post.ts','row.duplicateCandidate');
+console.log('P45.9 decision audit and final hardening verification: PASS');

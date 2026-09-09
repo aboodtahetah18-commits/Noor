@@ -1,0 +1,16 @@
+import fs from 'node:fs';
+import path from 'node:path';
+const root=process.cwd(); const read=(f)=>fs.readFileSync(path.join(root,f),'utf8');
+const fail=(m)=>{console.error(`P55-FAIL ${m}`);process.exitCode=1}; const pass=(m)=>console.log(`PASS ${m}`);
+const pkg=JSON.parse(read('package.json'));
+if(pkg.scripts?.['verify:p55']==='node scripts/verify-p55.mjs') pass('P55 verification command'); else fail('P55 verification command missing');
+const layout=read('src/app/(protected)/layout.tsx');
+if(layout.includes('<DesktopTopNav />')&&layout.includes('<TabletTopNav />')&&layout.includes('<MobileTopBar />')&&layout.includes('<GlobalTopBar profile=')) pass('CR-002 shell wiring'); else fail('CR-002 shell wiring missing');
+const top=read('src/app/(protected)/global-top-bar.tsx');
+if(top.includes('ProfileTrigger')&&top.includes('mustaqbali-profile-trigger')) pass('CR-002 desktop profile trigger'); else fail('CR-002 profile trigger missing');
+const mobile=read('src/app/(protected)/mobile-top-bar.tsx');
+if(mobile.includes('mustaqbali-mobile-drawer')&&mobile.includes('href="/dashboard"')) pass('CR-002 mobile brand + secondary drawer'); else fail('CR-002 mobile shell missing');
+const action=read('src/app/(protected)/settings/actions.ts');
+if(action.includes('safeProfileReturnTo')&&action.includes("requireAuthenticatedMutationUser('profile-settings-write')")) pass('profile write safety retained'); else fail('profile update safety contract missing');
+if(process.exitCode) process.exit(process.exitCode);
+console.log('P55/CR-002 profile and shell interaction contract: PASS');

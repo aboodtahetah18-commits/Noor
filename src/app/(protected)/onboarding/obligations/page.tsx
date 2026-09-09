@@ -1,0 +1,13 @@
+import { requireAuthenticatedUser } from '@/auth/require-authenticated-user';
+import { getOnboardingStatus } from '@/features/onboarding/queries/get-onboarding-status';
+import { listObligations } from '@/features/obligations/queries/list-obligations';
+import { redirect } from 'next/navigation';
+import { addOnboardingObligationAction,continueFromObligationsAction } from '../actions';
+import { OnboardingStepNav } from '@/features/onboarding/components/onboarding-step-nav';
+
+export default async function Page({searchParams}:{searchParams:Promise<{error?:string;created?:string}>}){
+ const u=await requireAuthenticatedUser();const s=await getOnboardingStatus(u.id);if(s.completed)redirect('/dashboard');if(!s.cycleId||s.expectedIncomeCount<1)redirect('/onboarding/income');const items=await listObligations(u.id,{});const q=await searchParams;
+ return <main className="app-page onboarding-page" dir="rtl"><div className="page-shell narrow-shell p47-closure-page"><div className="onboarding-progress"><span>4 من 6</span><strong>مراجعة الالتزامات</strong></div><OnboardingStepNav current="/onboarding/obligations"/><header className="page-header p47-closure-header"><div><p className="eyebrow">الالتزامات</p><div className="title-with-help"><h1>هل لديك التزامات يجب حجزها؟</h1></div></div></header>{q.error&&<p className="form-error" role="alert">{q.error}</p>}{q.created&&<p className="success-callout" role="status">تمت إضافة الالتزام.</p>}
+ <section className="card onboarding-review-card"><div><h2>الموجود حاليًا</h2>{items.length===0?<p className="muted">لا توجد التزامات مسجلة.</p>:<p>يوجد {items.length} التزام/استحقاق ظاهر حاليًا.</p>}</div><form action={continueFromObligationsAction}><button className="primary-button" type="submit">{items.length===0?'لا توجد التزامات — متابعة':'تمت المراجعة — متابعة'}</button></form></section>
+ <details className="card onboarding-optional-details"><summary>{items.length===0?'إضافة التزام الآن':'إضافة التزام آخر'}</summary><div className="onboarding-details-body"><form className="form-grid" action={addOnboardingObligationAction}><label>اسم الالتزام<input name="name" placeholder="قسط السيارة" required/></label><label>المبلغ<input name="defaultAmount" inputMode="decimal" required/></label><label>التكرار<select name="recurrence" defaultValue="MONTHLY"><option value="ONCE">مرة واحدة</option><option value="MONTHLY">شهري</option><option value="QUARTERLY">ربع سنوي</option><option value="SEMI_ANNUAL">نصف سنوي</option><option value="ANNUAL">سنوي</option></select></label><label>أول تاريخ استحقاق<input name="firstDueDate" type="date" required/></label><div className="full"><button className="secondary-button" type="submit">حفظ الالتزام</button></div></form></div></details>
+ </div></main>}

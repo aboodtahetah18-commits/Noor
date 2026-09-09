@@ -1,0 +1,30 @@
+import Link from 'next/link';
+import { randomUUID } from 'node:crypto';
+import { requireAuthenticatedUser } from '@/auth/require-authenticated-user';
+import { getCurrentFinancialCycle } from '@/features/cycles/queries/get-current-cycle';
+import { listPostedIncome } from '@/features/income/queries/list-income';
+import { listExpectedIncomes } from '@/features/expected-income/queries/list-expected-incomes';
+import { listAccounts } from '@/features/accounts/queries/list-accounts';
+import { Money, sumMoney } from '@/financial-engine/money';
+import { formatSar } from '@/lib/format-money';
+import { getUserOperationalDate } from '@/features/settings/queries/get-user-timezone';
+import { FocusedNextStep } from '@/components/ux/focused-next-step';
+import { ActionDialog } from '@/components/overlays/action-dialog';
+import { recordIncomeAction } from './actions';
+
+export default async function IncomeIndex({searchParams}:{searchParams:Promise<Record<string,string|string[]|undefined>>}){
+  const query=await searchParams;
+  const user=await requireAuthenticatedUser(); const cycle=await getCurrentFinancialCycle(user.id);
+  if(!cycle)return <main className="page-shell p47-resource-page" dir="rtl"><section className="p47-empty-state"><strong>لا توجد دورة مالية نشطة</strong><span>ابدأ دورة مالية قبل تسجيل الدخل.</span><Link className="primary-link" href="/cycles/new">بدء دورة</Link></section><FocusedNextStep href="/transactions" title="التالي: السجل المالي" description="بعد تسجيل الدخل، راجع الحركات الفعلية التي أثرت على حساباتك."/></main>;
+  const [posted,expected,accounts,today]=await Promise.all([listPostedIncome(user.id,cycle.id),listExpectedIncomes(user.id,cycle.id),listAccounts(user.id,true),getUserOperationalDate(user.id)]);
+  const accountMap=new Map(accounts.map(a=>[a.id,a.name]));
+  const actual=sumMoney((posted as Array<Record<string,unknown>>).map(r=>Money.parse(String(r.amount??'0'))));
+  const expectedTotal=sumMoney(expected.map(e=>Money.parse(e.expectedAmount)));
+  const difference=actual.compare(expectedTotal)>=0?actual.subtract(expectedTotal):expectedTotal.subtract(actual);
+  const status=actual.compare(expectedTotal);
+  return <main className="page-shell p47-resource-page" dir="rtl"><header className="p47-resource-header"><div><p className="eyebrow">الدخل</p><div className="title-with-help"><h1>الدخل الفعلي</h1></div><p>تابع ما كان متوقعًا، ما وصل فعليًا، وأين استقر داخل حساباتك.</p></div><ActionDialog trigger="تسجيل دخل مستلم" title="تسجيل دخل مستلم" description="يسجل الدخل فعليًا على الدورة والحساب المختار." size="lg" triggerClassName="primary-link" defaultOpen={query.action==='add'}><form className="p47-flow-form p73-entry-form p73-income-form" action={recordIncomeAction.bind(null,cycle.id)}><input type="hidden" name="idempotencyKey" value={randomUUID()}/><label className="p73-money-field">المبلغ<input name="amount" inputMode="decimal" required placeholder="0.00" autoFocus/></label><label>مصدر الدخل<input name="sourceName" required placeholder="الراتب"/></label><label>نوع الدخل<select name="incomeKind" defaultValue="SALARY"><option value="SALARY">راتب</option><option value="ADDITIONAL_INCOME">دخل إضافي</option><option value="BONUS">مكافأة</option><option value="OTHER">أخرى</option></select></label><label>الحساب<select name="accountId" required defaultValue=""><option value="" disabled>اختر الحساب</option>{accounts.map(a=><option key={a.id} value={a.id}>{a.name}</option>)}</select></label><label>الدخل المتوقع المرتبط<select name="expectedIncomeId" defaultValue=""><option value="">غير مرتبط</option>{expected.map(e=><option key={e.id} value={e.id}>{e.sourceName} — {e.expectedAmount} ريال</option>)}</select></label><label>التاريخ<input name="transactionDate" type="date" defaultValue={today} required/></label><label><input name="isPartial" type="checkbox"/> استلام جزئي</label><label>الوصف<input name="description" placeholder="اختياري"/></label><button className="primary-button" type="submit">تسجيل الدخل</button></form></ActionDialog></header>
+    <section className={`p74-focus-summary ${status<0?'is-warning':''}`}><div><span>الدخل الفعلي مقابل المتوقع</span><strong>{formatSar(actual)} مستلم فعليًا</strong><small>المتوقع للدورة {formatSar(expectedTotal)} · الفرق {formatSar(difference)}</small></div></section>
+    <section className="p47-resource-card"><div className="p47-section-heading"><div><span>Actual Income</span><h2>الحركات المستلمة</h2></div><small>الأحدث أولًا</small></div>{posted.length===0?<div className="p47-empty-state"><strong>لم يسجل دخل فعلي بعد</strong><span>سجل الراتب أو أي دخل مستلم عند وصوله للحساب.</span></div>:<div className="p47-income-feed">{(posted as Array<Record<string,unknown>>).map(r=><article className="p47-income-item" key={String(r.id)}><div><strong>{String(r.description??'دخل مستلم')}</strong><span>{accountMap.get(String(r.account_id))??'حساب'} · {String(r.transaction_date)}</span></div><div className="p49-action-row"><strong>{formatSar(String(r.amount??'0'))}</strong><ActionDialog trigger="التفاصيل" title="تفاصيل الدخل" size="md"><dl className="p49-detail-grid"><div><dt>المبلغ</dt><dd>{formatSar(String(r.amount??'0'))}</dd></div><div><dt>الحساب</dt><dd>{accountMap.get(String(r.account_id))??'حساب'}</dd></div><div><dt>التاريخ</dt><dd>{String(r.transaction_date)}</dd></div><div><dt>الوصف</dt><dd>{String(r.description??'دخل مستلم')}</dd></div></dl></ActionDialog></div></article>)}</div>}</section>
+    <section className="p47-resource-card"><div className="p47-section-heading"><div><span>Expected</span><h2>مصادر الدخل المتوقعة</h2></div><small>مرجع التخطيط لهذه الدورة</small></div><div className="p47-compact-list">{expected.map(e=><div key={e.id}><div><strong>{e.sourceName}</strong><span>{e.expectedDate??'بدون تاريخ محدد'}</span></div><strong>{formatSar(e.expectedAmount)}</strong></div>)}{expected.length===0?<p className="muted">لا يوجد دخل متوقع مسجل.</p>:null}</div></section>
+  <FocusedNextStep href="/transactions" title="التالي: السجل المالي" description="بعد تسجيل الدخل، راجع الحركات الفعلية التي أثرت على حساباتك."/></main>;
+}

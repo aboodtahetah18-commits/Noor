@@ -1,0 +1,11 @@
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import { requireAuthenticatedUser } from '@/auth/require-authenticated-user';
+import { getEditableAccount } from '@/features/accounts/queries/get-editable-account';
+import { ACCOUNT_NAME_PRESETS } from '@/features/accounts/account-name-options';
+import { BANK_OPTIONS } from '@/features/accounts/banks';
+import { SmartComboInput } from '@/components/forms/smart-combo-input';
+import { updateAccountAction } from '../../actions';
+export default async function Page({params,searchParams}:{params:Promise<{id:string}>;searchParams:Promise<{error?:string;returnTo?:string}>}){
+ const {id}=await params;const q=await searchParams;const u=await requireAuthenticatedUser();const a=await getEditableAccount(u.id,id);if(!a)notFound();const returnTo=q.returnTo==='/onboarding/accounts'?'/onboarding/accounts':'/accounts';
+ return <main className="app-page" dir="rtl"><div className="page-shell narrow-shell p47-flow-page"><header className="page-header p47-flow-header"><div><p className="eyebrow">تعديل الحساب</p><h1>{a.name}</h1></div><Link className="tertiary-link" href={returnTo}>عودة</Link></header>{q.error&&<p className="form-error">{q.error}</p>}<section className="card p47-flow-card"><form className="form-grid" action={updateAccountAction}><input type="hidden" name="accountId" value={a.id}/><input type="hidden" name="returnTo" value={returnTo}/><label>اسم الحساب<SmartComboInput name="name" options={[...ACCOUNT_NAME_PRESETS]} defaultValue={a.name} placeholder="اختر أو اكتب اسم الحساب" ariaLabel="اسم الحساب"/></label><label>البنك أو الجهة<SmartComboInput name="bankName" options={BANK_OPTIONS.map((b)=>b.name)} defaultValue={a.bankName} placeholder="اختر أو اكتب اسم البنك" ariaLabel="البنك أو الجهة"/></label><label>الرصيد الافتتاحي<input name="openingBalance" inputMode="decimal" defaultValue={a.openingBalance} required/></label><label>تاريخ الرصيد<input name="effectiveDate" type="date" defaultValue={a.effectiveDate} required/></label><label>IBAN<input name="iban" dir="ltr" defaultValue={a.iban}/></label><label>آخر 4 أرقام من البطاقة<input name="cardLast4" inputMode="numeric" maxLength={4} defaultValue={a.cardLast4}/></label><div className="full"><button className="primary-button" type="submit">حفظ التعديلات</button></div></form></section></div></main>}

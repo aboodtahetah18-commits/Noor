@@ -1,0 +1,86 @@
+/* MUSTAQBALI CR-002 — executable design tokens. Do not define page-specific values here. */
+:root {
+  --ux-brand-primary:#0B2D5B;
+  --ux-brand-secondary:#0EA5A2;
+  --ux-brand-accent:#22C55E;
+  --ux-success:#16A34A;
+  --ux-warning:#F59E0B;
+  --ux-error:#EF4444;
+  --ux-neutral-800:#334155;
+  --ux-neutral-400:#94A3B8;
+  --ux-page-bg:#F1F5F9;
+  --ux-card-bg:#FFFFFF;
+  --ux-shell-topbar-bg:#E6EDF5;
+  --ux-shell-topbar-border:#D6E0EA;
+  --ux-shell-sidebar-bg:#0B2D5B;
+  --ux-shell-sidebar-hover:#123D72;
+  --ux-shell-sidebar-active:#0EA5A2;
+  --ux-shell-sidebar-active-soft:rgb(14 165 162 / .16);
+  --ux-section-soft-blue:#EAF3FA;
+  --ux-section-soft-teal:#E7F7F5;
+  --ux-border-default:#D9E2EC;
+  --ux-border-emphasis:#B8CBE0;
+  --ux-text-primary:#0B2D5B;
+  --ux-text-secondary:#475569;
+  --ux-text-muted:#64748B;
+  --ux-text-inverse:#FFFFFF;
+  --ux-soft-green:#EAF8F0;
+  --ux-soft-red:#FFF0F1;
+  --ux-soft-orange:#FFF3E6;
+  --ux-soft-purple:#F3EDFF;
+
+  --ux-dark-page-bg:#08111F;
+  --ux-dark-card-bg:#0D1B2A;
+  --ux-dark-shell-topbar-bg:#0A1726;
+  --ux-dark-shell-sidebar-bg:#07101C;
+  --ux-dark-surface-muted:#12263A;
+  --ux-dark-border:#24364B;
+  --ux-dark-text-primary:#F8FAFC;
+  --ux-dark-text-secondary:#CBD5E1;
+  --ux-dark-soft-teal:#0D2B30;
+  --ux-dark-soft-teal-border:#145A59;
+
+  --ux-font-family-base:var(--font-tajawal),"Tajawal",sans-serif;
+  --ux-type-page-title-size:28px; --ux-type-page-title-line:38px; --ux-type-page-title-weight:700;
+  --ux-type-section-title-size:20px; --ux-type-section-title-line:29px; --ux-type-section-title-weight:700;
+  --ux-type-card-title-size:16px; --ux-type-card-title-line:23px; --ux-type-card-title-weight:700;
+  --ux-type-body-size:14px; --ux-type-body-line:24px; --ux-type-body-weight:400;
+  --ux-type-body-sm-size:13px; --ux-type-body-sm-line:21px;
+  --ux-type-caption-size:12px; --ux-type-caption-line:18px;
+  --ux-type-label-size:13px; --ux-type-label-line:20px; --ux-type-label-weight:500;
+  --ux-type-button-size:14px; --ux-type-button-line:20px; --ux-type-button-weight:500;
+  --ux-type-number-lg-size:32px; --ux-type-number-lg-line:37px; --ux-type-number-lg-weight:700;
+
+  --ux-space-0:0; --ux-space-1:4px; --ux-space-2:8px; --ux-space-3:12px; --ux-space-4:16px;
+  --ux-space-5:20px; --ux-space-6:24px; --ux-space-8:32px; --ux-space-10:40px; --ux-space-12:48px;
+  --ux-space-16:64px; --ux-space-20:80px; --ux-space-24:96px;
+
+  --ux-radius-0:0; --ux-radius-1:4px; --ux-radius-xs:8px; --ux-radius-sm:10px; --ux-radius-md:12px;
+  --ux-radius-lg:16px; --ux-radius-xl:20px; --ux-radius-full:9999px;
+  --ux-radius-2:var(--ux-radius-xs); --ux-radius-3:var(--ux-radius-md); --ux-radius-4:var(--ux-radius-lg); --ux-radius-6:24px;
+
+  --ux-border-width-0:0; --ux-border-width-1:1px; --ux-border-width-2:2px; --ux-border-style-default:solid;
+  --ux-alpha-navy-05:rgb(11 45 91 / .05); --ux-alpha-navy-06:rgb(11 45 91 / .06); --ux-alpha-navy-10:rgb(11 45 91 / .10); --ux-alpha-navy-18:rgb(11 45 91 / .18);
+  --ux-alpha-teal-15:rgb(14 165 162 / .15); --ux-alpha-teal-20:rgb(14 165 162 / .20); --ux-alpha-overlay:rgb(8 17 31 / .40);
+  --ux-shadow-none:none; --ux-shadow-xs:0 1px 2px var(--ux-alpha-navy-05); --ux-shadow-sm:0 4px 18px var(--ux-alpha-navy-06);
+  --ux-shadow-md:0 12px 28px var(--ux-alpha-navy-10); --ux-shadow-lg:0 18px 48px var(--ux-alpha-navy-18); --ux-shadow-focus:0 0 0 4px var(--ux-alpha-teal-15);
+
+  --ux-size-4:16px; --ux-size-5:20px; --ux-size-6:24px; --ux-size-8:32px; --ux-size-9:36px; --ux-size-10:40px;
+  --ux-size-11:44px; --ux-size-12:48px; --ux-size-14:56px; --ux-size-16:64px;
+  --ux-motion-duration-0:0ms; --ux-motion-duration-fast:120ms; --ux-motion-duration-base:200ms; --ux-motion-duration-slow:320ms;
+  --ux-motion-ease-standard:cubic-bezier(.2,0,0,1); --ux-motion-ease-enter:cubic-bezier(0,0,.2,1); --ux-motion-ease-exit:cubic-bezier(.4,0,1,1);
+  --ux-z-base:0; --ux-z-sticky:100; --ux-z-navigation:200; --ux-z-dropdown:400; --ux-z-overlay:600; --ux-z-modal:700; --ux-z-toast:800; --ux-z-critical:900;
+
+  --ux-container-reading:640px; --ux-container-form:720px; --ux-container-content:1360px; --ux-container-wide:1440px;
+  --ux-shell-sidebar-expanded:248px; --ux-shell-sidebar-collapsed:72px; --ux-shell-topbar-height:64px; --ux-mobile-header-height:56px;
+  --ux-logo-desktop-width:176px; --ux-logo-mobile-width:144px; --ux-logo-tablet-width:156px; --ux-logo-collapsed-size:48px;
+  --ux-drawer-max-width:320px; --ux-textarea-min-height:96px;
+
+  /* Compatibility aliases while legacy CSS is migrated. */
+  --ux-color-ink:var(--ux-brand-primary); --ux-color-primary:var(--ux-brand-primary); --ux-color-cyan:var(--ux-brand-secondary);
+  --ux-color-canvas:var(--ux-page-bg); --ux-color-white:var(--ux-card-bg); --ux-color-slate:var(--ux-text-secondary);
+  --ux-color-success:var(--ux-success); --ux-color-warning:var(--ux-warning); --ux-color-error:var(--ux-error); --ux-color-transparent:transparent;
+  --ux-surface-canvas:var(--ux-page-bg); --ux-surface-default:var(--ux-card-bg); --ux-surface-inverse:var(--ux-brand-primary);
+  --ux-action-primary:var(--ux-brand-primary); --ux-accent-supporting:var(--ux-brand-secondary); --ux-focus-ring:var(--ux-brand-secondary);
+  --ux-state-success:var(--ux-success); --ux-state-warning:var(--ux-warning); --ux-state-error:var(--ux-error);
+}

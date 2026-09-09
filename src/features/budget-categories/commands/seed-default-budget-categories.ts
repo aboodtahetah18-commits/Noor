@@ -1,0 +1,1 @@
+import { budgetCategoryRepository } from '@/repositories/budget-category-repository'; export async function seedDefaultBudgetCategories(userId:string){await budgetCategoryRepository.seedDefaults(userId);return{success:true as const};}

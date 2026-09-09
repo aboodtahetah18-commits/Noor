@@ -1,0 +1,2 @@
+import { goalRepository } from '@/repositories/goal-repository';import { validateCreateGoal,type CreateGoalInput } from '../schemas/goal';
+export async function createGoal(userId:string,input:CreateGoalInput){const p=validateCreateGoal(input);if(!p.success)return p;try{return{success:true as const,data:{goalId:await goalRepository.create(userId,p.data)}}}catch{return{success:false as const,message:'تعذر إنشاء الهدف المالي.'}}}

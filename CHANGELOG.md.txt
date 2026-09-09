@@ -1,0 +1,224 @@
+
+## [0.6.0] — 2026-09-02
+
+### Added
+- Phase 6 Accounts Vertical Slice: create/list/details/deactivate account.
+- Atomic opening-balance setup and server-side ownership-scoped repository.
+- Responsive Accounts UI for Desktop and Mobile.
+- Accounts validation and vertical-slice contract tests.
+
+### Changed
+- Account balances are exposed only as derived values from the opening-balance setup event plus approved POSTED ledger entries.
+
+### Security
+- Account read/write paths require authenticated user ownership in the repository layer.
+
+
+## [0.5.0] — 2026-09-02
+
+### Added
+- Phase 5 deterministic Financial Engine Core.
+- Exact bigint-based money calculations in halalas.
+- Account balance, category actual/remaining/utilization, Safe To Spend, Daily Safe, deterministic deficit, goal progress, emergency progress, and saving rate calculations.
+- Financial calculation regression tests including STS-001, STS-002, and STS-003.
+
+### Known Issues
+- ISSUE-0001 through ISSUE-0006 remain unresolved and no dependent formula was invented.
+
+## [0.8.0] — 2026-09-02
+### Added
+- Phase 8 Expected Income vertical slice.
+- Create/list/update expected income with primary source support.
+- Cycle-level expected income UI.
+- Tests preserving ExpectedIncome vs POSTED INCOME separation.
+
+## [0.10.0] — 2026-09-02
+### Added
+- Phase 10 Financial Plan vertical slice.
+- PLAN_DRAFT creation with PlanVersion v1 and budget allocations.
+- Plan approval, revision via immutable new PlanVersion, and revision approval.
+- Financial-plan state transition audit trail.
+- Budget plan UI for draft, active and revised states.
+### Changed
+- Planning source remains the approved current PlanVersion; pending revision is not official until approval.
+
+## [0.11.0] — 2026-09-02
+
+### Added
+- Phase 11 Income Vertical Slice.
+- Actual `INCOME` transaction flow with `PENDING → POSTED` atomic execution.
+- Expected-income linkage and Expected vs Actual variance reporting.
+- Explicit income source/kind/partial metadata persistence required by API-C-010.
+- Income entry and financial-impact result screens.
+
+### Changed
+- Below-expected income now requests plan review without silently mutating an approved plan.
+- Above-expected income remains surplus and is not automatically assigned to flexible spending.
+
+### Database
+- Added migration `20260902_010_income_expected_link.sql`.
+
+### Known Issues
+- Neon main migration remains unapplied pending a functioning safe branch workflow.
+
+## [0.12.0] — 2026-09-02
+### Added
+- Phase 12 Expense Vertical Slice.
+- Atomic/idempotent expense posting.
+- Deterministic category budget impact after posting.
+- Expense UI and recent expenses list.
+### Changed
+- Synchronized Drizzle transaction schema with existing expense columns.
+### Known Issues
+- Safe To Spend remains blocked in production by ISSUE-0002; no buffer value is invented.
+- AT_RISK threshold remains pending ISSUE-0003.
+
+## [0.14.0] — 2026-09-02
+
+### Added
+- Phase 14 transaction reversal for POSTED INCOME and EXPENSE transactions.
+- Mandatory reversal reason, reversal timestamp, audit trail, financial-impact readback, and reversal UI.
+
+### Changed
+- Generic reversal is blocked for specialized transaction types until linked domain reversal handlers exist.
+- Idempotency handling for reversal now preserves the original result for safe retries.
+
+### Database
+- Added migration `20260902_012_transaction_reversal.sql` for reversal reason integrity and supporting lookup index.
+
+### Known Issues
+- Safe To Spend remains blocked by ISSUE-0002 pending the Required Financial Buffer rule.
+
+## [0.15.0] — 2026-09-02
+### Added
+- Phase 15 Transfer Between Accounts using Transfer Header + OUT/IN ledger entries atomically.
+- Transfer id linkage on ledger entries and one logical transfer presentation in history.
+### Financial Integrity
+- A transfer is neither income nor expense and always has zero net effect on total user liquidity.
+
+## [0.16.0] — 2026-09-02
+
+### Added
+- Phase 16 Refund vertical slice.
+- Linked REFUND transactions with aggregate over-refund protection.
+- Net category actual calculation after refunds.
+
+### Database
+- Added 20260902_014_refund_integrity.sql.
+
+## 0.24.0 — Phase 24 AI Explanation Layer
+- Added optional AI explanation layer after deterministic recommendation rules.
+- Added structured-facts minimization and output grounding guard.
+- Added OpenAI Responses API provider through native fetch with timeout/fallback.
+- Recommendation details now display AI explanation when available and deterministic fallback otherwise.
+- No AI financial calculation, database access, state mutation, or financial write authority.
+
+
+## 0.35.0 — Phase 35 RTL Audit
+- Hardened Arabic RTL layout semantics.
+- Added bidi isolation for money, numeric, date and time values.
+- Converted shared table alignment to logical start/end semantics.
+- Hardened RTL pagination and directional icon utilities.
+- Preserved P32/P33/P34 responsive behavior.
+
+## 0.37.0 — Phase 37 Security Hardening
+- Added mutation origin/CSRF defense-in-depth.
+- Added security headers and private cache policy.
+- Added sanitized technical logging and reduced health endpoint disclosure.
+- Added PostgreSQL owner-isolation RLS migration and PUBLIC privilege revocation.
+- Added technical payload limits and security verification contracts.
+- Recorded production gates for least-privilege Neon runtime role and dependency lockfile.
+
+## [0.44.26] — 2026-09-03
+### Added
+- Contextual historical learning based exclusively on CLOSED-cycle snapshots.
+- 3-cycle and 6-cycle category averages, displayed only when sufficient history exists.
+- Category variance context: temporary, recurring/seasonal, or permanent.
+- Named season memory for Ramadan, Eid, summer holiday, back-to-school, travel season, winter/summer, and custom seasons.
+- “ماذا تعلّم النظام عني؟” report page.
+- Forecast accuracy history with SAR difference and percentage when actual balance is non-zero.
+
+### Changed
+- ±10% is the explicit category variance trigger for explanation/review.
+- Historical references are no longer rounded to a “clean” budget number.
+- Permanent user-confirmed changes may carry exact actual evidence forward; temporary changes do not.
+- Recurring/seasonal changes require applicability to the upcoming cycle before any amount change.
+- Cash forecast variable-spend category lookup no longer depends on an unnecessary allocation ownership join condition.
+
+### Financial Integrity
+- Learning/report queries are read-only; contextual learning is persisted only through an explicit command.
+- No automatic next-plan mutation is performed by historical learning.
+- CLOSED-cycle snapshots remain the immutable historical basis.
+
+## [0.48.10] — 2026-09-04
+
+### Added
+- Added a runtime-guarded npm lockfile generation command (`npm run dependencies:lock`).
+
+### Changed
+- Aligned README installation and verification instructions with npm 11.19.0 / Node 24.20.x.
+
+### Fixed
+- Removed stale pnpm operational guidance that conflicted with P48 dependency governance.
+
+### Database
+- No migration added. Total remains 64.
+
+## [0.49.8] — 2026-09-04
+
+### Changed
+- إكمال التحول إلى Modal-First للمصروفات والدخل والتحويلات والاستردادات والادخار والطوارئ.
+- تحويل تفاصيل الدخل والحركات المالية إلى نوافذ مستقلة من صفحات القوائم.
+- تنظيم الإجراءات في صف واحد قابل للتمرير عند ضيق الشاشة.
+
+### Testing
+- إضافة P49.8 quality gate ومنع رجوع المسارات الرئيسية إلى صفحات إدخال منفصلة.
+
+## [0.49.10] — 2026-09-04
+- Completed P49.10 Final UX Consistency Sweep.
+- Unified modal accessibility, focus return, backdrop/Escape close, title icons, sticky headers and action areas.
+- Added keyboard/ARIA hardening for internal tab navigation.
+- Added consistent focus-visible and reduced-motion behavior.
+- Made older P49 version checks forward-compatible.
+- No database migration; total remains 64.
+
+## [0.56.0] — 2026-09-04
+
+### Added
+- Finalized P56 V1 financial policy decisions for health score, required buffer, budget risk, forecast, multiple-goal prioritization, and emergency coverage.
+- Added explainable Financial Health engine with equal averaging across available dimensions.
+- Added deterministic current-cycle ForecastEngine and linear budget-pace risk resolver.
+- Added suggestion-only goal ranking and informational emergency coverage engine.
+
+### Changed
+- Required Financial Buffer is now formally an explicit owner-selected policy; no 1,000 SAR / 10% UI default is treated as an approved rule.
+- Dashboard forecast blocking now reports `BUFFER_POLICY_REQUIRED` when that is the real missing prerequisite.
+- Recommendation rules can now use finalized P56 forecast facts for deficit and zero-Safe-To-Spend recommendations.
+
+### Financial Integrity
+- Closed snapshots are not silently recalculated.
+- No automatic cross-goal financial write was introduced.
+- No hidden historical weighting was introduced in Forecast V1.
+
+### Database
+- No migration added. Migration inventory remains 64.
+
+## [1.0.0] — 2026-09-04
+
+### Added
+- Final V1 production audit and P59 quality gate.
+- Integration regression contract for goal-contribution account-ledger semantics.
+
+### Changed
+- Goal contributions now explicitly debit the selected source account (`transaction_direction = OUT`) while increasing the goal protected balance.
+- Current README and regression documentation synchronized with the P56 financial-decision closure.
+- Deprecated pending-forecast compatibility runtime removed.
+
+### Database
+- Added migration `20260904_065_goal_contribution_account_ledger.sql`.
+- Backfills historical `GOAL_CONTRIBUTION` direction as `OUT`.
+- Adds goal contributions to authoritative account outflows.
+- Migration inventory is now 65.
+
+### Fixed
+- Closed implementation issue ISSUE-0019; no specialized protected-fund ledger mapping remains unresolved for V1 runtime flows.

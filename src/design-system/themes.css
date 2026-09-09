@@ -1,0 +1,29 @@
+/* Theme mappings only. Brand values live in tokens.css. */
+html[data-theme="light"] {
+  color-scheme: light;
+  --ux-page-bg:#F1F5F9;
+  --ux-card-bg:#FFFFFF;
+  --ux-shell-topbar-bg:#E6EDF5;
+  --ux-shell-topbar-border:#D6E0EA;
+  --ux-shell-sidebar-bg:#0B2D5B;
+  --ux-border-default:#D9E2EC;
+  --ux-text-primary:#0B2D5B;
+  --ux-text-secondary:#475569;
+  --ux-text-muted:#64748B;
+  --ux-section-soft-blue:#EAF3FA;
+  --ux-section-soft-teal:#E7F7F5;
+}
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --ux-page-bg:var(--ux-dark-page-bg);
+  --ux-card-bg:var(--ux-dark-card-bg);
+  --ux-shell-topbar-bg:var(--ux-dark-shell-topbar-bg);
+  --ux-shell-topbar-border:var(--ux-dark-border);
+  --ux-shell-sidebar-bg:var(--ux-dark-shell-sidebar-bg);
+  --ux-border-default:var(--ux-dark-border);
+  --ux-text-primary:var(--ux-dark-text-primary);
+  --ux-text-secondary:var(--ux-dark-text-secondary);
+  --ux-text-muted:var(--ux-neutral-400);
+  --ux-section-soft-blue:var(--ux-dark-surface-muted);
+  --ux-section-soft-teal:var(--ux-dark-soft-teal);
+}

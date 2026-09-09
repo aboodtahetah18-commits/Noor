@@ -1,0 +1,1 @@
+import { financialPlanRepository } from '@/repositories/financial-plan-repository'; export const getFinancialPlan=(userId:string,planId:string)=>financialPlanRepository.getById(userId,planId); export const getFinancialPlanByCycle=(userId:string,cycleId:string)=>financialPlanRepository.getByCycle(userId,cycleId);

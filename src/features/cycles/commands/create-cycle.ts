@@ -1,0 +1,3 @@
+import { createCycleSchema } from '../schemas/cycle';
+import { financialCycleRepository } from '@/repositories/financial-cycle-repository';
+export async function createFinancialCycle(userId:string,input:unknown){ const parsed=createCycleSchema.safeParse(input); if(!parsed.success) return {success:false as const,code:'VALIDATION_ERROR' as const,message:parsed.error.issues[0]?.message??'بيانات غير صالحة'}; try { const cycle=await financialCycleRepository.create(userId,parsed.data); return {success:true as const,cycle}; } catch { return {success:false as const,code:'DATABASE_ERROR' as const,message:'تعذر إنشاء الدورة المالية'}; } }

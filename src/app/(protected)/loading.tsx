@@ -1,0 +1,2 @@
+import { LucideIcon } from '@/components/ui/lucide-icon';
+export default function ProtectedLoading(){return <main className="app-page" dir="rtl"><div className="page-shell"><section className="functional-state-card" role="status" aria-live="polite"><LucideIcon name="loaderCircle" size={32} className="functional-state-spinner"/><h1>جاري تحميل الصفحة…</h1><p>جاري تحميل بياناتك المالية.</p></section></div></main>}

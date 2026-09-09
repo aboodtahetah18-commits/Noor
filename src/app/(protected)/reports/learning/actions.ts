@@ -1,0 +1,5 @@
+'use server';
+import { redirect } from 'next/navigation';
+import { requireAuthenticatedMutationUser } from '@/auth/require-authenticated-user';
+import { linkGoalContextPattern } from '@/features/historical-learning/commands/link-goal-context-pattern';
+export async function linkPatternToGoalAction(f:FormData){const u=await requireAuthenticatedMutationUser('link-goal-context-pattern');let ids:string[]=[];try{const v=JSON.parse(String(f.get('categoryIds')??'[]'));if(Array.isArray(v))ids=v.map(String)}catch{}const r=await linkGoalContextPattern(u.id,{goalId:String(f.get('goalId')??''),reasonCode:String(f.get('reasonCode')??''),customReason:String(f.get('customReason')??'')||undefined,seasonCode:String(f.get('seasonCode')??'')||undefined,customSeasonName:String(f.get('customSeasonName')??'')||undefined,categoryIds:ids,sourceCycleCount:Number(f.get('sourceCycleCount')??0),sourceCategoryCount:Number(f.get('sourceCategoryCount')??0)});if(!r.success)redirect('/reports/learning?error='+encodeURIComponent(r.message));redirect('/reports/learning?linked=1')}

@@ -1,0 +1,25 @@
+name: Production Database Migration
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 10
+    env:
+      APP_ENV: production
+      VERCEL_ENV: production
+      ALLOW_DB_MIGRATIONS: 'true'
+      DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.20.0'
+      - run: npm install --no-audit --no-fund
+      - run: npm run deploy:preflight
+      - run: npm run deploy:migrate

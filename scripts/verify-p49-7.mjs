@@ -1,0 +1,26 @@
+import { readFileSync } from 'node:fs';
+const atLeast=(v,a,b,c)=>{const x=v.split('.').map(Number);return x[0]>a||(x[0]===a&&(x[1]>b||(x[1]===b&&x[2]>=c)));};
+const checks=[];
+const add=(name,ok)=>checks.push([name,Boolean(ok)]);
+const pkg=JSON.parse(readFileSync('package.json','utf8'));
+const dialog=readFileSync('src/components/overlays/action-dialog.tsx','utf8');
+const accounts=readFileSync('src/app/(protected)/accounts/page.tsx','utf8');
+const obligations=readFileSync('src/app/(protected)/obligations/page.tsx','utf8');
+const categories=readFileSync('src/app/(protected)/budget-categories/page.tsx','utf8');
+const goals=readFileSync('src/app/(protected)/goals/page.tsx','utf8');
+const settings=readFileSync('src/app/(protected)/settings/page.tsx','utf8');
+const css=readFileSync('src/app/globals.css','utf8');
+add('version 0.49.7+',atLeast(pkg.version,0,49,7));
+add('shared modal component uses native dialog',dialog.includes('<dialog')&&dialog.includes('showModal()'));
+add('modal has explicit close control',dialog.includes('إغلاق النافذة')&&dialog.includes('onClick={closeDialog}'));
+add('accounts add/details/edit/deactivate are dialog-first',accounts.includes('title="إضافة حساب"')&&accounts.includes('trigger="عرض التفاصيل"')&&accounts.includes('trigger="تعديل"')&&accounts.includes('trigger="تعطيل"'));
+add('obligations add/details/pay/cancel are dialog-first',obligations.includes('title="إضافة التزام مالي"')&&obligations.includes('trigger="التفاصيل"')&&obligations.includes('trigger="تسجيل السداد"')&&obligations.includes('trigger="إلغاء"'));
+add('budget categories add/details/edit/deactivate are dialog-first',categories.includes('title="إضافة بند ميزانية"')&&categories.includes('trigger="التفاصيل"')&&categories.includes('trigger="تعديل"')&&categories.includes('trigger="تعطيل"'));
+add('goals create/details/contribution are dialog-first',goals.includes('title="إنشاء هدف مالي"')&&goals.includes('trigger="عرض التفاصيل"')&&goals.includes('trigger="اعتماد المساهمة"'));
+add('settings profile and recurring changes use dialogs',settings.includes('title="تعديل الهوية والتوقيت"')&&settings.includes('ActionDialog title={`${item.isActive'));
+add('dialog actions remain on one row',css.includes('.p49-dialog-actions')&&css.includes('flex-wrap:nowrap'));
+add('resource actions remain on one row',css.includes('.p49-resource-actions')&&css.includes('flex-wrap:nowrap'));
+console.log('=== P49.7 modal-first interaction architecture ===');
+let failed=0; for(const [name,ok] of checks){console.log(`${ok?'PASS':'FAIL'} ${name}`);if(!ok)failed++;}
+if(failed) process.exit(1);
+console.log('P49.7 modal-first interaction architecture: PASS');

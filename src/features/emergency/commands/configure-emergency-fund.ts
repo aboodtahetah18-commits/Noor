@@ -1,0 +1,2 @@
+import { emergencyRepository } from '@/repositories/emergency-repository';import { validateConfigureEmergencyFund,type ConfigureEmergencyFundInput } from '../schemas/emergency';
+export async function configureEmergencyFund(userId:string,input:ConfigureEmergencyFundInput){const p=validateConfigureEmergencyFund(input);if(!p.success)return p;return{success:true as const,data:{id:await emergencyRepository.configure(userId,p.data)}}}

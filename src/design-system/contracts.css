@@ -1,0 +1,328 @@
+/* Shared executable UI contracts. Pages compose these classes; they do not redefine the system. */
+.ux-surface { background:var(--ux-card-bg); color:var(--ux-text-primary); border:1px solid var(--ux-border-default); border-radius:var(--ux-radius-lg); box-shadow:var(--ux-shadow-xs); }
+.ux-stack { display:flex; flex-direction:column; gap:var(--ux-space-4); min-width:0; }
+.ux-cluster { display:flex; flex-wrap:wrap; align-items:center; gap:var(--ux-space-3); min-width:0; }
+.ux-form-grid { display:grid; grid-template-columns:minmax(0,1fr); gap:var(--ux-space-4); }
+.ux-field { display:grid; gap:var(--ux-space-2); min-width:0; }
+.ux-field > label { font-size:var(--ux-type-label-size); line-height:var(--ux-type-label-line); font-weight:var(--ux-type-label-weight); }
+.ux-control { width:100%; min-height:var(--ux-size-11); padding-inline:var(--ux-space-3); border:1px solid var(--ux-border-default); border-radius:var(--ux-radius-md); background:var(--ux-card-bg); color:var(--ux-text-primary); }
+.ux-control[aria-invalid="true"] { border-color:var(--ux-error); }
+.ux-field-error { color:var(--ux-error); font-size:var(--ux-type-caption-size); line-height:var(--ux-type-caption-line); }
+.ux-button { min-height:var(--ux-size-11); display:inline-flex; align-items:center; justify-content:center; gap:var(--ux-space-2); padding-inline:var(--ux-space-4); border-radius:var(--ux-radius-md); border:1px solid transparent; font:inherit; font-weight:var(--ux-type-button-weight); cursor:pointer; text-decoration:none; }
+.ux-button--primary { background:var(--ux-brand-primary); color:var(--ux-text-inverse); border-color:var(--ux-brand-primary); }
+.ux-button--secondary { background:var(--ux-card-bg); color:var(--ux-text-primary); border-color:var(--ux-border-emphasis); }
+.ux-button:disabled { opacity:.55; cursor:not-allowed; }
+.ux-feedback { padding:var(--ux-space-4); border:1px solid var(--ux-border-default); border-radius:var(--ux-radius-md); background:var(--ux-card-bg); }
+.ux-feedback[data-tone="error"] { border-color:var(--ux-error); }
+.ux-feedback[data-tone="success"] { border-color:var(--ux-success); }
+.ux-dialog-surface { width:min(calc(100vw - 32px),640px); max-height:min(86dvh,760px); overflow:auto; background:var(--ux-card-bg); color:var(--ux-text-primary); border:1px solid var(--ux-border-default); border-radius:var(--ux-radius-xl); box-shadow:var(--ux-shadow-lg); }
+@media (min-width:768px) { .ux-form-grid[data-columns="2"] { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+
+
+/* Phase 2 visual refinement: governed shell branding, dialogs, and focused cycle start. */
+.mustaqbali-topbar-logo,
+.mustaqbali-tablet-brand,
+.mustaqbali-mobile-brand { flex:0 0 auto; overflow:visible; }
+.mustaqbali-topbar-logo img,
+.mustaqbali-tablet-brand img,
+.mustaqbali-mobile-brand img { display:block; object-fit:contain; object-position:center; }
+.mustaqbali-topbar-logo img { width:var(--ux-logo-desktop-width) !important; max-width:var(--ux-logo-desktop-width) !important; height:auto !important; max-height:54px !important; }
+.mustaqbali-tablet-brand img { width:var(--ux-logo-tablet-width) !important; max-width:var(--ux-logo-tablet-width) !important; height:auto !important; max-height:52px !important; }
+.mustaqbali-mobile-brand img { width:var(--ux-logo-mobile-width) !important; max-width:var(--ux-logo-mobile-width) !important; height:auto !important; max-height:50px !important; }
+
+.p49-action-dialog { border:0; padding:0; background:transparent; overflow:visible; }
+.p49-action-dialog::backdrop { background:var(--ux-ink-a32) !important; backdrop-filter:blur(4px); }
+.p49-dialog-shell {
+  background:var(--ux-surface-default) !important;
+  border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default) !important;
+  border-radius:var(--ux-radius-6) !important;
+  box-shadow:var(--ux-shadow-lg) !important;
+  max-height:min(88dvh,820px);
+  overflow:hidden;
+}
+.p49-dialog-header {
+  min-height:72px;
+  padding:var(--ux-space-5) var(--ux-space-6) !important;
+  border-bottom:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default) !important;
+  background:var(--ux-surface-default) !important;
+}
+.p49-dialog-header::after { display:none !important; }
+.p49-dialog-title-block { gap:var(--ux-space-3); }
+.p49-dialog-title-icon {
+  width:var(--ux-size-10) !important;
+  height:var(--ux-size-10) !important;
+  border-radius:var(--ux-radius-3) !important;
+  background:var(--ux-surface-canvas) !important;
+  color:var(--ux-brand-primary) !important;
+}
+.p49-dialog-header h2 { margin:0; }
+.p49-dialog-header p { margin-top:var(--ux-space-1); color:var(--ux-text-secondary) !important; }
+.p49-dialog-close { background:var(--ux-surface-canvas) !important; }
+.p49-dialog-body { padding:var(--ux-space-6) !important; background:var(--ux-surface-default) !important; }
+
+.cycle-create-page--focused { min-height:calc(100dvh - var(--ux-shell-topbar-height, 0px)); }
+.cycle-create-focus-shell {
+  min-height:inherit;
+  display:grid;
+  place-items:center;
+  padding-block:var(--ux-space-6);
+}
+.cycle-create-card--focused {
+  width:min(100%,680px);
+  margin:0 auto;
+  padding:var(--ux-space-6);
+  border-radius:var(--ux-radius-6);
+  box-shadow:var(--ux-shadow-md);
+}
+.cycle-create-minimal-header {
+  position:relative;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  margin-bottom:var(--ux-space-6);
+}
+.cycle-create-minimal-header h1 { margin:0; text-align:center; }
+.cycle-create-close {
+  position:absolute;
+  inset-inline-start:0;
+  top:50%;
+  transform:translateY(-50%);
+  width:var(--ux-size-10);
+  height:var(--ux-size-10);
+  display:grid;
+  place-items:center;
+  border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);
+  border-radius:var(--ux-radius-3);
+  background:var(--ux-surface-canvas);
+  color:var(--ux-text-primary);
+  text-decoration:none;
+}
+.cycle-create-form--focused { margin:0; }
+.cycle-create-actions--focused { margin-top:var(--ux-space-2); }
+
+@media (max-width:767px) {
+  .mustaqbali-mobile-brand { max-width:calc(100vw - 150px); }
+  .mustaqbali-mobile-brand img { width:min(var(--ux-logo-mobile-width),100%) !important; }
+  .p49-action-dialog {
+    width:100vw !important;
+    max-width:none !important;
+    max-height:calc(100dvh - var(--ux-space-6)) !important;
+    margin:auto 0 0 !important;
+  }
+  .p49-dialog-shell {
+    width:100%;
+    max-height:calc(100dvh - var(--ux-space-6));
+    border-radius:var(--ux-radius-6) var(--ux-radius-6) 0 0 !important;
+    border-bottom:0 !important;
+  }
+  .p49-dialog-header { min-height:64px; padding:var(--ux-space-4) !important; }
+  .p49-dialog-body { padding:var(--ux-space-4) !important; }
+  .cycle-create-page--focused { min-height:calc(100dvh - var(--ux-mobile-header-height, 0px) - var(--ux-mobile-nav-height, 0px)); }
+  .cycle-create-focus-shell { padding:var(--ux-space-4); }
+  .cycle-create-card--focused { padding:var(--ux-space-5) var(--ux-space-4); border-radius:var(--ux-radius-5); }
+  .cycle-create-actions--focused { display:grid; grid-template-columns:1fr 1fr; }
+}
+
+/* Phase 3 — mobile shell, account access, cycle viewport correction. */
+.p55-profile-logout-zone {
+  margin-top:var(--ux-space-5);
+  padding-top:var(--ux-space-4);
+  border-top:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);
+}
+.p55-profile-logout-zone form,
+.p55-profile-logout { width:100%; }
+.p55-profile-logout { display:flex; align-items:center; justify-content:center; gap:var(--ux-space-2); }
+
+@media (max-width:767px) {
+  .p47-mobile-topbar.mustaqbali-mobile-header {
+    grid-template-columns:minmax(0,1fr) auto !important;
+    gap:var(--ux-space-2) !important;
+    padding-inline:var(--ux-space-3) !important;
+  }
+  .mustaqbali-mobile-brand-zone {
+    min-width:0;
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    gap:var(--ux-space-2);
+  }
+  .mustaqbali-mobile-menu-trigger,
+  .mustaqbali-mobile-profile-trigger {
+    flex:0 0 auto;
+    width:var(--ux-size-11);
+    height:var(--ux-size-11);
+    display:grid;
+    place-items:center;
+    border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-alpha-white-18);
+    border-radius:var(--ux-radius-md);
+    background:var(--ux-alpha-white-10);
+    color:var(--ux-white);
+    padding:0;
+  }
+  .mustaqbali-mobile-brand {
+    flex:1 1 auto;
+    min-width:0;
+    max-width:none;
+    height:var(--ux-mobile-header-height);
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+  }
+  .mustaqbali-mobile-brand img {
+    width:min(168px,100%) !important;
+    max-width:168px !important;
+    max-height:52px !important;
+    object-position:right center !important;
+  }
+  .mustaqbali-mobile-header-actions {
+    flex:0 0 auto;
+    display:flex;
+    align-items:center;
+    gap:var(--ux-space-1);
+  }
+  .mustaqbali-mobile-profile-trigger .p4913-logo-mark,
+  .mustaqbali-mobile-profile-trigger .p60-avatar-image,
+  .mustaqbali-mobile-profile-trigger .p60-avatar-fallback {
+    width:100%;
+    height:100%;
+    display:grid;
+    place-items:center;
+    border-radius:inherit;
+  }
+  .mustaqbali-mobile-profile-trigger .p60-avatar-image { background-size:cover; background-position:center; }
+  .mustaqbali-drawer-backdrop { justify-content:flex-end !important; }
+  .mustaqbali-mobile-drawer {
+    border-inline-end:0 !important;
+    border-inline-start:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default) !important;
+  }
+
+  /* main-content already reserves the fixed header and bottom navigation. Do not center a second viewport inside it. */
+  .cycle-create-page--focused {
+    min-height:0 !important;
+    padding-block:var(--ux-space-4) !important;
+  }
+  .cycle-create-focus-shell {
+    min-height:0 !important;
+    place-items:start center !important;
+    padding:0 var(--ux-space-3) !important;
+  }
+  .cycle-create-card--focused { margin-block:0 !important; }
+}
+
+/* Phase 7 — financial account onboarding visual reconstruction. */
+.onboarding-money-shell-v2 { max-width:760px !important; display:grid; gap:var(--ux-space-4); }
+.onboarding-utility-row { display:flex; align-items:center; justify-content:space-between; gap:var(--ux-space-3); min-height:var(--ux-size-10); }
+.onboarding-home-link { display:inline-flex; align-items:center; gap:var(--ux-space-2); min-height:var(--ux-size-10); padding-inline:var(--ux-space-3); border:1px solid var(--ux-border-default); border-radius:var(--ux-radius-full); background:var(--ux-card-bg); color:var(--ux-text-primary); text-decoration:none; font-weight:700; }
+.onboarding-home-link:hover { border-color:var(--ux-brand-secondary); }
+.onboarding-step-count { color:var(--ux-text-muted); font-size:var(--ux-type-caption-size); font-weight:700; }
+.onboarding-money-shell-v2 .onboarding-step-nav { margin:0; padding-bottom:0; }
+.onboarding-money-shell-v2 .onboarding-step-nav a { min-height:36px; padding:var(--ux-space-2) var(--ux-space-3); box-shadow:none; }
+.onboarding-money-shell-v2 .onboarding-step-nav a.active { box-shadow:none; }
+
+.onboarding-money-hero { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:var(--ux-space-5); padding:var(--ux-space-5); border:1px solid var(--ux-border-default); border-radius:var(--ux-radius-xl); background:var(--ux-card-bg); box-shadow:var(--ux-shadow-xs); }
+.onboarding-money-hero-title { display:flex; align-items:center; gap:var(--ux-space-3); min-width:0; }
+.onboarding-money-hero-icon { width:var(--ux-size-12); height:var(--ux-size-12); display:grid; place-items:center; flex:0 0 auto; border-radius:var(--ux-radius-lg); background:var(--ux-section-soft-teal); color:var(--ux-brand-secondary); }
+.onboarding-money-hero-title div { min-width:0; }
+.onboarding-money-hero-title span:not(.onboarding-money-hero-icon) { display:block; margin-bottom:var(--ux-space-1); color:var(--ux-text-muted); font-size:var(--ux-type-caption-size); font-weight:700; }
+.onboarding-money-hero h1 { margin:0; font-size:var(--ux-type-section-title-size); line-height:var(--ux-type-section-title-line); }
+.money-location-total-v2 { min-width:190px; padding:0 !important; border:0 !important; border-radius:0 !important; background:transparent !important; box-shadow:none !important; text-align:left; }
+.money-location-total-v2 strong { font-size:var(--ux-type-page-title-size) !important; line-height:1.15; color:var(--ux-text-primary); }
+.money-location-total-v2 small { color:var(--ux-text-muted); }
+
+.onboarding-account-builder-v2,
+.money-locations-card-v2 { margin:0 !important; padding:var(--ux-space-5) !important; border-radius:var(--ux-radius-xl) !important; box-shadow:var(--ux-shadow-xs) !important; }
+.onboarding-section-title { display:flex; align-items:flex-start; gap:var(--ux-space-3); margin-bottom:var(--ux-space-4); }
+.onboarding-section-title .step-dot { flex:0 0 auto; width:var(--ux-size-8); height:var(--ux-size-8); }
+.onboarding-section-title h2 { margin:0 0 var(--ux-space-1); font-size:var(--ux-type-card-title-size); line-height:var(--ux-type-card-title-line); }
+.onboarding-section-title small { color:var(--ux-text-muted); font-size:var(--ux-type-caption-size); }
+
+.onboarding-primary-account-form { grid-template-columns:repeat(2,minmax(0,1fr)) !important; gap:var(--ux-space-4) var(--ux-space-3) !important; }
+.onboarding-primary-account-form label { gap:var(--ux-space-2); }
+.onboarding-primary-account-form .field-title { font-size:var(--ux-type-label-size); color:var(--ux-text-secondary); }
+.onboarding-primary-account-form :where(input,select) { min-height:48px !important; border-color:var(--ux-border-default) !important; border-radius:var(--ux-radius-md) !important; background:var(--ux-page-bg) !important; box-shadow:none !important; }
+.onboarding-primary-account-form :where(input,select):focus { background:var(--ux-card-bg) !important; border-color:var(--ux-brand-secondary) !important; box-shadow:var(--ux-shadow-focus) !important; }
+.onboarding-primary-account-form .onboarding-balance-field input { direction:ltr; text-align:right; font-variant-numeric:tabular-nums; font-weight:700; font-size:var(--ux-type-card-title-size); }
+.onboarding-primary-account-form .onboarding-date-field input { direction:ltr; text-align:left; }
+
+/* A combobox should look like an input with a chevron, not a second pill/button. */
+.smart-combo > input { padding-inline-start:var(--ux-space-10) !important; }
+.smart-combo-toggle { inset-inline-start:var(--ux-space-2) !important; width:var(--ux-size-8) !important; height:var(--ux-size-8) !important; border:0 !important; border-radius:var(--ux-radius-sm) !important; background:transparent !important; color:var(--ux-text-muted) !important; box-shadow:none !important; }
+.smart-combo-toggle:hover,
+.smart-combo-toggle:focus-visible { background:var(--ux-section-soft-blue) !important; color:var(--ux-text-primary) !important; box-shadow:none !important; }
+.smart-combo-menu { border-radius:var(--ux-radius-lg) !important; box-shadow:var(--ux-shadow-md) !important; }
+
+.onboarding-optional-details-v2 { justify-self:start; width:100%; border:0 !important; background:transparent !important; overflow:visible !important; }
+.onboarding-optional-details-v2 > summary { display:inline-flex; align-items:center; gap:var(--ux-space-2); width:auto; min-height:32px; padding:var(--ux-space-1) var(--ux-space-2) !important; border-radius:var(--ux-radius-sm); background:transparent; color:var(--ux-text-muted) !important; font-size:var(--ux-type-caption-size); font-weight:700; }
+.onboarding-optional-details-v2 > summary small { padding:2px var(--ux-space-2); border-radius:var(--ux-radius-full); background:var(--ux-page-bg); color:var(--ux-text-muted); font-size:11px; }
+.onboarding-optional-details-v2 > summary::after { margin-inline-start:var(--ux-space-1); }
+.onboarding-optional-details-v2[open] { padding:var(--ux-space-3); border:1px dashed var(--ux-border-default) !important; border-radius:var(--ux-radius-md); background:var(--ux-page-bg) !important; }
+.onboarding-optional-details-v2[open] > summary { margin-bottom:var(--ux-space-2); }
+.onboarding-optional-details-v2 .onboarding-optional-grid { padding:0 !important; grid-template-columns:2fr 1fr !important; }
+.onboarding-optional-details-v2 .field-title { font-size:var(--ux-type-caption-size); }
+.onboarding-optional-details-v2 input { min-height:42px !important; font-size:var(--ux-type-body-sm-size); background:var(--ux-card-bg) !important; }
+
+.onboarding-add-account-action { display:flex; justify-content:flex-end; }
+.onboarding-add-account-action .primary-button { width:auto; min-width:170px; display:inline-flex; align-items:center; justify-content:center; gap:var(--ux-space-2); }
+.money-locations-card-v2 .empty-compact { padding:var(--ux-space-5); background:var(--ux-page-bg); border-style:dashed; }
+.money-locations-card-v2 .money-location-item { border-radius:var(--ux-radius-lg); box-shadow:none; }
+.money-locations-card-v2 .bank-identity-badge { background:var(--ux-section-soft-teal); color:var(--ux-brand-secondary); box-shadow:none; }
+.onboarding-next-v2 { margin-top:0 !important; }
+.onboarding-next-v2 .primary-button { width:100%; min-height:52px; }
+
+/* Onboarding intentionally hides the global mobile top bar; therefore do not reserve its empty height. */
+@media (max-width:767px) {
+  .protected-app-shell:has(.onboarding-page) > #main-content { padding-top:0 !important; }
+  .protected-app-shell:has(.onboarding-page) { padding-top:0 !important; }
+  .onboarding-page { padding-top:var(--ux-space-3) !important; }
+  .onboarding-money-shell-v2 { gap:var(--ux-space-3); padding-inline:var(--ux-space-3) !important; }
+  .onboarding-utility-row { min-height:36px; }
+  .onboarding-home-link { min-height:36px; padding-inline:var(--ux-space-2); font-size:var(--ux-type-body-sm-size); }
+  .onboarding-money-shell-v2 .onboarding-step-nav { margin-inline:0 !important; }
+  .onboarding-money-shell-v2 .onboarding-step-nav a { min-height:34px; }
+  .onboarding-money-hero { grid-template-columns:1fr; gap:var(--ux-space-4); padding:var(--ux-space-4); }
+  .onboarding-money-hero-title { align-items:flex-start; }
+  .onboarding-money-hero-icon { width:var(--ux-size-10); height:var(--ux-size-10); border-radius:var(--ux-radius-md); }
+  .onboarding-money-hero h1 { font-size:var(--ux-type-card-title-size); line-height:var(--ux-type-card-title-line); }
+  .money-location-total-v2 { width:100%; display:grid !important; grid-template-columns:1fr auto; align-items:end; gap:var(--ux-space-1) var(--ux-space-3); text-align:right; }
+  .money-location-total-v2 strong { justify-self:end; font-size:24px !important; }
+  .money-location-total-v2 small { grid-column:1/-1; }
+  .onboarding-account-builder-v2,
+  .money-locations-card-v2 { padding:var(--ux-space-4) !important; }
+  .onboarding-primary-account-form { grid-template-columns:repeat(2,minmax(0,1fr)) !important; gap:var(--ux-space-3) var(--ux-space-2) !important; }
+  .onboarding-primary-account-form :where(input,select) { min-height:46px !important; padding-inline:var(--ux-space-3) !important; }
+  .onboarding-primary-account-form .smart-combo > input { padding-inline-start:var(--ux-space-9) !important; }
+  .onboarding-primary-account-form .field-title { font-size:var(--ux-type-caption-size); }
+  .onboarding-optional-details-v2 .onboarding-optional-grid { grid-template-columns:1fr !important; }
+  .onboarding-add-account-action { justify-content:stretch; }
+  .onboarding-add-account-action .primary-button { width:100%; }
+  .money-location-item { grid-template-columns:auto minmax(0,1fr) !important; padding:var(--ux-space-3) !important; }
+  .money-location-balance { grid-column:2 !important; padding-top:var(--ux-space-2); border-top:1px solid var(--ux-border-default); display:flex !important; align-items:center; justify-content:space-between; text-align:right !important; }
+}
+
+@media (max-width:767px) {
+  .onboarding-primary-account-form .onboarding-account-name-field,
+  .onboarding-primary-account-form .onboarding-bank-field { grid-column:1 / -1; }
+  .onboarding-primary-account-form .onboarding-balance-field { grid-column:1; }
+  .onboarding-primary-account-form .onboarding-date-field { grid-column:2; }
+}
+
+/* The standalone account-create dialog follows the same hierarchy as onboarding. */
+.account-form-v2 { display:grid; gap:var(--ux-space-4); }
+.account-form-primary-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--ux-space-4) var(--ux-space-3); }
+.account-form-primary-grid label { display:grid; gap:var(--ux-space-2); }
+.account-form-primary-grid :where(input,select) { min-height:48px; border-radius:var(--ux-radius-md); background:var(--ux-page-bg); border-color:var(--ux-border-default); }
+.account-form-primary-grid :where(input,select):focus { background:var(--ux-card-bg); border-color:var(--ux-brand-secondary); box-shadow:var(--ux-shadow-focus); }
+.account-form-balance .money-field input { font-size:var(--ux-type-card-title-size); font-weight:700; font-variant-numeric:tabular-nums; }
+.account-form-date input { direction:ltr; text-align:left; }
+.account-form-matching { width:100%; }
+.account-form-actions { margin-top:0 !important; }
+.account-form-actions .primary-button { display:inline-flex; align-items:center; justify-content:center; gap:var(--ux-space-2); min-width:180px; }
+@media (max-width:767px) {
+  .account-form-primary-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--ux-space-3) var(--ux-space-2); }
+  .account-form-primary-grid .account-form-name,
+  .account-form-primary-grid .account-form-bank { grid-column:1 / -1; }
+  .account-form-primary-grid .account-form-balance { grid-column:1; }
+  .account-form-primary-grid .account-form-date { grid-column:2; }
+  .account-form-primary-grid .field-title { font-size:var(--ux-type-caption-size); }
+  .account-form-actions .primary-button { width:100%; }
+}

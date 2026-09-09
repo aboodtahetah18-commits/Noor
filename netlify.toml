@@ -1,0 +1,21 @@
+[build]
+  command = "npm run ensure:npmrc && npm run ensure:env-example && npm run deploy:preflight && npm run quality:gate && npm run deploy:migrate"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "24.20.0"
+  NPM_VERSION = "11.19.0"
+  NEXT_TELEMETRY_DISABLED = "1"
+  ALLOW_DB_MIGRATIONS = "false"
+
+[context.production.environment]
+  APP_ENV = "production"
+  ALLOW_DB_MIGRATIONS = "true"
+
+[context.deploy-preview.environment]
+  APP_ENV = "staging"
+  ALLOW_DB_MIGRATIONS = "false"
+
+[context.branch-deploy.environment]
+  APP_ENV = "staging"
+  ALLOW_DB_MIGRATIONS = "false"

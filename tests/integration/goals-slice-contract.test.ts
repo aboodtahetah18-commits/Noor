@@ -1,0 +1,2 @@
+import { describe,it,expect } from 'vitest';import { goalTransitions } from '@/state-machines/definitions';
+describe('Phase 20 goals contract',()=>{it('preserves documented lifecycle',()=>{expect(goalTransitions.DRAFT.ACTIVATE_GOAL).toBe('ACTIVE');expect(goalTransitions.ACTIVE.MARK_FINANCIALLY_UNREALISTIC).toBe('FINANCIALLY_UNREALISTIC');expect(goalTransitions.ACTIVE.ACHIEVE_GOAL).toBe('ACHIEVED')});it('does not define automatic cross-goal allocation',()=>{expect('ALLOCATE_MULTIPLE_GOALS_AUTOMATICALLY' in (goalTransitions as object)).toBe(false)})});

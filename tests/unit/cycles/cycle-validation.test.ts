@@ -1,0 +1,2 @@
+import {describe,expect,it} from 'vitest'; import {createCycleSchema} from '@/features/cycles/schemas/cycle';
+describe('cycle validation',()=>{it('rejects next income before start',()=>{expect(createCycleSchema.safeParse({name:'سبتمبر',startDate:'2026-09-10',expectedNextIncomeDate:'2026-09-09'}).success).toBe(false)}); it('accepts valid draft',()=>{expect(createCycleSchema.safeParse({name:'سبتمبر',startDate:'2026-09-01',expectedNextIncomeDate:'2026-09-27'}).success).toBe(true)});});

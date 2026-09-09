@@ -1,0 +1,7 @@
+html { background:var(--ux-page-bg); color:var(--ux-text-primary); }
+body { background:var(--ux-page-bg); color:var(--ux-text-primary); }
+::selection { background:var(--ux-alpha-teal-20); color:var(--ux-text-primary); }
+:focus-visible { outline:var(--ux-border-width-2) solid var(--ux-focus-ring); outline-offset:2px; }
+img, svg, video, canvas { max-width:100%; }
+input, select, textarea, button { min-width:0; }
+[hidden] { display:none !important; }

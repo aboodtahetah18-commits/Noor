@@ -1,0 +1,1 @@
+import { budgetCategoryRepository } from '@/repositories/budget-category-repository'; export async function deactivateBudgetCategory(userId:string,id:string){return await budgetCategoryRepository.deactivate(userId,id)?{success:true as const}:{success:false as const,code:'NOT_FOUND',message:'البند غير موجود أو غير نشط'};}

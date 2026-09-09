@@ -1,0 +1,4 @@
+import type { AllocationType, FinancialPlanStatus } from '@/domain/types';
+export interface PlanAllocationView { id:string; categoryId:string; categoryName:string; allocationType:AllocationType; plannedAmount:string; recurrenceKind?:'MONTHLY'|'EVERY_N_CYCLES'|'ONE_TIME'|'SEASONAL'; intervalCycles?:number; startCycleDate?:string; ruleNote?:string|null; }
+export interface PlanVersionView { id:string; versionNumber:number; revisionReason:string|null; isCurrent:boolean; approvedAt:string|null; allocations:PlanAllocationView[]; }
+export interface FinancialPlanView { id:string; cycleId:string; cycleName:string; status:FinancialPlanStatus; currentVersionId:string|null; approvedAt:string|null; createdAt:string; currentVersion:PlanVersionView|null; pendingRevision:PlanVersionView|null; totals:Record<AllocationType,string>; }

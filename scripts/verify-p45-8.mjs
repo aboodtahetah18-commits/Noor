@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+const must=(p,t)=>{const s=fs.readFileSync(p,'utf8');if(!s.includes(t))throw new Error(`${p}: missing ${t}`)};
+must('database/migrations/20260903_048_safe_message_auto_post.sql','transaction_time');
+must('src/features/bank-statements/services/message-parser.ts','transactionTime');
+must('src/features/bank-statements/services/safe-message-auto-post.ts',"exact.approvalMode!=='AUTO'");
+must('src/features/bank-statements/commands/import-message.ts','approveBankStatementImport');
+must('src/features/bank-statements/commands/import-message.ts','r.transaction_time=${row.transactionTime}::time');
+must('src/features/bank-statements/services/intelligence.ts','const forceReview=duplicateCandidate');
+must('src/app/(protected)/bank-statements/actions.ts',"approval_mode='AUTO'");
+console.log('P45.8 safe known-message auto-post verification: PASS');

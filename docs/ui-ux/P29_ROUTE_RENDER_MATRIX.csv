@@ -1,0 +1,68 @@
+﻿Route,Access,Desktop,Mobile,Route Type,Audit Status
+/accounts/[id]/edit,Protected,YES,YES,Dynamic,P29 render audit required
+/accounts/[id],Protected,YES,YES,Dynamic,P29 render audit required
+/accounts/new,Protected,YES,YES,Static route,P29 render audit required
+/accounts,Protected,YES,YES,Static route,P29 render audit required
+/advisor/[id],Protected,YES,YES,Dynamic,P29 render audit required
+/advisor,Protected,YES,YES,Static route,P29 render audit required
+/alerts,Protected,YES,YES,Static route,P29 render audit required
+/bank-operations,Protected,YES,YES,Static route,P29 render audit required
+/bank-statements/[id],Protected,YES,YES,Dynamic,P29 render audit required
+/bank-statements,Protected,YES,YES,Static route,P29 render audit required
+/budget/new,Protected,YES,YES,Static route,P29 render audit required
+/budget/optimizer,Protected,YES,YES,Static route,P29 render audit required
+/budget/optimizer/review,Protected,YES,YES,Static route,P29 render audit required
+/budget,Protected,YES,YES,Static route,P29 render audit required
+/budget/revise,Protected,YES,YES,Static route,P29 render audit required
+/budget-categories/[id],Protected,YES,YES,Dynamic,P29 render audit required
+/budget-categories/new,Protected,YES,YES,Static route,P29 render audit required
+/budget-categories,Protected,YES,YES,Static route,P29 render audit required
+/cycles/[id]/forecast,Protected,YES,YES,Dynamic,P29 render audit required
+/cycles/[id]/income,Protected,YES,YES,Dynamic,P29 render audit required
+/cycles/[id],Protected,YES,YES,Dynamic,P29 render audit required
+/cycles/[id]/review,Protected,YES,YES,Dynamic,P29 render audit required
+/cycles/new,Protected,YES,YES,Static route,P29 render audit required
+/dashboard,Protected,YES,YES,Static route,P29 render audit required
+/decision-log,Protected,YES,YES,Static route,P29 render audit required
+/emergency/configure,Protected,YES,YES,Static route,P29 render audit required
+/emergency/contribute,Protected,YES,YES,Static route,P29 render audit required
+/emergency,Protected,YES,YES,Static route,P29 render audit required
+/emergency/withdraw,Protected,YES,YES,Static route,P29 render audit required
+/expenses,Protected,YES,YES,Static route,P29 render audit required
+/goals/[id]/contribute,Protected,YES,YES,Dynamic,P29 render audit required
+/goals/[id],Protected,YES,YES,Dynamic,P29 render audit required
+/goals/new,Protected,YES,YES,Static route,P29 render audit required
+/goals,Protected,YES,YES,Static route,P29 render audit required
+/income/[id],Protected,YES,YES,Dynamic,P29 render audit required
+/income/new,Protected,YES,YES,Static route,P29 render audit required
+/income,Protected,YES,YES,Static route,P29 render audit required
+/internal-funding,Protected,YES,YES,Static route,P29 render audit required
+/merchants,Protected,YES,YES,Static route,P29 render audit required
+/more,Protected,YES,YES,Static route,P29 render audit required
+/obligations/[id]/pay,Protected,YES,YES,Dynamic,P29 render audit required
+/obligations/new,Protected,YES,YES,Static route,P29 render audit required
+/obligations,Protected,YES,YES,Static route,P29 render audit required
+/onboarding/accounts,Protected,YES,YES,Static route,P29 render audit required
+/onboarding/controls,Protected,YES,YES,Static route,P29 render audit required
+/onboarding/income,Protected,YES,YES,Static route,P29 render audit required
+/onboarding/obligations,Protected,YES,YES,Static route,P29 render audit required
+/onboarding,Protected,YES,YES,Static route,P29 render audit required
+/onboarding/plan,Protected,YES,YES,Static route,P29 render audit required
+/refunds/new,Protected,YES,YES,Static route,P29 render audit required
+/reports/cycles/[id],Protected,YES,YES,Dynamic,P29 render audit required
+/reports/future-pressure,Protected,YES,YES,Static route,P29 render audit required
+/reports/history,Protected,YES,YES,Static route,P29 render audit required
+/reports/learning,Protected,YES,YES,Static route,P29 render audit required
+/reports,Protected,YES,YES,Static route,P29 render audit required
+/savings,Protected,YES,YES,Static route,P29 render audit required
+/savings/transfer,Protected,YES,YES,Static route,P29 render audit required
+/settings/financial-buffer,Protected,YES,YES,Static route,P29 render audit required
+/settings,Protected,YES,YES,Static route,P29 render audit required
+/transactions/[id],Protected,YES,YES,Dynamic,P29 render audit required
+/transactions,Protected,YES,YES,Static route,P29 render audit required
+/transfers/new,Protected,YES,YES,Static route,P29 render audit required
+/workspace,Protected,YES,YES,Static route,P29 render audit required
+/auth/error,Public,YES,YES,Static route,P29 render audit required
+/login,Public,YES,YES,Static route,P29 render audit required
+/,Public,YES,YES,Static route,P29 render audit required
+/preview,Public,YES,YES,Static route,P29 render audit required

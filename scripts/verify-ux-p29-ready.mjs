@@ -1,0 +1,33 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { spawnSync } from 'node:child_process';
+const root=process.cwd();
+const tokenCompliance=spawnSync(process.execPath,['scripts/verify-ui-token-compliance.mjs'],{cwd:root,stdio:'inherit'});
+if(tokenCompliance.status!==0){console.error('CR-002-READY blocked: static token compliance failed');process.exit(tokenCompliance.status??1)}
+const read=(p)=>fs.readFileSync(path.join(root,p),'utf8');
+const checks=[]; const check=(name,ok)=>{console.log(`${ok?'PASS':'FAIL'} ${name}`);if(!ok)checks.push(name)};
+const css=read('src/app/uiux-governance.css'); const combined=css+read('src/app/globals.css');
+const layout=read('src/app/layout.tsx'); const shell=read('src/app/(protected)/desktop-top-nav.tsx')+read('src/app/(protected)/global-top-bar.tsx')+read('src/app/(protected)/mobile-top-bar.tsx')+read('src/app/(protected)/mobile-bottom-nav.tsx');
+check('governance stylesheet imported last',layout.indexOf("./uiux-governance.css")>layout.indexOf("./globals.css"));
+for(const t of ['--ux-brand-primary:#0B2D5B','--ux-brand-secondary:#0EA5A2','--ux-brand-accent:#22C55E','--ux-success:#16A34A','--ux-warning:#F59E0B','--ux-error:#EF4444','--ux-page-bg:#F1F5F9','--ux-card-bg:#FFFFFF']) check(`CR-002 token ${t.split(':')[0]}`,css.includes(t));
+check('Tajawal only',layout.includes("Tajawal")&&!combined.includes('IBM Plex Sans Arabic'));
+check('Mustaqbali brand',layout.includes("title: 'مستقبلي'")&&shell.includes('مستقبلي'));
+check('approved logo asset',fs.existsSync(path.join(root,'public/brand/mustaqbali-logo.png'))&&shell.includes('/brand/mustaqbali-logo.png'));
+check('desktop sidebar 248/72',css.includes('--ux-shell-sidebar-expanded:248px')&&css.includes('--ux-shell-sidebar-collapsed:72px'));
+check('desktop sidebar persistence',read('src/app/(protected)/desktop-top-nav.tsx').includes("localStorage.setItem('sidebarState'"));
+check('desktop topbar 64',css.includes('--ux-shell-topbar-height:64px')&&shell.includes('mustaqbali-topbar'));
+check('mobile header 56',css.includes('--ux-mobile-header-height:56px'));
+check('mobile bottom nav five governed destinations',['/dashboard','/transactions','/budget','/advisor','/more'].every(r=>read('src/app/(protected)/mobile-bottom-nav.tsx').includes(r)));
+check('mobile secondary drawer',shell.includes('mustaqbali-mobile-drawer')&&shell.includes('aria-modal="true"'));
+check('adaptive mobile forms',css.includes('grid-template-columns:repeat(2,minmax(0,1fr))!important'));
+check('mobile 44 target',css.includes('--ux-size-11:44px'));
+check('breakpoint mobile 767',combined.includes('@media(max-width:767px)'));
+check('breakpoint medium 768-1023',combined.includes('@media(min-width:768px) and (max-width:1023px)'));
+check('breakpoint desktop 1024',combined.includes('@media(min-width:1024px)'));
+check('breakpoint wide 1440',combined.includes('@media(min-width:1440px)'));
+check('focus visible',css.includes(':focus-visible'));
+check('reduced motion',css.includes('prefers-reduced-motion:reduce'));
+check('dark mode',css.includes('prefers-color-scheme:dark'));
+check('Saudi Riyal sign',read('src/lib/format-money.ts').includes('\\u20C1'));
+if(checks.length){console.error(`CR-002 implementation readiness FAILED (${checks.length})`);process.exit(1)}
+console.log('CR-002 Mustaqbali implementation readiness: PASS');

@@ -1,0 +1,8 @@
+/* Governed viewport bands: mobile <768; tablet 768–1023; desktop 1024–1439; wide >=1440. */
+.ux-only-mobile,.ux-only-tablet,.ux-only-desktop,.ux-only-wide { display:none !important; }
+.ux-responsive-grid { display:grid; grid-template-columns:minmax(0,1fr); gap:var(--ux-space-4); }
+.ux-page-container { width:min(100%,var(--ux-container-content)); margin-inline:auto; padding-inline:var(--ux-space-4); }
+@media (max-width:767px) { .ux-only-mobile{display:revert!important;} }
+@media (min-width:768px) and (max-width:1023px) { .ux-only-tablet{display:revert!important;} .ux-page-container{padding-inline:var(--ux-space-6);} }
+@media (min-width:1024px) and (max-width:1439px) { .ux-only-desktop{display:revert!important;} .ux-page-container{padding-inline:var(--ux-space-8);} .ux-responsive-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--ux-space-6);} }
+@media (min-width:1440px) { .ux-only-wide{display:revert!important;} .ux-page-container{padding-inline:var(--ux-space-10);} .ux-responsive-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--ux-space-6);} }

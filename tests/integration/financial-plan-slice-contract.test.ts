@@ -1,0 +1,3 @@
+import { describe,it,expect } from 'vitest'; import fs from 'node:fs';
+const repo=fs.readFileSync('src/repositories/financial-plan-repository.ts','utf8');
+describe('financial plan slice contract',()=>{it('creates immutable versions instead of updating approved allocations',()=>{expect(repo).toContain('insert into public.plan_versions');expect(repo).not.toMatch(/update public\.budget_allocations set planned_amount/)});it('keeps old current version until revision approval',()=>{expect(repo).toContain("set status='REVISED'");expect(repo).toContain('set is_current=false');expect(repo).toContain('set is_current=true,approved_at')});it('writes state transition audit',()=>expect(repo).toContain('public.state_transition_logs'));});

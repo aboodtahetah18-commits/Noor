@@ -1,0 +1,3 @@
+MUSTAQBALI BUILD 10
+P47 source fingerprint: BUILD10-P47-SOURCE-FINGERPRINT
+Both cycles/new and more contain p47-shell + p47-closure-page.

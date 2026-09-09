@@ -1,0 +1,2 @@
+import { describe,it,expect } from 'vitest';import { existsSync } from 'node:fs';
+describe('WF-001..WF-006 routes',()=>{it('provides all six onboarding screens',()=>{for(const p of ['src/app/(protected)/onboarding/page.tsx','src/app/(protected)/onboarding/accounts/page.tsx','src/app/(protected)/onboarding/income/page.tsx','src/app/(protected)/onboarding/obligations/page.tsx','src/app/(protected)/onboarding/controls/page.tsx','src/app/(protected)/onboarding/plan/page.tsx'])expect(existsSync(p),p).toBe(true)})});
