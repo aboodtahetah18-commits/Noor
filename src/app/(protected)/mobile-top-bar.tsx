@@ -46,7 +46,7 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
     </header>
     {open?<div className="mustaqbali-drawer-backdrop" role="presentation" onMouseDown={(e)=>{if(e.target===e.currentTarget){setOpen(false);triggerRef.current?.focus();}}}>
       <aside className="mustaqbali-mobile-drawer" role="dialog" aria-modal="true" aria-label="القائمة الجانبية">
-        <header><strong>مستقبلي</strong><button ref={closeRef} type="button" onClick={()=>{setOpen(false);triggerRef.current?.focus();}} aria-label="إغلاق القائمة"><LucideIcon name="x" size={20}/></button></header>
+        <header><Link href="/dashboard" className="mustaqbali-drawer-brand" onClick={()=>setOpen(false)} aria-label="الرئيسية"><BrandLogo surface="dark" /></Link><button ref={closeRef} type="button" onClick={()=>{setOpen(false);triggerRef.current?.focus();}} aria-label="إغلاق القائمة"><LucideIcon name="x" size={20}/></button></header>
         <nav aria-label="التنقل الثانوي للجوال">
           {secondary.map(([href,label])=><Link key={href} href={href} onClick={()=>setOpen(false)} className={pathname.startsWith(href)?'is-active':''}>{label}</Link>)}
         </nav>
