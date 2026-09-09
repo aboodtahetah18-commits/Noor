@@ -10,6 +10,7 @@ import '../design-system/foundations.css';
 import '../design-system/responsive.css';
 import '../design-system/contracts.css';
 import '../design-system/experience.css';
+import '../design-system/brand-refresh.css';
 
 const tajawal = Tajawal({
   subsets: ['arabic'],
@@ -21,6 +22,11 @@ const tajawal = Tajawal({
 export const metadata: Metadata = {
   title: 'مستقبلي',
   description: 'إدارة أذكى لحياتك المالية',
+  icons: {
+    icon: '/brand/mustaqbali-brand-symbol.png',
+    shortcut: '/brand/mustaqbali-brand-symbol.png',
+    apple: '/brand/mustaqbali-brand-symbol.png',
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {

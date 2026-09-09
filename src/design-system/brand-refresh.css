@@ -1,0 +1,436 @@
+/* Final Mustaqbali brand refresh — icon-only nature-finance identity, CR-002 extension. */
+
+/* Theme separation: the premium experience layer remains dark by default, while
+   light mode is deliberately calmer and brighter rather than neon-on-white. */
+html[data-theme="light"] {
+  --ux-page-bg:#F2F7FB;
+  --ux-card-bg:#FFFFFF;
+  --ux-shell-topbar-bg:rgb(248 252 255 / .94);
+  --ux-shell-topbar-border:#D4E4F0;
+  --ux-border-default:#D7E3EC;
+  --ux-border-emphasis:#B8D0E0;
+  --ux-text-primary:#092A4B;
+  --ux-text-secondary:#47637B;
+  --ux-text-muted:#6C8499;
+  --ux-section-soft-blue:#EAF6FF;
+  --ux-section-soft-teal:#E9F9F5;
+  --mx-shell-bg:#EAF3F8;
+  --mx-shell-bg-deep:#F5F9FC;
+  --mx-surface:rgb(255 255 255 / .96);
+  --mx-surface-2:rgb(246 251 255 / .98);
+  --mx-surface-soft:rgb(7 54 91 / .035);
+  --mx-border:rgb(27 102 151 / .16);
+  --mx-border-strong:rgb(14 165 162 / .42);
+  --mx-glow:0 14px 34px rgb(4 40 70 / .08);
+  --mx-accent:var(--ux-brand-secondary);
+  --mx-accent-2:var(--ux-brand-teal-bright);
+  background:var(--ux-page-bg);
+}
+html[data-theme="light"] body {
+  background:
+    radial-gradient(circle at 48% -8%,var(--ux-alpha-cyan-10),transparent 28rem),
+    linear-gradient(180deg,#F7FBFE 0%,#EFF6FA 72%) !important;
+  color:var(--ux-text-primary);
+}
+html[data-theme="dark"] {
+  --mx-shell-bg:var(--ux-brand-night);
+  --mx-shell-bg-deep:var(--ux-brand-deep);
+  --mx-surface:rgb(10 35 59 / .92);
+  --mx-surface-2:rgb(14 46 73 / .92);
+  --mx-border:rgb(124 178 222 / .22);
+  --mx-border-strong:rgb(25 226 214 / .62);
+  --mx-glow:0 16px 44px rgb(0 14 34 / .28);
+  --mx-accent:var(--ux-brand-secondary);
+  --mx-accent-2:var(--ux-brand-teal-bright);
+}
+html[data-theme="dark"] body {
+  background:
+    radial-gradient(circle at 50% -10%,var(--ux-alpha-cyan-16),transparent 28rem),
+    linear-gradient(180deg,var(--ux-brand-night) 0%,var(--ux-brand-deep) 72%) !important;
+}
+
+/* Icon-only brand mark. */
+.mustaqbali-topbar-logo,
+.mustaqbali-tablet-brand,
+.mustaqbali-mobile-brand,
+.mustaqbali-drawer-brand {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 auto;
+  border-radius:var(--ux-radius-lg);
+  text-decoration:none;
+  overflow:visible;
+}
+.mustaqbali-topbar-logo img,
+.mustaqbali-tablet-brand img,
+.mustaqbali-mobile-brand img,
+.mustaqbali-drawer-brand img {
+  display:block;
+  aspect-ratio:1;
+  object-fit:contain;
+  object-position:center;
+  filter:drop-shadow(0 7px 16px var(--ux-brand-glow));
+}
+.mustaqbali-topbar-logo img { width:var(--ux-logo-desktop-width) !important; height:var(--ux-logo-desktop-width) !important; max-width:var(--ux-logo-desktop-width) !important; max-height:var(--ux-logo-desktop-width) !important; }
+.mustaqbali-tablet-brand img { width:var(--ux-logo-tablet-width) !important; height:var(--ux-logo-tablet-width) !important; max-width:var(--ux-logo-tablet-width) !important; max-height:var(--ux-logo-tablet-width) !important; }
+.mustaqbali-mobile-brand img { width:var(--ux-logo-mobile-width) !important; height:var(--ux-logo-mobile-width) !important; max-width:var(--ux-logo-mobile-width) !important; max-height:var(--ux-logo-mobile-width) !important; }
+.mustaqbali-drawer-brand img { width:var(--ux-size-14); height:var(--ux-size-14); }
+
+/* Login: one symbol, no duplicated wordmark, and a landscape-like financial path. */
+.auth-page-nature {
+  position:relative;
+  overflow:hidden;
+  background:var(--ux-brand-hero-bg) !important;
+}
+.auth-page-nature::before,
+.auth-page-nature::after {
+  content:"";
+  position:absolute;
+  pointer-events:none;
+  border-radius:var(--ux-radius-full);
+  filter:blur(20px);
+}
+.auth-page-nature::before {
+  width:min(54vw,620px);
+  height:min(54vw,620px);
+  inset-inline-start:-12%;
+  inset-block-start:-22%;
+  background:var(--ux-alpha-cyan-16);
+}
+.auth-page-nature::after {
+  width:min(42vw,480px);
+  height:min(42vw,480px);
+  inset-inline-end:-8%;
+  inset-block-end:-20%;
+  background:var(--ux-alpha-green-14);
+}
+.auth-stage-nature {
+  position:relative;
+  z-index:1;
+  border-color:var(--ux-brand-hero-border) !important;
+  box-shadow:var(--ux-shadow-brand) !important;
+}
+.auth-visual-nature {
+  position:relative;
+  overflow:hidden;
+  min-height:680px;
+  background:var(--ux-brand-deep) !important;
+  color:var(--ux-text-inverse);
+}
+.auth-visual-nature::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 18% 16%,var(--ux-alpha-gold-14),transparent 28%),
+    radial-gradient(circle at 72% 36%,var(--ux-alpha-cyan-16),transparent 34%),
+    linear-gradient(155deg,var(--ux-brand-night-soft),var(--ux-brand-deep));
+}
+.auth-visual-nature::after {
+  content:"";
+  position:absolute;
+  inset:auto -15% -12% -15%;
+  height:44%;
+  opacity:.82;
+  background:
+    linear-gradient(145deg,transparent 0 28%,var(--ux-brand-night-soft) 29% 46%,transparent 47%),
+    linear-gradient(38deg,transparent 0 36%,var(--ux-dark-soft-teal-border) 37% 54%,transparent 55%);
+  clip-path:polygon(0 100%,0 62%,16% 40%,28% 60%,45% 28%,61% 56%,76% 34%,100% 66%,100% 100%);
+}
+.auth-nature-glow {
+  position:absolute;
+  width:220px;
+  height:220px;
+  inset-block-start:10%;
+  inset-inline-start:50%;
+  transform:translateX(-50%);
+  border-radius:var(--ux-radius-full);
+  background:var(--ux-alpha-cyan-16);
+  filter:blur(52px);
+}
+.auth-brand-lockup-symbol {
+  position:relative;
+  z-index:2;
+  min-height:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:var(--ux-space-6);
+  text-align:center;
+}
+.auth-brand-symbol-frame {
+  width:clamp(180px,25vw,280px);
+  aspect-ratio:1;
+  display:grid;
+  place-items:center;
+  border-radius:var(--ux-radius-full);
+  background:radial-gradient(circle,var(--ux-alpha-cyan-10),transparent 68%);
+}
+.auth-brand-symbol {
+  width:100% !important;
+  height:100% !important;
+  object-fit:contain;
+  filter:drop-shadow(0 22px 32px var(--ux-alpha-cyan-24));
+}
+.auth-nature-copy { max-width:400px; }
+.auth-hero-eyebrow,
+.auth-panel-kicker {
+  margin:0 0 var(--ux-space-2);
+  color:var(--ux-brand-teal-bright);
+  font-size:var(--ux-type-label-size);
+  font-weight:700;
+}
+.auth-hero-title {
+  margin:0;
+  color:var(--ux-text-inverse);
+  font-size:clamp(var(--ux-type-section-title-size),3vw,var(--ux-type-page-title-size));
+  line-height:1.35;
+  font-weight:700;
+}
+.auth-hero-copy {
+  margin:var(--ux-space-3) 0 0;
+  color:var(--ux-dark-text-secondary);
+  line-height:var(--ux-type-body-line);
+}
+.auth-nature-path {
+  position:absolute;
+  z-index:2;
+  inset:auto 8% 6% 8%;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  align-items:end;
+  gap:var(--ux-space-3);
+  opacity:.7;
+}
+.auth-nature-path span {
+  display:block;
+  border:var(--ux-border-width-1) solid var(--ux-alpha-cyan-24);
+  border-radius:var(--ux-radius-full) var(--ux-radius-full) var(--ux-radius-sm) var(--ux-radius-sm);
+  background:linear-gradient(to top,var(--ux-alpha-cyan-16),transparent);
+}
+.auth-nature-path span:nth-child(1){height:42px;}
+.auth-nature-path span:nth-child(2){height:72px;}
+.auth-nature-path span:nth-child(3){height:104px;}
+.auth-panel-nature {
+  position:relative;
+  background:var(--ux-card-bg) !important;
+}
+.auth-panel-nature::before {
+  content:"";
+  position:absolute;
+  inset-inline:var(--ux-space-8);
+  inset-block-start:0;
+  height:var(--ux-border-width-2);
+  background:linear-gradient(90deg,transparent,var(--ux-brand-cyan),var(--ux-brand-green-bright),transparent);
+}
+.auth-heading-simple { margin-bottom:var(--ux-space-6); }
+.auth-heading-simple h2 { margin:0; }
+.auth-form-nature { gap:var(--ux-space-5); }
+.auth-input-field { gap:var(--ux-space-2) !important; }
+.auth-input-shell {
+  min-height:var(--ux-size-14);
+  display:flex;
+  align-items:center;
+  gap:var(--ux-space-3);
+  padding-inline:var(--ux-space-4);
+  border:var(--ux-border-width-1) solid var(--ux-border-default);
+  border-radius:var(--ux-radius-lg);
+  background:var(--ux-card-bg);
+  color:var(--ux-text-muted);
+  transition:border-color var(--ux-motion-duration-base) var(--ux-motion-ease-standard),box-shadow var(--ux-motion-duration-base) var(--ux-motion-ease-standard);
+}
+.auth-input-shell:focus-within {
+  border-color:var(--ux-brand-teal-bright);
+  box-shadow:var(--ux-shadow-focus);
+  color:var(--ux-brand-secondary);
+}
+.auth-form-nature .auth-input-shell input {
+  min-height:calc(var(--ux-size-14) - var(--ux-space-2));
+  flex:1 1 auto;
+  border:0 !important;
+  outline:0 !important;
+  box-shadow:none !important;
+  padding:0 !important;
+  background:transparent !important;
+  color:var(--ux-text-primary);
+  transform:none !important;
+}
+.auth-password-toggle {
+  width:var(--ux-size-10);
+  height:var(--ux-size-10);
+  min-height:var(--ux-size-10) !important;
+  display:grid !important;
+  place-items:center;
+  flex:0 0 auto;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:var(--ux-radius-full) !important;
+  background:transparent !important;
+  color:var(--ux-text-muted) !important;
+  box-shadow:none !important;
+}
+.auth-password-toggle:hover { color:var(--ux-brand-secondary) !important; }
+.auth-form-nature .auth-submit {
+  background:linear-gradient(105deg,var(--ux-brand-action-start),var(--ux-brand-action-end)) !important;
+  box-shadow:var(--ux-shadow-brand) !important;
+}
+.auth-form-nature .auth-submit:hover:not(:disabled) { box-shadow:var(--ux-shadow-brand-strong) !important; }
+.auth-form-nature .auth-alert {
+  border-inline-start:var(--ux-border-width-2) solid var(--ux-error);
+  border-radius:var(--ux-radius-md);
+  background:var(--ux-soft-red);
+  color:var(--ux-error);
+}
+
+/* Shell and shared dialogs. */
+html[data-theme="dark"] .mustaqbali-topbar,
+html[data-theme="dark"] .p47-mobile-topbar.mustaqbali-mobile-header,
+html[data-theme="dark"] .mustaqbali-tablet-topbar {
+  background:linear-gradient(110deg,var(--ux-brand-deep),var(--ux-dark-shell-topbar-bg)) !important;
+}
+html[data-theme="light"] .mustaqbali-topbar,
+html[data-theme="light"] .p47-mobile-topbar.mustaqbali-mobile-header,
+html[data-theme="light"] .mustaqbali-tablet-topbar {
+  background:linear-gradient(110deg,rgb(255 255 255 / .97),rgb(238 248 253 / .96)) !important;
+  color:var(--ux-text-primary) !important;
+  border-color:var(--ux-shell-topbar-border) !important;
+}
+.mustaqbali-sidebar { background:linear-gradient(180deg,var(--ux-shell-sidebar-bg),var(--ux-brand-deep)) !important; }
+.mustaqbali-sidebar-nav a.is-active,.mustaqbali-sidebar-footer a.is-active { box-shadow:inset 3px 0 0 var(--ux-brand-teal-bright); }
+.mustaqbali-mobile-bottom-nav a.is-active { color:var(--ux-brand-teal-bright) !important; }
+.mustaqbali-mobile-drawer { background:var(--ux-brand-deep) !important; }
+.mustaqbali-mobile-drawer > header { min-height:76px; display:flex; align-items:center; justify-content:space-between; gap:var(--ux-space-3); }
+
+.p49-action-dialog::backdrop { background:var(--ux-alpha-night-72) !important; backdrop-filter:blur(8px) !important; }
+.p49-dialog-shell { border-color:var(--ux-brand-hero-border) !important; box-shadow:var(--ux-shadow-brand-strong) !important; }
+html[data-theme="light"] .p49-dialog-shell { background:linear-gradient(160deg,#FFFFFF,#F4FAFD) !important; }
+html[data-theme="light"] .p49-dialog-header { background:transparent !important; color:var(--ux-text-primary) !important; }
+.p49-dialog-header { position:relative; }
+.p49-dialog-header::after {
+  content:"" !important;
+  display:block !important;
+  position:absolute;
+  inset-inline:var(--ux-space-6);
+  inset-block-end:-1px;
+  height:var(--ux-border-width-2);
+  background:linear-gradient(90deg,transparent,var(--ux-brand-cyan),var(--ux-brand-teal-bright),transparent);
+}
+
+/* Main financial surfaces use the landscape journey image with mode-aware contrast. */
+html[data-theme="light"] .p47-page-heading,
+html[data-theme="light"] .p47-resource-header,
+html[data-theme="light"] .page-header.p47-closure-header {
+  background:
+    linear-gradient(90deg,rgb(247 252 255 / .36),rgb(247 252 255 / .90)),
+    url('/brand/mustaqbali-financial-journey.png') center/cover no-repeat !important;
+  border-color:var(--ux-border-default) !important;
+  box-shadow:var(--mx-glow) !important;
+}
+html[data-theme="light"] .p47-page-heading h1,
+html[data-theme="light"] .p47-resource-header h1,
+html[data-theme="light"] .page-header.p47-closure-header h1 { color:var(--ux-text-primary) !important; text-shadow:0 1px 0 rgb(255 255 255 / .9); }
+html[data-theme="light"] .p47-page-heading p,
+html[data-theme="light"] .p47-resource-header p,
+html[data-theme="light"] .page-header.p47-closure-header p { color:var(--ux-text-secondary) !important; }
+html[data-theme="light"] .p47-page-heading::after,
+html[data-theme="light"] .p47-resource-header::after,
+html[data-theme="light"] .page-header.p47-closure-header::after { color:#156C9C; text-shadow:none; }
+html[data-theme="light"] .card,
+html[data-theme="light"] .p47-panel,
+html[data-theme="light"] .p47-resource-card,
+html[data-theme="light"] .p47-account-tile,
+html[data-theme="light"] .p47-transaction-row,
+html[data-theme="light"] .p47-budget-hero,
+html[data-theme="light"] .p47-financial-hero,
+html[data-theme="light"] .p47-kpi-strip>article,
+html[data-theme="light"] .detail-list,
+html[data-theme="light"] .form-card {
+  background:linear-gradient(145deg,#FFFFFF,#F7FBFD) !important;
+  border-color:var(--ux-border-default) !important;
+  color:var(--ux-text-primary) !important;
+  box-shadow:var(--mx-glow) !important;
+}
+html[data-theme="light"] input,
+html[data-theme="light"] select,
+html[data-theme="light"] textarea,
+html[data-theme="light"] .ux-control,
+html[data-theme="light"] .smart-combo-trigger {
+  background:#FFFFFF !important;
+  color:var(--ux-text-primary) !important;
+  border-color:var(--ux-border-default) !important;
+}
+html[data-theme="light"] input::placeholder,
+html[data-theme="light"] textarea::placeholder { color:var(--ux-text-muted) !important; }
+
+/* Accounts/profile/details: compact optional data and visual priority on money. */
+.p74-focus-summary { position:relative; overflow:hidden; }
+.p74-focus-summary::before {
+  content:"";
+  position:absolute;
+  width:180px;
+  height:180px;
+  inset-inline-end:-70px;
+  inset-block-start:-100px;
+  border-radius:var(--ux-radius-full);
+  background:var(--ux-brand-glow);
+  pointer-events:none;
+}
+html[data-theme="light"] .p74-focus-summary {
+  background:linear-gradient(125deg,#F2FBFF,#EEF9F4) !important;
+  border-color:var(--ux-border-default) !important;
+  color:var(--ux-text-primary) !important;
+}
+.account-form-matching { margin-top:var(--ux-space-2); }
+.account-form-matching>summary { font-weight:700; }
+.p55-profile-summary { position:relative; overflow:hidden; }
+html[data-theme="light"] .p55-profile-summary,
+html[data-theme="light"] .p55-profile-form,
+html[data-theme="light"] .p60-security-form {
+  background:#F7FBFD !important;
+  border-color:var(--ux-border-default) !important;
+  color:var(--ux-text-primary) !important;
+}
+.brand-logo-preview {
+  min-height:180px;
+  display:grid;
+  place-items:center;
+  border-radius:var(--ux-radius-xl);
+  overflow:hidden;
+}
+.brand-logo-preview img {
+  width:min(148px,70%) !important;
+  height:auto !important;
+  aspect-ratio:1;
+  object-fit:contain;
+  filter:drop-shadow(0 12px 26px var(--ux-brand-glow));
+}
+.brand-logo-setting-card.is-light .brand-logo-preview { background:#F4FAFD !important; }
+.brand-logo-setting-card.is-dark .brand-logo-preview { background:var(--ux-brand-deep) !important; }
+
+@media (max-width:1023px) {
+  .auth-stage-nature { min-height:100svh; }
+  .auth-visual-nature { min-height:330px; padding-block:var(--ux-space-6) var(--ux-space-8) !important; }
+  .auth-brand-lockup-symbol { gap:var(--ux-space-3); }
+  .auth-brand-symbol-frame { width:clamp(132px,30vw,190px); }
+  .auth-hero-copy { display:none; }
+  .auth-nature-path { inset-block-end:2%; opacity:.44; }
+  .auth-panel-nature::before { inset-inline:var(--ux-space-4); }
+}
+@media (max-width:767px) {
+  .mustaqbali-mobile-brand { flex:0 0 auto !important; max-width:none !important; width:var(--ux-logo-mobile-width); height:var(--ux-mobile-header-height); }
+  .mustaqbali-mobile-brand img { width:var(--ux-logo-mobile-width) !important; height:var(--ux-logo-mobile-width) !important; max-width:var(--ux-logo-mobile-width) !important; max-height:var(--ux-logo-mobile-width) !important; }
+  .auth-page-nature { background:var(--ux-brand-deep) !important; }
+  .auth-visual-nature { min-height:300px; }
+  .auth-nature-copy { max-width:300px; }
+  .auth-hero-title { font-size:var(--ux-type-section-title-size); }
+  .auth-panel-nature { border-start-start-radius:var(--ux-radius-6) !important; border-start-end-radius:var(--ux-radius-6) !important; }
+  .auth-input-shell { min-height:var(--ux-size-12); }
+  .auth-form-nature .auth-input-shell input { min-height:calc(var(--ux-size-12) - var(--ux-space-2)); }
+  .brand-logo-preview { min-height:150px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .auth-page-nature::before,.auth-page-nature::after,.auth-brand-symbol { transition:none !important; animation:none !important; }
+}

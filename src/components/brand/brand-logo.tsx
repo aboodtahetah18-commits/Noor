@@ -8,6 +8,7 @@ const LIGHT_KEY = 'mustaqbali-logo-light';
 const DARK_KEY = 'mustaqbali-logo-dark';
 const THEME_KEY = 'mustaqbali-theme';
 const EVENT = 'mustaqbali:brand-logo-change';
+const DEFAULT_SYMBOL = '/brand/mustaqbali-brand-symbol.png';
 
 function subscribe(callback: () => void) {
   const onStorage = (event: StorageEvent) => {
@@ -24,7 +25,7 @@ function subscribe(callback: () => void) {
 }
 
 function serverSnapshot() {
-  return JSON.stringify({light:'',dark:'',theme:'light'});
+  return JSON.stringify({ light: '', dark: '', theme: 'light' });
 }
 
 function clientSnapshot() {
@@ -35,13 +36,33 @@ function clientSnapshot() {
   });
 }
 
-export function BrandLogo({surface='auto',className='',priority=false}:{surface?:LogoSurface;className?:string;priority?:boolean}) {
+export function BrandLogo({
+  surface = 'auto',
+  className = '',
+  priority = false,
+}: {
+  surface?: LogoSurface;
+  className?: string;
+  priority?: boolean;
+}) {
   const snapshot = useSyncExternalStore(subscribe, clientSnapshot, serverSnapshot);
-  const data = JSON.parse(snapshot) as {light:string;dark:string;theme:'light'|'dark'};
+  const data = JSON.parse(snapshot) as { light: string; dark: string; theme: 'light' | 'dark' };
   const resolved = surface === 'auto' ? data.theme : surface;
   const custom = resolved === 'dark' ? data.dark : data.light;
-  const src = custom || (resolved === 'dark' ? '/brand/mustaqbali-logo-white-compact.png' : '/brand/mustaqbali-logo.png');
-  return <Image className={className} src={src} width={245} height={115} alt="مستقبلي" priority={priority} unoptimized={src.startsWith('data:')} />;
+  const src = custom || DEFAULT_SYMBOL;
+
+  return (
+    <Image
+      className={className}
+      src={src}
+      width={256}
+      height={256}
+      sizes="(max-width: 767px) 52px, (max-width: 1023px) 56px, 64px"
+      alt="مستقبلي"
+      priority={priority}
+      unoptimized={src.startsWith('data:')}
+    />
+  );
 }
 
-export const brandLogoStorage = {LIGHT_KEY,DARK_KEY,EVENT} as const;
+export const brandLogoStorage = { LIGHT_KEY, DARK_KEY, EVENT } as const;

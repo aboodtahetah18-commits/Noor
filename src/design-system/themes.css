@@ -27,3 +27,25 @@ html[data-theme="dark"] {
   --ux-section-soft-blue:var(--ux-dark-surface-muted);
   --ux-section-soft-teal:var(--ux-dark-soft-teal);
 }
+
+/* Nature-finance semantic mappings. The light theme is restrained; dark mode carries more glow. */
+html[data-theme="light"] {
+  --ux-brand-hero-bg:var(--ux-brand-sky-soft);
+  --ux-brand-hero-surface:var(--ux-card-bg);
+  --ux-brand-hero-border:var(--ux-border-emphasis);
+  --ux-brand-glow:var(--ux-alpha-cyan-10);
+  --ux-brand-action-start:var(--ux-brand-blue);
+  --ux-brand-action-end:var(--ux-brand-teal-bright);
+  --ux-brand-panel-accent:var(--ux-brand-mint-soft);
+  --ux-brand-shell-highlight:var(--ux-alpha-cyan-10);
+}
+html[data-theme="dark"] {
+  --ux-brand-hero-bg:var(--ux-brand-deep);
+  --ux-brand-hero-surface:var(--ux-brand-night-soft);
+  --ux-brand-hero-border:var(--ux-dark-soft-teal-border);
+  --ux-brand-glow:var(--ux-alpha-cyan-24);
+  --ux-brand-action-start:var(--ux-brand-blue);
+  --ux-brand-action-end:var(--ux-brand-teal-bright);
+  --ux-brand-panel-accent:var(--ux-dark-soft-teal);
+  --ux-brand-shell-highlight:var(--ux-alpha-cyan-16);
+}

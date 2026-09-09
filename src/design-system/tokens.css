@@ -84,3 +84,29 @@
   --ux-action-primary:var(--ux-brand-primary); --ux-accent-supporting:var(--ux-brand-secondary); --ux-focus-ring:var(--ux-brand-secondary);
   --ux-state-success:var(--ux-success); --ux-state-warning:var(--ux-warning); --ux-state-error:var(--ux-error);
 }
+
+/* Nature-finance identity extensions — approved September 2026 brand symbol. */
+:root {
+  --ux-brand-blue:#1687F8;
+  --ux-brand-cyan:#18D4F5;
+  --ux-brand-teal-bright:#16CDB7;
+  --ux-brand-green-bright:#31D26F;
+  --ux-brand-gold:#FFB21A;
+  --ux-brand-deep:#06152B;
+  --ux-brand-night:#07192E;
+  --ux-brand-night-soft:#0C223A;
+  --ux-brand-sky-soft:#EAF8FF;
+  --ux-brand-mint-soft:#ECFBF6;
+  --ux-alpha-cyan-10:rgb(24 212 245 / .10);
+  --ux-alpha-cyan-16:rgb(24 212 245 / .16);
+  --ux-alpha-cyan-24:rgb(24 212 245 / .24);
+  --ux-alpha-green-14:rgb(49 210 111 / .14);
+  --ux-alpha-gold-14:rgb(255 178 26 / .14);
+  --ux-alpha-night-72:rgb(6 21 43 / .72);
+  --ux-shadow-brand:0 16px 44px var(--ux-alpha-cyan-16);
+  --ux-shadow-brand-strong:0 22px 58px var(--ux-alpha-cyan-24);
+  --ux-logo-desktop-width:62px;
+  --ux-logo-tablet-width:56px;
+  --ux-logo-mobile-width:52px;
+  --ux-logo-collapsed-size:44px;
+}
