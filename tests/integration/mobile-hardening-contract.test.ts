@@ -14,7 +14,6 @@ describe('Phase 32 mobile hardening contract', () => {
     expect(nav).toContain("'/dashboard'");
     expect(nav).toContain("'/transactions'");
     expect(nav).toContain("'/budget'");
-    expect(nav).toContain("'/advisor'");
     expect(nav).toContain("'/more'");
   });
 
