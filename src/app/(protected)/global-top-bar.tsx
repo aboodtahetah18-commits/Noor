@@ -1,7 +1,5 @@
 'use client';
 
-// UX-P29 approved light logo asset: /brand/mustaqbali-logo.png
-
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useSyncExternalStore } from 'react';
@@ -30,14 +28,14 @@ export function GlobalTopBar({profile}:{profile:HeaderProfile}){
     document.documentElement.dataset.sidebar=next?'collapsed':'expanded';
     window.dispatchEvent(new Event('mustaqbali:sidebar-state'));
   };
-  return <header className="mustaqbali-topbar" dir="rtl">
+  return <header className="mustaqbali-topbar namaa-topbar" dir="rtl">
     <div className="mustaqbali-topbar-brand-zone">
       <button type="button" className="mustaqbali-topbar-menu" onClick={toggleSidebar} aria-label={collapsed?'توسيع القائمة الجانبية':'طي القائمة الجانبية'}><LucideIcon name="menu" size={20}/></button>
-      <Link href="/dashboard" className="mustaqbali-topbar-logo" aria-label="مستقبلي — الرئيسية"><BrandLogo surface="dark" priority /></Link>
+      <Link href="/dashboard" className="mustaqbali-topbar-logo" aria-label="نماء — الرئيسية"><BrandLogo surface="auto" priority /></Link>
     </div>
     <form action="/transactions" method="get" className="mustaqbali-global-search" role="search">
       <LucideIcon name="search" size={20}/>
-      <input name="search" aria-label="ابحث في مستقبلي" placeholder="ابحث في مستقبلي…" />
+      <input name="search" aria-label="ابحث في نماء" placeholder="ابحث في نماء…" />
     </form>
     <div className="mustaqbali-topbar-actions">
       <ProfileTrigger profile={profile} className="mustaqbali-profile-trigger" />
