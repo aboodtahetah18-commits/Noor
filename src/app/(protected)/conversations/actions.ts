@@ -12,9 +12,8 @@ import {
 
 export async function createGovernorConversationAction() {
   const user = await requireAuthenticatedMutationUser('conversation-create');
-  const thread = await createGovernorThread(user.id);
+  await createGovernorThread(user.id);
   revalidatePath('/conversations');
-  return { id: String(thread?.id ?? '') };
 }
 
 export async function sendConversationMessageAction(formData: FormData) {
