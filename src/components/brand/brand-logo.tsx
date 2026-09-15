@@ -29,7 +29,7 @@ function clientSnapshot() {
   return window.localStorage.getItem(THEME_KEY) === 'dark' || window.localStorage.getItem('mustaqbali-theme') === 'dark' ? 'dark' : 'light';
 }
 
-export function BrandLogo({ surface = 'auto', className = '', priority = false }: { surface?: LogoSurface; className?: string; priority?: boolean }) {
+export function BrandLogo({ className = '', priority = false }: { surface?: LogoSurface; className?: string; priority?: boolean }) {
   useSyncExternalStore(subscribe, clientSnapshot, serverSnapshot);
   return (
     <Image
