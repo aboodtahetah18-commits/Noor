@@ -1,8 +1,10 @@
 import { beforeEach,describe,expect,it,vi } from 'vitest';
 
-const getDashboard=vi.fn();
-const getCurrent=vi.fn();
-const listRecommendations=vi.fn();
+const {getDashboard,getCurrent,listRecommendations}=vi.hoisted(()=>({
+  getDashboard:vi.fn(),
+  getCurrent:vi.fn(),
+  listRecommendations:vi.fn(),
+}));
 
 vi.mock('@/repositories/dashboard-repository',()=>({dashboardRepository:{get:getDashboard}}));
 vi.mock('@/features/financial-engine/queries/get-current-financial-state',()=>({getCurrentFinancialState:getCurrent}));
