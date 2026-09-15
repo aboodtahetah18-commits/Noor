@@ -20,7 +20,7 @@ describe('financial API security boundary',()=>{
     for(const path of [...mutationRoutes,...readRoutes]){
       const text=source(path);
       expect(text).toContain('getAuthenticatedUser');
-      expect(text).toContain("'Cache-Control':'no-store'");
+      expect(text).toMatch(/['"]Cache-Control['"]\s*:\s*['"]no-store['"]/);
       expect(text).not.toContain('error.message');
     }
   });
