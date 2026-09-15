@@ -71,7 +71,9 @@ export async function createDecisionRequestFromRecommendation(input: {
         ${rec.engine_version ?? null},${rec.engine_snapshot_id == null ? null : String(rec.engine_snapshot_id)}
       ) RETURNING id,status,requested_amount,created_at
     `;
-    const requestId = String(inserted[0].id);
+    const insertedRequest = inserted[0];
+    if (!insertedRequest) throw new FinancialPlatformError('DECISION_REQUEST_WRITE_FAILED', 500);
+    const requestId = String(insertedRequest.id);
 
     await sql`UPDATE public.decision_requests SET status='UNDER_REVIEW',updated_at=now() WHERE id=${requestId}::uuid AND user_id=${input.userId}::uuid`;
     await sql`UPDATE public.decision_requests SET status='RECOMMENDED',updated_at=now() WHERE id=${requestId}::uuid AND user_id=${input.userId}::uuid`;
@@ -83,7 +85,9 @@ export async function createDecisionRequestFromRecommendation(input: {
       WHERE id=${requestId}::uuid AND user_id=${input.userId}::uuid
       RETURNING id,status,requested_amount,materiality,created_at,updated_at
     `;
-    return { request: finalRows[0], created: true };
+    const finalRequest = finalRows[0];
+    if (!finalRequest) throw new FinancialPlatformError('DECISION_REQUEST_STATE_FAILED', 500);
+    return { request: finalRequest, created: true };
   } catch (error) {
     throw mapFinancialDatabaseError(error);
   }
@@ -113,6 +117,7 @@ export async function recordUserDecision(input: {
       RETURNING id,action,status,decided_at
     `;
     const userDecision = inserted[0];
+    if (!userDecision) throw new FinancialPlatformError('USER_DECISION_WRITE_FAILED', 500);
     const target = input.action === 'APPROVE' ? 'APPROVED' : input.action === 'REJECT' ? 'REJECTED' : input.action === 'DEFER' ? 'DEFERRED' : 'REVALIDATION_REQUIRED';
 
     await sql`
@@ -123,10 +128,11 @@ export async function recordUserDecision(input: {
 
     let task: Record<string, unknown> | null = null;
     if (input.action === 'APPROVE') {
+      const userDecisionId = String(userDecision.id);
       const existingTask = await sql`
         SELECT id,status,action_type,amount,currency,evidence_requirement,required_by
         FROM public.execution_tasks
-        WHERE user_id=${input.userId}::uuid AND user_decision_id=${String(userDecision.id)}::uuid
+        WHERE user_id=${input.userId}::uuid AND user_decision_id=${userDecisionId}::uuid
         LIMIT 1
       `;
       if (existingTask[0]) task = existingTask[0];
@@ -135,12 +141,13 @@ export async function recordUserDecision(input: {
           INSERT INTO public.execution_tasks(
             user_id,decision_request_id,user_decision_id,action_type,amount,currency,instructions,evidence_requirement,status
           ) VALUES(
-            ${input.userId}::uuid,${input.decisionRequestId}::uuid,${String(userDecision.id)}::uuid,${String(request.decision_type)},
+            ${input.userId}::uuid,${input.decisionRequestId}::uuid,${userDecisionId}::uuid,${String(request.decision_type)},
             ${request.requested_amount ?? null},'SAR','نفّذ القرار المعتمد خارجيًا، ثم أكد التنفيذ وأرفق الإثبات. منصة نماء لا تنفذ العملية نيابةً عنك.',
             'REQUIRED','USER_ACTION_REQUEST'
           ) RETURNING id,status,action_type,amount,currency,evidence_requirement,required_by
         `;
         task = taskRows[0] ?? null;
+        if (!task) throw new FinancialPlatformError('EXECUTION_TASK_WRITE_FAILED', 500);
       }
     }
 
