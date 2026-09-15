@@ -4,15 +4,15 @@ import Image from 'next/image';
 import { useSyncExternalStore } from 'react';
 
 type LogoSurface = 'light' | 'dark' | 'auto';
-const LIGHT_KEY = 'mustaqbali-logo-light';
-const DARK_KEY = 'mustaqbali-logo-dark';
-const THEME_KEY = 'mustaqbali-theme';
-const EVENT = 'mustaqbali:brand-logo-change';
-const DEFAULT_SYMBOL = '/brand/mustaqbali-brand-symbol.png';
+const LIGHT_KEY = 'namaa-logo-light';
+const DARK_KEY = 'namaa-logo-dark';
+const THEME_KEY = 'namaa-theme';
+const EVENT = 'namaa:brand-logo-change';
+const DEFAULT_LOGO = '/brand/ndos/namaa-logo-official-lockup.png';
 
 function subscribe(callback: () => void) {
   const onStorage = (event: StorageEvent) => {
-    if ([LIGHT_KEY, DARK_KEY, THEME_KEY].includes(event.key ?? '')) callback();
+    if ([LIGHT_KEY, DARK_KEY, THEME_KEY, 'mustaqbali-theme'].includes(event.key ?? '')) callback();
   };
   window.addEventListener('storage', onStorage);
   window.addEventListener(EVENT, callback);
@@ -24,43 +24,22 @@ function subscribe(callback: () => void) {
   };
 }
 
-function serverSnapshot() {
-  return JSON.stringify({ light: '', dark: '', theme: 'light' });
-}
-
+function serverSnapshot() { return 'light'; }
 function clientSnapshot() {
-  return JSON.stringify({
-    light: window.localStorage.getItem(LIGHT_KEY) ?? '',
-    dark: window.localStorage.getItem(DARK_KEY) ?? '',
-    theme: window.localStorage.getItem(THEME_KEY) === 'dark' ? 'dark' : 'light',
-  });
+  return window.localStorage.getItem(THEME_KEY) === 'dark' || window.localStorage.getItem('mustaqbali-theme') === 'dark' ? 'dark' : 'light';
 }
 
-export function BrandLogo({
-  surface = 'auto',
-  className = '',
-  priority = false,
-}: {
-  surface?: LogoSurface;
-  className?: string;
-  priority?: boolean;
-}) {
-  const snapshot = useSyncExternalStore(subscribe, clientSnapshot, serverSnapshot);
-  const data = JSON.parse(snapshot) as { light: string; dark: string; theme: 'light' | 'dark' };
-  const resolved = surface === 'auto' ? data.theme : surface;
-  const custom = resolved === 'dark' ? data.dark : data.light;
-  const src = custom || DEFAULT_SYMBOL;
-
+export function BrandLogo({ surface = 'auto', className = '', priority = false }: { surface?: LogoSurface; className?: string; priority?: boolean }) {
+  useSyncExternalStore(subscribe, clientSnapshot, serverSnapshot);
   return (
     <Image
       className={className}
-      src={src}
-      width={256}
-      height={256}
-      sizes="(max-width: 767px) 52px, (max-width: 1023px) 56px, 64px"
-      alt="مستقبلي"
+      src={DEFAULT_LOGO}
+      width={208}
+      height={117}
+      sizes="(max-width: 767px) 96px, (max-width: 1023px) 112px, 128px"
+      alt="نماء"
       priority={priority}
-      unoptimized={src.startsWith('data:')}
     />
   );
 }
