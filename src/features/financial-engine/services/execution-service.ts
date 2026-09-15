@@ -66,8 +66,9 @@ export async function reportUserExecution(input:{
       AND status NOT IN ('FAILED','CANNOT_REVERSE')
     ORDER BY created_at DESC LIMIT 1
   `;
-  if(existing[0]){
-    return {executionEvent:existing[0],taskStatus,evidenceCase:null,created:false};
+  const existingEvent=existing[0];
+  if(existingEvent){
+    return {executionEvent:existingEvent,taskStatus,evidenceCase:null,created:false};
   }
 
   const evidenceRequirement=String(task.evidence_requirement);
@@ -95,6 +96,8 @@ export async function reportUserExecution(input:{
       ) RETURNING id,status,reported_amount,currency,external_reference,executed_at,created_at
     `;
     const event=eventRows[0];
+    if(!event)throw new FinancialPlatformError('EXECUTION_EVENT_WRITE_FAILED',500);
+    const eventId=String(event.id);
     let evidenceCase:Record<string,unknown>|null=null;
 
     if(input.evidence){
@@ -102,16 +105,17 @@ export async function reportUserExecution(input:{
         INSERT INTO public.evidence_cases(
           user_id,execution_event_id,evidence_type,file_or_reference,claimed_amount,claimed_date,source_account_ref,counterparty_ref,verification_status
         ) VALUES(
-          ${input.userId}::uuid,${String(event.id)}::uuid,${input.evidence.type},${input.evidence.fileOrReference??null},
+          ${input.userId}::uuid,${eventId}::uuid,${input.evidence.type},${input.evidence.fileOrReference??null},
           ${claimedAmount},${claimedDate?claimedDate.toISOString():null},${input.evidence.sourceAccountRef??null},${input.evidence.counterpartyRef??null},'PENDING'
         ) RETURNING id,evidence_type,file_or_reference,verification_status,created_at
       `;
       evidenceCase=evidenceRows[0]??null;
-      await sql`UPDATE public.execution_events SET status='EVIDENCE_PENDING' WHERE id=${String(event.id)}::uuid AND user_id=${input.userId}::uuid`;
+      if(!evidenceCase)throw new FinancialPlatformError('EVIDENCE_WRITE_FAILED',500);
+      await sql`UPDATE public.execution_events SET status='EVIDENCE_PENDING' WHERE id=${eventId}::uuid AND user_id=${input.userId}::uuid`;
       await sql`UPDATE public.execution_tasks SET status='EVIDENCE_PENDING',updated_at=now() WHERE id=${input.executionTaskId}::uuid AND user_id=${input.userId}::uuid`;
       event.status='EVIDENCE_PENDING';
     }else{
-      await sql`UPDATE public.execution_events SET status='VERIFICATION_PENDING' WHERE id=${String(event.id)}::uuid AND user_id=${input.userId}::uuid`;
+      await sql`UPDATE public.execution_events SET status='VERIFICATION_PENDING' WHERE id=${eventId}::uuid AND user_id=${input.userId}::uuid`;
       await sql`UPDATE public.execution_tasks SET status='VERIFICATION_PENDING',updated_at=now() WHERE id=${input.executionTaskId}::uuid AND user_id=${input.userId}::uuid`;
       event.status='VERIFICATION_PENDING';
     }
