@@ -66,7 +66,7 @@ export async function reportUserExecution(input:{
       AND status NOT IN ('FAILED','CANNOT_REVERSE')
     ORDER BY created_at DESC LIMIT 1
   `;
-  if(existing[0] && !['USER_ACTION_REQUEST','WAITING_USER_CONFIRMATION','OVERDUE'].includes(taskStatus)){
+  if(existing[0]){
     return {executionEvent:existing[0],taskStatus,evidenceCase:null,created:false};
   }
 
@@ -82,6 +82,8 @@ export async function reportUserExecution(input:{
   try{
     if(taskStatus==='USER_ACTION_REQUEST'||taskStatus==='OVERDUE'){
       await sql`UPDATE public.execution_tasks SET status='WAITING_USER_CONFIRMATION',updated_at=now() WHERE id=${input.executionTaskId}::uuid AND user_id=${input.userId}::uuid`;
+    }else if(taskStatus!=='WAITING_USER_CONFIRMATION'){
+      throw new FinancialPlatformError('EXECUTION_TASK_ALREADY_REPORTED',409);
     }
 
     const eventRows=await sql`
