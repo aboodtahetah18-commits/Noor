@@ -6,12 +6,12 @@ export const dynamic='force-dynamic';
 export const runtime='nodejs';
 
 function authorized(request:Request){
-  const expected=process.env.JOB_SECRET;
-  if(!expected)return false;
-  return request.headers.get('authorization')===`Bearer ${expected}`;
+  const header=request.headers.get('authorization');
+  const secrets=[process.env.CRON_SECRET,process.env.JOB_SECRET].filter((value):value is string=>Boolean(value));
+  return secrets.some((secret)=>header===`Bearer ${secret}`);
 }
 
-export async function POST(request:Request){
+async function run(request:Request){
   if(!authorized(request))return NextResponse.json({ok:false,error:'UNAUTHORIZED'},{status:401,headers:{'Cache-Control':'no-store'}});
   try{
     const results=await runFinancialEngineRecalcJob();
@@ -22,3 +22,6 @@ export async function POST(request:Request){
     return NextResponse.json({ok:false,error:'FINANCIAL_ENGINE_RECALC_JOB_FAILED',requestId},{status:500,headers:{'Cache-Control':'no-store'}});
   }
 }
+
+export const GET=run;
+export const POST=run;
