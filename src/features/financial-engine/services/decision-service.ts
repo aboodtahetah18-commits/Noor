@@ -42,14 +42,14 @@ export async function createDecisionRequestFromRecommendation(input: {
   const capRaw = reasonData.safe_allocation_ceiling ?? reasonData.recommended_amount ?? null;
   const cap = capRaw == null ? null : Number(capRaw);
   const requested = positiveAmount(input.requestedAmount);
-  if (requested != null && Number.isFinite(cap) && cap != null && requested > cap + 0.000001) {
+  if (requested != null && cap != null && Number.isFinite(cap) && requested > cap + 0.000001) {
     throw new FinancialPlatformError('REQUESTED_AMOUNT_EXCEEDS_RECOMMENDATION', 422);
   }
 
   const sensitivity = String(rec.sensitivity);
   const materiality = sensitivity === 'CRITICAL' ? 'CRITICAL' : sensitivity === 'SENSITIVE' ? 'HIGH' : sensitivity === 'STANDARD' ? 'MEDIUM' : 'LOW';
   const decisionType = `RECOMMENDATION:${String(rec.reason_code)}`;
-  const amount = requested ?? (Number.isFinite(cap) && cap != null && cap > 0 ? cap : null);
+  const amount = requested ?? (cap != null && Number.isFinite(cap) && cap > 0 ? cap : null);
 
   try {
     const existing = await sql`
