@@ -22,6 +22,7 @@ const sections = [
   {
     label: 'التحليل والقرار',
     items: [
+      { href: '/cases', label: 'القضايا والقرارات', icon: 'listChecks' },
       { href: '/reports', label: 'التقارير', icon: 'chart' },
       { href: '/advisor', label: 'المستشار الذكي', icon: 'sparkles' },
       { href: '/alerts', label: 'التنبيهات', icon: 'bell' },
