@@ -14,6 +14,7 @@ const steps = [
   ['database provider policy','node',['scripts/verify-database-provider-policy.mjs']],
   ['algorithm governance schema contract','node',['scripts/verify-algorithm-governance-schema-contract.mjs']],
   ['authorization RBAC ABAC contract','node',['scripts/verify-authorization-contract.mjs']],
+  ['governance action surface contract','node',['scripts/verify-governance-action-surface.mjs']],
   ['route integrity','node',['scripts/verify-route-integrity.mjs']],
   ['runtime surface','node',['scripts/verify-runtime-surface.mjs']],
   ['Vercel deployment contract','node',['scripts/verify-vercel-deployment-contract.mjs']],

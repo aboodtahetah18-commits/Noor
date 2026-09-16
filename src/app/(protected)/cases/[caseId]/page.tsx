@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 import { requireAuthenticatedUser } from '@/auth/require-authenticated-user';
 import { getGovernanceCaseContract } from '@/repositories/governance-case-repository';
 import { getGovernanceOperationsSnapshot } from '@/repositories/governance-operations-repository';
+import { getGovernanceActionCapabilities } from '@/features/governance/services/get-governance-action-capabilities';
+import { GovernanceActionPanel } from './governance-action-panel';
 
 const STATUS_LABEL: Record<string, string> = {
   DRAFT: 'مسودة', DATA_COLLECTION: 'جمع البيانات', ANALYSIS_IN_PROGRESS: 'قيد التحليل', READINESS_CHECK: 'فحص الجاهزية',
@@ -33,13 +35,22 @@ const GOVERNANCE_LABEL: Record<string, string> = {
 
 function display(value: string | null): string { return value ?? '—'; }
 function governanceLabel(value: string | null | undefined): string { return value ? (GOVERNANCE_LABEL[value] ?? value) : 'لم تبدأ'; }
+function queryText(value: string | string[] | undefined): string | undefined { return Array.isArray(value) ? value[0] : value; }
 
-export default async function CaseDetailPage({ params }: { params: Promise<{ caseId: string }> }) {
+export default async function CaseDetailPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ caseId: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const user = await requireAuthenticatedUser();
   const { caseId } = await params;
+  const query = searchParams ? await searchParams : {};
   const item = await getGovernanceCaseContract(user.id, caseId).catch(() => null);
   if (!item) notFound();
   const governance = await getGovernanceOperationsSnapshot(user.id, caseId);
+  const capabilities = await getGovernanceActionCapabilities({ actorUserId: user.id, ownerUserId: user.id, caseId, snapshot: governance });
 
   const nextAction = item.currentStatus === 'CLOSED'
     ? 'اكتملت دورة القضية'
@@ -164,6 +175,13 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ cas
             </>
           )}
         </section>
+
+        <GovernanceActionPanel
+          caseId={caseId}
+          capabilities={capabilities}
+          status={queryText(query.governanceStatus)}
+          message={queryText(query.governanceMessage)}
+        />
 
         <section className="p47-analysis-card">
           <div className="p47-section-heading"><div><span>Evidence & Closure</span><h2>الإثبات والإغلاق</h2></div></div>
