@@ -3,6 +3,7 @@ import {
   authorizationProvisioningRepository,
   type ProvisioningPayload,
 } from '@/repositories/authorization-provisioning-repository';
+import { breakGlassRepository } from '@/repositories/break-glass-repository';
 
 async function requireAuthorizationAdmin(actorUserId: string, objectId: string, requestId?: string): Promise<void> {
   const auth = await authorizationRepository.authorize({
@@ -70,4 +71,30 @@ export async function applyAuthorizationProvisioning(input: {
 }): Promise<string> {
   await requireAuthorizationAdmin(input.actorUserId, input.provisioningRequestId, input.requestId);
   return authorizationProvisioningRepository.applyApprovedRequest(input.provisioningRequestId, input.actorUserId);
+}
+
+export async function revokeBreakGlassAccess(input: {
+  actorUserId: string;
+  sessionId: string;
+  reason: string;
+  requestId?: string;
+}): Promise<void> {
+  await requireAuthorizationAdmin(input.actorUserId, input.sessionId, input.requestId);
+  await breakGlassRepository.revoke(input.sessionId, input.actorUserId, input.reason);
+}
+
+export async function closeOwnBreakGlassAccess(input: {
+  actorUserId: string;
+  sessionId: string;
+  reason: string;
+}): Promise<void> {
+  await breakGlassRepository.close(input.sessionId, input.actorUserId, input.reason);
+}
+
+export async function expireBreakGlassAccess(input: {
+  actorUserId: string;
+  requestId?: string;
+}): Promise<number> {
+  await requireAuthorizationAdmin(input.actorUserId, 'break-glass-expiration', input.requestId);
+  return breakGlassRepository.expireElapsed(input.actorUserId);
 }
