@@ -23,13 +23,15 @@ const notoSansArabic = Noto_Sans_Arabic({
   variable: '--font-noto-sans-arabic',
 });
 
+const approvedTransparentLogo = '/brand/ndos/namaa-logo-color-transparent.png';
+
 export const metadata: Metadata = {
   title: 'نماء',
   description: 'مستقبل مالي أكثر وعيًا',
   icons: {
-    icon: '/brand/ndos/namaa-logo-official.png',
-    shortcut: '/brand/ndos/namaa-logo-official.png',
-    apple: '/brand/ndos/namaa-logo-official.png',
+    icon: approvedTransparentLogo,
+    shortcut: approvedTransparentLogo,
+    apple: approvedTransparentLogo,
   },
 };
 
