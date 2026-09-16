@@ -49,10 +49,12 @@ function evidenceFrom(value: unknown): LearningEvidence {
   if (!CAUSES.has(causeRaw as CauseClassification)) throw new Error('RELEASE_EVIDENCE_CAUSE_REQUIRED');
   const expectedValue = e.expectedValue == null ? undefined : finite(e.expectedValue, 'RELEASE_EXPECTED_VALUE_INVALID');
   const actualValue = e.actualValue == null ? undefined : finite(e.actualValue, 'RELEASE_ACTUAL_VALUE_INVALID');
+  const learningReviewCompleted = e.learningReviewCompleted === true || ['COMPLETED','APPROVED'].includes(String(e.learningReviewStatus ?? '').toUpperCase());
+  if (!learningReviewCompleted) throw new Error('RELEASE_LEARNING_REVIEW_NOT_COMPLETED');
   return {
     caseId: text(e.caseId, 'RELEASE_EVIDENCE_CASE_REQUIRED'),
     decisionId: text(e.decisionId, 'RELEASE_EVIDENCE_DECISION_REQUIRED'),
-    learningReviewCompleted: e.learningReviewCompleted === true,
+    learningReviewCompleted,
     cause: causeRaw as CauseClassification,
     sampleCount: Math.trunc(finite(e.sampleCount, 'RELEASE_SAMPLE_COUNT_REQUIRED')),
     evidenceConfidence: finite(e.evidenceConfidence, 'RELEASE_EVIDENCE_CONFIDENCE_REQUIRED'),
