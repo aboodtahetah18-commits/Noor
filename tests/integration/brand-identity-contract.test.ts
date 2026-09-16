@@ -7,7 +7,9 @@ const read = (path: string) => readFileSync(join(process.cwd(), path), 'utf8');
 describe('approved Namaa NDOS v1.2 FINAL brand identity contract', () => {
   it('uses the frozen official Namaa mark as the default brand asset', () => {
     const logo = read('src/components/brand/brand-logo.tsx');
-    expect(logo).toContain("const DEFAULT_LOGO = '/brand/ndos/namaa-logo-official.png'");
+    const assets = read('src/design-system/ndos-v1.2-assets.ts');
+    expect(logo).toContain('const DEFAULT_LOGO = NDOS_V1_2_ASSETS.logo');
+    expect(assets).toContain("logo: '/brand/ndos/namaa-logo-official.png'");
     expect(logo).toContain('alt="نماء"');
     expect(logo).not.toContain("'/brand/mustaqbali-logo-white-compact.png'");
   });
@@ -24,6 +26,6 @@ describe('approved Namaa NDOS v1.2 FINAL brand identity contract', () => {
     expect(layout).toContain("title: 'نماء'");
     expect(layout).toContain("icon: '/brand/ndos/namaa-logo-official.png'");
     expect(layout).toContain("apple: '/brand/ndos/namaa-logo-official.png'");
-    expect(layout).toContain("Noto_Sans_Arabic");
+    expect(layout).toContain('Noto_Sans_Arabic');
   });
 });
