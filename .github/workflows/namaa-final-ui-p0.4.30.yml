@@ -1,0 +1,35 @@
+name: Namaa Final UI P0.4.30
+
+on:
+  push:
+    branches:
+      - namaa-final-ui-p0.4.30-runtime
+  pull_request:
+    paths:
+      - '.github/workflows/namaa-final-ui-p0.4.30.yml'
+      - 'scripts/materialize-namaa-final-ui.sh'
+      - 'vercel.json'
+
+jobs:
+  verify-final-ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.20.0'
+      - name: Materialize exact sanitized artifact
+        run: bash scripts/materialize-namaa-final-ui.sh
+      - name: Install exact UI dependencies
+        working-directory: apps/namaa-final-ui
+        run: npm install --legacy-peer-deps --no-audit --no-fund
+      - name: Typecheck
+        working-directory: apps/namaa-final-ui
+        run: npm run typecheck
+      - name: UI QA
+        working-directory: apps/namaa-final-ui
+        run: npm run qa:ui-all
+      - name: Build
+        working-directory: apps/namaa-final-ui
+        run: npm run build
