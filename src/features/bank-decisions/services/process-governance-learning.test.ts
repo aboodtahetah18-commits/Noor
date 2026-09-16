@@ -69,4 +69,12 @@ describe('process governance learning', () => {
     expect(result.route?.scope).toBe('CENTRAL_SHARED_CANDIDATE');
     expect(result.route?.centralTransferBlocked).toBe(false);
   });
+
+  it('blocks learning when the DB learning review is not completed even if all outcome data exists', () => {
+    const result = routeGovernanceLearningSnapshot(snapshot({
+      lifecycle: { ...snapshot().lifecycle, learningReviewStatus: 'READY' },
+    }), envelope);
+    expect(result.status).toBe('BLOCKED');
+    expect(result.blockers).toContain('LEARNING_REVIEW_NOT_COMPLETED');
+  });
 });
