@@ -23,17 +23,17 @@ export class BreakGlassRepository {
     `;
   }
 
-  async close(sessionId: string, actorUserId: string, reason: string): Promise<void> {
+  async closeOwn(sessionId: string, actorUserId: string, reason: string): Promise<void> {
     const rationale = reason.trim();
     if (rationale.length < 20) throw new Error('BREAK_GLASS_CLOSE_REASON_REQUIRED');
     const rows = await rawSql`
       update public.authorization_break_glass_sessions
       set status='CLOSED', closed_at=now()
-      where id=${sessionId}::uuid and status='ACTIVE'
+      where id=${sessionId}::uuid and actor_user_id=${actorUserId}::uuid and status='ACTIVE'
       returning actor_user_id::text, provisioning_request_id::text
     `;
     const row = rows[0];
-    if (!row) throw new Error('BREAK_GLASS_SESSION_NOT_ACTIVE');
+    if (!row) throw new Error('BREAK_GLASS_SESSION_NOT_ACTIVE_OR_NOT_OWNED');
     await rawSql`
       insert into public.authorization_admin_events
         (id,actor_user_id,event_type,provisioning_request_id,target_user_id,object_type,object_id,reason,context_json)
