@@ -31,7 +31,6 @@ export async function decideGovernedRollbackReview(input: DecideGovernedRollback
     select
       rr.user_id::text as owner_user_id,
       rr.release_id::text as release_id,
-      r.created_by_actor_user_id::text as release_creator_actor_id,
       lr.case_id::text as case_id,
       coalesce(lr.bank_key, p.spec_json->>'bankKey') as bank_key,
       p.spec_json->>'riskLevel' as risk_level,
@@ -66,7 +65,6 @@ export async function decideGovernedRollbackReview(input: DecideGovernedRollback
       riskLevel: enumValue(row.risk_level, RISK),
       materialityLevel: enumValue(row.materiality_level, MATERIALITY),
       amount: finiteNumber(row.amount),
-      releaseCreatorUserId: row.release_creator_actor_id == null ? null : String(row.release_creator_actor_id),
     },
   });
   if (auth.decision !== 'ALLOW') throw new Error(`AUTHORIZATION_DENIED:${auth.reason}`);
