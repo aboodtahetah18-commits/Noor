@@ -60,7 +60,7 @@ export default function PilotPage() {
           في نهاية كل دورة مالية نراجع الخطة، التنفيذ المؤكد، الانحرافات، التوصيات، وما حدث فعليًا بعدها.
         </p>
         <div className="ux-button-row">
-          <Link className="ux-button ux-button--primary" href="/cycles">الدورات المالية</Link>
+          <Link className="ux-button ux-button--primary" href="/cycles/new">بدء دورة مالية</Link>
           <Link className="ux-button ux-button--secondary" href="/decision-log">سجل القرارات</Link>
           <Link className="ux-button ux-button--ghost" href="/reports">التقارير</Link>
         </div>
