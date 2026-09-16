@@ -38,7 +38,11 @@ export default async function MorePage(){
   });
 
   const groups=baseGroups.map((group)=>group.id==='admin' && authorizationAdmin.decision==='ALLOW'
-    ? {...group,items:[...group.items,['/governance/authorization','إدارة الصلاحيات','الأدوار والـGrants والتفويضات وBreak Glass','lockKeyhole'] as NavItem]}
+    ? {...group,items:[
+        ...group.items,
+        ['/governance/authorization','إدارة الصلاحيات','الأدوار والـGrants والتفويضات وBreak Glass','lockKeyhole'] as NavItem,
+        ['/governance/authorization/templates','قوالب الصلاحيات','قوالب Grants رسمية تخضع لنفس دورة الاعتماد والتطبيق','listChecks'] as NavItem,
+      ]}
     : group);
 
   return <main className="app-page more-hub-page p47-shell p47-closure-page" data-p47-shell="true" dir="rtl">
