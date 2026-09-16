@@ -10,6 +10,7 @@ export async function hasAuthorizationAdminNavigationAccess(userId: string): Pro
      and g.is_active=true
      and g.action='ADMINISTER'
      and g.object_type='AUDIT_EVENT'
+     and g.principal_user_id=a.user_id
     where a.user_id=${userId}::uuid
       and a.status='ACTIVE'
       and a.starts_at<=now()
