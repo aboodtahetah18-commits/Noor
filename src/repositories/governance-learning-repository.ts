@@ -15,6 +15,13 @@ const CAUSES = new Set<CauseClassification>([
   'NO_MATERIAL_ERROR',
 ]);
 
+export interface GovernanceLearningSnapshot {
+  lifecycle: DecisionOutcomeLifecycleInput;
+  bankKey: string;
+  centralTransferEligible: boolean;
+  distinctBankCount: number;
+}
+
 function record(value: unknown): Record<string, unknown> {
   return value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {};
 }
@@ -71,8 +78,24 @@ export function governanceContractToLearningInput(contract: GovernanceCaseContra
   };
 }
 
-/** Reads the server-owned governance contract. Caller input cannot override lifecycle state. */
-export async function getGovernanceLearningInput(userId: string, caseId: string): Promise<DecisionOutcomeLifecycleInput | null> {
+export function governanceContractToLearningSnapshot(contract: GovernanceCaseContract): GovernanceLearningSnapshot {
+  const learning = record(contract.apiPayload.learningContext);
+  const distinctBankCount = Math.max(1, Math.trunc(finiteNumber(learning.distinctBankCount) ?? 1));
+  return {
+    lifecycle: governanceContractToLearningInput(contract),
+    bankKey: requiredText(learning.bankKey, 'LEARNING_BANK_KEY_REQUIRED'),
+    centralTransferEligible: learning.centralTransferEligible === true,
+    distinctBankCount,
+  };
+}
+
+/** Reads the server-owned governance contract. Caller input cannot override lifecycle or routing state. */
+export async function getGovernanceLearningSnapshot(userId: string, caseId: string): Promise<GovernanceLearningSnapshot | null> {
   const contract = await getGovernanceCaseContract(userId, caseId);
-  return contract ? governanceContractToLearningInput(contract) : null;
+  return contract ? governanceContractToLearningSnapshot(contract) : null;
+}
+
+export async function getGovernanceLearningInput(userId: string, caseId: string): Promise<DecisionOutcomeLifecycleInput | null> {
+  const snapshot = await getGovernanceLearningSnapshot(userId, caseId);
+  return snapshot?.lifecycle ?? null;
 }
