@@ -13,6 +13,7 @@ export interface GrantScopeInput {
   role: GovernanceRole;
   action: GovernanceAction;
   objectType: GovernanceObjectType;
+  principalUserId?: string | null;
   bankKey?: string | null;
   committeeId?: string | null;
   caseType?: string | null;
@@ -66,6 +67,7 @@ export function validateProvisioningActorSeparation(requestedBy: string, approve
 
 export function validateGrantScope(input: GrantScopeInput): void {
   if (!input.role || !input.action || !input.objectType) throw new Error('GRANT_CORE_SCOPE_REQUIRED');
+  if (input.action === 'ADMINISTER' && !input.principalUserId?.trim()) throw new Error('ADMINISTER_GRANT_REQUIRES_PRINCIPAL');
   if (input.maxAmount != null && (!Number.isFinite(input.maxAmount) || input.maxAmount < 0)) throw new Error('GRANT_MAX_AMOUNT_INVALID');
   if (input.policyVersion != null && !input.policyVersion.trim()) throw new Error('GRANT_POLICY_VERSION_INVALID');
 }
