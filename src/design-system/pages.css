@@ -1,0 +1,402 @@
+/* NAMAA — governed page and application-shell layer.
+   This file is intentionally loaded after shared component contracts. Pages consume tokens; they do not own palettes. */
+
+html,
+body {
+  background:var(--ux-page-bg);
+  color:var(--ux-text-primary);
+}
+body {
+  font-family:var(--ux-font-family-base);
+}
+
+/* Application canvas and bounded content. */
+.app-page,
+.p47-page-stack,
+.dashboard-composition-v2,
+.dashboard-composition-v3 {
+  color:var(--ux-text-primary);
+}
+.app-page {
+  background:var(--ux-page-bg) !important;
+}
+.page-shell {
+  width:min(100%,var(--ux-container-content));
+}
+.narrow-shell {
+  width:min(100%,var(--ux-container-form));
+}
+
+/* Global page headers and financial hero surfaces. */
+.page-header,
+.p47-page-heading,
+.p47-resource-header,
+.page-header.p47-closure-header,
+.p47-budget-hero,
+.p47-financial-hero,
+.account-detail-hero,
+.account-total,
+.onboarding-money-hero {
+  position:relative;
+  overflow:hidden;
+  border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default) !important;
+  border-radius:var(--ux-radius-xl) !important;
+  background:linear-gradient(135deg,var(--ux-brand-hero-bg),var(--ux-card-bg)) !important;
+  color:var(--ux-text-primary) !important;
+  box-shadow:var(--ux-shadow-sm) !important;
+}
+.page-header::before,
+.p47-page-heading::before,
+.p47-resource-header::before,
+.page-header.p47-closure-header::before,
+.p47-budget-hero::before,
+.p47-financial-hero::before,
+.account-detail-hero::before,
+.account-total::before,
+.onboarding-money-hero::before {
+  content:"";
+  position:absolute;
+  inset-block:0;
+  inset-inline-start:0;
+  width:var(--ux-space-1);
+  background:linear-gradient(180deg,var(--ux-brand-secondary),var(--ux-brand-accent));
+}
+.page-header h1,
+.p47-page-heading h1,
+.p47-resource-header h1,
+.page-header.p47-closure-header h1 {
+  color:var(--ux-text-primary) !important;
+}
+.page-header p,
+.p47-page-heading p,
+.p47-resource-header p,
+.page-header.p47-closure-header p {
+  color:var(--ux-text-secondary) !important;
+}
+
+/* Shared surfaces across dashboard, banks, advisor, cases, execution and settings. */
+.card,
+.panel,
+.p47-panel,
+.p47-resource-card,
+.p47-account-tile,
+.p47-transaction-row,
+.p47-kpi-strip > article,
+.account-card,
+.detail-list,
+.form-card,
+.p55-profile-summary,
+.p55-profile-form,
+.p60-security-form,
+.onboarding-account-builder-v2,
+.money-locations-card-v2,
+.empty-state {
+  border-color:var(--ux-border-default) !important;
+  background:var(--ux-card-bg) !important;
+  color:var(--ux-text-primary) !important;
+  box-shadow:var(--ux-shadow-xs) !important;
+}
+.card,
+.panel,
+.p47-panel,
+.p47-resource-card,
+.p47-account-tile,
+.account-card,
+.empty-state {
+  border-radius:var(--ux-radius-lg) !important;
+}
+.card:hover,
+.p47-resource-card:hover,
+.p47-account-tile:hover,
+.account-card:hover {
+  border-color:var(--ux-border-emphasis) !important;
+  box-shadow:var(--ux-shadow-sm) !important;
+}
+
+/* Monetary values get strong hierarchy without introducing a second visual language. */
+.money-cell,
+.account-balance strong,
+.account-total strong,
+.account-detail-hero strong,
+.p47-kpi-strip strong,
+[data-financial-value="true"] {
+  color:var(--ux-text-primary) !important;
+  font-variant-numeric:tabular-nums;
+}
+
+/* Shared action treatment for legacy route classes. */
+.primary-link,
+.primary-button,
+.primary,
+.auth-form button,
+.button-link {
+  border-color:var(--ux-brand-primary) !important;
+  background:var(--ux-brand-primary) !important;
+  color:var(--ux-text-inverse) !important;
+  box-shadow:var(--ux-shadow-xs);
+}
+.primary-link:hover,
+.primary-button:hover,
+.primary:hover,
+.auth-form button:hover,
+.button-link:hover {
+  border-color:var(--ux-brand-secondary) !important;
+  background:var(--ux-brand-secondary) !important;
+}
+.secondary-button,
+.tertiary-link {
+  color:var(--ux-brand-primary) !important;
+}
+.secondary-button {
+  border-color:var(--ux-border-emphasis) !important;
+  background:var(--ux-card-bg) !important;
+}
+.tertiary-link:hover,
+.secondary-button:hover {
+  color:var(--ux-brand-secondary) !important;
+}
+.danger-button {
+  border-color:var(--ux-error) !important;
+  background:var(--ux-card-bg) !important;
+  color:var(--ux-error) !important;
+}
+.danger-zone {
+  border-color:var(--ux-error) !important;
+  background:var(--ux-card-bg) !important;
+}
+
+/* Forms and financial inputs. */
+:where(.app-page,.p47-page-stack) :where(input,select,textarea),
+.account-form input,
+.account-form select,
+.form-grid input,
+.form-grid select,
+.transaction-filter-grid input,
+.transaction-filter-grid select,
+.onboarding-primary-account-form :where(input,select) {
+  border-color:var(--ux-border-default) !important;
+  background:var(--ux-card-bg) !important;
+  color:var(--ux-text-primary) !important;
+}
+:where(.app-page,.p47-page-stack) :where(input,select,textarea):focus,
+.account-form input:focus,
+.account-form select:focus,
+.form-grid input:focus,
+.form-grid select:focus,
+.transaction-filter-grid input:focus,
+.transaction-filter-grid select:focus {
+  border-color:var(--ux-brand-secondary) !important;
+  outline:var(--ux-border-width-2) solid var(--ux-focus-ring) !important;
+  outline-offset:var(--ux-border-width-1);
+  box-shadow:var(--ux-shadow-focus) !important;
+}
+:where(input,textarea)::placeholder {
+  color:var(--ux-text-muted);
+}
+
+/* Tables and dense data views. */
+.transaction-table-wrap,
+.ux-table-shell {
+  border-color:var(--ux-border-default) !important;
+  background:var(--ux-card-bg) !important;
+}
+.transaction-table th,
+.ux-table th {
+  background:var(--ux-section-soft-blue) !important;
+  color:var(--ux-text-secondary) !important;
+}
+.transaction-table td,
+.ux-table td,
+.list-row,
+.detail-list > div {
+  border-color:var(--ux-border-default) !important;
+}
+.transaction-table tbody tr:hover,
+.ux-table tbody tr:hover {
+  background:var(--ux-brand-shell-highlight) !important;
+}
+
+/* Protected application shell. */
+.mustaqbali-topbar,
+.mustaqbali-tablet-topbar,
+.p47-mobile-topbar.mustaqbali-mobile-header {
+  background:var(--ux-shell-topbar-bg) !important;
+  color:var(--ux-text-primary) !important;
+  border-color:var(--ux-shell-topbar-border) !important;
+  box-shadow:var(--ux-shadow-xs) !important;
+}
+.mustaqbali-sidebar,
+.mustaqbali-mobile-drawer {
+  background:linear-gradient(180deg,var(--ux-shell-sidebar-bg),var(--ux-brand-deep)) !important;
+  color:var(--ux-text-inverse) !important;
+}
+.mustaqbali-sidebar-nav a,
+.mustaqbali-sidebar-footer a,
+.mustaqbali-mobile-drawer a {
+  color:var(--ux-text-inverse) !important;
+  border-radius:var(--ux-radius-md);
+}
+.mustaqbali-sidebar-nav a:hover,
+.mustaqbali-sidebar-footer a:hover,
+.mustaqbali-mobile-drawer a:hover {
+  background:var(--ux-shell-sidebar-hover) !important;
+}
+.mustaqbali-sidebar-nav a.is-active,
+.mustaqbali-sidebar-footer a.is-active,
+.mustaqbali-mobile-drawer a.is-active {
+  background:var(--ux-shell-sidebar-active-soft) !important;
+  color:var(--ux-text-inverse) !important;
+  box-shadow:inset var(--ux-border-width-2) 0 0 var(--ux-shell-sidebar-active) !important;
+}
+.mustaqbali-mobile-bottom-nav {
+  border-color:var(--ux-border-default) !important;
+  background:var(--ux-card-bg) !important;
+}
+.mustaqbali-mobile-bottom-nav a {
+  color:var(--ux-text-muted) !important;
+}
+.mustaqbali-mobile-bottom-nav a.is-active {
+  color:var(--ux-brand-primary) !important;
+}
+
+/* Recommendation, decision, execution and governance states inherit semantic identity. */
+[data-tone="success"],
+.status-success,
+.is-success {
+  --ux-state-accent:var(--ux-success);
+}
+[data-tone="warning"],
+.status-warning,
+.is-warning {
+  --ux-state-accent:var(--ux-warning);
+}
+[data-tone="error"],
+.status-error,
+.is-error {
+  --ux-state-accent:var(--ux-error);
+}
+[data-tone="info"],
+.status-info,
+.is-info {
+  --ux-state-accent:var(--ux-brand-secondary);
+}
+.ux-feedback,
+.empty-state {
+  border-inline-start:var(--ux-border-width-2) solid var(--ux-state-accent,var(--ux-brand-secondary)) !important;
+}
+
+/* Dialogs and confirmation flows. */
+.p49-action-dialog::backdrop {
+  background:var(--ux-alpha-overlay) !important;
+  backdrop-filter:blur(var(--ux-space-2));
+}
+.p49-dialog-shell,
+.ux-dialog-surface {
+  border-color:var(--ux-border-emphasis) !important;
+  background:var(--ux-card-bg) !important;
+  color:var(--ux-text-primary) !important;
+  box-shadow:var(--ux-shadow-lg) !important;
+}
+.p49-dialog-header {
+  border-color:var(--ux-border-default) !important;
+  background:var(--ux-card-bg) !important;
+}
+.p49-dialog-header::after {
+  content:"" !important;
+  display:block !important;
+  position:absolute;
+  inset-inline:var(--ux-space-6);
+  inset-block-end:calc(var(--ux-border-width-1) * -1);
+  height:var(--ux-border-width-2);
+  background:linear-gradient(90deg,transparent,var(--ux-brand-secondary),var(--ux-brand-accent),transparent);
+}
+
+/* Profile, settings and approved logo previews. */
+.brand-logo-preview {
+  border:var(--ux-border-width-1) solid var(--ux-border-default);
+  background:var(--ux-section-soft-blue) !important;
+}
+.brand-logo-setting-card.is-dark .brand-logo-preview {
+  background:var(--ux-brand-deep) !important;
+}
+.p55-profile-logout-zone {
+  border-color:var(--ux-border-default) !important;
+}
+
+/* Dark-mode page surfaces stay within the approved deep navy/cyan/green system. */
+html[data-theme="dark"] .page-header,
+html[data-theme="dark"] .p47-page-heading,
+html[data-theme="dark"] .p47-resource-header,
+html[data-theme="dark"] .page-header.p47-closure-header,
+html[data-theme="dark"] .p47-budget-hero,
+html[data-theme="dark"] .p47-financial-hero,
+html[data-theme="dark"] .account-detail-hero,
+html[data-theme="dark"] .account-total,
+html[data-theme="dark"] .onboarding-money-hero {
+  background:linear-gradient(135deg,var(--ux-brand-deep),var(--ux-brand-night-soft)) !important;
+  border-color:var(--ux-dark-border) !important;
+}
+html[data-theme="dark"] .mustaqbali-topbar,
+html[data-theme="dark"] .mustaqbali-tablet-topbar,
+html[data-theme="dark"] .p47-mobile-topbar.mustaqbali-mobile-header {
+  background:var(--ux-dark-shell-topbar-bg) !important;
+}
+html[data-theme="dark"] .transaction-table th,
+html[data-theme="dark"] .ux-table th {
+  background:var(--ux-dark-surface-muted) !important;
+}
+
+/* Responsive composition: governed viewport bands only. */
+@media (max-width:767px) {
+  .app-page { padding:var(--ux-space-4) var(--ux-space-3) !important; }
+  .page-header,
+  .p47-page-heading,
+  .p47-resource-header,
+  .page-header.p47-closure-header {
+    padding:var(--ux-space-4) !important;
+    border-radius:var(--ux-radius-lg) !important;
+  }
+  .card,
+  .panel,
+  .p47-panel,
+  .p47-resource-card,
+  .p47-account-tile,
+  .account-card,
+  .empty-state {
+    border-radius:var(--ux-radius-md) !important;
+  }
+  .transaction-table-wrap,
+  .ux-table-shell {
+    max-width:100%;
+    overflow-x:auto;
+    overscroll-behavior-inline:contain;
+  }
+  .mustaqbali-mobile-bottom-nav {
+    box-shadow:0 -4px 18px var(--ux-alpha-navy-06) !important;
+  }
+}
+
+@media (min-width:768px) and (max-width:1023px) {
+  .page-shell { width:min(100%,var(--ux-container-form)); }
+}
+
+@media (min-width:1024px) {
+  .page-shell { width:min(100%,var(--ux-container-content)); }
+}
+
+@media (min-width:1440px) {
+  .page-shell { width:min(100%,var(--ux-container-wide)); }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  .card,
+  .panel,
+  .p47-resource-card,
+  .p47-account-tile,
+  .account-card,
+  .ux-button,
+  .primary-link,
+  .primary-button {
+    transition:none !important;
+  }
+}
