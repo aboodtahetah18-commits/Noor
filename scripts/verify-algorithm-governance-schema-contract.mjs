@@ -37,15 +37,33 @@ for (const [exportName, sqlName] of requiredTables) {
 const requiredRuntimeColumns = [
   'backtest_run_id',
   'completed_at',
-  'monitoring_observation_id',
+  'monitoring_id',
   'previous_drift_score',
+  'normalized_residual',
   'drift_score',
+  'action',
   'proposed_to_version',
   'review_json',
 ];
 for (const column of requiredRuntimeColumns) {
   if (!migration068.includes(column)) {
     throw new Error(`ALGORITHM_GOVERNANCE_RUNTIME_COLUMN_MISSING:${column}`);
+  }
+}
+
+const schemaColumnContracts = [
+  "uuid('backtest_run_id')",
+  "uuid('monitoring_id')",
+  "text('previous_drift_score')",
+  "text('normalized_residual')",
+  "text('drift_score')",
+  "text('action')",
+  "text('proposed_to_version')",
+  "jsonb('review_json')",
+];
+for (const token of schemaColumnContracts) {
+  if (!schema.includes(token)) {
+    throw new Error(`ALGORITHM_GOVERNANCE_DRIZZLE_COLUMN_MISSING:${token}`);
   }
 }
 
