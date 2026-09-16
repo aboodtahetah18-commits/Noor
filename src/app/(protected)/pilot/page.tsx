@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { requireAuthenticatedUser } from '@/auth/require-authenticated-user';
 import { PILOT_2026 } from '@/config/pilot-2026';
-import { getPilotDashboard } from '@/features/pilot/queries/get-pilot-dashboard';
+import { getPilotDashboard, type PilotDecisionTrace } from '@/features/pilot/queries/get-pilot-dashboard';
 
 function daysRemaining(end: string): number {
   const endDate = new Date(`${end}T23:59:59+03:00`).getTime();
@@ -9,13 +9,13 @@ function daysRemaining(end: string): number {
   return Math.max(0, Math.ceil((endDate - now) / 86_400_000));
 }
 
-function money(value: string | null): string {
+function money(value: string | null, currency = 'SAR'): string {
   if (value == null) return '—';
   const amount = Number(value);
   if (!Number.isFinite(amount)) return value;
   return new Intl.NumberFormat('ar-SA', {
     style: 'currency',
-    currency: 'SAR',
+    currency,
     maximumFractionDigits: 2,
   }).format(amount);
 }
@@ -36,6 +36,26 @@ function stateLabel(value: string | null): string {
     STRONG: 'قوية',
   };
   return labels[value] ?? value;
+}
+
+function decisionLabel(value: string | null): string {
+  if (!value) return 'لم يُتخذ قرار';
+  const labels: Record<string, string> = {
+    APPROVE: 'اعتماد',
+    REJECT: 'رفض',
+    DEFER: 'تأجيل',
+    MODIFY: 'طلب تعديل',
+  };
+  return labels[value] ?? value;
+}
+
+function executionLabel(item: PilotDecisionTrace): string {
+  if (item.verifiedExecution) return 'تنفيذ متحقق';
+  if (item.executionEventId) return `تم الإبلاغ: ${item.executionEventStatus ?? 'قيد التحقق'}`;
+  if (item.executionTaskId) return `بانتظار المستخدم: ${item.executionTaskStatus ?? 'مفتوح'}`;
+  if (item.userDecisionAction === 'REJECT') return 'لا يوجد تنفيذ — القرار مرفوض';
+  if (item.userDecisionAction === 'DEFER') return 'لا يوجد تنفيذ — القرار مؤجل';
+  return 'لم يصل للتنفيذ';
 }
 
 export default async function PilotPage() {
@@ -75,7 +95,8 @@ export default async function PilotPage() {
           </article>
           <article className="ux-card">
             <h2>التنفيذ المالي</h2>
-            <p>المستخدم ينفذ خارجيًا، والمنصة لا تعتبر التنفيذ واقعًا قبل VERIFIED_EXECUTION.</p>
+            <p>{pilot.verifiedExecutions} تنفيذ متحقق من أصل {pilot.executionReportsReceived} عملية تم الإبلاغ عنها.</p>
+            <strong>لا يُحسب التنفيذ واقعًا قبل VERIFIED_EXECUTION.</strong>
           </article>
         </div>
       </section>
@@ -116,6 +137,78 @@ export default async function PilotPage() {
             <h3>لا توجد Snapshot مالية بعد</h3>
             <p>ابدأ دورة مالية وشغّل المحرك حتى تبدأ لوحة التجربة في بناء سجل فعلي قابل للمقارنة.</p>
             <Link className="ux-button ux-button--primary" href="/cycles/new">بدء دورة مالية</Link>
+          </div>
+        )}
+      </section>
+
+      <section className="ux-card" aria-labelledby="decision-trace-title">
+        <div className="ux-page-header">
+          <div>
+            <h2 id="decision-trace-title">مسار التوصية → القرار → التنفيذ</h2>
+            <p>هذا السجل يتتبع ما حدث فعليًا لكل توصية، ولا يعتبر مجرد إنشاء مهمة أو رفع إثبات تنفيذًا ماليًا متحققًا.</p>
+          </div>
+        </div>
+
+        <div className="ux-card-grid">
+          <article className="ux-card">
+            <h3>التوصيات</h3>
+            <strong>{pilot.totalRecommendations}</strong>
+            <p>{pilot.recommendationsWithDecisionRequest} دخلت مسار القرار.</p>
+          </article>
+          <article className="ux-card">
+            <h3>قرارات الاعتماد</h3>
+            <strong>{pilot.userApprovedDecisions}</strong>
+            <p>اعتمادات صريحة من المستخدم.</p>
+          </article>
+          <article className="ux-card">
+            <h3>مهام التنفيذ</h3>
+            <strong>{pilot.executionTasksCreated}</strong>
+            <p>مهام تطلب من المستخدم التنفيذ خارجيًا.</p>
+          </article>
+          <article className="ux-card">
+            <h3>التنفيذ المتحقق</h3>
+            <strong>{pilot.verifiedExecutions}</strong>
+            <p>هذه فقط هي الحالات المؤهلة لبدء قياس أثر القرار.</p>
+          </article>
+        </div>
+
+        {pilot.decisions.length > 0 ? (
+          <div className="ux-table-shell">
+            <table className="ux-table">
+              <thead>
+                <tr>
+                  <th scope="col">التوصية</th>
+                  <th scope="col">الدورة</th>
+                  <th scope="col">طلب القرار</th>
+                  <th scope="col">قرار المستخدم</th>
+                  <th scope="col">المبلغ</th>
+                  <th scope="col">التنفيذ</th>
+                  <th scope="col">الإثبات</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pilot.decisions.map((item) => (
+                  <tr key={item.recommendationId}>
+                    <td>
+                      <Link href={`/advisor/${item.recommendationId}`}>{item.title}</Link>
+                      <br />
+                      <small>{item.reasonCode}</small>
+                    </td>
+                    <td><Link href={`/cycles/${item.cycleId}`}>{item.cycleName}</Link></td>
+                    <td>{item.decisionRequestStatus ?? 'لم يُنشأ'}</td>
+                    <td>{decisionLabel(item.userDecisionAction)}</td>
+                    <td>{money(item.executionAmount ?? item.requestedAmount, item.executionCurrency ?? 'SAR')}</td>
+                    <td>{executionLabel(item)}</td>
+                    <td>{item.evidenceVerificationStatus ?? (item.evidenceCaseId ? 'PENDING' : 'لا يوجد')}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="ux-empty-state">
+            <h3>لا توجد توصيات داخل فترة التجربة بعد</h3>
+            <p>عند توليد توصيات للدورات ستظهر هنا تلقائيًا مع تطور حالتها من القرار إلى التنفيذ والتحقق.</p>
           </div>
         )}
       </section>
