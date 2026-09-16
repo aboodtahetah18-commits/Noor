@@ -58,7 +58,7 @@ export interface AuthorizationResource {
   readinessPassed?: boolean | null;
   hardGuardPassed?: boolean | null;
   proposalCreatorUserId?: string | null;
-  releaseCreatorUserId?: string | null;
+  releaseApprovalActorUserId?: string | null;
   evidenceOwnerUserId?: string | null;
   sodRequired?: boolean | null;
 }
@@ -127,8 +127,12 @@ function separationOfDutiesViolation(req: AuthorizationRequest): string | null {
   if (action === 'APPROVE' && resource.objectType === 'CHANGE_PROPOSAL' && resource.proposalCreatorUserId === actor.userId) {
     return 'SOD_PROPOSAL_CREATOR_CANNOT_APPROVE';
   }
-  if (action === 'RELEASE' && (resource.materialityLevel === 'HIGH' || resource.materialityLevel === 'CRITICAL') && resource.releaseCreatorUserId === actor.userId) {
-    return 'SOD_HIGH_MATERIALITY_RELEASE_CREATOR_CANNOT_APPROVE_RELEASE';
+  if (
+    action === 'RELEASE' &&
+    (resource.materialityLevel === 'HIGH' || resource.materialityLevel === 'CRITICAL') &&
+    resource.releaseApprovalActorUserId === actor.userId
+  ) {
+    return 'SOD_HIGH_MATERIALITY_RELEASE_CREATOR_CANNOT_BE_APPROVER';
   }
   if (action === 'VERIFY_EVIDENCE' && resource.sodRequired && resource.evidenceOwnerUserId === actor.userId) {
     return 'SOD_EVIDENCE_OWNER_CANNOT_VERIFY';
