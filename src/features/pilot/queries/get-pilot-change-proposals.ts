@@ -1,3 +1,4 @@
+import { FINANCIAL_ENGINE_VERSIONS } from '@/features/financial-engine/services/run-full-cycle-pipeline';
 import { getPilotAlgorithmReviewQueue, type PilotAlgorithmReviewItem } from '@/features/pilot/queries/get-pilot-algorithm-review-queue';
 
 export type PilotChangeProposalTarget = 'POLICY' | 'WEIGHTS' | 'THRESHOLDS' | 'ENGINE_LOGIC' | 'MEASUREMENT_CONTRACT';
@@ -28,10 +29,10 @@ export type PilotAlgorithmChangeProposal = {
 };
 
 const CURRENT_VERSIONS = {
-  POLICY: 'namaa-central-policy-v1',
-  WEIGHTS: 'namaa-central-weights-v1',
-  THRESHOLDS: 'namaa-central-thresholds-v1',
-  ENGINE_LOGIC: 'P2.9-v1',
+  POLICY: FINANCIAL_ENGINE_VERSIONS.policy,
+  WEIGHTS: FINANCIAL_ENGINE_VERSIONS.weights,
+  THRESHOLDS: FINANCIAL_ENGINE_VERSIONS.thresholds,
+  ENGINE_LOGIC: FINANCIAL_ENGINE_VERSIONS.engine,
   MEASUREMENT_CONTRACT: 'pilot-measurement-v1',
 } as const satisfies Record<PilotChangeProposalTarget, string>;
 
