@@ -35,6 +35,7 @@
     "dependencies:lock": "node scripts/generate-package-lock.mjs",
     "ensure:npmrc": "node scripts/ensure-npmrc.mjs",
     "smoke:production": "node scripts/postdeploy-smoke.mjs",
+    "smoke:production:p0.4.30": "node scripts/postdeploy-smoke-p0.4.30.mjs",
     "ops:status": "node scripts/production-status.mjs",
     "ops:stability": "node scripts/production-stability.mjs",
     "ops:hardening": "node scripts/production-hardening.mjs",
