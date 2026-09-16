@@ -1,4 +1,5 @@
 import { FINANCIAL_ENGINE_VERSIONS } from '@/features/financial-engine/services/run-full-cycle-pipeline';
+import { resolveFinancialEngineRuntimeVersions } from '@/features/financial-engine/services/resolve-runtime-versions';
 import { getPilotAlgorithmReviewQueue, type PilotAlgorithmReviewItem } from '@/features/pilot/queries/get-pilot-algorithm-review-queue';
 
 export type PilotChangeProposalTarget = 'POLICY' | 'WEIGHTS' | 'THRESHOLDS' | 'ENGINE_LOGIC' | 'MEASUREMENT_CONTRACT';
@@ -27,14 +28,6 @@ export type PilotAlgorithmChangeProposal = {
   approvalBlocker: string;
   rollbackRequirement: string;
 };
-
-const CURRENT_VERSIONS = {
-  POLICY: FINANCIAL_ENGINE_VERSIONS.policy,
-  WEIGHTS: FINANCIAL_ENGINE_VERSIONS.weights,
-  THRESHOLDS: FINANCIAL_ENGINE_VERSIONS.thresholds,
-  ENGINE_LOGIC: FINANCIAL_ENGINE_VERSIONS.engine,
-  MEASUREMENT_CONTRACT: 'pilot-measurement-v1',
-} as const satisfies Record<PilotChangeProposalTarget, string>;
 
 function targetFor(key: PilotAlgorithmReviewItem['dimensionKey']): PilotChangeProposalTarget {
   if (key === 'SAFETY') return 'THRESHOLDS';
@@ -66,7 +59,18 @@ export async function getPilotAlgorithmChangeProposals(
   startsAt: string,
   endsAt: string,
 ): Promise<PilotAlgorithmChangeProposal[]> {
-  const queue = await getPilotAlgorithmReviewQueue(userId, startsAt, endsAt);
+  const [queue, runtime] = await Promise.all([
+    getPilotAlgorithmReviewQueue(userId, startsAt, endsAt),
+    resolveFinancialEngineRuntimeVersions(userId, FINANCIAL_ENGINE_VERSIONS),
+  ]);
+
+  const currentVersions: Record<PilotChangeProposalTarget, string> = {
+    POLICY: runtime.versions.policy,
+    WEIGHTS: runtime.versions.weights,
+    THRESHOLDS: runtime.versions.thresholds,
+    ENGINE_LOGIC: runtime.versions.engine,
+    MEASUREMENT_CONTRACT: 'pilot-measurement-v1',
+  };
 
   return queue.map((item) => {
     const target = targetFor(item.dimensionKey);
@@ -85,7 +89,7 @@ export async function getPilotAlgorithmChangeProposals(
       dimensionLabel: item.dimensionLabel,
       target,
       stage,
-      currentVersion: CURRENT_VERSIONS[target],
+      currentVersion: currentVersions[target],
       proposedVersion: null,
       requiredSpec: specRequired,
       evidenceCount: item.evidenceCount,
