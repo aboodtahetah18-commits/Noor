@@ -80,6 +80,13 @@ export async function getGovernanceOperationsSnapshot(
         and lr.case_id=${caseId}::uuid
       order by lr.created_at desc
       limit 1
+    ), latest_backtest_request as (
+      select br.*
+      from public.algorithm_backtest_requests br
+      join latest_review lr on lr.id=br.review_id
+      where br.user_id=${userId}::uuid
+      order by br.created_at desc
+      limit 1
     ), latest_decision as (
       select d.*
       from public.algorithm_change_decisions d
@@ -153,7 +160,7 @@ export async function getGovernanceOperationsSnapshot(
       rr.created_at::text as rollback_created_at
     from latest_review lr
     left join public.algorithm_change_proposals p on p.id=lr.proposal_id and p.user_id=lr.user_id
-    left join public.algorithm_backtest_requests br on br.review_id=lr.id and br.user_id=lr.user_id
+    left join latest_backtest_request br on true
     left join public.algorithm_backtest_runs b on b.id=br.backtest_run_id and b.user_id=lr.user_id
     left join latest_decision d on true
     left join latest_release r on true
