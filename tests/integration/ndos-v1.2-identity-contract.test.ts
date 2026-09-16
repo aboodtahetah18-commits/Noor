@@ -30,17 +30,18 @@ describe('NDOS v1.2 FINAL identity contract', () => {
     expect(meta.light_first).toBe(true);
   });
 
-  it('uses the official NDOS logo asset without redraw or alternate mark', () => {
-    expect(brandLogo).toContain("'/brand/ndos/namaa-logo-official.png'");
+  it('uses the canonical official NDOS logo registry without redraw or alternate mark', () => {
+    expect(brandLogo).toContain('NDOS_V1_2_ASSETS.logo');
+    expect(approvedAssets).toContain("'/brand/ndos/namaa-logo-official.png'");
     expect(brandLogo).not.toContain('mustaqbali-logo');
   });
 
   it('registers the approved bank and persona assets as PNG sources', () => {
-    expect(approvedAssets).toContain("namaa-central-bank.png");
-    expect(approvedAssets).toContain("hilal-bank.png");
-    expect(approvedAssets).toContain("malaa-bank.png");
-    expect(approvedAssets).toContain("investment-assets-bank.png");
-    expect(approvedAssets).toContain("namaa-algorithmic-personas.png");
+    expect(approvedAssets).toContain('namaa-central-bank.png');
+    expect(approvedAssets).toContain('hilal-bank.png');
+    expect(approvedAssets).toContain('malaa-bank.png');
+    expect(approvedAssets).toContain('investment-assets-bank.png');
+    expect(approvedAssets).toContain('namaa-algorithmic-personas.png');
     expect(approvedAssets).not.toContain('.jpg');
   });
 
