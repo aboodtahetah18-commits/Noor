@@ -1,0 +1,49 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "meta": {
+    "product": "نماء | Namaa",
+    "system": "Namaa Design Operating System",
+    "version": "1.2 FINAL",
+    "date": "2026-09-15",
+    "rtl_first": true,
+    "light_first": true,
+    "mobile_experience": "chat_only",
+    "desktop_experience": "full_workspace_with_optional_chat",
+    "identity_status": "FROZEN"
+  },
+  "color": {
+    "brand.green.900": "#0B6B4F",
+    "brand.green.700": "#189F7F",
+    "brand.gold.500": "#D4AF6B",
+    "brand.gold.action": "#FCAA30",
+    "surface.cream": "#FFF7E6",
+    "surface.warm": "#FAF9F4",
+    "surface.card": "#FFFFFF",
+    "surface.chat.canvas": "#F6F4ED",
+    "surface.chat.user": "#DDF3E8",
+    "surface.chat.agent": "#FFFFFF",
+    "text.primary": "#1F2937",
+    "text.muted": "#61758A",
+    "border.default": "#DCE6E0",
+    "border.strong": "#C9D8D1",
+    "state.info": "#3882F6",
+    "state.warning": "#F59E0B",
+    "state.danger": "#EF4444",
+    "state.success": "#189F7F"
+  },
+  "typography": {
+    "family": "Noto Sans Arabic",
+    "h1": {"size": 30, "range": "28-32", "weight": 700},
+    "h2": {"size": 23, "range": "22-24", "weight": 700},
+    "h3": {"size": 19, "range": "18-20", "weight": 700},
+    "body": {"size": 15, "range": "14-16", "weight": 400},
+    "small": {"size": 12, "weight": 400},
+    "caption": {"size": 11, "weight": 400},
+    "kpi": {"size": 32, "range": "28-36", "weight": 700}
+  },
+  "spacing": [4,8,12,16,20,24,32,40,48,64],
+  "radius": {"xs":6,"sm":8,"md":12,"lg":16,"xl":20,"xxl":24,"pill":999},
+  "button_height": {"sm":32,"md":40,"lg":48},
+  "desktop": {"system_sidebar":{"expanded":"240-272","collapsed":"72-80"},"header":"64-72"},
+  "chat": {"composer":"48-56","user_max_width":"76%","mobile_chat_viewport":"85-90%"}
+}

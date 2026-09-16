@@ -11,7 +11,7 @@ import '../design-system/responsive.css';
 import '../design-system/contracts.css';
 import '../design-system/experience.css';
 import '../design-system/brand-refresh.css';
-import '../design-system/ndos-v1.1.css';
+import '../design-system/ndos-v1.2.css';
 
 const notoSansArabic = Noto_Sans_Arabic({
   subsets: ['arabic'],

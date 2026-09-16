@@ -8,9 +8,10 @@ const dialog=fs.readFileSync('src/components/overlays/action-dialog.tsx','utf8')
 const account=fs.readFileSync('src/app/(protected)/accounts/page.tsx','utf8');
 
 describe('premium experience and entity interaction contract',()=>{
-  it('loads the premium experience followed by the approved NDOS layer and starts light-first',()=>{
+  it('loads the premium experience followed by the approved NDOS v1.2 FINAL layer and starts light-first',()=>{
     expect(layout).toContain("../design-system/experience.css");
-    expect(layout).toContain("../design-system/ndos-v1.1.css");
+    expect(layout).toContain("../design-system/ndos-v1.2.css");
+    expect(layout).not.toContain("../design-system/ndos-v1.1.css");
     expect(layout).toContain('data-theme="light"');
   });
   it('keeps the approved five mobile destinations',()=>{

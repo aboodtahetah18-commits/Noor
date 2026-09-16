@@ -4,10 +4,10 @@ import { describe, expect, it } from 'vitest';
 
 const read = (path: string) => readFileSync(join(process.cwd(), path), 'utf8');
 
-describe('approved Namaa NDOS v1.1 brand identity contract', () => {
-  it('uses the approved Namaa lockup as the default brand asset', () => {
+describe('approved Namaa NDOS v1.2 FINAL brand identity contract', () => {
+  it('uses the frozen official Namaa mark as the default brand asset', () => {
     const logo = read('src/components/brand/brand-logo.tsx');
-    expect(logo).toContain("const DEFAULT_LOGO = '/brand/ndos/namaa-logo-official-lockup.png'");
+    expect(logo).toContain("const DEFAULT_LOGO = '/brand/ndos/namaa-logo-official.png'");
     expect(logo).toContain('alt="نماء"');
     expect(logo).not.toContain("'/brand/mustaqbali-logo-white-compact.png'");
   });

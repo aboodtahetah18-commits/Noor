@@ -8,7 +8,7 @@ const LIGHT_KEY = 'namaa-logo-light';
 const DARK_KEY = 'namaa-logo-dark';
 const THEME_KEY = 'namaa-theme';
 const EVENT = 'namaa:brand-logo-change';
-const DEFAULT_LOGO = '/brand/ndos/namaa-logo-official-lockup.png';
+const DEFAULT_LOGO = '/brand/ndos/namaa-logo-official.png';
 
 function subscribe(callback: () => void) {
   const onStorage = (event: StorageEvent) => {
@@ -35,8 +35,8 @@ export function BrandLogo({ className = '', priority = false }: { surface?: Logo
     <Image
       className={className}
       src={DEFAULT_LOGO}
-      width={208}
-      height={117}
+      width={250}
+      height={180}
       sizes="(max-width: 767px) 96px, (max-width: 1023px) 112px, 128px"
       alt="نماء"
       priority={priority}

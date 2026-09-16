@@ -1,0 +1,165 @@
+/* Namaa Design Operating System (NDOS) v1.2 FINAL
+ * Approved/frozen source: Google Drive identity package dated 2026-09-15.
+ * This file is intentionally loaded last. Do not introduce new primary brand colors here.
+ */
+:root {
+  --namaa-green-900:#0B6B4F;
+  --namaa-green-700:#189F7F;
+  --namaa-gold-500:#D4AF6B;
+  --namaa-gold-action:#FCAA30;
+  --namaa-cream:#FFF7E6;
+  --namaa-surface-warm:#FAF9F4;
+  --namaa-card:#FFFFFF;
+  --namaa-chat-canvas:#F6F4ED;
+  --namaa-user-message:#DDF3E8;
+  --namaa-agent-message:#FFFFFF;
+  --namaa-text:#1F2937;
+  --namaa-muted:#61758A;
+  --namaa-border:#DCE6E0;
+  --namaa-border-strong:#C9D8D1;
+  --namaa-info:#3882F6;
+  --namaa-warning:#F59E0B;
+  --namaa-danger:#EF4444;
+  --namaa-success:#189F7F;
+  --namaa-font:var(--font-noto-sans-arabic),"Noto Sans Arabic",Tahoma,Arial,sans-serif;
+
+  --ux-font-family-base:var(--namaa-font);
+  --ux-type-page-title-size:30px;
+  --ux-type-page-title-line:42px;
+  --ux-type-page-title-weight:700;
+  --ux-type-section-title-size:23px;
+  --ux-type-section-title-line:34px;
+  --ux-type-section-title-weight:700;
+  --ux-type-card-title-size:19px;
+  --ux-type-card-title-line:30px;
+  --ux-type-card-title-weight:700;
+  --ux-type-body-size:15px;
+  --ux-type-body-line:26px;
+  --ux-type-body-weight:400;
+  --ux-type-body-sm-size:14px;
+  --ux-type-body-sm-line:23px;
+  --ux-type-caption-size:11px;
+  --ux-type-caption-line:18px;
+  --ux-type-label-size:14px;
+  --ux-type-label-line:22px;
+  --ux-type-label-weight:500;
+  --ux-type-button-size:14px;
+  --ux-type-button-line:22px;
+  --ux-type-button-weight:600;
+  --ux-type-number-lg-size:32px;
+  --ux-type-number-lg-line:42px;
+  --ux-type-number-lg-weight:700;
+
+  --ux-radius-1:6px;
+  --ux-radius-xs:6px;
+  --ux-radius-2:8px;
+  --ux-radius-sm:8px;
+  --ux-radius-3:12px;
+  --ux-radius-md:12px;
+  --ux-radius-4:16px;
+  --ux-radius-lg:16px;
+  --ux-radius-xl:20px;
+  --ux-radius-6:24px;
+  --ux-size-8:32px;
+  --ux-size-10:40px;
+  --ux-size-11:40px;
+  --ux-size-12:48px;
+
+  --ux-brand-primary:var(--namaa-green-900);
+  --ux-brand-secondary:var(--namaa-green-700);
+  --ux-brand-accent:var(--namaa-gold-500);
+  --ux-success:var(--namaa-success);
+  --ux-warning:var(--namaa-warning);
+  --ux-error:var(--namaa-danger);
+  --ux-page-bg:var(--namaa-surface-warm);
+  --ux-card-bg:var(--namaa-card);
+  --ux-shell-topbar-bg:rgb(255 255 255 / .96);
+  --ux-shell-topbar-border:var(--namaa-border);
+  --ux-shell-sidebar-bg:var(--namaa-green-900);
+  --ux-shell-sidebar-hover:#095B43;
+  --ux-shell-sidebar-active:var(--namaa-green-700);
+  --ux-shell-sidebar-active-soft:rgb(24 159 127 / .18);
+  --ux-border-default:var(--namaa-border);
+  --ux-border-emphasis:var(--namaa-border-strong);
+  --ux-text-primary:var(--namaa-text);
+  --ux-text-secondary:var(--namaa-muted);
+  --ux-text-muted:var(--namaa-muted);
+  --ux-text-inverse:#FFFFFF;
+  --ux-section-soft-blue:#F3F8F5;
+  --ux-section-soft-teal:#EDF8F4;
+  --ux-soft-green:#EDF8F4;
+  --ux-soft-red:#FFF1F2;
+  --ux-soft-orange:var(--namaa-cream);
+  --ux-soft-purple:#F7F4FA;
+  --ux-color-ink:var(--namaa-text);
+  --ux-color-primary:var(--namaa-green-900);
+  --ux-color-cyan:var(--namaa-green-700);
+  --ux-color-canvas:var(--namaa-surface-warm);
+  --ux-color-white:var(--namaa-card);
+  --ux-color-slate:var(--namaa-muted);
+  --ux-color-success:var(--namaa-success);
+  --ux-color-warning:var(--namaa-warning);
+  --ux-color-error:var(--namaa-danger);
+  --ux-surface-canvas:var(--ux-page-bg);
+  --ux-surface-default:var(--ux-card-bg);
+  --ux-surface-inverse:var(--namaa-green-900);
+  --ux-action-primary:var(--namaa-green-900);
+  --ux-accent-supporting:var(--namaa-green-700);
+  --ux-focus-ring:var(--namaa-green-700);
+  --ux-state-success:var(--namaa-success);
+  --ux-state-warning:var(--namaa-warning);
+  --ux-state-error:var(--namaa-danger);
+
+  --ux-alpha-navy-05:rgb(11 107 79 / .05);
+  --ux-alpha-navy-06:rgb(11 107 79 / .06);
+  --ux-alpha-navy-10:rgb(11 107 79 / .10);
+  --ux-alpha-navy-18:rgb(11 107 79 / .18);
+  --ux-alpha-teal-15:rgb(24 159 127 / .15);
+  --ux-alpha-teal-20:rgb(24 159 127 / .20);
+  --ux-shadow-xs:0 1px 2px rgb(31 41 55 / .06);
+  --ux-shadow-sm:0 4px 14px rgb(31 41 55 / .07);
+  --ux-shadow-md:0 10px 26px rgb(31 41 55 / .09);
+  --ux-shadow-lg:0 18px 38px rgb(31 41 55 / .11);
+  --ux-shadow-focus:0 0 0 4px rgb(24 159 127 / .16);
+
+  --ux-shell-sidebar-expanded:256px;
+  --ux-shell-sidebar-collapsed:76px;
+  --ux-shell-topbar-height:68px;
+  --ux-logo-desktop-width:128px;
+  --ux-logo-tablet-width:112px;
+  --ux-logo-mobile-width:96px;
+  --ux-logo-collapsed-size:48px;
+}
+
+html,body{font-family:var(--namaa-font)!important;}
+html[data-theme="light"]{color-scheme:light;--ux-page-bg:var(--namaa-surface-warm);--ux-card-bg:var(--namaa-card);--ux-shell-topbar-bg:rgb(255 255 255 / .96);--ux-shell-topbar-border:var(--namaa-border);--ux-shell-sidebar-bg:var(--namaa-green-900);--ux-border-default:var(--namaa-border);--ux-border-emphasis:var(--namaa-border-strong);--ux-text-primary:var(--namaa-text);--ux-text-secondary:var(--namaa-muted);--ux-text-muted:var(--namaa-muted);--ux-section-soft-blue:#F3F8F5;--ux-section-soft-teal:#EDF8F4;}
+html[data-theme="light"] body{background:var(--namaa-surface-warm)!important;color:var(--namaa-text)!important;}
+
+/* Dark mode is a derived accessibility theme. Frozen primary brand colors are unchanged. */
+html[data-theme="dark"]{color-scheme:dark;--ux-page-bg:#111A17;--ux-card-bg:#17231F;--ux-shell-topbar-bg:#13201C;--ux-shell-topbar-border:#2A3B35;--ux-shell-sidebar-bg:#081B15;--ux-border-default:#31443D;--ux-border-emphasis:#40584F;--ux-text-primary:#F6F7F5;--ux-text-secondary:#C5D0CB;--ux-text-muted:#AAB7B1;--ux-section-soft-blue:#1A2A24;--ux-section-soft-teal:#173329;--ux-action-primary:var(--namaa-green-700);--ux-focus-ring:var(--namaa-gold-500);}
+html[data-theme="dark"] body{background:var(--ux-page-bg)!important;color:var(--ux-text-primary)!important;}
+
+/* Official mark: never crop, recolor, mask, or redraw. */
+.mustaqbali-topbar-logo,.mustaqbali-tablet-brand,.mustaqbali-mobile-brand,.mustaqbali-drawer-brand{border-radius:0!important;overflow:visible!important;background:transparent!important;}
+.mustaqbali-topbar-logo img,.mustaqbali-tablet-brand img,.mustaqbali-mobile-brand img,.mustaqbali-drawer-brand img,.auth-brand-symbol{aspect-ratio:auto!important;object-fit:contain!important;filter:none!important;}
+.mustaqbali-topbar-logo img{width:var(--ux-logo-desktop-width)!important;height:auto!important;max-height:64px!important;}
+.mustaqbali-tablet-brand img{width:var(--ux-logo-tablet-width)!important;height:auto!important;max-height:60px!important;}
+.mustaqbali-mobile-brand img{width:var(--ux-logo-mobile-width)!important;height:auto!important;max-height:54px!important;}
+.mustaqbali-drawer-brand img{width:112px!important;height:auto!important;}
+
+.mustaqbali-topbar{background:var(--ux-shell-topbar-bg)!important;border-color:var(--namaa-border)!important;box-shadow:0 1px 0 var(--namaa-border)!important;}
+.mustaqbali-global-search,.mustaqbali-tablet-search{background:var(--namaa-surface-warm)!important;border-color:var(--namaa-border)!important;}
+.mustaqbali-sidebar,.desktop-top-nav-wrap{background:var(--namaa-green-900)!important;}
+.mustaqbali-sidebar a.is-active,.mustaqbali-nav-section a.is-active{background:rgb(255 255 255 / .13)!important;color:#fff!important;box-shadow:inset -3px 0 var(--namaa-gold-500)!important;}
+
+.primary,.primary-button,.primary-link,.auth-form button,.p47-primary-action,.p47-sidebar-add{background:var(--namaa-green-900)!important;border-color:var(--namaa-green-900)!important;color:#fff!important;}
+.primary:hover,.primary-button:hover,.primary-link:hover{background:var(--namaa-green-700)!important;border-color:var(--namaa-green-700)!important;}
+.secondary-button,.secondary-link,.button-link,.p47-secondary-action,.p49-modal-trigger{border-color:var(--namaa-border-strong)!important;color:var(--namaa-green-900)!important;}
+.status-pill,.p47-count-badge{border-color:var(--namaa-border)!important;}
+.card,.panel,.account-total,.account-card,.account-detail-hero,.detail-list,.empty-state,.form-card,.summary-card,.dashboard-card,.p47-panel,.p47-command-panel,.p47-resource-card,.p47-flow-card,.p47-analysis-card,.workspace-module-card,.more-hub-card,.statement-kpis>div{box-shadow:var(--ux-shadow-xs)!important;border-color:var(--namaa-border)!important;}
+.namaa-chat-panel,.chat-canvas,[class*="chat-canvas"]{background:var(--namaa-chat-canvas)!important;}
+.namaa-message--user,[class*="message--user"]{background:var(--namaa-user-message)!important;}
+.namaa-message--agent,[class*="message--agent"]{background:var(--namaa-agent-message)!important;}
+
+@media(max-width:767px){h1,.protected-app-shell h1{font-size:28px!important;line-height:39px!important;}.mustaqbali-mobile-brand img{width:var(--ux-logo-mobile-width)!important;}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}}
