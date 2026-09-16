@@ -11,3 +11,4 @@ export * from './budget-risk';
 export * from './financial-health';
 export * from './goal-allocation-policy';
 export * from './emergency-coverage';
+export * from './learning/governed-learning';
