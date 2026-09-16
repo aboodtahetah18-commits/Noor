@@ -1,11 +1,23 @@
 # Current UI/UX Source of Truth
 
-Current governed design reconstruction: **CR-002 — Mustaqbali Design-Led Product Reconstruction**.
+Current governed visual identity: **نماء — الهوية البصرية المرجع المعتمد v1.0 — 2026-09-15**.
 
-The only active implementation authority is:
+The active implementation authority is the approved project identity package in Google Drive:
 
-1. `CR-002/01_SOURCE_OF_TRUTH/MUSTAQBALI_UIUX_MASTER_IDENTITY_AND_DESIGN_LOCK.md`
-2. `CR-002/02_IMPLEMENTATION_SPEC/MUSTAQBALI_FINAL_IMPLEMENTATION_SPEC_V1.md`
-3. `CR-002/03_APPROVED_VISUAL_REFERENCES/`
+1. `00_نماء_الهوية_البصرية_المرجع_المعتمد_v1.0_2026-09-15`
+2. Its approved visual identity guide and token references.
+3. Approved Namaa logo and bank/advisor identity assets referenced by that package.
 
-Older UI/UX documents remain for historical traceability only and must not override CR-002.
+The approved implementation invariants are:
+
+- Arabic / RTL is the primary product direction.
+- Font: `Noto Sans Arabic`.
+- Primary navy: `#023C6E`.
+- Deep navy: `#021737`.
+- Cyan: `#0CB6E5`.
+- Green: `#189F7F`.
+- Gold: `#FCAA30`.
+- Light and dark modes must derive from governed design tokens; pages must not invent their own palettes.
+- Brand assets must be used from the approved identity package. Do not redraw the official mark when an approved asset exists.
+
+`CR-002` remains historical implementation context only. It does not override the approved Namaa identity package dated 2026-09-15.
