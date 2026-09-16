@@ -73,14 +73,15 @@ export async function beginRegistration(input: { name: string; email: string }) 
   const existing = await rawSql`
     select id, email_verified from auth."user" where lower(email) = ${email} limit 1
   `;
-  if (existing[0]?.email_verified === true) {
+  const existingUser = existing[0];
+  if (existingUser?.email_verified === true) {
     return { ok: true as const, deliver: false as const, email };
   }
 
-  if (existing.length) {
+  if (existingUser) {
     await rawSql`
       update auth."user" set name = ${name}, updated_at = now()
-      where id = ${String(existing[0].id)}::uuid and email_verified = false
+      where id = ${String(existingUser.id)}::uuid and email_verified = false
     `;
   } else {
     await rawSql`
