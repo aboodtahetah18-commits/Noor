@@ -14,6 +14,7 @@ const required = [
   'src/design-system/responsive.css',
   'src/design-system/contracts.css',
   'src/design-system/components.css',
+  'src/design-system/interaction-components.css',
   'src/design-system/pages.css',
   'src/design-system/ndos-v1.2.acceptance.css',
   'src/design-system/ndos-v1.2.css',
@@ -27,7 +28,7 @@ for (const retired of ['src/design-system/experience.css','src/design-system/bra
 }
 
 const layout = read('src/app/layout.tsx');
-const loaded = ['tokens.css','themes.css','typography.css','foundations.css','responsive.css','contracts.css','components.css','pages.css','ndos-v1.2.acceptance.css','ndos-v1.2.css','ndos-v1.2.enforcement.css'];
+const loaded = ['tokens.css','themes.css','typography.css','foundations.css','responsive.css','contracts.css','components.css','interaction-components.css','pages.css','ndos-v1.2.acceptance.css','ndos-v1.2.css','ndos-v1.2.enforcement.css'];
 for (const file of loaded) if (!layout.includes(`../design-system/${file}`)) fail.push(`root layout does not load ${file}`);
 for (const retired of ['experience.css','brand-refresh.css']) if (layout.includes(retired)) fail.push(`root layout still loads retired layer ${retired}`);
 
@@ -62,6 +63,9 @@ if (/Tajawal/i.test(ndos)) fail.push('Tajawal must not exist in final NDOS autho
 
 const themes = read('src/design-system/themes.css');
 if (/var\(--font-tajawal\)/i.test(themes)) fail.push('legacy Tajawal font mapping remains active in themes.css');
+
+const interaction = read('src/design-system/interaction-components.css');
+for (const token of ['.mx-action-rail','touch-action:pan-x','.mx-action-chip']) if (!interaction.includes(token)) fail.push(`interaction component layer missing ${token}`);
 
 const pages = read('src/design-system/pages.css');
 for (const selector of ['.mustaqbali-topbar','.mustaqbali-sidebar','.p47-page-heading','.transaction-table','.p49-dialog-shell','.p55-profile-summary']) {
