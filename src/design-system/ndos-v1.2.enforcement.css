@@ -1,0 +1,95 @@
+/* NDOS v1.2 FINAL — geometry and control enforcement.
+ * Loaded after all legacy layers. Values are restricted to the frozen token set.
+ */
+:root {
+  --ndos-control-sm: var(--ux-size-8);   /* 32px */
+  --ndos-control-md: var(--ux-size-10); /* 40px */
+  --ndos-control-lg: var(--ux-size-12); /* 48px */
+}
+
+/* Interactive controls default to a balanced, content-sized geometry. */
+:where(button,[role="button"],input[type="button"],input[type="submit"],input[type="reset"],a.primary,a.primary-button,a.secondary-button) {
+  min-height: var(--ndos-control-md);
+  height: var(--ndos-control-md);
+  width: auto;
+  max-width: 100%;
+  padding-inline: var(--ux-space-4);
+  padding-block: 0;
+  border-radius: var(--ux-radius-sm);
+  font-family: var(--ux-font-family-base);
+  font-size: var(--ux-type-button-size);
+  line-height: var(--ux-type-button-line);
+  font-weight: var(--ux-type-button-weight);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ux-space-2);
+  white-space: nowrap;
+}
+
+:where(button,[role="button"])[data-size="sm"] { min-height: var(--ndos-control-sm); height: var(--ndos-control-sm); padding-inline: var(--ux-space-3); }
+:where(button,[role="button"])[data-size="lg"] { min-height: var(--ndos-control-lg); height: var(--ndos-control-lg); padding-inline: var(--ux-space-5); }
+
+/* Full width is explicit only; ordinary actions must never expand just because a parent is wide. */
+:where(button,[role="button"],[class*="button"])[data-block="true"],
+.ndos-button--block { width: 100%; }
+
+/* Icon actions are square and cannot become oversized pills. */
+:where(button,[role="button"])[data-icon-only="true"],
+.ndos-icon-button {
+  width: var(--ndos-control-md);
+  min-width: var(--ndos-control-md);
+  max-width: var(--ndos-control-md);
+  padding-inline: 0;
+}
+:where(button,[role="button"])[data-icon-only="true"][data-size="sm"] { width: var(--ndos-control-sm); min-width: var(--ndos-control-sm); max-width: var(--ndos-control-sm); }
+:where(button,[role="button"])[data-icon-only="true"][data-size="lg"] { width: var(--ndos-control-lg); min-width: var(--ndos-control-lg); max-width: var(--ndos-control-lg); }
+
+/* Data-entry controls use the same vertical rhythm as actions. */
+:where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),select) {
+  min-height: var(--ndos-control-md);
+  height: var(--ndos-control-md);
+  padding-inline: var(--ux-space-3);
+  border-radius: var(--ux-radius-sm);
+  font-family: var(--ux-font-family-base);
+}
+textarea {
+  min-height: calc(var(--ndos-control-lg) * 2);
+  padding: var(--ux-space-3);
+  border-radius: var(--ux-radius-sm);
+  font-family: var(--ux-font-family-base);
+  resize: vertical;
+}
+
+/* Canonical action/field layouts for RTL screens. */
+.ndos-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--ux-space-2);
+}
+.ndos-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: var(--ux-space-4);
+  align-items: start;
+}
+.ndos-field { min-width: 0; display: grid; gap: var(--ux-space-2); }
+.ndos-field--wide { grid-column: 1 / -1; }
+
+/* Do not let legacy action classes produce giant controls. */
+:where(.primary,.primary-button,.secondary-button,.p47-primary-action,.p47-secondary-action,.p47-sidebar-add,.p49-modal-trigger) {
+  min-height: var(--ndos-control-md) !important;
+  height: var(--ndos-control-md) !important;
+  width: auto !important;
+  padding-inline: var(--ux-space-4) !important;
+  padding-block: 0 !important;
+}
+
+@media (max-width:767px) {
+  .ndos-form-grid { grid-template-columns: minmax(0,1fr); gap: var(--ux-space-3); }
+  .ndos-actions { gap: var(--ux-space-2); }
+  .ndos-actions > :where(button,[role="button"],a[class*="button"]) { flex: 0 1 auto; }
+  .ndos-actions > [data-block-mobile="true"] { flex-basis: 100%; width: 100%; }
+}
