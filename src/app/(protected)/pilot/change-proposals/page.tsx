@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { requireAuthenticatedUser } from '@/auth/require-authenticated-user';
 import { PILOT_2026 } from '@/config/pilot-2026';
 import { getPilotAlgorithmChangeProposals } from '@/features/pilot/queries/get-pilot-change-proposals';
+import { getPersistedAlgorithmGovernance } from '@/features/pilot/queries/get-persisted-algorithm-governance';
 
 function stageLabel(value: string): string {
   const labels: Record<string, string> = {
@@ -9,6 +10,11 @@ function stageLabel(value: string): string {
     SPEC_REQUIRED: 'مطلوب تحديد التغيير',
     BACKTEST_REQUIRED: 'مطلوب Backtest',
     DECISION_BLOCKED: 'القرار محظور',
+    SPEC_RECORDED: 'Spec محفوظ',
+    BACKTESTED: 'Backtest مكتمل',
+    DECIDED: 'تم اتخاذ قرار',
+    RELEASED: 'تم إصدار نسخة',
+    ROLLED_BACK: 'تم الرجوع عن الإصدار',
   };
   return labels[value] ?? value;
 }
@@ -26,7 +32,10 @@ function targetLabel(value: string): string {
 
 export default async function PilotChangeProposalsPage() {
   const user = await requireAuthenticatedUser();
-  const proposals = await getPilotAlgorithmChangeProposals(user.id, PILOT_2026.startsAt, PILOT_2026.endsAt);
+  const [proposals, governance] = await Promise.all([
+    getPilotAlgorithmChangeProposals(user.id, PILOT_2026.startsAt, PILOT_2026.endsAt),
+    getPersistedAlgorithmGovernance(user.id),
+  ]);
   const blocked = proposals.filter((item) => item.approvalStatus === 'BLOCKED').length;
   const specRequired = proposals.filter((item) => item.stage === 'SPEC_REQUIRED').length;
 
@@ -63,7 +72,64 @@ export default async function PilotChangeProposalsPage() {
             <strong>{blocked}</strong>
             <p>لا يوجد أي تطبيق تلقائي أو اعتماد قبل Backtest موثق.</p>
           </article>
+          <article className="ux-card">
+            <h2>سجل الحوكمة الدائم</h2>
+            <strong>{governance.storageReady ? governance.rows.length : 'بانتظار Migration'}</strong>
+            <p>السجل Append-only ولا يسمح بتعديل التاريخ أو حذفه.</p>
+          </article>
         </div>
+      </section>
+
+      <section className="ux-card" aria-labelledby="persisted-governance-title">
+        <div className="ux-page-header">
+          <div>
+            <p className={`ux-badge ${governance.storageReady ? 'ux-badge--success' : 'ux-badge--warning'}`}>
+              {governance.storageReady ? 'Governance ledger ready' : 'Migration required'}
+            </p>
+            <h2 id="persisted-governance-title">السجل الدائم للمقترحات المعتمدة للحفظ</h2>
+            <p>
+              بمجرد حفظ Spec رسمي، تنتقل دورة التغيير إلى سجل غير قابل للطمس: Spec → Backtest → قرار → Release → Rollback عند الحاجة.
+            </p>
+          </div>
+        </div>
+
+        {governance.rows.length > 0 ? (
+          <div className="ux-table-shell">
+            <table className="ux-table">
+              <thead>
+                <tr>
+                  <th scope="col">المقترح</th>
+                  <th scope="col">الهدف</th>
+                  <th scope="col">النسخة</th>
+                  <th scope="col">Backtest</th>
+                  <th scope="col">القرار</th>
+                  <th scope="col">الحالة</th>
+                </tr>
+              </thead>
+              <tbody>
+                {governance.rows.map((row) => (
+                  <tr key={row.proposalId}>
+                    <td>{row.title}</td>
+                    <td>{targetLabel(row.target)}</td>
+                    <td>{row.currentVersion} → {row.candidateVersion}</td>
+                    <td>{row.backtestOutcome ?? 'لم يُسجل'}</td>
+                    <td>{row.decision ?? 'لم يُتخذ'}</td>
+                    <td>{stageLabel(row.lifecycleStage)}{row.rollbackToVersion ? ` → ${row.rollbackToVersion}` : ''}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="ux-empty-state">
+            <h3>{governance.storageReady ? 'لا توجد Specs محفوظة بعد' : 'قاعدة الحوكمة لم تُطبق بعد'}</h3>
+            <p>
+              {governance.storageReady
+                ? 'لن يظهر سجل دائم حتى يتم تحويل مقترح مراجعة إلى Spec رسمي محدد وقابل للاختبار.'
+                : 'الكود جاهز، لكن الجداول الجديدة لا تُستخدم قبل تطبيق migration الإنتاجية الصريحة.'}
+            </p>
+          </div>
+        )}
       </section>
 
       {proposals.length > 0 ? proposals.map((proposal) => (
