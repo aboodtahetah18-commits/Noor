@@ -15,4 +15,3 @@ export * from './learning/governed-learning';
 export * from './learning/governed-learning-governance';
 export * from './learning/bank-learning-routing';
 export * from './learning/decision-outcome-lifecycle';
-export * from './learning/process-decision-outcome-learning';
