@@ -31,7 +31,7 @@ const sections = [
   },
 ] satisfies Array<{label:string;items:Array<{href:string;label:string;icon:LucideIconName}>}>;
 
-export function DesktopTopNav() {
+export function DesktopTopNav({ showAuthorizationAdmin = false }: { showAuthorizationAdmin?: boolean }) {
   const pathname = usePathname();
   if (pathname.startsWith('/onboarding')) return null;
   return (
@@ -48,6 +48,13 @@ export function DesktopTopNav() {
               </Link>;
             })}
           </section>)}
+          {showAuthorizationAdmin ? <section className="mustaqbali-nav-section">
+            <p>الحوكمة</p>
+            <Link href="/governance/authorization" className={pathname.startsWith('/governance/authorization')?'is-active':''} aria-current={pathname.startsWith('/governance/authorization')?'page':undefined}>
+              <span className="mustaqbali-nav-icon"><LucideIcon name="lockKeyhole" size={20}/></span>
+              <span className="mustaqbali-nav-label">إدارة الصلاحيات</span>
+            </Link>
+          </section> : null}
         </nav>
 
         <div className="mustaqbali-sidebar-footer">
