@@ -5,20 +5,24 @@ import { assertTrustedMutationOrigin } from '@/security/request-origin';
 import { enforceRateLimit } from '@/security/rate-limit';
 import { logServerError } from '@/security/safe-logging';
 import { FinancialPlatformError } from '@/features/financial-engine/services/financial-platform-error';
-import {
-  BACKTEST_COMPONENT_KEYS,
-  runComparativeBacktest,
-} from '@/features/pilot/services/algorithm-comparative-backtest-service';
+import { runComparativeBacktest } from '@/features/pilot/services/algorithm-comparative-backtest-service';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 const headers = { 'Cache-Control': 'no-store' };
 
-const weightsShape = Object.fromEntries(
-  BACKTEST_COMPONENT_KEYS.map((key) => [key, z.number().min(0).max(100)]),
-) as Record<(typeof BACKTEST_COMPONENT_KEYS)[number], z.ZodNumber>;
-
-const weightsSchema = z.object(weightsShape);
+const weightsSchema = z.object({
+  essentials: z.number().min(0).max(100),
+  cashLiquidity: z.number().min(0).max(100),
+  reserveEmergency: z.number().min(0).max(100),
+  debt: z.number().min(0).max(100),
+  incomeShock: z.number().min(0).max(100),
+  spendingFlexibility: z.number().min(0).max(100),
+  assetLiquidity: z.number().min(0).max(100),
+  executionDiscipline: z.number().min(0).max(100),
+  goals: z.number().min(0).max(100),
+  investmentConcentration: z.number().min(0).max(100),
+});
 const thresholdsSchema = z.object({
   vulnerableMin: z.number().gt(0).lte(100),
   balancedMin: z.number().gt(0).lte(100),
