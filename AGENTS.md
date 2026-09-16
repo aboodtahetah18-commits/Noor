@@ -1,14 +1,14 @@
-# MUSTAQBALI — EXECUTION CONTRACT
+# NAMAA — EXECUTION CONTRACT
 
 This file is the mandatory implementation contract for every code or design change in this repository.
-If any older phase note, repair note, legacy CSS rule, or implementation pattern conflicts with this file, this file wins unless CR-002 is explicitly superseded by a newer approved source of truth.
+If any older phase note, repair note, legacy CSS rule, or implementation pattern conflicts with this file, the approved Namaa visual identity source of truth wins.
 
 ## 1. Product authority
 
-- Visual identity authority: CR-002 and `docs/ui-ux/CURRENT_SOURCE_OF_TRUTH.md`.
+- Visual identity authority: `docs/ui-ux/CURRENT_SOURCE_OF_TRUTH.md`, which points to the approved Google Drive package `00_نماء_الهوية_البصرية_المرجع_المعتمد_v1.0_2026-09-15`.
 - Arabic / RTL is the primary product direction.
-- Font: Tajawal only unless the approved brand source of truth changes.
-- Brand assets must come from the approved repository brand assets. Do not introduce alternative logos, fonts, color palettes, decoration systems, or visual themes.
+- Font: Noto Sans Arabic only unless a newer approved brand source of truth changes it.
+- Brand assets must come from the approved Namaa identity package or approved repository copies of those assets. Do not introduce alternative logos, fonts, color palettes, decoration systems, or visual themes.
 - Business logic, financial rules, database behavior, security boundaries, and state machines must not be rewritten as part of UI migration unless the task explicitly requires it.
 
 ## 2. Architecture rule
@@ -144,9 +144,9 @@ Effective immediately:
 ## 12. Definition of done
 
 A UI change is complete only when:
-- it follows CR-002 identity,
-- no unauthorized brand/font/style is introduced,
-- mobile and desktop both satisfy their layout contracts,
-- required states are covered,
-- no new legacy CSS repair layer is added,
+- it follows the approved Namaa visual identity source dated 2026-09-15 or a newer approved replacement;
+- no unauthorized brand/font/style is introduced;
+- mobile and desktop both satisfy their layout contracts;
+- required states are covered;
+- no new legacy CSS repair layer is added;
 - all mandatory quality gates pass.
