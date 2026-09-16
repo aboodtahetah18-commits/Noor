@@ -1,0 +1,269 @@
+/* NAMAA — governed shared component layer.
+   Uses design tokens only; pages compose these contracts and do not redefine them. */
+
+.ux-surface,
+.ux-card {
+  background:var(--ux-card-bg);
+  color:var(--ux-text-primary);
+  border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);
+  border-radius:var(--ux-radius-lg);
+  box-shadow:var(--ux-shadow-sm);
+}
+
+.ux-card {
+  padding:var(--ux-space-5);
+  transition:border-color var(--ux-motion-duration-base) var(--ux-motion-ease-standard),
+    box-shadow var(--ux-motion-duration-base) var(--ux-motion-ease-standard),
+    transform var(--ux-motion-duration-base) var(--ux-motion-ease-standard);
+}
+
+.ux-card[data-interactive="true"]:hover {
+  border-color:var(--ux-border-emphasis);
+  box-shadow:var(--ux-shadow-md);
+  transform:translateY(-1px);
+}
+
+.ux-button {
+  min-height:var(--ux-size-11);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:var(--ux-space-2);
+  padding-inline:var(--ux-space-4);
+  border:var(--ux-border-width-1) var(--ux-border-style-default) transparent;
+  border-radius:var(--ux-radius-md);
+  font:inherit;
+  font-size:var(--ux-type-button-size);
+  line-height:var(--ux-type-button-line);
+  font-weight:var(--ux-type-button-weight);
+  cursor:pointer;
+  text-decoration:none;
+  transition:transform var(--ux-motion-duration-fast) var(--ux-motion-ease-standard),
+    box-shadow var(--ux-motion-duration-base) var(--ux-motion-ease-standard),
+    border-color var(--ux-motion-duration-base) var(--ux-motion-ease-standard),
+    background var(--ux-motion-duration-base) var(--ux-motion-ease-standard);
+}
+
+.ux-button--primary {
+  background:var(--ux-brand-primary);
+  color:var(--ux-text-inverse);
+  border-color:var(--ux-brand-primary);
+  box-shadow:var(--ux-shadow-sm);
+}
+
+.ux-button--primary:hover:not(:disabled) {
+  background:var(--ux-brand-deep);
+  border-color:var(--ux-brand-deep);
+  box-shadow:var(--ux-shadow-md);
+}
+
+.ux-button--secondary {
+  background:var(--ux-card-bg);
+  color:var(--ux-brand-primary);
+  border-color:var(--ux-border-emphasis);
+}
+
+.ux-button--secondary:hover:not(:disabled) {
+  border-color:var(--ux-brand-secondary);
+  background:var(--ux-brand-sky-soft);
+}
+
+.ux-button--accent {
+  background:var(--ux-brand-secondary);
+  color:var(--ux-text-inverse);
+  border-color:var(--ux-brand-secondary);
+}
+
+.ux-button--ghost {
+  background:transparent;
+  color:var(--ux-brand-primary);
+  border-color:transparent;
+}
+
+.ux-button--danger {
+  background:var(--ux-soft-red);
+  color:var(--ux-error);
+  border-color:var(--ux-error);
+}
+
+.ux-button:focus-visible,
+.ux-control:focus-visible,
+.ux-dialog-surface :where(button,a,input,select,textarea):focus-visible {
+  outline:var(--ux-border-width-2) var(--ux-border-style-default) var(--ux-focus-ring);
+  outline-offset:var(--ux-border-width-2);
+}
+
+.ux-button:active:not(:disabled) { transform:translateY(1px); }
+.ux-button:disabled { opacity:.55; cursor:not-allowed; box-shadow:none; }
+
+.ux-field {
+  display:grid;
+  gap:var(--ux-space-2);
+  min-width:0;
+}
+
+.ux-field > label {
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-label-size);
+  line-height:var(--ux-type-label-line);
+  font-weight:var(--ux-type-label-weight);
+}
+
+.ux-field > small {
+  color:var(--ux-text-muted);
+  font-size:var(--ux-type-caption-size);
+  line-height:var(--ux-type-caption-line);
+}
+
+.ux-control {
+  width:100%;
+  min-height:var(--ux-size-11);
+  padding-inline:var(--ux-space-3);
+  border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);
+  border-radius:var(--ux-radius-md);
+  background:var(--ux-card-bg);
+  color:var(--ux-text-primary);
+  font:inherit;
+  transition:border-color var(--ux-motion-duration-base) var(--ux-motion-ease-standard),
+    box-shadow var(--ux-motion-duration-base) var(--ux-motion-ease-standard),
+    background var(--ux-motion-duration-base) var(--ux-motion-ease-standard);
+}
+
+textarea.ux-control { min-height:var(--ux-textarea-min-height); padding-block:var(--ux-space-3); resize:vertical; }
+.ux-control::placeholder { color:var(--ux-text-muted); }
+.ux-control:hover:not(:disabled) { border-color:var(--ux-border-emphasis); }
+.ux-control:focus { border-color:var(--ux-brand-secondary); box-shadow:var(--ux-shadow-focus); outline:0; }
+.ux-control[aria-invalid="true"] { border-color:var(--ux-error); box-shadow:none; }
+.ux-control:disabled { opacity:.65; cursor:not-allowed; background:var(--ux-page-bg); }
+
+.ux-field-error {
+  color:var(--ux-error);
+  font-size:var(--ux-type-caption-size);
+  line-height:var(--ux-type-caption-line);
+}
+
+.ux-badge {
+  min-height:var(--ux-size-8);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:var(--ux-space-1);
+  padding-inline:var(--ux-space-3);
+  border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);
+  border-radius:var(--ux-radius-full);
+  background:var(--ux-page-bg);
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  font-weight:700;
+}
+
+.ux-badge[data-tone="success"] { background:var(--ux-soft-green); color:var(--ux-success); border-color:var(--ux-success); }
+.ux-badge[data-tone="warning"] { background:var(--ux-soft-orange); color:var(--ux-warning); border-color:var(--ux-warning); }
+.ux-badge[data-tone="error"] { background:var(--ux-soft-red); color:var(--ux-error); border-color:var(--ux-error); }
+.ux-badge[data-tone="info"] { background:var(--ux-brand-sky-soft); color:var(--ux-brand-primary); border-color:var(--ux-brand-secondary); }
+
+.ux-feedback {
+  display:grid;
+  gap:var(--ux-space-2);
+  padding:var(--ux-space-4);
+  border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);
+  border-inline-start-width:var(--ux-border-width-2);
+  border-radius:var(--ux-radius-md);
+  background:var(--ux-card-bg);
+  color:var(--ux-text-primary);
+}
+
+.ux-feedback[data-tone="success"] { border-inline-start-color:var(--ux-success); background:var(--ux-soft-green); }
+.ux-feedback[data-tone="warning"] { border-inline-start-color:var(--ux-warning); background:var(--ux-soft-orange); }
+.ux-feedback[data-tone="error"] { border-inline-start-color:var(--ux-error); background:var(--ux-soft-red); }
+.ux-feedback[data-tone="info"] { border-inline-start-color:var(--ux-brand-secondary); background:var(--ux-brand-sky-soft); }
+
+.ux-table-wrap {
+  width:100%;
+  overflow:auto;
+  border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);
+  border-radius:var(--ux-radius-lg);
+  background:var(--ux-card-bg);
+  box-shadow:var(--ux-shadow-xs);
+}
+
+.ux-table {
+  width:100%;
+  border-collapse:collapse;
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-body-size);
+}
+
+.ux-table th,
+.ux-table td {
+  padding:var(--ux-space-3) var(--ux-space-4);
+  text-align:start;
+  border-block-end:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);
+  vertical-align:middle;
+}
+
+.ux-table th {
+  background:var(--ux-section-soft-blue);
+  color:var(--ux-brand-primary);
+  font-size:var(--ux-type-label-size);
+  font-weight:700;
+  white-space:nowrap;
+}
+
+.ux-table tbody tr:last-child td { border-block-end:0; }
+.ux-table tbody tr:hover td { background:var(--ux-brand-sky-soft); }
+
+.ux-dialog-surface {
+  width:min(calc(100vw - var(--ux-space-8)),640px);
+  max-height:min(86dvh,760px);
+  overflow:auto;
+  padding:0;
+  background:var(--ux-card-bg);
+  color:var(--ux-text-primary);
+  border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);
+  border-radius:var(--ux-radius-xl);
+  box-shadow:var(--ux-shadow-lg);
+}
+
+.ux-dialog-surface::backdrop { background:var(--ux-alpha-overlay); backdrop-filter:blur(6px); }
+.ux-dialog-header { padding:var(--ux-space-5) var(--ux-space-6); border-block-end:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default); }
+.ux-dialog-body { padding:var(--ux-space-6); }
+.ux-dialog-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:var(--ux-space-3); padding:var(--ux-space-4) var(--ux-space-6); border-block-start:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default); }
+
+html[data-theme="dark"] .ux-surface,
+html[data-theme="dark"] .ux-card,
+html[data-theme="dark"] .ux-control,
+html[data-theme="dark"] .ux-table-wrap,
+html[data-theme="dark"] .ux-dialog-surface {
+  background:var(--ux-dark-card-bg);
+  color:var(--ux-dark-text-primary);
+  border-color:var(--ux-dark-border);
+}
+
+html[data-theme="dark"] .ux-field > label,
+html[data-theme="dark"] .ux-table,
+html[data-theme="dark"] .ux-button--secondary,
+html[data-theme="dark"] .ux-button--ghost { color:var(--ux-dark-text-primary); }
+
+html[data-theme="dark"] .ux-field > small { color:var(--ux-dark-text-secondary); }
+html[data-theme="dark"] .ux-button--secondary { background:var(--ux-dark-card-bg); border-color:var(--ux-dark-border); }
+html[data-theme="dark"] .ux-button--secondary:hover:not(:disabled) { background:var(--ux-dark-surface-muted); border-color:var(--ux-brand-secondary); }
+html[data-theme="dark"] .ux-control:disabled { background:var(--ux-dark-surface-muted); }
+html[data-theme="dark"] .ux-table th { background:var(--ux-dark-surface-muted); color:var(--ux-brand-cyan); border-color:var(--ux-dark-border); }
+html[data-theme="dark"] .ux-table td { border-color:var(--ux-dark-border); }
+html[data-theme="dark"] .ux-table tbody tr:hover td { background:var(--ux-dark-surface-muted); }
+html[data-theme="dark"] .ux-dialog-header,
+html[data-theme="dark"] .ux-dialog-actions { border-color:var(--ux-dark-border); }
+
+@media (max-width:767px) {
+  .ux-button { min-height:var(--ux-size-12); }
+  .ux-card { padding:var(--ux-space-4); }
+  .ux-table-wrap { border-radius:var(--ux-radius-md); }
+  .ux-dialog-surface { width:100vw; max-width:none; max-height:calc(100dvh - var(--ux-space-6)); margin:auto 0 0; border-end-start-radius:0; border-end-end-radius:0; }
+  .ux-dialog-header,.ux-dialog-body,.ux-dialog-actions { padding-inline:var(--ux-space-4); }
+  .ux-dialog-actions { display:grid; grid-template-columns:1fr; }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  .ux-card,.ux-button,.ux-control { transition:none; }
+}

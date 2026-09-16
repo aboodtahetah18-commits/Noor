@@ -1,46 +1,46 @@
-/* MUSTAQBALI CR-002 — executable design tokens. Do not define page-specific values here. */
+/* NAMAA — executable design tokens. Approved visual identity source: September 2026 brand reference. */
 :root {
-  --ux-brand-primary:#0B2D5B;
-  --ux-brand-secondary:#0EA5A2;
-  --ux-brand-accent:#22C55E;
-  --ux-success:#16A34A;
-  --ux-warning:#F59E0B;
+  --ux-brand-primary:#023C6E;
+  --ux-brand-secondary:#0CB6E5;
+  --ux-brand-accent:#189F7F;
+  --ux-success:#189F7F;
+  --ux-warning:#FCAA30;
   --ux-error:#EF4444;
   --ux-neutral-800:#334155;
   --ux-neutral-400:#94A3B8;
   --ux-page-bg:#F1F5F9;
   --ux-card-bg:#FFFFFF;
-  --ux-shell-topbar-bg:#E6EDF5;
-  --ux-shell-topbar-border:#D6E0EA;
-  --ux-shell-sidebar-bg:#0B2D5B;
-  --ux-shell-sidebar-hover:#123D72;
-  --ux-shell-sidebar-active:#0EA5A2;
-  --ux-shell-sidebar-active-soft:rgb(14 165 162 / .16);
-  --ux-section-soft-blue:#EAF3FA;
-  --ux-section-soft-teal:#E7F7F5;
-  --ux-border-default:#D9E2EC;
-  --ux-border-emphasis:#B8CBE0;
-  --ux-text-primary:#0B2D5B;
+  --ux-shell-topbar-bg:#EAF4FA;
+  --ux-shell-topbar-border:#D6E4EE;
+  --ux-shell-sidebar-bg:#023C6E;
+  --ux-shell-sidebar-hover:#075181;
+  --ux-shell-sidebar-active:#0CB6E5;
+  --ux-shell-sidebar-active-soft:rgb(12 182 229 / .16);
+  --ux-section-soft-blue:#EAF7FC;
+  --ux-section-soft-teal:#EAF7F3;
+  --ux-border-default:#D9E4EC;
+  --ux-border-emphasis:#B6CBDC;
+  --ux-text-primary:#023C6E;
   --ux-text-secondary:#475569;
   --ux-text-muted:#64748B;
   --ux-text-inverse:#FFFFFF;
-  --ux-soft-green:#EAF8F0;
+  --ux-soft-green:#EAF7F3;
   --ux-soft-red:#FFF0F1;
-  --ux-soft-orange:#FFF3E6;
+  --ux-soft-orange:#FFF6E8;
   --ux-soft-purple:#F3EDFF;
 
-  --ux-dark-page-bg:#08111F;
-  --ux-dark-card-bg:#0D1B2A;
-  --ux-dark-shell-topbar-bg:#0A1726;
-  --ux-dark-shell-sidebar-bg:#07101C;
-  --ux-dark-surface-muted:#12263A;
-  --ux-dark-border:#24364B;
+  --ux-dark-page-bg:#021737;
+  --ux-dark-card-bg:#062744;
+  --ux-dark-shell-topbar-bg:#031D3E;
+  --ux-dark-shell-sidebar-bg:#021737;
+  --ux-dark-surface-muted:#0B3552;
+  --ux-dark-border:#264B66;
   --ux-dark-text-primary:#F8FAFC;
   --ux-dark-text-secondary:#CBD5E1;
-  --ux-dark-soft-teal:#0D2B30;
-  --ux-dark-soft-teal-border:#145A59;
+  --ux-dark-soft-teal:#0B3938;
+  --ux-dark-soft-teal-border:#146E66;
 
-  --ux-font-family-base:var(--font-tajawal),"Tajawal",sans-serif;
+  --ux-font-family-base:var(--font-noto-sans-arabic),"Noto Sans Arabic",sans-serif;
   --ux-type-page-title-size:28px; --ux-type-page-title-line:38px; --ux-type-page-title-weight:700;
   --ux-type-section-title-size:20px; --ux-type-section-title-line:29px; --ux-type-section-title-weight:700;
   --ux-type-card-title-size:16px; --ux-type-card-title-line:23px; --ux-type-card-title-weight:700;
@@ -60,8 +60,8 @@
   --ux-radius-2:var(--ux-radius-xs); --ux-radius-3:var(--ux-radius-md); --ux-radius-4:var(--ux-radius-lg); --ux-radius-6:24px;
 
   --ux-border-width-0:0; --ux-border-width-1:1px; --ux-border-width-2:2px; --ux-border-style-default:solid;
-  --ux-alpha-navy-05:rgb(11 45 91 / .05); --ux-alpha-navy-06:rgb(11 45 91 / .06); --ux-alpha-navy-10:rgb(11 45 91 / .10); --ux-alpha-navy-18:rgb(11 45 91 / .18);
-  --ux-alpha-teal-15:rgb(14 165 162 / .15); --ux-alpha-teal-20:rgb(14 165 162 / .20); --ux-alpha-overlay:rgb(8 17 31 / .40);
+  --ux-alpha-navy-05:rgb(2 60 110 / .05); --ux-alpha-navy-06:rgb(2 60 110 / .06); --ux-alpha-navy-10:rgb(2 60 110 / .10); --ux-alpha-navy-18:rgb(2 60 110 / .18);
+  --ux-alpha-teal-15:rgb(24 159 127 / .15); --ux-alpha-teal-20:rgb(24 159 127 / .20); --ux-alpha-overlay:rgb(2 23 55 / .44);
   --ux-shadow-none:none; --ux-shadow-xs:0 1px 2px var(--ux-alpha-navy-05); --ux-shadow-sm:0 4px 18px var(--ux-alpha-navy-06);
   --ux-shadow-md:0 12px 28px var(--ux-alpha-navy-10); --ux-shadow-lg:0 18px 48px var(--ux-alpha-navy-18); --ux-shadow-focus:0 0 0 4px var(--ux-alpha-teal-15);
 
@@ -85,24 +85,24 @@
   --ux-state-success:var(--ux-success); --ux-state-warning:var(--ux-warning); --ux-state-error:var(--ux-error);
 }
 
-/* Nature-finance identity extensions — approved September 2026 brand symbol. */
+/* Approved Namaa brand extensions. */
 :root {
-  --ux-brand-blue:#1687F8;
-  --ux-brand-cyan:#18D4F5;
-  --ux-brand-teal-bright:#16CDB7;
-  --ux-brand-green-bright:#31D26F;
-  --ux-brand-gold:#FFB21A;
-  --ux-brand-deep:#06152B;
-  --ux-brand-night:#07192E;
-  --ux-brand-night-soft:#0C223A;
-  --ux-brand-sky-soft:#EAF8FF;
-  --ux-brand-mint-soft:#ECFBF6;
-  --ux-alpha-cyan-10:rgb(24 212 245 / .10);
-  --ux-alpha-cyan-16:rgb(24 212 245 / .16);
-  --ux-alpha-cyan-24:rgb(24 212 245 / .24);
-  --ux-alpha-green-14:rgb(49 210 111 / .14);
-  --ux-alpha-gold-14:rgb(255 178 26 / .14);
-  --ux-alpha-night-72:rgb(6 21 43 / .72);
+  --ux-brand-blue:#023C6E;
+  --ux-brand-cyan:#0CB6E5;
+  --ux-brand-teal-bright:#189F7F;
+  --ux-brand-green-bright:#189F7F;
+  --ux-brand-gold:#FCAA30;
+  --ux-brand-deep:#021737;
+  --ux-brand-night:#021737;
+  --ux-brand-night-soft:#07305A;
+  --ux-brand-sky-soft:#EAF7FC;
+  --ux-brand-mint-soft:#EAF7F3;
+  --ux-alpha-cyan-10:rgb(12 182 229 / .10);
+  --ux-alpha-cyan-16:rgb(12 182 229 / .16);
+  --ux-alpha-cyan-24:rgb(12 182 229 / .24);
+  --ux-alpha-green-14:rgb(24 159 127 / .14);
+  --ux-alpha-gold-14:rgb(252 170 48 / .14);
+  --ux-alpha-night-72:rgb(2 23 55 / .72);
   --ux-shadow-brand:0 16px 44px var(--ux-alpha-cyan-16);
   --ux-shadow-brand-strong:0 22px 58px var(--ux-alpha-cyan-24);
   --ux-logo-desktop-width:62px;
