@@ -30,7 +30,7 @@ describe('authorization provisioning policy', () => {
 
   it('caps break glass at 60 minutes and blocks governance mutation powers', () => {
     const base = {
-      actorUserId: 'u1', scope: {}, maxRisk: 'HIGH' as const,
+      actorUserId: 'u1', role: 'BANK_MANAGER' as const, scope: {}, maxRisk: 'HIGH' as const,
       justification: 'حالة تشغيلية حرجة تتطلب وصولاً مؤقتاً موثقاً للتحقق من السجلات.',
       incidentReference: 'INC-42', durationMinutes: 30,
     };
