@@ -17,3 +17,4 @@ export * from './learning/bank-learning-routing';
 export * from './learning/decision-outcome-lifecycle';
 export * from './learning/learning-workflow-plan';
 export * from './learning/backtest-result-governance';
+export * from './learning/post-release-monitoring';
