@@ -10,6 +10,7 @@ import '../design-system/foundations.css';
 import '../design-system/responsive.css';
 import '../design-system/contracts.css';
 import '../design-system/components.css';
+import '../design-system/interaction-components.css';
 import '../design-system/pages.css';
 import '../design-system/ndos-v1.2.acceptance.css';
 import '../design-system/ndos-v1.2.css';
