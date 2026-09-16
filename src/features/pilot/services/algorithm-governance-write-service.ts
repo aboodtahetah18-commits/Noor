@@ -126,3 +126,73 @@ export async function recordAlgorithmChangeDecision(input: {
     return mapGovernanceError(error);
   }
 }
+
+export async function recordAlgorithmRelease(input: {
+  userId: string;
+  proposalId: string;
+  approvalDecisionId: string;
+  artifactText: string;
+}) {
+  try {
+    const id = randomUUID();
+    const rows = await rawSql`
+      insert into public.algorithm_releases (
+        id, user_id, proposal_id, approval_decision_id, target,
+        version, previous_version, artifact_json
+      )
+      select
+        ${id}::uuid,
+        p.user_id,
+        p.id,
+        d.id,
+        p.target,
+        p.candidate_version,
+        p.current_version,
+        ${JSON.stringify({ text: input.artifactText, activationMode: 'GOVERNED_REGISTRY_ONLY' })}::jsonb
+      from public.algorithm_change_proposals p
+      join public.algorithm_change_decisions d
+        on d.id = ${input.approvalDecisionId}::uuid
+       and d.proposal_id = p.id
+       and d.user_id = p.user_id
+      where p.id = ${input.proposalId}::uuid
+        and p.user_id = ${input.userId}::uuid
+      returning id::text, version, previous_version
+    `;
+    const row = rows[0];
+    if (!row?.id) throw new FinancialPlatformError('APPROVED_DECISION_NOT_FOUND', 404);
+    return { releaseId: String(row.id), version: String(row.version), previousVersion: String(row.previous_version) };
+  } catch (error) {
+    return mapGovernanceError(error);
+  }
+}
+
+export async function recordAlgorithmRollback(input: {
+  userId: string;
+  releaseId: string;
+  reason: string;
+}) {
+  try {
+    const id = randomUUID();
+    const rows = await rawSql`
+      insert into public.algorithm_rollbacks (
+        id, user_id, release_id, from_version, to_version, reason
+      )
+      select
+        ${id}::uuid,
+        r.user_id,
+        r.id,
+        r.version,
+        r.previous_version,
+        ${input.reason}
+      from public.algorithm_releases r
+      where r.id = ${input.releaseId}::uuid
+        and r.user_id = ${input.userId}::uuid
+      returning id::text, from_version, to_version
+    `;
+    const row = rows[0];
+    if (!row?.id) throw new FinancialPlatformError('ALGORITHM_RELEASE_NOT_FOUND', 404);
+    return { rollbackId: String(row.id), fromVersion: String(row.from_version), toVersion: String(row.to_version) };
+  } catch (error) {
+    return mapGovernanceError(error);
+  }
+}
