@@ -15,33 +15,37 @@ export default function PilotPage() {
       <section className="ux-card" aria-labelledby="pilot-title">
         <div className="ux-page-header">
           <div>
-            <p className="ux-badge ux-badge--info">Pilot شخصي فعلي</p>
+            <p className="ux-badge ux-badge--info">Pilot شخصي فعلي طويل المدى</p>
             <h1 id="pilot-title">{PILOT_2026.name}</h1>
             <p>
-              فترة التحقق الفعلية من المنصة على بيانات شخصية حقيقية، بدون إطلاق تجاري وبدون تنفيذ مالي تلقائي.
+              اختبار فعلي للمنصة على البيانات المالية الشخصية حتى نهاية 2027، بدون إطلاق تجاري وبدون تنفيذ مالي تلقائي.
             </p>
           </div>
         </div>
 
         <div className="ux-card-grid">
           <article className="ux-card">
-            <h2>الفترة</h2>
+            <h2>فترة التجربة</h2>
             <p>{PILOT_2026.startsAt} — {PILOT_2026.endsAt}</p>
             <strong>{remaining} يومًا متبقيًا تقريبًا</strong>
+          </article>
+          <article className="ux-card">
+            <h2>المراجعة</h2>
+            <p>مراجعة شهرية لكل دورة مالية، ومراجعة أوسع كل ثلاثة أشهر لقياس دقة التوصيات والانحرافات المتكررة.</p>
           </article>
           <article className="ux-card">
             <h2>التنفيذ المالي</h2>
             <p>المستخدم ينفذ خارجيًا، والمنصة لا تعتبر التنفيذ واقعًا قبل VERIFIED_EXECUTION.</p>
           </article>
           <article className="ux-card">
-            <h2>الإطلاق التجاري</h2>
-            <p>موقوف حتى المراجعة الختامية بعد نهاية التجربة في 31 ديسمبر 2026.</p>
+            <h2>التكاليف والإطلاق</h2>
+            <p>لا إطلاق تجاري ولا تكلفة غير ضرورية قبل المراجعة الختامية بعد 31 ديسمبر 2027.</p>
           </article>
         </div>
       </section>
 
       <section className="ux-card" aria-labelledby="objectives-title">
-        <h2 id="objectives-title">ما الذي نختبره؟</h2>
+        <h2 id="objectives-title">ما الذي نختبره حتى نهاية 2027؟</h2>
         <ol>
           {PILOT_2026.objectives.map((item) => <li key={item}>{item}</li>)}
         </ol>
@@ -55,9 +59,9 @@ export default function PilotPage() {
       </section>
 
       <section className="ux-card">
-        <h2>المتابعة الشهرية</h2>
+        <h2>دورة التحقق المستمرة</h2>
         <p>
-          في نهاية كل دورة مالية نراجع الخطة، التنفيذ المؤكد، الانحرافات، التوصيات، وما حدث فعليًا بعدها.
+          في نهاية كل دورة مالية نراجع الخطة، التنفيذ المؤكد، الانحرافات، التوصيات، وما حدث فعليًا بعدها. وفي نهاية كل ربع سنة نراجع الأنماط المتكررة قبل تعديل القواعد أو الأوزان.
         </p>
         <div className="ux-button-row">
           <Link className="ux-button ux-button--primary" href="/cycles/new">بدء دورة مالية</Link>
