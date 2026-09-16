@@ -1,4 +1,4 @@
-import { rawSql } from '@/infrastructure/db/client';
+import { rawSql, type SqlRows } from '@/infrastructure/db/client';
 
 export interface AuthorizationAdminSnapshot {
   requests: Array<Record<string, unknown>>;
@@ -10,7 +10,7 @@ export interface AuthorizationAdminSnapshot {
 }
 
 export async function getAuthorizationAdminSnapshot(): Promise<AuthorizationAdminSnapshot> {
-  const [requests, assignments, grants, delegations, breakGlass, events] = await rawSql.transaction([
+  const result = await rawSql.transaction([
     rawSql`
       select r.id::text, r.change_type, r.status, r.rationale, r.request_key,
              r.requested_at::text, r.expires_at::text, r.approved_at::text, r.applied_at::text,
@@ -78,5 +78,13 @@ export async function getAuthorizationAdminSnapshot(): Promise<AuthorizationAdmi
     `,
   ]);
 
-  return { requests, assignments, grants, delegations, breakGlass, events };
+  const empty: SqlRows = [];
+  return {
+    requests: result[0] ?? empty,
+    assignments: result[1] ?? empty,
+    grants: result[2] ?? empty,
+    delegations: result[3] ?? empty,
+    breakGlass: result[4] ?? empty,
+    events: result[5] ?? empty,
+  };
 }
