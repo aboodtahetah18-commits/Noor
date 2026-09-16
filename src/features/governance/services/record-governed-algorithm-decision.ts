@@ -11,6 +11,12 @@ function enumValue<T extends string>(value: unknown, allowed: Set<T>): T | null 
   return allowed.has(v) ? v : null;
 }
 
+function finiteNumber(value: unknown): number | null {
+  if (value == null || value === '') return null;
+  const n = Number(value);
+  return Number.isFinite(n) ? n : null;
+}
+
 export interface RecordGovernedAlgorithmDecisionInput {
   actorUserId: string;
   proposalId: string;
@@ -53,7 +59,7 @@ export async function recordGovernedAlgorithmDecision(input: RecordGovernedAlgor
       bankKey: row.bank_key == null ? null : String(row.bank_key),
       riskLevel: enumValue(row.risk_level, RISK),
       materialityLevel: enumValue(row.materiality_level, MATERIALITY),
-      amount: row.amount == null ? null : Number(row.amount),
+      amount: finiteNumber(row.amount),
       proposalCreatorUserId: row.proposal_creator_actor_id == null ? null : String(row.proposal_creator_actor_id),
     },
   });
