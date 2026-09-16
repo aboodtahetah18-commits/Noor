@@ -6,6 +6,7 @@ const steps = [
   ['project execution contract','node',['scripts/verify-project-execution-contract.mjs']],
   ['design system contract','node',['scripts/verify-design-system-contract.mjs']],
   ['interaction capabilities contract','node',['scripts/verify-interaction-capabilities-contract.mjs']],
+  ['auth lifecycle contract','node',['scripts/verify-auth-lifecycle-contract.mjs']],
   ['Lucide icon contract','node',['scripts/verify-lucide-icon-contract.mjs']],
   ['UI token compliance','node',['scripts/verify-ui-token-compliance.mjs']],
   ['dependency policy','node',['scripts/verify-dependency-policy.mjs']],
