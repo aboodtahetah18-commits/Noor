@@ -2,13 +2,14 @@
 
 import Image from 'next/image';
 import { useSyncExternalStore } from 'react';
+import { NDOS_V1_2_ASSETS } from '../../design-system/ndos-v1.2-assets';
 
 type LogoSurface = 'light' | 'dark' | 'auto';
 const LIGHT_KEY = 'namaa-logo-light';
 const DARK_KEY = 'namaa-logo-dark';
 const THEME_KEY = 'namaa-theme';
 const EVENT = 'namaa:brand-logo-change';
-const DEFAULT_LOGO = '/brand/ndos/namaa-logo-official.png';
+const DEFAULT_LOGO = NDOS_V1_2_ASSETS.logo;
 
 function subscribe(callback: () => void) {
   const onStorage = (event: StorageEvent) => {
