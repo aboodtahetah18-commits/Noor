@@ -7,6 +7,7 @@ const steps = [
   ['design system contract','node',['scripts/verify-design-system-contract.mjs']],
   ['NDOS v1.2 frozen identity contract','node',['scripts/verify-ndos-frozen-contract.mjs']],
   ['NDOS final visual authority contract','node',['scripts/verify-ndos-authority-contract.mjs']],
+  ['NDOS stage 3 surface contract','node',['scripts/verify-ndos-stage3-surface-contract.mjs']],
   ['approved Namaa brand assets contract','node',['scripts/verify-approved-brand-assets.mjs']],
   ['interaction capabilities contract','node',['scripts/verify-interaction-capabilities-contract.mjs']],
   ['auth lifecycle contract','node',['scripts/verify-auth-lifecycle-contract.mjs']],
