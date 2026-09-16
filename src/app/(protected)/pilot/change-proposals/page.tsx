@@ -3,6 +3,7 @@ import { requireAuthenticatedUser } from '@/auth/require-authenticated-user';
 import { PILOT_2026 } from '@/config/pilot-2026';
 import { getPilotAlgorithmChangeProposals } from '@/features/pilot/queries/get-pilot-change-proposals';
 import { getPersistedAlgorithmGovernance } from '@/features/pilot/queries/get-persisted-algorithm-governance';
+import { GovernanceWritePanel } from './governance-write-panel';
 
 function stageLabel(value: string): string {
   const labels: Record<string, string> = {
@@ -79,6 +80,26 @@ export default async function PilotChangeProposalsPage() {
           </article>
         </div>
       </section>
+
+      {governance.storageReady ? (
+        <GovernanceWritePanel
+          reviewItems={proposals.map((item) => ({
+            reviewItemId: item.reviewItemId,
+            title: item.title,
+            currentVersion: item.currentVersion,
+            stage: item.stage,
+          }))}
+          persisted={governance.rows.map((row) => ({
+            proposalId: row.proposalId,
+            title: row.title,
+            currentVersion: row.currentVersion,
+            candidateVersion: row.candidateVersion,
+            lifecycleStage: row.lifecycleStage,
+            backtestRunId: row.backtestRunId,
+            backtestOutcome: row.backtestOutcome,
+          }))}
+        />
+      ) : null}
 
       <section className="ux-card" aria-labelledby="persisted-governance-title">
         <div className="ux-page-header">
