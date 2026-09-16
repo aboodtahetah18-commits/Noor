@@ -33,18 +33,6 @@ export const algorithmLearningReviews = pgTable('algorithm_learning_reviews', {
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
-export const algorithmBacktestRequests = pgTable('algorithm_backtest_requests', {
-  id: uuid('id').primaryKey(),
-  userId: uuid('user_id').notNull().references(() => profiles.id, { onDelete: 'restrict' }),
-  proposalId: uuid('proposal_id').notNull().references(() => algorithmChangeProposals.id, { onDelete: 'restrict' }),
-  reviewId: uuid('review_id').notNull().references(() => algorithmLearningReviews.id, { onDelete: 'restrict' }),
-  baselineVersion: text('baseline_version').notNull(),
-  candidateVersion: text('candidate_version').notNull(),
-  status: text('status').notNull(),
-  requestJson: jsonb('request_json').notNull(),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-});
-
 export const algorithmBacktestRuns = pgTable('algorithm_backtest_runs', {
   id: uuid('id').primaryKey(),
   userId: uuid('user_id').notNull().references(() => profiles.id, { onDelete: 'restrict' }),
@@ -58,6 +46,20 @@ export const algorithmBacktestRuns = pgTable('algorithm_backtest_runs', {
   evidenceJson: jsonb('evidence_json').notNull(),
   notes: text('notes'),
   completedAt: timestamp('completed_at', { withTimezone: true }).notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const algorithmBacktestRequests = pgTable('algorithm_backtest_requests', {
+  id: uuid('id').primaryKey(),
+  userId: uuid('user_id').notNull().references(() => profiles.id, { onDelete: 'restrict' }),
+  proposalId: uuid('proposal_id').notNull().references(() => algorithmChangeProposals.id, { onDelete: 'restrict' }),
+  reviewId: uuid('review_id').notNull().references(() => algorithmLearningReviews.id, { onDelete: 'restrict' }),
+  baselineVersion: text('baseline_version').notNull(),
+  candidateVersion: text('candidate_version').notNull(),
+  status: text('status').notNull(),
+  requestJson: jsonb('request_json').notNull(),
+  backtestRunId: uuid('backtest_run_id').references(() => algorithmBacktestRuns.id, { onDelete: 'restrict' }),
+  completedAt: timestamp('completed_at', { withTimezone: true }),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
