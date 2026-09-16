@@ -57,6 +57,13 @@ export function validateIndependentApproval(requestedBy: string, approvedBy: str
   if (requestedBy === approvedBy) throw new Error('PROVISIONING_INDEPENDENT_APPROVAL_REQUIRED');
 }
 
+export function validateProvisioningActorSeparation(requestedBy: string, approvedBy: string, appliedBy: string): void {
+  validateIndependentApproval(requestedBy, approvedBy);
+  if (!appliedBy) throw new Error('PROVISIONING_APPLIER_REQUIRED');
+  if (appliedBy === requestedBy) throw new Error('PROVISIONING_APPLIER_MUST_DIFFER_FROM_REQUESTER');
+  if (appliedBy === approvedBy) throw new Error('PROVISIONING_APPLIER_MUST_DIFFER_FROM_APPROVER');
+}
+
 export function validateGrantScope(input: GrantScopeInput): void {
   if (!input.role || !input.action || !input.objectType) throw new Error('GRANT_CORE_SCOPE_REQUIRED');
   if (input.maxAmount != null && (!Number.isFinite(input.maxAmount) || input.maxAmount < 0)) throw new Error('GRANT_MAX_AMOUNT_INVALID');
