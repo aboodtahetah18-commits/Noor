@@ -87,9 +87,28 @@ textarea {
   padding-block: 0 !important;
 }
 
+/* Frozen Namaa brand mark — transparent asset only; never render as a white card. */
+.namaa-brand-logo {
+  display: block;
+  width: clamp(96px, 8vw, 128px);
+  max-width: 128px;
+  height: auto;
+  aspect-ratio: 2 / 1;
+  object-fit: contain;
+  object-position: center;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  flex: none;
+  user-select: none;
+}
+
 @media (max-width:767px) {
   .ndos-form-grid { grid-template-columns: minmax(0,1fr); gap: var(--ux-space-3); }
   .ndos-actions { gap: var(--ux-space-2); }
   .ndos-actions > :where(button,[role="button"],a[class*="button"]) { flex: 0 1 auto; }
   .ndos-actions > [data-block-mobile="true"] { flex-basis: 100%; width: 100%; }
+  .namaa-brand-logo { width: 96px; max-width: 96px; }
 }

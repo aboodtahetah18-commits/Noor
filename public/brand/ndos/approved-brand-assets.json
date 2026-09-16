@@ -1,0 +1,26 @@
+{
+  "identity": "Namaa",
+  "identity_status": "FROZEN",
+  "approval_date": "2026-09-16",
+  "source_policy": "Use only approved transparent logo sources; no regeneration, recoloring, white card, screenshot, or marketing tagline inside the mark.",
+  "assets": {
+    "light": {
+      "runtime_path": "/brand/ndos/namaa-logo-color-transparent.png",
+      "runtime_dimensions": "128x64",
+      "runtime_sha256": "d2c95a814f67a8d44b6298e652b7f4af3cf28d1cc1bbe414be5fd0639d3d4695",
+      "source_filename": "namaa-logo-color-transparent.png",
+      "source_drive_file_id": "15nFpgc8isH1NC-OxtkIVHmUng8JaKV9F",
+      "source_dimensions": "1774x887",
+      "source_sha256": "0c2ac9ffc037962f810d08361aa3962c5563e7c618c6a0ca0824519f3040b58e"
+    },
+    "dark": {
+      "runtime_path": "/brand/ndos/namaa-logo-white-transparent.png",
+      "runtime_dimensions": "128x64",
+      "runtime_sha256": "9b73466b55b1ee4deefeda740616ce346445f3c6ffdf95c4a0a70053a7f31fe5",
+      "source_filename": "namaa-logo-white-transparent.png",
+      "source_drive_file_id": "1PFt82JzPsbg7NWKmh70foP5-kjv3IF6a",
+      "source_dimensions": "1774x887",
+      "source_sha256": "390898f1f125b894504316df42541b7781bf072365bdf137244b3f0ebf94f530"
+    }
+  }
+}

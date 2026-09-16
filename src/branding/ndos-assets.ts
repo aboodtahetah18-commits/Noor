@@ -1,8 +1,8 @@
-/** Approved Namaa Design Operating System v1.1 assets imported from the project Google Drive identity reference. */
+/** Approved Namaa Design Operating System v1.2 assets from the frozen project identity reference. */
 export const ndosAssets = {
   brand: {
-    officialLogo: '/brand/ndos/namaa-logo-official.png',
-    officialLockup: '/brand/ndos/namaa-logo-official-lockup.png',
+    colorTransparentLogo: '/brand/ndos/namaa-logo-color-transparent.png',
+    whiteTransparentLogo: '/brand/ndos/namaa-logo-white-transparent.png',
   },
   banks: {
     central: '/brand/ndos/banks/namaa-central-bank.jpg',
@@ -12,6 +12,6 @@ export const ndosAssets = {
   },
   personas: '/brand/ndos/personas/namaa-algorithmic-personas.jpg',
   iconsSprite: '/brand/ndos/icons/namaa-icons-sprite.svg',
-  version: 'NDOS v1.1',
+  version: 'NDOS v1.2 FINAL',
   approvedAt: '2026-09-15',
 } as const;

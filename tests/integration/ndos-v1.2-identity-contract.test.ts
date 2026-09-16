@@ -28,8 +28,12 @@ describe('NDOS v1.2 FINAL identity contract', () => {
     expect(meta.light_first).toBe(true);
   });
 
-  it('uses the official NDOS logo asset without redraw or alternate mark', () => {
-    expect(brandLogo).toContain("'/brand/ndos/namaa-logo-official.png'");
+  it('uses only the approved transparent NDOS logo pair without redraw or alternate mark', () => {
+    expect(brandLogo).toContain("'/brand/ndos/namaa-logo-color-transparent.png'");
+    expect(brandLogo).toContain("'/brand/ndos/namaa-logo-white-transparent.png'");
+    expect(brandLogo).toContain('width={128}');
+    expect(brandLogo).toContain('height={64}');
+    expect(brandLogo).not.toContain('namaa-logo-official.png');
     expect(brandLogo).not.toContain('mustaqbali-logo');
   });
 });
