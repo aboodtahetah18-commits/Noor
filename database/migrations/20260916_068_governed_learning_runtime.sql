@@ -47,30 +47,29 @@ create table if not exists public.algorithm_release_monitoring (
   user_id uuid not null references public.profiles(id) on delete restrict,
   release_id uuid not null references public.algorithm_releases(id) on delete restrict,
   metric_key text not null,
-  observed_value double precision not null,
-  expected_value double precision not null,
-  normalized_residual double precision not null,
-  previous_drift_score double precision not null,
-  drift_score double precision not null,
+  previous_drift_score text not null,
+  normalized_residual text not null,
+  drift_score text not null,
   severity text not null check (severity in ('NORMAL','EARLY_WARNING','REVIEW_REQUIRED','ROLLBACK_REVIEW_CANDIDATE')),
-  recommended_action text not null,
+  action text not null check (action in ('NONE','EARLY_WARNING','OPEN_REVIEW','PROPOSE_ROLLBACK_REVIEW')),
   evidence_json jsonb not null,
-  observed_at timestamptz not null default now()
+  observed_at timestamptz not null,
+  created_at timestamptz not null default now()
 );
 
 create table if not exists public.algorithm_rollback_reviews (
   id uuid primary key,
   user_id uuid not null references public.profiles(id) on delete restrict,
   release_id uuid not null references public.algorithm_releases(id) on delete restrict,
-  monitoring_observation_id uuid not null references public.algorithm_release_monitoring(id) on delete restrict,
+  monitoring_id uuid not null references public.algorithm_release_monitoring(id) on delete restrict,
   from_version text not null,
   proposed_to_version text not null,
   status text not null check (status in ('PENDING_REVIEW','APPROVED','REJECTED')),
-  rationale text,
+  rationale text not null,
   review_json jsonb not null,
   decided_at timestamptz,
   created_at timestamptz not null default now(),
-  unique (monitoring_observation_id),
+  unique (monitoring_id),
   check ((status = 'PENDING_REVIEW' and decided_at is null) or (status in ('APPROVED','REJECTED') and decided_at is not null))
 );
 
