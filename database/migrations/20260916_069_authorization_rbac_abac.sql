@@ -82,6 +82,18 @@ create table if not exists public.authorization_events (
   created_at timestamptz not null default now()
 );
 
+-- Distinguish the financial-data owner from the human/service governance actor.
+alter table public.algorithm_change_proposals
+  add column if not exists created_by_actor_user_id uuid references public.profiles(id) on delete restrict;
+alter table public.algorithm_change_decisions
+  add column if not exists decided_by_actor_user_id uuid references public.profiles(id) on delete restrict;
+alter table public.algorithm_releases
+  add column if not exists created_by_actor_user_id uuid references public.profiles(id) on delete restrict;
+alter table public.algorithm_rollback_reviews
+  add column if not exists decided_by_actor_user_id uuid references public.profiles(id) on delete restrict;
+alter table public.algorithm_rollbacks
+  add column if not exists created_by_actor_user_id uuid references public.profiles(id) on delete restrict;
+
 create index if not exists authorization_role_assignments_user_idx
   on public.authorization_role_assignments(user_id, status, starts_at, ends_at);
 create index if not exists authorization_grants_lookup_idx
