@@ -23,8 +23,32 @@ for (const key of ['CRON_SECRET','JOB_SECRET']) {
   if (!value && env === 'production') warnings.push(`${key} is not configured`);
 }
 
-const explicitOrigin=process.env.APP_BASE_URL?.trim() || process.env.BETTER_AUTH_URL?.trim();
-if (env === 'production' && !explicitOrigin) warnings.push('Set APP_BASE_URL and BETTER_AUTH_URL to the final production https:// domain after the first Vercel deployment.');
+const appBaseUrl=process.env.APP_BASE_URL?.trim();
+const betterAuthUrl=process.env.BETTER_AUTH_URL?.trim();
+if (env === 'production') {
+  if (!appBaseUrl) {
+    errors.push('APP_BASE_URL is required in production so email verification and password reset links use the canonical origin');
+  } else {
+    try {
+      const url=new URL(appBaseUrl);
+      if (url.protocol !== 'https:') errors.push('APP_BASE_URL must use https in production');
+      if (!url.hostname || ['localhost','127.0.0.1'].includes(url.hostname)) errors.push('APP_BASE_URL must use the public production hostname');
+    } catch { errors.push('APP_BASE_URL is not a valid URL'); }
+  }
+
+  if (betterAuthUrl) {
+    try {
+      const url=new URL(betterAuthUrl);
+      if (url.protocol !== 'https:') errors.push('BETTER_AUTH_URL must use https in production');
+    } catch { errors.push('BETTER_AUTH_URL is not a valid URL'); }
+  }
+
+  const resendApiKey=process.env.RESEND_API_KEY?.trim();
+  const authEmailFrom=process.env.AUTH_EMAIL_FROM?.trim();
+  if (!resendApiKey) errors.push('RESEND_API_KEY is required in production for account verification and password recovery');
+  if (!authEmailFrom) errors.push('AUTH_EMAIL_FROM is required in production for account verification and password recovery');
+  else if (!authEmailFrom.includes('@')) errors.push('AUTH_EMAIL_FROM must contain a valid sender email address');
+}
 
 if (errors.length) {
   console.error('VERCEL-PREFLIGHT-FAIL');
