@@ -26,6 +26,7 @@ const sections = [
       { href: '/reports', label: 'التقارير', icon: 'chart' },
       { href: '/advisor', label: 'المستشار الذكي', icon: 'sparkles' },
       { href: '/alerts', label: 'التنبيهات', icon: 'bell' },
+      { href: '/pilot', label: 'تجربة 2026', icon: 'listChecks' },
     ],
   },
 ] satisfies Array<{label:string;items:Array<{href:string;label:string;icon:LucideIconName}>}>;
