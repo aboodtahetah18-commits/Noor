@@ -3,18 +3,33 @@ import process from 'node:process';
 const errors=[];
 const warnings=[];
 const env=process.env.VERCEL_ENV || process.env.APP_ENV || 'development';
+const onVercel=process.env.VERCEL === '1';
+const deployedRuntime=onVercel && ['production','preview'].includes(env);
 const databaseUrl=process.env.DATABASE_URL?.trim() || process.env.DATABASEURL?.trim();
+const betterAuthSecret=process.env.BETTER_AUTH_SECRET?.trim();
+const buildOnlySecret='namaa-build-only-secret-not-for-runtime-20260916';
 
-if (process.env.VERCEL === '1' && !['production','preview','development'].includes(env)) {
+if (onVercel && !['production','preview','development'].includes(env)) {
   errors.push(`Unexpected Vercel environment: ${env}`);
 }
-if (!databaseUrl) errors.push('DATABASE_URL is required for Vercel builds');
+if (!databaseUrl) errors.push('DATABASE_URL is required for Vercel builds and runtime');
 else {
   try {
     const url=new URL(databaseUrl);
     if (!['postgres:','postgresql:'].includes(url.protocol)) errors.push('DATABASE_URL must be PostgreSQL');
     if (!url.hostname) errors.push('DATABASE_URL must contain a host');
+    if (deployedRuntime && ['localhost','127.0.0.1'].includes(url.hostname)) errors.push('DATABASE_URL must not target localhost for Vercel Preview/Production');
   } catch { errors.push('DATABASE_URL is not a valid URL'); }
+}
+
+if (deployedRuntime) {
+  if (!betterAuthSecret) errors.push('BETTER_AUTH_SECRET is required for Vercel Preview/Production runtime');
+  else {
+    if (betterAuthSecret.length < 32) errors.push('BETTER_AUTH_SECRET must contain at least 32 characters');
+    if (betterAuthSecret === buildOnlySecret || betterAuthSecret.includes('build-only')) {
+      errors.push('BETTER_AUTH_SECRET must be a real deployment secret, not the build-only placeholder');
+    }
+  }
 }
 
 for (const key of ['CRON_SECRET','JOB_SECRET']) {
@@ -44,6 +59,7 @@ if (env === 'production') {
     try {
       const url=new URL(betterAuthUrl);
       if (url.protocol !== 'https:') errors.push('BETTER_AUTH_URL must use https in production');
+      if (!url.hostname || ['localhost','127.0.0.1'].includes(url.hostname)) errors.push('BETTER_AUTH_URL must use a public hostname in production');
     } catch { errors.push('BETTER_AUTH_URL is not a valid URL'); }
   }
 
