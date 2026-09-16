@@ -9,6 +9,8 @@ on:
       - '.github/workflows/namaa-final-ui-p0.4.30.yml'
       - 'scripts/materialize-namaa-final-ui.sh'
       - 'scripts/patch-namaa-final-ui-compat.mjs'
+      - 'scripts/preserve-noor-financial-backend.sh'
+      - 'package.json'
       - 'vercel.json'
 
 jobs:
@@ -22,11 +24,13 @@ jobs:
           node-version: '24.20.0'
       - name: Materialize exact sanitized artifact
         run: bash scripts/materialize-namaa-final-ui.sh
-      - name: Apply type-only compatibility patch
+      - name: Apply compatibility patch
         run: node scripts/patch-namaa-final-ui-compat.mjs
-      - name: Install exact UI dependencies
+      - name: Preserve governed Noor financial backend
+        run: bash scripts/preserve-noor-financial-backend.sh
+      - name: Install runtime dependencies
         working-directory: apps/namaa-final-ui
-        run: npm install --legacy-peer-deps --no-audit --no-fund
+        run: npm install --legacy-peer-deps --no-audit --no-fund && npm install --no-save --legacy-peer-deps --no-audit --no-fund drizzle-orm@0.44.5
       - name: Typecheck
         working-directory: apps/namaa-final-ui
         run: npm run typecheck
