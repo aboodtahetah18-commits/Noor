@@ -12,3 +12,4 @@ export * from './financial-health';
 export * from './goal-allocation-policy';
 export * from './emergency-coverage';
 export * from './learning/governed-learning';
+export * from './learning/governed-learning-governance';
