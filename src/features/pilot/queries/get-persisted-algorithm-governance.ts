@@ -11,9 +11,12 @@ export type PersistedAlgorithmGovernanceRow = {
   backtestRunId: string | null;
   backtestOutcome: string | null;
   backtestCompletedAt: string | null;
+  decisionId: string | null;
   decision: string | null;
   decidedAt: string | null;
+  releaseId: string | null;
   releasedVersion: string | null;
+  previousVersion: string | null;
   releasedAt: string | null;
   rollbackToVersion: string | null;
   rolledBackAt: string | null;
@@ -47,9 +50,12 @@ export async function getPersistedAlgorithmGovernance(userId: string): Promise<P
       b.id::text as backtest_run_id,
       b.outcome as backtest_outcome,
       b.completed_at::text as backtest_completed_at,
+      d.id::text as decision_id,
       d.decision,
       d.decided_at::text as decided_at,
+      r.id::text as release_id,
       r.version as released_version,
+      r.previous_version,
       r.released_at::text as released_at,
       rb.to_version as rollback_to_version,
       rb.created_at::text as rolled_back_at
@@ -62,14 +68,14 @@ export async function getPersistedAlgorithmGovernance(userId: string): Promise<P
       limit 1
     ) b on true
     left join lateral (
-      select decision, decided_at
+      select id, decision, decided_at
       from public.algorithm_change_decisions
       where proposal_id = p.id and user_id = p.user_id
       order by decided_at desc
       limit 1
     ) d on true
     left join lateral (
-      select id, version, released_at
+      select id, version, previous_version, released_at
       from public.algorithm_releases
       where proposal_id = p.id and user_id = p.user_id
       order by released_at desc
@@ -123,9 +129,12 @@ export async function getPersistedAlgorithmGovernance(userId: string): Promise<P
         backtestRunId: text(row.backtest_run_id),
         backtestOutcome: text(row.backtest_outcome),
         backtestCompletedAt,
+        decisionId: text(row.decision_id),
         decision: text(row.decision),
         decidedAt,
+        releaseId: text(row.release_id),
         releasedVersion: text(row.released_version),
+        previousVersion: text(row.previous_version),
         releasedAt,
         rollbackToVersion: text(row.rollback_to_version),
         rolledBackAt,
