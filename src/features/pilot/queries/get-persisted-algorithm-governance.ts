@@ -8,6 +8,7 @@ export type PersistedAlgorithmGovernanceRow = {
   currentVersion: string;
   candidateVersion: string;
   createdAt: string;
+  backtestRunId: string | null;
   backtestOutcome: string | null;
   backtestCompletedAt: string | null;
   decision: string | null;
@@ -43,6 +44,7 @@ export async function getPersistedAlgorithmGovernance(userId: string): Promise<P
       p.current_version,
       p.candidate_version,
       p.created_at::text as created_at,
+      b.id::text as backtest_run_id,
       b.outcome as backtest_outcome,
       b.completed_at::text as backtest_completed_at,
       d.decision,
@@ -53,7 +55,7 @@ export async function getPersistedAlgorithmGovernance(userId: string): Promise<P
       rb.created_at::text as rolled_back_at
     from public.algorithm_change_proposals p
     left join lateral (
-      select outcome, completed_at
+      select id, outcome, completed_at, created_at
       from public.algorithm_backtest_runs
       where proposal_id = p.id and user_id = p.user_id
       order by completed_at desc, created_at desc
@@ -118,6 +120,7 @@ export async function getPersistedAlgorithmGovernance(userId: string): Promise<P
         currentVersion,
         candidateVersion,
         createdAt,
+        backtestRunId: text(row.backtest_run_id),
         backtestOutcome: text(row.backtest_outcome),
         backtestCompletedAt,
         decision: text(row.decision),
