@@ -14,6 +14,7 @@ export const algorithmChangeProposals = pgTable('algorithm_change_proposals', {
   specJson: jsonb('spec_json').notNull(),
   acceptanceCriteriaJson: jsonb('acceptance_criteria_json').notNull(),
   rollbackPlanJson: jsonb('rollback_plan_json').notNull(),
+  createdByActorUserId: uuid('created_by_actor_user_id').references(() => profiles.id, { onDelete: 'restrict' }),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -70,6 +71,7 @@ export const algorithmChangeDecisions = pgTable('algorithm_change_decisions', {
   backtestRunId: uuid('backtest_run_id').references(() => algorithmBacktestRuns.id, { onDelete: 'restrict' }),
   decision: text('decision').notNull(),
   rationale: text('rationale').notNull(),
+  decidedByActorUserId: uuid('decided_by_actor_user_id').references(() => profiles.id, { onDelete: 'restrict' }),
   decidedAt: timestamp('decided_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -82,6 +84,7 @@ export const algorithmReleases = pgTable('algorithm_releases', {
   version: text('version').notNull(),
   previousVersion: text('previous_version').notNull(),
   artifactJson: jsonb('artifact_json').notNull(),
+  createdByActorUserId: uuid('created_by_actor_user_id').references(() => profiles.id, { onDelete: 'restrict' }),
   releasedAt: timestamp('released_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -110,6 +113,7 @@ export const algorithmRollbackReviews = pgTable('algorithm_rollback_reviews', {
   status: text('status').notNull(),
   rationale: text('rationale').notNull(),
   reviewJson: jsonb('review_json').notNull(),
+  decidedByActorUserId: uuid('decided_by_actor_user_id').references(() => profiles.id, { onDelete: 'restrict' }),
   decidedAt: timestamp('decided_at', { withTimezone: true }),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
@@ -121,6 +125,7 @@ export const algorithmRollbacks = pgTable('algorithm_rollbacks', {
   fromVersion: text('from_version').notNull(),
   toVersion: text('to_version').notNull(),
   reason: text('reason').notNull(),
+  createdByActorUserId: uuid('created_by_actor_user_id').references(() => profiles.id, { onDelete: 'restrict' }),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
