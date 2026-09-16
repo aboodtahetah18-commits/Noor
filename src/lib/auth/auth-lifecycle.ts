@@ -71,7 +71,10 @@ export async function beginRegistration(input: { name: string; email: string }) 
   }
 
   const existing = await rawSql`
-    select id, email_verified from auth."user" where lower(email) = ${email} limit 1
+    select id, email_verified, identity_type
+    from auth."user"
+    where lower(email) = ${email}
+    limit 1
   `;
   const existingUser = existing[0];
   if (existingUser?.email_verified === true) {
@@ -84,9 +87,16 @@ export async function beginRegistration(input: { name: string; email: string }) 
       where id = ${String(existingUser.id)}::uuid and email_verified = false
     `;
   } else {
+    const owners = await rawSql`
+      select id from auth."user"
+      where identity_type = 'FINANCIAL_OWNER'
+      limit 1
+    `;
+    if (owners.length) return { ok: false as const, code: 'AUTH_OWNER_EXISTS' as const };
+
     await rawSql`
-      insert into auth."user" (id, name, email, email_verified, image, created_at, updated_at)
-      values (${randomUUID()}::uuid, ${name}, ${email}, false, null, now(), now())
+      insert into auth."user" (id, name, email, email_verified, image, identity_type, created_at, updated_at)
+      values (${randomUUID()}::uuid, ${name}, ${email}, false, null, 'FINANCIAL_OWNER', now(), now())
     `;
   }
 
