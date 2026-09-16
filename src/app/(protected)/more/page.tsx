@@ -1,13 +1,12 @@
 import Link from 'next/link';
 import { LucideIcon, type LucideIconName } from '@/components/ui/lucide-icon';
+import { requireAuthenticatedUser } from '@/auth/require-authenticated-user';
+import { authorizationRepository } from '@/repositories/authorization-repository';
 
-const groups: Array<{
-  id:string;
-  title:string;
-  hint:string;
-  icon:LucideIconName;
-  items:Array<[string,string,string,LucideIconName]>;
-}> = [
+type NavItem=[string,string,string,LucideIconName];
+type NavGroup={id:string;title:string;hint:string;icon:LucideIconName;items:NavItem[]};
+
+const baseGroups:NavGroup[] = [
   { id:'money', title:'إدارة المال', hint:'الحسابات والالتزامات والأهداف والحماية', icon:'walletCards', items:[
     ['/accounts','الحسابات','البنوك والحسابات النقدية والتوفير','landmark'],
     ['/obligations','الالتزامات','المستحقة والقادمة والمتأخرة','creditCard'],
@@ -30,7 +29,18 @@ const groups: Array<{
   ]},
 ];
 
-export default function MorePage(){
+export default async function MorePage(){
+  const user=await requireAuthenticatedUser();
+  const authorizationAdmin=await authorizationRepository.authorize({
+    actorUserId:user.id,
+    action:'ADMINISTER',
+    resource:{objectType:'AUDIT_EVENT',objectId:'authorization-admin-navigation'},
+  });
+
+  const groups=baseGroups.map((group)=>group.id==='admin' && authorizationAdmin.decision==='ALLOW'
+    ? {...group,items:[...group.items,['/governance/authorization','إدارة الصلاحيات','الأدوار والـGrants والتفويضات وBreak Glass','lockKeyhole'] as NavItem]}
+    : group);
+
   return <main className="app-page more-hub-page p47-shell p47-closure-page" data-p47-shell="true" dir="rtl">
     <div className="page-shell more-hub-shell">
       <header className="page-header more-hub-header">
