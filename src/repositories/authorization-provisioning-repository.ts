@@ -91,14 +91,22 @@ export class AuthorizationProvisioningRepository {
   async rejectRequest(requestId: string, rejectedBy: string, reason: string): Promise<void> {
     const rationale = reason.trim();
     if (rationale.length < 20) throw new Error('PROVISIONING_REJECTION_REASON_REQUIRED');
-    const rows = await rawSql`
+    const current = await rawSql`
+      select requested_by::text, status
+      from public.authorization_provisioning_requests
+      where id=${requestId}::uuid
+    `;
+    const row = current[0];
+    if (!row) throw new Error('PROVISIONING_REQUEST_NOT_FOUND');
+    if (String(row.status) !== 'PENDING') throw new Error('PROVISIONING_REQUEST_NOT_PENDING');
+    if (String(row.requested_by) === rejectedBy) throw new Error('PROVISIONING_INDEPENDENT_REJECTION_REQUIRED');
+    const updated = await rawSql`
       update public.authorization_provisioning_requests
       set status='REJECTED', rejection_reason=${rationale}
       where id=${requestId}::uuid and status='PENDING'
-      returning requested_by::text
+      returning id::text
     `;
-    if (!rows[0]) throw new Error('PROVISIONING_REQUEST_NOT_PENDING');
-    if (String(rows[0].requested_by) === rejectedBy) throw new Error('PROVISIONING_INDEPENDENT_REJECTION_REQUIRED');
+    if (!updated[0]) throw new Error('PROVISIONING_REQUEST_NOT_PENDING');
     await this.appendEvent(rejectedBy, 'PROVISIONING_REJECTED', requestId, null, null, null, rationale, {});
   }
 
