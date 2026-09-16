@@ -38,6 +38,7 @@ export interface DelegationProvisioningInput {
 
 export interface BreakGlassProvisioningInput {
   actorUserId: string;
+  role: GovernanceRole;
   permissions: Array<{ action: GovernanceAction; objectType: GovernanceObjectType }>;
   scope: { bankKey?: string | null; committeeId?: string | null; caseType?: string | null; maxMateriality?: MaterialityLevel | null; policyVersion?: string };
   maxAmount?: number | null;
@@ -73,7 +74,7 @@ export function validateDelegation(input: DelegationProvisioningInput): void {
 }
 
 export function validateBreakGlass(input: BreakGlassProvisioningInput): void {
-  if (!input.actorUserId) throw new Error('BREAK_GLASS_ACTOR_REQUIRED');
+  if (!input.actorUserId || !input.role) throw new Error('BREAK_GLASS_ACTOR_ROLE_REQUIRED');
   if (input.permissions.length === 0) throw new Error('BREAK_GLASS_PERMISSION_REQUIRED');
   if (!Number.isInteger(input.durationMinutes) || input.durationMinutes < 1 || input.durationMinutes > 60) {
     throw new Error('BREAK_GLASS_DURATION_OUT_OF_RANGE');
