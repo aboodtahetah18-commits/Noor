@@ -11,6 +11,7 @@ export class RollbackReviewRepository {
       update public.algorithm_rollback_reviews rr
       set status=${decision},
           rationale=${reason},
+          decided_at=now(),
           review_json=coalesce(rr.review_json,'{}'::jsonb) || ${JSON.stringify({ decision, decisionRationale: reason })}::jsonb
       from public.algorithm_releases r
       where rr.id=${reviewId}::uuid
