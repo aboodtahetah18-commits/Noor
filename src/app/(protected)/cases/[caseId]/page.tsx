@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requireAuthenticatedUser } from '@/auth/require-authenticated-user';
 import { getGovernanceCaseContract } from '@/repositories/governance-case-repository';
+import { getGovernanceOperationsSnapshot } from '@/repositories/governance-operations-repository';
 
 const STATUS_LABEL: Record<string, string> = {
   DRAFT: 'مسودة', DATA_COLLECTION: 'جمع البيانات', ANALYSIS_IN_PROGRESS: 'قيد التحليل', READINESS_CHECK: 'فحص الجاهزية',
@@ -23,17 +24,28 @@ const ACTION_LABEL: Record<string, string> = {
 
 const OWNER_LABEL: Record<string, string> = { USER: 'أنت', SYSTEM: 'النظام', GOVERNANCE: 'الحوكمة', BANK_ENGINE: 'المحرك المختص' };
 
+const GOVERNANCE_LABEL: Record<string, string> = {
+  PENDING: 'بانتظار البدء', RUNNING: 'قيد التنفيذ', COMPLETED: 'مكتمل', FAILED: 'فشل', CANCELLED: 'ملغي',
+  PASSED: 'اجتاز الاختبار', INCONCLUSIVE: 'غير حاسم', INVALID: 'غير صالح',
+  APPROVED: 'معتمد', REJECTED: 'مرفوض', CHANGES_REQUESTED: 'مطلوب تعديل', PENDING_REVIEW: 'بانتظار المراجعة',
+  NORMAL: 'طبيعي', EARLY_WARNING: 'إنذار مبكر', REVIEW_REQUIRED: 'تحتاج مراجعة', ROLLBACK_REVIEW_CANDIDATE: 'مرشح لمراجعة التراجع',
+};
+
 function display(value: string | null): string { return value ?? '—'; }
+function governanceLabel(value: string | null | undefined): string { return value ? (GOVERNANCE_LABEL[value] ?? value) : 'لم تبدأ'; }
 
 export default async function CaseDetailPage({ params }: { params: Promise<{ caseId: string }> }) {
   const user = await requireAuthenticatedUser();
   const { caseId } = await params;
   const item = await getGovernanceCaseContract(user.id, caseId).catch(() => null);
   if (!item) notFound();
+  const governance = await getGovernanceOperationsSnapshot(user.id, caseId);
 
   const nextAction = item.currentStatus === 'CLOSED'
     ? 'اكتملت دورة القضية'
     : item.nextActionCode ? (ACTION_LABEL[item.nextActionCode] ?? item.nextActionCode) : 'لا يوجد إجراء مطلوب الآن';
+
+  const learningChainStarted = governance.learningReview != null;
 
   return (
     <main className="app-page p47-decision-page" dir="rtl">
@@ -77,6 +89,80 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ cas
             <span>التسوية <b>{display(item.settlementStatus)}</b></span>
             <span>التعلم <b>{display(item.learningReviewStatus)}</b></span>
           </div>
+        </section>
+
+        <section className="p47-analysis-card">
+          <div className="p47-section-heading">
+            <div><span>Governed Learning</span><h2>مسار التعلم والإصدار المحكوم</h2></div>
+            <small>{learningChainStarted ? 'مرتبط بهذه القضية' : 'لم يبدأ بعد'}</small>
+          </div>
+          {!learningChainStarted ? (
+            <div className="p47-empty-state">
+              <strong>لا توجد دورة تعلم حوكمي لهذه القضية حتى الآن</strong>
+              <span>لن تبدأ هذه الدورة قبل اكتمال التنفيذ الخارجي وإثباته والمراقبة وتقييم النتيجة والتسوية ومراجعة التعلم.</span>
+            </div>
+          ) : (
+            <>
+              <div className="p74-inline-metrics">
+                <span>Learning Review <b>{governanceLabel(governance.learningReview?.status)}</b></span>
+                <span>Change Proposal <b>{governance.proposal ? 'منشأ' : 'غير مطلوب/لم ينشأ'}</b></span>
+                <span>Backtest <b>{governanceLabel(governance.backtest?.outcome ?? governance.backtest?.requestStatus)}</b></span>
+                <span>الاعتماد <b>{governanceLabel(governance.approval?.decision)}</b></span>
+                <span>Release <b>{governance.release ? governance.release.version : 'لم يصدر'}</b></span>
+                <span>Monitoring <b>{governanceLabel(governance.monitoring?.severity)}</b></span>
+                <span>Rollback Review <b>{governanceLabel(governance.rollbackReview?.status)}</b></span>
+              </div>
+
+              {governance.learningReview ? (
+                <details className="decision-details">
+                  <summary>تفاصيل مراجعة التعلم</summary>
+                  <div className="p74-inline-metrics">
+                    <span>البنك/النطاق <b>{governance.learningReview.bankKey}</b></span>
+                    <span>نطاق التعلم <b>{governance.learningReview.scope}</b></span>
+                    <span>الإجراء <b>{governance.learningReview.action}</b></span>
+                    <span>سبب الانحراف <b>{governance.learningReview.cause}</b></span>
+                  </div>
+                </details>
+              ) : null}
+
+              {governance.proposal ? (
+                <details className="decision-details">
+                  <summary>تفاصيل المقترح والإصدارات</summary>
+                  <div className="p74-inline-metrics">
+                    <span>الهدف <b>{governance.proposal.target}</b></span>
+                    <span>الإصدار الحالي <b>{governance.proposal.currentVersion}</b></span>
+                    <span>الإصدار المرشح <b>{governance.proposal.candidateVersion}</b></span>
+                  </div>
+                  <p>{governance.proposal.rationale}</p>
+                </details>
+              ) : null}
+
+              {governance.release ? (
+                <details className="decision-details">
+                  <summary>تفاصيل الإصدار والمراقبة</summary>
+                  <div className="p74-inline-metrics">
+                    <span>الإصدار المعتمد <b>{governance.release.version}</b></span>
+                    <span>الإصدار السابق <b>{governance.release.previousVersion}</b></span>
+                    <span>الهدف <b>{governance.release.target}</b></span>
+                    <span>Drift <b>{governance.monitoring?.driftScore ?? 'لا توجد قراءة'}</b></span>
+                    <span>المؤشر <b>{governance.monitoring?.metricKey ?? '—'}</b></span>
+                  </div>
+                </details>
+              ) : null}
+
+              {governance.rollbackReview ? (
+                <details className="decision-details">
+                  <summary>مراجعة التراجع</summary>
+                  <div className="p74-inline-metrics">
+                    <span>من <b>{governance.rollbackReview.fromVersion}</b></span>
+                    <span>إلى <b>{governance.rollbackReview.proposedToVersion}</b></span>
+                    <span>الحالة <b>{governanceLabel(governance.rollbackReview.status)}</b></span>
+                  </div>
+                  <p>{governance.rollbackReview.rationale}</p>
+                </details>
+              ) : null}
+            </>
+          )}
         </section>
 
         <section className="p47-analysis-card">

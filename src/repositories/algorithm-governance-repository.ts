@@ -10,6 +10,7 @@ export interface PersistReleaseInput {
   version: string;
   previousVersion: string;
   artifact: GovernedReleaseArtifact;
+  createdByActorUserId?: string | null;
 }
 
 export class AlgorithmGovernanceRepository {
@@ -19,7 +20,7 @@ export class AlgorithmGovernanceRepository {
 
     const rows = await rawSql`
       insert into public.algorithm_releases
-        (id,user_id,proposal_id,approval_decision_id,target,version,previous_version,artifact_json)
+        (id,user_id,proposal_id,approval_decision_id,target,version,previous_version,artifact_json,created_by_actor_user_id)
       select
         ${releaseId}::uuid,
         ${input.userId}::uuid,
@@ -28,7 +29,8 @@ export class AlgorithmGovernanceRepository {
         ${input.target},
         ${input.version},
         ${input.previousVersion},
-        ${artifactJson}::jsonb
+        ${artifactJson}::jsonb,
+        ${input.createdByActorUserId ?? null}::uuid
       from public.algorithm_change_proposals p
       join public.algorithm_change_decisions d
         on d.proposal_id=p.id
@@ -52,18 +54,19 @@ export class AlgorithmGovernanceRepository {
     return String(rows[0].id);
   }
 
-  async rollbackRelease(userId: string, event: GovernedRollbackEvent): Promise<string> {
+  async rollbackRelease(userId: string, event: GovernedRollbackEvent, createdByActorUserId?: string | null): Promise<string> {
     const rollbackId = randomUUID();
     const rows = await rawSql`
       insert into public.algorithm_rollbacks
-        (id,user_id,release_id,from_version,to_version,reason)
+        (id,user_id,release_id,from_version,to_version,reason,created_by_actor_user_id)
       select
         ${rollbackId}::uuid,
         r.user_id,
         r.id,
         r.version,
         r.previous_version,
-        ${event.reason}
+        ${event.reason},
+        ${createdByActorUserId ?? null}::uuid
       from public.algorithm_releases r
       join public.algorithm_rollback_reviews rr
         on rr.release_id=r.id

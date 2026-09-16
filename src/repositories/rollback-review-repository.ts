@@ -3,7 +3,13 @@ import { rawSql } from '@/infrastructure/db/client';
 export type RollbackReviewDecision = 'APPROVED' | 'REJECTED';
 
 export class RollbackReviewRepository {
-  async decide(userId: string, reviewId: string, decision: RollbackReviewDecision, rationale: string): Promise<void> {
+  async decide(
+    userId: string,
+    reviewId: string,
+    decision: RollbackReviewDecision,
+    rationale: string,
+    decidedByActorUserId?: string | null,
+  ): Promise<void> {
     const reason = rationale.trim();
     if (!reason) throw new Error('ROLLBACK_REVIEW_RATIONALE_REQUIRED');
 
@@ -11,6 +17,7 @@ export class RollbackReviewRepository {
       update public.algorithm_rollback_reviews rr
       set status=${decision},
           rationale=${reason},
+          decided_by_actor_user_id=${decidedByActorUserId ?? null}::uuid,
           decided_at=now(),
           review_json=coalesce(rr.review_json,'{}'::jsonb) || ${JSON.stringify({ decision, decisionRationale: reason })}::jsonb
       from public.algorithm_releases r
