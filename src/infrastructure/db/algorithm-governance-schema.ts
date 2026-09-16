@@ -29,7 +29,7 @@ export const algorithmLearningReviews = pgTable('algorithm_learning_reviews', {
   lifecycleJson: jsonb('lifecycle_json').notNull(),
   routeJson: jsonb('route_json').notNull(),
   status: text('status').notNull(),
-  proposalId: uuid('proposal_id'),
+  proposalId: uuid('proposal_id').references(() => algorithmChangeProposals.id, { onDelete: 'restrict' }),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
