@@ -55,7 +55,7 @@
     "namaa:final-ui:typecheck": "npm --prefix apps/namaa-final-ui run typecheck",
     "namaa:final-ui:qa": "npm --prefix apps/namaa-final-ui run qa:ui-all",
     "namaa:final-ui:build": "BETTER_AUTH_SECRET=namaa-build-only-secret-not-for-runtime-20260916 BETTER_AUTH_URL=http://127.0.0.1:3000 DATABASE_URL=postgresql://namaa_build:namaa_build@127.0.0.1:5432/namaa_build npm --prefix apps/namaa-final-ui run build",
-    "vercel:build": "npm run namaa:final-ui:materialize && npm run namaa:final-ui:preserve-backend && npm run namaa:final-ui:install && npm run namaa:final-ui:build",
+    "vercel:build": "npm run vercel:preflight && npm run namaa:final-ui:materialize && npm run namaa:final-ui:preserve-backend && npm run namaa:final-ui:install && npm run namaa:final-ui:build",
     "vercel:migrate": "node scripts/migrate-deployment.mjs",
     "vercel:preflight": "node scripts/vercel-preflight.mjs",
     "verify:vercel": "node scripts/verify-vercel-deployment-contract.mjs"
