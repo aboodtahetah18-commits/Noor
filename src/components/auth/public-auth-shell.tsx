@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { BrandLogo } from '@/components/brand/brand-logo';
-import { ThemeToggle } from '@/app/(public)/theme-toggle';
+import { ThemeToggle } from '@/app/theme-toggle';
 
 export function PublicAuthShell({ title, kicker, children }: { title: string; kicker: string; children: ReactNode }) {
   return <main className="auth-page auth-page-v42 auth-page-nature">
