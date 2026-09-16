@@ -60,9 +60,7 @@ export interface GovernedRollbackEvent {
 }
 
 export function buildLearningTrace(candidate: CalibrationCandidate, evidence: LearningEvidence, now = new Date()): LearningTrace {
-  if (candidate.evidenceCaseId !== evidence.caseId) {
-    throw new Error('CANDIDATE_EVIDENCE_CASE_MISMATCH');
-  }
+  if (candidate.evidenceCaseId !== evidence.caseId) throw new Error('CANDIDATE_EVIDENCE_CASE_MISMATCH');
   return {
     caseId: evidence.caseId,
     decisionId: evidence.decisionId,
@@ -86,6 +84,7 @@ export function buildGovernedReleaseArtifact(input: GovernedReleaseInput): Gover
   if (!input.target || !input.version || !input.previousVersion) throw new Error('ALGORITHM_RELEASE_VERSION_METADATA_REQUIRED');
   if (input.version === input.previousVersion) throw new Error('ALGORITHM_RELEASE_VERSION_MUST_ADVANCE');
 
+  const releasedAt = input.releasedAt ?? new Date().toISOString();
   return {
     mode: 'GOVERNED_REGISTRY_ONLY',
     target: input.target,
@@ -94,9 +93,9 @@ export function buildGovernedReleaseArtifact(input: GovernedReleaseInput): Gover
     parameter: input.candidate.parameter,
     approvedValue: input.candidate.proposedValue,
     previousValue: input.candidate.previousValue,
-    trace: buildLearningTrace(input.candidate, input.evidence),
+    trace: buildLearningTrace(input.candidate, input.evidence, new Date(releasedAt)),
     gate: { backtestStatus: 'PASSED', proposalStatus: 'APPROVED' },
-    releasedAt: input.releasedAt ?? new Date().toISOString(),
+    releasedAt,
   };
 }
 
@@ -105,10 +104,5 @@ export function buildGovernedRollback(input: GovernedRollbackInput): GovernedRol
   if (!input.releaseId || !input.fromVersion || !input.previousVersion) throw new Error('ALGORITHM_ROLLBACK_METADATA_REQUIRED');
   if (!reason) throw new Error('ALGORITHM_ROLLBACK_REASON_REQUIRED');
   if (input.fromVersion === input.previousVersion) throw new Error('ALGORITHM_ROLLBACK_TARGET_MUST_DIFFER');
-  return {
-    releaseId: input.releaseId,
-    fromVersion: input.fromVersion,
-    toVersion: input.previousVersion,
-    reason,
-  };
+  return { releaseId: input.releaseId, fromVersion: input.fromVersion, toVersion: input.previousVersion, reason };
 }
