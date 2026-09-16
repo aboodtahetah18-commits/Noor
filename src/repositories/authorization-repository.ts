@@ -73,20 +73,18 @@ export class AuthorizationRepository {
       order by created_at asc
     `;
 
-    const actors: AuthorizationActor[] = assignmentRows
-      .map((row) => {
-        const role = asRole(row.role);
-        if (!role) return null;
-        return {
-          userId: input.actorUserId,
-          role,
-          bankKey: asText(row.bank_key),
-          committeeId: asText(row.committee_id),
-          serviceId: asText(row.service_id),
-        } satisfies AuthorizationActor;
-      })
-      .filter((value): value is AuthorizationActor => value != null);
-
+    const actors: AuthorizationActor[] = [];
+    for (const row of assignmentRows) {
+      const role = asRole(row.role);
+      if (!role) continue;
+      actors.push({
+        userId: input.actorUserId,
+        role,
+        bankKey: asText(row.bank_key),
+        committeeId: asText(row.committee_id),
+        serviceId: asText(row.service_id),
+      });
+    }
     if (actors.length === 0) actors.push({ userId: input.actorUserId, role: 'USER' });
 
     const roleNames = actors.map((actor) => actor.role);
@@ -167,7 +165,8 @@ export class AuthorizationRepository {
       if (decision.decision === 'ALLOW') break;
     }
 
-    const actor = final?.actor ?? actors[0];
+    const fallbackActor: AuthorizationActor = { userId: input.actorUserId, role: 'USER' };
+    const actor: AuthorizationActor = final?.actor ?? actors[0] ?? fallbackActor;
     const decision = final?.decision ?? { decision: 'DENY' as const, reason: 'NO_ACTIVE_ROLE', matchedGrantId: null, policyVersion: 'RBAC_ABAC_v1.0' };
     const eventId = randomUUID();
     const matchedGrantUuid = decision.matchedGrantId?.startsWith('delegation:') ? null : decision.matchedGrantId;
