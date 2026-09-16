@@ -17,6 +17,7 @@ const steps = [
   ['authorization provisioning contract','node',['scripts/verify-authorization-provisioning-contract.mjs']],
   ['authorization admin console contract','node',['scripts/verify-authorization-admin-console-contract.mjs']],
   ['authorization bootstrap E2E contract','node',['scripts/verify-authorization-bootstrap-e2e-contract.mjs']],
+  ['authorization operational E2E contract','node',['scripts/verify-authorization-operational-e2e-contract.mjs']],
   ['governance action surface contract','node',['scripts/verify-governance-action-surface.mjs']],
   ['route integrity','node',['scripts/verify-route-integrity.mjs']],
   ['runtime surface','node',['scripts/verify-runtime-surface.mjs']],
