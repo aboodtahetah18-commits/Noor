@@ -3,7 +3,7 @@ import { rawSql } from '@/infrastructure/db/client';
 export class AuthorizationProvisioningAtomicRepository {
   async applyApprovedRequest(requestId: string, actorUserId: string): Promise<string> {
     const rows = await rawSql`
-      select public.apply_authorization_provisioning(
+      select public.apply_authorization_provisioning_with_sod(
         ${requestId}::uuid,
         ${actorUserId}::uuid
       ) as object_id
