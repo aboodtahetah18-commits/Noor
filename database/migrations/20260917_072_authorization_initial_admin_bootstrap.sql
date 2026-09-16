@@ -1,5 +1,41 @@
 begin;
 
+-- ADMINISTER is always principal-scoped. Role-wide administrator grants are forbidden.
+alter table public.authorization_grants
+  add column if not exists principal_user_id uuid references public.profiles(id) on delete restrict;
+
+create index if not exists authorization_grants_principal_idx
+  on public.authorization_grants(principal_user_id, action, object_type, is_active);
+
+create or replace function public.guard_authorization_admin_grant_principal()
+returns trigger
+language plpgsql
+as $$
+declare
+  v_principal uuid;
+begin
+  if new.action <> 'ADMINISTER' then return new; end if;
+
+  if new.principal_user_id is null and new.provisioning_request_id is not null then
+    select nullif(payload_json->'grant'->>'principalUserId','')::uuid
+      into v_principal
+    from public.authorization_provisioning_requests
+    where id=new.provisioning_request_id;
+    new.principal_user_id := v_principal;
+  end if;
+
+  if new.principal_user_id is null then
+    raise exception 'ADMINISTER_GRANT_REQUIRES_PRINCIPAL';
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists guard_authorization_admin_grant_principal on public.authorization_grants;
+create trigger guard_authorization_admin_grant_principal
+before insert or update on public.authorization_grants
+for each row execute function public.guard_authorization_admin_grant_principal();
+
 create table if not exists public.authorization_bootstrap_records (
   bootstrap_key text primary key check (bootstrap_key = 'INITIAL_ADMIN_V1'),
   target_user_id uuid not null references public.profiles(id) on delete restrict,
@@ -59,6 +95,7 @@ begin
     join public.authorization_grants g on g.role=a.role
     where a.status='ACTIVE' and a.starts_at<=now() and (a.ends_at is null or a.ends_at>now())
       and g.is_active=true and g.action='ADMINISTER' and g.object_type='AUDIT_EVENT'
+      and g.principal_user_id=a.user_id
   ) then
     raise exception 'authorization administrator already exists; use governed provisioning';
   end if;
@@ -69,9 +106,9 @@ begin
     (v_assignment_id,p_target_user_id,'CENTRAL_BANK_MANAGER','ACTIVE',now(),p_target_user_id);
 
   insert into public.authorization_grants
-    (id,role,action,object_type,policy_version,is_active)
+    (id,role,action,object_type,principal_user_id,policy_version,is_active)
   values
-    (v_grant_id,'CENTRAL_BANK_MANAGER','ADMINISTER','AUDIT_EVENT','RBAC_ABAC_v1.0',true);
+    (v_grant_id,'CENTRAL_BANK_MANAGER','ADMINISTER','AUDIT_EVENT',p_target_user_id,'RBAC_ABAC_v1.0',true);
 
   insert into public.authorization_bootstrap_records
     (bootstrap_key,target_user_id,role,requester_ref,approver_ref,rationale,assignment_id,grant_id)
@@ -84,6 +121,6 @@ $$;
 
 -- There is intentionally no application route for this function. It is an operator ceremony only.
 comment on function public.bootstrap_initial_authorization_admin(uuid,text,text,text) is
-  'One-time operator ceremony for the first ADMINISTER grant. Never call from an application route.';
+  'One-time operator ceremony for the first principal-scoped ADMINISTER grant. Never call from an application route.';
 
 commit;
