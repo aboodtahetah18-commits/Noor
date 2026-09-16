@@ -8,6 +8,7 @@ export const user = authSchema.table('user', {
   email: text('email').notNull(),
   emailVerified: boolean('email_verified').notNull().default(false),
   image: text('image'),
+  identityType: text('identity_type').notNull().default('FINANCIAL_OWNER'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 }, (table) => [uniqueIndex('auth_user_email_uq').on(table.email)]);
