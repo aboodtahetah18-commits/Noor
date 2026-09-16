@@ -7,6 +7,7 @@ const tokens = JSON.parse(read('src/design-system/ndos-v1.2.tokens.json'));
 const ndos = read('src/design-system/ndos-v1.2.css');
 const enforcement = read('src/design-system/ndos-v1.2.enforcement.css');
 const layout = read('src/app/layout.tsx');
+const legacyGovernance = read('src/app/uiux-governance.css');
 const failures = [];
 const fail = (message) => failures.push(message);
 
@@ -47,9 +48,21 @@ if (!enforcement.includes('[data-icon-only="true"]')) fail('Icon-only square geo
 if (!enforcement.includes('.ndos-form-grid')) fail('Canonical form-grid contract is missing.');
 if (!enforcement.includes('.ndos-actions')) fail('Canonical action-group contract is missing.');
 
+// Legacy visual contracts may remain temporarily for compatibility, but they are never authoritative.
+// The final cascade must remap their public UX variables to the frozen NDOS identity and font.
+const runtimeAliases = [
+  '--ux-brand-primary:var(--namaa-green-900)',
+  '--ux-brand-secondary:var(--namaa-green-700)',
+  '--ux-brand-accent:var(--namaa-gold-500)',
+  '--ux-font-family-base:var(--namaa-font)',
+  '--ux-action-primary:var(--namaa-green-900)',
+];
+for (const alias of runtimeAliases) if (!ndos.includes(alias)) fail(`Frozen runtime alias missing: ${alias}`);
+if (!legacyGovernance.includes(':root')) fail('Legacy governance compatibility layer is unexpectedly missing.');
+
 if (failures.length) {
   console.error(`NDOS-FROZEN-CONTRACT-FAIL ${failures.length} issue(s)`);
   for (const item of failures) console.error(`- ${item}`);
   process.exit(1);
 }
-console.log('NDOS-FROZEN-CONTRACT-PASS identity=1.2_FINAL controls=32/40/48 spacing=frozen');
+console.log('NDOS-FROZEN-CONTRACT-PASS identity=1.2_FINAL controls=32/40/48 spacing=frozen aliases=official');
