@@ -9,10 +9,9 @@ import '../design-system/typography.css';
 import '../design-system/foundations.css';
 import '../design-system/responsive.css';
 import '../design-system/contracts.css';
-import '../design-system/experience.css';
-import '../design-system/brand-refresh.css';
 import '../design-system/components.css';
 import '../design-system/pages.css';
+import '../design-system/ndos-v1.2.acceptance.css';
 import '../design-system/ndos-v1.2.css';
 import '../design-system/ndos-v1.2.enforcement.css';
 
