@@ -51,7 +51,7 @@ export default async function AuthorizationAdminPage({searchParams}:{searchParam
   const [snapshot,directory]=await Promise.all([getAuthorizationAdminSnapshot(),listAuthorizationDirectoryUsers()]);
   const pending=snapshot.requests.filter((r)=>String(r.status)==='PENDING');
   const approved=snapshot.requests.filter((r)=>String(r.status)==='APPROVED');
-  const activeBreakGlass=snapshot.breakGlass.filter((r)=>String(r.status)==='ACTIVE' && Date.parse(String(r.expires_at))>Date.now());
+  const activeBreakGlass=snapshot.breakGlass.filter((r)=>r.is_current===true);
   const feedback=message(q(query.message));
 
   return <main className="app-page p47-decision-page" dir="rtl">
