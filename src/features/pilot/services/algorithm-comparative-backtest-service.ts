@@ -1,35 +1,24 @@
 import { randomUUID } from 'node:crypto';
 import { rawSql } from '@/infrastructure/db/client';
 import { FinancialPlatformError, databaseErrorText } from '@/features/financial-engine/services/financial-platform-error';
+import {
+  CURRENT_STATE_THRESHOLDS,
+  STATE_RANK,
+  classifyScore,
+  scoreWithWeights,
+  validateCandidateThresholds,
+  validateCandidateWeights,
+  type BacktestComponents,
+  type CandidateThresholds,
+  type CandidateWeights,
+  type FinancialState,
+} from '@/features/pilot/services/algorithm-backtest-math';
 
-export const BACKTEST_COMPONENT_KEYS = [
-  'essentials',
-  'cashLiquidity',
-  'reserveEmergency',
-  'debt',
-  'incomeShock',
-  'spendingFlexibility',
-  'assetLiquidity',
-  'executionDiscipline',
-  'goals',
-  'investmentConcentration',
-] as const;
-
-type ComponentKey = (typeof BACKTEST_COMPONENT_KEYS)[number];
-export type CandidateWeights = Record<ComponentKey, number>;
-export type CandidateThresholds = {
-  vulnerableMin: number;
-  balancedMin: number;
-  stableMin: number;
-  strongMin: number;
-};
 export type ComparativeBacktestAcceptance = {
   minSampleCount: number;
   maxStateDowngradeRatePct: number;
   maxMeanAbsoluteScoreDelta: number;
 };
-
-type FinancialState = 'CRITICAL' | 'VULNERABLE' | 'BALANCED' | 'STABLE' | 'STRONG';
 
 type Assessment = {
   id: string;
@@ -37,10 +26,7 @@ type Assessment = {
   weightedScore: number;
   finalState: FinancialState;
   hardGateCode: string | null;
-  weightsVersion: string;
-  thresholdsVersion: string;
-  engineVersion: string;
-  components: Record<ComponentKey, number | null>;
+  components: BacktestComponents;
 };
 
 type Proposal = {
@@ -50,32 +36,15 @@ type Proposal = {
   candidateVersion: string;
 };
 
-const STATE_RANK: Record<FinancialState, number> = {
-  CRITICAL: 0,
-  VULNERABLE: 1,
-  BALANCED: 2,
-  STABLE: 3,
-  STRONG: 4,
-};
-
-// Current production state bands documented by the financial scoring contract.
-// Hard gates always take precedence and are preserved by this replay runner.
-export const CURRENT_STATE_THRESHOLDS: CandidateThresholds = {
-  vulnerableMin: 40,
-  balancedMin: 55,
-  stableMin: 70,
-  strongMin: 85,
-};
-
 function numberOrNull(value: unknown): number | null {
   if (value == null || value === '') return null;
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : null;
 }
 
-function requiredNumber(value: unknown, field: string): number {
+function requiredNumber(value: unknown): number {
   const parsed = numberOrNull(value);
-  if (parsed == null) throw new FinancialPlatformError(`INVALID_BACKTEST_${field.toUpperCase()}`, 422);
+  if (parsed == null) throw new FinancialPlatformError('INVALID_BACKTEST_DATA', 500);
   return parsed;
 }
 
@@ -84,48 +53,6 @@ function financialState(value: unknown): FinancialState {
     return value;
   }
   throw new FinancialPlatformError('INVALID_HISTORICAL_FINANCIAL_STATE', 500);
-}
-
-export function validateCandidateWeights(weights: CandidateWeights): void {
-  const values = BACKTEST_COMPONENT_KEYS.map((key) => weights[key]);
-  if (values.some((value) => !Number.isFinite(value) || value < 0 || value > 100)) {
-    throw new FinancialPlatformError('INVALID_CANDIDATE_WEIGHTS', 422);
-  }
-  const total = values.reduce((sum, value) => sum + value, 0);
-  if (Math.abs(total - 100) > 0.001) throw new FinancialPlatformError('CANDIDATE_WEIGHTS_MUST_SUM_TO_100', 422);
-}
-
-export function validateCandidateThresholds(thresholds: CandidateThresholds): void {
-  const { vulnerableMin, balancedMin, stableMin, strongMin } = thresholds;
-  const values = [vulnerableMin, balancedMin, stableMin, strongMin];
-  if (values.some((value) => !Number.isFinite(value) || value <= 0 || value > 100)) {
-    throw new FinancialPlatformError('INVALID_CANDIDATE_THRESHOLDS', 422);
-  }
-  if (!(vulnerableMin < balancedMin && balancedMin < stableMin && stableMin < strongMin)) {
-    throw new FinancialPlatformError('CANDIDATE_THRESHOLDS_MUST_ASCEND', 422);
-  }
-}
-
-export function scoreWithWeights(components: Assessment['components'], weights: CandidateWeights): number | null {
-  let weighted = 0;
-  let availableWeight = 0;
-  for (const key of BACKTEST_COMPONENT_KEYS) {
-    const score = components[key];
-    if (score == null) continue;
-    const weight = weights[key];
-    weighted += score * weight;
-    availableWeight += weight;
-  }
-  if (availableWeight <= 0) return null;
-  return weighted / availableWeight;
-}
-
-export function classifyScore(score: number, thresholds: CandidateThresholds): FinancialState {
-  if (score >= thresholds.strongMin) return 'STRONG';
-  if (score >= thresholds.stableMin) return 'STABLE';
-  if (score >= thresholds.balancedMin) return 'BALANCED';
-  if (score >= thresholds.vulnerableMin) return 'VULNERABLE';
-  return 'CRITICAL';
 }
 
 function mapDatabaseError(error: unknown): never {
@@ -144,10 +71,9 @@ async function getProposal(userId: string, proposalId: string): Promise<Proposal
   `;
   const row = rows[0];
   if (!row?.id) throw new FinancialPlatformError('GOVERNANCE_PROPOSAL_NOT_FOUND', 404);
-  const target = String(row.target) as Proposal['target'];
   return {
     id: String(row.id),
-    target,
+    target: String(row.target) as Proposal['target'],
     currentVersion: String(row.current_version),
     candidateVersion: String(row.candidate_version),
   };
@@ -161,9 +87,6 @@ async function getAssessments(userId: string, startsAt: string, endsAt: string):
       weighted_score,
       final_state,
       hard_gate_code,
-      weights_version,
-      thresholds_version,
-      engine_version,
       essentials_score,
       cash_liquidity_score,
       reserve_emergency_score,
@@ -184,12 +107,9 @@ async function getAssessments(userId: string, startsAt: string, endsAt: string):
   return rows.map((row) => ({
     id: String(row.id),
     cycleId: String(row.cycle_id),
-    weightedScore: requiredNumber(row.weighted_score, 'weighted_score'),
+    weightedScore: requiredNumber(row.weighted_score),
     finalState: financialState(row.final_state),
     hardGateCode: typeof row.hard_gate_code === 'string' ? row.hard_gate_code : null,
-    weightsVersion: String(row.weights_version),
-    thresholdsVersion: String(row.thresholds_version),
-    engineVersion: String(row.engine_version),
     components: {
       essentials: numberOrNull(row.essentials_score),
       cashLiquidity: numberOrNull(row.cash_liquidity_score),
@@ -205,9 +125,8 @@ async function getAssessments(userId: string, startsAt: string, endsAt: string):
   }));
 }
 
-function pct(part: number, total: number): number {
-  if (total <= 0) return 0;
-  return (part / total) * 100;
+function percentage(part: number, total: number): number {
+  return total <= 0 ? 0 : (part / total) * 100;
 }
 
 export async function runComparativeBacktest(input: {
@@ -228,8 +147,7 @@ export async function runComparativeBacktest(input: {
     if (proposal.target === 'WEIGHTS') {
       if (!input.candidateWeights) throw new FinancialPlatformError('CANDIDATE_WEIGHTS_REQUIRED', 422);
       validateCandidateWeights(input.candidateWeights);
-    }
-    if (proposal.target === 'THRESHOLDS') {
+    } else {
       if (!input.candidateThresholds) throw new FinancialPlatformError('CANDIDATE_THRESHOLDS_REQUIRED', 422);
       validateCandidateThresholds(input.candidateThresholds);
     }
@@ -269,7 +187,7 @@ export async function runComparativeBacktest(input: {
     const meanAbsoluteScoreDelta = sampleCount > 0
       ? replayRows.reduce((sum, row) => sum + Math.abs(row.candidateScore - row.baselineScore), 0) / sampleCount
       : 0;
-    const downgradeRatePct = pct(downgradeCount, sampleCount);
+    const downgradeRatePct = percentage(downgradeCount, sampleCount);
 
     const enoughSamples = sampleCount >= input.acceptance.minSampleCount;
     const passesGuardrails = enoughSamples
