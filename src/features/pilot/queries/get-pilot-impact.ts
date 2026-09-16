@@ -99,9 +99,18 @@ function classifyImpact(input: {
   const freeCash = finiteNumber(input.freeCashDelta);
   const protection = finiteNumber(input.protectionDeficitDelta);
 
-  if (score != null && Math.abs(score) >= 0.5) score > 0 ? positiveSignals++ : negativeSignals++;
-  if (freeCash != null && Math.abs(freeCash) >= 0.01) freeCash > 0 ? positiveSignals++ : negativeSignals++;
-  if (protection != null && Math.abs(protection) >= 0.01) protection < 0 ? positiveSignals++ : negativeSignals++;
+  if (score != null && Math.abs(score) >= 0.5) {
+    if (score > 0) positiveSignals += 1;
+    else negativeSignals += 1;
+  }
+  if (freeCash != null && Math.abs(freeCash) >= 0.01) {
+    if (freeCash > 0) positiveSignals += 1;
+    else negativeSignals += 1;
+  }
+  if (protection != null && Math.abs(protection) >= 0.01) {
+    if (protection < 0) positiveSignals += 1;
+    else negativeSignals += 1;
+  }
 
   const direction: PilotImpactDirection =
     positiveSignals > negativeSignals ? 'IMPROVED' : negativeSignals > positiveSignals ? 'DETERIORATED' : 'NEUTRAL';
