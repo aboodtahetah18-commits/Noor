@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { validateBreakGlass, validateProvisioningActorSeparation } from './authorization-provisioning-policy';
+import { validateBreakGlass, validateGrantScope, validateProvisioningActorSeparation } from './authorization-provisioning-policy';
 
 describe('authorization provisioning separation of duties', () => {
   it('accepts three distinct actors', () => {
@@ -16,6 +16,11 @@ describe('authorization provisioning separation of duties', () => {
 
   it('rejects approver as applier', () => {
     expect(() => validateProvisioningActorSeparation('requester','approver','approver')).toThrow('PROVISIONING_APPLIER_MUST_DIFFER_FROM_APPROVER');
+  });
+
+  it('requires a concrete principal for ADMINISTER grants', () => {
+    expect(() => validateGrantScope({ role:'CENTRAL_BANK_MANAGER', action:'ADMINISTER', objectType:'AUDIT_EVENT' })).toThrow('ADMINISTER_GRANT_REQUIRES_PRINCIPAL');
+    expect(() => validateGrantScope({ role:'CENTRAL_BANK_MANAGER', action:'ADMINISTER', objectType:'AUDIT_EVENT', principalUserId:'user-1' })).not.toThrow();
   });
 
   it('keeps governance powers outside break glass', () => {
