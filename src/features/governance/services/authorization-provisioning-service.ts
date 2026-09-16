@@ -3,6 +3,7 @@ import {
   authorizationProvisioningRepository,
   type ProvisioningPayload,
 } from '@/repositories/authorization-provisioning-repository';
+import { authorizationProvisioningAtomicRepository } from '@/repositories/authorization-provisioning-atomic-repository';
 import { breakGlassRepository } from '@/repositories/break-glass-repository';
 
 async function requireAuthorizationAdmin(actorUserId: string, objectId: string, requestId?: string): Promise<void> {
@@ -70,7 +71,7 @@ export async function applyAuthorizationProvisioning(input: {
   requestId?: string;
 }): Promise<string> {
   await requireAuthorizationAdmin(input.actorUserId, input.provisioningRequestId, input.requestId);
-  return authorizationProvisioningRepository.applyApprovedRequest(input.provisioningRequestId, input.actorUserId);
+  return authorizationProvisioningAtomicRepository.applyApprovedRequest(input.provisioningRequestId, input.actorUserId);
 }
 
 export async function revokeBreakGlassAccess(input: {
