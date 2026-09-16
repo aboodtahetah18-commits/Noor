@@ -4,14 +4,16 @@ import { requireAuthenticatedUser } from '@/auth/require-authenticated-user';
 import { authorizationRepository } from '@/repositories/authorization-repository';
 import { listAuthorizationDirectoryUsers } from '@/repositories/authorization-directory-repository';
 import { AUTHORIZATION_ROLE_TEMPLATES, AUTHORIZATION_TEMPLATE_VERSION } from '@/governance/authorization-role-templates';
-import { requestAuthorizationTemplateAction } from './actions';
+import { requestAuthorizationAdministratorGrantAction, requestAuthorizationTemplateAction } from './actions';
 
 function q(value: string | string[] | undefined): string | undefined { return Array.isArray(value) ? value[0] : value; }
 const MESSAGE: Record<string,string> = {
   AUTHORIZATION_TEMPLATE_REQUESTED: 'تم إنشاء حزمة طلبات الدور والصلاحيات. لا يصبح أي منها فعالًا قبل اعتماد مستقل ثم تطبيق بواسطة شخص ثالث.',
+  AUTHORIZATION_ADMIN_GRANT_REQUESTED: 'تم إنشاء طلب ADMINISTER مقيّد بالمستخدم المحدد. يحتاج اعتماد شخص ثانٍ وتطبيق شخص ثالث.',
   AUTHORIZATION_TEMPLATE_BANK_SCOPE_REQUIRED: 'هذا القالب يتطلب نطاق بنك محدد.',
   AUTHORIZATION_TEMPLATE_COMMITTEE_SCOPE_REQUIRED: 'هذا القالب يتطلب لجنة محددة.',
   AUTHORIZATION_TEMPLATE_NOT_FOUND: 'قالب الصلاحيات غير معروف.',
+  ADMINISTER_GRANT_REQUIRES_PRINCIPAL: 'صلاحية ADMINISTER يجب أن تكون مرتبطة بمستخدم محدد.',
   PROVISIONING_RATIONALE_REQUIRED: 'المسوغ يجب أن يكون واضحًا وقابلًا للتدقيق.',
   AUTHORIZATION_TEMPLATE_REQUEST_FAILED: 'تعذر إنشاء حزمة القالب.',
 };
@@ -58,6 +60,16 @@ export default async function AuthorizationTemplatesPage({ searchParams }: { sea
           <label><span>اللجنة</span><input name="committeeId" placeholder="مطلوب لقوالب اللجان" /></label>
           <label><span>المسوغ</span><textarea name="rationale" required minLength={20} maxLength={4000} placeholder="لماذا يحتاج هذا المستخدم هذا الدور وهذا النطاق؟" /></label>
           <div className="ndos-actions"><button className="primary-button" type="submit">إنشاء حزمة الطلبات</button></div>
+        </form>
+      </section>
+
+      <section className="p47-analysis-card">
+        <div className="p47-section-heading"><div><span>Principal Admin</span><h2>طلب إدارة الصلاحيات لمستخدم محدد</h2></div><small>ليست جزءًا من أي قالب تشغيلي</small></div>
+        <p className="muted">يجب أن يكون المستفيد صاحب دور CENTRAL_BANK_MANAGER فعّال. الطلب لا يمنحه ADMINISTER مباشرة؛ يحتاج اعتماد مدير مختلف ثم تطبيق مدير ثالث.</p>
+        <form action={requestAuthorizationAdministratorGrantAction} className="ndos-form-grid">
+          <label><span>المستخدم المحدد</span><select name="targetUserId" required>{directory.map((entry)=><option key={entry.id} value={entry.id}>{entry.displayName}</option>)}</select></label>
+          <label><span>المسوغ</span><textarea name="rationale" required minLength={20} maxLength={4000} placeholder="لماذا يحتاج هذا المستخدم تحديدًا إلى إدارة نظام الصلاحيات؟" /></label>
+          <div className="ndos-actions"><button className="secondary-button" type="submit">إنشاء طلب ADMINISTER المقيّد</button></div>
         </form>
       </section>
 
