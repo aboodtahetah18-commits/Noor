@@ -65,14 +65,22 @@ export class AlgorithmGovernanceRepository {
         r.previous_version,
         ${event.reason}
       from public.algorithm_releases r
+      join public.algorithm_rollback_reviews rr
+        on rr.release_id=r.id
+       and rr.user_id=r.user_id
+       and rr.status='APPROVED'
+       and rr.from_version=r.version
+       and rr.proposed_to_version=r.previous_version
       where r.id=${event.releaseId}::uuid
         and r.user_id=${userId}::uuid
         and r.version=${event.fromVersion}
         and r.previous_version=${event.toVersion}
+      order by rr.created_at desc
+      limit 1
       returning id::text as id
     `;
 
-    if (!rows[0]) throw new Error('ALGORITHM_ROLLBACK_RELEASE_MISMATCH');
+    if (!rows[0]) throw new Error('ALGORITHM_ROLLBACK_GOVERNANCE_GATE_FAILED');
     return String(rows[0].id);
   }
 }
