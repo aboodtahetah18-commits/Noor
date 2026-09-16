@@ -5,6 +5,7 @@ const steps = [
   ['environment example contract','node',['scripts/ensure-env-example.mjs']],
   ['project execution contract','node',['scripts/verify-project-execution-contract.mjs']],
   ['design system contract','node',['scripts/verify-design-system-contract.mjs']],
+  ['NDOS v1.2 frozen identity contract','node',['scripts/verify-ndos-frozen-contract.mjs']],
   ['interaction capabilities contract','node',['scripts/verify-interaction-capabilities-contract.mjs']],
   ['auth lifecycle contract','node',['scripts/verify-auth-lifecycle-contract.mjs']],
   ['Lucide icon contract','node',['scripts/verify-lucide-icon-contract.mjs']],
