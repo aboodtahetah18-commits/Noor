@@ -8,6 +8,7 @@ export const primaryNavigationItems = [
   { href: '/goals', label: 'الأهداف' },
   { href: '/advisor', label: 'المستشار' },
   { href: '/reports', label: 'التقارير' },
+  { href: '/pilot', label: 'تجربة 2026' },
   { href: '/workspace', label: 'مركز النظام' },
   { href: '/alerts', label: 'التنبيهات' },
   { href: '/settings', label: 'الإعدادات' },
