@@ -1,4 +1,8 @@
 import { getRawSql } from '@/infrastructure/db/client';
+import {
+  resolveFinancialEngineRuntimeVersions,
+  type FinancialEngineRuntimeResolution,
+} from '@/features/financial-engine/services/resolve-runtime-versions';
 
 export type FullCyclePipelineResult = {
   pipeline_status: string;
@@ -6,6 +10,7 @@ export type FullCyclePipelineResult = {
   engine: Record<string, unknown>;
   recommendation_generation: Record<string, unknown>;
   recommendations: unknown[];
+  runtime_binding: FinancialEngineRuntimeResolution;
 };
 
 export class FinancialEnginePipelineError extends Error {
@@ -32,6 +37,10 @@ function databaseErrorMessage(error: unknown): string {
 function mapPipelineDatabaseError(error: unknown): FinancialEnginePipelineError {
   const message = databaseErrorMessage(error);
 
+  if (message.includes('NAMAA_RUNTIME_BINDING_')) {
+    return new FinancialEnginePipelineError('ALGORITHM_RUNTIME_BINDING_INVALID', 409);
+  }
+
   if (message.includes('NAMAA_ORCHESTRATOR_CYCLE_NOT_OPERATIONAL')) {
     return new FinancialEnginePipelineError('CYCLE_NOT_OPERATIONAL', 409);
   }
@@ -56,7 +65,7 @@ function mapPipelineDatabaseError(error: unknown): FinancialEnginePipelineError 
   return new FinancialEnginePipelineError('FINANCIAL_ENGINE_FAILED', 500);
 }
 
-function isPipelineResult(value: unknown): value is FullCyclePipelineResult {
+function isPipelineResult(value: unknown): value is Omit<FullCyclePipelineResult, 'runtime_binding'> {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
   const result = value as Record<string, unknown>;
   return (
@@ -87,14 +96,15 @@ export async function runFullCyclePipelineForUser(
   }
 
   try {
+    const runtimeBinding = await resolveFinancialEngineRuntimeVersions(userId, FINANCIAL_ENGINE_VERSIONS);
     const rows = await sql`
       SELECT public.namaa_run_full_cycle_pipeline(
         ${userId}::uuid,
         ${cycleId}::uuid,
-        ${FINANCIAL_ENGINE_VERSIONS.engine},
-        ${FINANCIAL_ENGINE_VERSIONS.policy},
-        ${FINANCIAL_ENGINE_VERSIONS.weights},
-        ${FINANCIAL_ENGINE_VERSIONS.thresholds}
+        ${runtimeBinding.versions.engine},
+        ${runtimeBinding.versions.policy},
+        ${runtimeBinding.versions.weights},
+        ${runtimeBinding.versions.thresholds}
       ) AS result
     `;
 
@@ -103,7 +113,7 @@ export async function runFullCyclePipelineForUser(
       throw new FinancialEnginePipelineError('FINANCIAL_ENGINE_INVALID_RESPONSE', 500);
     }
 
-    return result;
+    return { ...result, runtime_binding: runtimeBinding };
   } catch (error) {
     if (error instanceof FinancialEnginePipelineError) throw error;
     throw mapPipelineDatabaseError(error);

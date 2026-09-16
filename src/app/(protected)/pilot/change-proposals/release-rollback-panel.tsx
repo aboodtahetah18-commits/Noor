@@ -60,7 +60,7 @@ export function ReleaseRollbackPanel({ items }: { items: Item[] }) {
       proposalId,
       approvalDecisionId: item.decisionId,
       artifactText: String(data.get('artifactText') ?? ''),
-    }, 'تم تسجيل الإصدار المعتمد في سجل الخوارزمية.');
+    }, 'تم تسجيل الإصدار وربط هوية النسخة المعتمدة بالتشغيل المحكوم.');
   }
 
   function onRollback(event: FormEvent<HTMLFormElement>) {
@@ -69,17 +69,17 @@ export function ReleaseRollbackPanel({ items }: { items: Item[] }) {
     void submit('/api/pilot/change-governance/rollbacks', {
       releaseId: String(data.get('releaseId') ?? ''),
       reason: String(data.get('reason') ?? ''),
-    }, 'تم تسجيل Rollback إلى النسخة السابقة.');
+    }, 'تم تسجيل Rollback وإعادة ربط التشغيل بالنسخة السابقة.');
   }
 
   return (
     <section className="ux-card" aria-labelledby="release-rollback-title">
       <div className="ux-page-header">
         <div>
-          <p className="ux-badge ux-badge--warning">Governed release only</p>
+          <p className="ux-badge ux-badge--warning">Governed runtime binding</p>
           <h2 id="release-rollback-title">الإصدار والرجوع</h2>
           <p>
-            الإصدار هنا يثبت النسخة المعتمدة في سجل الحوكمة فقط. لا يتم تبديل أوزان أو منطق المحرك المالي تلقائيًا.
+            بعد الاعتماد والـBacktest، يسجل Release النسخة رسميًا ويربط معرف نسختها بالتشغيل بصورة محكومة وقابلة للرجوع. هذا لا ينفذ أي إجراء مالي للمستخدم، ولا يحول وصف Artifact النصي إلى أوزان أو منطق جديد بصورة تلقائية.
           </p>
         </div>
       </div>
@@ -101,7 +101,7 @@ export function ReleaseRollbackPanel({ items }: { items: Item[] }) {
             <textarea className="ux-input" name="artifactText" required minLength={20} rows={5} />
           </label>
           <button className="ux-button ux-button--primary" type="submit" disabled={busy || releasable.length === 0}>تسجيل Release</button>
-          <p>قاعدة البيانات تعيد التحقق من APPROVED وPASSED قبل السماح بالإصدار.</p>
+          <p>قاعدة البيانات تعيد التحقق من APPROVED وPASSED وسلسلة النسخة النشطة قبل السماح بالإصدار.</p>
         </form>
 
         <form className="ux-card" onSubmit={onRollback}>
@@ -120,7 +120,7 @@ export function ReleaseRollbackPanel({ items }: { items: Item[] }) {
             <textarea className="ux-input" name="reason" required minLength={20} rows={5} />
           </label>
           <button className="ux-button ux-button--secondary" type="submit" disabled={busy || rollbackable.length === 0}>تسجيل Rollback</button>
-          <p>الرجوع لا يحذف الإصدار؛ يضيف حدثًا جديدًا يحفظ التاريخ الكامل.</p>
+          <p>الرجوع لا يحذف الإصدار؛ يضيف حدثًا جديدًا ويعيد ربط النسخة السابقة مع الحفاظ على التاريخ الكامل.</p>
         </form>
       </div>
     </section>

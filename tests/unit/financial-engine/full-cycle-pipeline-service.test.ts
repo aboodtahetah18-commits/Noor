@@ -1,18 +1,35 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const sqlMock = vi.fn();
+const resolveRuntimeVersionsMock = vi.fn();
 
 vi.mock('@/infrastructure/db/client', () => ({
   getRawSql: () => sqlMock,
 }));
 
+vi.mock('@/features/financial-engine/services/resolve-runtime-versions', () => ({
+  resolveFinancialEngineRuntimeVersions: (...args: unknown[]) => resolveRuntimeVersionsMock(...args),
+}));
+
 import {
+  FINANCIAL_ENGINE_VERSIONS,
   FinancialEnginePipelineError,
   runFullCyclePipelineForUser,
 } from '@/features/financial-engine/services/run-full-cycle-pipeline';
 
 const userId = '11111111-1111-4111-8111-111111111111';
 const cycleId = '22222222-2222-4222-8222-222222222222';
+
+const runtimeBinding = {
+  versions: { ...FINANCIAL_ENGINE_VERSIONS },
+  sources: {
+    engine: 'BASELINE' as const,
+    policy: 'BASELINE' as const,
+    weights: 'BASELINE' as const,
+    thresholds: 'BASELINE' as const,
+  },
+  bindingIds: {},
+};
 
 const validResult = {
   pipeline_status: 'COMPLETED',
@@ -31,24 +48,31 @@ const validResult = {
 describe('runFullCyclePipelineForUser', () => {
   beforeEach(() => {
     sqlMock.mockReset();
+    resolveRuntimeVersionsMock.mockReset();
+    resolveRuntimeVersionsMock.mockResolvedValue(runtimeBinding);
   });
 
-  it('returns the database pipeline result for an owned cycle', async () => {
+  it('returns the database pipeline result with the exact runtime binding for an owned cycle', async () => {
     sqlMock
       .mockResolvedValueOnce([{ id: cycleId }])
       .mockResolvedValueOnce([{ result: validResult }]);
 
-    await expect(runFullCyclePipelineForUser(userId, cycleId)).resolves.toEqual(validResult);
+    await expect(runFullCyclePipelineForUser(userId, cycleId)).resolves.toEqual({
+      ...validResult,
+      runtime_binding: runtimeBinding,
+    });
+    expect(resolveRuntimeVersionsMock).toHaveBeenCalledWith(userId, FINANCIAL_ENGINE_VERSIONS);
     expect(sqlMock).toHaveBeenCalledTimes(2);
   });
 
-  it('does not execute the engine when the cycle is not owned by the user', async () => {
+  it('does not resolve runtime versions or execute the engine when the cycle is not owned by the user', async () => {
     sqlMock.mockResolvedValueOnce([]);
 
     await expect(runFullCyclePipelineForUser(userId, cycleId)).rejects.toMatchObject({
       code: 'FINANCIAL_CYCLE_NOT_FOUND',
       httpStatus: 404,
     } satisfies Partial<FinancialEnginePipelineError>);
+    expect(resolveRuntimeVersionsMock).not.toHaveBeenCalled();
     expect(sqlMock).toHaveBeenCalledTimes(1);
   });
 

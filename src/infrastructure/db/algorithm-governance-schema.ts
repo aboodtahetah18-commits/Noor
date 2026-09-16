@@ -64,3 +64,16 @@ export const algorithmRollbacks = pgTable('algorithm_rollbacks', {
   reason: text('reason').notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
+
+export const algorithmRuntimeBindings = pgTable('algorithm_runtime_bindings', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').notNull().references(() => profiles.id, { onDelete: 'restrict' }),
+  target: text('target').notNull(),
+  version: text('version').notNull(),
+  previousVersion: text('previous_version').notNull(),
+  sourceType: text('source_type').notNull(),
+  releaseId: uuid('release_id').notNull().references(() => algorithmReleases.id, { onDelete: 'restrict' }),
+  rollbackId: uuid('rollback_id').references(() => algorithmRollbacks.id, { onDelete: 'restrict' }),
+  artifactJson: jsonb('artifact_json').notNull(),
+  activatedAt: timestamp('activated_at', { withTimezone: true }).notNull().defaultNow(),
+});
