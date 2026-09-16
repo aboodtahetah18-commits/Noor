@@ -23,7 +23,7 @@ create table if not exists public.authorization_provisioning_requests (
   check (length(trim(rationale)) >= 20),
   check (expires_at is null or expires_at > requested_at),
   check (approved_by is null or approved_by <> requested_by),
-  check ((status in ('APPROVED','APPLIED')) = (approved_by is not null and approved_at is not null) or status not in ('APPROVED','APPLIED'))
+  check (status not in ('APPROVED','APPLIED') or (approved_by is not null and approved_at is not null))
 );
 
 create unique index if not exists authorization_provisioning_requests_key_uq
@@ -82,13 +82,23 @@ create index if not exists authorization_admin_events_request_idx
 create index if not exists authorization_admin_events_actor_idx
   on public.authorization_admin_events(actor_user_id, created_at desc);
 
--- Link applied authorization rows back to the request that authorized their creation.
+-- Link newly created authorization records to exactly one approved request.
 alter table public.authorization_role_assignments
   add column if not exists provisioning_request_id uuid references public.authorization_provisioning_requests(id) on delete restrict;
 alter table public.authorization_grants
   add column if not exists provisioning_request_id uuid references public.authorization_provisioning_requests(id) on delete restrict;
 alter table public.authorization_delegations
   add column if not exists provisioning_request_id uuid references public.authorization_provisioning_requests(id) on delete restrict;
+
+create unique index if not exists authorization_role_assignment_request_uq
+  on public.authorization_role_assignments(provisioning_request_id)
+  where provisioning_request_id is not null;
+create unique index if not exists authorization_grant_request_uq
+  on public.authorization_grants(provisioning_request_id)
+  where provisioning_request_id is not null;
+create unique index if not exists authorization_delegation_request_uq
+  on public.authorization_delegations(provisioning_request_id)
+  where provisioning_request_id is not null;
 
 -- Audit history is append-only.
 drop trigger if exists prevent_authorization_admin_events_mutation on public.authorization_admin_events;
