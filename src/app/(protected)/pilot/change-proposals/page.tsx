@@ -92,6 +92,7 @@ export default async function PilotChangeProposalsPage() {
           persisted={governance.rows.map((row) => ({
             proposalId: row.proposalId,
             title: row.title,
+            target: row.target,
             currentVersion: row.currentVersion,
             candidateVersion: row.candidateVersion,
             lifecycleStage: row.lifecycleStage,
