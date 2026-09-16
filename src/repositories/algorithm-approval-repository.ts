@@ -9,6 +9,7 @@ export interface RecordAlgorithmDecisionInput {
   backtestRunId: string;
   decision: AlgorithmGovernanceDecision;
   rationale: string;
+  decidedByActorUserId?: string | null;
 }
 
 export class AlgorithmApprovalRepository {
@@ -20,14 +21,15 @@ export class AlgorithmApprovalRepository {
     const rows = input.decision === 'APPROVED'
       ? await rawSql`
           insert into public.algorithm_change_decisions
-            (id,user_id,proposal_id,backtest_run_id,decision,rationale)
+            (id,user_id,proposal_id,backtest_run_id,decision,rationale,decided_by_actor_user_id)
           select
             ${decisionId}::uuid,
             b.user_id,
             b.proposal_id,
             b.id,
             'APPROVED',
-            ${rationale}
+            ${rationale},
+            ${input.decidedByActorUserId ?? null}::uuid
           from public.algorithm_backtest_runs b
           join public.algorithm_backtest_requests r
             on r.backtest_run_id=b.id
@@ -42,14 +44,15 @@ export class AlgorithmApprovalRepository {
         `
       : await rawSql`
           insert into public.algorithm_change_decisions
-            (id,user_id,proposal_id,backtest_run_id,decision,rationale)
+            (id,user_id,proposal_id,backtest_run_id,decision,rationale,decided_by_actor_user_id)
           select
             ${decisionId}::uuid,
             b.user_id,
             b.proposal_id,
             b.id,
             'REJECTED',
-            ${rationale}
+            ${rationale},
+            ${input.decidedByActorUserId ?? null}::uuid
           from public.algorithm_backtest_runs b
           join public.algorithm_backtest_requests r
             on r.backtest_run_id=b.id
