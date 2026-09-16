@@ -6,5 +6,6 @@ export { Input } from './Input';
 export { Select } from './Select';
 export { Textarea } from './Textarea';
 export { StatusBadge } from './StatusBadge';
+export { Table, TableShell } from './TableShell';
 export { EntityActionRail } from './entity-actions';
 export { PrintButton } from './print-button';
