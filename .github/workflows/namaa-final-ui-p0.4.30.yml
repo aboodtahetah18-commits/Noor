@@ -35,4 +35,8 @@ jobs:
         run: npm run qa:ui-all
       - name: Build
         working-directory: apps/namaa-final-ui
+        env:
+          DATABASE_URL: postgresql://namaa_build:namaa_build@127.0.0.1:5432/namaa_build
+          BETTER_AUTH_SECRET: namaa-build-only-secret-not-for-runtime-20260916
+          BETTER_AUTH_URL: http://127.0.0.1:3000
         run: npm run build
