@@ -57,7 +57,8 @@ export async function getAuthorizationAdminSnapshot(): Promise<AuthorizationAdmi
              b.approved_by::text, pa.display_name as approved_by_name,
              b.permissions_json, b.scope_json, b.max_amount::text, b.max_risk,
              b.justification, b.incident_reference, b.starts_at::text, b.expires_at::text,
-             b.status, b.provisioning_request_id::text
+             b.status, (b.status='ACTIVE' and b.expires_at>now()) as is_current,
+             b.provisioning_request_id::text
       from public.authorization_break_glass_sessions b
       left join public.profiles p on p.id=b.actor_user_id
       left join public.profiles pa on pa.id=b.approved_by
