@@ -8,7 +8,7 @@ function patch(path, from, to){
   fs.writeFileSync(full,before.replace(from,to),'utf8');
 }
 
-// Type-only compatibility fixes. They do not change financial logic, execution semantics, RLS, or runtime data.
+// Compatibility-only fixes. They do not change financial logic, execution semantics, RLS, or runtime data.
 patch(
   'src/app/agents/page.tsx',
   '<AgentDirectory agents={agents}/>',
@@ -19,6 +19,11 @@ patch(
   'const [threadId,setThreadId]=useState(initialThreadId??initialThreads[0]?.id??null);',
   'const [threadId,setThreadId]=useState<string|null>(initialThreadId??initialThreads[0]?.id??null);',
 );
+patch(
+  'src/app/signup/page.tsx',
+  "import { getRegistrationAvailability } from '@/lib/auth/registration-status';\n",
+  "import { getRegistrationAvailability } from '@/lib/auth/registration-status';\n\nexport const dynamic = 'force-dynamic';\n",
+);
 
 fs.mkdirSync(`${root}/src/types`,{recursive:true});
 fs.writeFileSync(
@@ -27,4 +32,4 @@ fs.writeFileSync(
   'utf8',
 );
 
-console.log('Applied P0.4.30 type-compatibility patch only.');
+console.log('Applied P0.4.30 compatibility patch only.');
