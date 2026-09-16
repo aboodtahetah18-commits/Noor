@@ -18,10 +18,12 @@ export class FinancialEnginePipelineError extends Error {
   }
 }
 
-const ENGINE_VERSION = 'P2.9-v1';
-const POLICY_VERSION = 'namaa-central-policy-v1';
-const WEIGHTS_VERSION = 'namaa-central-weights-v1';
-const THRESHOLDS_VERSION = 'namaa-central-thresholds-v1';
+export const FINANCIAL_ENGINE_VERSIONS = {
+  engine: 'P2.9-v1',
+  policy: 'namaa-central-policy-v1',
+  weights: 'namaa-central-weights-v1',
+  thresholds: 'namaa-central-thresholds-v1',
+} as const;
 
 function databaseErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
@@ -89,10 +91,10 @@ export async function runFullCyclePipelineForUser(
       SELECT public.namaa_run_full_cycle_pipeline(
         ${userId}::uuid,
         ${cycleId}::uuid,
-        ${ENGINE_VERSION},
-        ${POLICY_VERSION},
-        ${WEIGHTS_VERSION},
-        ${THRESHOLDS_VERSION}
+        ${FINANCIAL_ENGINE_VERSIONS.engine},
+        ${FINANCIAL_ENGINE_VERSIONS.policy},
+        ${FINANCIAL_ENGINE_VERSIONS.weights},
+        ${FINANCIAL_ENGINE_VERSIONS.thresholds}
       ) AS result
     `;
 
