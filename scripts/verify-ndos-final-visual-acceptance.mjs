@@ -93,7 +93,8 @@ for (const file of finalVisualFiles) {
   if (/(?:linear|radial|conic)-gradient\s*\(/i.test(text)) fail(file, 'unapproved gradient in effective visual layer');
   // `none` is the required neutralization value; any positive blur/glass value is forbidden.
   for (const match of text.matchAll(/(?:-webkit-)?backdrop-filter\s*:\s*([^;}]*)/gi)) {
-    if (!/^\s*none\s*!?important?\s*$/i.test(match[1].trim().replace(/!important/i,'').trim())) fail(file, `unapproved blur/glass value ${match[1].trim()}`);
+    const normalized = match[1].replace(/!important/gi,'').trim().toLowerCase();
+    if (normalized !== 'none') fail(file, `unapproved blur/glass value ${match[1].trim()}`);
   }
   for (const re of legacyColorPatterns) if (re.test(text)) fail(file, `legacy palette value ${re}`);
   for (const re of legacyVarPatterns) if (re.test(text)) fail(file, `legacy visual variable ${re}`);
