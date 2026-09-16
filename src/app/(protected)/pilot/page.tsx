@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { requireAuthenticatedUser } from '@/auth/require-authenticated-user';
 import { PILOT_2026 } from '@/config/pilot-2026';
 import { getPilotDashboard, type PilotDecisionTrace } from '@/features/pilot/queries/get-pilot-dashboard';
+import { getPilotImpacts, type PilotImpactDirection, type PilotImpactRow } from '@/features/pilot/queries/get-pilot-impact';
 
 function daysRemaining(end: string): number {
   const endDate = new Date(`${end}T23:59:59+03:00`).getTime();
@@ -20,10 +21,25 @@ function money(value: string | null, currency = 'SAR'): string {
   }).format(amount);
 }
 
+function signedMoney(value: string | null): string {
+  if (value == null) return '—';
+  const amount = Number(value);
+  if (!Number.isFinite(amount)) return value;
+  const sign = amount > 0 ? '+' : '';
+  return `${sign}${money(String(amount))}`;
+}
+
 function score(value: string | null): string {
   if (value == null) return '—';
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed.toFixed(1) : value;
+}
+
+function signedScore(value: string | null): string {
+  if (value == null) return '—';
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return value;
+  return `${parsed > 0 ? '+' : ''}${parsed.toFixed(1)}`;
 }
 
 function stateLabel(value: string | null): string {
@@ -58,11 +74,37 @@ function executionLabel(item: PilotDecisionTrace): string {
   return 'لم يصل للتنفيذ';
 }
 
+function impactLabel(direction: PilotImpactDirection): string {
+  const labels: Record<PilotImpactDirection, string> = {
+    IMPROVED: 'تحسن بعد التنفيذ',
+    NEUTRAL: 'تغير محايد',
+    DETERIORATED: 'تدهور بعد التنفيذ',
+    PENDING_POST_SNAPSHOT: 'بانتظار Snapshot بعد التنفيذ',
+  };
+  return labels[direction];
+}
+
+function expectationLabel(item: PilotImpactRow): string {
+  if (!item.hasExplicitExpectation) return 'لا يوجد توقع رقمي/وصفي صريح محفوظ مع التوصية.';
+  const parts: string[] = [];
+  if (item.expected.expectedSummary) parts.push(item.expected.expectedSummary);
+  if (item.expected.targetScore) parts.push(`الدرجة المستهدفة: ${score(item.expected.targetScore)}`);
+  if (item.expected.expectedEndBalance) parts.push(`رصيد نهاية متوقع: ${money(item.expected.expectedEndBalance)}`);
+  if (item.expected.expectedReturnPct) parts.push(`عائد متوقع: ${item.expected.expectedReturnPct}%`);
+  if (item.expected.upsidePct) parts.push(`سيناريو صاعد: ${item.expected.upsidePct}%`);
+  if (item.expected.downsidePct) parts.push(`سيناريو هابط: ${item.expected.downsidePct}%`);
+  return parts.join(' — ');
+}
+
 export default async function PilotPage() {
   const user = await requireAuthenticatedUser();
   const remaining = daysRemaining(PILOT_2026.endsAt);
-  const pilot = await getPilotDashboard(user.id, PILOT_2026.startsAt, PILOT_2026.endsAt);
+  const [pilot, impacts] = await Promise.all([
+    getPilotDashboard(user.id, PILOT_2026.startsAt, PILOT_2026.endsAt),
+    getPilotImpacts(user.id, PILOT_2026.startsAt, PILOT_2026.endsAt),
+  ]);
   const latest = pilot.latest;
+  const impactsWithPostState = impacts.filter((item) => item.postSnapshotId !== null).length;
 
   return (
     <main className="ux-page-shell" dir="rtl">
@@ -209,6 +251,102 @@ export default async function PilotPage() {
           <div className="ux-empty-state">
             <h3>لا توجد توصيات داخل فترة التجربة بعد</h3>
             <p>عند توليد توصيات للدورات ستظهر هنا تلقائيًا مع تطور حالتها من القرار إلى التنفيذ والتحقق.</p>
+          </div>
+        )}
+      </section>
+
+      <section className="ux-card" aria-labelledby="impact-title">
+        <div className="ux-page-header">
+          <div>
+            <h2 id="impact-title">قياس الأثر بعد التنفيذ المتحقق</h2>
+            <p>
+              نقارن Snapshot الأساس المحفوظ مع القرار بأول Snapshot لاحق بعد VERIFIED_EXECUTION. هذا قياس رصدي قبل/بعد، ولا يثبت وحده أن القرار هو السبب الوحيد في التغير.
+            </p>
+          </div>
+        </div>
+
+        <div className="ux-card-grid">
+          <article className="ux-card">
+            <h3>تنفيذات مؤهلة للقياس</h3>
+            <strong>{impacts.length}</strong>
+            <p>تنفيذات وصلت إلى VERIFIED_EXECUTION.</p>
+          </article>
+          <article className="ux-card">
+            <h3>نتيجة مالية لاحقة متاحة</h3>
+            <strong>{impactsWithPostState}</strong>
+            <p>لديها Snapshot مالي بعد التنفيذ يمكن مقارنته بخط الأساس.</p>
+          </article>
+          <article className="ux-card">
+            <h3>تحسن رصدي</h3>
+            <strong>{impacts.filter((item) => item.direction === 'IMPROVED').length}</strong>
+            <p>إشارات التحسن أكثر من إشارات التدهور.</p>
+          </article>
+          <article className="ux-card">
+            <h3>تدهور رصدي</h3>
+            <strong>{impacts.filter((item) => item.direction === 'DETERIORATED').length}</strong>
+            <p>إشارات التدهور أكثر من إشارات التحسن وتحتاج مراجعة السبب.</p>
+          </article>
+        </div>
+
+        {impacts.length > 0 ? (
+          <div className="ux-table-shell">
+            <table className="ux-table">
+              <thead>
+                <tr>
+                  <th scope="col">التوصية</th>
+                  <th scope="col">التوقع المسجل</th>
+                  <th scope="col">قبل التنفيذ</th>
+                  <th scope="col">بعد التنفيذ</th>
+                  <th scope="col">التغير المرصود</th>
+                  <th scope="col">قراءة أولية</th>
+                </tr>
+              </thead>
+              <tbody>
+                {impacts.map((item) => (
+                  <tr key={item.executionEventId}>
+                    <td>
+                      <Link href={`/advisor/${item.recommendationId}`}>{item.title}</Link>
+                      <br />
+                      <small>{item.cycleName} — {item.reasonCode}</small>
+                    </td>
+                    <td>{expectationLabel(item)}</td>
+                    <td>
+                      <div>الحالة: {stateLabel(item.baselineFinalState)}</div>
+                      <div>الدرجة: {score(item.baselineWeightedScore)}</div>
+                      <div>السيولة: {money(item.baselineActualLiquidity)}</div>
+                      <div>النقد الحر: {money(item.baselineFreeCashAmount)}</div>
+                      <div>عجز الحماية: {money(item.baselineProtectionDeficit)}</div>
+                    </td>
+                    <td>
+                      {item.postSnapshotId ? (
+                        <>
+                          <div>الحالة: {stateLabel(item.postFinalState)}</div>
+                          <div>الدرجة: {score(item.postWeightedScore)}</div>
+                          <div>السيولة: {money(item.postActualLiquidity)}</div>
+                          <div>النقد الحر: {money(item.postFreeCashAmount)}</div>
+                          <div>عجز الحماية: {money(item.postProtectionDeficit)}</div>
+                        </>
+                      ) : 'بانتظار أول Snapshot مالي بعد التنفيذ'}
+                    </td>
+                    <td>
+                      <div>الدرجة: {signedScore(item.weightedScoreDelta)}</div>
+                      <div>السيولة: {signedMoney(item.actualLiquidityDelta)}</div>
+                      <div>النقد الحر: {signedMoney(item.freeCashDelta)}</div>
+                      <div>عجز الحماية: {signedMoney(item.protectionDeficitDelta)}</div>
+                    </td>
+                    <td>
+                      <strong>{impactLabel(item.direction)}</strong>
+                      <div><small>إشارات تحسن: {item.positiveSignals} / تدهور: {item.negativeSignals}</small></div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="ux-empty-state">
+            <h3>لا توجد نتائج مؤهلة للقياس بعد</h3>
+            <p>يبدأ القياس تلقائيًا فقط بعد تنفيذ خارجي موثق يصل إلى VERIFIED_EXECUTION، ثم تشغيل المحرك لإنشاء Snapshot لاحق.</p>
           </div>
         )}
       </section>
