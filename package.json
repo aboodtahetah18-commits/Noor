@@ -19,6 +19,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
+    "authorization:bootstrap-admin": "node scripts/bootstrap-initial-authorization-admin.mjs",
     "verify:security": "node scripts/verify-security-boundary.mjs",
     "verify:regression": "node scripts/verify-regression-contract.mjs",
     "regression": "npm run test && npm run verify:security && npm run verify:database-provider && npm run verify:routes && npm run verify:runtime-surface && npm run verify:regression",
