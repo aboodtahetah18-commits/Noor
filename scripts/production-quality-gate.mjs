@@ -12,6 +12,7 @@ const steps = [
   ['UI token compliance','node',['scripts/verify-ui-token-compliance.mjs']],
   ['dependency policy','node',['scripts/verify-dependency-policy.mjs']],
   ['database provider policy','node',['scripts/verify-database-provider-policy.mjs']],
+  ['database migration readiness contract','node',['scripts/verify-database-migration-readiness-contract.mjs']],
   ['algorithm governance schema contract','node',['scripts/verify-algorithm-governance-schema-contract.mjs']],
   ['authorization RBAC ABAC contract','node',['scripts/verify-authorization-contract.mjs']],
   ['authorization provisioning contract','node',['scripts/verify-authorization-provisioning-contract.mjs']],
