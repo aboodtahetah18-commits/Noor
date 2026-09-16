@@ -24,6 +24,7 @@ export default async function PilotAlgorithmReviewPage() {
             </p>
           </div>
           <div className="ux-button-row">
+            <Link className="ux-button ux-button--primary" href="/pilot/change-proposals">مقترحات التغيير</Link>
             <Link className="ux-button ux-button--secondary" href="/pilot/quality">جودة التوصيات</Link>
             <Link className="ux-button ux-button--ghost" href="/pilot">العودة إلى Pilot</Link>
           </div>
