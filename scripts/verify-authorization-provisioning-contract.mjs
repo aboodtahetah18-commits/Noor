@@ -2,6 +2,7 @@ import fs from 'node:fs';
 
 function read(path){return fs.readFileSync(path,'utf8');}
 function requireText(source,needle,label){if(!source.includes(needle)){console.error(`AUTHORIZATION-PROVISIONING-CONTRACT-FAIL ${label}`);process.exit(1)}}
+function requirePattern(source,pattern,label){if(!pattern.test(source)){console.error(`AUTHORIZATION-PROVISIONING-CONTRACT-FAIL ${label}`);process.exit(1)}}
 
 const migration=read('database/migrations/20260916_070_authorization_provisioning.sql');
 const policy=read('src/governance/authorization-provisioning-policy.ts');
@@ -22,8 +23,8 @@ for(const action of ['APPROVE','REJECT','RELEASE','ROLLBACK','ADMINISTER','EXECU
   requireText(policy,`'${action}'`,`policy must forbid break-glass ${action}`);
   requireText(runtime,`'${action}'`,`runtime must forbid break-glass ${action}`);
 }
-requireText(runtime,"grantId: `breakglass:",'runtime break-glass trace id missing');
-requireText(runtime,'actors.some((actor) => actor.role === role)','break-glass active-role binding missing');
+requirePattern(runtime,/grantId\s*:\s*`breakglass:/,'runtime break-glass trace id missing');
+requirePattern(runtime,/actors\.some\s*\(\s*\(actor\)\s*=>\s*actor\.role\s*===\s*role\s*\)/,'break-glass active-role binding missing');
 requireText(service,"action: 'ADMINISTER'",'provisioning service ADMINISTER gate missing');
 requireText(service,'approveAuthorizationProvisioning','approval service missing');
 requireText(service,'applyAuthorizationProvisioning','apply service missing');
