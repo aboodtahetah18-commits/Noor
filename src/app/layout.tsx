@@ -11,9 +11,9 @@ import '../design-system/responsive.css';
 import '../design-system/contracts.css';
 import '../design-system/experience.css';
 import '../design-system/brand-refresh.css';
-import '../design-system/ndos-v1.2.css';
 import '../design-system/components.css';
 import '../design-system/pages.css';
+import '../design-system/ndos-v1.2.css';
 import '../design-system/ndos-v1.2.enforcement.css';
 
 const notoSansArabic = Noto_Sans_Arabic({
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="ar" dir="rtl" data-theme="light" className={notoSansArabic.variable} suppressHydrationWarning>
-      <body className={notoSansArabic.className}>{children}</body>
+      <body>{children}</body>
     </html>
   );
 }
