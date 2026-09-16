@@ -56,8 +56,7 @@ export async function requestAuthorizationRoleTemplate(input: RequestAuthorizati
   });
 
   const grantRequestIds: string[] = [];
-  for (let index = 0; index < template.grants.length; index += 1) {
-    const grant = template.grants[index];
+  for (const [index, grant] of template.grants.entries()) {
     const requestId = await authorizationProvisioningRepository.createRequest({
       requestedBy: input.actorUserId,
       subjectUserId: input.targetUserId,
