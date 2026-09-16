@@ -42,7 +42,7 @@ export type PilotImpactRow = {
   protectionDeficitDelta: string | null;
   weightedScoreDelta: string | null;
   expected: PilotExpectedSignal;
-  hasExplicitNumericExpectation: boolean;
+  hasExplicitExpectation: boolean;
   direction: PilotImpactDirection;
   positiveSignals: number;
   negativeSignals: number;
@@ -171,7 +171,6 @@ export async function getPilotImpacts(userId: string, startsAt: string, endsAt: 
       FROM public.cycle_financial_engine_snapshots snapshot
       WHERE snapshot.user_id = r.user_id
         AND snapshot.cycle_id = r.cycle_id
-        AND snapshot.is_stale = false
         AND snapshot.as_of_at > COALESCE(e.executed_at, e.created_at)
       ORDER BY snapshot.as_of_at ASC
       LIMIT 1
@@ -248,7 +247,7 @@ export async function getPilotImpacts(userId: string, startsAt: string, endsAt: 
       protectionDeficitDelta,
       weightedScoreDelta,
       expected,
-      hasExplicitNumericExpectation: Object.values(expected).some((value) => value != null),
+      hasExplicitExpectation: Object.values(expected).some((value) => value != null),
       direction: impact.direction,
       positiveSignals: impact.positiveSignals,
       negativeSignals: impact.negativeSignals,
