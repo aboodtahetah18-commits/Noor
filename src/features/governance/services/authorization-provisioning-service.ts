@@ -88,7 +88,7 @@ export async function closeOwnBreakGlassAccess(input: {
   sessionId: string;
   reason: string;
 }): Promise<void> {
-  await breakGlassRepository.close(input.sessionId, input.actorUserId, input.reason);
+  await breakGlassRepository.closeOwn(input.sessionId, input.actorUserId, input.reason);
 }
 
 export async function expireBreakGlassAccess(input: {
