@@ -12,13 +12,17 @@ const required = [
   'src/design-system/contracts.css',
   'src/design-system/experience.css',
   'src/design-system/components.css',
+  'src/design-system/pages.css',
   'src/components/ui/index.ts',
 ];
 for (const file of required) if (!fs.existsSync(path.join(root,file))) fail.push(`missing design-system artifact: ${file}`);
 
 const layout = fs.readFileSync(path.join(root,'src/app/layout.tsx'),'utf8');
-for (const file of ['tokens.css','themes.css','typography.css','foundations.css','responsive.css','contracts.css','experience.css','components.css']) {
+for (const file of ['tokens.css','themes.css','typography.css','foundations.css','responsive.css','contracts.css','experience.css','components.css','pages.css']) {
   if (!layout.includes(`../design-system/${file}`)) fail.push(`root layout does not load ${file}`);
+}
+if (layout.indexOf("../design-system/pages.css") < layout.indexOf("../design-system/components.css")) {
+  fail.push('pages.css must load after components.css so page composition cannot bypass governed components');
 }
 
 if (!layout.includes('Noto_Sans_Arabic')) fail.push('approved Namaa font loader missing: Noto_Sans_Arabic');
@@ -39,6 +43,16 @@ for (const token of [
   '--ux-font-family-base:var(--font-noto-sans-arabic)',
 ]) {
   if (!tokens.includes(token)) fail.push(`approved Namaa identity invariant missing: ${token}`);
+}
+
+const themes = fs.readFileSync(path.join(root,'src/design-system/themes.css'),'utf8');
+for (const legacyValue of ['#0B2D5B','#0EA5A2','var(--font-tajawal)']) {
+  if (themes.includes(legacyValue)) fail.push(`legacy identity value remains in active theme mapping: ${legacyValue}`);
+}
+
+const pages = fs.readFileSync(path.join(root,'src/design-system/pages.css'),'utf8');
+for (const governedSelector of ['.mustaqbali-topbar','.mustaqbali-sidebar','.p47-page-heading','.transaction-table','.p49-dialog-shell','.p55-profile-summary']) {
+  if (!pages.includes(governedSelector)) fail.push(`page identity layer is missing governed surface: ${governedSelector}`);
 }
 
 const sourceOfTruth = fs.readFileSync(path.join(root,'docs/ui-ux/CURRENT_SOURCE_OF_TRUTH.md'),'utf8');
