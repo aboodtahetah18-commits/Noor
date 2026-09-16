@@ -5,5 +5,6 @@ export { FormField } from './FormField';
 export { Input } from './Input';
 export { Select } from './Select';
 export { Textarea } from './Textarea';
+export { StatusBadge } from './StatusBadge';
 export { EntityActionRail } from './entity-actions';
 export { PrintButton } from './print-button';
