@@ -17,6 +17,34 @@ export const algorithmChangeProposals = pgTable('algorithm_change_proposals', {
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
+export const algorithmLearningReviews = pgTable('algorithm_learning_reviews', {
+  id: uuid('id').primaryKey(),
+  userId: uuid('user_id').notNull().references(() => profiles.id, { onDelete: 'restrict' }),
+  caseId: uuid('case_id').notNull(),
+  decisionId: uuid('decision_id').notNull(),
+  bankKey: text('bank_key').notNull(),
+  learningScope: text('learning_scope').notNull(),
+  learningAction: text('learning_action').notNull(),
+  cause: text('cause').notNull(),
+  lifecycleJson: jsonb('lifecycle_json').notNull(),
+  routeJson: jsonb('route_json').notNull(),
+  status: text('status').notNull(),
+  proposalId: uuid('proposal_id'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const algorithmBacktestRequests = pgTable('algorithm_backtest_requests', {
+  id: uuid('id').primaryKey(),
+  userId: uuid('user_id').notNull().references(() => profiles.id, { onDelete: 'restrict' }),
+  proposalId: uuid('proposal_id').notNull().references(() => algorithmChangeProposals.id, { onDelete: 'restrict' }),
+  reviewId: uuid('review_id').notNull().references(() => algorithmLearningReviews.id, { onDelete: 'restrict' }),
+  baselineVersion: text('baseline_version').notNull(),
+  candidateVersion: text('candidate_version').notNull(),
+  status: text('status').notNull(),
+  requestJson: jsonb('request_json').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const algorithmBacktestRuns = pgTable('algorithm_backtest_runs', {
   id: uuid('id').primaryKey(),
   userId: uuid('user_id').notNull().references(() => profiles.id, { onDelete: 'restrict' }),
