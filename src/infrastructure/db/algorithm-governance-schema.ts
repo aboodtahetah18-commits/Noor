@@ -110,6 +110,7 @@ export const algorithmRollbackReviews = pgTable('algorithm_rollback_reviews', {
   status: text('status').notNull(),
   rationale: text('rationale').notNull(),
   reviewJson: jsonb('review_json').notNull(),
+  decidedAt: timestamp('decided_at', { withTimezone: true }),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
