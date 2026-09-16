@@ -23,17 +23,21 @@ for (const key of ['CRON_SECRET','JOB_SECRET']) {
   if (!value && env === 'production') warnings.push(`${key} is not configured`);
 }
 
-const appBaseUrl=process.env.APP_BASE_URL?.trim();
+const explicitAppBaseUrl=process.env.APP_BASE_URL?.trim();
+const vercelProductionHost=process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
+const vercelDeployHost=process.env.VERCEL_URL?.trim();
+const derivedAppBaseUrl=explicitAppBaseUrl || (vercelProductionHost ? `https://${vercelProductionHost}` : null) || (vercelDeployHost ? `https://${vercelDeployHost}` : null);
 const betterAuthUrl=process.env.BETTER_AUTH_URL?.trim();
+
 if (env === 'production') {
-  if (!appBaseUrl) {
-    errors.push('APP_BASE_URL is required in production so email verification and password reset links use the canonical origin');
+  if (!derivedAppBaseUrl) {
+    errors.push('A production application origin is required for email verification and password reset links');
   } else {
     try {
-      const url=new URL(appBaseUrl);
-      if (url.protocol !== 'https:') errors.push('APP_BASE_URL must use https in production');
-      if (!url.hostname || ['localhost','127.0.0.1'].includes(url.hostname)) errors.push('APP_BASE_URL must use the public production hostname');
-    } catch { errors.push('APP_BASE_URL is not a valid URL'); }
+      const url=new URL(derivedAppBaseUrl);
+      if (url.protocol !== 'https:') errors.push('Production application origin must use https');
+      if (!url.hostname || ['localhost','127.0.0.1'].includes(url.hostname)) errors.push('Production application origin must use a public hostname');
+    } catch { errors.push('Production application origin is not a valid URL'); }
   }
 
   if (betterAuthUrl) {
