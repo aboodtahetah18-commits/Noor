@@ -1,0 +1,61 @@
+/* NDOS governed interaction primitives.
+ * Functional interaction geometry only; visual values resolve through frozen semantic aliases.
+ */
+.mx-action-rail {
+  display:flex;
+  align-items:center;
+  gap:var(--ux-space-2);
+  max-width:100%;
+  overflow-x:auto;
+  overflow-y:hidden;
+  overscroll-behavior-inline:contain;
+  scroll-snap-type:inline proximity;
+  scrollbar-width:none;
+  padding-block:var(--ux-space-1);
+  touch-action:pan-x;
+}
+.mx-action-rail::-webkit-scrollbar { display:none; }
+.mx-action-rail > * {
+  flex:0 0 auto;
+  scroll-snap-align:start;
+}
+.mx-action-chip {
+  min-height:var(--ux-size-10);
+  height:var(--ux-size-10);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:var(--ux-space-2);
+  padding-inline:var(--ux-space-3);
+  border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);
+  border-radius:var(--ux-radius-full);
+  background:var(--ux-card-bg);
+  color:var(--ux-text-primary);
+  text-decoration:none;
+  font:inherit;
+  font-size:var(--ux-type-button-size);
+  font-weight:var(--ux-type-button-weight);
+  white-space:nowrap;
+}
+.mx-action-chip:hover,
+.mx-action-chip:focus-visible {
+  border-color:var(--ux-brand-secondary);
+  color:var(--ux-brand-primary);
+}
+.mx-action-chip.is-primary {
+  background:var(--ux-action-primary);
+  border-color:var(--ux-action-primary);
+  color:var(--ux-text-inverse);
+}
+.mx-action-chip.is-danger {
+  background:var(--ux-soft-red);
+  border-color:var(--ux-error);
+  color:var(--ux-error);
+}
+
+@media (max-width:767px) {
+  .mx-action-rail {
+    flex-wrap:nowrap;
+    width:100%;
+  }
+}
