@@ -11,6 +11,12 @@ function mapGovernanceError(error: unknown): never {
   if (message.includes('APPROVED decision requires a backtest')) throw new FinancialPlatformError('BACKTEST_REQUIRED', 409);
   if (message.includes('APPROVED decision requires a PASSED backtest')) throw new FinancialPlatformError('PASSED_BACKTEST_REQUIRED', 409);
   if (message.includes('release requires')) throw new FinancialPlatformError('RELEASE_GUARD_BLOCKED', 409);
+  if (
+    message.includes('active runtime binding') ||
+    message.includes('release previous_version does not match active runtime binding')
+  ) {
+    throw new FinancialPlatformError('RUNTIME_BINDING_CONFLICT', 409);
+  }
   throw new FinancialPlatformError('ALGORITHM_GOVERNANCE_WRITE_FAILED', 500);
 }
 
