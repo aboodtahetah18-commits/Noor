@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { getRawSql } from '@/infrastructure/db/client';
+import { computeProtectionCapacity } from './protection-capacity';
 import type { ConversationMessageKind, ConversationRoomKey } from './store';
 import { governedRooms } from './store';
 
@@ -42,6 +43,14 @@ type SolvencyMetrics = {
   basic_cycle_surplus: number;
   protection_status: 'BELOW_CORE_CYCLE' | 'COVERS_CORE_CYCLE';
   protected_pool_safe_capacity: number;
+};
+
+type CommitmentReservations = {
+  active_cycle_end: string | null;
+  reserved_dated_obligations_total: number;
+  reserved_dated_obligation_count: number;
+  near_goal_reserve_total: number;
+  near_goal_count: number;
 };
 
 const arabicDigits: Record<string, string> = {
@@ -121,6 +130,81 @@ async function readStates(userId: string) {
   return { baseline, state, solvencyMetadata };
 }
 
+async function readCommitmentReservations(userId: string): Promise<CommitmentReservations> {
+  const sql = getRawSql();
+  const rows = await sql`
+    with active_cycle as (
+      select expected_next_income_date
+      from public.financial_cycles
+      where user_id=${userId} and status='ACTIVE'
+      order by activated_at desc nulls last
+      limit 1
+    ), reserved_obligations as (
+      select
+        coalesce(sum(o.amount) filter (where o.is_reserved=true and o.status in ('UPCOMING','DUE','OVERDUE')),0)::text as total,
+        count(*) filter (where o.is_reserved=true and o.status in ('UPCOMING','DUE','OVERDUE'))::int as item_count
+      from public.obligation_occurrences o
+      where o.user_id=${userId}
+    ), near_goals as (
+      select
+        coalesce(sum(greatest(g.target_amount-(g.opening_balance+coalesce(c.contributed,0)),0)) filter (
+          where g.status in ('ACTIVE','FINANCIALLY_UNREALISTIC')
+            and g.target_date is not null
+            and ac.expected_next_income_date is not null
+            and g.target_date<=ac.expected_next_income_date
+        ),0)::text as total,
+        count(*) filter (
+          where g.status in ('ACTIVE','FINANCIALLY_UNREALISTIC')
+            and g.target_date is not null
+            and ac.expected_next_income_date is not null
+            and g.target_date<=ac.expected_next_income_date
+        )::int as item_count
+      from public.financial_goals g
+      left join active_cycle ac on true
+      left join lateral (
+        select coalesce(sum(t.amount) filter (where t.transaction_type='GOAL_CONTRIBUTION' and t.status='POSTED'),0) as contributed
+        from public.transactions t
+        where t.user_id=g.user_id and t.goal_id=g.id
+      ) c on true
+      where g.user_id=${userId}
+    )
+    select
+      (select expected_next_income_date::text from active_cycle) as active_cycle_end,
+      ro.total as reserved_dated_obligations_total,
+      ro.item_count as reserved_dated_obligation_count,
+      ng.total as near_goal_reserve_total,
+      ng.item_count as near_goal_count
+    from reserved_obligations ro cross join near_goals ng
+  `;
+  const row = rows[0];
+  return {
+    active_cycle_end: row?.active_cycle_end ? String(row.active_cycle_end) : null,
+    reserved_dated_obligations_total: Number(row?.reserved_dated_obligations_total ?? 0),
+    reserved_dated_obligation_count: Number(row?.reserved_dated_obligation_count ?? 0),
+    near_goal_reserve_total: Number(row?.near_goal_reserve_total ?? 0),
+    near_goal_count: Number(row?.near_goal_count ?? 0),
+  };
+}
+
+async function solvencyMetricsWithCommitments(userId: string, baseline: BaselineState, state: SolvencyState) {
+  const base = solvencyMetrics(baseline, state);
+  if (!base) return null;
+  const reservations = await readCommitmentReservations(userId);
+  const capacity = computeProtectionCapacity({
+    protectedLiquidityTotal: base.protected_liquidity_total,
+    recurringCoreObligationsTotal: base.recurring_core_obligations_total,
+    reservedDatedObligationsTotal: reservations.reserved_dated_obligations_total,
+    nearGoalReserveTotal: reservations.near_goal_reserve_total,
+  });
+  return {
+    ...base,
+    ...reservations,
+    ...capacity,
+    gross_core_safe_capacity: base.protected_pool_safe_capacity,
+    protected_pool_safe_capacity: capacity.safe_capacity_after_commitments,
+  };
+}
+
 function roomAgent(roomKey: ConversationRoomKey) {
   const participant = governedRooms[roomKey].participants[0];
   if (!participant) return { key: `${roomKey}-agent`, name: governedRooms[roomKey].title };
@@ -154,11 +238,16 @@ export async function createSolvencyReply(userId: string, userText: string): Pro
     else state.available_liquidity_confirmed = pending.value;
     delete state.pending_confirmation;
     state.updated_at = new Date().toISOString();
-    const metrics = solvencyMetrics(baseline, state);
+    const metrics = await solvencyMetricsWithCommitments(userId, baseline, state);
     if (metrics) {
-      const body = metrics.protection_status === 'BELOW_CORE_CYCLE'
-        ? `تم تثبيت بيانات الملاءة. أموال الحماية والسيولة المؤكدة ${formatSar(metrics.protected_liquidity_total)} ريال، مقابل التزامات أساسية قدرها ${formatSar(metrics.recurring_core_obligations_total)} ريال. يوجد عجز قدره ${formatSar(metrics.basic_cycle_gap)} ريال عن تغطية دورة أساسية كاملة؛ لذلك السعة الآمنة للاستخدام من أموال الحماية حاليًا صفر.`
-        : `تم تثبيت بيانات الملاءة. التغطية الحالية ${metrics.coverage_months?.toFixed(2)} شهر، والفائض الحسابي فوق دورة أساسية واحدة ${formatSar(metrics.basic_cycle_surplus)} ريال. هذا هو الحد الحسابي الأعلى الذي يمكن اختباره دون كسر أرضية الدورة، وليس توصية تلقائية باستخدامه.`;
+      let body: string;
+      if (metrics.protection_status === 'BELOW_CORE_CYCLE') {
+        body = `تم تثبيت بيانات الملاءة. أموال الحماية والسيولة المؤكدة ${formatSar(metrics.protected_liquidity_total)} ريال، مقابل التزامات أساسية قدرها ${formatSar(metrics.recurring_core_obligations_total)} ريال. يوجد عجز قدره ${formatSar(metrics.basic_cycle_gap)} ريال عن تغطية دورة أساسية كاملة؛ لذلك السعة الآمنة للاستخدام من أموال الحماية حاليًا صفر.`;
+      } else if (metrics.commitment_protection_status === 'COMMITMENT_SHORTFALL') {
+        body = `تم تثبيت بيانات الملاءة. تغطية الدورة الأساسية قائمة، لكن الالتزامات المؤرخة والأهداف القريبة ترفع الأموال الواجب حمايتها إلى ${formatSar(metrics.protected_commitment_floor)} ريال. المحجوز للأهداف القريبة ${formatSar(metrics.near_goal_reserve_total)} ريال، والالتزامات المؤرخة المحجوزة ${formatSar(metrics.reserved_dated_obligations_total)} ريال. توجد فجوة حماية قدرها ${formatSar(metrics.commitment_gap)} ريال، لذا السعة الآمنة للاستثمار أو التمويل من هذا المصدر تساوي صفر.`;
+      } else {
+        body = `تم تثبيت بيانات الملاءة. التغطية الحالية ${metrics.coverage_months?.toFixed(2)} شهر. الفائض الحسابي بعد أرضية الدورة ${formatSar(metrics.gross_core_safe_capacity)} ريال، وبعد حماية الالتزامات المؤرخة (${formatSar(metrics.reserved_dated_obligations_total)} ريال) والأهداف القريبة (${formatSar(metrics.near_goal_reserve_total)} ريال) تصبح السعة الآمنة القابلة للاختبار ${formatSar(metrics.protected_pool_safe_capacity)} ريال. هذه سعة اختبار وليست توصية تلقائية باستخدامها.`;
+      }
       return persistReply(userId, 'solvency', body, 'risk', { confidence:1, confidence_percent:100, ...metrics, execution_boundary:'advisory_only' }, { ...solvencyMetadata, solvency_state: state });
     }
     const body = typeof baseline.recurring_core_obligations_total !== 'number'
@@ -185,9 +274,11 @@ export async function createSolvencyReply(userId: string, userText: string): Pro
     return persistReply(userId, 'solvency', `التقطت سيولة متاحة خارج الاحتياطي بقيمة ${formatSar(amount)} ريال. هل أعتمد هذه القيمة؟`, 'request', { confidence:0.9, confidence_percent:90, candidate_type:'available_liquidity', candidate_value:amount, requires_user_confirmation:true, execution_boundary:'advisory_only' }, { ...solvencyMetadata, solvency_state: state });
   }
 
-  const metrics = solvencyMetrics(baseline, state);
+  const metrics = await solvencyMetricsWithCommitments(userId, baseline, state);
   if (metrics) {
-    const body = `التغطية الحالية ${metrics.coverage_months?.toFixed(2)} شهر، وإجمالي أموال الحماية والسيولة ${formatSar(metrics.protected_liquidity_total)} ريال. السعة الحسابية القصوى قبل كسر أرضية دورة أساسية واحدة هي ${formatSar(metrics.protected_pool_safe_capacity)} ريال.`;
+    const body = metrics.commitment_protection_status === 'COMMITMENT_SHORTFALL'
+      ? `إجمالي أموال الحماية والسيولة ${formatSar(metrics.protected_liquidity_total)} ريال، بينما أرضية الحماية بعد الالتزامات المؤرخة والأهداف القريبة ${formatSar(metrics.protected_commitment_floor)} ريال. توجد فجوة ${formatSar(metrics.commitment_gap)} ريال، ولذلك لا توجد سعة آمنة متاحة حاليًا.`
+      : `التغطية الحالية ${metrics.coverage_months?.toFixed(2)} شهر، وإجمالي أموال الحماية والسيولة ${formatSar(metrics.protected_liquidity_total)} ريال. بعد حجز الالتزامات المؤرخة والأهداف القريبة، السعة الحسابية الآمنة القابلة للاختبار هي ${formatSar(metrics.protected_pool_safe_capacity)} ريال.`;
     return persistReply(userId, 'solvency', body, 'risk', { confidence:1, confidence_percent:100, ...metrics, execution_boundary:'advisory_only' });
   }
 
@@ -205,7 +296,7 @@ export async function createProtectionGuardReply(userId: string, roomKey: Conver
   if (requestedAmount === null) return null;
 
   const { baseline, state } = await readStates(userId);
-  const metrics = solvencyMetrics(baseline, state);
+  const metrics = await solvencyMetricsWithCommitments(userId, baseline, state);
   if (!metrics) {
     const body = roomKey === 'assets'
       ? 'لا أستطيع تحديد مبلغ استثماري آمن قبل اكتمال بيانات بنك الملاءة: الالتزامات الأساسية، احتياطي الطوارئ، والسيولة المتاحة. لن أتعامل مع المبلغ المطلوب كأنه متاح للاستثمار قبل ذلك.'
@@ -220,12 +311,13 @@ export async function createProtectionGuardReply(userId: string, roomKey: Conver
   if (blocked) {
     const excess = requestedAmount - safeCapacity;
     const body = roomKey === 'assets'
-      ? `الطلب الاستثماري ${formatSar(requestedAmount)} ريال يتجاوز السعة الحسابية المتاحة بعد حماية دورة أساسية واحدة. الحد الأعلى الذي يمكن اختباره من هذا المصدر حاليًا ${formatSar(safeCapacity)} ريال، والتجاوز ${formatSar(excess)} ريال. لذلك يتوقف هذا المسار ما لم يوجد مصدر آخر خارج أموال الحماية أو تتحسن التغطية.`
-      : `طلب التمويل ${formatSar(requestedAmount)} ريال يتجاوز السعة الحسابية المتاحة بعد حماية دورة أساسية واحدة. الحد الأعلى الذي يمكن اختباره من هذا المصدر حاليًا ${formatSar(safeCapacity)} ريال، والتجاوز ${formatSar(excess)} ريال. لذلك لا ينتقل الطلب للاعتماد بهذه الصورة.`;
+      ? `الطلب الاستثماري ${formatSar(requestedAmount)} ريال يتجاوز السعة الآمنة بعد حماية الدورة والالتزامات المؤرخة والأهداف القريبة. السعة الحالية القابلة للاختبار ${formatSar(safeCapacity)} ريال، والتجاوز ${formatSar(excess)} ريال. المحجوز للأهداف القريبة ${formatSar(metrics.near_goal_reserve_total)} ريال، والالتزامات المؤرخة ${formatSar(metrics.reserved_dated_obligations_total)} ريال؛ لذلك يتوقف هذا المسار ما لم يوجد مصدر آخر غير محجوز أو تتغير البيانات المؤكدة.`
+      : `طلب التمويل ${formatSar(requestedAmount)} ريال يتجاوز السعة الآمنة بعد حماية الدورة والالتزامات المؤرخة والأهداف القريبة. السعة الحالية القابلة للاختبار ${formatSar(safeCapacity)} ريال، والتجاوز ${formatSar(excess)} ريال. لذلك لا ينتقل الطلب للاعتماد بهذه الصورة.`;
     return persistReply(userId, roomKey, body, 'risk', {
       confidence:1,
       confidence_percent:100,
-      hard_guard:'CORE_COVERAGE_FLOOR',
+      hard_guard:'PROTECTED_COMMITMENTS_FLOOR',
+      core_guard:'CORE_COVERAGE_FLOOR',
       blocked:true,
       requested_amount:requestedAmount,
       safe_capacity:safeCapacity,
@@ -233,6 +325,11 @@ export async function createProtectionGuardReply(userId: string, roomKey: Conver
       protected_liquidity_before:metrics.protected_liquidity_total,
       protected_liquidity_after:projectedProtected,
       core_cycle_floor:metrics.recurring_core_obligations_total,
+      reserved_dated_obligations_total:metrics.reserved_dated_obligations_total,
+      near_goal_reserve_total:metrics.near_goal_reserve_total,
+      protected_commitment_floor:metrics.protected_commitment_floor,
+      commitment_gap:metrics.commitment_gap,
+      active_cycle_end:metrics.active_cycle_end,
       coverage_months_before:metrics.coverage_months,
       execution_boundary:'advisory_only',
     });
@@ -240,12 +337,13 @@ export async function createProtectionGuardReply(userId: string, roomKey: Conver
 
   const remainingCapacity = safeCapacity - requestedAmount;
   const body = roomKey === 'assets'
-    ? `المبلغ ${formatSar(requestedAmount)} ريال لا يكسر أرضية تغطية دورة أساسية وفق البيانات المؤكدة الحالية. السعة الحسابية قبل الطلب ${formatSar(safeCapacity)} ريال، ويتبقى بعدها ${formatSar(remainingCapacity)} ريال. هذا اجتياز لحاجز الحماية فقط، وليس توصية استثمار نهائية؛ الخطوة التالية فحص الهدف، أفقه الزمني، والسيولة المطلوبة قريبًا ومستوى المخاطر.`
-    : `المبلغ ${formatSar(requestedAmount)} ريال لا يكسر أرضية تغطية دورة أساسية وفق البيانات المؤكدة الحالية. السعة الحسابية قبل الطلب ${formatSar(safeCapacity)} ريال، ويتبقى بعدها ${formatSar(remainingCapacity)} ريال. هذا اجتياز لحاجز الحماية فقط؛ ما زال يلزم اختبار غرض التمويل، أثر السداد، والالتزامات المستقبلية قبل الاعتماد.`;
+    ? `المبلغ ${formatSar(requestedAmount)} ريال يقع داخل السعة الآمنة بعد حماية الدورة والالتزامات المؤرخة والأهداف القريبة. السعة قبل الطلب ${formatSar(safeCapacity)} ريال، ويتبقى بعدها ${formatSar(remainingCapacity)} ريال. هذا اجتياز لحاجز الحماية فقط، وليس توصية استثمار نهائية؛ ما زال يلزم فحص أفق الهدف والمخاطر والسيولة المطلوبة لاحقًا.`
+    : `المبلغ ${formatSar(requestedAmount)} ريال يقع داخل السعة الآمنة بعد حماية الدورة والالتزامات المؤرخة والأهداف القريبة. السعة قبل الطلب ${formatSar(safeCapacity)} ريال، ويتبقى بعدها ${formatSar(remainingCapacity)} ريال. هذا اجتياز لحاجز الحماية فقط؛ ما زال يلزم اختبار غرض التمويل وأثر السداد والالتزامات المستقبلية قبل الاعتماد.`;
   return persistReply(userId, roomKey, body, roomKey === 'assets' ? 'recommendation' : 'request', {
     confidence:1,
     confidence_percent:100,
-    hard_guard:'CORE_COVERAGE_FLOOR',
+    hard_guard:'PROTECTED_COMMITMENTS_FLOOR',
+    core_guard:'CORE_COVERAGE_FLOOR',
     blocked:false,
     requested_amount:requestedAmount,
     safe_capacity:safeCapacity,
@@ -253,6 +351,10 @@ export async function createProtectionGuardReply(userId: string, roomKey: Conver
     protected_liquidity_before:metrics.protected_liquidity_total,
     protected_liquidity_after:projectedProtected,
     core_cycle_floor:metrics.recurring_core_obligations_total,
+    reserved_dated_obligations_total:metrics.reserved_dated_obligations_total,
+    near_goal_reserve_total:metrics.near_goal_reserve_total,
+    protected_commitment_floor:metrics.protected_commitment_floor,
+    active_cycle_end:metrics.active_cycle_end,
     coverage_months_before:metrics.coverage_months,
     passed_floor_only:true,
     execution_boundary:'advisory_only',
