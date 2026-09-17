@@ -26,7 +26,7 @@ type Message = {
   nextAction?: string;
 };
 
-const rooms: Room[] = [
+const rooms: [Room, ...Room[]] = [
   { id: 'central', title: 'البنك المركزي لنماء', subtitle: 'الحوكمة والتنسيق', kind: 'governor', specialists: 'المحافظ والمستشار المختص فقط عند الحاجة' },
   { id: 'solvency', title: 'بنك الملاءة', subtitle: 'الحماية والاحتياطي', kind: 'bank', specialists: 'مدير بنك الملاءة ومستشار المخاطر' },
   { id: 'assets', title: 'بنك الأصول والأهداف', subtitle: 'الأصول والأهداف والاستثمار', kind: 'bank', specialists: 'مدير بنك الأصول ومستشار الاستثمار عند صلة الموضوع' },
@@ -93,10 +93,10 @@ export function ConversationWorkspace() {
         </div>
         <div className={styles.headerActions}>
           <button type="button" className={styles.secondaryButton} onClick={() => setDesktopRoomsVisible((value) => !value)}>
-            <LucideIcon name="layoutGrid" size={17}/><span>{desktopRoomsVisible ? 'إخفاء الجهات' : 'إظهار الجهات'}</span>
+            <LucideIcon name="layoutGrid" size={16}/><span>{desktopRoomsVisible ? 'إخفاء الجهات' : 'إظهار الجهات'}</span>
           </button>
           <button type="button" className={styles.secondaryButton} onClick={() => setDesktopContextVisible((value) => !value)}>
-            <LucideIcon name="info" size={17}/><span>{desktopContextVisible ? 'إخفاء السياق' : 'إظهار السياق'}</span>
+            <LucideIcon name="info" size={16}/><span>{desktopContextVisible ? 'إخفاء السياق' : 'إظهار السياق'}</span>
           </button>
         </div>
       </header>
@@ -124,7 +124,7 @@ export function ConversationWorkspace() {
             </div>
           </header>
 
-          <div className={styles.routingNote}><LucideIcon name="sparkles" size={15}/><span><strong>التوجيه الذكي:</strong> المشاركون في هذه الغرفة: {activeRoom.specialists}.</span></div>
+          <div className={styles.routingNote}><LucideIcon name="sparkles" size={16}/><span><strong>التوجيه الذكي:</strong> المشاركون في هذه الغرفة: {activeRoom.specialists}.</span></div>
 
           <div className={styles.messages} aria-live="polite">
             {messages.map((message) => <article key={message.id} className={`${styles.message} ${message.sender === 'user' ? styles.userMessage : styles.agentMessage}`}>
@@ -143,13 +143,13 @@ export function ConversationWorkspace() {
             </article>)}
           </div>
 
-          <div className={styles.attachmentPolicy}><LucideIcon name="upload" size={15}/><span>المرفق يُرفع للمراجعة والتحقق فقط؛ رفعه لا ينشئ حركة مالية ولا يثبت التنفيذ تلقائيًا.</span></div>
-          <div className={styles.executionNote}><LucideIcon name="circleCheck" size={15}/><span>نماء يوصي ويتابع؛ التنفيذ المالي الخارجي يتم بواسطة المستخدم.</span></div>
+          <div className={styles.attachmentPolicy}><LucideIcon name="upload" size={16}/><span>المرفق يُرفع للمراجعة والتحقق فقط؛ رفعه لا ينشئ حركة مالية ولا يثبت التنفيذ تلقائيًا.</span></div>
+          <div className={styles.executionNote}><LucideIcon name="circleCheck" size={16}/><span>نماء يوصي ويتابع؛ التنفيذ المالي الخارجي يتم بواسطة المستخدم.</span></div>
 
           <form className={styles.composer} onSubmit={send}>
-            <button type="button" className={styles.attachButton} aria-label="إرفاق ملف" title="إرفاق ملف"><LucideIcon name="upload" size={19}/></button>
+            <button type="button" className={styles.attachButton} aria-label="إرفاق ملف" title="إرفاق ملف"><LucideIcon name="upload" size={20}/></button>
             <textarea value={draft} onChange={(event) => setDraft(event.target.value)} placeholder={`اكتب إلى ${activeRoom.title}…`} rows={1} aria-label="نص الرسالة" />
-            <button type="submit" className={styles.sendButton} disabled={!draft.trim()}><span>إرسال</span><LucideIcon name="chevronLeft" size={18}/></button>
+            <button type="submit" className={styles.sendButton} disabled={!draft.trim()}><span>إرسال</span><LucideIcon name="chevronLeft" size={20}/></button>
           </form>
         </main>
 
