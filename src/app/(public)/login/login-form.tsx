@@ -18,13 +18,17 @@ function loginErrorMessage(code: string): string {
   return 'تعذر تسجيل الدخول. تحقق من البريد وكلمة المرور.';
 }
 
-export function LoginForm({ returnTo }: { returnTo: string }) {
+export function LoginForm({ returnTo, previewOnly = false }: { returnTo: string; previewOnly?: boolean }) {
   const [pending, setPending] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (previewOnly) {
+      setError('هذه معاينة للواجهة فقط. تسجيل الدخول الفعلي غير مفعّل في بيئة المعاينة.');
+      return;
+    }
     if (pending) return;
     const form = new FormData(event.currentTarget);
     const email = String(form.get('email') ?? '').trim().toLowerCase();
