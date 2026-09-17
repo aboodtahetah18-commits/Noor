@@ -1,6 +1,6 @@
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { hashPassword } from 'better-auth/crypto';
-import { Pool } from 'pg';
+import { Pool } from '@neondatabase/serverless';
 
 type ChallengeKind = 'email-verification' | 'password-setup' | 'password-reset';
 
@@ -19,12 +19,7 @@ function database(): Pool {
   const connectionString = process.env.DATABASE_URL?.trim();
   if (!connectionString) throw new Error('DATABASE_URL_REQUIRED');
   if (!pool) {
-    pool = new Pool({
-      connectionString,
-      ssl: { rejectUnauthorized: false },
-      options: '-c search_path=auth,public',
-      max: 3,
-    });
+    pool = new Pool({ connectionString });
   }
   return pool;
 }
