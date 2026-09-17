@@ -7,8 +7,8 @@ create table if not exists auth.user_profile (
   phone text not null,
   city text not null,
   city_normalized text not null,
-  home_latitude double precision,
-  home_longitude double precision,
+  home_latitude numeric(9,6),
+  home_longitude numeric(9,6),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
