@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { FormEvent, useState } from 'react';
+import styles from './public-auth-shell.module.css';
 
 function messageFor(code: string): string {
   if (code === 'AUTH_RATE_LIMITED') return 'تمت محاولات كثيرة خلال وقت قصير. حاول لاحقًا.';
@@ -10,6 +11,10 @@ function messageFor(code: string): string {
   if (code === 'AUTH_TOKEN_INVALID_OR_EXPIRED') return 'الرابط غير صالح أو انتهت صلاحيته. اطلب رابطًا جديدًا.';
   if (code === 'AUTH_INPUT_INVALID') return 'تحقق من البيانات المدخلة.';
   return 'تعذر إكمال الطلب الآن. حاول مرة أخرى.';
+}
+
+function fieldClass(ltr = false) {
+  return ltr ? `${styles.input} ${styles.ltr}` : styles.input;
 }
 
 export function RegisterForm() {
@@ -48,23 +53,23 @@ export function RegisterForm() {
   }
 
   if (sent) {
-    return <div className="auth-success" role="status">
+    return <div className={styles.success} role="status">
       <strong>تحقق من بريدك الإلكتروني</strong>
       <p>إذا كان البريد متاحًا للتسجيل فستصلك رسالة من نماء. افتح الرابط لتأكيد البريد ثم أنشئ كلمة المرور.</p>
       <Link href="/login">العودة إلى تسجيل الدخول</Link>
     </div>;
   }
 
-  return <form className="auth-form auth-form-v42 auth-form-nature" onSubmit={submit}>
-    <label className="auth-input-field"><span>الاسم</span><span className="auth-input-shell"><input name="firstName" autoComplete="given-name" required maxLength={60} disabled={pending} /></span></label>
-    <label className="auth-input-field"><span>اسم العائلة</span><span className="auth-input-shell"><input name="lastName" autoComplete="family-name" required maxLength={60} disabled={pending} /></span></label>
-    <label className="auth-input-field"><span>رقم الجوال</span><span className="auth-input-shell"><input name="phone" type="tel" autoComplete="tel" inputMode="tel" required maxLength={20} disabled={pending} placeholder="05xxxxxxxx" dir="ltr" /></span></label>
-    <label className="auth-input-field"><span>البريد الإلكتروني</span><span className="auth-input-shell"><input name="email" type="email" autoComplete="email" inputMode="email" required disabled={pending} placeholder="name@example.com" dir="ltr" /></span></label>
-    <label className="auth-input-field"><span>المدينة</span><span className="auth-input-shell"><input name="city" autoComplete="address-level2" required maxLength={100} disabled={pending} /></span></label>
-    {error ? <p className="form-error auth-alert" role="alert">{error}</p> : null}
-    <button className="auth-submit" type="submit" disabled={pending}>{pending ? 'جاري الإرسال...' : 'إنشاء الحساب والتحقق من البريد'}</button>
-    <p className="auth-helper">لن تُنشأ كلمة المرور قبل تأكيد البريد الإلكتروني.</p>
-    <p className="auth-helper"><Link href="/login">لديك حساب؟ تسجيل الدخول</Link></p>
+  return <form className={styles.form} onSubmit={submit}>
+    <label className={styles.field}><span className={styles.fieldLabel}>الاسم</span><span className={styles.inputShell}><input className={styles.input} name="firstName" autoComplete="given-name" required maxLength={60} disabled={pending} /></span></label>
+    <label className={styles.field}><span className={styles.fieldLabel}>اسم العائلة</span><span className={styles.inputShell}><input className={styles.input} name="lastName" autoComplete="family-name" required maxLength={60} disabled={pending} /></span></label>
+    <label className={styles.field}><span className={styles.fieldLabel}>رقم الجوال</span><span className={styles.inputShell}><input className={fieldClass(true)} name="phone" type="tel" autoComplete="tel" inputMode="tel" required maxLength={20} disabled={pending} placeholder="05xxxxxxxx" /></span></label>
+    <label className={styles.field}><span className={styles.fieldLabel}>البريد الإلكتروني</span><span className={styles.inputShell}><input className={fieldClass(true)} name="email" type="email" autoComplete="email" inputMode="email" required disabled={pending} placeholder="name@example.com" /></span></label>
+    <label className={styles.field}><span className={styles.fieldLabel}>المدينة</span><span className={styles.inputShell}><input className={styles.input} name="city" autoComplete="address-level2" required maxLength={100} disabled={pending} /></span></label>
+    {error ? <p className={styles.alert} role="alert">{error}</p> : null}
+    <button className={styles.submit} type="submit" disabled={pending}>{pending ? 'جاري الإرسال...' : 'إنشاء الحساب والتحقق من البريد'}</button>
+    <p className={styles.helper}>لن تُنشأ كلمة المرور قبل تأكيد البريد الإلكتروني.</p>
+    <p className={styles.helper}><Link href="/login">لديك حساب؟ تسجيل الدخول</Link></p>
   </form>;
 }
 
@@ -96,13 +101,13 @@ export function ForgotPasswordForm() {
     }
   }
 
-  if (sent) return <div className="auth-success" role="status"><strong>تم استلام الطلب</strong><p>إذا كان البريد مرتبطًا بحساب متحقق فستصلك رسالة لإعادة تعيين كلمة المرور.</p><Link href="/login">العودة إلى تسجيل الدخول</Link></div>;
+  if (sent) return <div className={styles.success} role="status"><strong>تم استلام الطلب</strong><p>إذا كان البريد مرتبطًا بحساب متحقق فستصلك رسالة لإعادة تعيين كلمة المرور.</p><Link href="/login">العودة إلى تسجيل الدخول</Link></div>;
 
-  return <form className="auth-form auth-form-v42 auth-form-nature" onSubmit={submit}>
-    <label className="auth-input-field"><span>البريد الإلكتروني</span><span className="auth-input-shell"><input name="email" type="email" autoComplete="email" required disabled={pending} dir="ltr" /></span></label>
-    {error ? <p className="form-error auth-alert" role="alert">{error}</p> : null}
-    <button className="auth-submit" type="submit" disabled={pending}>{pending ? 'جاري الإرسال...' : 'إرسال رابط الاستعادة'}</button>
-    <p className="auth-helper"><Link href="/login">العودة إلى تسجيل الدخول</Link></p>
+  return <form className={styles.form} onSubmit={submit}>
+    <label className={styles.field}><span className={styles.fieldLabel}>البريد الإلكتروني</span><span className={styles.inputShell}><input className={fieldClass(true)} name="email" type="email" autoComplete="email" required disabled={pending} /></span></label>
+    {error ? <p className={styles.alert} role="alert">{error}</p> : null}
+    <button className={styles.submit} type="submit" disabled={pending}>{pending ? 'جاري الإرسال...' : 'إرسال رابط الاستعادة'}</button>
+    <p className={styles.helper}><Link href="/login">العودة إلى تسجيل الدخول</Link></p>
   </form>;
 }
 
@@ -138,14 +143,14 @@ export function PasswordTokenForm({ token, mode }: { token: string; mode: 'setup
     }
   }
 
-  if (!token) return <p className="form-error auth-alert" role="alert">الرابط غير مكتمل. اطلب رابطًا جديدًا.</p>;
-  if (done) return <div className="auth-success" role="status"><strong>{mode === 'setup' ? 'تم إنشاء كلمة المرور' : 'تم تحديث كلمة المرور'}</strong><p>اكتملت العملية ويمكنك الآن تسجيل الدخول إلى نماء.</p><Link href="/login">الانتقال إلى تسجيل الدخول</Link></div>;
+  if (!token) return <p className={styles.alert} role="alert">الرابط غير مكتمل. اطلب رابطًا جديدًا.</p>;
+  if (done) return <div className={styles.success} role="status"><strong>{mode === 'setup' ? 'تم إنشاء كلمة المرور' : 'تم تحديث كلمة المرور'}</strong><p>اكتملت العملية ويمكنك الآن تسجيل الدخول إلى نماء.</p><Link href="/login">الانتقال إلى تسجيل الدخول</Link></div>;
 
-  return <form className="auth-form auth-form-v42 auth-form-nature" onSubmit={submit}>
-    <p className="auth-helper">استخدم 10 أحرف على الأقل، مع حرف واحد ورقم واحد على الأقل.</p>
-    <label className="auth-input-field"><span>كلمة المرور الجديدة</span><span className="auth-input-shell"><input name="password" type="password" autoComplete="new-password" minLength={10} maxLength={128} required disabled={pending} /></span></label>
-    <label className="auth-input-field"><span>تأكيد كلمة المرور</span><span className="auth-input-shell"><input name="confirm" type="password" autoComplete="new-password" minLength={10} maxLength={128} required disabled={pending} /></span></label>
-    {error ? <p className="form-error auth-alert" role="alert">{error}</p> : null}
-    <button className="auth-submit" type="submit" disabled={pending}>{pending ? 'جاري الحفظ...' : mode === 'setup' ? 'إنشاء كلمة المرور' : 'حفظ كلمة المرور الجديدة'}</button>
+  return <form className={styles.form} onSubmit={submit}>
+    <p className={styles.helper}>استخدم 10 أحرف على الأقل، مع حرف واحد ورقم واحد على الأقل.</p>
+    <label className={styles.field}><span className={styles.fieldLabel}>كلمة المرور الجديدة</span><span className={styles.inputShell}><input className={styles.input} name="password" type="password" autoComplete="new-password" minLength={10} maxLength={128} required disabled={pending} /></span></label>
+    <label className={styles.field}><span className={styles.fieldLabel}>تأكيد كلمة المرور</span><span className={styles.inputShell}><input className={styles.input} name="confirm" type="password" autoComplete="new-password" minLength={10} maxLength={128} required disabled={pending} /></span></label>
+    {error ? <p className={styles.alert} role="alert">{error}</p> : null}
+    <button className={styles.submit} type="submit" disabled={pending}>{pending ? 'جاري الحفظ...' : mode === 'setup' ? 'إنشاء كلمة المرور' : 'حفظ كلمة المرور الجديدة'}</button>
   </form>;
 }
