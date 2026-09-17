@@ -1,0 +1,187 @@
+/* Namaa approved identity polish — 2026-09-17
+   Uses the frozen NDOS palette/assets already shipped by the application. */
+
+:root {
+  --namaa-screen-safe-inset: max(16px, env(safe-area-inset-left), env(safe-area-inset-right));
+  --namaa-screen-safe-top: max(16px, env(safe-area-inset-top));
+}
+
+/* Floating controls must never touch the viewport edge. */
+.auth-page-nature .auth-theme-action {
+  position: absolute;
+  inset-inline-start: var(--namaa-screen-safe-inset);
+  inset-inline-end: auto;
+  top: var(--namaa-screen-safe-top);
+  z-index: 8;
+}
+
+.auth-page-nature .auth-theme-action .mustaqbali-theme-toggle {
+  margin: 0;
+}
+
+/* Decorative watermark: approved transparent mark, clipped to the leaf side only. */
+.auth-leaf-watermark {
+  position: fixed;
+  inset-inline-start: 0;
+  bottom: 0;
+  width: clamp(150px, 22vw, 300px);
+  height: clamp(190px, 34vh, 380px);
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+  opacity: .035;
+}
+
+.auth-leaf-watermark-crop {
+  position: absolute;
+  inset-inline-start: -2%;
+  bottom: -4%;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.auth-leaf-watermark .namaa-brand-logo {
+  position: absolute;
+  inset-inline-end: -176%;
+  bottom: 8%;
+  width: 420%;
+  max-width: none;
+  height: auto;
+  object-fit: contain;
+  filter: saturate(.7);
+}
+
+[data-theme='dark'] .auth-leaf-watermark {
+  opacity: .025;
+}
+
+.auth-page-nature .auth-stage,
+.auth-page-nature .auth-panel,
+.auth-page-nature .auth-visual {
+  position: relative;
+  z-index: 1;
+}
+
+.auth-mobile-badge {
+  display: none;
+}
+
+/* Keep the heading and form as one visual block. */
+.auth-page-nature .auth-heading-simple {
+  margin-bottom: 18px;
+}
+
+.auth-page-nature .auth-heading-simple + .auth-form-nature {
+  margin-top: 0;
+}
+
+@media (max-width: 767px) {
+  .auth-page-nature {
+    min-height: 100dvh;
+    padding-inline: var(--namaa-screen-safe-inset);
+    padding-top: var(--namaa-screen-safe-top);
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+  }
+
+  .auth-page-nature .auth-stage-nature {
+    min-height: calc(100dvh - var(--namaa-screen-safe-top) - max(16px, env(safe-area-inset-bottom)));
+    display: grid;
+    grid-template-rows: minmax(150px, .82fr) auto;
+    align-content: start;
+    gap: 10px;
+  }
+
+  .auth-page-nature .auth-visual-nature {
+    display: grid;
+    place-items: center;
+    min-height: 150px;
+    padding: 42px 0 6px;
+  }
+
+  .auth-page-nature .auth-brand-lockup-symbol {
+    width: 100%;
+    display: grid;
+    justify-items: center;
+    gap: 8px;
+  }
+
+  .auth-page-nature .auth-brand-symbol-frame {
+    display: grid;
+    place-items: center;
+    width: min(52vw, 184px);
+    height: auto;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+  }
+
+  .auth-page-nature .auth-brand-symbol {
+    width: 100%;
+    height: auto;
+    max-width: 184px;
+  }
+
+  .auth-page-nature .auth-nature-copy,
+  .auth-page-nature .auth-nature-path,
+  .auth-page-nature .auth-nature-glow {
+    display: none;
+  }
+
+  .auth-mobile-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 30px;
+    padding: 4px 12px;
+    border: 1px solid color-mix(in srgb, #D4AF6B 50%, transparent);
+    border-radius: 999px;
+    background: color-mix(in srgb, #FFF7E6 72%, transparent);
+    color: #0B6B4F;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  [data-theme='dark'] .auth-mobile-badge {
+    background: color-mix(in srgb, #0B6B4F 20%, transparent);
+    color: #FAF9F4;
+  }
+
+  .auth-page-nature .auth-panel-nature {
+    width: 100%;
+    align-self: start;
+    padding-top: 4px;
+  }
+
+  .auth-page-nature .auth-heading-simple {
+    margin-top: 0;
+    margin-bottom: 14px;
+  }
+
+  .auth-page-nature .auth-heading-simple h2 {
+    margin-bottom: 0;
+  }
+
+  .auth-page-nature .auth-heading-simple + .auth-form-nature {
+    gap: 12px;
+  }
+
+  .auth-leaf-watermark {
+    width: min(46vw, 190px);
+    height: min(30vh, 260px);
+    opacity: .028;
+  }
+
+  [data-theme='dark'] .auth-leaf-watermark {
+    opacity: .02;
+  }
+}
+
+@media (min-width: 768px) {
+  .auth-page-nature .auth-theme-action {
+    inset-inline-start: max(22px, env(safe-area-inset-left));
+    top: max(22px, env(safe-area-inset-top));
+  }
+}
