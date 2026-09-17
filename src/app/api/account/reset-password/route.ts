@@ -3,8 +3,17 @@ export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
 import { resetNamaaPassword } from '@/lib/auth/namaa-account-access';
+import { guardPublicAccountRequest, publicAccountGuardError } from '@/security/public-account-mutation';
 
 export async function POST(request: Request) {
+  try {
+    await guardPublicAccountRequest(request, 'reset-password', { limit: 10 });
+  } catch (error) {
+    const guarded = publicAccountGuardError(error);
+    if (guarded) return NextResponse.json({ code: guarded.code }, { status: guarded.status });
+    return NextResponse.json({ code: 'AUTH_PASSWORD_FAILED' }, { status: 503 });
+  }
+
   let body: { token?: unknown; password?: unknown };
   try {
     body = await request.json();
