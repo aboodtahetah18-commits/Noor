@@ -7,11 +7,18 @@ function replaceOnce(path, from, to){
   if(!before.includes(from)) throw new Error(`Expected conversation-ops target not found: ${path}`);
   fs.writeFileSync(full,before.replace(from,to),'utf8');
 }
+function replacePattern(path, pattern, to){
+  const full=`${root}/${path}`;
+  const before=fs.readFileSync(full,'utf8');
+  if(!pattern.test(before)) throw new Error(`Expected conversation-ops pattern not found: ${path}`);
+  fs.writeFileSync(full,before.replace(pattern,to),'utf8');
+}
 
 // Promote governance destinations into first-class operational channels in the mobile inbox.
-replaceOnce(
+// Match semantically instead of depending on exact whitespace emitted by the previous materialization patch.
+replacePattern(
   'src/components/ConversationWorkspace.tsx',
-  `<section className="mobile-inbox-section">\n        <header><strong>المجالس والمجموعات</strong><span>2</span></header>\n        <div className="mobile-contact-list">\n          <a className="mobile-contact-row" href="/meetings"><span className="mobile-contact-avatar governance"><Icon name="meetings" size={20}/></span><span className="mobile-contact-copy"><b>مجلس نماء واللجان</b><small>الاجتماعات، اللجان، المحاضر والمتابعة</small></span><Icon name="chevron" size={17}/></a>\n          <a className="mobile-contact-row" href="/central-bank"><span className="mobile-contact-avatar governance"><Icon name="banks" size={20}/></span><span className="mobile-contact-copy"><b>مجلس نماء المركزي</b><small>الاستقرار والتنسيق بين البنوك</small></span><Icon name="chevron" size={17}/></a>\n        </div>\n      </section>`,
+  /<section className="mobile-inbox-section">\s*<header><strong>المجالس والمجموعات<\/strong><span>2<\/span><\/header>[\s\S]*?<a className="mobile-contact-row" href="\/central-bank">[\s\S]*?<\/a>\s*<\/div>\s*<\/section>/,
   `<section className="mobile-inbox-section mobile-channel-section">\n        <header><strong>القنوات التشغيلية</strong><span>5</span></header>\n        <div className="mobile-contact-list">\n          <a className="mobile-contact-row mobile-channel-row" href="/meetings"><span className="mobile-contact-avatar governance"><Icon name="meetings" size={20}/></span><span className="mobile-contact-copy"><b>مجلس نماء واللجان</b><small>الاجتماعات، اللجان، المحاضر والمتابعة</small></span><span className="mobile-channel-tag">مجموعة</span></a>\n          <a className="mobile-contact-row mobile-channel-row" href="/central-bank"><span className="mobile-contact-avatar governance"><Icon name="banks" size={20}/></span><span className="mobile-contact-copy"><b>مجلس نماء المركزي</b><small>الاستقرار والتنسيق بين البنوك</small></span><span className="mobile-channel-tag">مجلس</span></a>\n          <a className="mobile-contact-row mobile-channel-row" href="/decisions"><span className="mobile-contact-avatar governance"><Icon name="decisions" size={20}/></span><span className="mobile-contact-copy"><b>متابعة القرارات</b><small>القرارات المفتوحة، الأدلة، والاعتمادات</small></span><span className="mobile-channel-tag">تشغيل</span></a>\n          <a className="mobile-contact-row mobile-channel-row" href="/budget"><span className="mobile-contact-avatar governance"><Icon name="budget" size={20}/></span><span className="mobile-contact-copy"><b>غرفة الميزانية</b><small>المتابعة والتحليل والطلبات المرتبطة بالميزانية</small></span><span className="mobile-channel-tag">مالي</span></a>\n          <a className="mobile-contact-row mobile-channel-row" href="/alerts"><span className="mobile-contact-avatar governance"><Icon name="alerts" size={20}/></span><span className="mobile-contact-copy"><b>قناة التنبيهات</b><small>التنبيهات التي تحتاج انتباهك أو متابعة</small></span><span className="mobile-channel-tag">تنبيه</span></a>\n        </div>\n      </section>`,
 );
 
