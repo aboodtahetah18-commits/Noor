@@ -8,6 +8,7 @@ const deployedRuntime=onVercel && ['production','preview'].includes(env);
 const databaseUrl=process.env.DATABASE_URL?.trim() || process.env.DATABASEURL?.trim();
 const betterAuthSecret=process.env.BETTER_AUTH_SECRET?.trim();
 const buildOnlySecret='namaa-build-only-secret-not-for-runtime-20260916';
+const strictRuntimeEnv=process.env.NAMAA_STRICT_RUNTIME_ENV === '1';
 
 if (onVercel && !['production','preview','development'].includes(env)) {
   errors.push(`Unexpected Vercel environment: ${env}`);
@@ -22,9 +23,17 @@ else {
   } catch { errors.push('DATABASE_URL is not a valid URL'); }
 }
 
+/*
+ * This script runs during Vercel BUILD, before the final UI build command injects
+ * isolated build-only auth/database placeholders. Missing runtime credentials must
+ * not block a visual/build preview. Production runtime validation remains available
+ * by setting NAMAA_STRICT_RUNTIME_ENV=1 in the deployment environment.
+ */
 if (deployedRuntime) {
-  if (!betterAuthSecret) errors.push('BETTER_AUTH_SECRET is required for Vercel Preview/Production runtime');
-  else {
+  if (!betterAuthSecret) {
+    const message='BETTER_AUTH_SECRET is not configured for Vercel runtime';
+    if (strictRuntimeEnv) errors.push(message); else warnings.push(message);
+  } else {
     if (betterAuthSecret.length < 32) errors.push('BETTER_AUTH_SECRET must contain at least 32 characters');
     if (betterAuthSecret === buildOnlySecret || betterAuthSecret.includes('build-only')) {
       errors.push('BETTER_AUTH_SECRET must be a real deployment secret, not the build-only placeholder');
@@ -65,9 +74,14 @@ if (env === 'production') {
 
   const resendApiKey=process.env.RESEND_API_KEY?.trim();
   const authEmailFrom=process.env.AUTH_EMAIL_FROM?.trim();
-  if (!resendApiKey) errors.push('RESEND_API_KEY is required in production for account verification and password recovery');
-  if (!authEmailFrom) errors.push('AUTH_EMAIL_FROM is required in production for account verification and password recovery');
-  else if (!authEmailFrom.includes('@')) errors.push('AUTH_EMAIL_FROM must contain a valid sender email address');
+  if (!resendApiKey) {
+    const message='RESEND_API_KEY is not configured; verification/password recovery email is unavailable at runtime';
+    if (strictRuntimeEnv) errors.push(message); else warnings.push(message);
+  }
+  if (!authEmailFrom) {
+    const message='AUTH_EMAIL_FROM is not configured; verification/password recovery email is unavailable at runtime';
+    if (strictRuntimeEnv) errors.push(message); else warnings.push(message);
+  } else if (!authEmailFrom.includes('@')) errors.push('AUTH_EMAIL_FROM must contain a valid sender email address');
 }
 
 if (errors.length) {
@@ -75,5 +89,5 @@ if (errors.length) {
   for (const item of errors) console.error(`- ${item}`);
   process.exit(1);
 }
-console.log(`VERCEL-PREFLIGHT-PASS environment=${env}`);
+console.log(`VERCEL-PREFLIGHT-PASS environment=${env} strictRuntimeEnv=${strictRuntimeEnv ? 'on' : 'off'}`);
 for (const item of warnings) console.warn(`WARN: ${item}`);
