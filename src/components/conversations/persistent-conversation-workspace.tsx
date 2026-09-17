@@ -20,6 +20,32 @@ const rooms: [Room, ...Room[]] = [
 ];
 const labels:Record<MessageKind,string>={message:'',risk:'تقييم مخاطر',decision:'قرار / اعتماد',recommendation:'توصية',followup:'متابعة',request:'طلب إجراء'};
 
+function formatSar(value:number){return new Intl.NumberFormat('ar-SA',{maximumFractionDigits:2}).format(value)}
+function roomTitle(value:unknown){if(typeof value!=='string')return null;return rooms.find(room=>room.id===value)?.title??null}
+function missingLabel(value:string){if(value==='monthly_net_income')return 'الدخل الشهري الصافي';if(value==='recurring_core_obligations')return 'الالتزامات الأساسية';return value}
+
+function StructuredFacts({data}:{data?:Record<string,unknown>}){
+  if(!data)return null;
+  const confidence=typeof data.confidence_percent==='number'?data.confidence_percent:null;
+  const routed=roomTitle(data.routed_room);
+  const metrics=data.financial_metrics&&typeof data.financial_metrics==='object'?data.financial_metrics as Record<string,unknown>:null;
+  const missing=Array.isArray(data.missing_fields)?data.missing_fields.filter((item):item is string=>typeof item==='string'):[];
+  const income=metrics&&typeof metrics.monthly_net_income==='number'?metrics.monthly_net_income:null;
+  const obligations=metrics&&typeof metrics.recurring_core_obligations_total==='number'?metrics.recurring_core_obligations_total:null;
+  const margin=metrics&&typeof metrics.safety_margin==='number'?metrics.safety_margin:null;
+  const ratio=metrics&&typeof metrics.obligation_ratio==='number'?metrics.obligation_ratio:null;
+  if(confidence===null&&!routed&&income===null&&!missing.length)return null;
+  return <div className={styles.facts}>
+    {confidence!==null&&<span><small>درجة الثقة</small><strong>{confidence}٪</strong></span>}
+    {routed&&<span><small>الجهة المختصة</small><strong>{routed}</strong></span>}
+    {income!==null&&<span><small>الدخل المؤكد</small><strong>{formatSar(income)} ر.س</strong></span>}
+    {obligations!==null&&<span><small>الالتزامات المؤكدة</small><strong>{formatSar(obligations)} ر.س</strong></span>}
+    {margin!==null&&<span><small>الهامش الأولي</small><strong>{formatSar(margin)} ر.س</strong></span>}
+    {ratio!==null&&<span><small>نسبة الالتزامات</small><strong>{(ratio*100).toFixed(1)}٪</strong></span>}
+    {missing.length>0&&<span><small>بيانات ناقصة</small><strong>{missing.map(missingLabel).join('، ')}</strong></span>}
+  </div>;
+}
+
 export function PersistentConversationWorkspace(){
   const [activeRoomId,setActiveRoomId]=useState<RoomKey>('central');
   const [loadedRoomId,setLoadedRoomId]=useState<RoomKey|null>(null);
@@ -61,7 +87,7 @@ export function PersistentConversationWorkspace(){
       {desktopRoomsVisible&&<aside className={styles.roomsPane} aria-label="قائمة المحادثات"><div className={styles.paneTitle}><span>الجهات والمحادثات</span><small>{rooms.length} جهات</small></div>{roomButtons}</aside>}
       <main className={styles.chatPane}><header className={styles.chatHeader}><div className={styles.chatIdentity}><span className={styles.entityAvatar}>{activeRoom.title.slice(0,1)}</span><div><div className={styles.entityTitle}><strong>{activeRoom.title}</strong><span>شخصية خوارزمية</span></div><small>{activeRoom.subtitle}</small></div></div><div className={styles.mobileTools}><button type="button" aria-label="فتح الجهات" onClick={()=>setRoomsOpen(true)}><LucideIcon name="messageSquareText" size={20}/></button><button type="button" aria-label="فتح سياق المحادثة" onClick={()=>setContextOpen(true)}><LucideIcon name="info" size={20}/></button></div></header>
         <div className={styles.routingNote}><LucideIcon name="sparkles" size={16}/><span><strong>التوجيه الذكي:</strong> {activeRoom.specialists}.</span></div>
-        <div className={styles.messages} aria-live="polite">{loading&&<p>جارٍ تحميل سجل المحادثة…</p>}{!loading&&!messages.length&&<article className={`${styles.message} ${styles.agentMessage}`}><p>هذه بداية محادثتك مع {activeRoom.title}. اكتب سؤالك أو القرار الذي تريد دراسته.</p></article>}{messages.map(message=><article key={message.id} className={`${styles.message} ${message.sender_type==='user'?styles.userMessage:styles.agentMessage}`}>{message.sender_type!=='user'&&<div className={styles.messageIdentity}><span className={styles.miniAvatar}>{message.sender_name.slice(0,1)}</span><span><strong>{message.sender_name}</strong><small>{message.sender_type==='system'?'رسالة نظام':'شخصية خوارزمية'}</small></span></div>}<p>{message.body}</p>{message.message_kind!=='message'&&<section className={`${styles.structuredCard} ${styles[`kind_${message.message_kind}`]}`}><header><strong>{labels[message.message_kind]}</strong></header>{(message.message_kind==='decision'||message.message_kind==='request')&&<small className={styles.executionBoundary}>أي تنفيذ مالي خارجي يظل بيد المستخدم، ويحتاج تأكيدًا وإثباتًا قبل الإغلاق.</small>}</section>}</article>)}</div>
+        <div className={styles.messages} aria-live="polite">{loading&&<p>جارٍ تحميل سجل المحادثة…</p>}{!loading&&!messages.length&&<article className={`${styles.message} ${styles.agentMessage}`}><p>هذه بداية محادثتك مع {activeRoom.title}. اكتب سؤالك أو القرار الذي تريد دراسته.</p></article>}{messages.map(message=><article key={message.id} className={`${styles.message} ${message.sender_type==='user'?styles.userMessage:styles.agentMessage}`}>{message.sender_type!=='user'&&<div className={styles.messageIdentity}><span className={styles.miniAvatar}>{message.sender_name.slice(0,1)}</span><span><strong>{message.sender_name}</strong><small>{message.sender_type==='system'?'رسالة نظام':'شخصية خوارزمية'}</small></span></div>}<p>{message.body}</p>{message.message_kind!=='message'&&<section className={`${styles.structuredCard} ${styles[`kind_${message.message_kind}`]}`}><header><strong>{labels[message.message_kind]}</strong></header><StructuredFacts data={message.structured_data}/>{(message.message_kind==='decision'||message.message_kind==='request')&&<small className={styles.executionBoundary}>أي تنفيذ مالي خارجي يظل بيد المستخدم، ويحتاج تأكيدًا وإثباتًا قبل الإغلاق.</small>}</section>}</article>)}</div>
         {error&&<div className={styles.routingNote} role="alert"><LucideIcon name="triangleAlert" size={16}/><span>{error}</span></div>}
         <div className={styles.attachmentPolicy}><LucideIcon name="upload" size={16}/><span>المرفق للمراجعة والتحقق فقط؛ لا ينشئ حركة مالية ولا يثبت التنفيذ تلقائيًا.</span></div><div className={styles.executionNote}><LucideIcon name="circleCheck" size={16}/><span>نماء يوصي ويتابع؛ التنفيذ المالي الخارجي يتم بواسطة المستخدم.</span></div>
         <form className={styles.composer} onSubmit={send}><button type="button" className={styles.attachButton} aria-label="إرفاق ملف" title="الإرفاق سيُفعّل بعد ربط التخزين الآمن"><LucideIcon name="upload" size={20}/></button><textarea value={draft} onChange={e=>setDraft(e.target.value)} placeholder={`اكتب إلى ${activeRoom.title}…`} rows={1} aria-label="نص الرسالة" maxLength={8000}/><button type="submit" className={styles.sendButton} disabled={!draft.trim()||sending}><span>{sending?'جارٍ التحليل…':'إرسال'}</span><LucideIcon name="chevronLeft" size={20}/></button></form>
