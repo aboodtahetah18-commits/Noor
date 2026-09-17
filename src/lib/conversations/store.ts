@@ -13,6 +13,18 @@ export const governedRooms: Record<ConversationRoomKey, { title: string; subtitl
   council: { title: 'مجلس نماء الأعلى', subtitle: 'القرارات واللجان', kind: 'council', participants: [{ key: 'council-secretary', name: 'أمين مجلس نماء الأعلى', type: 'agent', role: 'أمين خوارزمي' }] },
 };
 
+const onboardingMessage = {
+  senderKey: 'central-governor',
+  senderName: 'محافظ البنك المركزي لنماء',
+  body: 'مرحبًا بك في نماء. سنبدأ بتأسيس ملفك المالي خطوة بخطوة حتى تكون توصيات البنوك والمستشارين مبنية على بياناتك الفعلية. ابدأ بإرسال متوسط دخلك الشهري الصافي، ثم اذكر الالتزامات الأساسية الثابتة التي تتكرر عليك كل شهر. لا تحتاج إلى ترتيب مثالي؛ أرسل ما تعرفه وسأطلب منك البيانات الناقصة بالتدريج.',
+  structuredData: {
+    onboarding: true,
+    stage: 'financial-baseline',
+    requested_fields: ['monthly_net_income', 'recurring_core_obligations'],
+    execution_boundary: 'advisory_only',
+  },
+} as const;
+
 export function isConversationRoomKey(value: string): value is ConversationRoomKey {
   return Object.prototype.hasOwnProperty.call(governedRooms, value);
 }
@@ -22,15 +34,28 @@ async function ensureThread(userId: string, roomKey: ConversationRoomKey) {
   const room = governedRooms[roomKey];
   const existing = await sql`select id, room_key, title, subtitle, room_kind, status, updated_at from public.conversation_threads where user_id=${userId} and room_key=${roomKey} limit 1`;
   let threadId = existing[0]?.id as string | undefined;
+  let created = false;
+
   if (!threadId) {
-    threadId = randomUUID();
-    await sql`insert into public.conversation_threads (id,user_id,room_key,title,subtitle,room_kind,status,metadata) values (${threadId},${userId},${roomKey},${room.title},${room.subtitle},${room.kind},'ACTIVE','{}'::jsonb) on conflict (user_id, room_key) do nothing`;
-    const resolved = await sql`select id from public.conversation_threads where user_id=${userId} and room_key=${roomKey} limit 1`;
-    threadId = resolved[0]?.id as string;
+    const candidateId = randomUUID();
+    const inserted = await sql`insert into public.conversation_threads (id,user_id,room_key,title,subtitle,room_kind,status,metadata) values (${candidateId},${userId},${roomKey},${room.title},${room.subtitle},${room.kind},'ACTIVE','{}'::jsonb) on conflict (user_id, room_key) do nothing returning id`;
+    threadId = inserted[0]?.id as string | undefined;
+    created = Boolean(threadId);
+    if (!threadId) {
+      const resolved = await sql`select id from public.conversation_threads where user_id=${userId} and room_key=${roomKey} limit 1`;
+      threadId = resolved[0]?.id as string;
+    }
   }
+
   for (const participant of room.participants) {
     await sql`insert into public.conversation_participants (id,thread_id,participant_key,display_name,participant_type,role_label,is_active) values (${randomUUID()},${threadId},${participant.key},${participant.name},${participant.type},${participant.role},true) on conflict (thread_id, participant_key) do update set display_name=excluded.display_name, participant_type=excluded.participant_type, role_label=excluded.role_label, is_active=true`;
   }
+
+  if (created && roomKey === 'central') {
+    await sql`insert into public.conversation_messages (id,thread_id,user_id,sender_type,sender_key,sender_name,message_kind,body,structured_data) values (${randomUUID()},${threadId},${userId},'agent',${onboardingMessage.senderKey},${onboardingMessage.senderName},'request',${onboardingMessage.body},${JSON.stringify(onboardingMessage.structuredData)}::jsonb)`;
+    await sql`update public.conversation_threads set updated_at=now(), metadata=jsonb_set(coalesce(metadata,'{}'::jsonb),'{onboarding_started}','true'::jsonb,true) where id=${threadId} and user_id=${userId}`;
+  }
+
   return threadId;
 }
 
