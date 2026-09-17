@@ -13,6 +13,7 @@ node scripts/patch-namaa-mobile-governance-compat.mjs
 node scripts/patch-namaa-mobile-governance-verifier-compat.mjs
 node scripts/patch-namaa-mobile-agent-deeplink-compat.mjs
 node scripts/patch-namaa-mobile-final-acceptance.mjs
+node scripts/patch-namaa-auth-experience.mjs
 node scripts/verify-namaa-mobile-experience.mjs
 node scripts/verify-namaa-mobile-chat-first.mjs
 node scripts/verify-namaa-mobile-operational-rooms.mjs
@@ -29,6 +30,12 @@ required=(
   "src/features/financial-engine/services/resolve-runtime-versions.ts"
   "src/infrastructure/db/client.ts"
   "src/security/safe-logging.ts"
+  "src/lib/auth/namaa-account-access.ts"
+  "src/app/api/account/register/route.ts"
+  "src/app/api/account/verify-email/route.ts"
+  "src/app/api/account/set-password/route.ts"
+  "src/app/api/account/forgot-password/route.ts"
+  "src/app/api/account/reset-password/route.ts"
 )
 
 for source in "${required[@]}"; do
@@ -41,10 +48,11 @@ for source in "${required[@]}"; do
   cp "$source" "$destination"
 done
 
-# This route only recalculates governed engine/recommendation state. It does not
-# perform any external transfer, payment, investment, or other financial action.
+# Financial execution remains user-confirmed. These preserved routes only
+# recalculate governed state or manage account access; they do not perform
+# transfers, payments, investments, or any external financial action.
 for source in "${required[@]}"; do
   sha256sum "$source"
 done
 
-echo "Preserved Noor financial-engine cron backend inside Namaa P0.4.30 runtime."
+echo "Preserved Noor financial engine and Namaa account-access backend inside Namaa P0.4.30 runtime."
