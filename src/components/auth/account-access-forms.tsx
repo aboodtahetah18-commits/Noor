@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { FormEvent, useState } from 'react';
-import { LucideIcon } from '@/components/ui/lucide-icon';
+import { LucideIcon, type LucideIconName } from '@/components/ui/lucide-icon';
 import styles from './public-auth-shell.module.css';
 
 function messageFor(code: string): string {
@@ -18,7 +18,7 @@ function fieldClass(ltr = false) {
   return ltr ? `${styles.input} ${styles.ltr}` : styles.input;
 }
 
-function FieldIcon({ name }: { name: 'userRound' | 'phone' | 'mail' | 'mapPin' | 'lockKeyhole' }) {
+function FieldIcon({ name }: { name: LucideIconName }) {
   return <span className={styles.inputIcon} aria-hidden="true"><LucideIcon name={name} size={20} /></span>;
 }
 
@@ -50,11 +50,11 @@ export function RegisterForm() {
   if (sent) return <div className={styles.success} role="status"><strong>تحقق من بريدك الإلكتروني</strong><p>إذا كان البريد متاحًا للتسجيل فستصلك رسالة من نماء. افتح الرابط لتأكيد البريد ثم أنشئ كلمة المرور.</p><Link href="/login">العودة إلى تسجيل الدخول</Link></div>;
 
   return <form className={styles.form} onSubmit={submit}>
-    <label className={styles.field}><span className={styles.fieldLabel}>الاسم</span><span className={styles.inputShell}><input className={styles.input} name="firstName" autoComplete="given-name" required maxLength={60} disabled={pending} /><FieldIcon name="userRound" /></span></label>
-    <label className={styles.field}><span className={styles.fieldLabel}>اسم العائلة</span><span className={styles.inputShell}><input className={styles.input} name="lastName" autoComplete="family-name" required maxLength={60} disabled={pending} /><FieldIcon name="userRound" /></span></label>
-    <label className={styles.field}><span className={styles.fieldLabel}>رقم الجوال</span><span className={styles.inputShell}><input className={fieldClass(true)} name="phone" type="tel" autoComplete="tel" inputMode="tel" required maxLength={20} disabled={pending} placeholder="05xxxxxxxx" /><FieldIcon name="phone" /></span></label>
-    <label className={styles.field}><span className={styles.fieldLabel}>البريد الإلكتروني</span><span className={styles.inputShell}><input className={fieldClass(true)} name="email" type="email" autoComplete="email" inputMode="email" required disabled={pending} placeholder="name@example.com" /><FieldIcon name="mail" /></span></label>
-    <label className={styles.field}><span className={styles.fieldLabel}>المدينة</span><span className={styles.inputShell}><input className={styles.input} name="city" autoComplete="address-level2" required maxLength={100} disabled={pending} /><FieldIcon name="mapPin" /></span></label>
+    <label className={styles.field}><span className={styles.fieldLabel}>الاسم</span><span className={styles.inputShell}><input className={styles.input} name="firstName" autoComplete="given-name" required maxLength={60} disabled={pending} /><FieldIcon name="circleUserRound" /></span></label>
+    <label className={styles.field}><span className={styles.fieldLabel}>اسم العائلة</span><span className={styles.inputShell}><input className={styles.input} name="lastName" autoComplete="family-name" required maxLength={60} disabled={pending} /><FieldIcon name="circleUserRound" /></span></label>
+    <label className={styles.field}><span className={styles.fieldLabel}>رقم الجوال</span><span className={styles.inputShell}><input className={fieldClass(true)} name="phone" type="tel" autoComplete="tel" inputMode="tel" required maxLength={20} disabled={pending} placeholder="05xxxxxxxx" /><FieldIcon name="messageSquareText" /></span></label>
+    <label className={styles.field}><span className={styles.fieldLabel}>البريد الإلكتروني</span><span className={styles.inputShell}><input className={fieldClass(true)} name="email" type="email" autoComplete="email" inputMode="email" required disabled={pending} placeholder="name@example.com" /><FieldIcon name="messageSquareText" /></span></label>
+    <label className={styles.field}><span className={styles.fieldLabel}>المدينة</span><span className={styles.inputShell}><input className={styles.input} name="city" autoComplete="address-level2" required maxLength={100} disabled={pending} /><FieldIcon name="landmark" /></span></label>
     {error ? <p className={styles.alert} role="alert">{error}</p> : null}
     <button className={styles.submit} type="submit" disabled={pending}>{pending ? 'جاري الإرسال...' : 'إنشاء الحساب والتحقق من البريد'}</button>
     <p className={styles.helper}>لن تُنشأ كلمة المرور قبل تأكيد البريد الإلكتروني.</p>
@@ -79,7 +79,7 @@ export function ForgotPasswordForm() {
   }
   if (sent) return <div className={styles.success} role="status"><strong>تم استلام الطلب</strong><p>إذا كان البريد مرتبطًا بحساب متحقق فستصلك رسالة لإعادة تعيين كلمة المرور.</p><Link href="/login">العودة إلى تسجيل الدخول</Link></div>;
   return <form className={styles.form} onSubmit={submit}>
-    <label className={styles.field}><span className={styles.fieldLabel}>البريد الإلكتروني</span><span className={styles.inputShell}><input className={fieldClass(true)} name="email" type="email" autoComplete="email" required disabled={pending} placeholder="name@example.com" /><FieldIcon name="mail" /></span></label>
+    <label className={styles.field}><span className={styles.fieldLabel}>البريد الإلكتروني</span><span className={styles.inputShell}><input className={fieldClass(true)} name="email" type="email" autoComplete="email" required disabled={pending} placeholder="name@example.com" /><FieldIcon name="messageSquareText" /></span></label>
     {error ? <p className={styles.alert} role="alert">{error}</p> : null}
     <button className={styles.submit} type="submit" disabled={pending}>{pending ? 'جاري الإرسال...' : 'إرسال رابط الاستعادة'}</button>
     <p className={styles.helper}><Link href="/login">العودة إلى تسجيل الدخول</Link></p>
