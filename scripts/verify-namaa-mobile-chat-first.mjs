@@ -16,13 +16,17 @@ const home=fs.readFileSync(required[1],'utf8');
 const chat=fs.readFileSync(required[2],'utf8');
 const css=fs.readFileSync(required[3],'utf8');
 
+const hasGovernanceDestination =
+  chat.includes('مجلس نماء واللجان') ||
+  (chat.includes('operationalGroups') && chat.includes('مجلس نماء المركزي'));
+
 const checks=[
   [login.includes('دخول إلى نماء'),'login CTA is not brand-owned'],
   [home.includes('listAgents'),'home does not load real active agents'],
   [home.includes('agents={agents as any[]}'),'agents are not passed into the conversation workspace'],
   [chat.includes('mobile-chat-inbox'),'mobile chat inbox is missing'],
   [chat.includes('جهات نماء'),'mobile Namaa contacts section is missing'],
-  [chat.includes('مجلس نماء واللجان'),'governance group destination is missing'],
+  [hasGovernanceDestination,'governance/group destination is missing'],
   [chat.includes('mobile-chat-back'),'mobile chat back navigation is missing'],
   [css.includes('/* Namaa mobile chat-first distribution contract */'),'chat-first CSS contract is missing'],
   [css.includes('grid-template-rows:auto auto minmax(0,1fr) auto'),'login full-height distribution grid is missing'],

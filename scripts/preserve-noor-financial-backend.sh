@@ -6,8 +6,10 @@ set -euo pipefail
 # contract is the final UI authority before backend preservation/build.
 node scripts/patch-namaa-mobile-native.mjs
 node scripts/patch-namaa-mobile-chat-first.mjs
+node scripts/patch-namaa-mobile-operational-groups-v2.mjs
 node scripts/verify-namaa-mobile-experience.mjs
 node scripts/verify-namaa-mobile-chat-first.mjs
+node scripts/verify-namaa-mobile-operational-groups.mjs
 
 TARGET="apps/namaa-final-ui/src"
 
