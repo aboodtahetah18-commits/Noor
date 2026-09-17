@@ -22,10 +22,21 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
     <main className={styles.page}>
       <section className={styles.shell} aria-label="تسجيل الدخول إلى نماء">
         <aside className={styles.visual} aria-label="هوية نماء">
+          <div className={styles.leafDecorOne} aria-hidden="true" />
+          <div className={styles.leafDecorTwo} aria-hidden="true" />
+          <div className={styles.heroTheme}><ThemeToggle /></div>
+
           <div className={styles.brand}>
             <span className={styles.logoFrame}><BrandLogo surface="dark" className={styles.logo} priority /></span>
             <span className={styles.brandText}><strong>نماء</strong><span>مستقبل مالي أكثر وعيًا</span></span>
           </div>
+
+          <div className={styles.mobileHeroCopy}>
+            <span className={styles.mobileBadge}>ابدأ بوعي مالي</span>
+            <h1>مرحبًا بعودتك</h1>
+            <p>أدخل بيانات حسابك للوصول إلى نماء.</p>
+          </div>
+
           <div className={styles.visualCopy}>
             <p>منصة إدارة مالية شخصية</p>
             <h1>قرار مالي أوضح، في كل دورة.</h1>
@@ -34,13 +45,6 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         </aside>
 
         <section className={styles.panel} aria-labelledby="login-title">
-          <div className={styles.mobileTopbar}>
-            <div className={styles.mobileIdentity} aria-label="نماء — ابدأ بوعي مالي">
-              <BrandLogo surface="light" className={styles.mobileLogo} priority />
-              <span>ابدأ بوعي مالي</span>
-            </div>
-            <div className={styles.mobileTheme}><ThemeToggle /></div>
-          </div>
           <div className={styles.themeButton}><ThemeToggle /></div>
 
           {bootstrapStatus === 'DATABASE_NOT_READY' ? (
