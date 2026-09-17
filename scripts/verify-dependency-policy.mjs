@@ -5,8 +5,8 @@ const errors=[];
 const warnings=[];
 
 if(pkg.packageManager !== 'npm@11.19.0') errors.push(`packageManager must be npm@11.19.0, got ${pkg.packageManager ?? 'missing'}`);
-if(pkg.engines?.node !== '24.20.x') errors.push(`engines.node must be 24.20.x, got ${pkg.engines?.node ?? 'missing'}`);
-if(pkg.engines?.npm !== '11.x') errors.push(`engines.npm must be 11.x, got ${pkg.engines?.npm ?? 'missing'}`);
+if(pkg.engines?.node !== '>=24.19.0 <25') errors.push(`engines.node must stay within Vercel-compatible Node 24.19+ and below 25, got ${pkg.engines?.node ?? 'missing'}`);
+if(pkg.engines?.npm !== '>=11.17.0 <12') errors.push(`engines.npm must stay within npm 11.17+ and below 12, got ${pkg.engines?.npm ?? 'missing'}`);
 
 for (const section of ['dependencies','devDependencies']) {
   for (const [name,version] of Object.entries(pkg[section] ?? {})) {
