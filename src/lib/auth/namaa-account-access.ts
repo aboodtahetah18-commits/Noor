@@ -18,9 +18,7 @@ let pool: Pool | null = null;
 function database(): Pool {
   const connectionString = process.env.DATABASE_URL?.trim();
   if (!connectionString) throw new Error('DATABASE_URL_REQUIRED');
-  if (!pool) {
-    pool = new Pool({ connectionString });
-  }
+  if (!pool) pool = new Pool({ connectionString });
   return pool;
 }
 
@@ -64,24 +62,6 @@ function emailFromIdentifier(kind: ChallengeKind, value: string): string | null 
 
 export function validNamaaPassword(password: string): boolean {
   return password.length >= 10 && password.length <= 128 && /[A-Za-z]/.test(password) && /\d/.test(password);
-}
-
-async function ensureProfileTable(): Promise<void> {
-  await database().query(`
-    create table if not exists auth.user_profile (
-      user_id uuid primary key references auth."user"(id) on delete cascade,
-      first_name text not null,
-      last_name text not null,
-      phone text not null,
-      city text not null,
-      city_normalized text not null,
-      home_latitude double precision null,
-      home_longitude double precision null,
-      created_at timestamptz not null default now(),
-      updated_at timestamptz not null default now()
-    )
-  `);
-  await database().query('create index if not exists auth_user_profile_city_idx on auth.user_profile (city_normalized)');
 }
 
 async function createChallenge(kind: ChallengeKind, email: string): Promise<string> {
@@ -128,7 +108,6 @@ export async function beginNamaaRegistration(input: RegistrationInput) {
     return { ok: false as const, code: 'AUTH_INPUT_INVALID' as const };
   }
 
-  await ensureProfileTable();
   const existing = await database().query(
     'select id, email_verified from auth."user" where lower(email) = $1 limit 1',
     [email],
@@ -208,7 +187,7 @@ export async function setNamaaInitialPassword(token: string, password: string) {
     await client.query('begin');
     await client.query("delete from auth.account where user_id = $1 and provider_id = 'credential'", [userId]);
     await client.query(
-      "insert into auth.account (id, account_id, provider_id, issuer, user_id, password, created_at, updated_at) values ($1, $2, 'credential', 'local:credential', $2, $3, now(), now())",
+      "insert into auth.account (id, account_id, provider_id, user_id, password, created_at, updated_at) values ($1, $2, 'credential', $2, $3, now(), now())",
       [randomUUID(), userId, passwordHash],
     );
     await client.query('delete from auth.session where user_id = $1', [userId]);
