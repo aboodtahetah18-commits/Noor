@@ -1,5 +1,5 @@
-import { ConversationWorkspace } from '@/components/conversations/conversation-workspace';
+import { PersistentConversationWorkspace } from '@/components/conversations/persistent-conversation-workspace';
 
 export default function ConversationsPage() {
-  return <ConversationWorkspace />;
+  return <PersistentConversationWorkspace />;
 }
