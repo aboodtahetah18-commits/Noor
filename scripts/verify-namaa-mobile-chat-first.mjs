@@ -22,7 +22,7 @@ const checks=[
   [home.includes('agents={agents as any[]}'),'agents are not passed into the conversation workspace'],
   [chat.includes('mobile-chat-inbox'),'mobile chat inbox is missing'],
   [chat.includes('جهات نماء'),'mobile Namaa contacts section is missing'],
-  [chat.includes('مجلس نماء واللجان'),'governance group destination is missing'],
+  [chat.includes('governanceRooms')&&chat.includes('مجلس نماء الأعلى'),'governance group destination is missing'],
   [chat.includes('mobile-chat-back'),'mobile chat back navigation is missing'],
   [css.includes('/* Namaa mobile chat-first distribution contract */'),'chat-first CSS contract is missing'],
   [css.includes('grid-template-rows:auto auto minmax(0,1fr) auto'),'login full-height distribution grid is missing'],
