@@ -7,8 +7,17 @@ import {
   beginNamaaRegistration,
   sendNamaaAccountEmail,
 } from '@/lib/auth/namaa-account-access';
+import { guardPublicAccountRequest, publicAccountGuardError } from '@/security/public-account-mutation';
 
 export async function POST(request: Request) {
+  try {
+    await guardPublicAccountRequest(request, 'register', { limit: 5 });
+  } catch (error) {
+    const guarded = publicAccountGuardError(error);
+    if (guarded) return NextResponse.json({ code: guarded.code }, { status: guarded.status });
+    return NextResponse.json({ code: 'AUTH_REGISTER_FAILED' }, { status: 503 });
+  }
+
   let body: { firstName?: unknown; lastName?: unknown; phone?: unknown; email?: unknown; city?: unknown };
   try {
     body = await request.json();
