@@ -19,7 +19,7 @@ const checks=[
   [css.includes('@media(max-width:430px)'),'430px contract missing'],
   [css.includes('100dvh'),'dynamic viewport height contract missing'],
   [css.includes('100svh'),'small viewport fallback missing'],
-  [workspace.includes('mobile-bottom-nav'),'chat-first mobile bottom nav missing'],
+  [css.includes('.mobile-bottom-nav'),'chat-first mobile bottom nav acceptance rule missing'],
   [workspace.includes('governance-chat-context'),'governance chat context missing'],
   [auth.includes('auth-'),'auth mobile surface missing'],
 ];
