@@ -75,7 +75,13 @@ function recommendedRoom(intent: Intent, current: ConversationRoomKey): Conversa
 
 function agentForRoom(roomKey: ConversationRoomKey) {
   const participant = governedRooms[roomKey].participants[0];
+  if (!participant) return { key: `${roomKey}-agent`, name: governedRooms[roomKey].title };
   return { key: participant.key, name: participant.name };
+}
+
+function firstAmount(amounts: number[]) {
+  const value = amounts[0];
+  return typeof value === 'number' ? value : null;
 }
 
 function formatSar(value: number) {
@@ -91,15 +97,12 @@ function baselineMetrics(baseline: BaselineState) {
   const income = baseline.monthly_net_income_confirmed;
   const obligations = baseline.recurring_core_obligations_total;
   if (typeof income !== 'number' || typeof obligations !== 'number') return null;
-  const safetyMargin = income - obligations;
-  const obligationRatio = income > 0 ? obligations / income : null;
-  const incomeCoverage = obligations > 0 ? income / obligations : null;
   return {
     monthly_net_income: income,
     recurring_core_obligations_total: obligations,
-    safety_margin: safetyMargin,
-    obligation_ratio: obligationRatio,
-    income_to_obligations_coverage: incomeCoverage,
+    safety_margin: income - obligations,
+    obligation_ratio: income > 0 ? obligations / income : null,
+    income_to_obligations_coverage: obligations > 0 ? income / obligations : null,
   };
 }
 
@@ -112,7 +115,7 @@ function missingBaselineFields(baseline: BaselineState) {
 
 function confirmPending(baseline: BaselineState) {
   const pending = baseline.pending_confirmation;
-  if (!pending) return { baseline, confirmed: false as const, confirmedType: null as string | null };
+  if (!pending) return { baseline, confirmedType: null as string | null };
   const next: BaselineState = { ...baseline, updated_at: new Date().toISOString() };
   if (pending.type === 'monthly_net_income') {
     next.monthly_net_income_confirmed = pending.value;
@@ -123,12 +126,12 @@ function confirmPending(baseline: BaselineState) {
     next.recurring_core_obligations_total = pending.values.reduce((sum, value) => sum + value, 0);
   }
   delete next.pending_confirmation;
-  return { baseline: next, confirmed: true as const, confirmedType: pending.type };
+  return { baseline: next, confirmedType: pending.type };
 }
 
 function buildCentralReply(text: string, intent: Intent, amounts: number[], metadata: Record<string, unknown>) {
   let baseline = baselineFrom(metadata);
-  let body: string;
+  let body = '';
   let kind: ConversationMessageKind = 'request';
   let confidence = 0.55;
   let routedRoom: ConversationRoomKey = 'central';
@@ -140,13 +143,13 @@ function buildCentralReply(text: string, intent: Intent, amounts: number[], meta
     confirmedFact = confirmed.confirmedType;
     confidence = 1;
     const metrics = baselineMetrics(baseline);
-    const missing = missingBaselineFields(baseline);
-    if (metrics && !missing.length) {
+    if (metrics && !missingBaselineFields(baseline).length) {
       kind = 'recommendation';
       routedRoom = 'solvency';
-      body = `تم تثبيت خط الأساس المالي. الدخل الشهري الصافي المؤكد ${formatSar(metrics.monthly_net_income)} ريال، والالتزامات الأساسية المتكررة ${formatSar(metrics.recurring_core_obligations_total)} ريال. الهامش الحسابي الأولي بعد الالتزامات ${formatSar(metrics.safety_margin)} ريال، ونسبة الالتزامات إلى الدخل ${(metrics.obligation_ratio! * 100).toFixed(1)}٪. هذه أرقام حسابية وليست حكم مخاطر نهائي؛ الخطوة التالية هي تقييم التغطية والاحتياطي لدى بنك الملاءة قبل أي توصية تمويل أو استثمار.`;
-    } else if (confirmed.confirmedType === 'monthly_net_income') {
-      body = `تم تثبيت الدخل الشهري الصافي عند ${formatSar(baseline.monthly_net_income_confirmed!)} ريال. الآن أرسل الالتزامات الأساسية الثابتة التي تتكرر شهريًا وقيمة كل التزام، وسأعرضها عليك للتأكيد قبل اعتمادها.`;
+      const ratioText = typeof metrics.obligation_ratio === 'number' ? `${(metrics.obligation_ratio * 100).toFixed(1)}٪` : 'غير متاح';
+      body = `تم تثبيت خط الأساس المالي. الدخل الشهري الصافي المؤكد ${formatSar(metrics.monthly_net_income)} ريال، والالتزامات الأساسية المتكررة ${formatSar(metrics.recurring_core_obligations_total)} ريال. الهامش الحسابي الأولي ${formatSar(metrics.safety_margin)} ريال، ونسبة الالتزامات إلى الدخل ${ratioText}. الخطوة التالية تقييم الملاءة قبل أي توصية تمويل أو استثمار.`;
+    } else if (confirmed.confirmedType === 'monthly_net_income' && typeof baseline.monthly_net_income_confirmed === 'number') {
+      body = `تم تثبيت الدخل الشهري الصافي عند ${formatSar(baseline.monthly_net_income_confirmed)} ريال. الآن أرسل الالتزامات الأساسية الثابتة التي تتكرر شهريًا وقيمة كل التزام.`;
     } else {
       body = `تم تثبيت الالتزامات الأساسية المتكررة بإجمالي ${formatSar(baseline.recurring_core_obligations_total ?? 0)} ريال. ${typeof baseline.monthly_net_income_confirmed === 'number' ? 'أصبح لدينا ما يكفي لحساب الهامش الأولي.' : 'باقي متوسط الدخل الشهري الصافي حتى يكتمل خط الأساس.'}`;
     }
@@ -156,95 +159,42 @@ function buildCentralReply(text: string, intent: Intent, amounts: number[], meta
   if (isRejection(text) && baseline.pending_confirmation) {
     delete baseline.pending_confirmation;
     confidence = 1;
-    body = 'تم إلغاء القيمة المرشحة ولم أعتمدها. أرسل القيمة الصحيحة مع وصفها، وسأعرضها عليك للتأكيد من جديد.';
+    body = 'تم إلغاء القيمة المرشحة ولم أعتمدها. أرسل القيمة الصحيحة مع وصفها.';
     return { body, kind, confidence, baseline, routedRoom, confirmedFact };
   }
 
-  if (intent === 'income' && amounts.length) {
-    const value = amounts[0];
-    baseline = {
-      ...baseline,
-      monthly_net_income_candidate: value,
-      pending_confirmation: { type: 'monthly_net_income', value, raw_text: text },
-      updated_at: new Date().toISOString(),
-    };
+  const amount = firstAmount(amounts);
+  if (intent === 'income' && amount !== null) {
+    baseline = { ...baseline, monthly_net_income_candidate: amount, pending_confirmation: { type: 'monthly_net_income', value: amount, raw_text: text }, updated_at: new Date().toISOString() };
     confidence = 0.92;
-    body = `التقطت من رسالتك دخلًا شهريًا صافيًا قدره ${formatSar(value)} ريال. لن أعتمده نهائيًا قبل تأكيدك. هل أعتمد ${formatSar(value)} ريال كمتوسط دخلك الشهري الصافي؟`;
-  } else if (intent === 'obligation' && amounts.length) {
-    baseline = {
-      ...baseline,
-      recurring_core_obligations_candidates: amounts,
-      pending_confirmation: { type: 'recurring_core_obligations', values: amounts, raw_text: text },
-      updated_at: new Date().toISOString(),
-    };
+    body = `التقطت دخلًا شهريًا صافيًا قدره ${formatSar(amount)} ريال. هل أعتمد هذه القيمة؟`;
+  } else if (intent === 'obligation' && amount !== null) {
+    baseline = { ...baseline, recurring_core_obligations_candidates: amounts, pending_confirmation: { type: 'recurring_core_obligations', values: amounts, raw_text: text }, updated_at: new Date().toISOString() };
     confidence = amounts.length > 1 ? 0.88 : 0.78;
     const total = amounts.reduce((sum, value) => sum + value, 0);
-    body = `التقطت ${amounts.length === 1 ? 'قيمة التزام أساسي واحدة' : `${amounts.length} قيم لالتزامات أساسية`} بإجمالي ${formatSar(total)} ريال: ${amounts.map((value) => `${formatSar(value)} ريال`).join('، ')}. لن أعتمدها قبل تأكيدك. إذا كانت هذه هي الالتزامات الأساسية الشهرية المتكررة فاكتب «تأكيد»، أو أرسل التصحيح.`;
-  } else if (amounts.length && intent === 'general') {
+    body = `التقطت التزامات أساسية بإجمالي ${formatSar(total)} ريال. اكتب «تأكيد» لاعتمادها أو أرسل التصحيح.`;
+  } else if (amount !== null && intent === 'general') {
     confidence = 0.35;
-    body = `وجدت في رسالتك مبلغًا قدره ${formatSar(amounts[0])} ريال، لكن لا أريد افتراض معناه. هل هذا دخل شهري، التزام ثابت، مصروف، هدف، أم رصيد متاح؟`;
+    body = `وجدت مبلغًا قدره ${formatSar(amount)} ريال، لكن لا أريد افتراض معناه. هل هو دخل، التزام، مصروف، هدف أم رصيد متاح؟`;
   } else if (intent === 'reserve' || intent === 'investment' || intent === 'financing' || intent === 'goal') {
     routedRoom = recommendedRoom(intent, 'central');
     confidence = 0.8;
-    const room = governedRooms[routedRoom];
-    body = `الموضوع يرتبط مباشرة بـ${room.title}. سأحافظ على البيانات المؤكدة في خط الأساس، ثم يُستكمل التحليل لدى الجهة المختصة. قبل إصدار توصية تنفيذية نحتاج التأكد من اكتمال الدخل والالتزامات الأساسية، ولن يُعامل أي مبلغ غير مؤكد كسيولة متاحة.`;
+    body = `الموضوع يرتبط مباشرة بـ${governedRooms[routedRoom].title}. سأحتفظ فقط بالبيانات المؤكدة، ولن يُعامل أي مبلغ غير مؤكد كسيولة متاحة.`;
   } else {
-    const missing = missingBaselineFields(baseline);
-    body = missing.length
-      ? 'أحتاج أن نثبت خط الأساس المالي بدقة. اكتب متوسط الدخل الشهري الصافي، ثم الالتزامات الأساسية الثابتة المتكررة وقيمة كل واحد منها. كل قيمة ستُعرض عليك للتأكيد قبل اعتمادها.'
-      : 'خط الأساس المالي مثبت. يمكنك الآن طرح موضوع الملاءة، الاستثمار، التمويل أو الأهداف، وسأوجهه للجهة المختصة مع الاحتفاظ بالأرقام المؤكدة فقط.';
+    body = missingBaselineFields(baseline).length
+      ? 'أحتاج تثبيت متوسط الدخل الشهري الصافي والالتزامات الأساسية المتكررة. كل قيمة ستُعرض عليك للتأكيد قبل اعتمادها.'
+      : 'خط الأساس المالي مثبت. يمكنك الآن طرح موضوع الملاءة أو الاستثمار أو التمويل أو الأهداف.';
   }
-
   return { body, kind, confidence, baseline, routedRoom, confirmedFact };
 }
 
 function buildRoomReply(roomKey: ConversationRoomKey, amounts: number[]) {
-  if (roomKey === 'solvency') {
-    return {
-      kind: 'risk' as ConversationMessageKind,
-      body: amounts.length
-        ? `استلمت المبلغ ${formatSar(amounts[0])} ريال ضمن سياق الملاءة. قبل أي توصية سأقارنه بالتغطية الأساسية، الاحتياطي والسيولة المطلوبة حتى نهاية الدورة. لا أعتبره قابلًا للاستثمار أو التحويل قبل اكتمال هذه البيانات.`
-        : 'لتحليل الملاءة أحتاج قيمة الاحتياطي الحالي، متوسط المصروفات الأساسية الشهرية، وأقرب الالتزامات واجبة السداد. بعدها أحسب التغطية وأوضح مستوى المخاطر ودرجة الثقة.',
-      confidence: amounts.length ? 0.72 : 0.42,
-    };
-  }
-  if (roomKey === 'assets') {
-    return {
-      kind: 'recommendation' as ConversationMessageKind,
-      body: amounts.length
-        ? `سجلت مبلغًا مرشحًا للتحليل قدره ${formatSar(amounts[0])} ريال. قبل اقتراح الاستثمار سأراجع أفق الهدف، موعد الحاجة للمال، مستوى المخاطر، وما إذا كان المبلغ جزءًا من أموال الحماية أو الطوارئ.`
-        : 'أرسل قيمة المبلغ، الهدف المرتبط به، المدة المتوقعة، وهل يمكن تحمل انخفاض مؤقت في القيمة. لن أتعامل مع أموال الحماية كسيولة استثمارية تلقائيًا.',
-      confidence: amounts.length ? 0.68 : 0.4,
-    };
-  }
-  if (roomKey === 'hilal') {
-    return {
-      kind: 'request' as ConversationMessageKind,
-      body: amounts.length
-        ? `استلمت مبلغًا مرتبطًا بطلب التمويل قدره ${formatSar(amounts[0])} ريال. سأختبر أولًا أثر التمويل على التغطية الأساسية والسيولة. وإذا اعتمد الطلب فالتنفيذ الخارجي يبقى بيدك ويحتاج تأكيدًا وإثباتًا.`
-        : 'اذكر مبلغ التمويل المطلوب، الغرض، وموعد السداد المتوقع. سأفحصه مقابل التغطية الأساسية وحدود المخاطر قبل إصدار توصية.',
-      confidence: amounts.length ? 0.74 : 0.44,
-    };
-  }
-  if (roomKey === 'advisor') {
-    return {
-      kind: 'recommendation' as ConversationMessageKind,
-      body: 'سأبني التحليل على البيانات المؤكدة فقط، وأوضح لك ما هو معلوم وما هو ناقص ودرجة الثقة. أرسل القرار أو المسألة المالية التي تريد دراستها مع الأرقام والتواريخ المتاحة.',
-      confidence: 0.58,
-    };
-  }
-  if (roomKey === 'council') {
-    return {
-      kind: 'request' as ConversationMessageKind,
-      body: 'سأعرض الموضوع على المسار الحوكمي المناسب فقط. أرسل القرار المطلوب اعتماده، سببه، البيانات المؤيدة، والبدائل إن وجدت؛ ولن يُعد أي قرار تنفيذًا ماليًا خارجيًا.',
-      confidence: 0.58,
-    };
-  }
-  return {
-    kind: 'message' as ConversationMessageKind,
-    body: 'استلمت رسالتك. سأتعامل معها وفق الجهة الحالية والبيانات المؤكدة فقط، وأطلب أي معلومات ناقصة قبل إصدار توصية مالية.',
-    confidence: 0.5,
-  };
+  const amount = firstAmount(amounts);
+  if (roomKey === 'assets') return { kind:'recommendation' as ConversationMessageKind, body: amount === null ? 'أرسل قيمة المبلغ والهدف والمدة المتوقعة، وسأتحقق أولًا من المبلغ الآمن المتاح بعد حماية الالتزامات.' : `استلمت مبلغًا قدره ${formatSar(amount)} ريال للتحليل. سأقارنه أولًا بالسعة الآمنة بعد حماية أموال الملاءة والأهداف القريبة.`, confidence: amount === null ? 0.4 : 0.72 };
+  if (roomKey === 'hilal') return { kind:'request' as ConversationMessageKind, body: amount === null ? 'اذكر مبلغ التمويل المطلوب والغرض وموعد السداد المتوقع.' : `استلمت طلبًا بقيمة ${formatSar(amount)} ريال. سأختبره مقابل السعة الآمنة والتغطية الأساسية قبل أي اعتماد.`, confidence: amount === null ? 0.44 : 0.74 };
+  if (roomKey === 'advisor') return { kind:'recommendation' as ConversationMessageKind, body:'سأبني التحليل على البيانات المؤكدة فقط وأوضح درجة الثقة والبيانات الناقصة.', confidence:0.58 };
+  if (roomKey === 'council') return { kind:'request' as ConversationMessageKind, body:'أرسل القرار المطلوب اعتماده وسببه والبيانات المؤيدة؛ ولن يُعد أي قرار تنفيذًا ماليًا خارجيًا.', confidence:0.58 };
+  return { kind:'message' as ConversationMessageKind, body:'استلمت رسالتك وسأتعامل معها وفق البيانات المؤكدة فقط.', confidence:0.5 };
 }
 
 export async function createRoutedReply(userId: string, roomKey: ConversationRoomKey, userText: string): Promise<RoutedReply | null> {
@@ -256,7 +206,7 @@ export async function createRoutedReply(userId: string, roomKey: ConversationRoo
   const text = userText.trim();
   const amounts = numbersFrom(text);
   const intent = detectIntent(text);
-  const metadata = (threadRows[0]?.metadata && typeof threadRows[0].metadata === 'object') ? threadRows[0].metadata as Record<string, unknown> : {};
+  const metadata = threadRows[0]?.metadata && typeof threadRows[0].metadata === 'object' ? threadRows[0].metadata as Record<string, unknown> : {};
   const agent = agentForRoom(roomKey);
 
   let body: string;
@@ -264,6 +214,8 @@ export async function createRoutedReply(userId: string, roomKey: ConversationRoo
   let confidence: number;
   let routedRoom = recommendedRoom(intent, roomKey);
   let nextMetadata = metadata;
+  let financialMetrics: ReturnType<typeof baselineMetrics> = null;
+  let missingFields: string[] = [];
   let confirmedFact: string | null = null;
 
   if (roomKey === 'central') {
@@ -273,24 +225,17 @@ export async function createRoutedReply(userId: string, roomKey: ConversationRoo
     confidence = result.confidence;
     routedRoom = result.routedRoom;
     confirmedFact = result.confirmedFact;
-    nextMetadata = {
-      ...metadata,
-      financial_baseline: result.baseline,
-      onboarding_started: true,
-      last_detected_intent: intent,
-      last_confidence: confidence,
-      last_routed_room: routedRoom,
-    };
+    financialMetrics = baselineMetrics(result.baseline);
+    missingFields = missingBaselineFields(result.baseline);
+    nextMetadata = { ...metadata, financial_baseline: result.baseline, onboarding_started:true, last_detected_intent:intent, last_confidence:confidence };
   } else {
     const result = buildRoomReply(roomKey, amounts);
     body = result.body;
     kind = result.kind;
     confidence = result.confidence;
-    nextMetadata = { ...metadata, last_detected_intent: intent, last_confidence: confidence, last_routed_room: routedRoom };
+    nextMetadata = { ...metadata, last_detected_intent:intent, last_confidence:confidence };
   }
 
-  const baseline = baselineFrom(nextMetadata);
-  const metrics = baselineMetrics(baseline);
   const structuredData = {
     intent,
     confidence,
@@ -298,19 +243,16 @@ export async function createRoutedReply(userId: string, roomKey: ConversationRoo
     routed_room: routedRoom,
     current_room: roomKey,
     extracted_amounts: amounts,
+    financial_metrics: financialMetrics,
+    missing_fields: missingFields,
     confirmed_fact: confirmedFact,
-    pending_confirmation: baseline.pending_confirmation ?? null,
-    financial_metrics: metrics,
-    missing_fields: roomKey === 'central' ? missingBaselineFields(baseline) : [],
-    requires_user_confirmation: Boolean(baseline.pending_confirmation) || confidence < 0.9,
+    requires_user_confirmation: confidence < 0.9,
     execution_boundary: 'advisory_only',
   };
 
-  const replyId = randomUUID();
   const rows = await sql.transaction([
-    sql`insert into public.conversation_messages (id,thread_id,user_id,sender_type,sender_key,sender_name,message_kind,body,structured_data) values (${replyId},${threadId},${userId},'agent',${agent.key},${agent.name},${kind},${body},${JSON.stringify(structuredData)}::jsonb) returning id,sender_type,sender_key,sender_name,message_kind,body,structured_data,created_at`,
+    sql`insert into public.conversation_messages (id,thread_id,user_id,sender_type,sender_key,sender_name,message_kind,body,structured_data) values (${randomUUID()},${threadId},${userId},'agent',${agent.key},${agent.name},${kind},${body},${JSON.stringify(structuredData)}::jsonb) returning id,sender_type,sender_key,sender_name,message_kind,body,structured_data,created_at`,
     sql`update public.conversation_threads set updated_at=now(), metadata=${JSON.stringify(nextMetadata)}::jsonb where id=${threadId} and user_id=${userId} returning id`,
   ]);
-
   return (rows[0]?.[0] ?? null) as RoutedReply | null;
 }
