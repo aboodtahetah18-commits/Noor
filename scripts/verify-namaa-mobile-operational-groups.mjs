@@ -26,7 +26,7 @@ const checks=[
   [workspace.includes('groupQuickPrompts'),'group quick prompts are missing'],
   [workspace.includes('mobile-group-members'),'group member strip is missing'],
   [repository.includes('        t.context,\n        t.updated_at,'),'thread context is not listed for inbox reconstruction'],
-  [messageRoute.includes("const isOperationalGroup=String(thread.thread_kind??'').startsWith('GROUP_') || threadContext.conversation_mode==='GROUP';"),'group route guard is missing'],
+  [messageRoute.includes("const isOperationalGroup=String(thread.thread_kind??'').startsWith('GROUP_') || threadContext['conversation_mode']==='GROUP';"),'group route guard is missing'],
   [messageRoute.includes('if(targetAgent && !isOperationalGroup'),'group routing can still mutate room identity'],
   [css.includes('/* Namaa mobile operational groups contract */'),'operational-group CSS contract is missing'],
   [css.includes('.mobile-group-badge'),'group badge styling is missing'],
