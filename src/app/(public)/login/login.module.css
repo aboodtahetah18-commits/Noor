@@ -76,6 +76,7 @@
 }
 
 .themeButton{position:absolute;top:28px;left:28px;}
+.mobileBrand{display:none;}
 
 .heading{display:grid;gap:8px;margin-bottom:28px;}
 .kicker{margin:0;color:var(--ux-text-secondary);font-size:15px;font-weight:600;}
@@ -191,19 +192,15 @@
   .page{padding:0;background:var(--ux-surface-default);}
   .shell{width:100%;min-height:100svh;grid-template-columns:1fr;border:0;border-radius:0;box-shadow:none;overflow:visible;}
   .visual{display:none;}
-  .panel{min-height:100svh;justify-content:flex-start;padding:96px 24px 28px;}
-  .themeButton{top:22px;left:20px;}
-  .panel::before{
-    content:"نماء";
-    position:absolute;
-    top:28px;
-    right:24px;
-    color:var(--ux-action-primary);
-    font-size:20px;
-    font-weight:800;
-  }
+  .panel{min-height:100svh;justify-content:flex-start;padding:88px 24px 28px;}
+  .themeButton{top:20px;left:20px;}
+  .mobileBrand{position:absolute;top:20px;right:24px;display:flex;align-items:center;gap:10px;}
+  .mobileBrandLogo{width:34px;height:auto;}
+  .mobileBrandText{display:grid;gap:1px;}
+  .mobileBrandText strong{color:var(--ux-action-primary);font-size:17px;line-height:1;}
+  .mobileBrandText span{color:var(--ux-text-secondary);font-size:11px;}
   .heading{margin-bottom:24px;gap:6px;}
-  .heading h2{font-size:32px;}
+  .heading h2{font-size:30px;}
   .form{gap:16px;}
   .inputShell{min-height:52px;border-radius:13px;}
   .input{height:50px;}
@@ -213,7 +210,8 @@
 
 @media(max-width:480px){
   .panel{padding-inline:20px;}
-  .heading h2{font-size:30px;}
+  .mobileBrand{right:20px;}
+  .heading h2{font-size:28px;}
   .metaRow{align-items:flex-start;flex-direction:column;gap:8px;}
   .footer{font-size:11px;}
 }
