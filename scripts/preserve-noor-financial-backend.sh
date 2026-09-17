@@ -21,6 +21,8 @@ node scripts/verify-namaa-mobile-inline-actions.mjs
 node scripts/verify-namaa-mobile-governance-groups.mjs
 node scripts/verify-namaa-mobile-final-acceptance.mjs
 node scripts/patch-namaa-desktop-chat-workspace.mjs
+node scripts/patch-namaa-conversation-surface.mjs
+node scripts/verify-namaa-conversation-surface.mjs
 
 TARGET="apps/namaa-final-ui/src"
 
