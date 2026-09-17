@@ -2,10 +2,12 @@ import { describe, expect, it } from 'vitest';
 import { safeReturnTo } from '@/auth/safe-return-to';
 import { sanitizeMetadata } from '@/security/safe-logging';
 
- describe('Phase 37 security contracts', () => {
+describe('Phase 37 security contracts', () => {
   it('blocks external/open redirects', () => {
-    expect(safeReturnTo('https://evil.example')).toBe('/dashboard');
-    expect(safeReturnTo('//evil.example')).toBe('/dashboard');
+    expect(safeReturnTo('https://evil.example')).toBe('/conversations');
+    expect(safeReturnTo('//evil.example')).toBe('/conversations');
+    expect(safeReturnTo('/login')).toBe('/conversations');
+    expect(safeReturnTo('/auth/reset-password')).toBe('/conversations');
     expect(safeReturnTo('/transactions')).toBe('/transactions');
   });
 
