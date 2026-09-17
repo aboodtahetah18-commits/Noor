@@ -1,4 +1,4 @@
-import { boolean, pgSchema, text, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
+import { boolean, index, numeric, pgSchema, text, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 
 export const authSchema = pgSchema('auth');
 
@@ -11,6 +11,19 @@ export const user = authSchema.table('user', {
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 }, (table) => [uniqueIndex('auth_user_email_uq').on(table.email)]);
+
+export const userProfile = authSchema.table('user_profile', {
+  userId: uuid('user_id').primaryKey().references(() => user.id, { onDelete: 'cascade' }),
+  firstName: text('first_name').notNull(),
+  lastName: text('last_name').notNull(),
+  phone: text('phone').notNull(),
+  city: text('city').notNull(),
+  cityNormalized: text('city_normalized').notNull(),
+  homeLatitude: numeric('home_latitude', { precision: 9, scale: 6 }),
+  homeLongitude: numeric('home_longitude', { precision: 9, scale: 6 }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [index('auth_user_profile_city_idx').on(table.cityNormalized)]);
 
 export const session = authSchema.table('session', {
   id: uuid('id').primaryKey(),
@@ -48,4 +61,4 @@ export const verification = authSchema.table('verification', {
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
-export const authTables = { user, session, account, verification };
+export const authTables = { user, userProfile, session, account, verification };
