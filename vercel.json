@@ -3,7 +3,7 @@
   "installCommand": "npm install --legacy-peer-deps --no-audit --no-fund",
   "buildCommand": "npm run vercel:build",
   "devCommand": "npm run dev",
-  "outputDirectory": "apps/namaa-final-ui/.next",
+  "outputDirectory": ".next",
   "regions": ["fra1"],
   "framework": "nextjs",
   "crons": [
