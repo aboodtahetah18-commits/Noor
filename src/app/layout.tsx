@@ -12,6 +12,7 @@ import '../design-system/contracts.css';
 import '../design-system/components.css';
 import '../design-system/interaction-components.css';
 import '../design-system/pages.css';
+import '../design-system/auth-mobile-viewport.css';
 import '../design-system/ndos-v1.2.acceptance.css';
 import '../design-system/ndos-v1.2.css';
 import '../design-system/ndos-v1.2.enforcement.css';
