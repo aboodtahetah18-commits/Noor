@@ -6,7 +6,7 @@ import { LucideIcon } from '@/components/ui/lucide-icon';
 import styles from './login.module.css';
 
 function safeClientReturnTo(value: string): string {
-  if (!value.startsWith('/') || value.startsWith('//')) return '/dashboard';
+  if (!value.startsWith('/') || value.startsWith('//')) return '/conversations';
   return value;
 }
 
