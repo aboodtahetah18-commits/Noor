@@ -12,11 +12,13 @@ node scripts/patch-namaa-mobile-governance-groups-v2.mjs
 node scripts/patch-namaa-mobile-governance-compat.mjs
 node scripts/patch-namaa-mobile-governance-verifier-compat.mjs
 node scripts/patch-namaa-mobile-agent-deeplink-compat.mjs
+node scripts/patch-namaa-mobile-final-acceptance.mjs
 node scripts/verify-namaa-mobile-experience.mjs
 node scripts/verify-namaa-mobile-chat-first.mjs
 node scripts/verify-namaa-mobile-operational-rooms.mjs
 node scripts/verify-namaa-mobile-inline-actions.mjs
 node scripts/verify-namaa-mobile-governance-groups.mjs
+node scripts/verify-namaa-mobile-final-acceptance.mjs
 
 TARGET="apps/namaa-final-ui/src"
 
