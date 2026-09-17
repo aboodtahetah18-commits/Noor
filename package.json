@@ -47,6 +47,7 @@
     "verify:runtime-surface": "node scripts/verify-runtime-surface.mjs",
     "verify:project-contract": "node scripts/verify-project-execution-contract.mjs",
     "verify:design-system": "node scripts/verify-design-system-contract.mjs",
+    "verify:conversation-workspace": "node scripts/verify-root-conversation-workspace.mjs",
     "prequality:gate": "node scripts/ensure-npmrc.mjs && node scripts/ensure-env-example.mjs",
     "verify:interactions": "node scripts/verify-interaction-capabilities-contract.mjs",
     "verify:deployment-authority": "node scripts/verify-deployment-authority.mjs",
