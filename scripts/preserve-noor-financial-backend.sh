@@ -5,7 +5,9 @@ set -euo pipefail
 # Apply the mobile-native experience only after those steps so its responsive
 # contract is the final UI authority before backend preservation/build.
 node scripts/patch-namaa-mobile-native.mjs
+node scripts/patch-namaa-mobile-chat-first.mjs
 node scripts/verify-namaa-mobile-experience.mjs
+node scripts/verify-namaa-mobile-chat-first.mjs
 
 TARGET="apps/namaa-final-ui/src"
 
