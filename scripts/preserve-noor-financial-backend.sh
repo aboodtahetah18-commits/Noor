@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# The Vercel build materializes Namaa first and applies the compatibility patch.
+# Apply the mobile-native experience only after those steps so its responsive
+# contract is the final UI authority before backend preservation/build.
+node scripts/patch-namaa-mobile-native.mjs
+node scripts/verify-namaa-mobile-experience.mjs
+
 TARGET="apps/namaa-final-ui/src"
 
 required=(
