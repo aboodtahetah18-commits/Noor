@@ -1,6 +1,6 @@
 const AUTH_PUBLIC_PREFIXES = ['/login', '/auth'];
 
-export function safeReturnTo(value: string | null | undefined, fallback = '/dashboard') {
+export function safeReturnTo(value: string | null | undefined, fallback = '/conversations') {
   if (!value) return fallback;
   if (!value.startsWith('/') || value.startsWith('//')) return fallback;
   if (value.includes('\\')) return fallback;
