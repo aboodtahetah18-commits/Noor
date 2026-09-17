@@ -4,12 +4,20 @@ import { ThemeToggle } from '@/app/theme-toggle';
 
 export function PublicAuthShell({ title, kicker, children }: { title: string; kicker: string; children: ReactNode }) {
   return <main className="auth-page auth-page-v42 auth-page-nature">
+    <div className="auth-leaf-watermark" aria-hidden="true">
+      <span className="auth-leaf-watermark-crop"><BrandLogo surface="auto" priority /></span>
+    </div>
     <section className="auth-stage auth-stage-nature" aria-label={title}>
       <aside className="auth-visual auth-visual-nature" aria-label="هوية نماء">
         <div className="auth-nature-glow" aria-hidden="true" />
         <div className="auth-brand-lockup auth-brand-lockup-symbol">
-          <span className="auth-brand-symbol-frame"><BrandLogo surface="dark" className="auth-brand-symbol" priority /></span>
-          <div className="auth-nature-copy"><p className="auth-hero-eyebrow">نماء</p><p className="auth-hero-title">رؤية أوضح لقرارات أفضل</p><p className="auth-hero-copy">حسابك يبدأ ببريد إلكتروني متحقق، ثم كلمة مرور خاصة بك.</p></div>
+          <span className="auth-brand-symbol-frame"><BrandLogo surface="auto" className="auth-brand-symbol" priority /></span>
+          <span className="auth-mobile-badge">مستقبل مالي أكثر وعيًا</span>
+          <div className="auth-nature-copy">
+            <p className="auth-hero-eyebrow">نماء</p>
+            <p className="auth-hero-title">رؤية أوضح لقرارات أفضل</p>
+            <p className="auth-hero-copy">بيانات حسابك الأساسية تبقى في مسار واحد واضح وآمن، من التحقق بالبريد حتى الدخول.</p>
+          </div>
         </div>
       </aside>
       <section className="auth-panel auth-panel-nature" aria-labelledby="auth-flow-title">
