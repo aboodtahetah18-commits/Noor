@@ -12,12 +12,16 @@ export const dynamic = 'force-dynamic';
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ return_to?: string }> }) {
   const params = await searchParams;
   const returnTo = safeReturnTo(params.return_to);
-  const user = await getAuthenticatedUser();
-  if (user) redirect(returnTo);
+  const uiPreviewOnly = process.env.VERCEL_ENV === 'preview' && !process.env.BETTER_AUTH_SECRET?.trim();
 
-  const bootstrapStatus = await getOwnerBootstrapStatus();
+  if (!uiPreviewOnly) {
+    const user = await getAuthenticatedUser();
+    if (user) redirect(returnTo);
+  }
+
+  const bootstrapStatus = uiPreviewOnly ? 'READY' : await getOwnerBootstrapStatus();
   return (
-    <main className="auth-page auth-page-v42 auth-page-nature">
+    <main className="auth-page auth-page-v42 auth-page-nature" data-ui-preview-only={uiPreviewOnly ? 'true' : undefined}>
       <section className="auth-stage auth-stage-nature" aria-label="تسجيل الدخول إلى نماء">
         <aside className="auth-visual auth-visual-nature" aria-label="هوية المنصة">
           <div className="auth-nature-glow" aria-hidden="true" />
@@ -34,7 +38,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
             <p className="form-error auth-alert" role="alert">قاعدة البيانات لم تكتمل تهيئتها بعد. أعد نشر هذه النسخة ثم حاول مجددًا.</p>
           </> : <>
             <div className="auth-heading-block auth-heading-simple"><p className="auth-panel-kicker">مرحبًا بعودتك</p><h2 id="login-title">تسجيل الدخول</h2></div>
-            <LoginForm returnTo={returnTo} />
+            <LoginForm returnTo={returnTo} previewOnly={uiPreviewOnly} />
           </>}
           <footer className="auth-version" aria-label="إصدار التطبيق"><span>{appEnvironmentLabel()}</span><b>الإصدار {APP_VERSION}</b></footer>
         </section>
