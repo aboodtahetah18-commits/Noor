@@ -3,7 +3,7 @@
   "version": "1.5.0",
   "private": true,
   "engines": {
-    "node": "24.20.x",
+    "node": ">=24.19 <25",
     "npm": "11.x"
   },
   "scripts": {
@@ -51,7 +51,8 @@
     "prequality:gate": "node scripts/ensure-npmrc.mjs && node scripts/ensure-env-example.mjs",
     "verify:interactions": "node scripts/verify-interaction-capabilities-contract.mjs",
     "verify:deployment-authority": "node scripts/verify-deployment-authority.mjs",
-    "vercel:build": "npm run vercel:preflight && npm run verify:deployment-authority && BETTER_AUTH_SECRET=namaa-build-only-secret-not-for-runtime-20260916 BETTER_AUTH_URL=http://127.0.0.1:3000 DATABASE_URL=postgresql://namaa_build:namaa_build@127.0.0.1:5432/namaa_build npm run build",
+    "clean:legacy-ui-cache": "node -e \"require('node:fs').rmSync('apps/namaa-final-ui',{recursive:true,force:true})\"",
+    "vercel:build": "npm run vercel:preflight && npm run clean:legacy-ui-cache && npm run verify:deployment-authority && BETTER_AUTH_SECRET=namaa-build-only-secret-not-for-runtime-20260916 BETTER_AUTH_URL=http://127.0.0.1:3000 DATABASE_URL=postgresql://namaa_build:namaa_build@127.0.0.1:5432/namaa_build npm run build",
     "vercel:migrate": "node scripts/migrate-deployment.mjs",
     "vercel:preflight": "node scripts/vercel-preflight.mjs",
     "verify:vercel": "node scripts/verify-vercel-deployment-contract.mjs"
