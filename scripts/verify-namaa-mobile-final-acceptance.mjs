@@ -2,12 +2,10 @@ import fs from 'node:fs';
 
 const root='apps/namaa-final-ui';
 const cssPath=`${root}/src/app/globals.css`;
-const authPath=`${root}/src/app/login/page.tsx`;
 const workspacePath=`${root}/src/components/ConversationWorkspace.tsx`;
-for(const file of [cssPath,authPath,workspacePath]) if(!fs.existsSync(file)) throw new Error(`Missing final mobile acceptance target: ${file}`);
+for(const file of [cssPath,workspacePath]) if(!fs.existsSync(file)) throw new Error(`Missing final mobile acceptance target: ${file}`);
 
 const css=fs.readFileSync(cssPath,'utf8');
-const auth=fs.readFileSync(authPath,'utf8');
 const workspace=fs.readFileSync(workspacePath,'utf8');
 const checks=[
   [css.includes('/* Namaa mobile final acceptance contract */'),'final acceptance marker missing'],
@@ -20,8 +18,8 @@ const checks=[
   [css.includes('100dvh'),'dynamic viewport height contract missing'],
   [css.includes('100svh'),'small viewport fallback missing'],
   [css.includes('.mobile-bottom-nav'),'chat-first mobile bottom nav acceptance rule missing'],
+  [css.includes('.auth-page,.auth-shell'),'auth viewport contract missing'],
   [workspace.includes('governance-chat-context'),'governance chat context missing'],
-  [auth.includes('auth-'),'auth mobile surface missing'],
 ];
 for(const [ok,message] of checks) if(!ok) throw new Error(message);
 
