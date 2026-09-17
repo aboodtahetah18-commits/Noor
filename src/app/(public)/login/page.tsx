@@ -35,6 +35,10 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
 
         <section className={styles.panel} aria-labelledby="login-title">
           <div className={styles.themeButton}><ThemeToggle /></div>
+          <div className={styles.mobileBrand} aria-label="نماء — ابدأ بوعي مالي">
+            <BrandLogo surface="auto" className={styles.mobileBrandLogo} priority />
+            <span className={styles.mobileBrandText}><strong>نماء</strong><span>ابدأ بوعي مالي</span></span>
+          </div>
 
           {bootstrapStatus === 'DATABASE_NOT_READY' ? (
             <div className={styles.loadingCard}>
