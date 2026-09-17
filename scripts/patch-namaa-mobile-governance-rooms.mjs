@@ -10,6 +10,12 @@ function replaceOnce(path,from,to){
 
 replaceOnce(
   'src/components/ConversationWorkspace.tsx',
+  "import { Icon } from './Icon';",
+  "import { Icon, type IconName } from './Icon';"
+);
+
+replaceOnce(
+  'src/components/ConversationWorkspace.tsx',
   'function StructuredActionCard({',
   String.raw`type GovernanceRoom={
   key:'supreme'|'standing'|'temporary'|'emergency';
