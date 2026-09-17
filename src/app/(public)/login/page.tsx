@@ -26,7 +26,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           <div className="auth-nature-glow" aria-hidden="true" />
           <div className="auth-brand-lockup auth-brand-lockup-symbol">
             <span className="auth-brand-symbol-frame"><BrandLogo surface="auto" className="auth-brand-symbol" priority /></span>
-            <span className="auth-mobile-badge">مستقبل مالي أكثر وعيًا</span>
+            <span className="auth-mobile-badge">اصنع مستقبلك المالي</span>
             <div className="auth-nature-copy"><p className="auth-hero-eyebrow">رحلتك المالية</p><p className="auth-hero-title">رؤية أوضح لقرارات أفضل</p><p className="auth-hero-copy">تابع أموالك، خطط بهدوء، وشاهد تقدمك في مكان واحد.</p></div>
           </div>
           <div className="auth-nature-path" aria-hidden="true"><span /><span /><span /></div>
