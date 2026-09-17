@@ -8,7 +8,7 @@ on:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     env:
       BETTER_AUTH_SECRET: namaa-ci-build-only-secret-20260917
       BETTER_AUTH_URL: http://127.0.0.1:3000
@@ -21,10 +21,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24.19.0
-          cache: npm
 
       - name: Install dependencies
-        run: npm ci --legacy-peer-deps --no-audit --no-fund
+        run: npm install --legacy-peer-deps --no-audit --no-fund
+
+      - name: Verify deployment authority
+        run: npm run verify:deployment-authority
 
       - name: TypeScript
         run: npm run typecheck
