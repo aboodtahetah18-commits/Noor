@@ -9,6 +9,7 @@ node scripts/patch-namaa-mobile-chat-first.mjs
 node scripts/patch-namaa-mobile-operational-rooms.mjs
 node scripts/patch-namaa-mobile-inline-actions-v2.mjs
 node scripts/patch-namaa-mobile-governance-groups-v2.mjs
+node scripts/patch-namaa-mobile-governance-compat.mjs
 node scripts/verify-namaa-mobile-experience.mjs
 node scripts/verify-namaa-mobile-chat-first.mjs
 node scripts/verify-namaa-mobile-operational-rooms.mjs
