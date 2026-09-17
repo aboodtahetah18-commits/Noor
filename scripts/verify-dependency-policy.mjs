@@ -4,8 +4,10 @@ const pkg = JSON.parse(fs.readFileSync('package.json','utf8'));
 const errors=[];
 const warnings=[];
 
+const SUPPORTED_NODE_ENGINE = '>=24.19 <25';
+
 if(pkg.packageManager !== 'npm@11.19.0') errors.push(`packageManager must be npm@11.19.0, got ${pkg.packageManager ?? 'missing'}`);
-if(pkg.engines?.node !== '24.20.x') errors.push(`engines.node must be 24.20.x, got ${pkg.engines?.node ?? 'missing'}`);
+if(pkg.engines?.node !== SUPPORTED_NODE_ENGINE) errors.push(`engines.node must be ${SUPPORTED_NODE_ENGINE}, got ${pkg.engines?.node ?? 'missing'}`);
 if(pkg.engines?.npm !== '11.x') errors.push(`engines.npm must be 11.x, got ${pkg.engines?.npm ?? 'missing'}`);
 
 for (const section of ['dependencies','devDependencies']) {
@@ -27,4 +29,4 @@ else {
 
 if(errors.length){for(const e of errors) console.error('DEPENDENCY-POLICY-FAIL',e);process.exit(1)}
 for(const w of warnings) console.warn('DEPENDENCY-POLICY-WARN',w);
-console.log(`DEPENDENCY-POLICY-PASS direct dependencies pinned=${Object.keys(pkg.dependencies??{}).length+Object.keys(pkg.devDependencies??{}).length} lockfile=${lockExists?'present':'pending'}`);
+console.log(`DEPENDENCY-POLICY-PASS node=${SUPPORTED_NODE_ENGINE} direct dependencies pinned=${Object.keys(pkg.dependencies??{}).length+Object.keys(pkg.devDependencies??{}).length} lockfile=${lockExists?'present':'pending'}`);
