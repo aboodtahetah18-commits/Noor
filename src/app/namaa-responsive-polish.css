@@ -1,9 +1,9 @@
 /* Namaa approved identity polish — 2026-09-17
-   Uses the frozen NDOS palette/assets already shipped by the application. */
+   Uses only governed NDOS/UX tokens for visual values. */
 
 :root {
-  --namaa-screen-safe-inset: max(16px, env(safe-area-inset-left), env(safe-area-inset-right));
-  --namaa-screen-safe-top: max(16px, env(safe-area-inset-top));
+  --namaa-screen-safe-inset: max(var(--ux-space-4), env(safe-area-inset-left), env(safe-area-inset-right));
+  --namaa-screen-safe-top: max(var(--ux-space-4), env(safe-area-inset-top));
 }
 
 /* Floating controls must never touch the viewport edge. */
@@ -16,7 +16,7 @@
 }
 
 .auth-page-nature .auth-theme-action .mustaqbali-theme-toggle {
-  margin: 0;
+  margin: var(--ux-space-0);
 }
 
 /* Decorative watermark: approved transparent mark, clipped to the leaf side only. */
@@ -70,11 +70,11 @@
 
 /* Keep the heading and form as one visual block. */
 .auth-page-nature .auth-heading-simple {
-  margin-bottom: 18px;
+  margin-bottom: var(--ux-space-5);
 }
 
 .auth-page-nature .auth-heading-simple + .auth-form-nature {
-  margin-top: 0;
+  margin-top: var(--ux-space-0);
 }
 
 @media (max-width: 767px) {
@@ -82,29 +82,29 @@
     min-height: 100dvh;
     padding-inline: var(--namaa-screen-safe-inset);
     padding-top: var(--namaa-screen-safe-top);
-    padding-bottom: max(16px, env(safe-area-inset-bottom));
+    padding-bottom: max(var(--ux-space-4), env(safe-area-inset-bottom));
   }
 
   .auth-page-nature .auth-stage-nature {
-    min-height: calc(100dvh - var(--namaa-screen-safe-top) - max(16px, env(safe-area-inset-bottom)));
+    min-height: calc(100dvh - var(--namaa-screen-safe-top) - max(var(--ux-space-4), env(safe-area-inset-bottom)));
     display: grid;
     grid-template-rows: minmax(150px, .82fr) auto;
     align-content: start;
-    gap: 10px;
+    gap: var(--ux-space-3);
   }
 
   .auth-page-nature .auth-visual-nature {
     display: grid;
     place-items: center;
     min-height: 150px;
-    padding: 42px 0 6px;
+    padding: var(--ux-space-10) var(--ux-space-0) var(--ux-space-2);
   }
 
   .auth-page-nature .auth-brand-lockup-symbol {
     width: 100%;
     display: grid;
     justify-items: center;
-    gap: 8px;
+    gap: var(--ux-space-2);
   }
 
   .auth-page-nature .auth-brand-symbol-frame {
@@ -114,7 +114,7 @@
     height: auto;
     background: transparent;
     border: 0;
-    box-shadow: none;
+    box-shadow: var(--ux-shadow-none);
   }
 
   .auth-page-nature .auth-brand-symbol {
@@ -134,38 +134,38 @@
     align-items: center;
     justify-content: center;
     min-height: 30px;
-    padding: 4px 12px;
-    border: 1px solid color-mix(in srgb, #D4AF6B 50%, transparent);
-    border-radius: 999px;
-    background: color-mix(in srgb, #FFF7E6 72%, transparent);
-    color: #0B6B4F;
-    font-size: 12px;
+    padding: var(--ux-space-1) var(--ux-space-3);
+    border: 1px solid color-mix(in srgb, var(--namaa-gold-500) 50%, transparent);
+    border-radius: var(--ux-radius-full);
+    background: color-mix(in srgb, var(--namaa-cream) 72%, transparent);
+    color: var(--namaa-green-900);
+    font-size: var(--ux-type-caption-size);
     font-weight: 500;
     line-height: 1.5;
   }
 
   [data-theme='dark'] .auth-mobile-badge {
-    background: color-mix(in srgb, #0B6B4F 20%, transparent);
-    color: #FAF9F4;
+    background: color-mix(in srgb, var(--namaa-green-900) 20%, transparent);
+    color: var(--namaa-surface-warm);
   }
 
   .auth-page-nature .auth-panel-nature {
     width: 100%;
     align-self: start;
-    padding-top: 4px;
+    padding-top: var(--ux-space-1);
   }
 
   .auth-page-nature .auth-heading-simple {
-    margin-top: 0;
-    margin-bottom: 14px;
+    margin-top: var(--ux-space-0);
+    margin-bottom: var(--ux-space-4);
   }
 
   .auth-page-nature .auth-heading-simple h2 {
-    margin-bottom: 0;
+    margin-bottom: var(--ux-space-0);
   }
 
   .auth-page-nature .auth-heading-simple + .auth-form-nature {
-    gap: 12px;
+    gap: var(--ux-space-3);
   }
 
   .auth-leaf-watermark {
@@ -181,7 +181,7 @@
 
 @media (min-width: 768px) {
   .auth-page-nature .auth-theme-action {
-    inset-inline-start: max(22px, env(safe-area-inset-left));
-    top: max(22px, env(safe-area-inset-top));
+    inset-inline-start: max(var(--ux-space-6), env(safe-area-inset-left));
+    top: max(var(--ux-space-6), env(safe-area-inset-top));
   }
 }
