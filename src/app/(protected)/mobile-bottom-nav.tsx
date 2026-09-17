@@ -7,7 +7,7 @@ import { LucideIcon, type LucideIconName } from '@/components/ui/lucide-icon';
 const items: Array<{href:string;label:string;icon:LucideIconName}> = [
   { href: '/dashboard', label: 'الرئيسية', icon: 'house' },
   { href: '/accounts', label: 'الحسابات', icon: 'creditCard' },
-  { href: '/transactions', label: 'العمليات', icon: 'repeat2' },
+  { href: '/conversations', label: 'المحادثات', icon: 'messageSquareText' },
   { href: '/budget', label: 'الميزانية', icon: 'chart' },
   { href: '/more', label: 'المزيد', icon: 'ellipsis' },
 ];
