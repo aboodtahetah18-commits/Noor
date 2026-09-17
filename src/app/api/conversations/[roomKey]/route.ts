@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
 import { getAuthenticatedUser, requireAuthenticatedMutationUser } from '@/auth/require-authenticated-user';
+import { createRoutedReply } from '@/lib/conversations/reply-engine';
 import { appendUserMessage, getConversationRoom, isConversationRoomKey } from '@/lib/conversations/store';
 
 export async function GET(_request: Request, context: { params: Promise<{ roomKey: string }> }) {
@@ -29,8 +30,10 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
     return NextResponse.json({ code: 'CONVERSATION_INPUT_INVALID' }, { status: 400 });
   }
   try {
-    const message = await appendUserMessage(user.id, user.name || 'أنت', roomKey, String(body.body ?? ''));
-    return NextResponse.json({ message }, { status: 201 });
+    const text = String(body.body ?? '');
+    const message = await appendUserMessage(user.id, user.name || 'أنت', roomKey, text);
+    const reply = await createRoutedReply(user.id, roomKey, text);
+    return NextResponse.json({ message, reply }, { status: 201 });
   } catch (error) {
     const code = error instanceof Error ? error.message : 'CONVERSATION_WRITE_FAILED';
     if (code === 'CONVERSATION_MESSAGE_INVALID') return NextResponse.json({ code }, { status: 400 });
