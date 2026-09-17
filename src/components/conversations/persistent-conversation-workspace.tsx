@@ -22,10 +22,10 @@ const labels:Record<MessageKind,string>={message:'',risk:'تقييم مخاطر'
 
 export function PersistentConversationWorkspace(){
   const [activeRoomId,setActiveRoomId]=useState<RoomKey>('central');
+  const [loadedRoomId,setLoadedRoomId]=useState<RoomKey|null>(null);
   const [messages,setMessages]=useState<Message[]>([]);
   const [participants,setParticipants]=useState<Participant[]>([]);
   const [draft,setDraft]=useState('');
-  const [loading,setLoading]=useState(true);
   const [sending,setSending]=useState(false);
   const [error,setError]=useState('');
   const [roomsOpen,setRoomsOpen]=useState(false);
@@ -33,14 +33,14 @@ export function PersistentConversationWorkspace(){
   const [desktopRoomsVisible,setDesktopRoomsVisible]=useState(true);
   const [desktopContextVisible,setDesktopContextVisible]=useState(true);
   const activeRoom=useMemo(()=>rooms.find(r=>r.id===activeRoomId)??rooms[0],[activeRoomId]);
+  const loading=loadedRoomId!==activeRoomId;
 
-  useEffect(()=>{ let cancelled=false; setLoading(true); setError(''); fetch(`/api/conversations/${activeRoomId}`,{cache:'no-store'})
+  useEffect(()=>{ let cancelled=false; fetch(`/api/conversations/${activeRoomId}`,{cache:'no-store'})
     .then(async response=>{ if(!response.ok) throw new Error('تعذر تحميل المحادثة.'); return response.json(); })
-    .then(data=>{ if(!cancelled){ setMessages(Array.isArray(data.messages)?data.messages:[]); setParticipants(Array.isArray(data.participants)?data.participants:[]); } })
-    .catch(()=>{ if(!cancelled) setError('تعذر تحميل المحادثة الآن. حاول مرة أخرى.'); })
-    .finally(()=>{ if(!cancelled) setLoading(false); }); return()=>{cancelled=true}; },[activeRoomId]);
+    .then(data=>{ if(!cancelled){ setMessages(Array.isArray(data.messages)?data.messages:[]); setParticipants(Array.isArray(data.participants)?data.participants:[]); setLoadedRoomId(activeRoomId); } })
+    .catch(()=>{ if(!cancelled){ setError('تعذر تحميل المحادثة الآن. حاول مرة أخرى.'); setLoadedRoomId(activeRoomId); } }); return()=>{cancelled=true}; },[activeRoomId]);
 
-  function chooseRoom(id:RoomKey){setActiveRoomId(id);setRoomsOpen(false)}
+  function chooseRoom(id:RoomKey){setError('');setActiveRoomId(id);setRoomsOpen(false)}
   async function send(event:FormEvent){ event.preventDefault(); const body=draft.trim(); if(!body||sending)return; setSending(true); setError('');
     try{ const response=await fetch(`/api/conversations/${activeRoomId}`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({body})}); const data=await response.json(); if(!response.ok||!data.message)throw new Error('write'); setMessages(current=>[...current,data.message]); setDraft(''); }
     catch{setError('لم تُحفظ الرسالة. لم يعتبر نماء الإرسال مكتملًا؛ أعد المحاولة.')} finally{setSending(false)} }
