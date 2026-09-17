@@ -8,12 +8,13 @@ const deployedRuntime=onVercel && ['production','preview'].includes(env);
 const databaseUrl=process.env.DATABASE_URL?.trim() || process.env.DATABASEURL?.trim();
 const betterAuthSecret=process.env.BETTER_AUTH_SECRET?.trim();
 const buildOnlySecret='namaa-build-only-secret-not-for-runtime-20260916';
+const uiPreviewWithoutAuth=onVercel && env === 'preview' && !betterAuthSecret;
 
 if (onVercel && !['production','preview','development'].includes(env)) {
   errors.push(`Unexpected Vercel environment: ${env}`);
 }
-if (!databaseUrl) errors.push('DATABASE_URL is required for Vercel builds and runtime');
-else {
+if (!databaseUrl && !uiPreviewWithoutAuth) errors.push('DATABASE_URL is required for Vercel builds and runtime');
+else if (databaseUrl) {
   try {
     const url=new URL(databaseUrl);
     if (!['postgres:','postgresql:'].includes(url.protocol)) errors.push('DATABASE_URL must be PostgreSQL');
@@ -23,8 +24,10 @@ else {
 }
 
 if (deployedRuntime) {
-  if (!betterAuthSecret) errors.push('BETTER_AUTH_SECRET is required for Vercel Preview/Production runtime');
-  else {
+  if (!betterAuthSecret) {
+    if (env === 'production') errors.push('BETTER_AUTH_SECRET is required for Vercel Production runtime');
+    else warnings.push('Preview is running in UI-only mode because BETTER_AUTH_SECRET is not configured; authentication remains disabled.');
+  } else {
     if (betterAuthSecret.length < 32) errors.push('BETTER_AUTH_SECRET must contain at least 32 characters');
     if (betterAuthSecret === buildOnlySecret || betterAuthSecret.includes('build-only')) {
       errors.push('BETTER_AUTH_SECRET must be a real deployment secret, not the build-only placeholder');
@@ -75,5 +78,5 @@ if (errors.length) {
   for (const item of errors) console.error(`- ${item}`);
   process.exit(1);
 }
-console.log(`VERCEL-PREFLIGHT-PASS environment=${env}`);
+console.log(`VERCEL-PREFLIGHT-PASS environment=${env}${uiPreviewWithoutAuth?' mode=ui-preview-only':''}`);
 for (const item of warnings) console.warn(`WARN: ${item}`);
