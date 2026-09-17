@@ -42,8 +42,14 @@ export function PersistentConversationWorkspace(){
 
   function chooseRoom(id:RoomKey){setError('');setActiveRoomId(id);setRoomsOpen(false)}
   async function send(event:FormEvent){ event.preventDefault(); const body=draft.trim(); if(!body||sending)return; setSending(true); setError('');
-    try{ const response=await fetch(`/api/conversations/${activeRoomId}`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({body})}); const data=await response.json(); if(!response.ok||!data.message)throw new Error('write'); setMessages(current=>[...current,data.message]); setDraft(''); }
-    catch{setError('لم تُحفظ الرسالة. لم يعتبر نماء الإرسال مكتملًا؛ أعد المحاولة.')} finally{setSending(false)} }
+    try{
+      const response=await fetch(`/api/conversations/${activeRoomId}`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({body})});
+      const data=await response.json() as {message?:Message;reply?:Message};
+      if(!response.ok||!data.message)throw new Error('write');
+      setMessages(current=>[...current,data.message as Message,...(data.reply?[data.reply as Message]:[])]);
+      setDraft('');
+    }
+    catch{setError('لم تُحفظ الرسالة أو تعذر توليد الرد. لم يعتبر نماء الإرسال مكتملًا؛ أعد المحاولة.')} finally{setSending(false)} }
 
   const roomButtons=<div className={styles.roomList}>{rooms.map(room=><button key={room.id} type="button" onClick={()=>chooseRoom(room.id)} className={`${styles.roomItem} ${activeRoom.id===room.id?styles.activeRoom:''}`}><span className={styles.entityAvatar}>{room.title.slice(0,1)}</span><span className={styles.roomCopy}><strong>{room.title}</strong><small>{room.subtitle}</small></span></button>)}</div>;
 
@@ -58,7 +64,7 @@ export function PersistentConversationWorkspace(){
         <div className={styles.messages} aria-live="polite">{loading&&<p>جارٍ تحميل سجل المحادثة…</p>}{!loading&&!messages.length&&<article className={`${styles.message} ${styles.agentMessage}`}><p>هذه بداية محادثتك مع {activeRoom.title}. اكتب سؤالك أو القرار الذي تريد دراسته.</p></article>}{messages.map(message=><article key={message.id} className={`${styles.message} ${message.sender_type==='user'?styles.userMessage:styles.agentMessage}`}>{message.sender_type!=='user'&&<div className={styles.messageIdentity}><span className={styles.miniAvatar}>{message.sender_name.slice(0,1)}</span><span><strong>{message.sender_name}</strong><small>{message.sender_type==='system'?'رسالة نظام':'شخصية خوارزمية'}</small></span></div>}<p>{message.body}</p>{message.message_kind!=='message'&&<section className={`${styles.structuredCard} ${styles[`kind_${message.message_kind}`]}`}><header><strong>{labels[message.message_kind]}</strong></header>{(message.message_kind==='decision'||message.message_kind==='request')&&<small className={styles.executionBoundary}>أي تنفيذ مالي خارجي يظل بيد المستخدم، ويحتاج تأكيدًا وإثباتًا قبل الإغلاق.</small>}</section>}</article>)}</div>
         {error&&<div className={styles.routingNote} role="alert"><LucideIcon name="triangleAlert" size={16}/><span>{error}</span></div>}
         <div className={styles.attachmentPolicy}><LucideIcon name="upload" size={16}/><span>المرفق للمراجعة والتحقق فقط؛ لا ينشئ حركة مالية ولا يثبت التنفيذ تلقائيًا.</span></div><div className={styles.executionNote}><LucideIcon name="circleCheck" size={16}/><span>نماء يوصي ويتابع؛ التنفيذ المالي الخارجي يتم بواسطة المستخدم.</span></div>
-        <form className={styles.composer} onSubmit={send}><button type="button" className={styles.attachButton} aria-label="إرفاق ملف" title="الإرفاق سيُفعّل بعد ربط التخزين الآمن"><LucideIcon name="upload" size={20}/></button><textarea value={draft} onChange={e=>setDraft(e.target.value)} placeholder={`اكتب إلى ${activeRoom.title}…`} rows={1} aria-label="نص الرسالة" maxLength={8000}/><button type="submit" className={styles.sendButton} disabled={!draft.trim()||sending}><span>{sending?'جارٍ الحفظ…':'إرسال'}</span><LucideIcon name="chevronLeft" size={20}/></button></form>
+        <form className={styles.composer} onSubmit={send}><button type="button" className={styles.attachButton} aria-label="إرفاق ملف" title="الإرفاق سيُفعّل بعد ربط التخزين الآمن"><LucideIcon name="upload" size={20}/></button><textarea value={draft} onChange={e=>setDraft(e.target.value)} placeholder={`اكتب إلى ${activeRoom.title}…`} rows={1} aria-label="نص الرسالة" maxLength={8000}/><button type="submit" className={styles.sendButton} disabled={!draft.trim()||sending}><span>{sending?'جارٍ التحليل…':'إرسال'}</span><LucideIcon name="chevronLeft" size={20}/></button></form>
       </main>
       {desktopContextVisible&&<aside className={styles.contextPane} aria-label="سياق المحادثة"><div className={styles.paneTitle}><span>السياق</span><small>حيّز العمل</small></div>{contextCards}</aside>}
     </div>
