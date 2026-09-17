@@ -16,14 +16,15 @@ const css=fs.readFileSync(required[2],'utf8');
 
 const checks=[
   [appShell.includes('mobile-bottom-nav'),'mobile bottom navigation is missing'],
-  [appShell.includes('mobile-nav-sheet'),'mobile navigation sheet is missing'],
-  [appShell.includes('desktop-sidebar'),'desktop sidebar separation is missing'],
+  [appShell.includes('mobile-brand-link'),'mobile app identity is missing'],
   [authShell.includes('auth-mobile-brand'),'mobile auth brand header is missing'],
   [css.includes('/* Namaa mobile-native experience contract */'),'mobile-native CSS contract is missing'],
-  [css.includes('height: 100dvh'),'100dvh mobile viewport contract is missing'],
-  [css.includes('overflow-x: clip'),'horizontal overflow guard is missing'],
-  [css.includes('.desktop-sidebar'),'desktop sidebar mobile isolation rule is missing'],
+  [css.includes('height:100dvh'),'100dvh mobile viewport contract is missing'],
+  [css.includes('overflow-x:clip'),'horizontal overflow guard is missing'],
+  [css.includes('.mobile-menu-button{display:none!important}'),'desktop menu trigger still leaks into mobile'],
+  [css.includes('.sidebar.open{display:flex!important;position:fixed!important;z-index:61!important'),'mobile menu is not converted to a bottom sheet'],
   [css.includes('.mobile-bottom-nav'),'mobile bottom navigation CSS is missing'],
+  [css.includes('.desktop-auth-hero{display:none!important}'),'desktop auth hero still leaks into mobile'],
 ];
 for(const [ok,message] of checks){
   if(!ok) throw new Error(message);
