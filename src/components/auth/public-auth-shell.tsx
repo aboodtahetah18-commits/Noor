@@ -20,13 +20,19 @@ export function PublicAuthShell({ title, kicker, children }: { title: string; ki
           </div>
         </aside>
 
+        <div className={styles.mobileHero} aria-label="هوية نماء">
+          <div className={styles.mobileHeroTop}>
+            <BrandLogo surface="dark" className={styles.mobileHeroLogo} priority />
+            <div className={styles.mobileHeroTheme}><ThemeToggle /></div>
+          </div>
+          <span className={styles.mobileBadge}>ابدأ بوعي مالي</span>
+          <p className={styles.mobileKicker}>{kicker}</p>
+          <h1>{title}</h1>
+          <p className={styles.mobileSubtitle}>أكمل البيانات المطلوبة للمتابعة بأمان.</p>
+        </div>
+
         <section className={styles.panel} aria-labelledby="auth-flow-title">
           <div className={styles.themeButton}><ThemeToggle /></div>
-          <div className={styles.mobileBrand} aria-label="نماء — ابدأ بوعي مالي">
-            <BrandLogo surface="auto" className={styles.mobileBrandLogo} priority />
-            <span className={styles.mobileBrandText}><strong>نماء</strong><span>ابدأ بوعي مالي</span></span>
-          </div>
-
           <div className={styles.heading}>
             <p className={styles.kicker}>{kicker}</p>
             <h1 id="auth-flow-title">{title}</h1>
