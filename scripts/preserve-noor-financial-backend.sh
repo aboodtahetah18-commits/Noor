@@ -7,9 +7,11 @@ set -euo pipefail
 node scripts/patch-namaa-mobile-native.mjs
 node scripts/patch-namaa-mobile-chat-first.mjs
 node scripts/patch-namaa-mobile-operational-rooms.mjs
+node scripts/patch-namaa-mobile-inline-actions-v2.mjs
 node scripts/verify-namaa-mobile-experience.mjs
 node scripts/verify-namaa-mobile-chat-first.mjs
 node scripts/verify-namaa-mobile-operational-rooms.mjs
+node scripts/verify-namaa-mobile-inline-actions.mjs
 
 TARGET="apps/namaa-final-ui/src"
 
