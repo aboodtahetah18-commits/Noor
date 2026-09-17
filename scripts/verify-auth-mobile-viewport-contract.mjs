@@ -25,7 +25,9 @@ requireText(css,css,'env(safe-area-inset-bottom)');
 if(!/@media\s*\(max-width:767px\)/.test(css)) failures.push(`${cssFile}: mobile viewport rule must target approved 767px breakpoint`);
 if(/(?:linear|radial|conic)-gradient\s*\(/i.test(css)) failures.push(`${cssFile}: auth viewport layer must not introduce gradients`);
 if(/Tajawal/i.test(css)) failures.push(`${cssFile}: legacy font is forbidden`);
-if(/(?:padding|margin|inset|left|right)-(?:left|right)/i.test(css)) failures.push(`${cssFile}: physical RTL spacing is forbidden`);
+
+const physicalProperty=/(^|[;{}\n]\s*)(margin-left|margin-right|padding-left|padding-right|border-left|border-right|border-left-color|border-right-color|left|right)\s*:/gim;
+if(physicalProperty.test(css)) failures.push(`${cssFile}: physical RTL property declaration is forbidden`);
 
 requireText(logoFile,logo,"/brand/ndos/namaa-logo-color-transparent.png");
 requireText(logoFile,logo,"/brand/ndos/namaa-logo-white-transparent.png");
