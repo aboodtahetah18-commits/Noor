@@ -20,6 +20,7 @@ node scripts/verify-namaa-mobile-operational-rooms.mjs
 node scripts/verify-namaa-mobile-inline-actions.mjs
 node scripts/verify-namaa-mobile-governance-groups.mjs
 node scripts/verify-namaa-mobile-final-acceptance.mjs
+node scripts/patch-namaa-desktop-chat-workspace.mjs
 
 TARGET="apps/namaa-final-ui/src"
 
