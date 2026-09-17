@@ -30,6 +30,7 @@ const legacyBuildFiles=[
   'scripts/materialize-namaa-final-ui.sh',
   'scripts/preserve-noor-financial-backend.sh',
   'scripts/postdeploy-smoke-p0.4.30.mjs',
+  '.github/workflows/namaa-final-ui-p0.4.30.yml',
 ];
 const legacyPatchFiles=trackedFiles('scripts/patch-namaa-*');
 const legacySmokeCommands=Object.keys(pkg.scripts??{}).filter(name=>name.includes('p0.4.30'));
