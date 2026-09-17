@@ -54,19 +54,21 @@ export function LoginForm({ returnTo }: { returnTo: string }) {
       <label className={styles.field}>
         <span className={styles.fieldLabel}>البريد الإلكتروني</span>
         <span className={styles.inputShell}>
-          <span className={styles.inputIcon}><LucideIcon name="circleUserRound" size={20} /></span>
           <input className={styles.input} name="email" type="email" autoComplete="email" inputMode="email" required disabled={pending} placeholder="name@example.com" />
+          <span className={styles.inputIcon}><LucideIcon name="circleUserRound" size={20} /></span>
         </span>
       </label>
 
       <label className={styles.field}>
         <span className={styles.fieldLabel}>كلمة المرور</span>
         <span className={styles.inputShell}>
-          <span className={styles.inputIcon}><LucideIcon name="lockKeyhole" size={20} /></span>
           <input className={styles.input} name="password" type={showPassword ? 'text' : 'password'} autoComplete="current-password" required disabled={pending} />
-          <button className={styles.passwordToggle} type="button" onClick={() => setShowPassword((value) => !value)} aria-label={showPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'} title={showPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}>
-            <LucideIcon name={showPassword ? 'eyeOff' : 'eye'} size={20} />
-          </button>
+          <span className={styles.passwordControls}>
+            <span className={styles.inputIcon}><LucideIcon name="lockKeyhole" size={20} /></span>
+            <button className={styles.passwordToggle} type="button" onClick={() => setShowPassword((value) => !value)} aria-label={showPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'} title={showPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}>
+              <LucideIcon name={showPassword ? 'eyeOff' : 'eye'} size={20} />
+            </button>
+          </span>
         </span>
       </label>
 
