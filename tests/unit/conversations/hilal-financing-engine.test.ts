@@ -24,4 +24,15 @@ describe('Hilal financing draft parser', () => {
     expect(draft.requested_amount).toBe(30000);
     expect(draft.expected_installment).toBe(1500);
   });
+
+  it('collects repayment-source and policy evidence classifications over chat', () => {
+    const first = parseFinancingDraft('مصدر السداد: الراتب الشهري');
+    const second = parseFinancingDraft('الدخل ثابت ومنتظم', first);
+    const completed = parseFinancingDraft('الغرض أساسي', second);
+    expect(completed).toMatchObject({
+      repayment_source: 'الراتب الشهري',
+      income_pattern: 'STABLE',
+      funded_item_importance: 'ESSENTIAL',
+    });
+  });
 });
