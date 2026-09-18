@@ -8,6 +8,7 @@ import {
   classifyNamaaAccountError,
   sendNamaaAccountEmail,
   isNamaaAccountEmailConfigured,
+  isNamaaPilotMode,
 } from '@/lib/auth/namaa-account-access';
 import { guardPublicAccountRequest, publicAccountGuardError } from '@/security/public-account-mutation';
 
@@ -27,7 +28,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ code: 'AUTH_INPUT_INVALID' }, { status: 400 });
   }
 
-  if (!isNamaaAccountEmailConfigured()) {
+  if (!isNamaaPilotMode() && !isNamaaAccountEmailConfigured()) {
     return NextResponse.json({ code: 'AUTH_EMAIL_NOT_CONFIGURED' }, { status: 503 });
   }
 
