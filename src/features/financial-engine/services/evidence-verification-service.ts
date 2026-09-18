@@ -153,7 +153,7 @@ export async function verifyUnifiedEvidenceCase(userId: string, evidenceCaseId: 
         verification_reason=${result.reason},
         candidate_count=${hasMaterialDifference ? candidates.length : exactCandidates.length},
         matched_statement_row_id=${matchedStatementRowId},
-        reviewer_type='SYSTEM_BANK_STATEMENT',
+        reviewer_type=coalesce(reviewer_type,'SYSTEM_BANK_STATEMENT'),
         verified_at=${result.status === 'FINAL_MATCHED' ? new Date().toISOString() : null}
     where id=${evidenceCaseId}::uuid and user_id=${userId}::uuid
   `;
