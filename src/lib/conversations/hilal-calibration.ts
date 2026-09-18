@@ -1,4 +1,4 @@
-import type { HilalEligibilityFactor, HilalEligibilityScores } from './hilal-policy';
+import { HILAL_ELIGIBILITY_WEIGHTS, type HilalEligibilityFactor, type HilalEligibilityScores } from './hilal-policy';
 import type { HilalFactorEvaluation } from './hilal-factor-evaluator';
 
 export type NumericBand = {
@@ -13,15 +13,26 @@ export type HilalFactorCalibration =
   | { kind: 'numeric_bands'; bands: NumericBand[] }
   | { kind: 'category_map'; scores: CategoryScoreMap };
 
-export type HilalCalibrationStatus = 'DRAFT' | 'APPROVED';
+export type HilalCalibrationStatus =
+  | 'SIMULATION_ONLY'
+  | 'APPROVED_GOVERNING';
 
 export type HilalEligibilityCalibration = {
   calibration_id: string;
   policy_version: string;
   status: HilalCalibrationStatus;
+  historical_validation_reference: string | null;
   effective_from: string | null;
   approved_reference: string | null;
   factors: Partial<Record<HilalEligibilityFactor, HilalFactorCalibration>>;
+};
+
+export type HilalEligibilityCalibrationReadiness = {
+  baseline_weights_version: string;
+  total_weight: number;
+  weights_sum_valid: boolean;
+  governing_calibration_active: boolean;
+  activation_blockers: string[];
 };
 
 export type HilalCalibrationResult =
@@ -29,17 +40,24 @@ export type HilalCalibrationResult =
       status: 'SCORED';
       calibration_id: string;
       scores: HilalEligibilityScores;
+      readiness: HilalEligibilityCalibrationReadiness;
     }
   | {
-      status: 'CALIBRATION_NOT_ACTIVE' | 'CALIBRATION_INCOMPLETE' | 'EVIDENCE_INCOMPLETE' | 'VALUE_UNMAPPED';
+      status:
+        | 'CALIBRATION_NOT_GOVERNING'
+        | 'CALIBRATION_GOVERNANCE_INCOMPLETE'
+        | 'CALIBRATION_INCOMPLETE'
+        | 'EVIDENCE_INCOMPLETE'
+        | 'VALUE_UNMAPPED';
       calibration_id: string | null;
       missing_factors: HilalEligibilityFactor[];
+      readiness: HilalEligibilityCalibrationReadiness;
     };
 
 /**
- * The current project registry explicitly marks Hilal scoring indicators as
- * structurally approved but still requiring numeric calibration before they
- * become governing. Keep this null until an approved, versioned mapping exists.
+ * Eligibility weights and thresholds exist in policy, but the raw-evidence
+ * mappings to 0–100 remain non-governing until historical validation, final
+ * approval and an effective date are all recorded.
  */
 export const ACTIVE_HILAL_ELIGIBILITY_CALIBRATION: HilalEligibilityCalibration | null = null;
 
@@ -50,6 +68,34 @@ export const HILAL_REPAYMENT_SAVINGS_SHARE = {
   max: 0.50,
   status: 'APPROVED' as const,
 };
+
+export function getHilalEligibilityCalibrationReadiness(
+  calibration: HilalEligibilityCalibration | null = ACTIVE_HILAL_ELIGIBILITY_CALIBRATION,
+): HilalEligibilityCalibrationReadiness {
+  const totalWeight = Object.values(HILAL_ELIGIBILITY_WEIGHTS)
+    .reduce((sum, weight) => sum + weight, 0);
+
+  const blockers: string[] = [];
+  if (!calibration?.historical_validation_reference) blockers.push('HISTORICAL_VALIDATION_REQUIRED');
+  if (!calibration?.approved_reference) blockers.push('FINAL_GOVERNANCE_APPROVAL_REQUIRED');
+  if (!calibration?.effective_from) blockers.push('EFFECTIVE_DATE_REQUIRED');
+  const requiredFactors = Object.keys(HILAL_ELIGIBILITY_WEIGHTS) as HilalEligibilityFactor[];
+  if (!calibration || requiredFactors.some((factor) => !calibration.factors[factor])) {
+    blockers.push('FACTOR_TO_SCORE_MAPPING_REQUIRED');
+  }
+
+  return {
+    baseline_weights_version: 'hilal-eligibility-policy-1.0-2026-09-14',
+    total_weight: Math.round(totalWeight * 100) / 100,
+    weights_sum_valid: Math.abs(totalWeight - 1) < 1e-9,
+    governing_calibration_active: Boolean(
+      calibration
+      && calibration.status === 'APPROVED_GOVERNING'
+      && blockers.length === 0
+    ),
+    activation_blockers: blockers,
+  };
+}
 
 function scoreNumeric(value: number, calibration: Extract<HilalFactorCalibration, { kind: 'numeric_bands' }>) {
   const band = calibration.bands.find((item) => {
@@ -69,11 +115,23 @@ export function scoreHilalFactorEvidence(
   evidence: HilalFactorEvaluation,
   calibration: HilalEligibilityCalibration | null = ACTIVE_HILAL_ELIGIBILITY_CALIBRATION,
 ): HilalCalibrationResult {
-  if (!calibration || calibration.status !== 'APPROVED') {
+  const readiness = getHilalEligibilityCalibrationReadiness(calibration);
+
+  if (!calibration || calibration.status !== 'APPROVED_GOVERNING') {
     return {
-      status: 'CALIBRATION_NOT_ACTIVE',
+      status: 'CALIBRATION_NOT_GOVERNING',
       calibration_id: calibration?.calibration_id ?? null,
       missing_factors: evidence.calibration_required_factors,
+      readiness,
+    };
+  }
+
+  if (!calibration.historical_validation_reference || !calibration.approved_reference || !calibration.effective_from) {
+    return {
+      status: 'CALIBRATION_GOVERNANCE_INCOMPLETE',
+      calibration_id: calibration.calibration_id,
+      missing_factors: evidence.calibration_required_factors,
+      readiness,
     };
   }
 
@@ -82,6 +140,7 @@ export function scoreHilalFactorEvidence(
       status: 'EVIDENCE_INCOMPLETE',
       calibration_id: calibration.calibration_id,
       missing_factors: evidence.missing_evidence_factors,
+      readiness,
     };
   }
 
@@ -92,6 +151,7 @@ export function scoreHilalFactorEvidence(
       status: 'CALIBRATION_INCOMPLETE',
       calibration_id: calibration.calibration_id,
       missing_factors: missingMappings,
+      readiness,
     };
   }
 
@@ -125,6 +185,7 @@ export function scoreHilalFactorEvidence(
       status: 'VALUE_UNMAPPED',
       calibration_id: calibration.calibration_id,
       missing_factors: unmapped,
+      readiness,
     };
   }
 
@@ -132,6 +193,7 @@ export function scoreHilalFactorEvidence(
     status: 'SCORED',
     calibration_id: calibration.calibration_id,
     scores,
+    readiness,
   };
 }
 
