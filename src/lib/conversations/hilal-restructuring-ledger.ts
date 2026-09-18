@@ -93,6 +93,25 @@ export async function getHilalRestructuringSummary(userId: string, categoryId: s
   return summarizeHilalRestructuringCounts((rows[0] ?? {}) as Record<string, unknown>);
 }
 
+export async function getHilalCaseAppliedRestructuringCount(userId: string, caseId: string) {
+  const sql = getRawSql();
+  const tableRows = await sql`select to_regclass('public.internal_funding_restructuring_events')::text as relation`;
+  if (!tableRows[0]?.relation) return { ledger_status: 'MIGRATION_REQUIRED' as const, applied_count: 0, precautionary_cap_reached: false };
+  const rows = await sql`
+    select count(*)::int as applied_count
+    from public.internal_funding_restructuring_events
+    where user_id=${userId}
+      and case_id=${caseId}::uuid
+      and event_type='APPLIED'
+  `;
+  const appliedCount = intValue(rows[0]?.applied_count);
+  return {
+    ledger_status: 'AVAILABLE' as const,
+    applied_count: appliedCount,
+    precautionary_cap_reached: appliedCount >= 3,
+  };
+}
+
 export async function recordHilalRestructuringEvent(userId: string, input: HilalRestructuringEventInput) {
   const sql = getRawSql();
   const tableRows = await sql`select to_regclass('public.internal_funding_restructuring_events')::text as relation`;
