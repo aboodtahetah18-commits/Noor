@@ -1,0 +1,25 @@
+name: Central Registry UAT
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tests/acceptance/**'
+      - 'src/features/financial-engine/**'
+      - 'database/migrations/**'
+      - 'package.json'
+      - '.github/workflows/central-registry-uat.yml'
+  workflow_dispatch:
+
+jobs:
+  uat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.19.0'
+          cache: npm
+      - run: npm ci
+      - run: npm run test:uat
