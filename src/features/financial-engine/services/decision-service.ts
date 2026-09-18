@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { getRawSql } from '@/infrastructure/db/client';
 import { FinancialPlatformError, mapFinancialDatabaseError } from '@/features/financial-engine/services/financial-platform-error';
 
@@ -53,7 +54,7 @@ export async function createDecisionRequestFromRecommendation(input: {
 
   try {
     const existing = await sql`
-      SELECT id,status,requested_amount,created_at
+      SELECT id,status,requested_amount,decision_reference,created_at
       FROM public.decision_requests
       WHERE user_id=${input.userId}::uuid AND recommendation_id=${input.recommendationId}::uuid
         AND status NOT IN ('CANCELLED','CLOSED','REJECTED')
@@ -61,15 +62,16 @@ export async function createDecisionRequestFromRecommendation(input: {
     `;
     if (existing[0]) return { request: existing[0], created: false };
 
+    const decisionReference = `DEC-${randomUUID()}`;
     const inserted = await sql`
       INSERT INTO public.decision_requests(
         user_id,recommendation_id,decision_type,subject_type,subject_id,requested_amount,materiality,status,
-        policy_version,weights_version,thresholds_version,engine_version,data_snapshot_id
+        policy_version,weights_version,thresholds_version,engine_version,data_snapshot_id,decision_reference
       ) VALUES(
         ${input.userId}::uuid,${input.recommendationId}::uuid,${decisionType},'RECOMMENDATION',${input.recommendationId}::uuid,
         ${amount},${materiality},'DRAFT',${rec.policy_version ?? null},${rec.weights_version ?? null},${rec.thresholds_version ?? null},
-        ${rec.engine_version ?? null},${rec.engine_snapshot_id == null ? null : String(rec.engine_snapshot_id)}
-      ) RETURNING id,status,requested_amount,created_at
+        ${rec.engine_version ?? null},${rec.engine_snapshot_id == null ? null : String(rec.engine_snapshot_id)},${decisionReference}
+      ) RETURNING id,status,requested_amount,decision_reference,created_at
     `;
     const insertedRequest = inserted[0];
     if (!insertedRequest) throw new FinancialPlatformError('DECISION_REQUEST_WRITE_FAILED', 500);
@@ -83,7 +85,7 @@ export async function createDecisionRequestFromRecommendation(input: {
     const finalRows = await sql`
       UPDATE public.decision_requests SET status=${nextStatus},updated_at=now()
       WHERE id=${requestId}::uuid AND user_id=${input.userId}::uuid
-      RETURNING id,status,requested_amount,materiality,created_at,updated_at
+      RETURNING id,status,requested_amount,materiality,decision_reference,created_at,updated_at
     `;
     const finalRequest = finalRows[0];
     if (!finalRequest) throw new FinancialPlatformError('DECISION_REQUEST_STATE_FAILED', 500);
@@ -101,7 +103,7 @@ export async function recordUserDecision(input: {
 }) {
   const sql = getRawSql();
   const requests = await sql`
-    SELECT id,recommendation_id,decision_type,requested_amount,status,materiality
+    SELECT id,recommendation_id,decision_type,requested_amount,status,materiality,decision_reference
     FROM public.decision_requests
     WHERE id=${input.decisionRequestId}::uuid AND user_id=${input.userId}::uuid
     LIMIT 1
@@ -130,7 +132,7 @@ export async function recordUserDecision(input: {
     if (input.action === 'APPROVE') {
       const userDecisionId = String(userDecision.id);
       const existingTask = await sql`
-        SELECT id,status,action_type,amount,currency,evidence_requirement,required_by
+        SELECT id,status,action_type,amount,currency,evidence_requirement,required_by,decision_reference
         FROM public.execution_tasks
         WHERE user_id=${input.userId}::uuid AND user_decision_id=${userDecisionId}::uuid
         LIMIT 1
@@ -139,12 +141,12 @@ export async function recordUserDecision(input: {
       else {
         const taskRows = await sql`
           INSERT INTO public.execution_tasks(
-            user_id,decision_request_id,user_decision_id,action_type,amount,currency,instructions,evidence_requirement,status
+            user_id,decision_request_id,user_decision_id,action_type,amount,currency,instructions,evidence_requirement,status,decision_reference
           ) VALUES(
             ${input.userId}::uuid,${input.decisionRequestId}::uuid,${userDecisionId}::uuid,${String(request.decision_type)},
             ${request.requested_amount ?? null},'SAR','نفّذ القرار المعتمد خارجيًا، ثم أكد التنفيذ وأرفق الإثبات. منصة نماء لا تنفذ العملية نيابةً عنك.',
-            'REQUIRED','USER_ACTION_REQUEST'
-          ) RETURNING id,status,action_type,amount,currency,evidence_requirement,required_by
+            'REQUIRED','USER_ACTION_REQUEST',${request.decision_reference ?? null}
+          ) RETURNING id,status,action_type,amount,currency,evidence_requirement,required_by,decision_reference
         `;
         task = taskRows[0] ?? null;
         if (!task) throw new FinancialPlatformError('EXECUTION_TASK_WRITE_FAILED', 500);
