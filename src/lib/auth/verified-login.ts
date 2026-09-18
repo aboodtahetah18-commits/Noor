@@ -11,7 +11,7 @@ export async function signInVerifiedWithPassword(input: { email: string; passwor
     select u.id, u.email, u.email_verified, a.password
     from auth."user" u
     left join auth.account a
-      on a.user_id = u.id and a.provider_id = 'credential' and a.issuer = 'local:credential'
+      on a.user_id = u.id and a.provider_id = 'credential'
     where lower(u.email) = ${email}
     limit 1
   `;
