@@ -9,7 +9,7 @@ import {
 } from './decision-lifecycle';
 import type { ConversationMessageKind, ConversationRoomKey } from './store';
 
-type PersistedReply = {
+export type PersistedReply = {
   id: string;
   message_kind: ConversationMessageKind;
   structured_data: Record<string, unknown>;
