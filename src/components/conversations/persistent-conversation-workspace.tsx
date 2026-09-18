@@ -120,8 +120,13 @@ function StructuredFacts({data}:{data?:Record<string,unknown>}){
   const recoveryOverdueAmount=recoveryFollowup&&typeof recoveryFollowup.overdue_planned_amount==='number'?recoveryFollowup.overdue_planned_amount:null;
   const recoveryHardStop=recoveryFollowup&&typeof recoveryFollowup.hard_stop==='boolean'?recoveryFollowup.hard_stop:null;
   const recoveryTrigger=recoveryFollowup&&typeof recoveryFollowup.trigger==='string'?recoveryFollowup.trigger:null;
-  if(confidence===null&&!routed&&income===null&&!missing.length&&!goalName&&safeCapacity===null&&requested===null&&!financingPurpose&&!decisionState&&eligibilityScore===null&&!calibrationStatus)return null;
+  const decisionLifecycle=data.decision_lifecycle&&typeof data.decision_lifecycle==='object'?data.decision_lifecycle as Record<string,unknown>:null;
+  const decisionReference=decisionLifecycle&&typeof decisionLifecycle.decision_reference==='string'?decisionLifecycle.decision_reference:null;
+  const decisionLifecycleState=decisionLifecycle&&typeof decisionLifecycle.state==='string'?decisionLifecycle.state:null;
+  if(confidence===null&&!routed&&income===null&&!missing.length&&!goalName&&safeCapacity===null&&requested===null&&!financingPurpose&&!decisionState&&eligibilityScore===null&&!calibrationStatus&&!decisionReference)return null;
   return <div className={styles.facts}>
+    {decisionReference&&<span><small>مرجع القرار</small><strong>{decisionReference}</strong></span>}
+    {decisionLifecycleState&&<span><small>حالة دورة القرار</small><strong>{decisionLifecycleState==='PROPOSED'?'مقترح':decisionLifecycleState==='REVIEWED'?'تحت المراجعة':decisionLifecycleState==='USER_CONFIRMED'?'أكد المستخدم':decisionLifecycleState==='EVIDENCE_REQUIRED'?'بانتظار الإثبات':decisionLifecycleState==='VERIFIED'?'تم التحقق':decisionLifecycleState==='APPLIED'?'تم التحقق من التطبيق':decisionLifecycleState==='FOLLOWUP'?'متابعة بعد القرار':decisionLifecycleState==='BLOCKED'?'متوقف بحاجز حاكم':decisionLifecycleState==='CANCELLED'?'ملغى':decisionLifecycleState}</strong></span>}
     {confidence!==null&&<span><small>درجة الثقة</small><strong>{confidence}٪</strong></span>}
     {routed&&<span><small>الجهة المختصة</small><strong>{routed}</strong></span>}
     {income!==null&&<span><small>الدخل المؤكد</small><strong>{formatSar(income)} ر.س</strong></span>}
