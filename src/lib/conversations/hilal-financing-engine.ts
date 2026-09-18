@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { getRawSql } from '@/infrastructure/db/client';
 import { getProtectionSnapshot } from './solvency-engine';
-import { computeHilalFinanceLimit, HILAL_ELIGIBILITY_WEIGHTS, HILAL_POLICY_VERSION, evaluateHilalEligibility } from './hilal-policy';
+import { computeHilalFinanceLimit, evaluateHilalFinancingGate, HILAL_ELIGIBILITY_WEIGHTS, HILAL_POLICY_VERSION, evaluateHilalEligibility } from './hilal-policy';
 import { evaluateHilalFactorEvidence } from './hilal-factor-evaluator';
 import { computeApprovedRepaymentInstallmentBand, scoreHilalFactorEvidence } from './hilal-calibration';
 import { getHilalRepaymentCapacity } from './hilal-repayment-capacity';
@@ -326,18 +326,23 @@ export async function createHilalFinancingReply(userId: string, userText: string
     );
   }
 
-  const blockedByPolicyLimit = financeLimit.finance_limit !== null && requested > financeLimit.finance_limit;
-  const installmentAboveApprovedBand = installment > repaymentBand.max_installment_from_safe_savings;
-  const blocked = requested > safeCapacity
-    || protection.commitment_gap > 0
-    || blockedByPolicyLimit
-    || installmentAboveApprovedBand
-    || policyCapGovernance.hard_stop;
+  const financingGate = evaluateHilalFinancingGate({
+    requestedAmount: requested,
+    safeCapacity,
+    commitmentGap: protection.commitment_gap,
+    financeLimit: financeLimit.finance_limit,
+    installment,
+    maxApprovedInstallment: repaymentBand.max_installment_from_safe_savings,
+    policyHardStop: policyCapGovernance.hard_stop,
+    eligibilityBand: eligibility?.band ?? null,
+  });
+  const blocked = financingGate.blocked;
+  const installmentAboveApprovedBand = financingGate.block_reasons.includes('INSTALLMENT_ABOVE_APPROVED_BAND');
 
   if (blocked) {
     const excess = Math.max(requested - safeCapacity, 0);
     return persistReply(userId, nextMetadata,
-`حالة الطلب BLOCKED. الطلب يكسر أحد حدود الحماية أو القدرة المعتمدة${policyCapGovernance.hard_stop ? '، ويوجد استرداد متأخر يوقف أي تمويل جديد وفق سياسة الهلال' : ''}. السعة القابلة للاختبار ${formatSar(safeCapacity)} ريال، وفجوة الحماية ${formatSar(protection.commitment_gap)} ريال. نطاق القسط المبني على الوفر الآمن هو ${formatSar(repaymentBand.min_installment_from_safe_savings)}–${formatSar(repaymentBand.max_installment_from_safe_savings)} ريال وفق SET-HL-005، والقسط المقترح ${formatSar(installment)} ريال. لا ينتقل الطلب للمراجعة قبل معالجة الحد المتجاوز.`,
+`حالة الطلب BLOCKED. الطلب يكسر أحد حدود الحماية أو القدرة المعتمدة${policyCapGovernance.hard_stop ? '، ويوجد استرداد متأخر يوقف أي تمويل جديد وفق سياسة الهلال' : ''}${eligibility?.band === 'REJECTED' ? '، كما أن معايرة الأهلية الحاكمة صنفته مرفوضًا' : ''}. السعة القابلة للاختبار ${formatSar(safeCapacity)} ريال، وفجوة الحماية ${formatSar(protection.commitment_gap)} ريال. نطاق القسط المبني على الوفر الآمن هو ${formatSar(repaymentBand.min_installment_from_safe_savings)}–${formatSar(repaymentBand.max_installment_from_safe_savings)} ريال وفق SET-HL-005، والقسط المقترح ${formatSar(installment)} ريال. لا ينتقل الطلب للمراجعة قبل معالجة الحد المتجاوز.`,
       'risk',
       {
         decision_state: 'BLOCKED',
@@ -370,6 +375,7 @@ export async function createHilalFinancingReply(userId: string, userText: string
         policy_cap_governance: policyCapGovernance,
         policy_cap_calibration: policyCapCalibration,
         installment_above_approved_band: installmentAboveApprovedBand,
+        financing_gate: financingGate,
         calibration_status: automaticCalibration.status,
         calibration_id: automaticCalibration.calibration_id,
         eligibility_calibration: automaticCalibration,
