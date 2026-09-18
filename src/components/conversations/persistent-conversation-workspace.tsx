@@ -63,6 +63,10 @@ function StructuredFacts({data}:{data?:Record<string,unknown>}){
   const repaymentBand=data.repayment_installment_band&&typeof data.repayment_installment_band==='object'?data.repayment_installment_band as Record<string,unknown>:null;
   const repaymentMin=repaymentBand&&typeof repaymentBand.min_installment_from_safe_savings==='number'?repaymentBand.min_installment_from_safe_savings:null;
   const repaymentMax=repaymentBand&&typeof repaymentBand.max_installment_from_safe_savings==='number'?repaymentBand.max_installment_from_safe_savings:null;
+  const repaymentEvidence=data.repayment_capacity_evidence&&typeof data.repayment_capacity_evidence==='object'?data.repayment_capacity_evidence as Record<string,unknown>:null;
+  const realizedSalary=repaymentEvidence&&typeof repaymentEvidence.realized_salary_income==='number'?repaymentEvidence.realized_salary_income:null;
+  const repaymentCapacity=repaymentEvidence&&typeof repaymentEvidence.repayment_capacity==='number'?repaymentEvidence.repayment_capacity:null;
+  const conservativeIncome=repaymentEvidence&&typeof repaymentEvidence.conservative_income_basis==='number'?repaymentEvidence.conservative_income_basis:null;
   if(confidence===null&&!routed&&income===null&&!missing.length&&!goalName&&safeCapacity===null&&requested===null&&!financingPurpose&&!decisionState&&eligibilityScore===null&&!calibrationStatus)return null;
   return <div className={styles.facts}>
     {confidence!==null&&<span><small>درجة الثقة</small><strong>{confidence}٪</strong></span>}
@@ -96,6 +100,9 @@ function StructuredFacts({data}:{data?:Record<string,unknown>}){
     {financeLimit!==null&&<span><small>سقف التمويل المحسوب</small><strong>{formatSar(financeLimit)} ر.س</strong></span>}
     {missingLimit.length>0&&<span><small>مكونات سقف ناقصة</small><strong>{missingLimit.join('، ')}</strong></span>}
     {repaymentMin!==null&&repaymentMax!==null&&<span><small>نطاق القسط من الوفر الآمن</small><strong>{formatSar(repaymentMin)}–{formatSar(repaymentMax)} ر.س</strong></span>}
+    {realizedSalary!==null&&<span><small>راتب متحقق في الدورة</small><strong>{formatSar(realizedSalary)} ر.س</strong></span>}
+    {conservativeIncome!==null&&<span><small>أساس الدخل المتحفظ</small><strong>{formatSar(conservativeIncome)} ر.س</strong></span>}
+    {repaymentCapacity!==null&&<span><small>قدرة السداد قبل التسعير</small><strong>{formatSar(repaymentCapacity)} ر.س</strong></span>}
     {calibrationStatus&&<span><small>معايرة الأهلية</small><strong>{calibrationStatus==='CALIBRATION_NOT_ACTIVE'?'بانتظار معايرة رقمية معتمدة':calibrationStatus==='SCORED'?'معايرة مفعلة':calibrationStatus}</strong></span>}
     {missing.length>0&&<span><small>بيانات ناقصة</small><strong>{missing.map(missingLabel).join('، ')}</strong></span>}
   </div>;
