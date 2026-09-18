@@ -10,21 +10,8 @@ import {
   isNamaaAccountEmailConfigured,
   isNamaaPilotMode,
 } from '@/lib/auth/namaa-account-access';
-import { signInVerifiedWithPassword } from '@/lib/auth/verified-login';
 import { AUTH_SESSION_COOKIE, authCookieOptions } from '@/lib/auth/session-cookie';
 import { guardPublicAccountRequest, publicAccountGuardError } from '@/security/public-account-mutation';
-
-async function pilotLoginResponse(email: string, password: string) {
-  const login = await signInVerifiedWithPassword({ email, password });
-  if (!login.ok) return null;
-
-  const response = NextResponse.json(
-    { ok: true, code: 'AUTH_PILOT_LOGIN_OK', authenticated: true },
-    { status: 200 },
-  );
-  response.cookies.set(AUTH_SESSION_COOKIE, login.token, authCookieOptions(login.expiresAt));
-  return response;
-}
 
 export async function POST(request: Request) {
   const pilotMode = isNamaaPilotMode();
@@ -80,32 +67,24 @@ export async function POST(request: Request) {
   }
 
   if (!result.ok) {
-    if (pilotMode && result.code === 'AUTH_ACCOUNT_EXISTS') {
-      try {
-        const response = await pilotLoginResponse(email, password);
-        if (response) return response;
-      } catch (error) {
-        console.error('[namaa-pilot-existing-login]', {
-          name: error instanceof Error ? error.name : 'UnknownError',
-          message: error instanceof Error ? error.message : '',
-        });
-      }
-    }
     return NextResponse.json({ code: result.code }, { status: 400 });
   }
 
   if (pilotMode) {
-    try {
-      const response = await pilotLoginResponse(email, password);
-      if (response) return response;
-      return NextResponse.json({ code: 'AUTH_LOGIN_FAILED' }, { status: 503 });
-    } catch (error) {
-      console.error('[namaa-pilot-auto-login]', {
-        name: error instanceof Error ? error.name : 'UnknownError',
-        message: error instanceof Error ? error.message : '',
-      });
+    if (!('sessionToken' in result) || !result.sessionToken || !result.sessionExpiresAt) {
       return NextResponse.json({ code: 'AUTH_LOGIN_FAILED' }, { status: 503 });
     }
+
+    const response = NextResponse.json(
+      { ok: true, code: 'AUTH_PILOT_LOGIN_OK', authenticated: true },
+      { status: 200 },
+    );
+    response.cookies.set(
+      AUTH_SESSION_COOKIE,
+      result.sessionToken,
+      authCookieOptions(result.sessionExpiresAt),
+    );
+    return response;
   }
 
   if (result.deliver) {
