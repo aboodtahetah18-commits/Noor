@@ -3,8 +3,10 @@ import { getRawSql } from '@/infrastructure/db/client';
 import { getHilalRepaymentCapacity } from './hilal-repayment-capacity';
 import {
   getHilalCaseAppliedRestructuringCount,
+  getHilalRestructuringLedgerCapabilities,
   recordHilalRestructuringEvent,
 } from './hilal-restructuring-ledger';
+import { isHilalExecutionEvidenceIntent, parseHilalExecutionEvidence, verifyHilalExecutionEvidence } from './hilal-restructuring-verification';
 import type { ConversationMessageKind } from './store';
 import { governedRooms } from './store';
 
@@ -318,6 +320,162 @@ export function buildHilalRestructuringProposal(
 export async function createHilalRestructuringReply(userId: string, userText: string): Promise<AgentReply | null> {
   const { baseline, hilalMetadata } = await readContext(userId);
   const active = hilalMetadata.restructuring_state?.active_request;
+  const lastApprovedRaw = hilalMetadata.restructuring_state?.last_approved;
+  const lastApproved = lastApprovedRaw && typeof lastApprovedRaw === 'object'
+    ? lastApprovedRaw as Record<string, unknown>
+    : null;
+
+  if (!active && lastApproved && String(lastApproved.application_status ?? '') !== 'APPLIED' && isHilalExecutionEvidenceIntent(userText)) {
+    const caseId = typeof lastApproved.case_id === 'string' ? lastApproved.case_id : null;
+    const caseTitle = typeof lastApproved.case_title === 'string' ? lastApproved.case_title : 'التمويل';
+    const categoryId = typeof lastApproved.category_id === 'string' ? lastApproved.category_id : null;
+    const rootCause = typeof lastApproved.root_cause === 'string' ? lastApproved.root_cause : null;
+    const proposedPlan = lastApproved.proposed_plan && typeof lastApproved.proposed_plan === 'object'
+      ? lastApproved.proposed_plan as Record<string, unknown>
+      : null;
+
+    if (!caseId || !proposedPlan) {
+      return persistReply(userId, hilalMetadata,
+        'تعذر ربط إثبات التنفيذ باعتماد إعادة جدولة صالح. أعد فتح دراسة إعادة الجدولة من التمويل المقصود.',
+        'risk',
+        {
+          restructuring_state: 'APPROVAL_CONTEXT_INVALID',
+          execution_boundary: 'advisory_only',
+        },
+      );
+    }
+
+    const capabilities = await getHilalRestructuringLedgerCapabilities();
+    if (!capabilities.ledger_available || !capabilities.evidence_events_available) {
+      return persistReply(userId, hilalMetadata,
+        'اعتماد إعادة الجدولة موجود، لكن سجل إثبات التطبيق Canonical غير مفعل بعد في قاعدة البيانات. لن أسجل APPLIED قبل تفعيل سجل الأدلة.',
+        'request',
+        {
+          restructuring_state: 'MIGRATION_REQUIRED',
+          case_id: caseId,
+          required_migrations: [
+            '20260918_073_hilal_restructuring_events.sql',
+            '20260918_074_hilal_restructuring_evidence_events.sql',
+          ],
+          execution_boundary: 'advisory_only',
+        },
+      );
+    }
+
+    const evidence = parseHilalExecutionEvidence(userText);
+    const verification = await verifyHilalExecutionEvidence(userId, caseId, evidence);
+
+    if (verification.status === 'MISSING_FIELDS') {
+      return persistReply(userId, hilalMetadata,
+        'أحتاج إثبات تنفيذ قابل للمطابقة قبل تسجيل إعادة الجدولة كمطبقة. أرسل رقم المرجع، المبلغ، التاريخ بصيغة YYYY-MM-DD، واسم أو معرف حساب السداد. ويمكنك بدل ذلك إرسال معرف صف كشف الحساب المرتبط بالتمويل.',
+        'request',
+        {
+          restructuring_state: 'EVIDENCE_REQUIRED',
+          case_id: caseId,
+          case_title: caseTitle,
+          missing_evidence_fields: verification.missing_fields,
+          execution_boundary: 'advisory_only',
+        },
+      );
+    }
+
+    if (verification.status !== 'VERIFIED') {
+      await recordHilalRestructuringEvent(userId, {
+        caseId,
+        categoryId,
+        eventType: 'EVIDENCE_SUBMITTED',
+        rootCause,
+        proposedPlan,
+        evidence: { submitted: evidence, verification },
+        reason: 'User submitted external execution evidence; canonical verification did not pass.',
+      });
+      await recordHilalRestructuringEvent(userId, {
+        caseId,
+        categoryId,
+        eventType: 'EVIDENCE_REJECTED',
+        rootCause,
+        proposedPlan,
+        evidence: { submitted: evidence, verification },
+        reason: 'Evidence did not match one unique approved bank-statement row linked to the financing case.',
+      });
+      const nextMetadata: HilalMetadata = {
+        ...hilalMetadata,
+        restructuring_state: {
+          ...hilalMetadata.restructuring_state,
+          last_approved: {
+            ...lastApproved,
+            application_status: 'EVIDENCE_PENDING',
+            last_evidence: evidence,
+            last_verification: verification,
+          },
+        },
+      };
+      const guidance = verification.status === 'CASE_LINK_REQUIRED'
+        ? 'وجدت حركة محتملة، لكنها غير مرتبطة بهذا التمويل داخل كشف الحساب. اربط صف كشف الحساب بالتمويل أولًا ثم أعد إرسال الإثبات.'
+        : verification.status === 'AMBIGUOUS'
+          ? 'وجدت أكثر من حركة مطابقة. أرسل معرف صف كشف الحساب المحدد حتى أتجنب اعتماد الحركة الخطأ.'
+          : 'لم أجد حركة مطابقة معتمدة بالمبلغ والتاريخ والحساب والمرجع لهذا التمويل.';
+      return persistReply(userId, nextMetadata, `لم أسجل إعادة الجدولة كـ APPLIED. ${guidance}`, 'request', {
+        restructuring_state: 'EVIDENCE_NOT_VERIFIED',
+        case_id: caseId,
+        case_title: caseTitle,
+        evidence,
+        verification,
+        execution_boundary: 'advisory_only',
+      });
+    }
+
+    const versionKey = String(lastApproved.version_key ?? lastApproved.approved_at ?? `restructure:${caseId}`);
+    const appliedPlan = { ...proposedPlan, version_key: versionKey };
+    await recordHilalRestructuringEvent(userId, {
+      caseId,
+      categoryId,
+      eventType: 'EVIDENCE_SUBMITTED',
+      rootCause,
+      proposedPlan: appliedPlan,
+      evidence: { submitted: evidence, verification },
+      reason: 'Human execution evidence matched a unique approved bank-statement row linked to the financing case.',
+    });
+    await recordHilalRestructuringEvent(userId, {
+      caseId,
+      categoryId,
+      eventType: 'APPLIED',
+      rootCause,
+      proposedPlan: appliedPlan,
+      evidence: { submitted: evidence, verification },
+      reason: 'Restructuring marked APPLIED only after canonical evidence verification. No financial transaction was created by Namaa.',
+    });
+
+    const nextMetadata: HilalMetadata = {
+      ...hilalMetadata,
+      restructuring_state: {
+        ...hilalMetadata.restructuring_state,
+        last_approved: {
+          ...lastApproved,
+          proposed_plan: appliedPlan,
+          version_key: versionKey,
+          application_status: 'APPLIED',
+          applied_at: new Date().toISOString(),
+          verified_evidence: verification,
+        },
+      },
+    };
+    return persistReply(userId, nextMetadata,
+      `تم التحقق من إثبات التنفيذ المرتبط بالتمويل «${caseTitle}» وتسجيل إعادة الجدولة كـ APPLIED. هذا التسجيل يوثق تطبيق الخطة فقط؛ لم ينشئ نماء تحويلًا أو دفعة مالية، ولن ينخفض التعرض النقدي إلا عند وجود سداد فعلي مسجل في سجل الاسترداد.`,
+      'decision',
+      {
+        restructuring_state: 'APPLIED',
+        case_id: caseId,
+        case_title: caseTitle,
+        proposed_plan: appliedPlan,
+        evidence_verification: verification,
+        monetary_exposure_changed: false,
+        execution_performed_by_user: true,
+        execution_boundary: 'advisory_only',
+      },
+    );
+  }
+
   if (!active && !isRestructuringIntent(userText)) return null;
 
   if (active && isCancellation(userText)) {
@@ -513,6 +671,8 @@ export async function createHilalRestructuringReply(userId: string, userText: st
       );
     }
 
+    const approvalVersionKey = randomUUID();
+    const approvedProposal = { ...proposal, version_key: approvalVersionKey };
     await recordHilalRestructuringEvent(userId, {
       caseId: selected.id,
       categoryId: selected.category_id,
@@ -524,7 +684,7 @@ export async function createHilalRestructuringReply(userId: string, userText: st
         next_installment_number: selected.next_installment_number,
         next_installment_amount: selected.next_installment_amount,
       },
-      proposedPlan: proposal,
+      proposedPlan: approvedProposal,
       evidence: {
         safe_monthly_capacity: repayment.max_monthly_repayment,
         realized_salary_income: repayment.realized_salary_income,
@@ -535,8 +695,10 @@ export async function createHilalRestructuringReply(userId: string, userText: st
     const approval = {
       case_id: selected.id,
       case_title: selected.title,
+      category_id: selected.category_id,
       root_cause: draft.root_cause,
-      proposed_plan: proposal,
+      proposed_plan: approvedProposal,
+      version_key: approvalVersionKey,
       approved_at: new Date().toISOString(),
       application_status: 'NOT_APPLIED',
     };
@@ -560,7 +722,7 @@ export async function createHilalRestructuringReply(userId: string, userText: st
           remaining_installments: selected.remaining_installments,
           next_installment_amount: selected.next_installment_amount,
         },
-        proposed_plan: proposal,
+        proposed_plan: approvedProposal,
         user_confirmed: true,
         execution_required_from_user: true,
         evidence_required_after_execution: true,
