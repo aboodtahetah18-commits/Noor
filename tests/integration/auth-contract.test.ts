@@ -42,4 +42,27 @@ describe('Neon HTTP auth contract', () => {
     expect(cookie).toContain('httpOnly: true');
     expect(cookie).toContain("sameSite: 'lax'");
   });
+
+  it('keeps pilot signup verification-free and creates a first-party session immediately', () => {
+    const registerRoute = read('src/app/api/account/register/route.ts');
+    const accountAccess = read('src/lib/auth/namaa-account-access.ts');
+    const registerForm = read('src/components/auth/account-access-forms.tsx');
+
+    expect(registerRoute).toContain('const pilotMode = isNamaaPilotMode()');
+    expect(registerRoute).toContain('if (!pilotMode)');
+    expect(registerRoute).toContain('pilotLoginResponse');
+    expect(registerRoute).toContain('AUTH_PILOT_LOGIN_OK');
+    expect(registerRoute).toContain('response.cookies.set(AUTH_SESSION_COOKIE');
+    expect(accountAccess).toContain("if (current?.email_verified === true && !pilotMode)");
+    expect(accountAccess).toContain("email_verified = $2");
+    expect(accountAccess).toContain("verified_at = coalesce(verified_at, now())");
+    expect(registerForm).toContain("window.location.assign('/conversations')");
+  });
+
+  it('scopes verified credential login to the local credential issuer', () => {
+    const login = read('src/lib/auth/verified-login.ts');
+    expect(login).toContain("a.provider_id = 'credential'");
+    expect(login).toContain("a.issuer = 'local:credential'");
+  });
+
 });
