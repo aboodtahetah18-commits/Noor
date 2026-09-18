@@ -14,7 +14,7 @@ const items: Array<{href:string;label:string;icon:LucideIconName}> = [
 
 export function MobileBottomNav() {
   const pathname = usePathname();
-  if (pathname.startsWith('/onboarding')) return null;
+  if (pathname.startsWith('/onboarding') || pathname.startsWith('/conversations')) return null;
   return <nav className="mobile-bottom-nav mustaqbali-mobile-bottom-nav" aria-label="التنقل الرئيسي للجوال">
     {items.map((item)=>{
       const active=item.href==='/dashboard'?pathname==='/dashboard':pathname===item.href||pathname.startsWith(`${item.href}/`);
