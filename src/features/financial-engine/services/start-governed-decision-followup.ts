@@ -46,8 +46,11 @@ export async function startGovernedDecisionFollowupAfterVerifiedExecution(input:
   `;
 
   const row=rows[0];
-  const decisionId=row?.decision_id==null?null:String(row.decision_id);
+  if(!row){
+    return {started:false,decisionId:null,reason:'GOVERNANCE_DECISION_NOT_LINKED'};
+  }
 
+  const decisionId=row.decision_id==null?null:String(row.decision_id);
   if(!decisionId){
     return {started:false,decisionId:null,reason:'GOVERNANCE_DECISION_NOT_LINKED'};
   }
