@@ -29,6 +29,7 @@ function exposure(overrides: Partial<HilalExposureProfile> = {}): HilalExposureP
       cancelled_count: 0,
       precautionary_cap: 3,
       precautionary_cap_reached: false,
+      ledger_status: 'AVAILABLE',
       policy_reference: 'HILAL_POLICY_1.0_SECTION_14',
     },
     source: 'INTERNAL_FUNDING_LEDGER',
