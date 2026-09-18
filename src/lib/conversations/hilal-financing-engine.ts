@@ -262,29 +262,6 @@ export async function createHilalFinancingReply(userId: string, userText: string
   });
   const policyState = hilalMetadata.financing_state ?? {};
   const factorScores = policyState.eligibility_factor_scores;
-  if (factorEvidence.missing_evidence_factors.length > 0) {
-    const nextFactor = factorEvidence.missing_evidence_factors[0];
-    const question = nextFactor === 'repayment_source_clarity'
-      ? 'ما مصدر السداد المحدد لهذا التمويل؟ اذكر المصدر بوضوح، ولن أعتبر دخلًا لم يصل أو دخلًا غير موثوق مصدرًا مؤكدًا.'
-      : nextFactor === 'income_stability'
-        ? 'كيف تصف نمط دخلك الحالي: ثابت، متغير، أم موسمي؟ سأحفظها كإفادة أولية ولا أرفعها إلى دليل موثق دون سجل داعم.'
-        : nextFactor === 'funded_item_importance'
-          ? 'صنّف الغرض نفسه فقط: أساسي، مهم، أم اختياري؟ لا أستنتج أهمية البند من اسمه وحده.'
-          : 'أحتاج استكمال دليل مالي إضافي قبل احتساب أهلية بنك الهلال.';
-    return persistReply(userId, nextMetadata, `حالة الطلب UNDER_REVIEW. اجتاز الطلب حاجز الحماية، لكن أهلية الهلال لا تُحسب قبل استكمال أدلة عوامل السياسة. ${question}`, 'request', {
-      decision_state: 'UNDER_REVIEW',
-      protection_gate_state: 'PASSES_PROTECTION_GATE',
-      financing_purpose: draft.purpose,
-      requested_amount: requested,
-      expected_installment: installment,
-      safe_capacity: safeCapacity,
-      factor_evidence: factorEvidence.factors,
-      missing_eligibility_evidence: factorEvidence.missing_evidence_factors,
-      calibration_required_factors: factorEvidence.calibration_required_factors,
-      policy_version: HILAL_POLICY_VERSION,
-      execution_boundary: 'advisory_only',
-    });
-  }
   const missingEligibility = missingHilalEligibilityFactors(factorScores);
   const eligibility = missingEligibility.length === 0
     ? evaluateHilalEligibility(factorScores as HilalEligibilityScores)
@@ -332,6 +309,30 @@ export async function createHilalFinancingReply(userId: string, userText: string
     );
   }
 
+  if (factorEvidence.missing_evidence_factors.length > 0) {
+    const nextFactor = factorEvidence.missing_evidence_factors[0];
+    const question = nextFactor === 'repayment_source_clarity'
+      ? 'ما مصدر السداد المحدد لهذا التمويل؟ اذكر المصدر بوضوح، ولن أعتبر دخلًا لم يصل أو دخلًا غير موثوق مصدرًا مؤكدًا.'
+      : nextFactor === 'income_stability'
+        ? 'كيف تصف نمط دخلك الحالي: ثابت، متغير، أم موسمي؟ سأحفظها كإفادة أولية ولا أرفعها إلى دليل موثق دون سجل داعم.'
+        : nextFactor === 'funded_item_importance'
+          ? 'صنّف الغرض نفسه فقط: أساسي، مهم، أم اختياري؟ لا أستنتج أهمية البند من اسمه وحده.'
+          : 'أحتاج استكمال دليل مالي إضافي قبل احتساب أهلية بنك الهلال.';
+    return persistReply(userId, nextMetadata, `حالة الطلب UNDER_REVIEW. اجتاز الطلب حاجز الحماية، لكن أهلية الهلال لا تُحسب قبل استكمال أدلة عوامل السياسة. ${question}`, 'request', {
+      decision_state: 'UNDER_REVIEW',
+      protection_gate_state: 'PASSES_PROTECTION_GATE',
+      financing_purpose: draft.purpose,
+      requested_amount: requested,
+      expected_installment: installment,
+      safe_capacity: safeCapacity,
+      factor_evidence: factorEvidence.factors,
+      missing_eligibility_evidence: factorEvidence.missing_evidence_factors,
+      calibration_required_factors: factorEvidence.calibration_required_factors,
+      policy_version: HILAL_POLICY_VERSION,
+      execution_boundary: 'advisory_only',
+    });
+  }
+
   const passesBody = eligibility
     ? `حالة الحماية PASSES_PROTECTION_GATE. درجة أهلية بنك الهلال وفق السياسة المعتمدة ${eligibility.weighted_score} من 100 (${eligibility.decision_ar}). يبقى الطلب UNDER_REVIEW حتى يكتمل سقف التمويل النهائي من REPAYMENT_CAPACITY وPOLICY_CAP وCASHFLOW_SAFE_LIMIT، ولا يعد ذلك تنفيذًا ماليًا.`
     : `حالة الحماية PASSES_PROTECTION_GATE: مبلغ التمويل ${formatSar(requested)} ريال يقع داخل السعة الآمنة الحالية ${formatSar(safeCapacity)} ريال. بعد إضافة قسط متوقع قدره ${formatSar(installment)} ريال تصبح الالتزامات الشهرية ${formatSar(projectedCoreObligations)} ريال والهامش الشهري الحسابي ${formatSar(monthlyMarginAfter)} ريال. تم ربط سياسة بنك الهلال المعتمدة، لكن درجة الأهلية لا تُحسب حتى تكتمل أدلة عواملها الخمسة بدل اختراع درجات فرعية.`;
@@ -351,8 +352,17 @@ export async function createHilalFinancingReply(userId: string, userText: string
     obligations_after_installment: projectedCoreObligations,
     obligation_ratio_after: obligationRatioAfter,
     monthly_margin_after: monthlyMarginAfter,
-    policy_threshold_applied: false,
-    requires_policy_review: true,
+    policy_version: HILAL_POLICY_VERSION,
+    eligibility_weights: HILAL_ELIGIBILITY_WEIGHTS,
+    eligibility_score: eligibility?.weighted_score ?? null,
+    eligibility_band: eligibility?.band ?? null,
+    missing_eligibility_factors: missingEligibility,
+    factor_evidence: factorEvidence.factors,
+    raw_evidence_complete: factorEvidence.raw_evidence_complete,
+    calibration_required_factors: factorEvidence.calibration_required_factors,
+    finance_limit_components: financeLimit,
+    policy_threshold_applied: eligibility !== null,
+    requires_policy_review: eligibility === null || !financeLimit.limit_complete,
     execution_boundary: 'advisory_only',
   });
 }
