@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { getRawSql } from '@/infrastructure/db/client';
 
-export type HilalRestructuringEventType = 'REQUESTED' | 'APPROVED' | 'APPLIED' | 'REJECTED' | 'CANCELLED';
+export type HilalRestructuringEventType = 'REQUESTED' | 'APPROVED' | 'EVIDENCE_SUBMITTED' | 'EVIDENCE_REJECTED' | 'APPLIED' | 'REJECTED' | 'CANCELLED';
 
 export type HilalRestructuringEventInput = {
   caseId: string;
