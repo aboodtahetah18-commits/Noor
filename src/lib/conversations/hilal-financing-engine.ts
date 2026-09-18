@@ -372,6 +372,7 @@ export async function createHilalFinancingReply(userId: string, userText: string
         installment_above_approved_band: installmentAboveApprovedBand,
         calibration_status: automaticCalibration.status,
         calibration_id: automaticCalibration.calibration_id,
+        eligibility_calibration: automaticCalibration,
         execution_boundary: 'advisory_only',
       },
     );
@@ -398,6 +399,7 @@ export async function createHilalFinancingReply(userId: string, userText: string
       calibration_required_factors: factorEvidence.calibration_required_factors,
       calibration_status: automaticCalibration.status,
       calibration_id: automaticCalibration.calibration_id,
+      eligibility_calibration: automaticCalibration,
       repayment_installment_band: repaymentBand,
       repayment_capacity_evidence: repaymentCapacity,
       policy_cap_evidence: policyCapEvidence,
@@ -446,6 +448,7 @@ export async function createHilalFinancingReply(userId: string, userText: string
     policy_cap_calibration: policyCapCalibration,
     calibration_status: automaticCalibration.status,
     calibration_id: automaticCalibration.calibration_id,
+    eligibility_calibration: automaticCalibration,
     policy_threshold_applied: eligibility !== null,
     requires_policy_review: eligibility === null || !financeLimit.limit_complete,
     execution_boundary: 'advisory_only',
