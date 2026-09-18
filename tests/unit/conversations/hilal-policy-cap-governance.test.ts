@@ -19,8 +19,18 @@ function exposure(overrides: Partial<HilalExposureProfile> = {}): HilalExposureP
     overdue_installment_count: 0,
     next_installment_number: 2,
     financing_history_available: true,
-    reschedule_count: null,
-    reschedule_tracking_status: 'NOT_TRACKED_IN_CANONICAL_LEDGER',
+    restructuring: {
+      requested_count: 1,
+      approved_count: 1,
+      applied_count_total: 1,
+      max_applied_per_case: 1,
+      cases_at_precautionary_cap: 0,
+      rejected_count: 0,
+      cancelled_count: 0,
+      precautionary_cap: 3,
+      precautionary_cap_reached: false,
+      policy_reference: 'HILAL_POLICY_1.0_SECTION_14',
+    },
     source: 'INTERNAL_FUNDING_LEDGER',
     ...overrides,
   };
@@ -65,6 +75,9 @@ describe('Hilal policy cap governance', () => {
       financing_frequency: 2,
       active_or_recovery_case_count: 2,
       overdue_installment_count: 0,
+      restructuring_applied_count_total: 1,
+      restructuring_max_applied_per_case: 1,
+      restructuring_precautionary_cap_reached: false,
       essential_category: true,
     });
   });
