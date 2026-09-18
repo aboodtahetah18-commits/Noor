@@ -5,7 +5,7 @@ import { reportExecutionAction } from './actions';
 
 const statusLabels:Record<string,string>={
   USER_ACTION_REQUEST:'بانتظار تنفيذك الخارجي',WAITING_USER_CONFIRMATION:'بانتظار تأكيدك',EVIDENCE_PENDING:'الإثبات قيد المراجعة',
-  VERIFICATION_PENDING:'قيد التحقق',VERIFIED_EXECUTION:'تم التحقق من التنفيذ',RECONCILIATION:'قيد المطابقة',PARTIAL:'تنفيذ جزئي',
+  VERIFICATION_PENDING:'قيد التحقق',VERIFIED_EXECUTION:'تم التحقق من التنفيذ',RECONCILIATION:'فرق تسوية تحت التحقق',PARTIAL:'تنفيذ جزئي',
   FAILED:'تعذر التنفيذ',OVERDUE:'متأخر',DISPUTED:'محل مراجعة',CANNOT_REVERSE:'غير قابل للتراجع',
 };
 
@@ -20,8 +20,8 @@ export default async function ExecutionPage({searchParams}:{searchParams:Promise
       {tasks.length===0?<p className="muted">عندما تعتمد قرارًا ماليًا من المستشار ستظهر مهمة التنفيذ هنا.</p>:<div>{tasks.map(task=><article className="card" key={task.id}>
         <div className="row-between"><div><strong>{task.actionType}</strong><p className="muted">{statusLabels[task.status]??task.status}</p></div>{task.amount?<strong>{task.amount} {task.currency}</strong>:null}</div>
         {task.decisionReference?<p className="muted">مرجع القرار: <strong>{task.decisionReference}</strong></p>:null}
-        {task.verificationStatus?<p className="muted">حالة الإثبات: <strong>{task.verificationStatus==='VERIFIED'?'تم التحقق':task.verificationStatus==='REJECTED'?'مرفوض':task.verificationStatus==='AMBIGUOUS'?'مطابق لأكثر من حركة':task.verificationStatus==='PENDING'?'بانتظار اكتمال التحقق':task.verificationStatus}</strong></p>:null}
-        {task.verificationReason?<p className="muted">سبب حالة الإثبات: {task.verificationReason==='EVIDENCE_FIELDS_INCOMPLETE'?'بيانات الإثبات غير مكتملة':task.verificationReason==='UNIQUE_BANK_STATEMENT_MATCH'?'وجدت حركة واحدة مطابقة في كشف حساب معتمد':task.verificationReason==='NO_BANK_STATEMENT_MATCH'?'لم توجد حركة مطابقة في كشف حساب معتمد':task.verificationReason==='MULTIPLE_BANK_STATEMENT_MATCHES'?'وجدت أكثر من حركة مطابقة وتحتاج تحديدًا أدق':task.verificationReason}</p>:null}
+        {task.verificationStatus?<p className="muted">حالة الإثبات: <strong>{task.verificationStatus==='MATCHED'?'مطابقة نهائيًا':task.verificationStatus==='MISMATCH'?'فرق تسوية تحت التحقق':task.verificationStatus==='NEEDS_CLARIFICATION'?'تحتاج مراجعة مطابقة':task.verificationStatus==='PENDING'?'منفذة مبدئيًا وبانتظار المطابقة':task.verificationStatus}</strong></p>:null}
+        {task.verificationReason?<p className="muted">سبب حالة الإثبات: {task.verificationReason==='EVIDENCE_FIELDS_INCOMPLETE'?'بيانات الإثبات غير مكتملة':task.verificationReason==='BANK_MATCH_NOT_AVAILABLE_YET'?'لم تظهر مطابقة بنكية نهائية بعد':task.verificationReason==='UNIQUE_BANK_STATEMENT_MATCH'?'تمت المطابقة النهائية وفق الضوابط الحاكمة':task.verificationReason==='MULTIPLE_BANK_STATEMENT_MATCHES'?'وجدت أكثر من حركة مرشحة وتحتاج مراجعة':task.verificationReason==='MATCH_CONFIDENCE_NOT_AVAILABLE'?'درجة مطابقة حاكمة غير متاحة بعد':task.verificationReason==='MATCH_CONFIDENCE_BELOW_THRESHOLD'?'درجة المطابقة لا تتجاوز الحد الحاكم':task.verificationReason==='MATERIAL_DIFFERENCE_REQUIRES_RECONCILIATION'?'ظهر فرق مادي غير مفسر ويحتاج تسوية':task.verificationReason}</p>:null}
         {task.instructions?<p>{task.instructions}</p>:null}
         {['USER_ACTION_REQUEST','WAITING_USER_CONFIRMATION','OVERDUE'].includes(task.status)?<form action={reportExecutionAction}>
           <input type="hidden" name="executionTaskId" value={task.id}/>
