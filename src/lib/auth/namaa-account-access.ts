@@ -247,62 +247,92 @@ async function beginNamaaPilotRegistration(input: {
     where lower(email) = ${input.email}
     limit 1
   `;
+
   const userId = existing[0]?.id ? String(existing[0].id) : randomUUID();
+  const accountId = userId;
+  const accountRowId = randomUUID();
+  const sessionId = randomUUID();
+  const sessionToken = randomBytes(36).toString('base64url');
+  const sessionExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
   const fullName = `${input.firstName} ${input.lastName}`;
   const passwordHash = await hashPassword(input.password);
+  const cityNormalized = input.city.toLocaleLowerCase('ar');
 
-  const userQuery = existing.length
-    ? rawSql`
-        update auth."user"
-        set name = ${fullName},
-            email_verified = true,
-            updated_at = now()
-        where id = ${userId}::uuid
-      `
-    : rawSql`
-        insert into auth."user"
-          (id, name, email, email_verified, image, created_at, updated_at)
-        values
-          (${userId}::uuid, ${fullName}, ${input.email}, true, null, now(), now())
-      `;
-
-  const profileQuery = rawSql`
-    insert into auth.user_profile
-      (user_id, first_name, last_name, phone, city, city_normalized, created_at, updated_at)
-    values
-      (${userId}::uuid, ${input.firstName}, ${input.lastName}, ${input.phone}, ${input.city}, ${input.city.toLocaleLowerCase('ar')}, now(), now())
-    on conflict (user_id) do update set
-      first_name = excluded.first_name,
-      last_name = excluded.last_name,
-      phone = excluded.phone,
-      city = excluded.city,
-      city_normalized = excluded.city_normalized,
-      updated_at = now()
-  `;
-
-  const accountQuery = rawSql`
-    insert into auth.account
-      (id, account_id, provider_id, user_id, password, issuer, created_at, updated_at)
-    values
-      (${randomUUID()}::uuid, ${userId}, 'credential', ${userId}::uuid, ${passwordHash}, 'local:credential', now(), now())
-    on conflict (issuer, account_id) do update set
-      provider_id = 'credential',
-      user_id = excluded.user_id,
-      password = excluded.password,
-      updated_at = now()
-  `;
-
-  const pilotQuery = rawSql`
-    update auth.pilot_access
-    set registered_at = coalesce(registered_at, now()),
-        verified_at = coalesce(verified_at, now()),
+  const rows = await rawSql`
+    with upsert_user as (
+      insert into auth."user"
+        (id, name, email, email_verified, image, created_at, updated_at)
+      values
+        (${userId}::uuid, ${fullName}, ${input.email}, true, null, now(), now())
+      on conflict (id) do update set
+        name = excluded.name,
+        email = excluded.email,
+        email_verified = true,
         updated_at = now()
-    where lower(email) = ${input.email}
-      and status = 'ACTIVE'
+      returning id
+    ),
+    upsert_profile as (
+      insert into auth.user_profile
+        (user_id, first_name, last_name, phone, city, city_normalized, created_at, updated_at)
+      select
+        id, ${input.firstName}, ${input.lastName}, ${input.phone}, ${input.city}, ${cityNormalized}, now(), now()
+      from upsert_user
+      on conflict (user_id) do update set
+        first_name = excluded.first_name,
+        last_name = excluded.last_name,
+        phone = excluded.phone,
+        city = excluded.city,
+        city_normalized = excluded.city_normalized,
+        updated_at = now()
+      returning user_id
+    ),
+    upsert_account as (
+      insert into auth.account
+        (id, account_id, provider_id, user_id, password, issuer, created_at, updated_at)
+      select
+        ${accountRowId}::uuid, ${accountId}, 'credential', user_id, ${passwordHash}, 'local:credential', now(), now()
+      from upsert_profile
+      on conflict (issuer, account_id) do update set
+        provider_id = 'credential',
+        user_id = excluded.user_id,
+        password = excluded.password,
+        updated_at = now()
+      returning user_id
+    ),
+    update_pilot as (
+      update auth.pilot_access
+      set registered_at = coalesce(registered_at, now()),
+          verified_at = coalesce(verified_at, now()),
+          updated_at = now()
+      where lower(email) = ${input.email}
+        and status = 'ACTIVE'
+      returning email
+    )
+    insert into auth.session
+      (id, expires_at, token, created_at, updated_at, ip_address, user_agent, user_id)
+    select
+      ${sessionId}::uuid,
+      ${sessionExpiresAt.toISOString()}::timestamptz,
+      ${sessionToken},
+      now(),
+      now(),
+      null,
+      null,
+      user_id
+    from upsert_account
+    returning token, expires_at
   `;
 
-  await rawSql.transaction([userQuery, profileQuery, accountQuery, pilotQuery]);
-  return { ok: true as const, deliver: false as const, email: input.email };
+  const session = rows[0];
+  if (!session?.token) throw new Error('AUTH_PILOT_SESSION_CREATE_FAILED');
+
+  return {
+    ok: true as const,
+    deliver: false as const,
+    email: input.email,
+    sessionToken: String(session.token),
+    sessionExpiresAt: new Date(String(session.expires_at)),
+  };
 }
 
 export async function beginNamaaRegistration(input: RegistrationInput) {
