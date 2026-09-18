@@ -9,6 +9,12 @@ export type UnifiedEvidenceStateMachineId =
   | 'حالة-مطابقة-٣٧'
   | 'حالة-مطابقة-٣٨';
 
+export type StoredEvidenceVerificationStatus =
+  | 'PENDING'
+  | 'MATCHED'
+  | 'NEEDS_CLARIFICATION'
+  | 'MISMATCH';
+
 export type UnifiedEvidenceVerificationInput = {
   completeEvidence: boolean;
   candidateCount: number;
@@ -17,11 +23,10 @@ export type UnifiedEvidenceVerificationInput = {
   hasMaterialDifference: boolean;
 };
 
-export function evaluateUnifiedEvidenceVerification(
-  input: UnifiedEvidenceVerificationInput,
-): {
+export type UnifiedEvidenceVerificationResult = {
   status: UnifiedEvidenceVerificationStatus;
   state_machine_id: UnifiedEvidenceStateMachineId;
+  storage_status: StoredEvidenceVerificationStatus;
   reason:
     | 'EVIDENCE_FIELDS_INCOMPLETE'
     | 'BANK_MATCH_NOT_AVAILABLE_YET'
@@ -30,11 +35,16 @@ export function evaluateUnifiedEvidenceVerification(
     | 'UNIQUE_BANK_STATEMENT_MATCH'
     | 'MULTIPLE_BANK_STATEMENT_MATCHES'
     | 'MATERIAL_DIFFERENCE_REQUIRES_RECONCILIATION';
-} {
+};
+
+export function evaluateUnifiedEvidenceVerification(
+  input: UnifiedEvidenceVerificationInput,
+): UnifiedEvidenceVerificationResult {
   if (!input.completeEvidence) {
     return {
       status: 'PENDING_MATCH',
       state_machine_id: 'حالة-تنفيذ-٣٦',
+      storage_status: 'PENDING',
       reason: 'EVIDENCE_FIELDS_INCOMPLETE',
     };
   }
@@ -43,6 +53,7 @@ export function evaluateUnifiedEvidenceVerification(
     return {
       status: 'RECONCILIATION_REQUIRED',
       state_machine_id: 'حالة-مطابقة-٣٨',
+      storage_status: 'MISMATCH',
       reason: 'MATERIAL_DIFFERENCE_REQUIRES_RECONCILIATION',
     };
   }
@@ -51,6 +62,7 @@ export function evaluateUnifiedEvidenceVerification(
     return {
       status: 'PENDING_MATCH',
       state_machine_id: 'حالة-تنفيذ-٣٦',
+      storage_status: 'PENDING',
       reason: 'BANK_MATCH_NOT_AVAILABLE_YET',
     };
   }
@@ -59,6 +71,7 @@ export function evaluateUnifiedEvidenceVerification(
     return {
       status: 'REVIEW_REQUIRED',
       state_machine_id: 'حالة-تنفيذ-٣٦',
+      storage_status: 'NEEDS_CLARIFICATION',
       reason: 'MULTIPLE_BANK_STATEMENT_MATCHES',
     };
   }
@@ -67,6 +80,7 @@ export function evaluateUnifiedEvidenceVerification(
     return {
       status: 'REVIEW_REQUIRED',
       state_machine_id: 'حالة-تنفيذ-٣٦',
+      storage_status: 'NEEDS_CLARIFICATION',
       reason: 'MATCH_CONFIDENCE_NOT_AVAILABLE',
     };
   }
@@ -75,6 +89,7 @@ export function evaluateUnifiedEvidenceVerification(
     return {
       status: 'REVIEW_REQUIRED',
       state_machine_id: 'حالة-تنفيذ-٣٦',
+      storage_status: 'NEEDS_CLARIFICATION',
       reason: 'MATCH_CONFIDENCE_BELOW_THRESHOLD',
     };
   }
@@ -82,6 +97,7 @@ export function evaluateUnifiedEvidenceVerification(
   return {
     status: 'FINAL_MATCHED',
     state_machine_id: 'حالة-مطابقة-٣٧',
+    storage_status: 'MATCHED',
     reason: 'UNIQUE_BANK_STATEMENT_MATCH',
   };
 }
