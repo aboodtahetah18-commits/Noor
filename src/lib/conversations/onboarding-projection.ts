@@ -42,9 +42,23 @@ function parseTargetDate(raw:string){
   const normalized=normalizeArabicNumber(raw);
   const match=normalized.match(/\b(20\d{2})[-\/.](\d{1,2})[-\/.](\d{1,2})\b/);
   if(!match) return null;
-  const month=String(match[2]).padStart(2,'0');
-  const day=String(match[3]).padStart(2,'0');
-  return `${match[1]}-${month}-${day}`;
+  const year=Number(match[1]);
+  const month=Number(match[2]);
+  const day=Number(match[3]);
+  const candidate=new Date(Date.UTC(year,month-1,day));
+  if(
+    candidate.getUTCFullYear()!==year ||
+    candidate.getUTCMonth()!==month-1 ||
+    candidate.getUTCDate()!==day
+  ) return null;
+  const today=new Date();
+  const todayIso=[
+    today.getUTCFullYear(),
+    String(today.getUTCMonth()+1).padStart(2,'0'),
+    String(today.getUTCDate()).padStart(2,'0'),
+  ].join('-');
+  const iso=`${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+  return iso>=todayIso ? iso : null;
 }
 
 function rawFact(value:unknown){
