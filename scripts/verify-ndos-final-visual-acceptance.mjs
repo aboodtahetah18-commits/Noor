@@ -63,6 +63,17 @@ const requiredCorrections = [
   'inset-inline-start:',
   '.auth-aurora-two',
   'inset-inline-end:',
+  '.auth-brand-symbol-frame',
+  'background: transparent !important',
+  '.auth-brand-symbol.namaa-brand-logo',
+  'aspect-ratio: 2 / 1',
+  '.auth-page-v42.auth-page-nature',
+  'block-size: 100dvh !important',
+  'overflow: hidden !important',
+  'overscroll-behavior: none',
+  'grid-template-rows: auto minmax(0,1fr)',
+  '.auth-page-v42 .auth-nature-copy',
+  'display: none !important',
 ];
 for (const expected of requiredCorrections) if (!acceptance.includes(expected)) fail(acceptanceFile, `missing runtime correction: ${expected}`);
 if (/(?:linear|radial|conic)-gradient\s*\(/i.test(acceptance)) fail(acceptanceFile, 'acceptance layer must not introduce gradients');
@@ -91,7 +102,6 @@ for (const file of finalVisualFiles) {
   const text = read(file).replace(/\/\*[\s\S]*?\*\//g,'');
   if (/Tajawal/i.test(text)) fail(file, 'legacy Tajawal reference in effective visual layer');
   if (/(?:linear|radial|conic)-gradient\s*\(/i.test(text)) fail(file, 'unapproved gradient in effective visual layer');
-  // `none` is the required neutralization value; any positive blur/glass value is forbidden.
   for (const match of text.matchAll(/(?:-webkit-)?backdrop-filter\s*:\s*([^;}]*)/gi)) {
     const normalized = match[1].replace(/!important/gi,'').trim().toLowerCase();
     if (normalized !== 'none') fail(file, `unapproved blur/glass value ${match[1].trim()}`);
@@ -103,7 +113,6 @@ for (const file of finalVisualFiles) {
   for (const match of text.matchAll(physical)) fail(file, `physical RTL property ${match[2]} in effective visual layer`);
 }
 
-// Breakpoint governance is evaluated across all runtime CSS, including compatibility layers.
 const cssRoots = ['src/app','src/components','src/features','src/design-system'];
 function walk(rel) {
   const abs = path.join(root, rel);
@@ -126,4 +135,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('NDOS-FINAL-VISUAL-ACCEPTANCE-PASS effective visual authority, RTL corrections, responsive breakpoints and mobile overflow contract are locked');
+console.log('NDOS-FINAL-VISUAL-ACCEPTANCE-PASS effective visual authority, transparent logo, fixed mobile login viewport, RTL corrections, responsive breakpoints and mobile overflow contract are locked');
