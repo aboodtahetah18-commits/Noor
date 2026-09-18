@@ -28,3 +28,27 @@ export async function getCentralPolicyNumericParameter(
     synced_at: String(row.synced_at),
   };
 }
+
+
+export async function getCentralPolicyTextParameter(parameterId: string) {
+  const sql = getRawSql();
+  const rows = await sql`
+    select text_value,registry_status,registry_file_id,registry_sheet,synced_at
+    from public.central_policy_parameters
+    where parameter_id=${parameterId}
+    limit 1
+  `;
+  const row = rows[0];
+  if (!row || typeof row.text_value !== 'string' || row.text_value.length === 0) {
+    throw new Error(`CENTRAL_POLICY_PARAMETER_MISSING:${parameterId}`);
+  }
+  if (String(row.registry_status) !== 'معتمد') {
+    throw new Error(`CENTRAL_POLICY_PARAMETER_NOT_APPROVED:${parameterId}`);
+  }
+  return {
+    value: String(row.text_value),
+    registry_file_id: String(row.registry_file_id),
+    registry_sheet: String(row.registry_sheet),
+    synced_at: String(row.synced_at),
+  };
+}
