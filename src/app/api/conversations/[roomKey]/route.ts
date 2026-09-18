@@ -10,7 +10,7 @@ import { createCrossBankHardGuardReply, createProtectionGuardReply, createSolven
 import { createHilalFinancingReply } from '@/lib/conversations/hilal-financing-engine';
 import { createHilalRestructuringReply } from '@/lib/conversations/hilal-restructuring-engine';
 import { appendUserMessage, getConversationRoom, isConversationRoomKey, type ConversationMessageKind } from '@/lib/conversations/store';
-import { getGovernorOnboardingStatus, processGovernorOnboardingMessage } from '@/lib/conversations/governor-onboarding';
+import { getGovernorOnboardingStatus, getGovernorWelcome, processGovernorOnboardingMessage } from '@/lib/conversations/governor-onboarding';
 
 export async function GET(_request: Request, context: { params: Promise<{ roomKey: string }> }) {
   const user = await getAuthenticatedUser();
@@ -20,7 +20,63 @@ export async function GET(_request: Request, context: { params: Promise<{ roomKe
   try {
     const onboarding = await getGovernorOnboardingStatus(user.id);
     if (!onboarding.complete && roomKey !== 'central') return NextResponse.json({ code: 'ONBOARDING_REQUIRED', onboarding }, { status: 423 });
-    const room = await getConversationRoom(user.id, roomKey);
+    let room = await getConversationRoom(user.id, roomKey);
+    if (!onboarding.complete && roomKey === 'central') {
+      const hasCurrentPrompt = room.messages.some((message) => {
+        const data = message.structured_data && typeof message.structured_data === 'object'
+          ? message.structured_data as Record<string, unknown>
+          : {};
+        return message.sender_key === 'central-governor'
+          && data.onboarding === true
+          && data.onboarding_step === onboarding.current_step;
+      });
+      if (!hasCurrentPrompt) {
+        const sql = (await import('@/infrastructure/db/client')).getRawSql();
+        const legacy = await sql`
+          select id
+          from public.conversation_messages
+          where thread_id=${room.threadId}::uuid
+            and user_id=${user.id}::uuid
+            and sender_key='central-governor'
+            and (
+              body like 'هذه بداية محادثتك%'
+              or body like 'مرحبًا بك في نماء.%'
+            )
+          order by created_at asc
+          limit 1
+        `;
+        const prompt = onboarding.current_step === 'marital_status'
+          ? getGovernorWelcome('marital_status')
+          : String(onboarding.question ?? '');
+        const structured = JSON.stringify({
+          onboarding: true,
+          onboarding_step: onboarding.current_step,
+          onboarding_complete: false,
+          next_question: onboarding.question,
+          execution_boundary: 'advisory_only',
+        });
+        if (legacy[0]?.id) {
+          await sql`
+            update public.conversation_messages
+            set body=${prompt}, message_kind='request',
+                sender_name='محافظ بنك نماء المركزي',
+                structured_data=${structured}::jsonb
+            where id=${String(legacy[0].id)}::uuid
+              and user_id=${user.id}::uuid
+          `;
+        } else {
+          await sql`
+            insert into public.conversation_messages(
+              id,thread_id,user_id,sender_type,sender_key,sender_name,message_kind,body,structured_data
+            ) values(
+              gen_random_uuid(),${room.threadId}::uuid,${user.id}::uuid,'agent','central-governor',
+              'محافظ بنك نماء المركزي','request',${prompt},${structured}::jsonb
+            )
+          `;
+        }
+        room = await getConversationRoom(user.id, roomKey);
+      }
+    }
     return NextResponse.json({ ...room, onboarding });
   } catch (error) {
     console.error('[conversation-room-read]', { roomKey, name: error instanceof Error ? error.name : 'UnknownError' });
