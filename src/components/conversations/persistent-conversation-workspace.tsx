@@ -79,6 +79,13 @@ function StructuredFacts({data}:{data?:Record<string,unknown>}){
   const plannedRepayment=exposureProfile&&typeof exposureProfile.planned_repayment_total==='number'?exposureProfile.planned_repayment_total:null;
   const overdueExposure=exposureProfile&&typeof exposureProfile.overdue_planned_amount==='number'?exposureProfile.overdue_planned_amount:null;
   const overdueInstallments=exposureProfile&&typeof exposureProfile.overdue_installment_count==='number'?exposureProfile.overdue_installment_count:null;
+  const policyGovernance=data.policy_cap_governance&&typeof data.policy_cap_governance==='object'?data.policy_cap_governance as Record<string,unknown>:null;
+  const policySignals=policyGovernance&&policyGovernance.signals&&typeof policyGovernance.signals==='object'?policyGovernance.signals as Record<string,unknown>:null;
+  const policyHardStop=policyGovernance&&typeof policyGovernance.hard_stop==='boolean'?policyGovernance.hard_stop:null;
+  const policyGovernanceStatus=policyGovernance&&typeof policyGovernance.status==='string'?policyGovernance.status:null;
+  const exposureIncomeRatio=policySignals&&typeof policySignals.exposure_to_realized_income_ratio==='number'?policySignals.exposure_to_realized_income_ratio:null;
+  const utilizationRatio=policySignals&&typeof policySignals.category_utilization_ratio==='number'?policySignals.category_utilization_ratio:null;
+  const financingFrequency=policySignals&&typeof policySignals.financing_frequency==='number'?policySignals.financing_frequency:null;
   if(confidence===null&&!routed&&income===null&&!missing.length&&!goalName&&safeCapacity===null&&requested===null&&!financingPurpose&&!decisionState&&eligibilityScore===null&&!calibrationStatus)return null;
   return <div className={styles.facts}>
     {confidence!==null&&<span><small>درجة الثقة</small><strong>{confidence}٪</strong></span>}
@@ -125,6 +132,11 @@ function StructuredFacts({data}:{data?:Record<string,unknown>}){
     {plannedRepayment!==null&&<span><small>استرداد مخطط قائم</small><strong>{formatSar(plannedRepayment)} ر.س</strong></span>}
     {overdueExposure!==null&&overdueExposure>0&&<span><small>استرداد متأخر</small><strong>{formatSar(overdueExposure)} ر.س</strong></span>}
     {overdueInstallments!==null&&overdueInstallments>0&&<span><small>دفعات متأخرة</small><strong>{overdueInstallments}</strong></span>}
+    {utilizationRatio!==null&&<span><small>استخدام مخصص البند</small><strong>{(utilizationRatio*100).toFixed(1)}٪</strong></span>}
+    {exposureIncomeRatio!==null&&<span><small>التعرض إلى الدخل المتحقق</small><strong>{(exposureIncomeRatio*100).toFixed(1)}٪</strong></span>}
+    {financingFrequency!==null&&<span><small>تكرار تمويل البند</small><strong>{financingFrequency}</strong></span>}
+    {policyGovernanceStatus&&<span><small>حوكمة POLICY_CAP</small><strong>{policyGovernanceStatus==='HARD_STOP_OVERDUE'?'متوقف بسبب استرداد متأخر':policyGovernanceStatus==='NUMERIC_CALIBRATION_REQUIRED'?'إشارات مكتملة — المعايرة الرقمية مطلوبة':policyGovernanceStatus}</strong></span>}
+    {policyHardStop===true&&<span><small>منع تمويل جديد</small><strong>مفعل حتى معالجة التأخر</strong></span>}
     {calibrationStatus&&<span><small>معايرة الأهلية</small><strong>{calibrationStatus==='CALIBRATION_NOT_ACTIVE'?'بانتظار معايرة رقمية معتمدة':calibrationStatus==='SCORED'?'معايرة مفعلة':calibrationStatus}</strong></span>}
     {missing.length>0&&<span><small>بيانات ناقصة</small><strong>{missing.map(missingLabel).join('، ')}</strong></span>}
   </div>;
