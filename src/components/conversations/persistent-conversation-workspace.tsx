@@ -13,10 +13,10 @@ type OnboardingStatus = { status:string; current_step:string; complete:boolean; 
 type Room = { id:RoomKey; title:string; subtitle:string; lead:string; specialists:string; avatar:string; bankLogo:string };
 const rooms: [Room, ...Room[]] = [
   { id:'central', title:'بنك نماء المركزي', subtitle:'الحوكمة والاستقرار', lead:'محافظ بنك نماء المركزي', specialists:'المحافظ والمستشار المختص فقط عند الحاجة', avatar:'/brand/governor.webp', bankLogo:'/brand/bank-central.webp' },
-  { id:'solvency', title:'بنك ملاءة', subtitle:'الحماية والاحتياطي', lead:'مدير بنك ملاءة', specialists:'مدير بنك ملاءة ومستشار المخاطر', avatar:'/brand/bank-malaa.webp', bankLogo:'/brand/bank-malaa.webp' },
-  { id:'assets', title:'بنك الأصول الاستثماري', subtitle:'الأصول والأهداف والاستثمار', lead:'مدير بنك الأصول الاستثماري', specialists:'مدير بنك الأصول الاستثماري ومستشار الاستثمار عند صلة الموضوع', avatar:'/brand/bank-assets.webp', bankLogo:'/brand/bank-assets.webp' },
-  { id:'hilal', title:'بنك الهلال', subtitle:'التمويل الداخلي', lead:'مدير بنك الهلال', specialists:'مدير بنك الهلال ومستشار التمويل', avatar:'/brand/bank-hilal.webp', bankLogo:'/brand/bank-hilal.webp' },
-  { id:'advisor', title:'المستشار الاقتصادي', subtitle:'تحليل الصورة المالية الكلية', lead:'المستشار الاقتصادي', specialists:'المستشار الاقتصادي أو المختص بحسب موضوع الرسالة', avatar:'/brand/namaa-logo.webp', bankLogo:'/brand/namaa-logo.webp' },
+  { id:'solvency', title:'بنك ملاءة', subtitle:'الحماية والاحتياطي', lead:'مدير بنك ملاءة', specialists:'مدير بنك ملاءة ومستشار المخاطر', avatar:'/brand/malaa-manager.webp', bankLogo:'/brand/bank-malaa.webp' },
+  { id:'assets', title:'بنك الأصول الاستثماري', subtitle:'الأصول والأهداف والاستثمار', lead:'مدير بنك الأصول الاستثماري', specialists:'مدير بنك الأصول الاستثماري ومستشار الاستثمار عند صلة الموضوع', avatar:'/brand/assets-manager.webp', bankLogo:'/brand/bank-assets.webp' },
+  { id:'hilal', title:'بنك الهلال', subtitle:'التمويل الداخلي', lead:'مدير بنك الهلال', specialists:'مدير بنك الهلال ومستشار التمويل', avatar:'/brand/hilal-manager.webp', bankLogo:'/brand/bank-hilal.webp' },
+  { id:'advisor', title:'المستشار الاقتصادي', subtitle:'تحليل الصورة المالية الكلية', lead:'المستشار الاقتصادي', specialists:'المستشار الاقتصادي أو المختص بحسب موضوع الرسالة', avatar:'/brand/economic-advisor.webp', bankLogo:'/brand/namaa-logo.webp' },
   { id:'council', title:'مجلس نماء الأعلى', subtitle:'القرارات واللجان', lead:'محافظ بنك نماء المركزي بصفته رئيس المجلس', specialists:'أعضاء اللجنة ذات الصلة فقط، وليس جميع الشخصيات', avatar:'/brand/governor.webp', bankLogo:'/brand/bank-central.webp' },
 ];
 const labels:Record<MessageKind,string>={message:'',risk:'تقييم مخاطر',decision:'قرار / اعتماد',recommendation:'توصية',followup:'متابعة',request:'طلب إجراء'};
