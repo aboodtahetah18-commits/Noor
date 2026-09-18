@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { getRawSql } from '@/infrastructure/db/client';
 import { goalRepository } from '@/repositories/goal-repository';
+import { getProtectionSnapshot } from './solvency-engine';
 import type { ConversationMessageKind } from './store';
 import { governedRooms } from './store';
 
@@ -187,6 +188,7 @@ export async function createAssetGoalReply(userId: string, userText: string): Pr
       });
     }
 
+    const protectionBefore = await getProtectionSnapshot(userId);
     const goalId = await goalRepository.create(userId, {
       name: pending.name!,
       targetAmount: pending.target_amount!.toFixed(2),
@@ -197,6 +199,10 @@ export async function createAssetGoalReply(userId: string, userText: string): Pr
     });
     const status = await goalRepository.applyEvent(userId, goalId, 'ACTIVATE_GOAL', 'Created and confirmed through governed assets conversation.');
     const sources = { ...(metadata.goal_funding_sources ?? {}), [goalId]: pending.funding_source! };
+    const protectionAfter = await getProtectionSnapshot(userId, { [goalId]: pending.funding_source! });
+    const safeBefore = protectionBefore?.protected_pool_safe_capacity ?? null;
+    const safeAfter = protectionAfter?.protected_pool_safe_capacity ?? null;
+    const capacityReduction = typeof safeBefore === 'number' && typeof safeAfter === 'number' ? Math.max(safeBefore - safeAfter, 0) : null;
     const nextMetadata: AssetMetadata = {
       ...metadata,
       goal_chat_state: {},
@@ -214,6 +220,11 @@ export async function createAssetGoalReply(userId: string, userText: string): Pr
       funding_source: pending.funding_source,
       user_confirmed: true,
       external_execution: false,
+      safe_capacity_before_goal: safeBefore,
+      safe_capacity_after_goal: safeAfter,
+      safe_capacity_reduction: capacityReduction,
+      reserved_near_goal_total_after: protectionAfter?.near_goal_reserve_total ?? null,
+      commitment_gap_after: protectionAfter?.commitment_gap ?? null,
       execution_boundary: 'advisory_only',
     });
   }
