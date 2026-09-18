@@ -4,6 +4,7 @@ import { getProtectionSnapshot } from './solvency-engine';
 import { computeHilalFinanceLimit, HILAL_ELIGIBILITY_WEIGHTS, HILAL_POLICY_VERSION, evaluateHilalEligibility } from './hilal-policy';
 import { evaluateHilalFactorEvidence } from './hilal-factor-evaluator';
 import { computeApprovedRepaymentInstallmentBand, scoreHilalFactorEvidence } from './hilal-calibration';
+import { getHilalRepaymentCapacity } from './hilal-repayment-capacity';
 import type { ConversationMessageKind } from './store';
 import { governedRooms } from './store';
 
@@ -253,13 +254,18 @@ export async function createHilalFinancingReply(userId: string, userText: string
   });
   const policyState = hilalMetadata.financing_state ?? {};
   const repaymentBand = computeApprovedRepaymentInstallmentBand(income, baseline.recurring_core_obligations_total!);
+  const repaymentCapacity = await getHilalRepaymentCapacity(userId, {
+    confirmedMonthlyIncome: income,
+    recurringCoreObligations: baseline.recurring_core_obligations_total!,
+    repaymentCycles: draft.repayment_cycles,
+  });
   const automaticCalibration = scoreHilalFactorEvidence(factorEvidence);
   const missingEligibility = automaticCalibration.status === 'SCORED' ? [] : automaticCalibration.missing_factors;
   const eligibility = automaticCalibration.status === 'SCORED'
     ? evaluateHilalEligibility(automaticCalibration.scores)
     : null;
   const financeLimit = computeHilalFinanceLimit({
-    repaymentCapacity: policyState.repayment_capacity,
+    repaymentCapacity: repaymentCapacity.repayment_capacity ?? undefined,
     policyCap: policyState.policy_cap,
     cashflowSafeLimit: safeCapacity,
   });
@@ -298,6 +304,7 @@ export async function createHilalFinancingReply(userId: string, userText: string
         calibration_required_factors: factorEvidence.calibration_required_factors,
         finance_limit_components: financeLimit,
         repayment_installment_band: repaymentBand,
+        repayment_capacity_evidence: repaymentCapacity,
         installment_above_approved_band: installmentAboveApprovedBand,
         calibration_status: automaticCalibration.status,
         calibration_id: automaticCalibration.calibration_id,
@@ -328,14 +335,18 @@ export async function createHilalFinancingReply(userId: string, userText: string
       calibration_status: automaticCalibration.status,
       calibration_id: automaticCalibration.calibration_id,
       repayment_installment_band: repaymentBand,
+      repayment_capacity_evidence: repaymentCapacity,
       policy_version: HILAL_POLICY_VERSION,
       execution_boundary: 'advisory_only',
     });
   }
 
+  const repaymentNote = repaymentCapacity.repayment_capacity === null
+    ? 'تعذر إكمال REPAYMENT_CAPACITY لأن مدة السداد غير محددة أو لا يوجد دخل راتب متحقق في الدورة الحالية.'
+    : `قدرة السداد الأولية قبل التسعير ${formatSar(repaymentCapacity.repayment_capacity)} ريال، مبنية على دخل راتب متحقق قدره ${formatSar(repaymentCapacity.realized_salary_income)} ريال وبأساس متحفظ لا يتجاوز الدخل الشهري المؤكد.`;
   const passesBody = eligibility
-    ? `حالة الحماية PASSES_PROTECTION_GATE. درجة أهلية بنك الهلال وفق السياسة المعتمدة ${eligibility.weighted_score} من 100 (${eligibility.decision_ar}). يبقى الطلب UNDER_REVIEW حتى يكتمل سقف التمويل النهائي من REPAYMENT_CAPACITY وPOLICY_CAP وCASHFLOW_SAFE_LIMIT، ولا يعد ذلك تنفيذًا ماليًا.`
-    : `حالة الحماية PASSES_PROTECTION_GATE: مبلغ التمويل ${formatSar(requested)} ريال يقع داخل السعة الآمنة الحالية ${formatSar(safeCapacity)} ريال. بعد إضافة قسط متوقع قدره ${formatSar(installment)} ريال تصبح الالتزامات الشهرية ${formatSar(projectedCoreObligations)} ريال والهامش الشهري الحسابي ${formatSar(monthlyMarginAfter)} ريال. تم ربط سياسة بنك الهلال المعتمدة، لكن درجة الأهلية لا تُحسب حتى تكتمل أدلة عواملها الخمسة بدل اختراع درجات فرعية.`;
+    ? `حالة الحماية PASSES_PROTECTION_GATE. درجة أهلية بنك الهلال وفق السياسة المعتمدة ${eligibility.weighted_score} من 100 (${eligibility.decision_ar}). ${repaymentNote} يبقى الطلب UNDER_REVIEW حتى يكتمل POLICY_CAP وسقف التمويل النهائي، ولا يعد ذلك تنفيذًا ماليًا.`
+    : `حالة الحماية PASSES_PROTECTION_GATE: مبلغ التمويل ${formatSar(requested)} ريال يقع داخل السعة الآمنة الحالية ${formatSar(safeCapacity)} ريال. بعد إضافة قسط متوقع قدره ${formatSar(installment)} ريال تصبح الالتزامات الشهرية ${formatSar(projectedCoreObligations)} ريال والهامش الشهري الحسابي ${formatSar(monthlyMarginAfter)} ريال. ${repaymentNote} تم ربط سياسة بنك الهلال المعتمدة، لكن درجة الأهلية لا تُحسب حتى تكتمل المعايرة الرقمية المعتمدة.`;
   return persistReply(userId, nextMetadata, passesBody, 'recommendation', {
     decision_state: 'UNDER_REVIEW',
     protection_gate_state: 'PASSES_PROTECTION_GATE',
@@ -362,6 +373,7 @@ export async function createHilalFinancingReply(userId: string, userText: string
     calibration_required_factors: factorEvidence.calibration_required_factors,
     finance_limit_components: financeLimit,
     repayment_installment_band: repaymentBand,
+    repayment_capacity_evidence: repaymentCapacity,
     calibration_status: automaticCalibration.status,
     calibration_id: automaticCalibration.calibration_id,
     policy_threshold_applied: eligibility !== null,
