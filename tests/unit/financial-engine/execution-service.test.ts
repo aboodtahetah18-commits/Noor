@@ -1,7 +1,9 @@
 import { beforeEach,describe,expect,it,vi } from 'vitest';
 
 const sqlMock=vi.fn();
+const verifyEvidenceMock=vi.fn();
 vi.mock('@/infrastructure/db/client',()=>({getRawSql:()=>sqlMock}));
+vi.mock('@/features/financial-engine/services/evidence-verification-service',()=>({verifyUnifiedEvidenceCase:verifyEvidenceMock}));
 
 import { reportUserExecution } from '@/features/financial-engine/services/execution-service';
 
@@ -10,7 +12,7 @@ const taskId='22222222-2222-4222-8222-222222222222';
 const decisionReference='DEC-55555555-5555-4555-8555-555555555555';
 
 describe('reportUserExecution',()=>{
-  beforeEach(()=>sqlMock.mockReset());
+  beforeEach(()=>{sqlMock.mockReset();verifyEvidenceMock.mockReset();verifyEvidenceMock.mockResolvedValue({status:'PENDING',reason:'EVIDENCE_FIELDS_INCOMPLETE',candidateCount:0,matchedStatementRowId:null});});
 
   it('requires evidence when the execution task requires it',async()=>{
     sqlMock
@@ -44,6 +46,7 @@ describe('reportUserExecution',()=>{
     expect(result.created).toBe(true);
     expect(result.executionEvent.status).toBe('EVIDENCE_PENDING');
     expect(result.evidenceCase?.verification_status).toBe('PENDING');
+    expect(verifyEvidenceMock).toHaveBeenCalledTimes(1);
     expect(result.executionEvent.decision_reference).toBe(decisionReference);
     expect(result.evidenceCase?.decision_reference).toBe(decisionReference);
   });
