@@ -5,17 +5,17 @@ export type ConversationRoomKey = 'central' | 'solvency' | 'assets' | 'hilal' | 
 export type ConversationMessageKind = 'message' | 'risk' | 'decision' | 'recommendation' | 'followup' | 'request';
 
 export const governedRooms: Record<ConversationRoomKey, { title: string; subtitle: string; kind: string; participants: Array<{ key: string; name: string; type: 'agent' | 'system'; role: string }> }> = {
-  central: { title: 'البنك المركزي لنماء', subtitle: 'الحوكمة والتنسيق', kind: 'governor', participants: [{ key: 'central-governor', name: 'محافظ البنك المركزي لنماء', type: 'agent', role: 'المحافظ الخوارزمي' }] },
-  solvency: { title: 'بنك الملاءة', subtitle: 'الحماية والاحتياطي', kind: 'bank', participants: [{ key: 'solvency-manager', name: 'مدير بنك الملاءة', type: 'agent', role: 'مدير خوارزمي' }, { key: 'risk-advisor', name: 'مستشار المخاطر', type: 'agent', role: 'مستشار مختص' }] },
-  assets: { title: 'بنك الأصول والأهداف', subtitle: 'الأصول والأهداف والاستثمار', kind: 'bank', participants: [{ key: 'assets-manager', name: 'مدير بنك الأصول والأهداف', type: 'agent', role: 'مدير خوارزمي' }, { key: 'investment-advisor', name: 'مستشار الاستثمار', type: 'agent', role: 'مستشار مختص' }] },
+  central: { title: 'بنك نماء المركزي', subtitle: 'الحوكمة والاستقرار', kind: 'governor', participants: [{ key: 'central-governor', name: 'محافظ بنك نماء المركزي', type: 'agent', role: 'محافظ خوارزمي' }] },
+  solvency: { title: 'بنك ملاءة', subtitle: 'الحماية والاحتياطي', kind: 'bank', participants: [{ key: 'solvency-manager', name: 'مدير بنك ملاءة', type: 'agent', role: 'مدير خوارزمي' }, { key: 'risk-advisor', name: 'مستشار المخاطر', type: 'agent', role: 'مستشار مختص' }] },
+  assets: { title: 'بنك الأصول الاستثماري', subtitle: 'الأصول والأهداف والاستثمار', kind: 'bank', participants: [{ key: 'assets-manager', name: 'مدير بنك الأصول الاستثماري', type: 'agent', role: 'مدير خوارزمي' }, { key: 'investment-advisor', name: 'مستشار الاستثمار', type: 'agent', role: 'مستشار مختص' }] },
   hilal: { title: 'بنك الهلال', subtitle: 'التمويل الداخلي', kind: 'bank', participants: [{ key: 'hilal-manager', name: 'مدير بنك الهلال', type: 'agent', role: 'مدير خوارزمي' }, { key: 'funding-advisor', name: 'مستشار التمويل', type: 'agent', role: 'مستشار مختص' }] },
-  advisor: { title: 'المستشار المالي', subtitle: 'تحليل وتوصيات', kind: 'advisor', participants: [{ key: 'financial-advisor', name: 'المستشار المالي', type: 'agent', role: 'مستشار خوارزمي' }] },
+  advisor: { title: 'المستشار الاقتصادي', subtitle: 'تحليل الصورة المالية الكلية', kind: 'advisor', participants: [{ key: 'financial-advisor', name: 'المستشار الاقتصادي', type: 'agent', role: 'مستشار خوارزمي' }] },
   council: { title: 'مجلس نماء الأعلى', subtitle: 'القرارات واللجان', kind: 'council', participants: [{ key: 'council-secretary', name: 'أمين مجلس نماء الأعلى', type: 'agent', role: 'أمين خوارزمي' }] },
 };
 
 const onboardingMessage = {
   senderKey: 'central-governor',
-  senderName: 'محافظ البنك المركزي لنماء',
+  senderName: 'محافظ بنك نماء المركزي',
   body: 'مرحبًا بك في نماء. سنبدأ بتأسيس ملفك المالي خطوة بخطوة حتى تكون توصيات البنوك والمستشارين مبنية على بياناتك الفعلية. ابدأ بإرسال متوسط دخلك الشهري الصافي، ثم اذكر الالتزامات الأساسية الثابتة التي تتكرر عليك كل شهر. لا تحتاج إلى ترتيب مثالي؛ أرسل ما تعرفه وسأطلب منك البيانات الناقصة بالتدريج.',
   structuredData: {
     onboarding: true,
@@ -35,6 +35,10 @@ async function ensureThread(userId: string, roomKey: ConversationRoomKey) {
   const existing = await sql`select id, room_key, title, subtitle, room_kind, status, updated_at from public.conversation_threads where user_id=${userId} and room_key=${roomKey} limit 1`;
   let threadId = existing[0]?.id as string | undefined;
   let created = false;
+
+  if (threadId) {
+    await sql`update public.conversation_threads set title=${room.title},subtitle=${room.subtitle},room_kind=${room.kind} where id=${threadId} and user_id=${userId}`;
+  }
 
   if (!threadId) {
     const candidateId = randomUUID();
