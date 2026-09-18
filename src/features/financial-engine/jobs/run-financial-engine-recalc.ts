@@ -1,5 +1,5 @@
 import { rawSql } from '@/infrastructure/db/client';
-import { runFullCyclePipelineForUser } from '@/features/financial-engine/services/run-full-cycle-pipeline';
+import { runGovernedCycleRecalculationForUser } from '@/features/financial-engine/services/run-governed-cycle-recalculation';
 
 export type FinancialEngineRecalcJobResult={
   userId:string;
@@ -22,7 +22,7 @@ export async function runFinancialEngineRecalcJob():Promise<FinancialEngineRecal
     const userId=String(raw.user_id);
     const cycleId=String(raw.cycle_id);
     try{
-      await runFullCyclePipelineForUser(userId,cycleId);
+      await runGovernedCycleRecalculationForUser(userId,cycleId);
       results.push({userId,cycleId,status:'SUCCESS',errorCode:null});
     }catch(error){
       const code=error&&typeof error==='object'&&'code' in error?String((error as {code:unknown}).code):'FINANCIAL_ENGINE_RECALC_FAILED';
