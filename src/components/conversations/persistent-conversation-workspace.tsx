@@ -67,6 +67,12 @@ function StructuredFacts({data}:{data?:Record<string,unknown>}){
   const realizedSalary=repaymentEvidence&&typeof repaymentEvidence.realized_salary_income==='number'?repaymentEvidence.realized_salary_income:null;
   const repaymentCapacity=repaymentEvidence&&typeof repaymentEvidence.repayment_capacity==='number'?repaymentEvidence.repayment_capacity:null;
   const conservativeIncome=repaymentEvidence&&typeof repaymentEvidence.conservative_income_basis==='number'?repaymentEvidence.conservative_income_basis:null;
+  const policyCapEvidence=data.policy_cap_evidence&&typeof data.policy_cap_evidence==='object'?data.policy_cap_evidence as Record<string,unknown>:null;
+  const policyCategory=policyCapEvidence&&typeof policyCapEvidence.category_name==='string'?policyCapEvidence.category_name:null;
+  const policyPlanned=policyCapEvidence&&typeof policyCapEvidence.planned_amount_current_cycle==='number'?policyCapEvidence.planned_amount_current_cycle:null;
+  const policyActual=policyCapEvidence&&typeof policyCapEvidence.actual_spend_current_cycle==='number'?policyCapEvidence.actual_spend_current_cycle:null;
+  const policyAverage=policyCapEvidence&&typeof policyCapEvidence.historical_average_spend==='number'?policyCapEvidence.historical_average_spend:null;
+  const policyCapStatus=policyCapEvidence&&typeof policyCapEvidence.policy_cap_status==='string'?policyCapEvidence.policy_cap_status:null;
   if(confidence===null&&!routed&&income===null&&!missing.length&&!goalName&&safeCapacity===null&&requested===null&&!financingPurpose&&!decisionState&&eligibilityScore===null&&!calibrationStatus)return null;
   return <div className={styles.facts}>
     {confidence!==null&&<span><small>درجة الثقة</small><strong>{confidence}٪</strong></span>}
@@ -103,6 +109,11 @@ function StructuredFacts({data}:{data?:Record<string,unknown>}){
     {realizedSalary!==null&&<span><small>راتب متحقق في الدورة</small><strong>{formatSar(realizedSalary)} ر.س</strong></span>}
     {conservativeIncome!==null&&<span><small>أساس الدخل المتحفظ</small><strong>{formatSar(conservativeIncome)} ر.س</strong></span>}
     {repaymentCapacity!==null&&<span><small>قدرة السداد قبل التسعير</small><strong>{formatSar(repaymentCapacity)} ر.س</strong></span>}
+    {policyCategory&&<span><small>بند التمويل</small><strong>{policyCategory}</strong></span>}
+    {policyPlanned!==null&&<span><small>مخصص البند الحالي</small><strong>{formatSar(policyPlanned)} ر.س</strong></span>}
+    {policyActual!==null&&<span><small>إنفاق البند الحالي</small><strong>{formatSar(policyActual)} ر.س</strong></span>}
+    {policyAverage!==null&&<span><small>متوسط الإنفاق التاريخي</small><strong>{formatSar(policyAverage)} ر.س</strong></span>}
+    {policyCapStatus&&<span><small>POLICY_CAP</small><strong>{policyCapStatus==='NUMERIC_CALIBRATION_REQUIRED'?'بانتظار معايرة رقمية معتمدة':policyCapStatus}</strong></span>}
     {calibrationStatus&&<span><small>معايرة الأهلية</small><strong>{calibrationStatus==='CALIBRATION_NOT_ACTIVE'?'بانتظار معايرة رقمية معتمدة':calibrationStatus==='SCORED'?'معايرة مفعلة':calibrationStatus}</strong></span>}
     {missing.length>0&&<span><small>بيانات ناقصة</small><strong>{missing.map(missingLabel).join('، ')}</strong></span>}
   </div>;
