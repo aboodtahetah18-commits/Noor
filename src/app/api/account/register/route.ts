@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ code: 'AUTH_REGISTER_FAILED' }, { status: 503 });
   }
 
-  let body: { firstName?: unknown; lastName?: unknown; phone?: unknown; email?: unknown; city?: unknown };
+  let body: { firstName?: unknown; lastName?: unknown; phone?: unknown; email?: unknown; city?: unknown; password?: unknown };
   try {
     body = await request.json();
   } catch {
@@ -37,6 +37,7 @@ export async function POST(request: Request) {
       phone: String(body.phone ?? ''),
       email: String(body.email ?? ''),
       city: String(body.city ?? ''),
+      password: String(body.password ?? ''),
     });
     if (!result.ok) return NextResponse.json({ code: result.code }, { status: 400 });
 
