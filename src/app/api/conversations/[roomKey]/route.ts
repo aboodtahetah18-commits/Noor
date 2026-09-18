@@ -10,6 +10,7 @@ import { createCrossBankHardGuardReply, createProtectionGuardReply, createSolven
 import { createHilalFinancingReply } from '@/lib/conversations/hilal-financing-engine';
 import { createHilalRestructuringReply } from '@/lib/conversations/hilal-restructuring-engine';
 import { appendUserMessage, getConversationRoom, isConversationRoomKey } from '@/lib/conversations/store';
+import { getGovernorOnboardingStatus, processGovernorOnboardingMessage } from '@/lib/conversations/governor-onboarding';
 
 export async function GET(_request: Request, context: { params: Promise<{ roomKey: string }> }) {
   const user = await getAuthenticatedUser();
@@ -17,7 +18,10 @@ export async function GET(_request: Request, context: { params: Promise<{ roomKe
   const { roomKey } = await context.params;
   if (!isConversationRoomKey(roomKey)) return NextResponse.json({ code: 'CONVERSATION_ROOM_NOT_FOUND' }, { status: 404 });
   try {
-    return NextResponse.json(await getConversationRoom(user.id, roomKey));
+    const onboarding = await getGovernorOnboardingStatus(user.id);
+    if (!onboarding.complete && roomKey !== 'central') return NextResponse.json({ code: 'ONBOARDING_REQUIRED', onboarding }, { status: 423 });
+    const room = await getConversationRoom(user.id, roomKey);
+    return NextResponse.json({ ...room, onboarding });
   } catch (error) {
     console.error('[conversation-room-read]', { roomKey, name: error instanceof Error ? error.name : 'UnknownError' });
     return NextResponse.json({ code: 'CONVERSATION_UNAVAILABLE' }, { status: 503 });
@@ -38,8 +42,40 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
     const text = String(body.body ?? '');
     const message = await appendUserMessage(user.id, user.name || 'أنت', roomKey, text);
 
+    const onboarding = await getGovernorOnboardingStatus(user.id);
+    if (!onboarding.complete && roomKey !== 'central') {
+      return NextResponse.json({ code: 'ONBOARDING_REQUIRED', onboarding }, { status: 423 });
+    }
+
     let reply;
-    if (roomKey === 'solvency') {
+    if (roomKey === 'central' && !onboarding.complete) {
+      const onboardingReply = await processGovernorOnboardingMessage(user.id, text);
+      if (onboardingReply) {
+        const thread = await getConversationRoom(user.id, 'central');
+        const agent = thread.room.participants[0];
+        const sql = (await import('@/infrastructure/db/client')).getRawSql();
+        const rows = await sql`
+          insert into public.conversation_messages(
+            id,thread_id,user_id,sender_type,sender_key,sender_name,message_kind,body,structured_data
+          ) values(
+            gen_random_uuid(),${thread.threadId}::uuid,${user.id}::uuid,'agent',
+            ${agent?.key ?? 'central-governor'},${agent?.name ?? 'محافظ بنك نماء المركزي'},'request',
+            ${onboardingReply.body},
+            ${JSON.stringify({
+              onboarding:true,
+              onboarding_step:onboardingReply.current_step,
+              onboarding_complete:onboardingReply.completed,
+              next_question:onboardingReply.next_question,
+              execution_boundary:'advisory_only'
+            })}::jsonb
+          )
+          returning id,sender_type,sender_key,sender_name,message_kind,body,structured_data,created_at
+        `;
+        reply = rows[0] ?? null;
+      } else {
+        reply = await createRoutedReply(user.id, roomKey, text);
+      }
+    } else if (roomKey === 'solvency') {
       reply = await createSolvencyReply(user.id, text);
     } else if (roomKey === 'assets') {
       const goalReply = await createAssetGoalReply(user.id, text);
