@@ -1,6 +1,6 @@
 import type { HilalEligibilityFactor } from './hilal-policy';
 
-export type HilalFactorEvidenceStatus = 'READY_RAW' | 'NEEDS_EVIDENCE' | 'NEEDS_CALIBRATION';
+export type HilalFactorEvidenceStatus = 'READY_RAW' | 'NEEDS_EVIDENCE';
 
 export type HilalFactorEvidence = {
   factor: HilalEligibilityFactor;
@@ -15,7 +15,7 @@ export type HilalFactorContext = {
   recurringCoreObligations?: number;
   repaymentSource?: string;
   repaymentSourceVerified?: boolean;
-  incomeHistoryVerified?: boolean;
+  incomePattern?: 'STABLE' | 'VARIABLE' | 'SEASONAL';
   fundedItemImportance?: 'ESSENTIAL' | 'IMPORTANT' | 'DISCRETIONARY';
 };
 
@@ -36,7 +36,7 @@ export function evaluateHilalFactorEvidence(context: HilalFactorContext): HilalF
     repayment_source_clarity: context.repaymentSource && context.repaymentSourceVerified
       ? {
           factor: 'repayment_source_clarity',
-          status: 'NEEDS_CALIBRATION',
+          status: 'READY_RAW',
           raw_value: context.repaymentSource,
           evidence_source: 'verified_repayment_source',
           note: 'مصدر السداد موثق، لكن تحويل وضوح المصدر إلى درجة 0–100 يحتاج معايرة رقمية معتمدة.',
@@ -51,7 +51,7 @@ export function evaluateHilalFactorEvidence(context: HilalFactorContext): HilalF
     surplus_after_essentials: surplus !== null
       ? {
           factor: 'surplus_after_essentials',
-          status: 'NEEDS_CALIBRATION',
+          status: 'READY_RAW',
           raw_value: surplus,
           evidence_source: 'confirmed_baseline',
           note: 'الفائض بعد الأساسيات محسوب من الدخل والالتزامات المؤكدة، لكن حدود تحويله إلى درجة أهلية لم تُعتمد رقميًا.',
@@ -63,13 +63,13 @@ export function evaluateHilalFactorEvidence(context: HilalFactorContext): HilalF
           evidence_source: null,
           note: 'يلزم دخل شهري والتزامات أساسية مؤكدة.',
         },
-    income_stability: context.incomeHistoryVerified
+    income_stability: context.incomePattern
       ? {
           factor: 'income_stability',
-          status: 'NEEDS_CALIBRATION',
-          raw_value: 'VERIFIED_HISTORY_AVAILABLE',
-          evidence_source: 'verified_income_history',
-          note: 'تاريخ الدخل الموثق متاح، لكن نطاقات الاستقرار الرقمية لم تُعتمد بعد.',
+          status: 'READY_RAW',
+          raw_value: context.incomePattern,
+          evidence_source: 'user_confirmed_income_pattern',
+          note: 'نمط الدخل مصنف كدليل خام؛ التحويل إلى درجة 0–100 يحتاج معايرة رقمية معتمدة وسجل دخل موثق عند توفره.',
         }
       : {
           factor: 'income_stability',
@@ -81,7 +81,7 @@ export function evaluateHilalFactorEvidence(context: HilalFactorContext): HilalF
     current_obligation_burden: obligationRatio !== null
       ? {
           factor: 'current_obligation_burden',
-          status: 'NEEDS_CALIBRATION',
+          status: 'READY_RAW',
           raw_value: obligationRatio,
           evidence_source: 'confirmed_baseline',
           note: 'نسبة الالتزامات إلى الدخل محسوبة، لكن حدود تحويل النسبة إلى درجة 0–100 غير معايرة.',
@@ -96,7 +96,7 @@ export function evaluateHilalFactorEvidence(context: HilalFactorContext): HilalF
     funded_item_importance: context.fundedItemImportance
       ? {
           factor: 'funded_item_importance',
-          status: 'NEEDS_CALIBRATION',
+          status: 'READY_RAW',
           raw_value: context.fundedItemImportance,
           evidence_source: 'user_confirmed_purpose_classification',
           note: 'أهمية الغرض مصنفة، لكن تحويل الفئة إلى درجة 0–100 يحتاج معايرة معتمدة.',
@@ -112,7 +112,7 @@ export function evaluateHilalFactorEvidence(context: HilalFactorContext): HilalF
 
   const entries = Object.values(factors);
   const missingEvidence = entries.filter((item) => item.status === 'NEEDS_EVIDENCE').map((item) => item.factor);
-  const calibrationRequired = entries.filter((item) => item.status === 'NEEDS_CALIBRATION').map((item) => item.factor);
+  const calibrationRequired = entries.filter((item) => item.status === 'READY_RAW').map((item) => item.factor);
 
   return {
     factors,
