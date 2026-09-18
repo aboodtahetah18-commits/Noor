@@ -22,7 +22,7 @@ const labels:Record<MessageKind,string>={message:'',risk:'تقييم مخاطر'
 
 function formatSar(value:number){return new Intl.NumberFormat('ar-SA',{maximumFractionDigits:2}).format(value)}
 function roomTitle(value:unknown){if(typeof value!=='string')return null;return rooms.find(room=>room.id===value)?.title??null}
-function missingLabel(value:string){if(value==='monthly_net_income')return 'الدخل الشهري الصافي';if(value==='recurring_core_obligations')return 'الالتزامات الأساسية';return value}
+function missingLabel(value:string){if(value==='monthly_net_income')return 'الدخل الشهري الصافي';if(value==='recurring_core_obligations')return 'الالتزامات الأساسية';if(value==='financing_purpose')return 'غرض التمويل';if(value==='requested_amount')return 'مبلغ التمويل';if(value==='expected_installment')return 'القسط الشهري المتوقع';return value}
 
 function StructuredFacts({data}:{data?:Record<string,unknown>}){
   if(!data)return null;
@@ -47,7 +47,14 @@ function StructuredFacts({data}:{data?:Record<string,unknown>}){
   const remaining=typeof data.remaining_safe_capacity==='number'?data.remaining_safe_capacity:null;
   const gap=typeof data.commitment_gap_after==='number'?data.commitment_gap_after:typeof data.commitment_gap==='number'?data.commitment_gap:null;
   const blocked=typeof data.blocked==='boolean'?data.blocked:null;
-  if(confidence===null&&!routed&&income===null&&!missing.length&&!goalName&&safeCapacity===null&&requested===null)return null;
+  const financingPurpose=typeof data.financing_purpose==='string'?data.financing_purpose:null;
+  const installment=typeof data.expected_installment==='number'?data.expected_installment:null;
+  const obligationsAfter=typeof data.obligations_after_installment==='number'?data.obligations_after_installment:null;
+  const financingRatio=typeof data.obligation_ratio_after==='number'?data.obligation_ratio_after:null;
+  const financingMargin=typeof data.monthly_margin_after==='number'?data.monthly_margin_after:null;
+  const decisionState=typeof data.decision_state==='string'?data.decision_state:null;
+  const protectionGate=typeof data.protection_gate_state==='string'?data.protection_gate_state:null;
+  if(confidence===null&&!routed&&income===null&&!missing.length&&!goalName&&safeCapacity===null&&requested===null&&!financingPurpose&&!decisionState)return null;
   return <div className={styles.facts}>
     {confidence!==null&&<span><small>درجة الثقة</small><strong>{confidence}٪</strong></span>}
     {routed&&<span><small>الجهة المختصة</small><strong>{routed}</strong></span>}
@@ -68,6 +75,13 @@ function StructuredFacts({data}:{data?:Record<string,unknown>}){
     {remaining!==null&&<span><small>السعة بعد الطلب</small><strong>{formatSar(remaining)} ر.س</strong></span>}
     {gap!==null&&gap>0&&<span><small>فجوة الحماية</small><strong>{formatSar(gap)} ر.س</strong></span>}
     {blocked!==null&&<span><small>حالة الحاجز</small><strong>{blocked?'متوقف لحماية الالتزامات':'اجتاز الحماية فقط'}</strong></span>}
+    {financingPurpose&&<span><small>غرض التمويل</small><strong>{financingPurpose}</strong></span>}
+    {installment!==null&&<span><small>القسط المتوقع</small><strong>{formatSar(installment)} ر.س</strong></span>}
+    {obligationsAfter!==null&&<span><small>الالتزامات بعد القسط</small><strong>{formatSar(obligationsAfter)} ر.س</strong></span>}
+    {financingRatio!==null&&<span><small>نسبة الالتزامات بعد القسط</small><strong>{(financingRatio*100).toFixed(1)}٪</strong></span>}
+    {financingMargin!==null&&<span><small>الهامش الشهري بعد القسط</small><strong>{formatSar(financingMargin)} ر.س</strong></span>}
+    {protectionGate&&<span><small>حاجز الحماية</small><strong>{protectionGate==='PASSES_PROTECTION_GATE'?'اجتاز الحماية فقط':protectionGate}</strong></span>}
+    {decisionState&&<span><small>حالة دراسة التمويل</small><strong>{decisionState==='NEEDS_DATA'?'تحتاج بيانات':decisionState==='BLOCKED'?'متوقفة':decisionState==='UNDER_REVIEW'?'تحت المراجعة':decisionState}</strong></span>}
     {missing.length>0&&<span><small>بيانات ناقصة</small><strong>{missing.map(missingLabel).join('، ')}</strong></span>}
   </div>;
 }
