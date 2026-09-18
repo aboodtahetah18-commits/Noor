@@ -34,7 +34,20 @@ function StructuredFacts({data}:{data?:Record<string,unknown>}){
   const obligations=metrics&&typeof metrics.recurring_core_obligations_total==='number'?metrics.recurring_core_obligations_total:null;
   const margin=metrics&&typeof metrics.safety_margin==='number'?metrics.safety_margin:null;
   const ratio=metrics&&typeof metrics.obligation_ratio==='number'?metrics.obligation_ratio:null;
-  if(confidence===null&&!routed&&income===null&&!missing.length)return null;
+  const goalName=typeof data.goal_name==='string'?data.goal_name:null;
+  const goalAmount=typeof data.target_amount==='number'?data.target_amount:null;
+  const goalDate=typeof data.target_date==='string'?data.target_date:null;
+  const funding=typeof data.funding_source==='string'?data.funding_source:null;
+  const safeCapacity=typeof data.safe_capacity==='number'?data.safe_capacity:typeof data.safe_capacity_after_goal==='number'?data.safe_capacity_after_goal:null;
+  const capacityBefore=typeof data.safe_capacity_before_goal==='number'?data.safe_capacity_before_goal:null;
+  const capacityReduction=typeof data.safe_capacity_reduction==='number'?data.safe_capacity_reduction:null;
+  const goalReserve=typeof data.reserved_near_goal_total_after==='number'?data.reserved_near_goal_total_after:typeof data.near_goal_reserve_total==='number'?data.near_goal_reserve_total:null;
+  const dated=typeof data.reserved_dated_obligations_total==='number'?data.reserved_dated_obligations_total:null;
+  const requested=typeof data.requested_amount==='number'?data.requested_amount:null;
+  const remaining=typeof data.remaining_safe_capacity==='number'?data.remaining_safe_capacity:null;
+  const gap=typeof data.commitment_gap_after==='number'?data.commitment_gap_after:typeof data.commitment_gap==='number'?data.commitment_gap:null;
+  const blocked=typeof data.blocked==='boolean'?data.blocked:null;
+  if(confidence===null&&!routed&&income===null&&!missing.length&&!goalName&&safeCapacity===null&&requested===null)return null;
   return <div className={styles.facts}>
     {confidence!==null&&<span><small>درجة الثقة</small><strong>{confidence}٪</strong></span>}
     {routed&&<span><small>الجهة المختصة</small><strong>{routed}</strong></span>}
@@ -42,6 +55,19 @@ function StructuredFacts({data}:{data?:Record<string,unknown>}){
     {obligations!==null&&<span><small>الالتزامات المؤكدة</small><strong>{formatSar(obligations)} ر.س</strong></span>}
     {margin!==null&&<span><small>الهامش الأولي</small><strong>{formatSar(margin)} ر.س</strong></span>}
     {ratio!==null&&<span><small>نسبة الالتزامات</small><strong>{(ratio*100).toFixed(1)}٪</strong></span>}
+    {goalName&&<span><small>الهدف</small><strong>{goalName}</strong></span>}
+    {goalAmount!==null&&<span><small>قيمة الهدف</small><strong>{formatSar(goalAmount)} ر.س</strong></span>}
+    {goalDate&&<span><small>موعد الهدف</small><strong>{goalDate}</strong></span>}
+    {funding&&<span><small>مصدر الهدف</small><strong>{funding==='PROTECTED_POOL'?'أموال الحماية / السيولة الحالية':'مصدر خارجي أو دخل مستقبلي'}</strong></span>}
+    {capacityBefore!==null&&<span><small>السعة قبل الهدف</small><strong>{formatSar(capacityBefore)} ر.س</strong></span>}
+    {safeCapacity!==null&&<span><small>السعة الآمنة الحالية</small><strong>{formatSar(safeCapacity)} ر.س</strong></span>}
+    {capacityReduction!==null&&<span><small>أثر الهدف على السعة</small><strong>-{formatSar(capacityReduction)} ر.س</strong></span>}
+    {goalReserve!==null&&<span><small>محجوز للأهداف القريبة</small><strong>{formatSar(goalReserve)} ر.س</strong></span>}
+    {dated!==null&&<span><small>التزامات مؤرخة محجوزة</small><strong>{formatSar(dated)} ر.س</strong></span>}
+    {requested!==null&&<span><small>المبلغ قيد الدراسة</small><strong>{formatSar(requested)} ر.س</strong></span>}
+    {remaining!==null&&<span><small>السعة بعد الطلب</small><strong>{formatSar(remaining)} ر.س</strong></span>}
+    {gap!==null&&gap>0&&<span><small>فجوة الحماية</small><strong>{formatSar(gap)} ر.س</strong></span>}
+    {blocked!==null&&<span><small>حالة الحاجز</small><strong>{blocked?'متوقف لحماية الالتزامات':'اجتاز الحماية فقط'}</strong></span>}
     {missing.length>0&&<span><small>بيانات ناقصة</small><strong>{missing.map(missingLabel).join('، ')}</strong></span>}
   </div>;
 }
