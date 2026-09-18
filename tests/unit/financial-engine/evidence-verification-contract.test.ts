@@ -9,6 +9,7 @@ describe('central-registry evidence verification contract', () => {
       matchConfidence: null,
       autoMatchThreshold: 95,
       hasMaterialDifference: false,
+      accountingClassificationReady: true,
     })).toMatchObject({
       status: 'PENDING_MATCH',
       state_machine_id: 'حالة-تنفيذ-٣٦',
@@ -24,6 +25,7 @@ describe('central-registry evidence verification contract', () => {
       matchConfidence: null,
       autoMatchThreshold: 95,
       hasMaterialDifference: false,
+      accountingClassificationReady: true,
     })).toMatchObject({
       status: 'PENDING_MATCH',
       storage_status: 'PENDING',
@@ -38,6 +40,7 @@ describe('central-registry evidence verification contract', () => {
       matchConfidence: null,
       autoMatchThreshold: 95,
       hasMaterialDifference: true,
+      accountingClassificationReady: false,
     })).toMatchObject({
       status: 'RECONCILIATION_REQUIRED',
       state_machine_id: 'حالة-مطابقة-٣٨',
@@ -53,6 +56,7 @@ describe('central-registry evidence verification contract', () => {
       matchConfidence: 99,
       autoMatchThreshold: 95,
       hasMaterialDifference: false,
+      accountingClassificationReady: true,
     })).toMatchObject({
       status: 'REVIEW_REQUIRED',
       storage_status: 'NEEDS_CLARIFICATION',
@@ -67,9 +71,25 @@ describe('central-registry evidence verification contract', () => {
       matchConfidence: null,
       autoMatchThreshold: 95,
       hasMaterialDifference: false,
+      accountingClassificationReady: true,
     })).toMatchObject({
       status: 'REVIEW_REQUIRED',
       reason: 'MATCH_CONFIDENCE_NOT_AVAILABLE',
+    });
+  });
+
+  it('keeps a strong bank match under review until accounting classification is ready', () => {
+    expect(evaluateUnifiedEvidenceVerification({
+      completeEvidence: true,
+      candidateCount: 1,
+      matchConfidence: 99,
+      autoMatchThreshold: 95,
+      hasMaterialDifference: false,
+      accountingClassificationReady: false,
+    })).toMatchObject({
+      status: 'REVIEW_REQUIRED',
+      storage_status: 'NEEDS_CLARIFICATION',
+      reason: 'ACCOUNTING_CLASSIFICATION_REQUIRED',
     });
   });
 
@@ -80,6 +100,7 @@ describe('central-registry evidence verification contract', () => {
       matchConfidence: 95,
       autoMatchThreshold: 95,
       hasMaterialDifference: false,
+      accountingClassificationReady: true,
     }).status).toBe('REVIEW_REQUIRED');
 
     expect(evaluateUnifiedEvidenceVerification({
@@ -88,6 +109,7 @@ describe('central-registry evidence verification contract', () => {
       matchConfidence: 96,
       autoMatchThreshold: 95,
       hasMaterialDifference: false,
+      accountingClassificationReady: true,
     })).toMatchObject({
       status: 'FINAL_MATCHED',
       state_machine_id: 'حالة-مطابقة-٣٧',
