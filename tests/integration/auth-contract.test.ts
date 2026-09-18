@@ -20,11 +20,10 @@ describe('Neon HTTP auth contract', () => {
     const lifecycle = read('src/lib/auth/auth-lifecycle.ts');
 
     expect(schema).toContain("providerId: text('provider_id').notNull()");
-    expect(schema).not.toContain("issuer:");
+    expect(schema).toContain("issuer: text('issuer').notNull()");
     expect(login).toContain("a.provider_id = 'credential'");
-    expect(login).not.toContain('a.issuer');
-    expect(accountAccess).not.toContain('issuer');
-    expect(lifecycle).not.toContain('issuer');
+    expect(accountAccess).toContain("'local:credential'");
+    expect(lifecycle).toContain("'local:credential'");
   });
 
   it('protects authenticated pages through a server-validated HTTP session', () => {
