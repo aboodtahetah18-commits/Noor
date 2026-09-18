@@ -54,7 +54,12 @@ function StructuredFacts({data}:{data?:Record<string,unknown>}){
   const financingMargin=typeof data.monthly_margin_after==='number'?data.monthly_margin_after:null;
   const decisionState=typeof data.decision_state==='string'?data.decision_state:null;
   const protectionGate=typeof data.protection_gate_state==='string'?data.protection_gate_state:null;
-  if(confidence===null&&!routed&&income===null&&!missing.length&&!goalName&&safeCapacity===null&&requested===null&&!financingPurpose&&!decisionState)return null;
+  const eligibilityScore=typeof data.eligibility_score==='number'?data.eligibility_score:null;
+  const eligibilityBand=typeof data.eligibility_band==='string'?data.eligibility_band:null;
+  const financeLimitComponents=data.finance_limit_components&&typeof data.finance_limit_components==='object'?data.finance_limit_components as Record<string,unknown>:null;
+  const financeLimit=financeLimitComponents&&typeof financeLimitComponents.finance_limit==='number'?financeLimitComponents.finance_limit:null;
+  const missingLimit=financeLimitComponents&&Array.isArray(financeLimitComponents.missing_limit_components)?financeLimitComponents.missing_limit_components.filter((item):item is string=>typeof item==='string'):[];
+  if(confidence===null&&!routed&&income===null&&!missing.length&&!goalName&&safeCapacity===null&&requested===null&&!financingPurpose&&!decisionState&&eligibilityScore===null)return null;
   return <div className={styles.facts}>
     {confidence!==null&&<span><small>درجة الثقة</small><strong>{confidence}٪</strong></span>}
     {routed&&<span><small>الجهة المختصة</small><strong>{routed}</strong></span>}
@@ -82,6 +87,10 @@ function StructuredFacts({data}:{data?:Record<string,unknown>}){
     {financingMargin!==null&&<span><small>الهامش الشهري بعد القسط</small><strong>{formatSar(financingMargin)} ر.س</strong></span>}
     {protectionGate&&<span><small>حاجز الحماية</small><strong>{protectionGate==='PASSES_PROTECTION_GATE'?'اجتاز الحماية فقط':protectionGate}</strong></span>}
     {decisionState&&<span><small>حالة دراسة التمويل</small><strong>{decisionState==='NEEDS_DATA'?'تحتاج بيانات':decisionState==='BLOCKED'?'متوقفة':decisionState==='UNDER_REVIEW'?'تحت المراجعة':decisionState}</strong></span>}
+    {eligibilityScore!==null&&<span><small>درجة أهلية الهلال</small><strong>{eligibilityScore.toFixed(1)} / 100</strong></span>}
+    {eligibilityBand&&<span><small>فئة الأهلية</small><strong>{eligibilityBand==='ELIGIBLE_WITHIN_LIMIT'?'مؤهل داخل السقف':eligibilityBand==='ELIGIBLE_WITH_CONDITIONS'?'مؤهل بشروط أو مبلغ أقل':eligibilityBand==='RESTRICTED'?'مقيد':'مرفوض'}</strong></span>}
+    {financeLimit!==null&&<span><small>سقف التمويل المحسوب</small><strong>{formatSar(financeLimit)} ر.س</strong></span>}
+    {missingLimit.length>0&&<span><small>مكونات سقف ناقصة</small><strong>{missingLimit.join('، ')}</strong></span>}
     {missing.length>0&&<span><small>بيانات ناقصة</small><strong>{missing.map(missingLabel).join('، ')}</strong></span>}
   </div>;
 }
