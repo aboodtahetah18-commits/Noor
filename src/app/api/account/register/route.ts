@@ -5,6 +5,7 @@ import { NextResponse } from 'next/server';
 import {
   accountAccessBaseUrl,
   beginNamaaRegistration,
+  classifyNamaaAccountError,
   sendNamaaAccountEmail,
   isNamaaAccountEmailConfigured,
 } from '@/lib/auth/namaa-account-access';
@@ -30,8 +31,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ code: 'AUTH_EMAIL_NOT_CONFIGURED' }, { status: 503 });
   }
 
+  let result: Awaited<ReturnType<typeof beginNamaaRegistration>>;
   try {
-    const result = await beginNamaaRegistration({
+    result = await beginNamaaRegistration({
       firstName: String(body.firstName ?? ''),
       lastName: String(body.lastName ?? ''),
       phone: String(body.phone ?? ''),
@@ -39,16 +41,25 @@ export async function POST(request: Request) {
       city: String(body.city ?? ''),
       password: String(body.password ?? ''),
     });
-    if (!result.ok) return NextResponse.json({ code: result.code }, { status: 400 });
-
-    if (result.deliver) {
-      const url = new URL(`/api/account/verify-email?token=${encodeURIComponent(result.token)}`, accountAccessBaseUrl()).toString();
-      await sendNamaaAccountEmail({ to: result.email, kind: 'verify-email', url });
-    }
-
-    return NextResponse.json({ ok: true, code: 'AUTH_VERIFICATION_EMAIL_ACCEPTED' }, { status: 202 });
   } catch (error) {
-    console.error('[namaa-account-register]', { name: error instanceof Error ? error.name : 'UnknownError' });
-    return NextResponse.json({ code: 'AUTH_REGISTER_FAILED' }, { status: 503 });
+    const code = classifyNamaaAccountError(error);
+    console.error('[namaa-account-register]', { code, name: error instanceof Error ? error.name : 'UnknownError' });
+    return NextResponse.json({ code }, { status: 503 });
   }
+
+  if (!result.ok) return NextResponse.json({ code: result.code }, { status: 400 });
+
+  if (result.deliver) {
+    const url = new URL(`/api/account/verify-email?token=${encodeURIComponent(result.token)}`, accountAccessBaseUrl()).toString();
+    try {
+      await sendNamaaAccountEmail({ to: result.email, kind: 'verify-email', url });
+      return NextResponse.json({ ok: true, code: 'AUTH_VERIFICATION_EMAIL_ACCEPTED' }, { status: 202 });
+    } catch (error) {
+      const code = classifyNamaaAccountError(error);
+      console.error('[namaa-account-register-email]', { code, name: error instanceof Error ? error.name : 'UnknownError' });
+      return NextResponse.json({ ok: true, code: 'AUTH_ACCOUNT_CREATED_EMAIL_FAILED' }, { status: 202 });
+    }
+  }
+
+  return NextResponse.json({ ok: true, code: 'AUTH_REGISTERED' }, { status: 202 });
 }
