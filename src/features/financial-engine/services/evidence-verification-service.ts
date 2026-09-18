@@ -16,6 +16,7 @@ export async function verifyUnifiedEvidenceCase(userId: string, evidenceCaseId: 
       ec.file_or_reference,
       ec.decision_reference,
       ec.confidence::text as match_confidence,
+      ec.reviewer_type,
       ee.execution_task_id::text as execution_task_id,
       ee.external_reference
     from public.evidence_cases ec
@@ -65,11 +66,11 @@ export async function verifyUnifiedEvidenceCase(userId: string, evidenceCaseId: 
     });
     await sql`
       update public.evidence_cases
-      set verification_status=${pending.status},
+      set verification_status=${pending.storage_status},
           verification_reason=${pending.reason},
           candidate_count=0,
           matched_statement_row_id=null,
-          reviewer_type='SYSTEM_BANK_STATEMENT',
+          reviewer_type=coalesce(reviewer_type,'SYSTEM_BANK_STATEMENT'),
           verified_at=null
       where id=${evidenceCaseId}::uuid and user_id=${userId}::uuid
     `;
@@ -129,9 +130,10 @@ export async function verifyUnifiedEvidenceCase(userId: string, evidenceCaseId: 
   const existingConfidence = evidence.match_confidence == null
     ? null
     : Number(evidence.match_confidence);
-  const matchConfidence = Number.isFinite(existingConfidence)
-    ? existingConfidence
-    : null;
+  const matchConfidence = (
+    evidence.reviewer_type === 'APPROVED_MATCH_ENGINE'
+    && Number.isFinite(existingConfidence)
+  ) ? existingConfidence : null;
 
   const result = evaluateUnifiedEvidenceVerification({
     completeEvidence: true,
@@ -147,7 +149,7 @@ export async function verifyUnifiedEvidenceCase(userId: string, evidenceCaseId: 
 
   await sql`
     update public.evidence_cases
-    set verification_status=${result.status},
+    set verification_status=${result.storage_status},
         verification_reason=${result.reason},
         candidate_count=${hasMaterialDifference ? candidates.length : exactCandidates.length},
         matched_statement_row_id=${matchedStatementRowId},
@@ -178,7 +180,7 @@ export async function verifyUnifiedEvidenceCase(userId: string, evidenceCaseId: 
     await sql.transaction([
       sql`
         update public.execution_events
-        set status='RECONCILIATION'
+        set status='DISPUTED'
         where id=${eventId}::uuid and user_id=${userId}::uuid
       `,
       sql`
