@@ -26,5 +26,17 @@ export async function assertTrustedMutationOrigin(): Promise<void> {
   }
 
   const trusted = new Set(getServerEnv().TRUSTED_ORIGINS);
+
+  // Accept the exact origin that matches the host which received this request.
+  // This safely supports Vercel production aliases without weakening the
+  // cross-site protection: scheme + host must match the current request host.
+  const forwardedHost = h.get('x-forwarded-host')?.split(',')[0]?.trim();
+  const host = forwardedHost || h.get('host')?.trim();
+  const forwardedProto = h.get('x-forwarded-proto')?.split(',')[0]?.trim();
+  if (host) {
+    const protocol = forwardedProto || (host.startsWith('localhost') ? 'http' : 'https');
+    trusted.add(`${protocol}://${host}`);
+  }
+
   if (!trusted.has(normalized)) throw new Error('UNTRUSTED_REQUEST_ORIGIN');
 }
