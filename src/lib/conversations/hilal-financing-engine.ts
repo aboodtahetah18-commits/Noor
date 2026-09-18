@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { getRawSql } from '@/infrastructure/db/client';
 import { getProtectionSnapshot } from './solvency-engine';
+import { computeHilalFinanceLimit, HILAL_ELIGIBILITY_WEIGHTS, HILAL_POLICY_VERSION, missingHilalEligibilityFactors, evaluateHilalEligibility, type HilalEligibilityScores } from './hilal-policy';
 import type { ConversationMessageKind } from './store';
 import { governedRooms } from './store';
 
@@ -17,6 +18,9 @@ type FinancingDraft = {
 type HilalMetadata = Record<string, unknown> & {
   financing_state?: {
     active_request?: FinancingDraft;
+    eligibility_factor_scores?: Partial<HilalEligibilityScores>;
+    repayment_capacity?: number;
+    policy_cap?: number;
   };
 };
 
@@ -211,7 +215,19 @@ export async function createHilalFinancingReply(userId: string, userText: string
   const income = baseline.monthly_net_income_confirmed!;
   const obligationRatioAfter = income > 0 ? projectedCoreObligations / income : null;
   const monthlyMarginAfter = income - projectedCoreObligations;
-  const blocked = requested > safeCapacity || protection.commitment_gap > 0;
+  const policyState = hilalMetadata.financing_state ?? {};
+  const factorScores = policyState.eligibility_factor_scores;
+  const missingEligibility = missingHilalEligibilityFactors(factorScores);
+  const eligibility = missingEligibility.length === 0
+    ? evaluateHilalEligibility(factorScores as HilalEligibilityScores)
+    : null;
+  const financeLimit = computeHilalFinanceLimit({
+    repaymentCapacity: policyState.repayment_capacity,
+    policyCap: policyState.policy_cap,
+    cashflowSafeLimit: safeCapacity,
+  });
+  const blockedByPolicyLimit = financeLimit.finance_limit !== null && requested > financeLimit.finance_limit;
+  const blocked = requested > safeCapacity || protection.commitment_gap > 0 || blockedByPolicyLimit;
 
   if (blocked) {
     const excess = Math.max(requested - safeCapacity, 0);
@@ -234,12 +250,20 @@ export async function createHilalFinancingReply(userId: string, userText: string
         obligations_after_installment: projectedCoreObligations,
         obligation_ratio_after: obligationRatioAfter,
         monthly_margin_after: monthlyMarginAfter,
+        policy_version: HILAL_POLICY_VERSION,
+        eligibility_weights: HILAL_ELIGIBILITY_WEIGHTS,
+        eligibility_score: eligibility?.weighted_score ?? null,
+        eligibility_band: eligibility?.band ?? null,
+        missing_eligibility_factors: missingEligibility,
+        finance_limit_components: financeLimit,
         execution_boundary: 'advisory_only',
       },
     );
   }
 
-  const passesBody = `حالة الحماية PASSES_PROTECTION_GATE: مبلغ التمويل ${formatSar(requested)} ريال يقع داخل السعة الآمنة الحالية ${formatSar(safeCapacity)} ريال. بعد إضافة قسط متوقع قدره ${formatSar(installment)} ريال تصبح الالتزامات الشهرية ${formatSar(projectedCoreObligations)} ريال والهامش الشهري الحسابي ${formatSar(monthlyMarginAfter)} ريال. هذا لا يعني اعتماد التمويل؛ ينتقل الطلب الآن إلى UNDER_REVIEW لأننا لم نضع حد قدرة سداد اعتباطيًا دون سياسة معتمدة.`;
+  const passesBody = eligibility
+    ? `حالة الحماية PASSES_PROTECTION_GATE. درجة أهلية بنك الهلال وفق السياسة المعتمدة ${eligibility.weighted_score} من 100 (${eligibility.decision_ar}). يبقى الطلب UNDER_REVIEW حتى يكتمل سقف التمويل النهائي من REPAYMENT_CAPACITY وPOLICY_CAP وCASHFLOW_SAFE_LIMIT، ولا يعد ذلك تنفيذًا ماليًا.`
+    : `حالة الحماية PASSES_PROTECTION_GATE: مبلغ التمويل ${formatSar(requested)} ريال يقع داخل السعة الآمنة الحالية ${formatSar(safeCapacity)} ريال. بعد إضافة قسط متوقع قدره ${formatSar(installment)} ريال تصبح الالتزامات الشهرية ${formatSar(projectedCoreObligations)} ريال والهامش الشهري الحسابي ${formatSar(monthlyMarginAfter)} ريال. تم ربط سياسة بنك الهلال المعتمدة، لكن درجة الأهلية لا تُحسب حتى تكتمل أدلة عواملها الخمسة بدل اختراع درجات فرعية.`;
   return persistReply(userId, nextMetadata, passesBody, 'recommendation', {
     decision_state: 'UNDER_REVIEW',
     protection_gate_state: 'PASSES_PROTECTION_GATE',
