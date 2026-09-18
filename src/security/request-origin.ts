@@ -10,6 +10,7 @@ export async function assertTrustedMutationOrigin(): Promise<void> {
   const h = await headers();
   const fetchSite = h.get('sec-fetch-site');
   if (fetchSite === 'cross-site') throw new Error('UNTRUSTED_REQUEST_ORIGIN');
+  if (fetchSite === 'same-origin') return;
 
   const origin = h.get('origin');
   if (!origin) {
@@ -31,9 +32,11 @@ export async function assertTrustedMutationOrigin(): Promise<void> {
   // This safely supports Vercel production aliases without weakening the
   // cross-site protection: scheme + host must match the current request host.
   const forwardedHost = h.get('x-forwarded-host')?.split(',')[0]?.trim();
-  const host = forwardedHost || h.get('host')?.trim();
+  const requestHost = h.get('host')?.trim();
   const forwardedProto = h.get('x-forwarded-proto')?.split(',')[0]?.trim();
-  if (host) {
+
+  for (const host of [forwardedHost, requestHost]) {
+    if (!host) continue;
     const protocol = forwardedProto || (host.startsWith('localhost') ? 'http' : 'https');
     trusted.add(`${protocol}://${host}`);
   }
