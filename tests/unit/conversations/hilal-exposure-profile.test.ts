@@ -4,12 +4,13 @@ import { summarizeHilalExposureRow } from '@/lib/conversations/hilal-exposure-pr
 const restructuring = {
   requested_count: 2,
   approved_count: 2,
-  applied_count: 2,
+  applied_count_total: 2,
+  max_applied_per_case: 2,
+  cases_at_precautionary_cap: 0,
   rejected_count: 0,
   cancelled_count: 0,
   precautionary_cap: 3 as const,
   precautionary_cap_reached: false,
-  remaining_precautionary_slots: 1,
   policy_reference: 'HILAL_POLICY_1.0_SECTION_14' as const,
 };
 
@@ -39,7 +40,7 @@ describe('Hilal unified exposure profile', () => {
       overdue_installment_count: 2,
       next_installment_number: 3,
       financing_history_available: true,
-      restructuring: { applied_count: 2, precautionary_cap: 3, precautionary_cap_reached: false },
+      restructuring: { applied_count_total: 2, max_applied_per_case: 2, precautionary_cap: 3, precautionary_cap_reached: false },
     });
   });
 
