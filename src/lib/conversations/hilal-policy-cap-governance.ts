@@ -9,6 +9,9 @@ export type HilalPolicyCapSignals = {
   active_or_recovery_case_count: number;
   overdue_installment_count: number;
   overdue_planned_amount: number;
+  restructuring_applied_count_total: number;
+  restructuring_max_applied_per_case: number;
+  restructuring_precautionary_cap_reached: boolean;
   essential_category: boolean | null;
   expense_nature_default: string | null;
 };
@@ -59,6 +62,9 @@ export function evaluateHilalPolicyCapGovernance(input: HilalPolicyCapGovernance
     active_or_recovery_case_count: (exposure?.active_case_count ?? 0) + (exposure?.recovery_case_count ?? 0),
     overdue_installment_count: overdueInstallments,
     overdue_planned_amount: overdueAmount,
+    restructuring_applied_count_total: exposure?.restructuring.applied_count_total ?? 0,
+    restructuring_max_applied_per_case: exposure?.restructuring.max_applied_per_case ?? 0,
+    restructuring_precautionary_cap_reached: exposure?.restructuring.precautionary_cap_reached ?? false,
     essential_category: input.isEssential,
     expense_nature_default: input.expenseNatureDefault,
   };
