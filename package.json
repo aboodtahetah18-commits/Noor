@@ -56,7 +56,8 @@
     "vercel:build": "npm run vercel:preflight && npm run clean:legacy-ui-cache && npm run verify:deployment-authority && BETTER_AUTH_SECRET=namaa-build-only-secret-not-for-runtime-20260916 BETTER_AUTH_URL=http://127.0.0.1:3000 DATABASE_URL=postgresql://namaa_build:namaa_build@127.0.0.1:5432/namaa_build npm run build",
     "vercel:migrate": "node scripts/migrate-deployment.mjs",
     "vercel:preflight": "node scripts/vercel-preflight.mjs",
-    "verify:vercel": "node scripts/verify-vercel-deployment-contract.mjs"
+    "verify:vercel": "node scripts/verify-vercel-deployment-contract.mjs",
+    "test:uat": "node scripts/ensure-env-example.mjs && vitest run tests/acceptance"
   },
   "dependencies": {
     "@neondatabase/serverless": "1.0.1",
