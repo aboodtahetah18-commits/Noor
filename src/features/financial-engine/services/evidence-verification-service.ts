@@ -1,6 +1,7 @@
 import { getRawSql } from '@/infrastructure/db/client';
 import { getCentralPolicyNumericParameter } from './central-policy-parameters';
 import { evaluateUnifiedEvidenceVerification } from './evidence-verification-contract';
+import { enqueueCycleRecalcForMatchedTransaction } from './enqueue-matched-execution-recalc';
 
 export async function verifyUnifiedEvidenceCase(userId: string, evidenceCaseId: string) {
   const sql = getRawSql();
@@ -63,6 +64,7 @@ export async function verifyUnifiedEvidenceCase(userId: string, evidenceCaseId: 
       matchConfidence: null,
       autoMatchThreshold: autoMatchThreshold.value,
       hasMaterialDifference: false,
+      accountingClassificationReady: false,
     });
     await sql`
       update public.evidence_cases
@@ -80,7 +82,8 @@ export async function verifyUnifiedEvidenceCase(userId: string, evidenceCaseId: 
       ...pending,
       candidateCount: 0,
       matchedStatementRowId: null,
-      policySnapshot: {
+      recalculation,
+    policySnapshot: {
         dateTolerance: { id: 'SET-RC-001', ...dateTolerance },
         autoMatchThreshold: { id: 'SET-RC-002', ...autoMatchThreshold },
       },
@@ -97,6 +100,7 @@ export async function verifyUnifiedEvidenceCase(userId: string, evidenceCaseId: 
       a.name as account_name,
       a.iban,
       a.account_number,
+      r.final_transaction_id::text as final_transaction_id,
       (
         lower(a.name)=lower(${sourceAccountRef})
         or a.id::text=${sourceAccountRef}
@@ -135,12 +139,17 @@ export async function verifyUnifiedEvidenceCase(userId: string, evidenceCaseId: 
     && Number.isFinite(existingConfidence)
   ) ? existingConfidence : null;
 
+  const classifiedTransactionId = exactCandidates.length === 1 && exactCandidates[0]?.final_transaction_id
+    ? String(exactCandidates[0].final_transaction_id)
+    : null;
+
   const result = evaluateUnifiedEvidenceVerification({
     completeEvidence: true,
     candidateCount: exactCandidates.length,
     matchConfidence,
     autoMatchThreshold: autoMatchThreshold.value,
     hasMaterialDifference,
+    accountingClassificationReady: Boolean(classifiedTransactionId),
   });
 
   const matchedStatementRowId = result.status === 'FINAL_MATCHED'
@@ -161,6 +170,8 @@ export async function verifyUnifiedEvidenceCase(userId: string, evidenceCaseId: 
   const taskId = String(evidence.execution_task_id);
   const eventId = String(evidence.execution_event_id);
 
+  let recalculation: Awaited<ReturnType<typeof enqueueCycleRecalcForMatchedTransaction>> | null = null;
+
   if (result.status === 'FINAL_MATCHED') {
     await sql.transaction([
       sql`
@@ -176,6 +187,13 @@ export async function verifyUnifiedEvidenceCase(userId: string, evidenceCaseId: 
         where id=${taskId}::uuid and user_id=${userId}::uuid
       `,
     ]);
+    if (classifiedTransactionId) {
+      recalculation = await enqueueCycleRecalcForMatchedTransaction({
+        userId,
+        executionEventId: eventId,
+        transactionId: classifiedTransactionId,
+      });
+    }
   } else if (result.status === 'RECONCILIATION_REQUIRED') {
     await sql.transaction([
       sql`
