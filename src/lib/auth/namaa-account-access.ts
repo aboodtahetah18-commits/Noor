@@ -1,6 +1,7 @@
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { hashPassword } from 'better-auth/crypto';
 import { Pool } from '@neondatabase/serverless';
+import { connect as tlsConnect, type TLSSocket } from 'node:tls';
 
 type ChallengeKind = 'email-verification' | 'password-setup' | 'password-reset';
 
@@ -58,6 +59,100 @@ function emailFromIdentifier(kind: ChallengeKind, value: string): string | null 
   if (!value.startsWith(prefix)) return null;
   const email = normalizeEmail(value.slice(prefix.length));
   return email.includes('@') ? email : null;
+}
+
+export function isNamaaAccountEmailConfigured(): boolean {
+  const from = process.env.AUTH_EMAIL_FROM?.trim();
+  const resend = process.env.RESEND_API_KEY?.trim();
+  const smtpUser = process.env.SMTP_USER?.trim();
+  const smtpPassword = process.env.SMTP_PASSWORD?.trim();
+  return Boolean(from && (resend || (smtpUser && smtpPassword)));
+}
+
+async function smtpResponse(socket: TLSSocket): Promise<string> {
+  return await new Promise((resolve, reject) => {
+    let buffer = '';
+    const timeout = setTimeout(() => {
+      cleanup();
+      reject(new Error('AUTH_EMAIL_SMTP_TIMEOUT'));
+    }, 10000);
+    const cleanup = () => {
+      clearTimeout(timeout);
+      socket.off('data', onData);
+      socket.off('error', onError);
+    };
+    const onError = (error: Error) => {
+      cleanup();
+      reject(error);
+    };
+    const onData = (chunk: Buffer) => {
+      buffer += chunk.toString('utf8');
+      const lines = buffer.split(/\r?\n/).filter(Boolean);
+      const last = lines.at(-1) ?? '';
+      if (/^\d{3} /.test(last)) {
+        cleanup();
+        resolve(buffer);
+      }
+    };
+    socket.on('data', onData);
+    socket.on('error', onError);
+  });
+}
+
+async function smtpCommand(socket: TLSSocket, command?: string, accepted = /^[23]/): Promise<string> {
+  if (command) socket.write(`${command}\r\n`);
+  const response = await smtpResponse(socket);
+  if (!accepted.test(response)) throw new Error('AUTH_EMAIL_DELIVERY_FAILED');
+  return response;
+}
+
+function senderAddress(from: string): string {
+  const match = from.match(/<([^>]+)>/);
+  return (match?.[1] ?? from).trim();
+}
+
+async function sendViaSmtp(input: { from: string; to: string; subject: string; html: string }): Promise<void> {
+  const host = process.env.SMTP_HOST?.trim() || 'smtp.gmail.com';
+  const port = Number(process.env.SMTP_PORT?.trim() || '465');
+  const user = process.env.SMTP_USER?.trim();
+  const password = process.env.SMTP_PASSWORD?.trim();
+  if (!user || !password || !Number.isInteger(port) || port <= 0) throw new Error('AUTH_EMAIL_NOT_CONFIGURED');
+
+  const socket = tlsConnect({ host, port, servername: host });
+  await new Promise<void>((resolve, reject) => {
+    socket.once('secureConnect', resolve);
+    socket.once('error', reject);
+  });
+
+  try {
+    await smtpCommand(socket);
+    await smtpCommand(socket, 'EHLO namaa');
+    await smtpCommand(socket, 'AUTH LOGIN', /^334/);
+    await smtpCommand(socket, Buffer.from(user).toString('base64'), /^334/);
+    await smtpCommand(socket, Buffer.from(password).toString('base64'), /^235/);
+    await smtpCommand(socket, `MAIL FROM:<${senderAddress(input.from)}>`);
+    await smtpCommand(socket, `RCPT TO:<${input.to}>`);
+    await smtpCommand(socket, 'DATA', /^354/);
+
+    const encodedSubject = `=?UTF-8?B?${Buffer.from(input.subject).toString('base64')}?=`;
+    const safeHtml = input.html.replace(/\r?\n\./g, '\r\n..');
+    socket.write([
+      `From: ${input.from}`,
+      `To: ${input.to}`,
+      `Subject: ${encodedSubject}`,
+      'MIME-Version: 1.0',
+      'Content-Type: text/html; charset=UTF-8',
+      'Content-Transfer-Encoding: 8bit',
+      '',
+      safeHtml,
+      '.',
+      '',
+    ].join('\r\n'));
+    await smtpCommand(socket);
+    await smtpCommand(socket, 'QUIT').catch(() => undefined);
+  } finally {
+    socket.end();
+  }
 }
 
 export function validNamaaPassword(password: string): boolean {
@@ -262,7 +357,7 @@ export async function sendNamaaAccountEmail(input: {
 }): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY?.trim();
   const from = process.env.AUTH_EMAIL_FROM?.trim();
-  if (!apiKey || !from) throw new Error('AUTH_EMAIL_NOT_CONFIGURED');
+  if (!from || !isNamaaAccountEmailConfigured()) throw new Error('AUTH_EMAIL_NOT_CONFIGURED');
 
   const verify = input.kind === 'verify-email';
   const subject = verify ? 'تأكيد بريدك الإلكتروني في نماء' : 'إعادة تعيين كلمة المرور في نماء';
@@ -273,11 +368,16 @@ export async function sendNamaaAccountEmail(input: {
   const label = verify ? 'تأكيد البريد وإنشاء كلمة المرور' : 'إنشاء كلمة مرور جديدة';
   const html = `<div dir="rtl" style="font-family:Arial,sans-serif;line-height:1.8"><h2>${heading}</h2><p>${intro}</p><p><a href="${input.url}">${label}</a></p><p>ينتهي الرابط خلال 30 دقيقة. إذا لم تطلب هذه العملية فتجاهل الرسالة.</p></div>`;
 
-  const response = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: { authorization: `Bearer ${apiKey}`, 'content-type': 'application/json' },
-    body: JSON.stringify({ from, to: [input.to], subject, html }),
-    cache: 'no-store',
-  });
-  if (!response.ok) throw new Error('AUTH_EMAIL_DELIVERY_FAILED');
+  if (apiKey) {
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { authorization: `Bearer ${apiKey}`, 'content-type': 'application/json' },
+      body: JSON.stringify({ from, to: [input.to], subject, html }),
+      cache: 'no-store',
+    });
+    if (!response.ok) throw new Error('AUTH_EMAIL_DELIVERY_FAILED');
+    return;
+  }
+
+  await sendViaSmtp({ from, to: input.to, subject, html });
 }
