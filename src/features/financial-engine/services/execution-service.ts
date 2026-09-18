@@ -129,13 +129,13 @@ export async function reportUserExecution(input:{
       event.status='EVIDENCE_PENDING';
       const verification = await verifyUnifiedEvidenceCase(input.userId,eventId ? String(evidenceCase?.id ?? '') : '');
       if(verification){
-        event.status = verification.status === 'VERIFIED'
+        event.status = verification.status === 'FINAL_MATCHED'
           ? 'VERIFIED_EXECUTION'
-          : verification.status === 'REJECTED'
-            ? 'EVIDENCE_REJECTED'
+          : verification.status === 'RECONCILIATION_REQUIRED'
+            ? 'DISPUTED'
             : 'EVIDENCE_PENDING';
         if(evidenceCase){
-          evidenceCase.verification_status=verification.status;
+          evidenceCase.verification_status=verification.storage_status;
           evidenceCase.verification_reason=verification.reason;
           evidenceCase.candidate_count=verification.candidateCount;
           evidenceCase.matched_statement_row_id=verification.matchedStatementRowId;
