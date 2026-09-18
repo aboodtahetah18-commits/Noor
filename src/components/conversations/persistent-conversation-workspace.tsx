@@ -96,6 +96,11 @@ function StructuredFacts({data}:{data?:Record<string,unknown>}){
   const proposedCycles=proposedPlan&&typeof proposedPlan.proposed_cycles==='number'?proposedPlan.proposed_cycles:null;
   const proposalRemaining=proposedPlan&&typeof proposedPlan.remaining_amount==='number'?proposedPlan.remaining_amount:null;
   const restructuringApplied=typeof data.applied_restructuring_count==='number'?data.applied_restructuring_count:null;
+  const evidenceVerification=data.evidence_verification&&typeof data.evidence_verification==='object'?data.evidence_verification as Record<string,unknown>:null;
+  const evidenceMatchedAmount=evidenceVerification&&typeof evidenceVerification.matched_amount==='number'?evidenceVerification.matched_amount:null;
+  const evidenceMatchedDate=evidenceVerification&&typeof evidenceVerification.matched_transaction_date==='string'?evidenceVerification.matched_transaction_date:null;
+  const evidenceMatchedAccount=evidenceVerification&&typeof evidenceVerification.matched_account_name==='string'?evidenceVerification.matched_account_name:null;
+  const evidenceMatchedRow=evidenceVerification&&typeof evidenceVerification.matched_statement_row_id==='string'?evidenceVerification.matched_statement_row_id:null;
   if(confidence===null&&!routed&&income===null&&!missing.length&&!goalName&&safeCapacity===null&&requested===null&&!financingPurpose&&!decisionState&&eligibilityScore===null&&!calibrationStatus)return null;
   return <div className={styles.facts}>
     {confidence!==null&&<span><small>درجة الثقة</small><strong>{confidence}٪</strong></span>}
@@ -148,12 +153,16 @@ function StructuredFacts({data}:{data?:Record<string,unknown>}){
     {restructuringTotal!==null&&<span><small>إعادات الجدولة المطبقة</small><strong>{restructuringTotal}</strong></span>}
     {restructuringMax!==null&&<span><small>أعلى إعادة جدولة لتمويل واحد</small><strong>{restructuringMax} / 3</strong></span>}
     {restructuringCapReached===true&&<span><small>سقف إعادة الجدولة</small><strong>بلغ السقف الاحترازي</strong></span>}
-    {restructuringState&&<span><small>حالة إعادة الجدولة</small><strong>{restructuringState==='PROPOSAL_READY'?'مقترح جاهز للتأكيد':restructuringState==='APPROVED_NOT_APPLIED'?'معتمد داخليًا — غير مطبق':restructuringState==='MIGRATION_REQUIRED'?'السجل يحتاج ترحيل قاعدة البيانات':restructuringState==='PRECAUTIONARY_CAP_REACHED'?'بلغ السقف الاحترازي':restructuringState}</strong></span>}
+    {restructuringState&&<span><small>حالة إعادة الجدولة</small><strong>{restructuringState==='PROPOSAL_READY'?'مقترح جاهز للتأكيد':restructuringState==='APPROVED_NOT_APPLIED'?'معتمد داخليًا — غير مطبق':restructuringState==='EVIDENCE_REQUIRED'?'بانتظار إثبات التنفيذ':restructuringState==='EVIDENCE_NOT_VERIFIED'?'الإثبات غير متحقق':restructuringState==='APPLIED'?'تم التحقق والتطبيق':restructuringState==='MIGRATION_REQUIRED'?'السجل يحتاج ترحيل قاعدة البيانات':restructuringState==='PRECAUTIONARY_CAP_REACHED'?'بلغ السقف الاحترازي':restructuringState}</strong></span>}
     {restructuringRootCause&&<span><small>سبب إعادة الجدولة</small><strong>{restructuringRootCause}</strong></span>}
     {proposalRemaining!==null&&<span><small>الرصيد المتبقي لإعادة الجدولة</small><strong>{formatSar(proposalRemaining)} ر.س</strong></span>}
     {proposedMonthly!==null&&<span><small>القسط المقترح الجديد</small><strong>{formatSar(proposedMonthly)} ر.س</strong></span>}
     {proposedCycles!==null&&<span><small>الدورات المقترحة</small><strong>{proposedCycles}</strong></span>}
     {restructuringApplied!==null&&<span><small>إعادات الجدولة المطبقة للتمويل</small><strong>{restructuringApplied} / 3</strong></span>}
+    {evidenceMatchedAmount!==null&&<span><small>مبلغ الإثبات المتحقق</small><strong>{formatSar(evidenceMatchedAmount)} ر.س</strong></span>}
+    {evidenceMatchedDate&&<span><small>تاريخ الإثبات المتحقق</small><strong>{evidenceMatchedDate}</strong></span>}
+    {evidenceMatchedAccount&&<span><small>حساب الإثبات</small><strong>{evidenceMatchedAccount}</strong></span>}
+    {evidenceMatchedRow&&<span><small>مرجع صف الكشف</small><strong>{evidenceMatchedRow}</strong></span>}
     {policyGovernanceStatus&&<span><small>حوكمة POLICY_CAP</small><strong>{policyGovernanceStatus==='HARD_STOP_OVERDUE'?'متوقف بسبب استرداد متأخر':policyGovernanceStatus==='NUMERIC_CALIBRATION_REQUIRED'?'إشارات مكتملة — المعايرة الرقمية مطلوبة':policyGovernanceStatus}</strong></span>}
     {policyHardStop===true&&<span><small>منع تمويل جديد</small><strong>مفعل حتى معالجة التأخر</strong></span>}
     {calibrationStatus&&<span><small>معايرة الأهلية</small><strong>{calibrationStatus==='CALIBRATION_NOT_ACTIVE'?'بانتظار معايرة رقمية معتمدة':calibrationStatus==='SCORED'?'معايرة مفعلة':calibrationStatus}</strong></span>}
