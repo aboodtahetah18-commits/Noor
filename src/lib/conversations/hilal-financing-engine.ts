@@ -54,13 +54,6 @@ function normalizeDigits(value: string) {
   return value.replace(/[٠-٩۰-۹]/g, (digit) => arabicDigits[digit] ?? digit);
 }
 
-function amounts(text: string) {
-  const normalized = normalizeDigits(text).replace(/,/g, '');
-  return [...normalized.matchAll(/(?:^|\s)(\d+(?:\.\d+)?)(?=\s|$|\s*(?:ريال|ر\.س))/g)]
-    .map((match) => Number(match[1]))
-    .filter((value) => Number.isFinite(value) && value > 0);
-}
-
 function purposeFrom(text: string) {
   const patterns = [
     /(?:الغرض|السبب|لأجل|لاجل|لـ)\s*[:\-]?\s*([^،,\n\d]{2,100})/i,
