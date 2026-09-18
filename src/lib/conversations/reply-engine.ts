@@ -45,7 +45,7 @@ function numbersFrom(text: string) {
     .filter((value) => Number.isFinite(value) && value >= 0);
 }
 
-function detectIntent(text: string): Intent {
+export function detectConversationIntent(text: string): Intent {
   if (/(دخل|راتب|راتبي|صافي|دخل شهري|الدخل)/i.test(text)) return 'income';
   if (/(إيجار|ايجار|قسط|أقساط|اقساط|فاتورة|فواتير|التزام|التزامات|مصروف ثابت)/i.test(text)) return 'obligation';
   if (/(احتياط|طوارئ|سيولة|ملاءة|حماية)/i.test(text)) return 'reserve';
@@ -65,7 +65,7 @@ function isRejection(text: string) {
   return /^(لا|غير صحيح|خطأ|غلط|ارفض|أرفض|رفض)$/i.test(normalized);
 }
 
-function recommendedRoom(intent: Intent, current: ConversationRoomKey): ConversationRoomKey {
+export function recommendedConversationRoom(intent: Intent, current: ConversationRoomKey): ConversationRoomKey {
   if (intent === 'reserve') return 'solvency';
   if (intent === 'investment' || intent === 'goal') return 'assets';
   if (intent === 'financing') return 'hilal';
@@ -177,7 +177,7 @@ function buildCentralReply(text: string, intent: Intent, amounts: number[], meta
     confidence = 0.35;
     body = `وجدت مبلغًا قدره ${formatSar(amount)} ريال، لكن لا أريد افتراض معناه. هل هو دخل، التزام، مصروف، هدف أم رصيد متاح؟`;
   } else if (intent === 'reserve' || intent === 'investment' || intent === 'financing' || intent === 'goal') {
-    routedRoom = recommendedRoom(intent, 'central');
+    routedRoom = recommendedConversationRoom(intent, 'central');
     confidence = 0.8;
     body = `الموضوع يرتبط مباشرة بـ${governedRooms[routedRoom].title}. سأحتفظ فقط بالبيانات المؤكدة، ولن يُعامل أي مبلغ غير مؤكد كسيولة متاحة.`;
   } else {
@@ -205,14 +205,14 @@ export async function createRoutedReply(userId: string, roomKey: ConversationRoo
 
   const text = userText.trim();
   const amounts = numbersFrom(text);
-  const intent = detectIntent(text);
+  const intent = detectConversationIntent(text);
   const metadata = threadRows[0]?.metadata && typeof threadRows[0].metadata === 'object' ? threadRows[0].metadata as Record<string, unknown> : {};
   const agent = agentForRoom(roomKey);
 
   let body: string;
   let kind: ConversationMessageKind;
   let confidence: number;
-  let routedRoom = recommendedRoom(intent, roomKey);
+  let routedRoom = recommendedConversationRoom(intent, roomKey);
   let nextMetadata = metadata;
   let financialMetrics: ReturnType<typeof baselineMetrics> = null;
   let missingFields: string[] = [];
