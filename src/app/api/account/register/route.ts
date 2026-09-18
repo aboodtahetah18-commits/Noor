@@ -10,15 +10,36 @@ import {
   isNamaaAccountEmailConfigured,
   isNamaaPilotMode,
 } from '@/lib/auth/namaa-account-access';
+import { signInVerifiedWithPassword } from '@/lib/auth/verified-login';
+import { AUTH_SESSION_COOKIE, authCookieOptions } from '@/lib/auth/session-cookie';
 import { guardPublicAccountRequest, publicAccountGuardError } from '@/security/public-account-mutation';
 
+async function pilotLoginResponse(email: string, password: string) {
+  const login = await signInVerifiedWithPassword({ email, password });
+  if (!login.ok) return null;
+
+  const response = NextResponse.json(
+    { ok: true, code: 'AUTH_PILOT_LOGIN_OK', authenticated: true },
+    { status: 200 },
+  );
+  response.cookies.set(AUTH_SESSION_COOKIE, login.token, authCookieOptions(login.expiresAt));
+  return response;
+}
+
 export async function POST(request: Request) {
-  try {
-    await guardPublicAccountRequest(request, 'register', { limit: 5 });
-  } catch (error) {
-    const guarded = publicAccountGuardError(error);
-    if (guarded) return NextResponse.json({ code: guarded.code }, { status: guarded.status });
-    return NextResponse.json({ code: 'AUTH_REGISTER_FAILED' }, { status: 503 });
+  const pilotMode = isNamaaPilotMode();
+
+  // Pilot registration is intentionally simpler: access is gated by
+  // auth.pilot_access inside beginNamaaRegistration, so email verification and
+  // the public mutation origin guard are not part of this temporary flow.
+  if (!pilotMode) {
+    try {
+      await guardPublicAccountRequest(request, 'register', { limit: 5 });
+    } catch (error) {
+      const guarded = publicAccountGuardError(error);
+      if (guarded) return NextResponse.json({ code: guarded.code }, { status: guarded.status });
+      return NextResponse.json({ code: 'AUTH_REGISTER_FAILED' }, { status: 503 });
+    }
   }
 
   let body: { firstName?: unknown; lastName?: unknown; phone?: unknown; email?: unknown; city?: unknown; password?: unknown };
@@ -28,9 +49,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ code: 'AUTH_INPUT_INVALID' }, { status: 400 });
   }
 
-  if (!isNamaaPilotMode() && !isNamaaAccountEmailConfigured()) {
+  if (!pilotMode && !isNamaaAccountEmailConfigured()) {
     return NextResponse.json({ code: 'AUTH_EMAIL_NOT_CONFIGURED' }, { status: 503 });
   }
+
+  const email = String(body.email ?? '').trim().toLowerCase();
+  const password = String(body.password ?? '');
 
   let result: Awaited<ReturnType<typeof beginNamaaRegistration>>;
   try {
@@ -38,26 +62,66 @@ export async function POST(request: Request) {
       firstName: String(body.firstName ?? ''),
       lastName: String(body.lastName ?? ''),
       phone: String(body.phone ?? ''),
-      email: String(body.email ?? ''),
+      email,
       city: String(body.city ?? ''),
-      password: String(body.password ?? ''),
+      password,
     });
   } catch (error) {
     const code = classifyNamaaAccountError(error);
-    console.error('[namaa-account-register]', { code, name: error instanceof Error ? error.name : 'UnknownError' });
+    console.error('[namaa-account-register]', {
+      code,
+      dbCode:
+        typeof error === 'object' && error !== null && 'code' in error
+          ? String((error as { code?: unknown }).code ?? '')
+          : '',
+      message: error instanceof Error ? error.message : 'UnknownError',
+    });
     return NextResponse.json({ code }, { status: 503 });
   }
 
-  if (!result.ok) return NextResponse.json({ code: result.code }, { status: 400 });
+  if (!result.ok) {
+    if (pilotMode && result.code === 'AUTH_ACCOUNT_EXISTS') {
+      try {
+        const response = await pilotLoginResponse(email, password);
+        if (response) return response;
+      } catch (error) {
+        console.error('[namaa-pilot-existing-login]', {
+          name: error instanceof Error ? error.name : 'UnknownError',
+          message: error instanceof Error ? error.message : '',
+        });
+      }
+    }
+    return NextResponse.json({ code: result.code }, { status: 400 });
+  }
+
+  if (pilotMode) {
+    try {
+      const response = await pilotLoginResponse(email, password);
+      if (response) return response;
+      return NextResponse.json({ code: 'AUTH_LOGIN_FAILED' }, { status: 503 });
+    } catch (error) {
+      console.error('[namaa-pilot-auto-login]', {
+        name: error instanceof Error ? error.name : 'UnknownError',
+        message: error instanceof Error ? error.message : '',
+      });
+      return NextResponse.json({ code: 'AUTH_LOGIN_FAILED' }, { status: 503 });
+    }
+  }
 
   if (result.deliver) {
-    const url = new URL(`/api/account/verify-email?token=${encodeURIComponent(result.token)}`, accountAccessBaseUrl()).toString();
+    const url = new URL(
+      `/api/account/verify-email?token=${encodeURIComponent(result.token)}`,
+      accountAccessBaseUrl(),
+    ).toString();
     try {
       await sendNamaaAccountEmail({ to: result.email, kind: 'verify-email', url });
       return NextResponse.json({ ok: true, code: 'AUTH_VERIFICATION_EMAIL_ACCEPTED' }, { status: 202 });
     } catch (error) {
       const code = classifyNamaaAccountError(error);
-      console.error('[namaa-account-register-email]', { code, name: error instanceof Error ? error.name : 'UnknownError' });
+      console.error('[namaa-account-register-email]', {
+        code,
+        name: error instanceof Error ? error.name : 'UnknownError',
+      });
       return NextResponse.json({ ok: true, code: 'AUTH_ACCOUNT_CREATED_EMAIL_FAILED' }, { status: 202 });
     }
   }
