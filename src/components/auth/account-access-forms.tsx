@@ -106,16 +106,21 @@ export function RegisterForm() {
   }
 
   if (registeredEmail) {
+    const pilotActivated = registrationCode === 'AUTH_REGISTERED';
     return <div className={styles.success} role="status">
-      <strong>تم إنشاء الحساب</strong>
-      <p>{registrationCode === 'AUTH_ACCOUNT_CREATED_EMAIL_FAILED'
-        ? 'تم حفظ الحساب، لكن تعذر إرسال رسالة التحقق تلقائيًا. استخدم الزر أدناه لإعادة الإرسال.'
-        : `بقي تأكيد البريد الإلكتروني قبل تسجيل الدخول. أرسلنا رسالة تحقق إلى ${registeredEmail}.`}</p>
-      <button className={styles.secondaryAction} type="button" onClick={resendVerification} disabled={resendPending}>
-        {resendPending ? 'جاري الإرسال...' : 'إعادة إرسال بريد التحقق'}
-      </button>
-      {resendMessage ? <p>{resendMessage}</p> : null}
-      <Link href="/login">العودة إلى تسجيل الدخول</Link>
+      <strong>{pilotActivated ? 'تم تفعيل الحساب' : 'تم إنشاء الحساب'}</strong>
+      <p>{pilotActivated
+        ? 'اكتمل إنشاء حسابك التجريبي ويمكنك تسجيل الدخول مباشرة باستخدام البريد وكلمة المرور.'
+        : registrationCode === 'AUTH_ACCOUNT_CREATED_EMAIL_FAILED'
+          ? 'تم حفظ الحساب، لكن تعذر إرسال رسالة التحقق تلقائيًا. استخدم الزر أدناه لإعادة الإرسال.'
+          : `بقي تأكيد البريد الإلكتروني قبل تسجيل الدخول. أرسلنا رسالة تحقق إلى ${registeredEmail}.`}</p>
+      {!pilotActivated ? <>
+        <button className={styles.secondaryAction} type="button" onClick={resendVerification} disabled={resendPending}>
+          {resendPending ? 'جاري الإرسال...' : 'إعادة إرسال بريد التحقق'}
+        </button>
+        {resendMessage ? <p>{resendMessage}</p> : null}
+      </> : null}
+      <Link href="/login">{pilotActivated ? 'الانتقال إلى تسجيل الدخول' : 'العودة إلى تسجيل الدخول'}</Link>
     </div>;
   }
 
@@ -130,7 +135,7 @@ export function RegisterForm() {
     <p className={styles.helper}>استخدم 10 أحرف على الأقل، مع حرف واحد ورقم واحد على الأقل.</p>
     {error ? <p className={styles.alert} role="alert">{error}</p> : null}
     <button className={styles.submit} type="submit" disabled={pending}>{pending ? 'جاري إنشاء الحساب...' : 'إنشاء الحساب'}</button>
-    <p className={styles.helper}>يلزم تأكيد البريد الإلكتروني قبل تسجيل الدخول.</p>
+    <p className={styles.helper}>في النسخة التجريبية، تُفعّل الحسابات المصرح بها مباشرة بعد التسجيل.</p>
     <p className={styles.helper}><Link href="/login">لديك حساب؟ تسجيل الدخول</Link></p>
   </form>;
 }
