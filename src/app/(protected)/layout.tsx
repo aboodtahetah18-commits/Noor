@@ -6,6 +6,7 @@ import { TabletTopNav } from './tablet-top-nav';
 import { MobileTopBar } from './mobile-top-bar';
 import { GlobalTopBar } from './global-top-bar';
 import { BankMessageDialog } from '@/components/bank-message-dialog';
+import { MobileConversationGate } from './mobile-conversation-gate';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,7 +19,7 @@ export default async function ProtectedLayout({ children }: Readonly<{ children:
       <GlobalTopBar profile={{displayName:user.name,email:user.email,timezone:'Asia/Riyadh',emailVerified:user.emailVerified,image:user.image}} />
       <TabletTopNav />
       <MobileTopBar profile={{displayName:user.name,email:user.email,timezone:'Asia/Riyadh',emailVerified:user.emailVerified,image:user.image}} />
-      <div id="main-content" tabIndex={-1} className="main-content-focus-target">{children}</div>
+      <div id="main-content" tabIndex={-1} className="main-content-focus-target"><MobileConversationGate>{children}</MobileConversationGate></div>
       <MobileBottomNav />
       <BankMessageDialog />
     </div>
