@@ -74,14 +74,12 @@ function purposeFrom(text: string) {
 }
 
 function requestedAmountFrom(text: string) {
-  const values = amounts(text);
-  if (!values.length) return null;
   const explicit = /(?:مبلغ|تمويل|احتاج|أحتاج|أبغى|ابغى)[^\d٠-٩۰-۹]{0,20}([\d٠-٩۰-۹,.]+)/i.exec(text);
   if (explicit?.[1]) {
     const value = Number(normalizeDigits(explicit[1]).replace(/,/g, ''));
     if (Number.isFinite(value) && value > 0) return value;
   }
-  return values[0] ?? null;
+  return null;
 }
 
 function installmentFrom(text: string) {
