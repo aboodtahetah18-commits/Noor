@@ -61,6 +61,76 @@ function extractNumbers(input:string){
   return [...normalizeArabicNumber(input).matchAll(/\d+(?:\.\d+)?/g)].map(m=>Number(m[0])).filter(Number.isFinite);
 }
 
+function isNone(raw:string){
+  return /^(لا يوجد|لايوجد|لا أحد|لا احد|ما عندي|ليس لدي|لا)$/i.test(raw.trim());
+}
+
+function validateOnboardingAnswer(step:OnboardingStep,text:string): string | null {
+  const raw=text.trim();
+  if(!raw) return 'أحتاج إجابة قصيرة على السؤال الحالي قبل أن ننتقل للخطوة التالية.';
+
+  if(step==='marital_status' && !/(أعزب|اعزب|متزوج|مطلق|أرمل|ارمل)/.test(raw)){
+    return 'اختر واحدة فقط: أعزب، متزوج، مطلق أو أرمل.';
+  }
+
+  if(step==='dependents' && !isNone(raw)){
+    const items=raw.split(/\n|،/).map(x=>x.trim()).filter(Boolean);
+    if(!items.length || items.some(item=>extractNumbers(item).length===0)){
+      return 'اكتب كل شخص بهذا الشكل: الاسم — المبلغ الشهري. مثال: أحمد — 800. وإذا لا يوجد أحد اكتب «لا يوجد».';
+    }
+  }
+
+  if(step==='home_city' && (raw.length<2 || /^\d+$/.test(normalizeArabicNumber(raw)))){
+    return 'اكتب اسم مدينة السكن فقط، مثل: خميس مشيط.';
+  }
+
+  if(step==='housing'){
+    if(!/(ملك|إيجار|ايجار|مع العائلة|مع الاهل|مع الأهل|غير ذلك)/i.test(raw)){
+      return 'اذكر وضع السكن: ملك، إيجار، مع العائلة، أو غير ذلك.';
+    }
+    if(/إيجار|ايجار/.test(raw) && extractNumbers(raw).length===0){
+      return 'ذكرت أن السكن إيجار؛ أحتاج قيمة الإيجار الشهري التقريبية حتى أحسب التزاماتك الأساسية.';
+    }
+  }
+
+  if(step==='employment' && raw.length<3){
+    return 'اذكر طبيعة عملك أو المسمى الوظيفي باختصار.';
+  }
+
+  if(step==='work_city' && raw.length<2){
+    return 'اكتب مدينة العمل أو اكتب «عن بعد» إذا كان عملك عن بعد بالكامل.';
+  }
+
+  if(step==='commute' && !/عن بعد/.test(raw) && extractNumbers(raw).length===0){
+    return 'اذكر المسافة بالكيلومتر أو مدة الرحلة المعتادة ووسيلة النقل.';
+  }
+
+  if(step==='income' && extractNumbers(raw).filter(n=>n>0).length===0){
+    return 'أحتاج مبلغ الدخل الشهري الصافي الذي يصل فعليًا إلى حسابك.';
+  }
+
+  if(step==='accounts' && !isNone(raw)){
+    const lines=raw.split(/\n|،/).map(x=>x.trim()).filter(Boolean);
+    if(!lines.length || lines.some(line=>extractNumbers(line).length===0)){
+      return 'اكتب كل حساب في سطر: اسم البنك — نوع الحساب — الرصيد التقريبي. لا ترسل أي رقم سري أو رمز تحقق.';
+    }
+  }
+
+  if(step==='obligations' && !isNone(raw) && extractNumbers(raw).length===0){
+    return 'اذكر كل التزام مع قيمته الشهرية، أو اكتب «لا يوجد».';
+  }
+
+  if(step==='goals' && !isNone(raw) && extractNumbers(raw).length===0){
+    return 'اذكر اسم الهدف والمبلغ المستهدف، أو اكتب «لا يوجد».';
+  }
+
+  if(step==='statements' && !/^(نعم|لا)$/i.test(raw)){
+    return 'اكتب «نعم» أو «لا» فقط. إذا قلت نعم سأطلب منك رفع الكشف في خطوة المرفقات.';
+  }
+
+  return null;
+}
+
 function parseValue(step:OnboardingStep,text:string){
   const raw=text.trim();
   if(step==='dependents'){
@@ -77,6 +147,16 @@ function parseValue(step:OnboardingStep,text:string){
     return {raw,numbers:extractNumbers(raw)};
   }
   return {raw};
+}
+
+export function getGovernorOnboardingQuestion(step:OnboardingStep){
+  return step==='complete' ? null : QUESTIONS[step as Exclude<OnboardingStep,'complete'>];
+}
+
+export function getGovernorWelcome(step:OnboardingStep='marital_status'){
+  const question=getGovernorOnboardingQuestion(step);
+  const intro='مرحبًا بك في نماء. أنا محافظ بنك نماء المركزي. مهمتي في البداية أن أتعرف على وضعك المالي والأسري خطوة بخطوة حتى لا تُبنى أي توصية على افتراضات. سأطرح سؤالًا واحدًا في كل مرة، ويمكنك تصحيح أي معلومة لاحقًا.';
+  return question ? `${intro} ${question}` : intro;
 }
 
 function nextStep(step:OnboardingStep):OnboardingStep{
@@ -101,7 +181,7 @@ export async function getGovernorOnboardingStatus(userId:string){
     status:String(state.status),
     current_step:currentStep,
     complete:String(state.status)==='COMPLETED',
-    question: currentStep==='complete' ? null : QUESTIONS[currentStep as Exclude<OnboardingStep,'complete'>],
+    question: getGovernorOnboardingQuestion(currentStep),
     facts:factRows,
   };
 }
@@ -124,6 +204,7 @@ export async function processGovernorOnboardingMessage(userId:string,text:string
         completed:true,
         current_step:'complete' as OnboardingStep,
         next_question:null,
+        accepted:true,
       };
     }
     return {
@@ -131,10 +212,22 @@ export async function processGovernorOnboardingMessage(userId:string,text:string
       completed:false,
       current_step:'review' as OnboardingStep,
       next_question:QUESTIONS.review,
+      accepted:false,
     };
   }
 
   if(step==='complete') return null;
+
+  const validationMessage=validateOnboardingAnswer(step,text);
+  if(validationMessage){
+    return {
+      body:validationMessage,
+      completed:false,
+      current_step:step,
+      next_question:getGovernorOnboardingQuestion(step),
+      accepted:false,
+    };
+  }
 
   const parsed=parseValue(step,text);
   await sql`
@@ -168,5 +261,6 @@ export async function processGovernorOnboardingMessage(userId:string,text:string
     completed:false,
     current_step:next,
     next_question: next==='complete' ? null : QUESTIONS[next as Exclude<OnboardingStep,'complete'>],
+    accepted:true,
   };
 }
