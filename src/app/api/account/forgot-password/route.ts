@@ -6,6 +6,7 @@ import {
   accountAccessBaseUrl,
   beginNamaaPasswordReset,
   sendNamaaAccountEmail,
+  isNamaaAccountEmailConfigured,
 } from '@/lib/auth/namaa-account-access';
 import { guardPublicAccountRequest, publicAccountGuardError } from '@/security/public-account-mutation';
 
@@ -28,7 +29,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true }, { status: 202 });
   }
 
-  if (!process.env.RESEND_API_KEY?.trim() || !process.env.AUTH_EMAIL_FROM?.trim()) {
+  if (!isNamaaAccountEmailConfigured()) {
     return NextResponse.json({ code: 'AUTH_EMAIL_NOT_CONFIGURED' }, { status: 503 });
   }
 
