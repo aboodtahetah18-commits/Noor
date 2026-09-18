@@ -12,6 +12,9 @@ function messageFor(code: string): string {
   if (code === 'AUTH_UNTRUSTED_ORIGIN') return 'تم رفض الطلب بسبب عنوان غير موثوق. حدّث الصفحة وحاول مرة أخرى.';
   if (code === 'AUTH_PASSWORD_WEAK') return 'استخدم كلمة مرور من 10 أحرف على الأقل وتتضمن حرفًا ورقمًا.';
   if (code === 'AUTH_ACCOUNT_EXISTS') return 'يوجد حساب مفعّل بهذا البريد. انتقل إلى تسجيل الدخول.';
+  if (code === 'AUTH_DATABASE_UNAVAILABLE') return 'تعذر الاتصال بقاعدة بيانات نماء في بيئة الإنتاج.';
+  if (code === 'AUTH_DATABASE_SCHEMA_MISMATCH') return 'قاعدة بيانات الإنتاج غير متوافقة مع إصدار نماء الحالي.';
+  if (code === 'AUTH_EMAIL_DELIVERY_FAILED') return 'تم إنشاء الحساب، لكن تعذر إرسال رسالة التحقق.';
   if (code === 'AUTH_TOKEN_INVALID_OR_EXPIRED') return 'الرابط غير صالح أو انتهت صلاحيته. اطلب رابطًا جديدًا.';
   if (code === 'AUTH_INPUT_INVALID') return 'تحقق من البيانات المدخلة.';
   return 'تعذر إكمال الطلب الآن. حاول مرة أخرى.';
@@ -29,6 +32,7 @@ export function RegisterForm() {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [registeredEmail, setRegisteredEmail] = useState<string | null>(null);
+  const [registrationCode, setRegistrationCode] = useState<string | null>(null);
   const [resendPending, setResendPending] = useState(false);
   const [resendMessage, setResendMessage] = useState<string | null>(null);
 
@@ -67,6 +71,7 @@ export function RegisterForm() {
       if (!response.ok) {
         setError(messageFor(body.code ?? 'AUTH_REGISTER_FAILED'));
       } else {
+        setRegistrationCode(body.code ?? 'AUTH_REGISTERED');
         setRegisteredEmail(email);
       }
     } catch {
@@ -103,7 +108,9 @@ export function RegisterForm() {
   if (registeredEmail) {
     return <div className={styles.success} role="status">
       <strong>تم إنشاء الحساب</strong>
-      <p>بقي تأكيد البريد الإلكتروني قبل تسجيل الدخول. أرسلنا رسالة تحقق إلى {registeredEmail}.</p>
+      <p>{registrationCode === 'AUTH_ACCOUNT_CREATED_EMAIL_FAILED'
+        ? 'تم حفظ الحساب، لكن تعذر إرسال رسالة التحقق تلقائيًا. استخدم الزر أدناه لإعادة الإرسال.'
+        : `بقي تأكيد البريد الإلكتروني قبل تسجيل الدخول. أرسلنا رسالة تحقق إلى ${registeredEmail}.`}</p>
       <button className={styles.secondaryAction} type="button" onClick={resendVerification} disabled={resendPending}>
         {resendPending ? 'جاري الإرسال...' : 'إعادة إرسال بريد التحقق'}
       </button>
