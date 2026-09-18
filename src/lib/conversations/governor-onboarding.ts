@@ -1,4 +1,5 @@
 import { getRawSql } from '@/infrastructure/db/client';
+import { projectConfirmedOnboardingFacts } from '@/lib/conversations/onboarding-projection';
 
 export type OnboardingStep =
   | 'marital_status'
@@ -194,17 +195,30 @@ export async function processGovernorOnboardingMessage(userId:string,text:string
   const step=status.current_step;
   if(step==='review'){
     if(/^(تأكيد|اكد|أكد|اعتمد|تمام|موافق)$/i.test(text.trim())){
+      const projection=await projectConfirmedOnboardingFacts(userId);
       await sql`
         update public.user_onboarding_state
         set status='COMPLETED',current_step='complete',completed_at=now(),updated_at=now()
         where user_id=${userId}::uuid
       `;
+      const createdTotal=
+        projection.accounts_created+
+        projection.goals_created+
+        projection.obligations_created+
+        projection.incomes_created;
+      const projectionNote=createdTotal>0
+        ? ` حوّلت البيانات المؤكدة إلى ${createdTotal} سجل مالي تأسيسي قابل للمراجعة دون إنشاء أي حركة مالية.`
+        : ' لم أحتج إلى إنشاء سجلات مالية جديدة لأن البيانات المطابقة موجودة مسبقًا أو لا تتطلب سجلًا متخصصًا بعد.';
+      const incomeNote=projection.income_deferred
+        ? ' أبقيت الدخل في ذاكرة التأسيس إلى أن توجد دورة مالية صالحة لربطه بها.'
+        : '';
       return {
-        body:'تم تثبيت ملف التأسيس الأساسي. الآن أصبحت بقية جهات نماء متاحة لك، وسأبقى أتعلم من بياناتك المحدثة دون إعادة سؤال ما هو محفوظ وموثوق.',
+        body:`تم تثبيت ملف التأسيس الأساسي. الآن أصبحت بقية جهات نماء متاحة لك.${projectionNote}${incomeNote}`,
         completed:true,
         current_step:'complete' as OnboardingStep,
         next_question:null,
         accepted:true,
+        projection,
       };
     }
     return {
