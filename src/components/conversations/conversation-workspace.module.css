@@ -17,21 +17,50 @@
   overflow:hidden;
   border-radius:var(--ux-radius-full);
   border:1px solid var(--namaa-border);
-  background-image:url("https://drive.google.com/uc?export=view&id=1P8ATAUVkohwHJQhzU8cm-bey7OxL813E");
-  background-repeat:no-repeat;
-  background-size:300% 200%;
   background-color:var(--namaa-surface-warm);
   box-shadow:var(--ux-shadow-xs);
 }
-.personaAvatar>span{
+.personaAvatar>img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+.bankBadge{
   position:absolute;
-  inset:var(--ux-space-0);
+  inset-inline-end:calc(var(--ux-space-1) * -1);
+  bottom:calc(var(--ux-space-1) * -1);
+  width:45%;
+  height:45%;
+  border-radius:var(--ux-radius-full);
+  background:var(--namaa-card);
+  border:1px solid var(--namaa-border);
+  overflow:hidden;
   display:grid;
   place-items:center;
-  z-index:-1;
-  font-weight:900;
-  color:var(--namaa-green-900);
 }
+.bankBadge>img{width:82%;height:82%;object-fit:contain}
+.brandWatermark{
+  position:fixed;
+  inset-inline-start:calc(var(--ux-space-8) * -1);
+  bottom:calc(var(--ux-space-8) * -1);
+  width:calc(var(--ux-space-16) * 4);
+  height:auto;
+  opacity:.055;
+  pointer-events:none;
+  z-index:0;
+}
+.chatBrandBar{
+  display:none;
+  background:var(--namaa-card);
+  border-bottom:1px solid var(--namaa-border);
+}
+.chatBrandBar img,.mobileBrandLogo{
+  width:calc(var(--ux-space-8) * 3);
+  height:auto;
+  object-fit:contain;
+}
+
 .persona_sm{width:38px;height:38px;flex-basis:38px}
 .persona_md{width:48px;height:48px;flex-basis:48px}
 .persona_lg{width:58px;height:58px;flex-basis:58px}
@@ -74,7 +103,8 @@
     background:var(--namaa-card);
     border-bottom:1px solid var(--namaa-border);
     display:flex;
-    align-items:end;
+    align-items:center;
+    gap:var(--ux-space-3);
   }
   .mobileListHeader>div{display:grid;gap:var(--ux-space-1)}
   .mobileListHeader strong{font-size:var(--ux-type-section-title-size);line-height:1.25;color:var(--ux-text-primary)}
@@ -102,9 +132,17 @@
   .chatPane{
     height:100dvh;
     min-height:100dvh;
-    grid-template-rows:auto auto minmax(0,1fr) auto;
+    grid-template-rows:auto auto auto minmax(0,1fr) auto;
     background:var(--namaa-chat-canvas);
     overflow:hidden;
+    position:relative;
+    z-index:1;
+  }
+  .chatBrandBar{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    padding:calc(var(--ux-space-2) + env(safe-area-inset-top)) var(--ux-space-3) var(--ux-space-1);
   }
   .chatHeader{
     height:auto;
