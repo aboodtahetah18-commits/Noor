@@ -101,6 +101,8 @@ export async function verifyUnifiedEvidenceCase(userId: string, evidenceCaseId: 
       a.iban,
       a.account_number,
       r.final_transaction_id::text as final_transaction_id,
+      t.status as final_transaction_status,
+      t.cycle_id::text as final_transaction_cycle_id,
       (
         lower(a.name)=lower(${sourceAccountRef})
         or a.id::text=${sourceAccountRef}
@@ -112,6 +114,8 @@ export async function verifyUnifiedEvidenceCase(userId: string, evidenceCaseId: 
       on i.id=r.import_id and i.user_id=r.user_id
     join public.accounts a
       on a.id=i.account_id and a.user_id=i.user_id
+    left join public.transactions t
+      on t.id=r.final_transaction_id and t.user_id=r.user_id
     where r.user_id=${userId}::uuid
       and i.status='APPROVED'
       and r.review_status in ('AUTO','CONFIRMED')
@@ -139,9 +143,12 @@ export async function verifyUnifiedEvidenceCase(userId: string, evidenceCaseId: 
     && Number.isFinite(existingConfidence)
   ) ? existingConfidence : null;
 
-  const classifiedTransactionId = exactCandidates.length === 1 && exactCandidates[0]?.final_transaction_id
-    ? String(exactCandidates[0].final_transaction_id)
-    : null;
+  const classifiedTransactionId = (
+    exactCandidates.length === 1
+    && exactCandidates[0]?.final_transaction_id
+    && exactCandidates[0]?.final_transaction_status === 'POSTED'
+    && exactCandidates[0]?.final_transaction_cycle_id
+  ) ? String(exactCandidates[0].final_transaction_id) : null;
 
   const result = evaluateUnifiedEvidenceVerification({
     completeEvidence: true,
