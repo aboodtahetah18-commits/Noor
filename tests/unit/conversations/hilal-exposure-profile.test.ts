@@ -11,6 +11,7 @@ const restructuring = {
   cancelled_count: 0,
   precautionary_cap: 3 as const,
   precautionary_cap_reached: false,
+  ledger_status: 'AVAILABLE' as const,
   policy_reference: 'HILAL_POLICY_1.0_SECTION_14' as const,
 };
 
