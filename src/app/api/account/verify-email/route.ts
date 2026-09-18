@@ -11,9 +11,7 @@ export async function GET(request: Request) {
     if (!result.ok) {
       return NextResponse.redirect(new URL('/login?verification=invalid', accountAccessBaseUrl()));
     }
-    return NextResponse.redirect(
-      new URL(`/set-password?token=${encodeURIComponent(result.setupToken)}`, accountAccessBaseUrl()),
-    );
+    return NextResponse.redirect(new URL('/login?verification=success', accountAccessBaseUrl()));
   } catch (error) {
     console.error('[namaa-account-verify-email]', { name: error instanceof Error ? error.name : 'UnknownError' });
     return NextResponse.redirect(new URL('/login?verification=failed', accountAccessBaseUrl()));
