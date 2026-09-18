@@ -19,6 +19,7 @@ export default async function ExecutionPage({searchParams}:{searchParams:Promise
     <section className="card"><div className="row-between"><div><p className="eyebrow">المهام المفتوحة</p><h2>{tasks.length?`${tasks.length} مهمة تحتاج متابعة`:'لا توجد مهام تنفيذ مفتوحة'}</h2></div></div>
       {tasks.length===0?<p className="muted">عندما تعتمد قرارًا ماليًا من المستشار ستظهر مهمة التنفيذ هنا.</p>:<div>{tasks.map(task=><article className="card" key={task.id}>
         <div className="row-between"><div><strong>{task.actionType}</strong><p className="muted">{statusLabels[task.status]??task.status}</p></div>{task.amount?<strong>{task.amount} {task.currency}</strong>:null}</div>
+        {task.decisionReference?<p className="muted">مرجع القرار: <strong>{task.decisionReference}</strong></p>:null}
         {task.instructions?<p>{task.instructions}</p>:null}
         {['USER_ACTION_REQUEST','WAITING_USER_CONFIRMATION','OVERDUE'].includes(task.status)?<form action={reportExecutionAction}>
           <input type="hidden" name="executionTaskId" value={task.id}/>
