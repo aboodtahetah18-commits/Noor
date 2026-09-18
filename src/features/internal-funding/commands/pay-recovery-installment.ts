@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { rawSql, type SqlQuery } from '@/infrastructure/db/client';
 import { Money } from '@/financial-engine/money';
+import { refreshHilalRecoveryGovernance } from '@/lib/conversations/hilal-recovery-followup';
 
 export async function payRecoverySourceInstallment(userId:string,input:{caseId:string;sourceId:string;installmentNumber:number;fromAccountId:string}){
   if(!Number.isInteger(input.installmentNumber)||input.installmentNumber<1||input.installmentNumber>36)throw new Error('رقم دفعة الاسترداد غير صالح.');
@@ -60,5 +61,10 @@ export async function payRecoverySourceInstallment(userId:string,input:{caseId:s
   await rawSql.transaction(statements);
   const tr=await rawSql`select id from public.transfers where user_id=${userId} and idempotency_key=${key} limit 1`;
   if(!tr[0])throw new Error('تعذر توثيق تحويل الاسترداد.');
+  try{
+    await refreshHilalRecoveryGovernance(userId,input.caseId,'PAYMENT_RECORDED');
+  }catch(error){
+    console.error('[hilal-recovery-followup-after-payment]',{caseId:input.caseId,name:error instanceof Error?error.name:'UnknownError'});
+  }
   return {alreadyPaid:false,transferId:String(tr[0].id),amount:total.toString()};
 }
