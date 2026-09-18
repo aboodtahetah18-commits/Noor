@@ -24,6 +24,7 @@ export type HilalRestructuringSummary = {
   cancelled_count: number;
   precautionary_cap: 3;
   precautionary_cap_reached: boolean;
+  ledger_status: 'AVAILABLE' | 'MIGRATION_REQUIRED';
   policy_reference: 'HILAL_POLICY_1.0_SECTION_14';
 };
 
@@ -45,12 +46,29 @@ export function summarizeHilalRestructuringCounts(row: Record<string, unknown>):
     cancelled_count: intValue(row.cancelled_count),
     precautionary_cap: 3,
     precautionary_cap_reached: maxAppliedPerCase >= 3,
+    ledger_status: 'AVAILABLE',
     policy_reference: 'HILAL_POLICY_1.0_SECTION_14',
   };
 }
 
 export async function getHilalRestructuringSummary(userId: string, categoryId: string): Promise<HilalRestructuringSummary> {
   const sql = getRawSql();
+  const tableRows = await sql`select to_regclass('public.internal_funding_restructuring_events')::text as relation`;
+  if (!tableRows[0]?.relation) {
+    return {
+      requested_count: 0,
+      approved_count: 0,
+      applied_count_total: 0,
+      max_applied_per_case: 0,
+      cases_at_precautionary_cap: 0,
+      rejected_count: 0,
+      cancelled_count: 0,
+      precautionary_cap: 3,
+      precautionary_cap_reached: false,
+      ledger_status: 'MIGRATION_REQUIRED',
+      policy_reference: 'HILAL_POLICY_1.0_SECTION_14',
+    };
+  }
   const rows = await sql`
     with category_events as (
       select e.*
@@ -77,6 +95,8 @@ export async function getHilalRestructuringSummary(userId: string, categoryId: s
 
 export async function recordHilalRestructuringEvent(userId: string, input: HilalRestructuringEventInput) {
   const sql = getRawSql();
+  const tableRows = await sql`select to_regclass('public.internal_funding_restructuring_events')::text as relation`;
+  if (!tableRows[0]?.relation) throw new Error('HILAL_RESTRUCTURING_LEDGER_MIGRATION_REQUIRED');
 
   if (input.eventType === 'APPLIED') {
     const countRows = await sql`
