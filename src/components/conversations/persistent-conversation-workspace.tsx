@@ -9,20 +9,28 @@ type MessageKind = 'message' | 'risk' | 'decision' | 'recommendation' | 'followu
 type Message = { id:string; sender_type:'user'|'agent'|'system'; sender_name:string; message_kind:MessageKind; body:string; structured_data?:Record<string,unknown>; created_at?:string };
 type Participant = { participant_key:string; display_name:string; participant_type:string; role_label?:string };
 
-type Room = { id:RoomKey; title:string; subtitle:string; specialists:string };
+type Room = { id:RoomKey; title:string; subtitle:string; lead:string; specialists:string; portraitPosition:string };
 const rooms: [Room, ...Room[]] = [
-  { id:'central', title:'البنك المركزي لنماء', subtitle:'الحوكمة والتنسيق', specialists:'المحافظ والمستشار المختص فقط عند الحاجة' },
-  { id:'solvency', title:'بنك الملاءة', subtitle:'الحماية والاحتياطي', specialists:'مدير بنك الملاءة ومستشار المخاطر' },
-  { id:'assets', title:'بنك الأصول والأهداف', subtitle:'الأصول والأهداف والاستثمار', specialists:'مدير بنك الأصول ومستشار الاستثمار عند صلة الموضوع' },
-  { id:'hilal', title:'بنك الهلال', subtitle:'التمويل الداخلي', specialists:'مدير بنك الهلال ومستشار التمويل' },
-  { id:'advisor', title:'المستشار المالي', subtitle:'تحليل وتوصيات', specialists:'المستشار المختص بحسب موضوع الرسالة' },
-  { id:'council', title:'مجلس نماء الأعلى', subtitle:'القرارات واللجان', specialists:'أعضاء اللجنة ذات الصلة فقط، وليس جميع الشخصيات' },
+  { id:'central', title:'بنك نماء المركزي', subtitle:'الحوكمة والاستقرار', lead:'محافظ بنك نماء المركزي', specialists:'المحافظ والمستشار المختص فقط عند الحاجة', portraitPosition:'0% 0%' },
+  { id:'solvency', title:'بنك ملاءة', subtitle:'الحماية والاحتياطي', lead:'مدير بنك ملاءة', specialists:'مدير بنك ملاءة ومستشار المخاطر', portraitPosition:'50% 0%' },
+  { id:'assets', title:'بنك الأصول الاستثماري', subtitle:'الأصول والأهداف والاستثمار', lead:'مدير بنك الأصول الاستثماري', specialists:'مدير بنك الأصول الاستثماري ومستشار الاستثمار عند صلة الموضوع', portraitPosition:'100% 0%' },
+  { id:'hilal', title:'بنك الهلال', subtitle:'التمويل الداخلي', lead:'مدير بنك الهلال', specialists:'مدير بنك الهلال ومستشار التمويل', portraitPosition:'0% 100%' },
+  { id:'advisor', title:'المستشار الاقتصادي', subtitle:'تحليل الصورة المالية الكلية', lead:'المستشار الاقتصادي', specialists:'المستشار الاقتصادي أو المختص بحسب موضوع الرسالة', portraitPosition:'50% 100%' },
+  { id:'council', title:'مجلس نماء الأعلى', subtitle:'القرارات واللجان', lead:'محافظ بنك نماء المركزي بصفته رئيس المجلس', specialists:'أعضاء اللجنة ذات الصلة فقط، وليس جميع الشخصيات', portraitPosition:'100% 100%' },
 ];
 const labels:Record<MessageKind,string>={message:'',risk:'تقييم مخاطر',decision:'قرار / اعتماد',recommendation:'توصية',followup:'متابعة',request:'طلب إجراء'};
 
 function formatSar(value:number){return new Intl.NumberFormat('ar-SA',{maximumFractionDigits:2}).format(value)}
 function roomTitle(value:unknown){if(typeof value!=='string')return null;return rooms.find(room=>room.id===value)?.title??null}
 function missingLabel(value:string){if(value==='monthly_net_income')return 'الدخل الشهري الصافي';if(value==='recurring_core_obligations')return 'الالتزامات الأساسية';if(value==='financing_purpose')return 'غرض التمويل';if(value==='requested_amount')return 'مبلغ التمويل';if(value==='expected_installment')return 'القسط الشهري المتوقع';return value}
+
+function RoomPortrait({room,size='md'}:{room:Room;size?:'sm'|'md'|'lg'}) {
+  return <span
+    className={`${styles.personaAvatar} ${styles[`persona_${size}`]}`}
+    style={{backgroundPosition:room.portraitPosition}}
+    aria-hidden="true"
+  ><span>{room.title.slice(0,1)}</span></span>;
+}
 
 function StructuredFacts({data}:{data?:Record<string,unknown>}){
   if(!data)return null;
@@ -217,6 +225,7 @@ export function PersistentConversationWorkspace(){
   const [error,setError]=useState('');
   const [roomsOpen,setRoomsOpen]=useState(false);
   const [contextOpen,setContextOpen]=useState(false);
+  const [mobileRoomList,setMobileRoomList]=useState(true);
   const [desktopRoomsVisible,setDesktopRoomsVisible]=useState(true);
   const [desktopContextVisible,setDesktopContextVisible]=useState(true);
   const activeRoom=useMemo(()=>rooms.find(r=>r.id===activeRoomId)??rooms[0],[activeRoomId]);
@@ -227,7 +236,7 @@ export function PersistentConversationWorkspace(){
     .then(data=>{ if(!cancelled){ setMessages(Array.isArray(data.messages)?data.messages:[]); setParticipants(Array.isArray(data.participants)?data.participants:[]); setLoadedRoomId(activeRoomId); } })
     .catch(()=>{ if(!cancelled){ setError('تعذر تحميل المحادثة الآن. حاول مرة أخرى.'); setLoadedRoomId(activeRoomId); } }); return()=>{cancelled=true}; },[activeRoomId]);
 
-  function chooseRoom(id:RoomKey){setError('');setActiveRoomId(id);setRoomsOpen(false)}
+  function chooseRoom(id:RoomKey){setError('');setActiveRoomId(id);setRoomsOpen(false);setMobileRoomList(false)}
   async function send(event:FormEvent){ event.preventDefault(); const body=draft.trim(); if(!body||sending)return; setSending(true); setError('');
     try{
       const response=await fetch(`/api/conversations/${activeRoomId}`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({body})});
@@ -238,17 +247,21 @@ export function PersistentConversationWorkspace(){
     }
     catch{setError('لم تُحفظ الرسالة أو تعذر توليد الرد. لم يعتبر نماء الإرسال مكتملًا؛ أعد المحاولة.')} finally{setSending(false)} }
 
-  const roomButtons=<div className={styles.roomList}>{rooms.map(room=><button key={room.id} type="button" onClick={()=>chooseRoom(room.id)} className={`${styles.roomItem} ${activeRoom.id===room.id?styles.activeRoom:''}`}><span className={styles.entityAvatar}>{room.title.slice(0,1)}</span><span className={styles.roomCopy}><strong>{room.title}</strong><small>{room.subtitle}</small></span></button>)}</div>;
+  const roomButtons=<div className={styles.roomList}>{rooms.map(room=><button key={room.id} type="button" onClick={()=>chooseRoom(room.id)} className={`${styles.roomItem} ${activeRoom.id===room.id?styles.activeRoom:''}`}><RoomPortrait room={room}/><span className={styles.roomCopy}><strong>{room.title}</strong><small>{room.lead}</small><em>{room.subtitle}</em></span><LucideIcon name="chevronLeft" size={18}/></button>)}</div>;
 
-  const contextCards=<><section className={styles.contextCard}><small>الجهة الحالية</small><strong>{activeRoom.title}</strong><p>{activeRoom.subtitle}</p></section><section className={styles.contextCard}><small>المشاركون الفعليون</small><strong>{participants.length?`${participants.length} اختصاصيين`:'اختصاصيون حسب الموضوع'}</strong><p>{participants.length?participants.map(p=>p.display_name).join('، '):activeRoom.specialists}. لا تُستدعى جميع الجهات تلقائيًا.</p></section><section className={styles.contextCard}><small>حد التنفيذ</small><strong>توصية ومتابعة فقط</strong><p>لا تحويل، لا سداد، ولا إجراء مالي خارجي يُعد منفذًا من المنصة.</p></section></>;
+  const contextCards=<><section className={styles.contextCard}><small>الجهة الحالية</small><strong>{activeRoom.title}</strong><p>{activeRoom.lead} · {activeRoom.subtitle}</p></section><section className={styles.contextCard}><small>المشاركون الفعليون</small><strong>{participants.length?`${participants.length} اختصاصيين`:'اختصاصيون حسب الموضوع'}</strong><p>{participants.length?participants.map(p=>p.display_name).join('، '):activeRoom.specialists}. لا تُستدعى جميع الجهات تلقائيًا.</p></section><section className={styles.contextCard}><small>حد التنفيذ</small><strong>توصية ومتابعة فقط</strong><p>لا تحويل، لا سداد، ولا إجراء مالي خارجي يُعد منفذًا من المنصة.</p></section></>;
 
   return <section className={styles.page} dir="rtl" aria-label="محادثات نماء">
     <header className={styles.workspaceHeader}><div className={styles.headingCopy}><span className={styles.eyebrow}>محادثات نماء</span><h1>مركز الحوار والقرار</h1><p>المحادثات محفوظة في حسابك، وتصل رسالتك إلى الجهة والمتخصصين المرتبطين بالموضوع.</p></div><div className={styles.headerActions}><button type="button" className={styles.secondaryButton} onClick={()=>setDesktopRoomsVisible(v=>!v)}><LucideIcon name="layoutGrid" size={16}/><span>{desktopRoomsVisible?'إخفاء الجهات':'إظهار الجهات'}</span></button><button type="button" className={styles.secondaryButton} onClick={()=>setDesktopContextVisible(v=>!v)}><LucideIcon name="info" size={16}/><span>{desktopContextVisible?'إخفاء السياق':'إظهار السياق'}</span></button></div></header>
+    <section className={`${styles.mobileConversationList} ${mobileRoomList?styles.mobileConversationListVisible:''}`} aria-label="محادثات نماء">
+      <header className={styles.mobileListHeader}><div><strong>محادثات نماء</strong><small>اختر الجهة التي تريد محادثتها</small></div></header>
+      {roomButtons}
+    </section>
     <div className={`${styles.workspace} ${desktopRoomsVisible?'':styles.withoutRooms} ${desktopContextVisible?'':styles.withoutContext}`}>
       {desktopRoomsVisible&&<aside className={styles.roomsPane} aria-label="قائمة المحادثات"><div className={styles.paneTitle}><span>الجهات والمحادثات</span><small>{rooms.length} جهات</small></div>{roomButtons}</aside>}
-      <main className={styles.chatPane}><header className={styles.chatHeader}><div className={styles.chatIdentity}><span className={styles.entityAvatar}>{activeRoom.title.slice(0,1)}</span><div><div className={styles.entityTitle}><strong>{activeRoom.title}</strong><span>شخصية خوارزمية</span></div><small>{activeRoom.subtitle}</small></div></div><div className={styles.mobileTools}><button type="button" aria-label="فتح الجهات" onClick={()=>setRoomsOpen(true)}><LucideIcon name="messageSquareText" size={20}/></button><button type="button" aria-label="فتح سياق المحادثة" onClick={()=>setContextOpen(true)}><LucideIcon name="info" size={20}/></button></div></header>
-        <div className={styles.routingNote}><LucideIcon name="sparkles" size={16}/><span><strong>التوجيه الذكي:</strong> {activeRoom.specialists}.</span></div>
-        <div className={styles.messages} aria-live="polite">{loading&&<p>جارٍ تحميل سجل المحادثة…</p>}{!loading&&!messages.length&&<article className={`${styles.message} ${styles.agentMessage}`}><p>هذه بداية محادثتك مع {activeRoom.title}. اكتب سؤالك أو القرار الذي تريد دراسته.</p></article>}{messages.map(message=><article key={message.id} className={`${styles.message} ${message.sender_type==='user'?styles.userMessage:styles.agentMessage}`}>{message.sender_type!=='user'&&<div className={styles.messageIdentity}><span className={styles.miniAvatar}>{message.sender_name.slice(0,1)}</span><span><strong>{message.sender_name}</strong><small>{message.sender_type==='system'?'رسالة نظام':'شخصية خوارزمية'}</small></span></div>}<p>{message.body}</p>{message.message_kind!=='message'&&<section className={`${styles.structuredCard} ${styles[`kind_${message.message_kind}`]}`}><header><strong>{labels[message.message_kind]}</strong></header><StructuredFacts data={message.structured_data}/>{(message.message_kind==='decision'||message.message_kind==='request')&&<small className={styles.executionBoundary}>أي تنفيذ مالي خارجي يظل بيد المستخدم، ويحتاج تأكيدًا وإثباتًا قبل الإغلاق.</small>}</section>}</article>)}</div>
+      <main className={`${styles.chatPane} ${mobileRoomList?styles.mobileChatHidden:''}`}><header className={styles.chatHeader}><div className={styles.chatIdentity}><button type="button" className={styles.mobileBack} aria-label="العودة إلى المحادثات" onClick={()=>setMobileRoomList(true)}><LucideIcon name="chevronRight" size={22}/></button><RoomPortrait room={activeRoom} size="sm"/><div><div className={styles.entityTitle}><strong>{activeRoom.title}</strong></div><small>{activeRoom.lead}</small></div></div><div className={styles.mobileTools}><button type="button" aria-label="معلومات الجهة" onClick={()=>setContextOpen(true)}><LucideIcon name="info" size={20}/></button></div></header>
+        <div className={styles.routingNote}><LucideIcon name="sparkles" size={16}/><span>{activeRoom.specialists}</span></div>
+        <div className={styles.messages} aria-live="polite">{loading&&<p>جارٍ تحميل سجل المحادثة…</p>}{!loading&&!messages.length&&<article className={`${styles.message} ${styles.agentMessage}`}><p>هذه بداية محادثتك مع {activeRoom.title}. اكتب سؤالك أو القرار الذي تريد دراسته.</p></article>}{messages.map(message=><article key={message.id} className={`${styles.message} ${message.sender_type==='user'?styles.userMessage:styles.agentMessage}`}>{message.sender_type!=='user'&&<div className={styles.messageIdentity}><RoomPortrait room={activeRoom} size="sm"/><span><strong>{message.sender_name}</strong><small>{message.sender_type==='system'?'رسالة نظام':'شخصية خوارزمية'}</small></span></div>}<p>{message.body}</p>{message.message_kind!=='message'&&<section className={`${styles.structuredCard} ${styles[`kind_${message.message_kind}`]}`}><header><strong>{labels[message.message_kind]}</strong></header><StructuredFacts data={message.structured_data}/>{(message.message_kind==='decision'||message.message_kind==='request')&&<small className={styles.executionBoundary}>أي تنفيذ مالي خارجي يظل بيد المستخدم، ويحتاج تأكيدًا وإثباتًا قبل الإغلاق.</small>}</section>}</article>)}</div>
         {error&&<div className={styles.routingNote} role="alert"><LucideIcon name="triangleAlert" size={16}/><span>{error}</span></div>}
         <div className={styles.attachmentPolicy}><LucideIcon name="upload" size={16}/><span>المرفق للمراجعة والتحقق فقط؛ لا ينشئ حركة مالية ولا يثبت التنفيذ تلقائيًا.</span></div><div className={styles.executionNote}><LucideIcon name="circleCheck" size={16}/><span>نماء يوصي ويتابع؛ التنفيذ المالي الخارجي يتم بواسطة المستخدم.</span></div>
         <form className={styles.composer} onSubmit={send}><button type="button" className={styles.attachButton} aria-label="إرفاق ملف" title="الإرفاق سيُفعّل بعد ربط التخزين الآمن"><LucideIcon name="upload" size={20}/></button><textarea value={draft} onChange={e=>setDraft(e.target.value)} placeholder={`اكتب إلى ${activeRoom.title}…`} rows={1} aria-label="نص الرسالة" maxLength={8000}/><button type="submit" className={styles.sendButton} disabled={!draft.trim()||sending}><span>{sending?'جارٍ التحليل…':'إرسال'}</span><LucideIcon name="chevronLeft" size={20}/></button></form>
