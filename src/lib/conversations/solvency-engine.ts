@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { getRawSql } from '@/infrastructure/db/client';
 import { computeProtectionCapacity } from './protection-capacity';
+import { evaluateCrossBankDecisionPrecedence, type CrossBankHardGuard } from './decision-precedence';
 import type { ConversationMessageKind, ConversationRoomKey } from './store';
 import { governedRooms } from './store';
 
@@ -310,6 +311,82 @@ export async function createSolvencyReply(userId: string, userText: string): Pro
       ? `الالتزامات الأساسية المؤكدة ${formatSar(baseline.recurring_core_obligations_total)} ريال. أرسل قيمة احتياطي الطوارئ المحمي.`
       : 'تم تثبيت احتياطي الطوارئ. أرسل قيمة السيولة المتاحة خارج الاحتياطي.';
   return persistReply(userId, 'solvency', body, 'request', { confidence:0.55, confidence_percent:55, execution_boundary:'advisory_only' });
+}
+
+function crossBankAction(text: string) {
+  if (/(استثمار|استثمر|أسهم|اسهم|صندوق|محفظة|عائد)/i.test(text)) return 'INVESTMENT' as const;
+  if (/(تمويل|قرض|تقسيط|دين جديد|سداد على)/i.test(text)) return 'FINANCING' as const;
+  return null;
+}
+
+async function hasHilalOverdueHardStop(userId: string) {
+  const sql = getRawSql();
+  const rows = await sql`select metadata from public.conversation_threads where user_id=${userId} and room_key='hilal' limit 1`;
+  const metadata = rows[0]?.metadata && typeof rows[0].metadata === 'object'
+    ? rows[0].metadata as Record<string, unknown>
+    : {};
+  const recovery = metadata.recovery_followup && typeof metadata.recovery_followup === 'object'
+    ? metadata.recovery_followup as Record<string, unknown>
+    : {};
+  const byCase = recovery.by_case && typeof recovery.by_case === 'object'
+    ? recovery.by_case as Record<string, unknown>
+    : {};
+  return Object.values(byCase).some((value) =>
+    Boolean(value && typeof value === 'object' && (value as Record<string, unknown>).hard_stop === true),
+  );
+}
+
+export async function createCrossBankHardGuardReply(
+  userId: string,
+  roomKey: ConversationRoomKey,
+  userText: string,
+): Promise<AgentReply | null> {
+  if (roomKey !== 'central' && roomKey !== 'advisor' && roomKey !== 'council') return null;
+  const action = crossBankAction(userText);
+  if (!action) return null;
+
+  const requestedAmount = firstAmount(numbersFrom(userText));
+  const protection = await getProtectionSnapshot(userId);
+  const hilalOverdueHardStop = action === 'FINANCING'
+    ? await hasHilalOverdueHardStop(userId)
+    : false;
+
+  const hardGuards: CrossBankHardGuard[] = [];
+  if (!protection || protection.commitment_gap > 0 || (requestedAmount !== null && requestedAmount > protection.protected_pool_safe_capacity)) {
+    hardGuards.push('SOLVENCY_PROTECTED_FLOOR');
+  }
+  if (hilalOverdueHardStop) hardGuards.push('HILAL_OVERDUE_REPAYMENT');
+
+  const precedence = evaluateCrossBankDecisionPrecedence({
+    source: roomKey === 'central' ? 'CENTRAL' : roomKey === 'advisor' ? 'ADVISOR' : 'COUNCIL',
+    action,
+    hardGuards,
+  });
+  if (!precedence.blocked) return null;
+
+  const reasons = precedence.applicable_hard_guards.map((guard) =>
+    guard === 'SOLVENCY_PROTECTED_FLOOR'
+      ? 'حاجز حماية الملاءة يمنع استخدام هذا المبلغ قبل اكتمال التغطية أو بقاء الطلب داخل السعة الآمنة'
+      : 'يوجد استرداد متأخر في بنك الهلال يوقف التمويل الجديد',
+  );
+
+  const amountText = requestedAmount === null ? '' : ` المبلغ قيد الدراسة ${formatSar(requestedAmount)} ريال.`;
+  const safeText = protection ? ` السعة الآمنة الحالية ${formatSar(protection.protected_pool_safe_capacity)} ريال.` : '';
+  return persistReply(
+    userId,
+    roomKey,
+    `تتقدم القيود الحاكمة على أي توصية أو اعتماد من الجهة الحالية. ${reasons.join('، ')}.${amountText}${safeText} يمكن شرح البدائل فقط، ولا يمكن تجاوز Hard Guard.`,
+    'risk',
+    {
+      cross_bank_precedence: precedence,
+      governed_action: action,
+      requested_amount: requestedAmount,
+      safe_capacity: protection?.protected_pool_safe_capacity ?? null,
+      commitment_gap: protection?.commitment_gap ?? null,
+      hilal_overdue_hard_stop: hilalOverdueHardStop,
+      execution_boundary: 'advisory_only',
+    },
+  );
 }
 
 export async function createProtectionGuardReply(userId: string, roomKey: ConversationRoomKey, userText: string): Promise<AgentReply | null> {
