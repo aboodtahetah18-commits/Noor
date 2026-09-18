@@ -7,6 +7,7 @@ import { createRoutedReply } from '@/lib/conversations/reply-engine';
 import { createAssetGoalReply } from '@/lib/conversations/asset-goal-engine';
 import { createProtectionGuardReply, createSolvencyReply } from '@/lib/conversations/solvency-engine';
 import { createHilalFinancingReply } from '@/lib/conversations/hilal-financing-engine';
+import { createHilalRestructuringReply } from '@/lib/conversations/hilal-restructuring-engine';
 import { appendUserMessage, getConversationRoom, isConversationRoomKey } from '@/lib/conversations/store';
 
 export async function GET(_request: Request, context: { params: Promise<{ roomKey: string }> }) {
@@ -44,8 +45,9 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
       const guardReply = goalReply ? null : await createProtectionGuardReply(user.id, roomKey, text);
       reply = goalReply ?? guardReply ?? await createRoutedReply(user.id, roomKey, text);
     } else if (roomKey === 'hilal') {
-      const financingReply = await createHilalFinancingReply(user.id, text);
-      reply = financingReply ?? await createRoutedReply(user.id, roomKey, text);
+      const restructuringReply = await createHilalRestructuringReply(user.id, text);
+      const financingReply = restructuringReply ? null : await createHilalFinancingReply(user.id, text);
+      reply = restructuringReply ?? financingReply ?? await createRoutedReply(user.id, roomKey, text);
     } else {
       const guardReply = await createProtectionGuardReply(user.id, roomKey, text);
       reply = guardReply ?? await createRoutedReply(user.id, roomKey, text);
