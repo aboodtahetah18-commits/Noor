@@ -25,8 +25,6 @@ type FinancingDraft = {
 type HilalMetadata = Record<string, unknown> & {
   financing_state?: {
     active_request?: FinancingDraft;
-    repayment_capacity?: number;
-    policy_cap?: number;
   };
 };
 
@@ -253,7 +251,6 @@ export async function createHilalFinancingReply(userId: string, userText: string
     incomePattern: draft.income_pattern,
     fundedItemImportance: draft.funded_item_importance,
   });
-  const policyState = hilalMetadata.financing_state ?? {};
   const repaymentBand = computeApprovedRepaymentInstallmentBand(income, baseline.recurring_core_obligations_total!);
   const repaymentCapacity = await getHilalRepaymentCapacity(userId, {
     confirmedMonthlyIncome: income,
