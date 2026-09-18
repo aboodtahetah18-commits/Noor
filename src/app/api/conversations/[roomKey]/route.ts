@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server';
 import { getAuthenticatedUser, requireAuthenticatedMutationUser } from '@/auth/require-authenticated-user';
 import { createRoutedReply } from '@/lib/conversations/reply-engine';
 import { createAssetGoalReply } from '@/lib/conversations/asset-goal-engine';
-import { createProtectionGuardReply, createSolvencyReply } from '@/lib/conversations/solvency-engine';
+import { createCrossBankHardGuardReply, createProtectionGuardReply, createSolvencyReply } from '@/lib/conversations/solvency-engine';
 import { createHilalFinancingReply } from '@/lib/conversations/hilal-financing-engine';
 import { createHilalRestructuringReply } from '@/lib/conversations/hilal-restructuring-engine';
 import { appendUserMessage, getConversationRoom, isConversationRoomKey } from '@/lib/conversations/store';
@@ -49,8 +49,9 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
       const financingReply = restructuringReply ? null : await createHilalFinancingReply(user.id, text);
       reply = restructuringReply ?? financingReply ?? await createRoutedReply(user.id, roomKey, text);
     } else {
-      const guardReply = await createProtectionGuardReply(user.id, roomKey, text);
-      reply = guardReply ?? await createRoutedReply(user.id, roomKey, text);
+      const crossBankGuardReply = await createCrossBankHardGuardReply(user.id, roomKey, text);
+      const guardReply = crossBankGuardReply ? null : await createProtectionGuardReply(user.id, roomKey, text);
+      reply = crossBankGuardReply ?? guardReply ?? await createRoutedReply(user.id, roomKey, text);
     }
 
     return NextResponse.json({ message, reply }, { status: 201 });
