@@ -17,12 +17,13 @@ export type HilalRestructuringEventInput = {
 export type HilalRestructuringSummary = {
   requested_count: number;
   approved_count: number;
-  applied_count: number;
+  applied_count_total: number;
+  max_applied_per_case: number;
+  cases_at_precautionary_cap: number;
   rejected_count: number;
   cancelled_count: number;
   precautionary_cap: 3;
   precautionary_cap_reached: boolean;
-  remaining_precautionary_slots: number;
   policy_reference: 'HILAL_POLICY_1.0_SECTION_14';
 };
 
@@ -32,16 +33,18 @@ function intValue(value: unknown) {
 }
 
 export function summarizeHilalRestructuringCounts(row: Record<string, unknown>): HilalRestructuringSummary {
-  const applied = intValue(row.applied_count);
+  const appliedTotal = intValue(row.applied_count_total);
+  const maxAppliedPerCase = intValue(row.max_applied_per_case);
   return {
     requested_count: intValue(row.requested_count),
     approved_count: intValue(row.approved_count),
-    applied_count: applied,
+    applied_count_total: appliedTotal,
+    max_applied_per_case: maxAppliedPerCase,
+    cases_at_precautionary_cap: intValue(row.cases_at_precautionary_cap),
     rejected_count: intValue(row.rejected_count),
     cancelled_count: intValue(row.cancelled_count),
     precautionary_cap: 3,
-    precautionary_cap_reached: applied >= 3,
-    remaining_precautionary_slots: Math.max(3 - applied, 0),
+    precautionary_cap_reached: maxAppliedPerCase >= 3,
     policy_reference: 'HILAL_POLICY_1.0_SECTION_14',
   };
 }
@@ -49,15 +52,25 @@ export function summarizeHilalRestructuringCounts(row: Record<string, unknown>):
 export async function getHilalRestructuringSummary(userId: string, categoryId: string): Promise<HilalRestructuringSummary> {
   const sql = getRawSql();
   const rows = await sql`
+    with category_events as (
+      select e.*
+      from public.internal_funding_restructuring_events e
+      where e.user_id=${userId}
+        and e.category_id=${categoryId}::uuid
+    ),
+    per_case as (
+      select case_id,count(*) filter(where event_type='APPLIED')::int as applied_count
+      from category_events
+      group by case_id
+    )
     select
-      count(*) filter(where e.event_type='REQUESTED')::int as requested_count,
-      count(*) filter(where e.event_type='APPROVED')::int as approved_count,
-      count(*) filter(where e.event_type='APPLIED')::int as applied_count,
-      count(*) filter(where e.event_type='REJECTED')::int as rejected_count,
-      count(*) filter(where e.event_type='CANCELLED')::int as cancelled_count
-    from public.internal_funding_restructuring_events e
-    where e.user_id=${userId}
-      and e.category_id=${categoryId}::uuid
+      (select count(*) filter(where event_type='REQUESTED') from category_events)::int as requested_count,
+      (select count(*) filter(where event_type='APPROVED') from category_events)::int as approved_count,
+      (select count(*) filter(where event_type='APPLIED') from category_events)::int as applied_count_total,
+      (select count(*) filter(where event_type='REJECTED') from category_events)::int as rejected_count,
+      (select count(*) filter(where event_type='CANCELLED') from category_events)::int as cancelled_count,
+      coalesce((select max(applied_count) from per_case),0)::int as max_applied_per_case,
+      coalesce((select count(*) from per_case where applied_count>=3),0)::int as cases_at_precautionary_cap
   `;
   return summarizeHilalRestructuringCounts((rows[0] ?? {}) as Record<string, unknown>);
 }
