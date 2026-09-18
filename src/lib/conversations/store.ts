@@ -16,11 +16,11 @@ export const governedRooms: Record<ConversationRoomKey, { title: string; subtitl
 const onboardingMessage = {
   senderKey: 'central-governor',
   senderName: 'محافظ بنك نماء المركزي',
-  body: 'مرحبًا بك في نماء. سنبدأ بتأسيس ملفك المالي خطوة بخطوة حتى تكون توصيات البنوك والمستشارين مبنية على بياناتك الفعلية. ابدأ بإرسال متوسط دخلك الشهري الصافي، ثم اذكر الالتزامات الأساسية الثابتة التي تتكرر عليك كل شهر. لا تحتاج إلى ترتيب مثالي؛ أرسل ما تعرفه وسأطلب منك البيانات الناقصة بالتدريج.',
+  body: 'مرحبًا بك في نماء. أنا محافظ بنك نماء المركزي، وسأقود معك تأسيس ملفك خطوة بخطوة. سأطرح سؤالًا رئيسيًا واحدًا في كل مرة، وأحفظ المعلومة الصحيحة حتى لا أكررها عليك. نبدأ من وضعك الأسري: هل أنت أعزب، متزوج، مطلق أو أرمل؟',
   structuredData: {
     onboarding: true,
     stage: 'financial-baseline',
-    requested_fields: ['monthly_net_income', 'recurring_core_obligations'],
+    requested_fields: ['marital_status'],
     execution_boundary: 'advisory_only',
   },
 } as const;
