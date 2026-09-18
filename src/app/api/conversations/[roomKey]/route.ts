@@ -122,6 +122,7 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
               onboarding_step:onboardingReply.current_step,
               onboarding_complete:onboardingReply.completed,
               next_question:onboardingReply.next_question,
+              onboarding_projection:'projection' in onboardingReply ? onboardingReply.projection : null,
               execution_boundary:'advisory_only'
             })}::jsonb
           )
