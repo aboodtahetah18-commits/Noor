@@ -132,7 +132,7 @@ async function readStates(userId: string) {
   return { baseline, state, solvencyMetadata };
 }
 
-async function readCommitmentReservations(userId: string): Promise<CommitmentReservations> {
+async function readCommitmentReservations(userId: string, fundingOverrides: Record<string, unknown> = {}): Promise<CommitmentReservations> {
   const sql = getRawSql();
   const [cycleRows, obligationRows, goalRows, assetThreadRows] = await Promise.all([
     sql`select expected_next_income_date::text as active_cycle_end
@@ -165,9 +165,10 @@ async function readCommitmentReservations(userId: string): Promise<CommitmentRes
     ? assetThreadRows[0].metadata as Record<string, unknown>
     : {};
   const rawSources = assetMetadata.goal_funding_sources;
-  const fundingSources = rawSources && typeof rawSources === 'object'
-    ? rawSources as Record<string, unknown>
-    : {};
+  const fundingSources = {
+    ...(rawSources && typeof rawSources === 'object' ? rawSources as Record<string, unknown> : {}),
+    ...fundingOverrides,
+  };
 
   let nearGoalReserveTotal = 0;
   let nearGoalCount = 0;
@@ -202,10 +203,10 @@ async function readCommitmentReservations(userId: string): Promise<CommitmentRes
   };
 }
 
-async function solvencyMetricsWithCommitments(userId: string, baseline: BaselineState, state: SolvencyState) {
+async function solvencyMetricsWithCommitments(userId: string, baseline: BaselineState, state: SolvencyState, fundingOverrides: Record<string, unknown> = {}) {
   const base = solvencyMetrics(baseline, state);
   if (!base) return null;
-  const reservations = await readCommitmentReservations(userId);
+  const reservations = await readCommitmentReservations(userId, fundingOverrides);
   const capacity = computeProtectionCapacity({
     protectedLiquidityTotal: base.protected_liquidity_total,
     recurringCoreObligationsTotal: base.recurring_core_obligations_total,
@@ -219,6 +220,11 @@ async function solvencyMetricsWithCommitments(userId: string, baseline: Baseline
     gross_core_safe_capacity: base.protected_pool_safe_capacity,
     protected_pool_safe_capacity: capacity.safe_capacity_after_commitments,
   };
+}
+
+export async function getProtectionSnapshot(userId: string, fundingOverrides: Record<string, unknown> = {}) {
+  const { baseline, state } = await readStates(userId);
+  return solvencyMetricsWithCommitments(userId, baseline, state, fundingOverrides);
 }
 
 function roomAgent(roomKey: ConversationRoomKey) {
