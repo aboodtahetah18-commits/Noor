@@ -93,6 +93,27 @@ export async function getHilalRestructuringSummary(userId: string, categoryId: s
   return summarizeHilalRestructuringCounts((rows[0] ?? {}) as Record<string, unknown>);
 }
 
+export async function getHilalRestructuringLedgerCapabilities() {
+  const sql = getRawSql();
+  const rows = await sql`
+    select
+      to_regclass('public.internal_funding_restructuring_events')::text as relation,
+      coalesce((
+        select pg_get_constraintdef(c.oid)
+        from pg_constraint c
+        where c.conrelid=to_regclass('public.internal_funding_restructuring_events')
+          and c.conname='internal_funding_restructuring_events_type_chk'
+        limit 1
+      ),'') as type_constraint
+  `;
+  const relation = rows[0]?.relation ? String(rows[0].relation) : null;
+  const constraint = String(rows[0]?.type_constraint ?? '');
+  return {
+    ledger_available: Boolean(relation),
+    evidence_events_available: Boolean(relation) && constraint.includes('EVIDENCE_SUBMITTED') && constraint.includes('EVIDENCE_REJECTED'),
+  };
+}
+
 export async function getHilalCaseAppliedRestructuringCount(userId: string, caseId: string) {
   const sql = getRawSql();
   const tableRows = await sql`select to_regclass('public.internal_funding_restructuring_events')::text as relation`;
