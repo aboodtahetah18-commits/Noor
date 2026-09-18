@@ -8,6 +8,7 @@ type RoomKey = 'central' | 'solvency' | 'assets' | 'hilal' | 'advisor' | 'counci
 type MessageKind = 'message' | 'risk' | 'decision' | 'recommendation' | 'followup' | 'request';
 type Message = { id:string; sender_type:'user'|'agent'|'system'; sender_name:string; message_kind:MessageKind; body:string; structured_data?:Record<string,unknown>; created_at?:string };
 type Participant = { participant_key:string; display_name:string; participant_type:string; role_label?:string };
+type OnboardingStatus = { status:string; current_step:string; complete:boolean; question?:string|null };
 
 type Room = { id:RoomKey; title:string; subtitle:string; lead:string; specialists:string; portraitPosition:string };
 const rooms: [Room, ...Room[]] = [
@@ -225,7 +226,8 @@ export function PersistentConversationWorkspace(){
   const [error,setError]=useState('');
   const [roomsOpen,setRoomsOpen]=useState(false);
   const [contextOpen,setContextOpen]=useState(false);
-  const [mobileRoomList,setMobileRoomList]=useState(true);
+  const [mobileRoomList,setMobileRoomList]=useState(false);
+  const [onboardingComplete,setOnboardingComplete]=useState<boolean|null>(null);
   const [desktopRoomsVisible,setDesktopRoomsVisible]=useState(true);
   const [desktopContextVisible,setDesktopContextVisible]=useState(true);
   const activeRoom=useMemo(()=>rooms.find(r=>r.id===activeRoomId)??rooms[0],[activeRoomId]);
@@ -233,33 +235,46 @@ export function PersistentConversationWorkspace(){
 
   useEffect(()=>{ let cancelled=false; fetch(`/api/conversations/${activeRoomId}`,{cache:'no-store'})
     .then(async response=>{ if(!response.ok) throw new Error('تعذر تحميل المحادثة.'); return response.json(); })
-    .then(data=>{ if(!cancelled){ setMessages(Array.isArray(data.messages)?data.messages:[]); setParticipants(Array.isArray(data.participants)?data.participants:[]); setLoadedRoomId(activeRoomId); } })
+    .then(data=>{ if(!cancelled){
+      setMessages(Array.isArray(data.messages)?data.messages:[]);
+      setParticipants(Array.isArray(data.participants)?data.participants:[]);
+      const onboarding=(data.onboarding??null) as OnboardingStatus|null;
+      if(onboarding){
+        setOnboardingComplete(Boolean(onboarding.complete));
+        if(activeRoomId==='central' && onboarding.complete) setMobileRoomList(true);
+        if(!onboarding.complete && activeRoomId!=='central') setActiveRoomId('central');
+      }
+      setLoadedRoomId(activeRoomId);
+    } })
     .catch(()=>{ if(!cancelled){ setError('تعذر تحميل المحادثة الآن. حاول مرة أخرى.'); setLoadedRoomId(activeRoomId); } }); return()=>{cancelled=true}; },[activeRoomId]);
 
-  function chooseRoom(id:RoomKey){setError('');setActiveRoomId(id);setRoomsOpen(false);setMobileRoomList(false)}
+  function chooseRoom(id:RoomKey){if(onboardingComplete===false&&id!=='central')return;setError('');setActiveRoomId(id);setRoomsOpen(false);setMobileRoomList(false)}
   async function send(event:FormEvent){ event.preventDefault(); const body=draft.trim(); if(!body||sending)return; setSending(true); setError('');
     try{
       const response=await fetch(`/api/conversations/${activeRoomId}`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({body})});
       const data=await response.json() as {message?:Message;reply?:Message};
       if(!response.ok||!data.message)throw new Error('write');
       setMessages(current=>[...current,data.message as Message,...(data.reply?[data.reply as Message]:[])]);
+      const completed=Boolean(data.reply?.structured_data?.onboarding_complete);
+      if(completed) setOnboardingComplete(true);
       setDraft('');
     }
     catch{setError('لم تُحفظ الرسالة أو تعذر توليد الرد. لم يعتبر نماء الإرسال مكتملًا؛ أعد المحاولة.')} finally{setSending(false)} }
 
-  const roomButtons=<div className={styles.roomList}>{rooms.map(room=><button key={room.id} type="button" onClick={()=>chooseRoom(room.id)} className={`${styles.roomItem} ${activeRoom.id===room.id?styles.activeRoom:''}`}><RoomPortrait room={room}/><span className={styles.roomCopy}><strong>{room.title}</strong><small>{room.lead}</small><em>{room.subtitle}</em></span><LucideIcon name="chevronLeft" size={16}/></button>)}</div>;
+  const visibleRooms=onboardingComplete===false?rooms.filter(room=>room.id==='central'):rooms;
+  const roomButtons=<div className={styles.roomList}>{visibleRooms.map(room=><button key={room.id} type="button" onClick={()=>chooseRoom(room.id)} className={`${styles.roomItem} ${activeRoom.id===room.id?styles.activeRoom:''}`}><RoomPortrait room={room}/><span className={styles.roomCopy}><strong>{room.title}</strong><small>{room.lead}</small><em>{room.subtitle}</em></span><LucideIcon name="chevronLeft" size={16}/></button>)}</div>;
 
   const contextCards=<><section className={styles.contextCard}><small>الجهة الحالية</small><strong>{activeRoom.title}</strong><p>{activeRoom.lead} · {activeRoom.subtitle}</p></section><section className={styles.contextCard}><small>المشاركون الفعليون</small><strong>{participants.length?`${participants.length} اختصاصيين`:'اختصاصيون حسب الموضوع'}</strong><p>{participants.length?participants.map(p=>p.display_name).join('، '):activeRoom.specialists}. لا تُستدعى جميع الجهات تلقائيًا.</p></section><section className={styles.contextCard}><small>حد التنفيذ</small><strong>توصية ومتابعة فقط</strong><p>لا تحويل، لا سداد، ولا إجراء مالي خارجي يُعد منفذًا من المنصة.</p></section></>;
 
   return <section className={styles.page} dir="rtl" aria-label="محادثات نماء">
     <header className={styles.workspaceHeader}><div className={styles.headingCopy}><span className={styles.eyebrow}>محادثات نماء</span><h1>مركز الحوار والقرار</h1><p>المحادثات محفوظة في حسابك، وتصل رسالتك إلى الجهة والمتخصصين المرتبطين بالموضوع.</p></div><div className={styles.headerActions}><button type="button" className={styles.secondaryButton} onClick={()=>setDesktopRoomsVisible(v=>!v)}><LucideIcon name="layoutGrid" size={16}/><span>{desktopRoomsVisible?'إخفاء الجهات':'إظهار الجهات'}</span></button><button type="button" className={styles.secondaryButton} onClick={()=>setDesktopContextVisible(v=>!v)}><LucideIcon name="info" size={16}/><span>{desktopContextVisible?'إخفاء السياق':'إظهار السياق'}</span></button></div></header>
     <section className={`${styles.mobileConversationList} ${mobileRoomList?styles.mobileConversationListVisible:''}`} aria-label="محادثات نماء">
-      <header className={styles.mobileListHeader}><div><strong>محادثات نماء</strong><small>اختر الجهة التي تريد محادثتها</small></div></header>
+      <header className={styles.mobileListHeader}><div><strong>محادثات نماء</strong><small>{onboardingComplete===false?'أكمل التأسيس مع المحافظ أولًا':'اختر الجهة التي تريد محادثتها'}</small></div></header>
       {roomButtons}
     </section>
     <div className={`${styles.workspace} ${desktopRoomsVisible?'':styles.withoutRooms} ${desktopContextVisible?'':styles.withoutContext}`}>
-      {desktopRoomsVisible&&<aside className={styles.roomsPane} aria-label="قائمة المحادثات"><div className={styles.paneTitle}><span>الجهات والمحادثات</span><small>{rooms.length} جهات</small></div>{roomButtons}</aside>}
-      <main className={`${styles.chatPane} ${mobileRoomList?styles.mobileChatHidden:''}`}><header className={styles.chatHeader}><div className={styles.chatIdentity}><button type="button" className={styles.mobileBack} aria-label="العودة إلى المحادثات" onClick={()=>setMobileRoomList(true)}><LucideIcon name="chevronRight" size={20}/></button><RoomPortrait room={activeRoom} size="sm"/><div><div className={styles.entityTitle}><strong>{activeRoom.title}</strong></div><small>{activeRoom.lead}</small></div></div><div className={styles.mobileTools}><button type="button" aria-label="معلومات الجهة" onClick={()=>setContextOpen(true)}><LucideIcon name="info" size={20}/></button></div></header>
+      {desktopRoomsVisible&&<aside className={styles.roomsPane} aria-label="قائمة المحادثات"><div className={styles.paneTitle}><span>الجهات والمحادثات</span><small>{visibleRooms.length} جهات</small></div>{roomButtons}</aside>}
+      <main className={`${styles.chatPane} ${mobileRoomList?styles.mobileChatHidden:''}`}><header className={styles.chatHeader}><div className={styles.chatIdentity}>{onboardingComplete!==false&&<button type="button" className={styles.mobileBack} aria-label="العودة إلى المحادثات" onClick={()=>setMobileRoomList(true)}><LucideIcon name="chevronRight" size={20}/></button>}<RoomPortrait room={activeRoom} size="sm"/><div><div className={styles.entityTitle}><strong>{activeRoom.title}</strong></div><small>{activeRoom.lead}</small></div></div><div className={styles.mobileTools}><button type="button" aria-label="معلومات الجهة" onClick={()=>setContextOpen(true)}><LucideIcon name="info" size={20}/></button></div></header>
         <div className={styles.routingNote}><LucideIcon name="sparkles" size={16}/><span>{activeRoom.specialists}</span></div>
         <div className={styles.messages} aria-live="polite">{loading&&<p>جارٍ تحميل سجل المحادثة…</p>}{!loading&&!messages.length&&<article className={`${styles.message} ${styles.agentMessage}`}><p>هذه بداية محادثتك مع {activeRoom.title}. اكتب سؤالك أو القرار الذي تريد دراسته.</p></article>}{messages.map(message=><article key={message.id} className={`${styles.message} ${message.sender_type==='user'?styles.userMessage:styles.agentMessage}`}>{message.sender_type!=='user'&&<div className={styles.messageIdentity}><RoomPortrait room={activeRoom} size="sm"/><span><strong>{message.sender_name}</strong><small>{message.sender_type==='system'?'رسالة نظام':'شخصية خوارزمية'}</small></span></div>}<p>{message.body}</p>{message.message_kind!=='message'&&<section className={`${styles.structuredCard} ${styles[`kind_${message.message_kind}`]}`}><header><strong>{labels[message.message_kind]}</strong></header><StructuredFacts data={message.structured_data}/>{(message.message_kind==='decision'||message.message_kind==='request')&&<small className={styles.executionBoundary}>أي تنفيذ مالي خارجي يظل بيد المستخدم، ويحتاج تأكيدًا وإثباتًا قبل الإغلاق.</small>}</section>}</article>)}</div>
         {error&&<div className={styles.routingNote} role="alert"><LucideIcon name="triangleAlert" size={16}/><span>{error}</span></div>}
