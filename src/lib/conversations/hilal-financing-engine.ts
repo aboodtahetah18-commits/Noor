@@ -3,6 +3,7 @@ import { getRawSql } from '@/infrastructure/db/client';
 import { getProtectionSnapshot } from './solvency-engine';
 import { computeHilalFinanceLimit, HILAL_ELIGIBILITY_WEIGHTS, HILAL_POLICY_VERSION, missingHilalEligibilityFactors, evaluateHilalEligibility, type HilalEligibilityScores } from './hilal-policy';
 import { evaluateHilalFactorEvidence } from './hilal-factor-evaluator';
+import { computeApprovedRepaymentInstallmentBand, scoreHilalFactorEvidence } from './hilal-calibration';
 import type { ConversationMessageKind } from './store';
 import { governedRooms } from './store';
 
@@ -259,7 +260,11 @@ export async function createHilalFinancingReply(userId: string, userText: string
     fundedItemImportance: draft.funded_item_importance,
   });
   const policyState = hilalMetadata.financing_state ?? {};
-  const factorScores = policyState.eligibility_factor_scores;
+  const repaymentBand = computeApprovedRepaymentInstallmentBand(income, baseline.recurring_core_obligations_total!);
+  const automaticCalibration = scoreHilalFactorEvidence(factorEvidence);
+  const factorScores = automaticCalibration.status === 'SCORED'
+    ? automaticCalibration.scores
+    : policyState.eligibility_factor_scores;
   const missingEligibility = missingHilalEligibilityFactors(factorScores);
   const eligibility = missingEligibility.length === 0
     ? evaluateHilalEligibility(factorScores as HilalEligibilityScores)
@@ -270,12 +275,13 @@ export async function createHilalFinancingReply(userId: string, userText: string
     cashflowSafeLimit: safeCapacity,
   });
   const blockedByPolicyLimit = financeLimit.finance_limit !== null && requested > financeLimit.finance_limit;
-  const blocked = requested > safeCapacity || protection.commitment_gap > 0 || blockedByPolicyLimit;
+  const installmentAboveApprovedBand = installment > repaymentBand.max_installment_from_safe_savings;
+  const blocked = requested > safeCapacity || protection.commitment_gap > 0 || blockedByPolicyLimit || installmentAboveApprovedBand;
 
   if (blocked) {
     const excess = Math.max(requested - safeCapacity, 0);
     return persistReply(userId, nextMetadata,
-      `حالة الطلب BLOCKED. مبلغ التمويل ${formatSar(requested)} ريال يتجاوز السعة الآمنة الحالية أو توجد فجوة حماية قائمة. السعة القابلة للاختبار ${formatSar(safeCapacity)} ريال، وفجوة الحماية ${formatSar(protection.commitment_gap)} ريال. لا ينتقل الطلب للمراجعة قبل معالجة ذلك.`,
+`حالة الطلب BLOCKED. الطلب يكسر أحد حدود الحماية أو القدرة المعتمدة. السعة القابلة للاختبار ${formatSar(safeCapacity)} ريال، وفجوة الحماية ${formatSar(protection.commitment_gap)} ريال. نطاق القسط المبني على الوفر الآمن هو ${formatSar(repaymentBand.min_installment_from_safe_savings)}–${formatSar(repaymentBand.max_installment_from_safe_savings)} ريال وفق SET-HL-005، والقسط المقترح ${formatSar(installment)} ريال. لا ينتقل الطلب للمراجعة قبل معالجة الحد المتجاوز.`,
       'risk',
       {
         decision_state: 'BLOCKED',
@@ -302,6 +308,10 @@ export async function createHilalFinancingReply(userId: string, userText: string
         raw_evidence_complete: factorEvidence.raw_evidence_complete,
         calibration_required_factors: factorEvidence.calibration_required_factors,
         finance_limit_components: financeLimit,
+        repayment_installment_band: repaymentBand,
+        installment_above_approved_band: installmentAboveApprovedBand,
+        calibration_status: automaticCalibration.status,
+        calibration_id: automaticCalibration.calibration_id,
         execution_boundary: 'advisory_only',
       },
     );
@@ -326,6 +336,9 @@ export async function createHilalFinancingReply(userId: string, userText: string
       factor_evidence: factorEvidence.factors,
       missing_eligibility_evidence: factorEvidence.missing_evidence_factors,
       calibration_required_factors: factorEvidence.calibration_required_factors,
+      calibration_status: automaticCalibration.status,
+      calibration_id: automaticCalibration.calibration_id,
+      repayment_installment_band: repaymentBand,
       policy_version: HILAL_POLICY_VERSION,
       execution_boundary: 'advisory_only',
     });
@@ -359,6 +372,9 @@ export async function createHilalFinancingReply(userId: string, userText: string
     raw_evidence_complete: factorEvidence.raw_evidence_complete,
     calibration_required_factors: factorEvidence.calibration_required_factors,
     finance_limit_components: financeLimit,
+    repayment_installment_band: repaymentBand,
+    calibration_status: automaticCalibration.status,
+    calibration_id: automaticCalibration.calibration_id,
     policy_threshold_applied: eligibility !== null,
     requires_policy_review: eligibility === null || !financeLimit.limit_complete,
     execution_boundary: 'advisory_only',
