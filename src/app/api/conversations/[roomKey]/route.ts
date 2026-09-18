@@ -4,6 +4,7 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { getAuthenticatedUser, requireAuthenticatedMutationUser } from '@/auth/require-authenticated-user';
 import { createRoutedReply } from '@/lib/conversations/reply-engine';
+import { attachUnifiedDecisionLifecycle } from '@/lib/conversations/decision-lifecycle-store';
 import { createAssetGoalReply } from '@/lib/conversations/asset-goal-engine';
 import { createCrossBankHardGuardReply, createProtectionGuardReply, createSolvencyReply } from '@/lib/conversations/solvency-engine';
 import { createHilalFinancingReply } from '@/lib/conversations/hilal-financing-engine';
@@ -54,7 +55,8 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
       reply = crossBankGuardReply ?? guardReply ?? await createRoutedReply(user.id, roomKey, text);
     }
 
-    return NextResponse.json({ message, reply }, { status: 201 });
+    const governedReply = await attachUnifiedDecisionLifecycle(user.id, roomKey, reply ?? null);
+    return NextResponse.json({ message, reply: governedReply }, { status: 201 });
   } catch (error) {
     const code = error instanceof Error ? error.message : 'CONVERSATION_WRITE_FAILED';
     if (code === 'CONVERSATION_MESSAGE_INVALID') return NextResponse.json({ code }, { status: 400 });
