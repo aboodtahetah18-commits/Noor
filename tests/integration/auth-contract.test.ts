@@ -53,11 +53,14 @@ describe('Neon HTTP auth contract', () => {
     expect(registerRoute).toContain('AUTH_PILOT_LOGIN_OK');
     expect(registerRoute).toContain('response.cookies.set(');
     expect(registerRoute).toContain('result.sessionToken');
-    expect(accountAccess).toContain('with upsert_user as');
+    expect(accountAccess).toContain("await client.query('begin')");
     expect(accountAccess).toContain('insert into auth.session');
     expect(accountAccess).toContain('email_verified = true');
-    expect(accountAccess).toContain("verified_at = coalesce(verified_at, now())");
+    expect(accountAccess).not.toContain("select email from auth.pilot_access");
+    expect(accountAccess).not.toContain("update auth.pilot_access set registered_at");
+    expect(registerForm).toContain("setError('كلمتا المرور غير متطابقتين.')");
     expect(registerForm).toContain("router.push('/conversations')");
+    expect(registerForm).toContain('يمكن لأي مستخدم يملك الرابط إنشاء حساب والدخول مباشرة بعد التسجيل');
   });
 
   it('scopes verified credential login to the local credential issuer', () => {
