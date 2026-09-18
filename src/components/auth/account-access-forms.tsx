@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { FormEvent, useState } from 'react';
 import { LucideIcon, type LucideIconName } from '@/components/ui/lucide-icon';
 import styles from './public-auth-shell.module.css';
@@ -29,6 +30,7 @@ function FieldIcon({ name }: { name: LucideIconName }) {
 }
 
 export function RegisterForm() {
+  const router = useRouter();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [registeredEmail, setRegisteredEmail] = useState<string | null>(null);
@@ -71,7 +73,7 @@ export function RegisterForm() {
       if (!response.ok) {
         setError(messageFor(body.code ?? 'AUTH_REGISTER_FAILED'));
       } else if (body.authenticated) {
-        window.location.assign('/conversations');
+        router.push('/conversations');
       } else {
         setRegistrationCode(body.code ?? 'AUTH_REGISTERED');
         setRegisteredEmail(email);
