@@ -6,6 +6,7 @@ import { evaluateHilalFactorEvidence } from './hilal-factor-evaluator';
 import { computeApprovedRepaymentInstallmentBand, scoreHilalFactorEvidence } from './hilal-calibration';
 import { getHilalRepaymentCapacity } from './hilal-repayment-capacity';
 import { getHilalPolicyCapEvidence } from './hilal-policy-cap';
+import { evaluateHilalPolicyCapGovernance } from './hilal-policy-cap-governance';
 import type { ConversationMessageKind } from './store';
 import { governedRooms } from './store';
 
@@ -263,9 +264,18 @@ export async function createHilalFinancingReply(userId: string, userText: string
   const eligibility = automaticCalibration.status === 'SCORED'
     ? evaluateHilalEligibility(automaticCalibration.scores)
     : null;
+  const policyCapGovernance = evaluateHilalPolicyCapGovernance({
+    plannedAmount: policyCapEvidence.planned_amount_current_cycle,
+    actualSpend: policyCapEvidence.actual_spend_current_cycle,
+    historicalAverageSpend: policyCapEvidence.historical_average_spend,
+    realizedIncome: repaymentCapacity.realized_salary_income,
+    isEssential: policyCapEvidence.is_essential,
+    expenseNatureDefault: policyCapEvidence.expense_nature_default,
+    exposure: policyCapEvidence.exposure_profile,
+  });
   const financeLimit = computeHilalFinanceLimit({
     repaymentCapacity: repaymentCapacity.repayment_capacity ?? undefined,
-    policyCap: policyCapEvidence.policy_cap ?? undefined,
+    policyCap: policyCapGovernance.policy_cap ?? undefined,
     cashflowSafeLimit: safeCapacity,
   });
   if (policyCapEvidence.status === 'CATEGORY_REQUIRED') {
@@ -280,6 +290,7 @@ export async function createHilalFinancingReply(userId: string, userText: string
         expected_installment: installment,
         repayment_capacity_evidence: repaymentCapacity,
         policy_cap_evidence: policyCapEvidence,
+        policy_cap_governance: policyCapGovernance,
         finance_limit_components: financeLimit,
         execution_boundary: 'advisory_only',
       },
@@ -306,12 +317,16 @@ export async function createHilalFinancingReply(userId: string, userText: string
 
   const blockedByPolicyLimit = financeLimit.finance_limit !== null && requested > financeLimit.finance_limit;
   const installmentAboveApprovedBand = installment > repaymentBand.max_installment_from_safe_savings;
-  const blocked = requested > safeCapacity || protection.commitment_gap > 0 || blockedByPolicyLimit || installmentAboveApprovedBand;
+  const blocked = requested > safeCapacity
+    || protection.commitment_gap > 0
+    || blockedByPolicyLimit
+    || installmentAboveApprovedBand
+    || policyCapGovernance.hard_stop;
 
   if (blocked) {
     const excess = Math.max(requested - safeCapacity, 0);
     return persistReply(userId, nextMetadata,
-`حالة الطلب BLOCKED. الطلب يكسر أحد حدود الحماية أو القدرة المعتمدة. السعة القابلة للاختبار ${formatSar(safeCapacity)} ريال، وفجوة الحماية ${formatSar(protection.commitment_gap)} ريال. نطاق القسط المبني على الوفر الآمن هو ${formatSar(repaymentBand.min_installment_from_safe_savings)}–${formatSar(repaymentBand.max_installment_from_safe_savings)} ريال وفق SET-HL-005، والقسط المقترح ${formatSar(installment)} ريال. لا ينتقل الطلب للمراجعة قبل معالجة الحد المتجاوز.`,
+`حالة الطلب BLOCKED. الطلب يكسر أحد حدود الحماية أو القدرة المعتمدة${policyCapGovernance.hard_stop ? '، ويوجد استرداد متأخر يوقف أي تمويل جديد وفق سياسة الهلال' : ''}. السعة القابلة للاختبار ${formatSar(safeCapacity)} ريال، وفجوة الحماية ${formatSar(protection.commitment_gap)} ريال. نطاق القسط المبني على الوفر الآمن هو ${formatSar(repaymentBand.min_installment_from_safe_savings)}–${formatSar(repaymentBand.max_installment_from_safe_savings)} ريال وفق SET-HL-005، والقسط المقترح ${formatSar(installment)} ريال. لا ينتقل الطلب للمراجعة قبل معالجة الحد المتجاوز.`,
       'risk',
       {
         decision_state: 'BLOCKED',
@@ -341,6 +356,7 @@ export async function createHilalFinancingReply(userId: string, userText: string
         repayment_installment_band: repaymentBand,
         repayment_capacity_evidence: repaymentCapacity,
         policy_cap_evidence: policyCapEvidence,
+        policy_cap_governance: policyCapGovernance,
         installment_above_approved_band: installmentAboveApprovedBand,
         calibration_status: automaticCalibration.status,
         calibration_id: automaticCalibration.calibration_id,
@@ -373,6 +389,7 @@ export async function createHilalFinancingReply(userId: string, userText: string
       repayment_installment_band: repaymentBand,
       repayment_capacity_evidence: repaymentCapacity,
       policy_cap_evidence: policyCapEvidence,
+      policy_cap_governance: policyCapGovernance,
       policy_version: HILAL_POLICY_VERSION,
       execution_boundary: 'advisory_only',
     });
@@ -412,6 +429,7 @@ export async function createHilalFinancingReply(userId: string, userText: string
     repayment_installment_band: repaymentBand,
     repayment_capacity_evidence: repaymentCapacity,
     policy_cap_evidence: policyCapEvidence,
+    policy_cap_governance: policyCapGovernance,
     calibration_status: automaticCalibration.status,
     calibration_id: automaticCalibration.calibration_id,
     policy_threshold_applied: eligibility !== null,
