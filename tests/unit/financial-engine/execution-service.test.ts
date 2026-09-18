@@ -1,7 +1,9 @@
 import { beforeEach,describe,expect,it,vi } from 'vitest';
 
-const sqlMock=vi.fn();
-const verifyEvidenceMock=vi.fn();
+const { sqlMock, verifyEvidenceMock } = vi.hoisted(() => ({
+  sqlMock: vi.fn(),
+  verifyEvidenceMock: vi.fn(),
+}));
 vi.mock('@/infrastructure/db/client',()=>({getRawSql:()=>sqlMock}));
 vi.mock('@/features/financial-engine/services/evidence-verification-service',()=>({verifyUnifiedEvidenceCase:verifyEvidenceMock}));
 
