@@ -124,7 +124,7 @@ export async function setInitialPassword(input: { token: string; password: strin
   await rawSql.transaction([
     rawSql`
       delete from auth.account
-      where user_id = ${userId}::uuid and provider_id = 'credential' and issuer = 'local:credential'
+      where user_id = ${userId}::uuid and provider_id = 'credential'
     `,
     rawSql`
       insert into auth.account (id, account_id, provider_id, issuer, user_id, password, created_at, updated_at)
@@ -159,7 +159,7 @@ export async function resetPassword(input: { token: string; password: string }) 
   const passwordHash = await hashPassword(input.password);
   const accounts = await rawSql`
     select id from auth.account
-    where user_id = ${userId}::uuid and provider_id = 'credential' and issuer = 'local:credential'
+    where user_id = ${userId}::uuid and provider_id = 'credential'
     limit 1
   `;
   if (!accounts.length) return { ok: false as const, code: 'AUTH_CREDENTIAL_NOT_FOUND' as const };
@@ -167,7 +167,7 @@ export async function resetPassword(input: { token: string; password: string }) 
   await rawSql.transaction([
     rawSql`
       update auth.account set password = ${passwordHash}, updated_at = now()
-      where user_id = ${userId}::uuid and provider_id = 'credential' and issuer = 'local:credential'
+      where user_id = ${userId}::uuid and provider_id = 'credential'
     `,
     rawSql`delete from auth.session where user_id = ${userId}::uuid`,
   ]);
