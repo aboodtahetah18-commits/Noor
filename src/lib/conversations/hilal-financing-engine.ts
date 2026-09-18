@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { getRawSql } from '@/infrastructure/db/client';
 import { getProtectionSnapshot } from './solvency-engine';
 import { computeHilalFinanceLimit, HILAL_ELIGIBILITY_WEIGHTS, HILAL_POLICY_VERSION, missingHilalEligibilityFactors, evaluateHilalEligibility, type HilalEligibilityScores } from './hilal-policy';
+import { evaluateHilalFactorEvidence } from './hilal-factor-evaluator';
 import type { ConversationMessageKind } from './store';
 import { governedRooms } from './store';
 
@@ -12,6 +13,9 @@ type FinancingDraft = {
   requested_amount?: number;
   expected_installment?: number;
   repayment_cycles?: number;
+  repayment_source?: string;
+  income_pattern?: 'STABLE' | 'VARIABLE' | 'SEASONAL';
+  funded_item_importance?: 'ESSENTIAL' | 'IMPORTANT' | 'DISCRETIONARY';
   updated_at?: string;
 };
 
@@ -26,6 +30,7 @@ type HilalMetadata = Record<string, unknown> & {
 
 type BaselineState = {
   monthly_net_income_confirmed?: number;
+  monthly_net_income_verified?: boolean;
   recurring_core_obligations_total?: number;
 };
 
@@ -93,6 +98,32 @@ function cyclesFrom(text: string) {
   return Number.isInteger(value) && value > 0 ? value : null;
 }
 
+function repaymentSourceFrom(text: string) {
+  const patterns = [
+    /(?:مصدر\s+السداد|السداد\s+من)\s*[:\-]?\s*([^،,\n]{2,120})/i,
+    /(?:بسدد|سأسدد|سوف\s+أسدد)\s+من\s+([^،,\n]{2,120})/i,
+  ];
+  for (const pattern of patterns) {
+    const value = text.match(pattern)?.[1]?.trim();
+    if (value) return value.replace(/\s+/g, ' ').slice(0, 120);
+  }
+  return null;
+}
+
+function incomePatternFrom(text: string): FinancingDraft['income_pattern'] | null {
+  if (/(الدخل|راتبي|الراتب).*(ثابت|منتظم)/i.test(text)) return 'STABLE';
+  if (/(الدخل|راتبي|الراتب).*(متغير|غير\s+ثابت)/i.test(text)) return 'VARIABLE';
+  if (/(الدخل|راتبي|الراتب).*(موسمي|موسمية)/i.test(text)) return 'SEASONAL';
+  return null;
+}
+
+function importanceFrom(text: string): FinancingDraft['funded_item_importance'] | null {
+  if (/(الغرض|البند|التمويل).*(أساسي|اساسي|ضروري|ضرورة)/i.test(text)) return 'ESSENTIAL';
+  if (/(الغرض|البند|التمويل).*(مهم)/i.test(text)) return 'IMPORTANT';
+  if (/(الغرض|البند|التمويل).*(اختياري|كمالي|كماليات)/i.test(text)) return 'DISCRETIONARY';
+  return null;
+}
+
 function isFinancingMessage(text: string) {
   return /(تمويل|قرض|قسط|سداد|أمول|امول)/i.test(text);
 }
@@ -111,12 +142,18 @@ export function parseFinancingDraft(text: string, previous: FinancingDraft = {})
   const requested = requestedAmountFrom(text);
   const installment = installmentFrom(text);
   const cycles = cyclesFrom(text);
+  const repaymentSource = repaymentSourceFrom(text);
+  const incomePattern = incomePatternFrom(text);
+  const importance = importanceFrom(text);
   return {
     ...previous,
     ...(purpose ? { purpose } : {}),
     ...(requested !== null ? { requested_amount: requested } : {}),
     ...(installment !== null ? { expected_installment: installment } : {}),
     ...(cycles !== null ? { repayment_cycles: cycles } : {}),
+    ...(repaymentSource ? { repayment_source: repaymentSource } : {}),
+    ...(incomePattern ? { income_pattern: incomePattern } : {}),
+    ...(importance ? { funded_item_importance: importance } : {}),
     updated_at: new Date().toISOString(),
   };
 }
@@ -215,8 +252,39 @@ export async function createHilalFinancingReply(userId: string, userText: string
   const income = baseline.monthly_net_income_confirmed!;
   const obligationRatioAfter = income > 0 ? projectedCoreObligations / income : null;
   const monthlyMarginAfter = income - projectedCoreObligations;
+  const factorEvidence = evaluateHilalFactorEvidence({
+    monthlyNetIncome: baseline.monthly_net_income_confirmed,
+    recurringCoreObligations: baseline.recurring_core_obligations_total,
+    repaymentSource: draft.repayment_source,
+    repaymentSourceVerified: Boolean(draft.repayment_source && baseline.monthly_net_income_verified === true),
+    incomePattern: draft.income_pattern,
+    fundedItemImportance: draft.funded_item_importance,
+  });
   const policyState = hilalMetadata.financing_state ?? {};
   const factorScores = policyState.eligibility_factor_scores;
+  if (factorEvidence.missing_evidence_factors.length > 0) {
+    const nextFactor = factorEvidence.missing_evidence_factors[0];
+    const question = nextFactor === 'repayment_source_clarity'
+      ? 'ما مصدر السداد المحدد لهذا التمويل؟ اذكر المصدر بوضوح، ولن أعتبر دخلًا لم يصل أو دخلًا غير موثوق مصدرًا مؤكدًا.'
+      : nextFactor === 'income_stability'
+        ? 'كيف تصف نمط دخلك الحالي: ثابت، متغير، أم موسمي؟ سأحفظها كإفادة أولية ولا أرفعها إلى دليل موثق دون سجل داعم.'
+        : nextFactor === 'funded_item_importance'
+          ? 'صنّف الغرض نفسه فقط: أساسي، مهم، أم اختياري؟ لا أستنتج أهمية البند من اسمه وحده.'
+          : 'أحتاج استكمال دليل مالي إضافي قبل احتساب أهلية بنك الهلال.';
+    return persistReply(userId, nextMetadata, `حالة الطلب UNDER_REVIEW. اجتاز الطلب حاجز الحماية، لكن أهلية الهلال لا تُحسب قبل استكمال أدلة عوامل السياسة. ${question}`, 'request', {
+      decision_state: 'UNDER_REVIEW',
+      protection_gate_state: 'PASSES_PROTECTION_GATE',
+      financing_purpose: draft.purpose,
+      requested_amount: requested,
+      expected_installment: installment,
+      safe_capacity: safeCapacity,
+      factor_evidence: factorEvidence.factors,
+      missing_eligibility_evidence: factorEvidence.missing_evidence_factors,
+      calibration_required_factors: factorEvidence.calibration_required_factors,
+      policy_version: HILAL_POLICY_VERSION,
+      execution_boundary: 'advisory_only',
+    });
+  }
   const missingEligibility = missingHilalEligibilityFactors(factorScores);
   const eligibility = missingEligibility.length === 0
     ? evaluateHilalEligibility(factorScores as HilalEligibilityScores)
@@ -255,6 +323,9 @@ export async function createHilalFinancingReply(userId: string, userText: string
         eligibility_score: eligibility?.weighted_score ?? null,
         eligibility_band: eligibility?.band ?? null,
         missing_eligibility_factors: missingEligibility,
+        factor_evidence: factorEvidence.factors,
+        raw_evidence_complete: factorEvidence.raw_evidence_complete,
+        calibration_required_factors: factorEvidence.calibration_required_factors,
         finance_limit_components: financeLimit,
         execution_boundary: 'advisory_only',
       },
