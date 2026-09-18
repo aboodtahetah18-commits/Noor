@@ -68,9 +68,10 @@ export function RegisterForm() {
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(payload),
       });
-      const body = await response.json().catch(() => ({})) as { code?: string; authenticated?: boolean };
+      const body = await response.json().catch(() => ({})) as { code?: string; authenticated?: boolean; stage?: string };
       if (!response.ok) {
-        setError(messageFor(body.code ?? 'AUTH_REGISTER_FAILED'));
+        const baseMessage = messageFor(body.code ?? 'AUTH_REGISTER_FAILED');
+        setError(body.stage ? `${baseMessage} (المرحلة: ${body.stage})` : baseMessage);
       } else if (body.authenticated) {
         router.push('/conversations');
       } else {
