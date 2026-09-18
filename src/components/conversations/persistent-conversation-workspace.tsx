@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { LucideIcon } from '@/components/ui/lucide-icon';
 import styles from './conversation-workspace.module.css';
 
@@ -10,6 +10,7 @@ type MessageKind = 'message' | 'risk' | 'decision' | 'recommendation' | 'followu
 type Message = { id:string; sender_type:'user'|'agent'|'system'; sender_name:string; message_kind:MessageKind; body:string; structured_data?:Record<string,unknown>; created_at?:string };
 type Participant = { participant_key:string; display_name:string; participant_type:string; role_label?:string };
 type OnboardingStatus = { status:string; current_step:string; complete:boolean; question?:string|null };
+type StatementAccount = { id:string; name:string; account_type:string; bank_name?:string|null };
 
 type Room = { id:RoomKey; title:string; subtitle:string; lead:string; specialists:string; avatar:string; bankLogo:string };
 const rooms: [Room, ...Room[]] = [
@@ -228,6 +229,12 @@ export function PersistentConversationWorkspace(){
   const [contextOpen,setContextOpen]=useState(false);
   const [mobileRoomList,setMobileRoomList]=useState(false);
   const [onboardingComplete,setOnboardingComplete]=useState<boolean|null>(null);
+  const [onboardingStep,setOnboardingStep]=useState<string|null>(null);
+  const [statementAccounts,setStatementAccounts]=useState<StatementAccount[]>([]);
+  const [statementAccountId,setStatementAccountId]=useState('');
+  const [statementPickerOpen,setStatementPickerOpen]=useState(false);
+  const [statementUploading,setStatementUploading]=useState(false);
+  const statementFileRef=useRef<HTMLInputElement|null>(null);
   const [desktopRoomsVisible,setDesktopRoomsVisible]=useState(true);
   const [desktopContextVisible,setDesktopContextVisible]=useState(true);
   const activeRoom=useMemo(()=>rooms.find(r=>r.id===activeRoomId)??rooms[0],[activeRoomId]);
@@ -241,6 +248,7 @@ export function PersistentConversationWorkspace(){
       const onboarding=(data.onboarding??null) as OnboardingStatus|null;
       if(onboarding){
         setOnboardingComplete(Boolean(onboarding.complete));
+        setOnboardingStep(onboarding.current_step??null);
         if(activeRoomId==='central' && onboarding.complete) setMobileRoomList(true);
         if(!onboarding.complete && activeRoomId!=='central') setActiveRoomId('central');
       }
@@ -249,6 +257,82 @@ export function PersistentConversationWorkspace(){
     .catch(()=>{ if(!cancelled){ setError('تعذر تحميل المحادثة الآن. حاول مرة أخرى.'); setLoadedRoomId(activeRoomId); } }); return()=>{cancelled=true}; },[activeRoomId]);
 
   function chooseRoom(id:RoomKey){if(onboardingComplete===false&&id!=='central')return;setError('');setActiveRoomId(id);setRoomsOpen(false);setMobileRoomList(false)}
+
+  async function refreshActiveRoom(){
+    const response=await fetch(`/api/conversations/${activeRoomId}`,{cache:'no-store'});
+    if(!response.ok) return;
+    const data=await response.json();
+    setMessages(Array.isArray(data.messages)?data.messages:[]);
+    setParticipants(Array.isArray(data.participants)?data.participants:[]);
+    const onboarding=(data.onboarding??null) as OnboardingStatus|null;
+    if(onboarding){
+      setOnboardingComplete(Boolean(onboarding.complete));
+      setOnboardingStep(onboarding.current_step??null);
+    }
+  }
+
+  async function prepareStatementUpload(){
+    if(activeRoomId!=='central'){
+      setError('رفع كشف الحساب مرتبط حاليًا بمحافظ بنك نماء المركزي.');
+      return;
+    }
+    setError('');
+    try{
+      const response=await fetch('/api/conversations/central/statement',{cache:'no-store'});
+      const data=await response.json() as {accounts?:StatementAccount[]};
+      if(!response.ok) throw new Error('accounts');
+      const accounts=Array.isArray(data.accounts)?data.accounts:[];
+      if(!accounts.length){
+        setError('أضف حسابًا ماليًا في التأسيس أولًا حتى أعرف لأي حساب ينتمي الكشف.');
+        return;
+      }
+      setStatementAccounts(accounts);
+      if(accounts.length===1){
+        setStatementAccountId(accounts[0]?.id??'');
+        setStatementPickerOpen(false);
+        statementFileRef.current?.click();
+      }else{
+        setStatementAccountId(current=>current||accounts[0]?.id||'');
+        setStatementPickerOpen(true);
+      }
+    }catch{
+      setError('تعذر تجهيز رفع كشف الحساب الآن. حاول مرة أخرى.');
+    }
+  }
+
+  async function uploadStatement(file:File){
+    if(!statementAccountId) return;
+    setStatementUploading(true);
+    setError('');
+    try{
+      const form=new FormData();
+      form.set('file',file);
+      form.set('account_id',statementAccountId);
+      const response=await fetch('/api/conversations/central/statement',{method:'POST',body:form});
+      const data=await response.json() as {code?:string;row_count?:number};
+      if(!response.ok){
+        const message=data.code==='STATEMENT_CSV_ONLY'
+          ? 'الرفع الحالي يقبل CSV فقط.'
+          : data.code==='STATEMENT_DIRECTION_COLUMN_REQUIRED'
+            ? 'الكشف يحتاج عمود اتجاه الحركة أو أعمدة خصم/إيداع.'
+            : data.code==='STATEMENT_DESCRIPTION_COLUMN_REQUIRED'
+              ? 'لم أجد عمود وصف الحركة في الملف.'
+              : data.code==='STATEMENT_CSV_NO_VALID_ROWS'
+                ? 'لم أجد حركات صالحة للمراجعة في الكشف.'
+                : 'تعذر استيراد كشف الحساب. راجع الملف وحاول مرة أخرى.';
+        setError(message);
+        return;
+      }
+      setStatementPickerOpen(false);
+      await refreshActiveRoom();
+    }catch{
+      setError('تعذر رفع كشف الحساب الآن. لم تُنشأ أي حركة مالية.');
+    }finally{
+      setStatementUploading(false);
+      if(statementFileRef.current) statementFileRef.current.value='';
+    }
+  }
+
   async function send(event:FormEvent){ event.preventDefault(); const body=draft.trim(); if(!body||sending)return; setSending(true); setError('');
     try{
       const response=await fetch(`/api/conversations/${activeRoomId}`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({body})});
@@ -256,7 +340,9 @@ export function PersistentConversationWorkspace(){
       if(!response.ok||!data.message)throw new Error('write');
       setMessages(current=>[...current,data.message as Message,...(data.reply?[data.reply as Message]:[])]);
       const completed=Boolean(data.reply?.structured_data?.onboarding_complete);
-      if(completed) setOnboardingComplete(true);
+      const nextStep=data.reply?.structured_data?.onboarding_step;
+      if(typeof nextStep==='string') setOnboardingStep(nextStep);
+      if(completed){ setOnboardingComplete(true); setOnboardingStep('complete'); }
       setDraft('');
     }
     catch{setError('لم تُحفظ الرسالة أو تعذر توليد الرد. لم يعتبر نماء الإرسال مكتملًا؛ أعد المحاولة.')} finally{setSending(false)} }
@@ -279,8 +365,9 @@ export function PersistentConversationWorkspace(){
         <div className={styles.routingNote}><LucideIcon name="sparkles" size={16}/><span>{activeRoom.specialists}</span></div>
         <div className={styles.messages} aria-live="polite">{loading&&<p>جارٍ تحميل سجل المحادثة…</p>}{!loading&&!messages.length&&<article className={`${styles.message} ${styles.agentMessage}`}><p>{onboardingComplete===false?'أنا محافظ بنك نماء المركزي. سأبدأ معك بسؤال واحد في كل مرة حتى أبني ملفك من معلوماتك أنت، دون افتراضات.':'هذه بداية محادثتك مع '+activeRoom.title+'. اكتب سؤالك أو القرار الذي تريد دراسته.'}</p></article>}{messages.map(message=><article key={message.id} className={`${styles.message} ${message.sender_type==='user'?styles.userMessage:styles.agentMessage}`}>{message.sender_type!=='user'&&<div className={styles.messageIdentity}><RoomPortrait room={activeRoom} size="sm"/><span><strong>{message.sender_name}</strong><small>{message.sender_type==='system'?'رسالة نظام':'شخصية خوارزمية'}</small></span></div>}<p>{message.body}</p>{message.message_kind!=='message'&&<section className={`${styles.structuredCard} ${styles[`kind_${message.message_kind}`]}`}><header><strong>{labels[message.message_kind]}</strong></header><StructuredFacts data={message.structured_data}/>{(message.message_kind==='decision'||message.message_kind==='request')&&<small className={styles.executionBoundary}>أي تنفيذ مالي خارجي يظل بيد المستخدم، ويحتاج تأكيدًا وإثباتًا قبل الإغلاق.</small>}</section>}</article>)}</div>
         {error&&<div className={styles.routingNote} role="alert"><LucideIcon name="triangleAlert" size={16}/><span>{error}</span></div>}
-        <div className={styles.attachmentPolicy}><LucideIcon name="upload" size={16}/><span>المرفق للمراجعة والتحقق فقط؛ لا ينشئ حركة مالية ولا يثبت التنفيذ تلقائيًا.</span></div><div className={styles.executionNote}><LucideIcon name="circleCheck" size={16}/><span>نماء يوصي ويتابع؛ التنفيذ المالي الخارجي يتم بواسطة المستخدم.</span></div>
-        <form className={styles.composer} onSubmit={send}><button type="button" className={styles.attachButton} aria-label="إرفاق ملف" title="الإرفاق سيُفعّل بعد ربط التخزين الآمن"><LucideIcon name="upload" size={20}/></button><textarea value={draft} onChange={e=>setDraft(e.target.value)} placeholder={`اكتب إلى ${activeRoom.title}…`} rows={1} aria-label="نص الرسالة" maxLength={8000}/><button type="submit" className={styles.sendButton} disabled={!draft.trim()||sending}><span>{sending?'جارٍ التحليل…':'إرسال'}</span><LucideIcon name="chevronLeft" size={20}/></button></form>
+        {statementPickerOpen&&<div className={styles.statementPicker}><div><strong>اختر الحساب المرتبط بالكشف</strong><small>سيُقرأ الملف للمراجعة فقط، ولن ينشئ معاملات تلقائيًا.</small></div><select value={statementAccountId} onChange={event=>setStatementAccountId(event.target.value)} aria-label="الحساب المرتبط بكشف الحساب">{statementAccounts.map(account=><option key={account.id} value={account.id}>{account.bank_name||account.name} — {account.name}</option>)}</select><button type="button" className={styles.secondaryButton} onClick={()=>statementFileRef.current?.click()} disabled={statementUploading}>{statementUploading?'جارٍ الاستيراد…':'اختيار ملف CSV'}</button></div>}
+        <div className={styles.attachmentPolicy}><LucideIcon name="upload" size={16}/><span>{onboardingStep==='statements'?'ارفع كشف CSV إن كان متاحًا. كل صف يبقى تحت المراجعة حتى تؤكده.':'المرفق للمراجعة والتحقق فقط؛ لا ينشئ حركة مالية ولا يثبت التنفيذ تلقائيًا.'}</span></div><div className={styles.executionNote}><LucideIcon name="circleCheck" size={16}/><span>نماء يوصي ويتابع؛ التنفيذ المالي الخارجي يتم بواسطة المستخدم.</span></div>
+        <form className={styles.composer} onSubmit={send}><input ref={statementFileRef} className={styles.hiddenFileInput} type="file" accept=".csv,text/csv" onChange={event=>{const file=event.target.files?.[0];if(file)void uploadStatement(file)}}/><button type="button" className={styles.attachButton} aria-label="إرفاق كشف حساب CSV" title="إرفاق كشف حساب CSV للمراجعة" onClick={()=>void prepareStatementUpload()} disabled={statementUploading}><LucideIcon name="upload" size={20}/></button><textarea value={draft} onChange={e=>setDraft(e.target.value)} placeholder={`اكتب إلى ${activeRoom.title}…`} rows={1} aria-label="نص الرسالة" maxLength={8000}/><button type="submit" className={styles.sendButton} disabled={!draft.trim()||sending}><span>{sending?'جارٍ التحليل…':'إرسال'}</span><LucideIcon name="chevronLeft" size={20}/></button></form>
       </main>
       {desktopContextVisible&&<aside className={styles.contextPane} aria-label="سياق المحادثة"><div className={styles.paneTitle}><span>السياق</span><small>حيّز العمل</small></div>{contextCards}</aside>}
     </div>
