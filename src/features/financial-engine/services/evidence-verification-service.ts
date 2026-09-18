@@ -2,6 +2,7 @@ import { getRawSql } from '@/infrastructure/db/client';
 import { getCentralPolicyNumericParameter } from './central-policy-parameters';
 import { evaluateUnifiedEvidenceVerification } from './evidence-verification-contract';
 import { enqueueCycleRecalcForMatchedTransaction } from './enqueue-matched-execution-recalc';
+import { startGovernedDecisionFollowupAfterVerifiedExecution } from './start-governed-decision-followup';
 
 export async function verifyUnifiedEvidenceCase(userId: string, evidenceCaseId: string) {
   const sql = getRawSql();
@@ -83,6 +84,7 @@ export async function verifyUnifiedEvidenceCase(userId: string, evidenceCaseId: 
       candidateCount: 0,
       matchedStatementRowId: null,
       recalculation,
+    followup,
     policySnapshot: {
         dateTolerance: { id: 'SET-RC-001', ...dateTolerance },
         autoMatchThreshold: { id: 'SET-RC-002', ...autoMatchThreshold },
@@ -178,6 +180,7 @@ export async function verifyUnifiedEvidenceCase(userId: string, evidenceCaseId: 
   const eventId = String(evidence.execution_event_id);
 
   let recalculation: Awaited<ReturnType<typeof enqueueCycleRecalcForMatchedTransaction>> | null = null;
+  let followup: Awaited<ReturnType<typeof startGovernedDecisionFollowupAfterVerifiedExecution>> | null = null;
 
   if (result.status === 'FINAL_MATCHED') {
     await sql.transaction([
@@ -201,6 +204,10 @@ export async function verifyUnifiedEvidenceCase(userId: string, evidenceCaseId: 
         transactionId: classifiedTransactionId,
       });
     }
+    followup = await startGovernedDecisionFollowupAfterVerifiedExecution({
+      userId,
+      executionEventId: eventId,
+    });
   } else if (result.status === 'RECONCILIATION_REQUIRED') {
     await sql.transaction([
       sql`
