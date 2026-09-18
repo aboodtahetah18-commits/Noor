@@ -4,12 +4,12 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { getAuthenticatedUser, requireAuthenticatedMutationUser } from '@/auth/require-authenticated-user';
 import { createRoutedReply } from '@/lib/conversations/reply-engine';
-import { attachUnifiedDecisionLifecycle } from '@/lib/conversations/decision-lifecycle-store';
+import { attachUnifiedDecisionLifecycle, type PersistedReply } from '@/lib/conversations/decision-lifecycle-store';
 import { createAssetGoalReply } from '@/lib/conversations/asset-goal-engine';
 import { createCrossBankHardGuardReply, createProtectionGuardReply, createSolvencyReply } from '@/lib/conversations/solvency-engine';
 import { createHilalFinancingReply } from '@/lib/conversations/hilal-financing-engine';
 import { createHilalRestructuringReply } from '@/lib/conversations/hilal-restructuring-engine';
-import { appendUserMessage, getConversationRoom, isConversationRoomKey } from '@/lib/conversations/store';
+import { appendUserMessage, getConversationRoom, isConversationRoomKey, type ConversationMessageKind } from '@/lib/conversations/store';
 import { getGovernorOnboardingStatus, processGovernorOnboardingMessage } from '@/lib/conversations/governor-onboarding';
 
 export async function GET(_request: Request, context: { params: Promise<{ roomKey: string }> }) {
@@ -47,7 +47,7 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
       return NextResponse.json({ code: 'ONBOARDING_REQUIRED', onboarding }, { status: 423 });
     }
 
-    let reply;
+    let reply: PersistedReply | null = null;
     if (roomKey === 'central' && !onboarding.complete) {
       const onboardingReply = await processGovernorOnboardingMessage(user.id, text);
       if (onboardingReply) {
@@ -71,7 +71,15 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
           )
           returning id,sender_type,sender_key,sender_name,message_kind,body,structured_data,created_at
         `;
-        reply = rows[0] ?? null;
+        const row = rows[0];
+        reply = row ? {
+          ...row,
+          id: String(row.id),
+          message_kind: String(row.message_kind) as ConversationMessageKind,
+          structured_data: row.structured_data && typeof row.structured_data === 'object'
+            ? row.structured_data as Record<string, unknown>
+            : {},
+        } : null;
       } else {
         reply = await createRoutedReply(user.id, roomKey, text);
       }
