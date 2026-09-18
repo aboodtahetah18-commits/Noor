@@ -26,6 +26,9 @@ export default async function ExecutionPage({searchParams}:{searchParams:Promise
           {task.amount?<input type="hidden" name="reportedAmount" value={task.amount}/>:null}
           <label>نوع الإثبات<select name="evidenceType" defaultValue="REFERENCE"><option value="REFERENCE">مرجع عملية</option><option value="BANK_RECEIPT">إيصال بنكي</option><option value="TRANSFER_RECEIPT">إيصال تحويل</option><option value="BILL_RECEIPT">إيصال سداد</option><option value="STATEMENT">كشف حساب</option><option value="OTHER">إثبات آخر</option></select></label>
           <label>مرجع أو رابط الإثبات<input name="externalReference" required maxLength={500} placeholder="رقم المرجع أو رابط آمن للإثبات"/></label>
+          <label>تاريخ العملية<input name="claimedDate" type="date" required/></label>
+          <label>الحساب المصدر<input name="sourceAccountRef" required maxLength={500} placeholder="اسم الحساب أو المعرّف أو الآيبان"/></label>
+          <label>الطرف المقابل أو الوصف المطابق<input name="counterpartyRef" maxLength={500} placeholder="اختياري عند وجود رقم مرجع واضح"/></label>
           <div className="inline-actions"><button type="submit">تأكيد أنني نفذت خارجيًا</button></div>
           <p className="muted">هذا التأكيد ينقل المهمة للتحقق فقط، ولا يمنحها حالة VERIFIED_EXECUTION تلقائيًا.</p>
         </form>:<p className="muted">لا يلزم إجراء إضافي منك الآن؛ النظام ينتظر التحقق أو المطابقة.</p>}
