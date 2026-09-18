@@ -20,6 +20,8 @@ export default async function ExecutionPage({searchParams}:{searchParams:Promise
       {tasks.length===0?<p className="muted">عندما تعتمد قرارًا ماليًا من المستشار ستظهر مهمة التنفيذ هنا.</p>:<div>{tasks.map(task=><article className="card" key={task.id}>
         <div className="row-between"><div><strong>{task.actionType}</strong><p className="muted">{statusLabels[task.status]??task.status}</p></div>{task.amount?<strong>{task.amount} {task.currency}</strong>:null}</div>
         {task.decisionReference?<p className="muted">مرجع القرار: <strong>{task.decisionReference}</strong></p>:null}
+        {task.verificationStatus?<p className="muted">حالة الإثبات: <strong>{task.verificationStatus==='VERIFIED'?'تم التحقق':task.verificationStatus==='REJECTED'?'مرفوض':task.verificationStatus==='AMBIGUOUS'?'مطابق لأكثر من حركة':task.verificationStatus==='PENDING'?'بانتظار اكتمال التحقق':task.verificationStatus}</strong></p>:null}
+        {task.verificationReason?<p className="muted">سبب حالة الإثبات: {task.verificationReason==='EVIDENCE_FIELDS_INCOMPLETE'?'بيانات الإثبات غير مكتملة':task.verificationReason==='UNIQUE_BANK_STATEMENT_MATCH'?'وجدت حركة واحدة مطابقة في كشف حساب معتمد':task.verificationReason==='NO_BANK_STATEMENT_MATCH'?'لم توجد حركة مطابقة في كشف حساب معتمد':task.verificationReason==='MULTIPLE_BANK_STATEMENT_MATCHES'?'وجدت أكثر من حركة مطابقة وتحتاج تحديدًا أدق':task.verificationReason}</p>:null}
         {task.instructions?<p>{task.instructions}</p>:null}
         {['USER_ACTION_REQUEST','WAITING_USER_CONFIRMATION','OVERDUE'].includes(task.status)?<form action={reportExecutionAction}>
           <input type="hidden" name="executionTaskId" value={task.id}/>
