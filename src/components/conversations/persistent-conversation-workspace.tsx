@@ -60,6 +60,11 @@ function StructuredFacts({data}:{data?:Record<string,unknown>}){
   const financeLimit=financeLimitComponents&&typeof financeLimitComponents.finance_limit==='number'?financeLimitComponents.finance_limit:null;
   const missingLimit=financeLimitComponents&&Array.isArray(financeLimitComponents.missing_limit_components)?financeLimitComponents.missing_limit_components.filter((item):item is string=>typeof item==='string'):[];
   const calibrationStatus=typeof data.calibration_status==='string'?data.calibration_status:null;
+  const eligibilityCalibration=data.eligibility_calibration&&typeof data.eligibility_calibration==='object'?data.eligibility_calibration as Record<string,unknown>:null;
+  const eligibilityCalibrationId=eligibilityCalibration&&typeof eligibilityCalibration.calibration_id==='string'?eligibilityCalibration.calibration_id:null;
+  const eligibilityReadiness=eligibilityCalibration&&eligibilityCalibration.readiness&&typeof eligibilityCalibration.readiness==='object'?eligibilityCalibration.readiness as Record<string,unknown>:null;
+  const eligibilityWeightVersion=eligibilityReadiness&&typeof eligibilityReadiness.baseline_weights_version==='string'?eligibilityReadiness.baseline_weights_version:null;
+  const eligibilityBlockers=eligibilityReadiness&&Array.isArray(eligibilityReadiness.activation_blockers)?eligibilityReadiness.activation_blockers.filter((x):x is string=>typeof x==='string'):[];
   const repaymentBand=data.repayment_installment_band&&typeof data.repayment_installment_band==='object'?data.repayment_installment_band as Record<string,unknown>:null;
   const repaymentMin=repaymentBand&&typeof repaymentBand.min_installment_from_safe_savings==='number'?repaymentBand.min_installment_from_safe_savings:null;
   const repaymentMax=repaymentBand&&typeof repaymentBand.max_installment_from_safe_savings==='number'?repaymentBand.max_installment_from_safe_savings:null;
@@ -186,7 +191,10 @@ function StructuredFacts({data}:{data?:Record<string,unknown>}){
     {recoveryHardStop===true&&<span><small>تمويل جديد</small><strong>متوقف حتى معالجة التأخر</strong></span>}
     {policyGovernanceStatus&&<span><small>حوكمة POLICY_CAP</small><strong>{policyGovernanceStatus==='HARD_STOP_OVERDUE'?'متوقف بسبب استرداد متأخر':policyGovernanceStatus==='NUMERIC_CALIBRATION_REQUIRED'?'إشارات مكتملة — المعايرة الرقمية مطلوبة':policyGovernanceStatus}</strong></span>}
     {policyHardStop===true&&<span><small>منع تمويل جديد</small><strong>مفعل حتى معالجة التأخر</strong></span>}
-    {calibrationStatus&&<span><small>معايرة الأهلية</small><strong>{calibrationStatus==='CALIBRATION_NOT_ACTIVE'?'بانتظار معايرة رقمية معتمدة':calibrationStatus==='SCORED'?'معايرة مفعلة':calibrationStatus}</strong></span>}
+    {calibrationStatus&&<span><small>معايرة الأهلية</small><strong>{calibrationStatus==='CALIBRATION_NOT_GOVERNING'?'غير مفعلة حاكمًا':calibrationStatus==='CALIBRATION_GOVERNANCE_INCOMPLETE'?'حوكمتها غير مكتملة':calibrationStatus==='SCORED'?'مفعلة ومعتمدة':calibrationStatus}</strong></span>}
+    {eligibilityCalibrationId&&<span><small>إصدار معايرة الأهلية</small><strong>{eligibilityCalibrationId}</strong></span>}
+    {eligibilityWeightVersion&&<span><small>مرجع أوزان الأهلية</small><strong>{eligibilityWeightVersion}</strong></span>}
+    {eligibilityBlockers.length>0&&<span><small>متطلبات تفعيل الأهلية</small><strong>{eligibilityBlockers.map(item=>item==='HISTORICAL_VALIDATION_REQUIRED'?'التحقق التاريخي':item==='FINAL_GOVERNANCE_APPROVAL_REQUIRED'?'الاعتماد النهائي':item==='EFFECTIVE_DATE_REQUIRED'?'تاريخ النفاذ':item==='FACTOR_TO_SCORE_MAPPING_REQUIRED'?'خرائط تحويل العوامل إلى درجات':item).join('، ')}</strong></span>}
     {missing.length>0&&<span><small>بيانات ناقصة</small><strong>{missing.map(missingLabel).join('، ')}</strong></span>}
   </div>;
 }
