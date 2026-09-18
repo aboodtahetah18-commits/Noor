@@ -92,3 +92,45 @@ export function computeHilalFinanceLimit(input: HilalFinanceLimitInput) {
     ],
   };
 }
+
+
+export type HilalFinancingBlockReason =
+  | 'SAFE_CAPACITY_EXCEEDED'
+  | 'PROTECTION_COMMITMENT_GAP'
+  | 'FINANCE_LIMIT_EXCEEDED'
+  | 'INSTALLMENT_ABOVE_APPROVED_BAND'
+  | 'OVERDUE_REPAYMENT_HARD_STOP'
+  | 'ELIGIBILITY_REJECTED';
+
+export type HilalFinancingGateInput = {
+  requestedAmount: number;
+  safeCapacity: number;
+  commitmentGap: number;
+  financeLimit: number | null;
+  installment: number;
+  maxApprovedInstallment: number;
+  policyHardStop: boolean;
+  eligibilityBand: HilalEligibilityBand | null;
+};
+
+export function evaluateHilalFinancingGate(input: HilalFinancingGateInput) {
+  const blockReasons: HilalFinancingBlockReason[] = [];
+
+  if (input.requestedAmount > input.safeCapacity) blockReasons.push('SAFE_CAPACITY_EXCEEDED');
+  if (input.commitmentGap > 0) blockReasons.push('PROTECTION_COMMITMENT_GAP');
+  if (input.financeLimit !== null && input.requestedAmount > input.financeLimit) {
+    blockReasons.push('FINANCE_LIMIT_EXCEEDED');
+  }
+  if (input.installment > input.maxApprovedInstallment) {
+    blockReasons.push('INSTALLMENT_ABOVE_APPROVED_BAND');
+  }
+  if (input.policyHardStop) blockReasons.push('OVERDUE_REPAYMENT_HARD_STOP');
+  if (input.eligibilityBand === 'REJECTED') blockReasons.push('ELIGIBILITY_REJECTED');
+
+  return {
+    blocked: blockReasons.length > 0,
+    block_reasons: blockReasons,
+    eligibility_requires_conditions:
+      input.eligibilityBand === 'ELIGIBLE_WITH_CONDITIONS' || input.eligibilityBand === 'RESTRICTED',
+  } as const;
+}
