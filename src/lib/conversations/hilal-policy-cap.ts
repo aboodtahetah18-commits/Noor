@@ -1,4 +1,5 @@
 import { getRawSql } from '@/infrastructure/db/client';
+import { getHilalExposureProfile } from './hilal-exposure-profile';
 
 export type HilalPolicyCapEvidence = {
   status: 'READY_FOR_CALIBRATION' | 'CATEGORY_REQUIRED' | 'CATEGORY_NOT_IN_ACTIVE_PLAN';
@@ -13,7 +14,8 @@ export type HilalPolicyCapEvidence = {
   historical_cycle_count: number;
   historical_average_spend: number | null;
   historical_max_spend: number | null;
-  financing_history_available: false;
+  financing_history_available: boolean;
+  exposure_profile: Awaited<ReturnType<typeof getHilalExposureProfile>> | null;
   policy_cap: null;
   policy_cap_status: 'NUMERIC_CALIBRATION_REQUIRED';
   policy_reference: 'HILAL_POLICY_1.0_SECTIONS_12_13_14';
@@ -84,13 +86,14 @@ export async function getHilalPolicyCapEvidence(userId: string, financingPurpose
       historical_average_spend: null,
       historical_max_spend: null,
       financing_history_available: false,
+      exposure_profile: null,
       policy_cap: null,
       policy_cap_status: 'NUMERIC_CALIBRATION_REQUIRED',
       policy_reference: 'HILAL_POLICY_1.0_SECTIONS_12_13_14',
     };
   }
 
-  const [currentRows, historyRows] = await Promise.all([
+  const [currentRows, historyRows, exposureProfile] = await Promise.all([
     sql`
       select
         bc.id::text as category_id,
@@ -137,6 +140,7 @@ export async function getHilalPolicyCapEvidence(userId: string, financingPurpose
         limit 12
       ) history
     `,
+    getHilalExposureProfile(userId, resolved.id),
   ]);
 
   const current = currentRows[0];
@@ -157,6 +161,7 @@ export async function getHilalPolicyCapEvidence(userId: string, financingPurpose
       historical_average_spend: Number(history?.average_spend ?? 0),
       historical_max_spend: Number(history?.max_spend ?? 0),
       financing_history_available: false,
+      exposure_profile: null,
       policy_cap: null,
       policy_cap_status: 'NUMERIC_CALIBRATION_REQUIRED',
       policy_reference: 'HILAL_POLICY_1.0_SECTIONS_12_13_14',
@@ -179,7 +184,8 @@ export async function getHilalPolicyCapEvidence(userId: string, financingPurpose
     historical_cycle_count: Number(history?.cycle_count ?? 0),
     historical_average_spend: Number(history?.average_spend ?? 0),
     historical_max_spend: Number(history?.max_spend ?? 0),
-    financing_history_available: false,
+    financing_history_available: exposureProfile.financing_history_available,
+    exposure_profile: exposureProfile,
     policy_cap: null,
     policy_cap_status: 'NUMERIC_CALIBRATION_REQUIRED',
     policy_reference: 'HILAL_POLICY_1.0_SECTIONS_12_13_14',
