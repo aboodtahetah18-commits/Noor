@@ -51,6 +51,8 @@ type CommitmentReservations = {
   reserved_dated_obligation_count: number;
   near_goal_reserve_total: number;
   near_goal_count: number;
+  external_near_goal_total: number;
+  external_near_goal_count: number;
 };
 
 const arabicDigits: Record<string, string> = {
@@ -132,57 +134,71 @@ async function readStates(userId: string) {
 
 async function readCommitmentReservations(userId: string): Promise<CommitmentReservations> {
   const sql = getRawSql();
-  const rows = await sql`
-    with active_cycle as (
-      select expected_next_income_date
+  const [cycleRows, obligationRows, goalRows, assetThreadRows] = await Promise.all([
+    sql`select expected_next_income_date::text as active_cycle_end
       from public.financial_cycles
       where user_id=${userId} and status='ACTIVE'
       order by activated_at desc nulls last
-      limit 1
-    ), reserved_obligations as (
-      select
-        coalesce(sum(o.amount) filter (where o.is_reserved=true and o.status in ('UPCOMING','DUE','OVERDUE')),0)::text as total,
-        count(*) filter (where o.is_reserved=true and o.status in ('UPCOMING','DUE','OVERDUE'))::int as item_count
-      from public.obligation_occurrences o
-      where o.user_id=${userId}
-    ), near_goals as (
-      select
-        coalesce(sum(greatest(g.target_amount-(g.opening_balance+coalesce(c.contributed,0)),0)) filter (
-          where g.status in ('ACTIVE','FINANCIALLY_UNREALISTIC')
-            and g.target_date is not null
-            and ac.expected_next_income_date is not null
-            and g.target_date<=ac.expected_next_income_date
-        ),0)::text as total,
-        count(*) filter (
-          where g.status in ('ACTIVE','FINANCIALLY_UNREALISTIC')
-            and g.target_date is not null
-            and ac.expected_next_income_date is not null
-            and g.target_date<=ac.expected_next_income_date
-        )::int as item_count
+      limit 1`,
+    sql`select
+        coalesce(sum(amount) filter (where is_reserved=true and status in ('UPCOMING','DUE','OVERDUE')),0)::text as total,
+        count(*) filter (where is_reserved=true and status in ('UPCOMING','DUE','OVERDUE'))::int as item_count
+      from public.obligation_occurrences
+      where user_id=${userId}`,
+    sql`select
+        g.id::text,
+        g.target_amount::text,
+        (g.opening_balance + coalesce(sum(t.amount) filter (where t.transaction_type='GOAL_CONTRIBUTION' and t.status='POSTED'),0))::text as current_balance,
+        g.target_date::text
       from public.financial_goals g
-      left join active_cycle ac on true
-      left join lateral (
-        select coalesce(sum(t.amount) filter (where t.transaction_type='GOAL_CONTRIBUTION' and t.status='POSTED'),0) as contributed
-        from public.transactions t
-        where t.user_id=g.user_id and t.goal_id=g.id
-      ) c on true
+      left join public.transactions t on t.goal_id=g.id and t.user_id=g.user_id
       where g.user_id=${userId}
-    )
-    select
-      (select expected_next_income_date::text from active_cycle) as active_cycle_end,
-      ro.total as reserved_dated_obligations_total,
-      ro.item_count as reserved_dated_obligation_count,
-      ng.total as near_goal_reserve_total,
-      ng.item_count as near_goal_count
-    from reserved_obligations ro cross join near_goals ng
-  `;
-  const row = rows[0];
+        and g.status in ('ACTIVE','FINANCIALLY_UNREALISTIC')
+        and g.target_date is not null
+      group by g.id`,
+    sql`select metadata from public.conversation_threads where user_id=${userId} and room_key='assets' limit 1`,
+  ]);
+
+  const activeCycleEnd = cycleRows[0]?.active_cycle_end ? String(cycleRows[0].active_cycle_end) : null;
+  const obligationRow = obligationRows[0];
+  const assetMetadata = assetThreadRows[0]?.metadata && typeof assetThreadRows[0].metadata === 'object'
+    ? assetThreadRows[0].metadata as Record<string, unknown>
+    : {};
+  const rawSources = assetMetadata.goal_funding_sources;
+  const fundingSources = rawSources && typeof rawSources === 'object'
+    ? rawSources as Record<string, unknown>
+    : {};
+
+  let nearGoalReserveTotal = 0;
+  let nearGoalCount = 0;
+  let externalNearGoalTotal = 0;
+  let externalNearGoalCount = 0;
+
+  for (const row of goalRows) {
+    const targetDate = row.target_date ? String(row.target_date) : null;
+    if (!activeCycleEnd || !targetDate || targetDate > activeCycleEnd) continue;
+    const target = Number(row.target_amount ?? 0);
+    const current = Number(row.current_balance ?? 0);
+    const remaining = Math.max(target - current, 0);
+    if (remaining <= 0) continue;
+    const source = fundingSources[String(row.id)];
+    if (source === 'EXTERNAL_UNPROTECTED') {
+      externalNearGoalTotal += remaining;
+      externalNearGoalCount += 1;
+      continue;
+    }
+    nearGoalReserveTotal += remaining;
+    nearGoalCount += 1;
+  }
+
   return {
-    active_cycle_end: row?.active_cycle_end ? String(row.active_cycle_end) : null,
-    reserved_dated_obligations_total: Number(row?.reserved_dated_obligations_total ?? 0),
-    reserved_dated_obligation_count: Number(row?.reserved_dated_obligation_count ?? 0),
-    near_goal_reserve_total: Number(row?.near_goal_reserve_total ?? 0),
-    near_goal_count: Number(row?.near_goal_count ?? 0),
+    active_cycle_end: activeCycleEnd,
+    reserved_dated_obligations_total: Number(obligationRow?.total ?? 0),
+    reserved_dated_obligation_count: Number(obligationRow?.item_count ?? 0),
+    near_goal_reserve_total: nearGoalReserveTotal,
+    near_goal_count: nearGoalCount,
+    external_near_goal_total: externalNearGoalTotal,
+    external_near_goal_count: externalNearGoalCount,
   };
 }
 
