@@ -249,7 +249,7 @@ export async function beginNamaaRegistration(input: RegistrationInput) {
     [email],
   );
   const current = existing.rows[0];
-  if (current?.email_verified === true) {
+  if (current?.email_verified === true && !pilotMode) {
     return { ok: false as const, code: 'AUTH_ACCOUNT_EXISTS' as const };
   }
 
@@ -261,8 +261,8 @@ export async function beginNamaaRegistration(input: RegistrationInput) {
     await client.query('begin');
     if (current) {
       await client.query(
-        'update auth."user" set name = $1, email_verified = $2, updated_at = now() where id = $3 and email_verified = false',
-        [fullName, pilotMode, userId],
+        'update auth."user" set name = $1, email_verified = $2, updated_at = now() where id = $3',
+        [fullName, pilotMode ? true : false, userId],
       );
     } else {
       await client.query(
