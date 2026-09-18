@@ -24,9 +24,14 @@ export async function listOpenExecutionTasks(userId:string){
     SELECT t.id,t.decision_request_id,t.user_decision_id,t.action_type,t.amount,t.currency,t.instructions,t.decision_reference,
       t.evidence_requirement,t.required_by,t.status,t.created_at,
       r.recommendation_id,r.decision_type,r.materiality,
-      ev.verification_status,ev.verification_reason,ev.candidate_count
+      ev.verification_status,ev.verification_reason,ev.candidate_count,
+      gd.id::text as governance_decision_id,gd.review_date,
+      dms.current_status as followup_case_status,
+      dms.monitoring_run_status,dms.highest_severity,dms.signal_count,dms.escalation_count
     FROM public.execution_tasks t
     JOIN public.decision_requests r ON r.id=t.decision_request_id AND r.user_id=t.user_id
+    LEFT JOIN governance.decisions gd ON gd.public_decision_request_id=t.decision_request_id AND gd.user_id=t.user_id
+    LEFT JOIN governance.decision_monitoring_summary dms ON dms.decision_id=gd.id AND dms.user_id=gd.user_id
     LEFT JOIN LATERAL (
       SELECT ec.verification_status,ec.verification_reason,ec.candidate_count
       FROM public.execution_events ee
@@ -48,6 +53,13 @@ export async function listOpenExecutionTasks(userId:string){
     verificationStatus:row.verification_status==null?null:String(row.verification_status),
     verificationReason:row.verification_reason==null?null:String(row.verification_reason),
     verificationCandidateCount:row.candidate_count==null?null:Number(row.candidate_count),
+    governanceDecisionId:row.governance_decision_id==null?null:String(row.governance_decision_id),
+    followupReviewDate:row.review_date==null?null:String(row.review_date),
+    followupCaseStatus:row.followup_case_status==null?null:String(row.followup_case_status),
+    followupRunStatus:row.monitoring_run_status==null?null:String(row.monitoring_run_status),
+    followupHighestSeverity:row.highest_severity==null?null:String(row.highest_severity),
+    followupSignalCount:row.signal_count==null?0:Number(row.signal_count),
+    followupEscalationCount:row.escalation_count==null?0:Number(row.escalation_count),
   }));
 }
 
@@ -76,7 +88,7 @@ export async function reportUserExecution(input:{
     SELECT id,status,reported_amount,currency,external_reference,executed_at,created_at
     FROM public.execution_events
     WHERE execution_task_id=${input.executionTaskId}::uuid AND user_id=${input.userId}::uuid
-      AND status NOT IN ('FAILED','CANNOT_REVERSE','EVIDENCE_REJECTED')
+      AND status NOT IN ('FAILED','CANNOT_REVERSE')
     ORDER BY created_at DESC LIMIT 1
   `;
   const existingEvent=existing[0];
