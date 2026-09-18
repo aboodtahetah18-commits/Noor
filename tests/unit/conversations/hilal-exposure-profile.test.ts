@@ -1,6 +1,18 @@
 import { describe, expect, it } from 'vitest';
 import { summarizeHilalExposureRow } from '@/lib/conversations/hilal-exposure-profile';
 
+const restructuring = {
+  requested_count: 2,
+  approved_count: 2,
+  applied_count: 2,
+  rejected_count: 0,
+  cancelled_count: 0,
+  precautionary_cap: 3 as const,
+  precautionary_cap_reached: false,
+  remaining_precautionary_slots: 1,
+  policy_reference: 'HILAL_POLICY_1.0_SECTION_14' as const,
+};
+
 describe('Hilal unified exposure profile', () => {
   it('aggregates outstanding exposure from principal, growth, and paid repayments', () => {
     const result = summarizeHilalExposureRow('cat-1', {
@@ -16,7 +28,7 @@ describe('Hilal unified exposure profile', () => {
       overdue_planned_amount: '1000',
       overdue_installment_count: 2,
       next_installment_number: 3,
-    });
+    }, restructuring);
 
     expect(result).toMatchObject({
       category_id: 'cat-1',
@@ -27,8 +39,7 @@ describe('Hilal unified exposure profile', () => {
       overdue_installment_count: 2,
       next_installment_number: 3,
       financing_history_available: true,
-      reschedule_count: null,
-      reschedule_tracking_status: 'NOT_TRACKED_IN_CANONICAL_LEDGER',
+      restructuring: { applied_count: 2, precautionary_cap: 3, precautionary_cap_reached: false },
     });
   });
 
@@ -38,12 +49,12 @@ describe('Hilal unified exposure profile', () => {
       total_used_principal: 1000,
       total_growth_contribution: 0,
       total_paid_repayments: 1500,
-    });
+    }, restructuring);
     expect(result.outstanding_exposure).toBe(0);
   });
 
   it('marks financing history unavailable when no cases exist', () => {
-    const result = summarizeHilalExposureRow('cat-3', {});
+    const result = summarizeHilalExposureRow('cat-3', {}, restructuring);
     expect(result.financing_history_available).toBe(false);
     expect(result.next_installment_number).toBeNull();
   });
