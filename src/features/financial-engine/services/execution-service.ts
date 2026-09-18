@@ -1,5 +1,6 @@
 import { getRawSql } from '@/infrastructure/db/client';
 import { FinancialPlatformError, mapFinancialDatabaseError } from '@/features/financial-engine/services/financial-platform-error';
+import { verifyUnifiedEvidenceCase } from '@/features/financial-engine/services/evidence-verification-service';
 
 export type ExecutionEvidenceInput={
   type:'BANK_RECEIPT'|'TRANSFER_RECEIPT'|'BILL_RECEIPT'|'STATEMENT'|'REFERENCE'|'OTHER';
@@ -63,7 +64,7 @@ export async function reportUserExecution(input:{
     SELECT id,status,reported_amount,currency,external_reference,executed_at,created_at
     FROM public.execution_events
     WHERE execution_task_id=${input.executionTaskId}::uuid AND user_id=${input.userId}::uuid
-      AND status NOT IN ('FAILED','CANNOT_REVERSE')
+      AND status NOT IN ('FAILED','CANNOT_REVERSE','EVIDENCE_REJECTED')
     ORDER BY created_at DESC LIMIT 1
   `;
   const existingEvent=existing[0];
@@ -114,13 +115,28 @@ export async function reportUserExecution(input:{
       await sql`UPDATE public.execution_events SET status='EVIDENCE_PENDING' WHERE id=${eventId}::uuid AND user_id=${input.userId}::uuid`;
       await sql`UPDATE public.execution_tasks SET status='EVIDENCE_PENDING',updated_at=now() WHERE id=${input.executionTaskId}::uuid AND user_id=${input.userId}::uuid`;
       event.status='EVIDENCE_PENDING';
+      const verification = await verifyUnifiedEvidenceCase(input.userId,eventId ? String(evidenceCase?.id ?? '') : '');
+      if(verification){
+        event.status = verification.status === 'VERIFIED'
+          ? 'VERIFIED_EXECUTION'
+          : verification.status === 'REJECTED'
+            ? 'EVIDENCE_REJECTED'
+            : 'EVIDENCE_PENDING';
+        if(evidenceCase){
+          evidenceCase.verification_status=verification.status;
+          evidenceCase.verification_reason=verification.reason;
+          evidenceCase.candidate_count=verification.candidateCount;
+          evidenceCase.matched_statement_row_id=verification.matchedStatementRowId;
+        }
+      }
+      return {executionEvent:event,taskStatus:String(event.status),evidenceCase,verification,created:true};
     }else{
       await sql`UPDATE public.execution_events SET status='VERIFICATION_PENDING' WHERE id=${eventId}::uuid AND user_id=${input.userId}::uuid`;
       await sql`UPDATE public.execution_tasks SET status='VERIFICATION_PENDING',updated_at=now() WHERE id=${input.executionTaskId}::uuid AND user_id=${input.userId}::uuid`;
       event.status='VERIFICATION_PENDING';
     }
 
-    return {executionEvent:event,taskStatus:String(event.status),evidenceCase,created:true};
+    return {executionEvent:event,taskStatus:String(event.status),evidenceCase,verification:null,created:true};
   }catch(error){
     throw mapFinancialDatabaseError(error);
   }
