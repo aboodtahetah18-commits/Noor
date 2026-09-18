@@ -63,7 +63,14 @@ export async function POST(request: Request) {
           : '',
       message: error instanceof Error ? error.message : 'UnknownError',
     });
-    return NextResponse.json({ code }, { status: 503 });
+    const stage =
+      typeof error === 'object' && error !== null && 'namaaStage' in error
+        ? String((error as { namaaStage?: unknown }).namaaStage ?? '')
+        : '';
+    return NextResponse.json(
+      pilotMode ? { code, stage } : { code },
+      { status: 503 },
+    );
   }
 
   if (!result.ok) {
