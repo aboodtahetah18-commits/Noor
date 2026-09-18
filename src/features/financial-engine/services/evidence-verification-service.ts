@@ -6,6 +6,8 @@ import { startGovernedDecisionFollowupAfterVerifiedExecution } from './start-gov
 
 export async function verifyUnifiedEvidenceCase(userId: string, evidenceCaseId: string) {
   const sql = getRawSql();
+  let recalculation: Awaited<ReturnType<typeof enqueueCycleRecalcForMatchedTransaction>> | null = null;
+  let followup: Awaited<ReturnType<typeof startGovernedDecisionFollowupAfterVerifiedExecution>> | null = null;
 
   const evidenceRows = await sql`
     select
@@ -179,9 +181,6 @@ export async function verifyUnifiedEvidenceCase(userId: string, evidenceCaseId: 
   const taskId = String(evidence.execution_task_id);
   const eventId = String(evidence.execution_event_id);
 
-  let recalculation: Awaited<ReturnType<typeof enqueueCycleRecalcForMatchedTransaction>> | null = null;
-  let followup: Awaited<ReturnType<typeof startGovernedDecisionFollowupAfterVerifiedExecution>> | null = null;
-
   if (result.status === 'FINAL_MATCHED') {
     await sql.transaction([
       sql`
@@ -242,6 +241,8 @@ export async function verifyUnifiedEvidenceCase(userId: string, evidenceCaseId: 
     ...result,
     candidateCount: hasMaterialDifference ? candidates.length : exactCandidates.length,
     matchedStatementRowId,
+    recalculation,
+    followup,
     policySnapshot: {
       dateTolerance: { id: 'SET-RC-001', ...dateTolerance },
       autoMatchThreshold: { id: 'SET-RC-002', ...autoMatchThreshold },
