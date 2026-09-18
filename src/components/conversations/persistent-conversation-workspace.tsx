@@ -73,6 +73,12 @@ function StructuredFacts({data}:{data?:Record<string,unknown>}){
   const policyActual=policyCapEvidence&&typeof policyCapEvidence.actual_spend_current_cycle==='number'?policyCapEvidence.actual_spend_current_cycle:null;
   const policyAverage=policyCapEvidence&&typeof policyCapEvidence.historical_average_spend==='number'?policyCapEvidence.historical_average_spend:null;
   const policyCapStatus=policyCapEvidence&&typeof policyCapEvidence.policy_cap_status==='string'?policyCapEvidence.policy_cap_status:null;
+  const exposureProfile=policyCapEvidence&&policyCapEvidence.exposure_profile&&typeof policyCapEvidence.exposure_profile==='object'?policyCapEvidence.exposure_profile as Record<string,unknown>:null;
+  const exposureCases=exposureProfile&&typeof exposureProfile.total_case_count==='number'?exposureProfile.total_case_count:null;
+  const outstandingExposure=exposureProfile&&typeof exposureProfile.outstanding_exposure==='number'?exposureProfile.outstanding_exposure:null;
+  const plannedRepayment=exposureProfile&&typeof exposureProfile.planned_repayment_total==='number'?exposureProfile.planned_repayment_total:null;
+  const overdueExposure=exposureProfile&&typeof exposureProfile.overdue_planned_amount==='number'?exposureProfile.overdue_planned_amount:null;
+  const overdueInstallments=exposureProfile&&typeof exposureProfile.overdue_installment_count==='number'?exposureProfile.overdue_installment_count:null;
   if(confidence===null&&!routed&&income===null&&!missing.length&&!goalName&&safeCapacity===null&&requested===null&&!financingPurpose&&!decisionState&&eligibilityScore===null&&!calibrationStatus)return null;
   return <div className={styles.facts}>
     {confidence!==null&&<span><small>درجة الثقة</small><strong>{confidence}٪</strong></span>}
@@ -114,6 +120,11 @@ function StructuredFacts({data}:{data?:Record<string,unknown>}){
     {policyActual!==null&&<span><small>إنفاق البند الحالي</small><strong>{formatSar(policyActual)} ر.س</strong></span>}
     {policyAverage!==null&&<span><small>متوسط الإنفاق التاريخي</small><strong>{formatSar(policyAverage)} ر.س</strong></span>}
     {policyCapStatus&&<span><small>POLICY_CAP</small><strong>{policyCapStatus==='NUMERIC_CALIBRATION_REQUIRED'?'بانتظار معايرة رقمية معتمدة':policyCapStatus}</strong></span>}
+    {exposureCases!==null&&<span><small>عدد تمويلات البند</small><strong>{exposureCases}</strong></span>}
+    {outstandingExposure!==null&&<span><small>التعرض القائم للبند</small><strong>{formatSar(outstandingExposure)} ر.س</strong></span>}
+    {plannedRepayment!==null&&<span><small>استرداد مخطط قائم</small><strong>{formatSar(plannedRepayment)} ر.س</strong></span>}
+    {overdueExposure!==null&&overdueExposure>0&&<span><small>استرداد متأخر</small><strong>{formatSar(overdueExposure)} ر.س</strong></span>}
+    {overdueInstallments!==null&&overdueInstallments>0&&<span><small>دفعات متأخرة</small><strong>{overdueInstallments}</strong></span>}
     {calibrationStatus&&<span><small>معايرة الأهلية</small><strong>{calibrationStatus==='CALIBRATION_NOT_ACTIVE'?'بانتظار معايرة رقمية معتمدة':calibrationStatus==='SCORED'?'معايرة مفعلة':calibrationStatus}</strong></span>}
     {missing.length>0&&<span><small>بيانات ناقصة</small><strong>{missing.map(missingLabel).join('، ')}</strong></span>}
   </div>;
