@@ -28,8 +28,8 @@ function normalizeArabic(value: string) {
     .replace(/[إأآ]/g, 'ا')
     .replace(/ة/g, 'ه')
     .replace(/ى/g, 'ي')
-    .replace(/[^؀-ۿa-z0-9s]/g, ' ')
-    .replace(/s+/g, ' ');
+    .replace(/[^\u0600-\u06FFa-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ');
 }
 
 function categoryScore(purpose: string, categoryName: string) {
@@ -160,8 +160,8 @@ export async function getHilalPolicyCapEvidence(userId: string, financingPurpose
       historical_cycle_count: Number(history?.cycle_count ?? 0),
       historical_average_spend: Number(history?.average_spend ?? 0),
       historical_max_spend: Number(history?.max_spend ?? 0),
-      financing_history_available: false,
-      exposure_profile: null,
+      financing_history_available: exposureProfile.financing_history_available,
+      exposure_profile: exposureProfile,
       policy_cap: null,
       policy_cap_status: 'NUMERIC_CALIBRATION_REQUIRED',
       policy_reference: 'HILAL_POLICY_1.0_SECTIONS_12_13_14',
