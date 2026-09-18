@@ -14,19 +14,24 @@ DECLARE
   v_run uuid;
   v_verified_execution boolean;
 BEGIN
-  SELECT d.*,c.case_type,c.current_status,c.version
-    INTO v_decision,v_case_type,v_case_status,v_version
-  FROM governance.decisions d
-  JOIN governance.cases c ON c.id=d.case_id AND c.user_id=d.user_id
-  WHERE d.id=p_decision_id
-    AND d.user_id=p_user_id
-    AND d.decision_status IN ('APPROVED_LOCKED','ACTIVE','REVALIDATION_REQUIRED');
+  SELECT * INTO v_decision
+  FROM governance.decisions
+  WHERE id=p_decision_id
+    AND user_id=p_user_id
+    AND decision_status IN ('APPROVED_LOCKED','ACTIVE','REVALIDATION_REQUIRED');
 
   IF v_decision.id IS NULL THEN
     RAISE EXCEPTION 'NAMAA_MONITORING_DECISION_NOT_ELIGIBLE';
   END IF;
 
-  v_case_id:=v_decision.case_id;
+  SELECT c.id,c.case_type,c.current_status,c.version
+    INTO v_case_id,v_case_type,v_case_status,v_version
+  FROM governance.cases c
+  WHERE c.id=v_decision.case_id AND c.user_id=p_user_id;
+
+  IF v_case_id IS NULL THEN
+    RAISE EXCEPTION 'NAMAA_MONITORING_CASE_NOT_FOUND';
+  END IF;
 
   SELECT EXISTS(
     SELECT 1
