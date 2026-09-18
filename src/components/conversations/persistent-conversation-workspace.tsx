@@ -83,6 +83,12 @@ function StructuredFacts({data}:{data?:Record<string,unknown>}){
   const policySignals=policyGovernance&&policyGovernance.signals&&typeof policyGovernance.signals==='object'?policyGovernance.signals as Record<string,unknown>:null;
   const policyHardStop=policyGovernance&&typeof policyGovernance.hard_stop==='boolean'?policyGovernance.hard_stop:null;
   const policyGovernanceStatus=policyGovernance&&typeof policyGovernance.status==='string'?policyGovernance.status:null;
+  const policyCapCalibration=data.policy_cap_calibration&&typeof data.policy_cap_calibration==='object'?data.policy_cap_calibration as Record<string,unknown>:null;
+  const policyCapCalibrationStatus=policyCapCalibration&&typeof policyCapCalibration.status==='string'?policyCapCalibration.status:null;
+  const policyCapCalibrationId=policyCapCalibration&&typeof policyCapCalibration.calibration_id==='string'?policyCapCalibration.calibration_id:null;
+  const policyCapReadiness=policyCapCalibration&&policyCapCalibration.readiness&&typeof policyCapCalibration.readiness==='object'?policyCapCalibration.readiness as Record<string,unknown>:null;
+  const policyCapWeightVersion=policyCapReadiness&&typeof policyCapReadiness.baseline_weights_version==='string'?policyCapReadiness.baseline_weights_version:null;
+  const policyCapBlockers=policyCapReadiness&&Array.isArray(policyCapReadiness.activation_blockers)?policyCapReadiness.activation_blockers.filter((x):x is string=>typeof x==='string'):[];
   const exposureIncomeRatio=policySignals&&typeof policySignals.exposure_to_realized_income_ratio==='number'?policySignals.exposure_to_realized_income_ratio:null;
   const utilizationRatio=policySignals&&typeof policySignals.category_utilization_ratio==='number'?policySignals.category_utilization_ratio:null;
   const financingFrequency=policySignals&&typeof policySignals.financing_frequency==='number'?policySignals.financing_frequency:null;
@@ -148,6 +154,10 @@ function StructuredFacts({data}:{data?:Record<string,unknown>}){
     {policyActual!==null&&<span><small>إنفاق البند الحالي</small><strong>{formatSar(policyActual)} ر.س</strong></span>}
     {policyAverage!==null&&<span><small>متوسط الإنفاق التاريخي</small><strong>{formatSar(policyAverage)} ر.س</strong></span>}
     {policyCapStatus&&<span><small>POLICY_CAP</small><strong>{policyCapStatus==='NUMERIC_CALIBRATION_REQUIRED'?'بانتظار معايرة رقمية معتمدة':policyCapStatus}</strong></span>}
+    {policyCapCalibrationStatus&&<span><small>معايرة POLICY_CAP</small><strong>{policyCapCalibrationStatus==='CALIBRATION_NOT_GOVERNING'?'غير مفعلة حاكمًا':policyCapCalibrationStatus==='CALIBRATED'?'مفعلة ومعتمدة':policyCapCalibrationStatus}</strong></span>}
+    {policyCapCalibrationId&&<span><small>إصدار معايرة POLICY_CAP</small><strong>{policyCapCalibrationId}</strong></span>}
+    {policyCapWeightVersion&&<span><small>مرجع أوزان الهلال</small><strong>{policyCapWeightVersion}</strong></span>}
+    {policyCapBlockers.length>0&&<span><small>متطلبات التفعيل الحاكم</small><strong>{policyCapBlockers.join('، ')}</strong></span>}
     {exposureCases!==null&&<span><small>عدد تمويلات البند</small><strong>{exposureCases}</strong></span>}
     {outstandingExposure!==null&&<span><small>التعرض القائم للبند</small><strong>{formatSar(outstandingExposure)} ر.س</strong></span>}
     {plannedRepayment!==null&&<span><small>استرداد مخطط قائم</small><strong>{formatSar(plannedRepayment)} ر.س</strong></span>}
