@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { LucideIcon } from '@/components/ui/lucide-icon';
 import styles from './conversation-workspace.module.css';
@@ -27,8 +28,8 @@ function missingLabel(value:string){if(value==='monthly_net_income')return 'ال
 
 function RoomPortrait({room,size='md'}:{room:Room;size?:'sm'|'md'|'lg'}) {
   return <span className={`${styles.personaAvatar} ${styles[`persona_${size}`]}`} aria-hidden="true">
-    <img src={room.avatar} alt="" />
-    <span className={styles.bankBadge}><img src={room.bankLogo} alt="" /></span>
+    <Image src={room.avatar} alt="" fill sizes="(max-width: 767px) 40px, 48px" />
+    <span className={styles.bankBadge}><Image src={room.bankLogo} alt="" fill sizes="24px" /></span>
   </span>;
 }
 
@@ -266,15 +267,15 @@ export function PersistentConversationWorkspace(){
   const contextCards=<><section className={styles.contextCard}><small>الجهة الحالية</small><strong>{activeRoom.title}</strong><p>{activeRoom.lead} · {activeRoom.subtitle}</p></section><section className={styles.contextCard}><small>المشاركون الفعليون</small><strong>{participants.length?`${participants.length} اختصاصيين`:'اختصاصيون حسب الموضوع'}</strong><p>{participants.length?participants.map(p=>p.display_name).join('، '):activeRoom.specialists}. لا تُستدعى جميع الجهات تلقائيًا.</p></section><section className={styles.contextCard}><small>حد التنفيذ</small><strong>توصية ومتابعة فقط</strong><p>لا تحويل، لا سداد، ولا إجراء مالي خارجي يُعد منفذًا من المنصة.</p></section></>;
 
   return <section className={styles.page} dir="rtl" aria-label="محادثات نماء">
-    <img className={styles.brandWatermark} src="/brand/namaa-leaf.webp" alt="" aria-hidden="true" />
+    <Image className={styles.brandWatermark} src="/brand/namaa-leaf.webp" alt="" width={256} height={256} aria-hidden="true" />
     <header className={styles.workspaceHeader}><div className={styles.headingCopy}><span className={styles.eyebrow}>محادثات نماء</span><h1>مركز الحوار والقرار</h1><p>المحادثات محفوظة في حسابك، وتصل رسالتك إلى الجهة والمتخصصين المرتبطين بالموضوع.</p></div><div className={styles.headerActions}><button type="button" className={styles.secondaryButton} onClick={()=>setDesktopRoomsVisible(v=>!v)}><LucideIcon name="layoutGrid" size={16}/><span>{desktopRoomsVisible?'إخفاء الجهات':'إظهار الجهات'}</span></button><button type="button" className={styles.secondaryButton} onClick={()=>setDesktopContextVisible(v=>!v)}><LucideIcon name="info" size={16}/><span>{desktopContextVisible?'إخفاء السياق':'إظهار السياق'}</span></button></div></header>
     <section className={`${styles.mobileConversationList} ${mobileRoomList?styles.mobileConversationListVisible:''}`} aria-label="محادثات نماء">
-      <header className={styles.mobileListHeader}><img className={styles.mobileBrandLogo} src="/brand/namaa-logo.webp" alt="نماء" /><div><strong>المحادثات</strong><small>{onboardingComplete===false?'ابدأ التأسيس مع المحافظ':'اختر الجهة التي تريد محادثتها'}</small></div></header>
+      <header className={styles.mobileListHeader}><Image className={styles.mobileBrandLogo} src="/brand/namaa-logo.webp" alt="نماء" width={120} height={80} priority /><div><strong>المحادثات</strong><small>{onboardingComplete===false?'ابدأ التأسيس مع المحافظ':'اختر الجهة التي تريد محادثتها'}</small></div></header>
       {roomButtons}
     </section>
     <div className={`${styles.workspace} ${desktopRoomsVisible?'':styles.withoutRooms} ${desktopContextVisible?'':styles.withoutContext}`}>
       {desktopRoomsVisible&&<aside className={styles.roomsPane} aria-label="قائمة المحادثات"><div className={styles.paneTitle}><span>الجهات والمحادثات</span><small>{visibleRooms.length} جهات</small></div>{roomButtons}</aside>}
-      <main className={`${styles.chatPane} ${mobileRoomList?styles.mobileChatHidden:''}`}><div className={styles.chatBrandBar}><img src="/brand/namaa-logo.webp" alt="نماء" /></div><header className={styles.chatHeader}><div className={styles.chatIdentity}>{onboardingComplete!==false&&<button type="button" className={styles.mobileBack} aria-label="العودة إلى المحادثات" onClick={()=>setMobileRoomList(true)}><LucideIcon name="chevronRight" size={20}/></button>}<RoomPortrait room={activeRoom} size="sm"/><div><div className={styles.entityTitle}><strong>{activeRoom.title}</strong></div><small>{activeRoom.lead}</small></div></div><div className={styles.mobileTools}><button type="button" aria-label="معلومات الجهة" onClick={()=>setContextOpen(true)}><LucideIcon name="info" size={20}/></button></div></header>
+      <main className={`${styles.chatPane} ${mobileRoomList?styles.mobileChatHidden:''}`}><div className={styles.chatBrandBar}><Image src="/brand/namaa-logo.webp" alt="نماء" width={120} height={80} priority /></div><header className={styles.chatHeader}><div className={styles.chatIdentity}>{onboardingComplete!==false&&<button type="button" className={styles.mobileBack} aria-label="العودة إلى المحادثات" onClick={()=>setMobileRoomList(true)}><LucideIcon name="chevronRight" size={20}/></button>}<RoomPortrait room={activeRoom} size="sm"/><div><div className={styles.entityTitle}><strong>{activeRoom.title}</strong></div><small>{activeRoom.lead}</small></div></div><div className={styles.mobileTools}><button type="button" aria-label="معلومات الجهة" onClick={()=>setContextOpen(true)}><LucideIcon name="info" size={20}/></button></div></header>
         <div className={styles.routingNote}><LucideIcon name="sparkles" size={16}/><span>{activeRoom.specialists}</span></div>
         <div className={styles.messages} aria-live="polite">{loading&&<p>جارٍ تحميل سجل المحادثة…</p>}{!loading&&!messages.length&&<article className={`${styles.message} ${styles.agentMessage}`}><p>{onboardingComplete===false?'أنا محافظ بنك نماء المركزي. سأبدأ معك بسؤال واحد في كل مرة حتى أبني ملفك من معلوماتك أنت، دون افتراضات.':'هذه بداية محادثتك مع '+activeRoom.title+'. اكتب سؤالك أو القرار الذي تريد دراسته.'}</p></article>}{messages.map(message=><article key={message.id} className={`${styles.message} ${message.sender_type==='user'?styles.userMessage:styles.agentMessage}`}>{message.sender_type!=='user'&&<div className={styles.messageIdentity}><RoomPortrait room={activeRoom} size="sm"/><span><strong>{message.sender_name}</strong><small>{message.sender_type==='system'?'رسالة نظام':'شخصية خوارزمية'}</small></span></div>}<p>{message.body}</p>{message.message_kind!=='message'&&<section className={`${styles.structuredCard} ${styles[`kind_${message.message_kind}`]}`}><header><strong>{labels[message.message_kind]}</strong></header><StructuredFacts data={message.structured_data}/>{(message.message_kind==='decision'||message.message_kind==='request')&&<small className={styles.executionBoundary}>أي تنفيذ مالي خارجي يظل بيد المستخدم، ويحتاج تأكيدًا وإثباتًا قبل الإغلاق.</small>}</section>}</article>)}</div>
         {error&&<div className={styles.routingNote} role="alert"><LucideIcon name="triangleAlert" size={16}/><span>{error}</span></div>}
