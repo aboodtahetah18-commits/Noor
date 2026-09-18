@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { getRawSql } from '@/infrastructure/db/client';
 import { getProtectionSnapshot } from './solvency-engine';
-import { computeHilalFinanceLimit, HILAL_ELIGIBILITY_WEIGHTS, HILAL_POLICY_VERSION, missingHilalEligibilityFactors, evaluateHilalEligibility, type HilalEligibilityScores } from './hilal-policy';
+import { computeHilalFinanceLimit, HILAL_ELIGIBILITY_WEIGHTS, HILAL_POLICY_VERSION, evaluateHilalEligibility } from './hilal-policy';
 import { evaluateHilalFactorEvidence } from './hilal-factor-evaluator';
 import { computeApprovedRepaymentInstallmentBand, scoreHilalFactorEvidence } from './hilal-calibration';
 import type { ConversationMessageKind } from './store';
@@ -23,7 +23,6 @@ type FinancingDraft = {
 type HilalMetadata = Record<string, unknown> & {
   financing_state?: {
     active_request?: FinancingDraft;
-    eligibility_factor_scores?: Partial<HilalEligibilityScores>;
     repayment_capacity?: number;
     policy_cap?: number;
   };
@@ -262,12 +261,9 @@ export async function createHilalFinancingReply(userId: string, userText: string
   const policyState = hilalMetadata.financing_state ?? {};
   const repaymentBand = computeApprovedRepaymentInstallmentBand(income, baseline.recurring_core_obligations_total!);
   const automaticCalibration = scoreHilalFactorEvidence(factorEvidence);
-  const factorScores = automaticCalibration.status === 'SCORED'
-    ? automaticCalibration.scores
-    : policyState.eligibility_factor_scores;
-  const missingEligibility = missingHilalEligibilityFactors(factorScores);
-  const eligibility = missingEligibility.length === 0
-    ? evaluateHilalEligibility(factorScores as HilalEligibilityScores)
+  const missingEligibility = automaticCalibration.status === 'SCORED' ? [] : automaticCalibration.missing_factors;
+  const eligibility = automaticCalibration.status === 'SCORED'
+    ? evaluateHilalEligibility(automaticCalibration.scores)
     : null;
   const financeLimit = computeHilalFinanceLimit({
     repaymentCapacity: policyState.repayment_capacity,
