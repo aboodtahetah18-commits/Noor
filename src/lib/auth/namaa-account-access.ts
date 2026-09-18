@@ -2,6 +2,7 @@ import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { hashPassword } from 'better-auth/crypto';
 import { Pool } from '@neondatabase/serverless';
 import { connect as tlsConnect, type TLSSocket } from 'node:tls';
+import { rawSql } from '@/infrastructure/db/client';
 
 type ChallengeKind = 'email-verification' | 'password-setup' | 'password-reset';
 
@@ -221,6 +222,89 @@ async function consumeChallenge(kind: ChallengeKind, token: string): Promise<str
   return emailFromIdentifier(kind, identifier);
 }
 
+async function beginNamaaPilotRegistration(input: {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  city: string;
+  password: string;
+}) {
+  const access = await rawSql`
+    select email
+    from auth.pilot_access
+    where lower(email) = ${input.email}
+      and status = 'ACTIVE'
+    limit 1
+  `;
+  if (!access.length) {
+    return { ok: false as const, code: 'AUTH_PILOT_ACCESS_REQUIRED' as const };
+  }
+
+  const existing = await rawSql`
+    select id
+    from auth."user"
+    where lower(email) = ${input.email}
+    limit 1
+  `;
+  const userId = existing[0]?.id ? String(existing[0].id) : randomUUID();
+  const fullName = `${input.firstName} ${input.lastName}`;
+  const passwordHash = await hashPassword(input.password);
+
+  const userQuery = existing.length
+    ? rawSql`
+        update auth."user"
+        set name = ${fullName},
+            email_verified = true,
+            updated_at = now()
+        where id = ${userId}::uuid
+      `
+    : rawSql`
+        insert into auth."user"
+          (id, name, email, email_verified, image, created_at, updated_at)
+        values
+          (${userId}::uuid, ${fullName}, ${input.email}, true, null, now(), now())
+      `;
+
+  const profileQuery = rawSql`
+    insert into auth.user_profile
+      (user_id, first_name, last_name, phone, city, city_normalized, created_at, updated_at)
+    values
+      (${userId}::uuid, ${input.firstName}, ${input.lastName}, ${input.phone}, ${input.city}, ${input.city.toLocaleLowerCase('ar')}, now(), now())
+    on conflict (user_id) do update set
+      first_name = excluded.first_name,
+      last_name = excluded.last_name,
+      phone = excluded.phone,
+      city = excluded.city,
+      city_normalized = excluded.city_normalized,
+      updated_at = now()
+  `;
+
+  const accountQuery = rawSql`
+    insert into auth.account
+      (id, account_id, provider_id, user_id, password, issuer, created_at, updated_at)
+    values
+      (${randomUUID()}::uuid, ${userId}, 'credential', ${userId}::uuid, ${passwordHash}, 'local:credential', now(), now())
+    on conflict (issuer, account_id) do update set
+      provider_id = 'credential',
+      user_id = excluded.user_id,
+      password = excluded.password,
+      updated_at = now()
+  `;
+
+  const pilotQuery = rawSql`
+    update auth.pilot_access
+    set registered_at = coalesce(registered_at, now()),
+        verified_at = coalesce(verified_at, now()),
+        updated_at = now()
+    where lower(email) = ${input.email}
+      and status = 'ACTIVE'
+  `;
+
+  await rawSql.transaction([userQuery, profileQuery, accountQuery, pilotQuery]);
+  return { ok: true as const, deliver: false as const, email: input.email };
+}
+
 export async function beginNamaaRegistration(input: RegistrationInput) {
   const firstName = normalizeText(input.firstName, 80);
   const lastName = normalizeText(input.lastName, 80);
@@ -239,13 +323,7 @@ export async function beginNamaaRegistration(input: RegistrationInput) {
   const pilotMode = isNamaaPilotMode();
 
   if (pilotMode) {
-    const access = await database().query(
-      "select email from auth.pilot_access where lower(email) = $1 and status = 'ACTIVE' limit 1",
-      [email],
-    );
-    if (!access.rows.length) {
-      return { ok: false as const, code: 'AUTH_PILOT_ACCESS_REQUIRED' as const };
-    }
+    return beginNamaaPilotRegistration({ firstName, lastName, phone, email, city, password });
   }
 
   const existing = await database().query(
