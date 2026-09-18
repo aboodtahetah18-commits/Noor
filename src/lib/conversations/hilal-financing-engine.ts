@@ -5,6 +5,7 @@ import { computeHilalFinanceLimit, HILAL_ELIGIBILITY_WEIGHTS, HILAL_POLICY_VERSI
 import { evaluateHilalFactorEvidence } from './hilal-factor-evaluator';
 import { computeApprovedRepaymentInstallmentBand, scoreHilalFactorEvidence } from './hilal-calibration';
 import { getHilalRepaymentCapacity } from './hilal-repayment-capacity';
+import { getHilalPolicyCapEvidence } from './hilal-policy-cap';
 import type { ConversationMessageKind } from './store';
 import { governedRooms } from './store';
 
@@ -259,6 +260,7 @@ export async function createHilalFinancingReply(userId: string, userText: string
     recurringCoreObligations: baseline.recurring_core_obligations_total!,
     repaymentCycles: draft.repayment_cycles,
   });
+  const policyCapEvidence = await getHilalPolicyCapEvidence(userId, draft.purpose!);
   const automaticCalibration = scoreHilalFactorEvidence(factorEvidence);
   const missingEligibility = automaticCalibration.status === 'SCORED' ? [] : automaticCalibration.missing_factors;
   const eligibility = automaticCalibration.status === 'SCORED'
@@ -266,9 +268,45 @@ export async function createHilalFinancingReply(userId: string, userText: string
     : null;
   const financeLimit = computeHilalFinanceLimit({
     repaymentCapacity: repaymentCapacity.repayment_capacity ?? undefined,
-    policyCap: policyState.policy_cap,
+    policyCap: policyCapEvidence.policy_cap ?? undefined,
     cashflowSafeLimit: safeCapacity,
   });
+  if (policyCapEvidence.status === 'CATEGORY_REQUIRED') {
+    return persistReply(userId, nextMetadata,
+      'حالة الطلب UNDER_REVIEW. لا أستطيع احتساب POLICY_CAP قبل ربط التمويل ببند ميزانية محدد. اذكر اسم البند كما هو مسجل في ميزانيتك، مثل «وقود» أو «مطاعم»، ولن أستنتج البند إذا كان الغرض يحتمل أكثر من تصنيف.',
+      'request',
+      {
+        decision_state: 'UNDER_REVIEW',
+        protection_gate_state: 'PASSES_PROTECTION_GATE',
+        financing_purpose: draft.purpose,
+        requested_amount: requested,
+        expected_installment: installment,
+        repayment_capacity_evidence: repaymentCapacity,
+        policy_cap_evidence: policyCapEvidence,
+        finance_limit_components: financeLimit,
+        execution_boundary: 'advisory_only',
+      },
+    );
+  }
+
+  if (policyCapEvidence.status === 'CATEGORY_NOT_IN_ACTIVE_PLAN') {
+    return persistReply(userId, nextMetadata,
+      `تم التعرف على البند «${policyCapEvidence.category_name}»، لكنه غير موجود في الخطة المالية النشطة. حالة الطلب UNDER_REVIEW حتى يضاف البند للخطة أو يحدد المستخدم بندًا آخر مرتبطًا بالتمويل.`,
+      'request',
+      {
+        decision_state: 'UNDER_REVIEW',
+        protection_gate_state: 'PASSES_PROTECTION_GATE',
+        financing_purpose: draft.purpose,
+        requested_amount: requested,
+        expected_installment: installment,
+        repayment_capacity_evidence: repaymentCapacity,
+        policy_cap_evidence: policyCapEvidence,
+        finance_limit_components: financeLimit,
+        execution_boundary: 'advisory_only',
+      },
+    );
+  }
+
   const blockedByPolicyLimit = financeLimit.finance_limit !== null && requested > financeLimit.finance_limit;
   const installmentAboveApprovedBand = installment > repaymentBand.max_installment_from_safe_savings;
   const blocked = requested > safeCapacity || protection.commitment_gap > 0 || blockedByPolicyLimit || installmentAboveApprovedBand;
@@ -305,6 +343,7 @@ export async function createHilalFinancingReply(userId: string, userText: string
         finance_limit_components: financeLimit,
         repayment_installment_band: repaymentBand,
         repayment_capacity_evidence: repaymentCapacity,
+        policy_cap_evidence: policyCapEvidence,
         installment_above_approved_band: installmentAboveApprovedBand,
         calibration_status: automaticCalibration.status,
         calibration_id: automaticCalibration.calibration_id,
@@ -336,6 +375,7 @@ export async function createHilalFinancingReply(userId: string, userText: string
       calibration_id: automaticCalibration.calibration_id,
       repayment_installment_band: repaymentBand,
       repayment_capacity_evidence: repaymentCapacity,
+      policy_cap_evidence: policyCapEvidence,
       policy_version: HILAL_POLICY_VERSION,
       execution_boundary: 'advisory_only',
     });
@@ -345,8 +385,8 @@ export async function createHilalFinancingReply(userId: string, userText: string
     ? 'تعذر إكمال REPAYMENT_CAPACITY لأن مدة السداد غير محددة أو لا يوجد دخل راتب متحقق في الدورة الحالية.'
     : `قدرة السداد الأولية قبل التسعير ${formatSar(repaymentCapacity.repayment_capacity)} ريال، مبنية على دخل راتب متحقق قدره ${formatSar(repaymentCapacity.realized_salary_income)} ريال وبأساس متحفظ لا يتجاوز الدخل الشهري المؤكد.`;
   const passesBody = eligibility
-    ? `حالة الحماية PASSES_PROTECTION_GATE. درجة أهلية بنك الهلال وفق السياسة المعتمدة ${eligibility.weighted_score} من 100 (${eligibility.decision_ar}). ${repaymentNote} يبقى الطلب UNDER_REVIEW حتى يكتمل POLICY_CAP وسقف التمويل النهائي، ولا يعد ذلك تنفيذًا ماليًا.`
-    : `حالة الحماية PASSES_PROTECTION_GATE: مبلغ التمويل ${formatSar(requested)} ريال يقع داخل السعة الآمنة الحالية ${formatSar(safeCapacity)} ريال. بعد إضافة قسط متوقع قدره ${formatSar(installment)} ريال تصبح الالتزامات الشهرية ${formatSar(projectedCoreObligations)} ريال والهامش الشهري الحسابي ${formatSar(monthlyMarginAfter)} ريال. ${repaymentNote} تم ربط سياسة بنك الهلال المعتمدة، لكن درجة الأهلية لا تُحسب حتى تكتمل المعايرة الرقمية المعتمدة.`;
+    ? `حالة الحماية PASSES_PROTECTION_GATE. درجة أهلية بنك الهلال وفق السياسة المعتمدة ${eligibility.weighted_score} من 100 (${eligibility.decision_ar}). ${repaymentNote} تم ربط البند «${policyCapEvidence.category_name}» وجمع بيانات الإنفاق والخطة، لكن POLICY_CAP الرقمي يبقى غير مفعل حتى تعتمد معايرته؛ لذلك يظل الطلب UNDER_REVIEW.`
+    : `حالة الحماية PASSES_PROTECTION_GATE: مبلغ التمويل ${formatSar(requested)} ريال يقع داخل السعة الآمنة الحالية ${formatSar(safeCapacity)} ريال. بعد إضافة قسط متوقع قدره ${formatSar(installment)} ريال تصبح الالتزامات الشهرية ${formatSar(projectedCoreObligations)} ريال والهامش الشهري الحسابي ${formatSar(monthlyMarginAfter)} ريال. ${repaymentNote} تم ربط البند «${policyCapEvidence.category_name}» وبيانات خطته وإنفاقه، لكن POLICY_CAP ودرجة الأهلية لا يتحولان إلى رقم حاكم قبل معايرة رقمية معتمدة.`;
   return persistReply(userId, nextMetadata, passesBody, 'recommendation', {
     decision_state: 'UNDER_REVIEW',
     protection_gate_state: 'PASSES_PROTECTION_GATE',
@@ -374,6 +414,7 @@ export async function createHilalFinancingReply(userId: string, userText: string
     finance_limit_components: financeLimit,
     repayment_installment_band: repaymentBand,
     repayment_capacity_evidence: repaymentCapacity,
+    policy_cap_evidence: policyCapEvidence,
     calibration_status: automaticCalibration.status,
     calibration_id: automaticCalibration.calibration_id,
     policy_threshold_applied: eligibility !== null,
