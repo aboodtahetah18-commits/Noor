@@ -42,6 +42,9 @@
 
 @media(max-width:767px){
   .page{
+    position:fixed;
+    inset:var(--ux-space-0);
+    z-index:20;
     height:100dvh;
     min-height:100dvh;
     width:100%;
@@ -106,9 +109,9 @@
   .chatHeader{
     height:auto;
     min-height:68px;
-    padding:calc(var(--ux-space-2) + env(safe-area-inset-top)) var(--ux-space-2) var(--ux-space-2);
+    padding:calc(var(--ux-space-2) + env(safe-area-inset-top)) var(--ux-space-3) var(--ux-space-2);
     position:relative;
-    top:auto;
+    top:var(--ux-space-0);
     z-index:6;
     background:var(--namaa-card);
   }
