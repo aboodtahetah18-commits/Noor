@@ -222,14 +222,24 @@ async function consumeChallenge(kind: ChallengeKind, token: string): Promise<str
   return emailFromIdentifier(kind, identifier);
 }
 
-async function beginNamaaPilotRegistration(input: {
+type PilotRegistrationInput = {
   firstName: string;
   lastName: string;
   phone: string;
   email: string;
   city: string;
   password: string;
-}) {
+};
+
+type PilotRegistrationSuccess = {
+  ok: true;
+  deliver: false;
+  email: string;
+  sessionToken: string;
+  sessionExpiresAt: Date;
+};
+
+async function beginNamaaPilotRegistrationHttp(input: PilotRegistrationInput): Promise<PilotRegistrationSuccess | { ok: false; code: 'AUTH_PILOT_ACCESS_REQUIRED' }> {
   const access = await rawSql`
     select email
     from auth.pilot_access
@@ -333,6 +343,113 @@ async function beginNamaaPilotRegistration(input: {
     sessionToken: String(session.token),
     sessionExpiresAt: new Date(String(session.expires_at)),
   };
+}
+
+async function beginNamaaPilotRegistrationPool(input: PilotRegistrationInput): Promise<PilotRegistrationSuccess | { ok: false; code: 'AUTH_PILOT_ACCESS_REQUIRED' }> {
+  const client = await database().connect();
+  try {
+    await client.query('begin');
+
+    const access = await client.query(
+      "select email from auth.pilot_access where lower(email) = $1 and status = 'ACTIVE' limit 1",
+      [input.email],
+    );
+    if (!access.rows.length) {
+      await client.query('rollback');
+      return { ok: false as const, code: 'AUTH_PILOT_ACCESS_REQUIRED' as const };
+    }
+
+    const existing = await client.query(
+      'select id from auth."user" where lower(email) = $1 limit 1',
+      [input.email],
+    );
+
+    const userId = existing.rows[0]?.id ? String(existing.rows[0].id) : randomUUID();
+    const accountRowId = randomUUID();
+    const sessionId = randomUUID();
+    const sessionToken = randomBytes(36).toString('base64url');
+    const sessionExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+    const fullName = `${input.firstName} ${input.lastName}`;
+    const passwordHash = await hashPassword(input.password);
+    const cityNormalized = input.city.toLocaleLowerCase('ar');
+
+    if (existing.rows.length) {
+      await client.query(
+        'update auth."user" set name = $1, email = $2, email_verified = true, updated_at = now() where id = $3',
+        [fullName, input.email, userId],
+      );
+    } else {
+      await client.query(
+        'insert into auth."user" (id, name, email, email_verified, image, created_at, updated_at) values ($1, $2, $3, true, null, now(), now())',
+        [userId, fullName, input.email],
+      );
+    }
+
+    await client.query(
+      `insert into auth.user_profile
+        (user_id, first_name, last_name, phone, city, city_normalized, created_at, updated_at)
+       values ($1, $2, $3, $4, $5, $6, now(), now())
+       on conflict (user_id) do update set
+         first_name = excluded.first_name,
+         last_name = excluded.last_name,
+         phone = excluded.phone,
+         city = excluded.city,
+         city_normalized = excluded.city_normalized,
+         updated_at = now()`,
+      [userId, input.firstName, input.lastName, input.phone, input.city, cityNormalized],
+    );
+
+    await client.query(
+      `insert into auth.account
+        (id, account_id, provider_id, user_id, password, issuer, created_at, updated_at)
+       values ($1, $2, 'credential', $3, $4, 'local:credential', now(), now())
+       on conflict (issuer, account_id) do update set
+         provider_id = 'credential',
+         user_id = excluded.user_id,
+         password = excluded.password,
+         updated_at = now()`,
+      [accountRowId, userId, userId, passwordHash],
+    );
+
+    await client.query(
+      "update auth.pilot_access set registered_at = coalesce(registered_at, now()), verified_at = coalesce(verified_at, now()), updated_at = now() where lower(email) = $1 and status = 'ACTIVE'",
+      [input.email],
+    );
+
+    await client.query(
+      `insert into auth.session
+        (id, expires_at, token, created_at, updated_at, ip_address, user_agent, user_id)
+       values ($1, $2, $3, now(), now(), null, null, $4)`,
+      [sessionId, sessionExpiresAt, sessionToken, userId],
+    );
+
+    await client.query('commit');
+
+    return {
+      ok: true as const,
+      deliver: false as const,
+      email: input.email,
+      sessionToken,
+      sessionExpiresAt,
+    };
+  } catch (error) {
+    await client.query('rollback').catch(() => undefined);
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
+async function beginNamaaPilotRegistration(input: PilotRegistrationInput) {
+  try {
+    return await beginNamaaPilotRegistrationHttp(input);
+  } catch (httpError) {
+    console.warn('[namaa-pilot-register-http-fallback]', {
+      name: httpError instanceof Error ? httpError.name : 'UnknownError',
+      message: httpError instanceof Error ? httpError.message : '',
+    });
+    return await beginNamaaPilotRegistrationPool(input);
+  }
 }
 
 export async function beginNamaaRegistration(input: RegistrationInput) {
