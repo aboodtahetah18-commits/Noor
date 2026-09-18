@@ -101,6 +101,12 @@ function StructuredFacts({data}:{data?:Record<string,unknown>}){
   const evidenceMatchedDate=evidenceVerification&&typeof evidenceVerification.matched_transaction_date==='string'?evidenceVerification.matched_transaction_date:null;
   const evidenceMatchedAccount=evidenceVerification&&typeof evidenceVerification.matched_account_name==='string'?evidenceVerification.matched_account_name:null;
   const evidenceMatchedRow=evidenceVerification&&typeof evidenceVerification.matched_statement_row_id==='string'?evidenceVerification.matched_statement_row_id:null;
+  const recoveryFollowup=data.recovery_followup&&typeof data.recovery_followup==='object'?data.recovery_followup as Record<string,unknown>:null;
+  const recoveryOutstanding=recoveryFollowup&&typeof recoveryFollowup.outstanding_exposure==='number'?recoveryFollowup.outstanding_exposure:null;
+  const recoveryOverdueCount=recoveryFollowup&&typeof recoveryFollowup.overdue_installment_count==='number'?recoveryFollowup.overdue_installment_count:null;
+  const recoveryOverdueAmount=recoveryFollowup&&typeof recoveryFollowup.overdue_planned_amount==='number'?recoveryFollowup.overdue_planned_amount:null;
+  const recoveryHardStop=recoveryFollowup&&typeof recoveryFollowup.hard_stop==='boolean'?recoveryFollowup.hard_stop:null;
+  const recoveryTrigger=recoveryFollowup&&typeof recoveryFollowup.trigger==='string'?recoveryFollowup.trigger:null;
   if(confidence===null&&!routed&&income===null&&!missing.length&&!goalName&&safeCapacity===null&&requested===null&&!financingPurpose&&!decisionState&&eligibilityScore===null&&!calibrationStatus)return null;
   return <div className={styles.facts}>
     {confidence!==null&&<span><small>درجة الثقة</small><strong>{confidence}٪</strong></span>}
@@ -163,6 +169,11 @@ function StructuredFacts({data}:{data?:Record<string,unknown>}){
     {evidenceMatchedDate&&<span><small>تاريخ الإثبات المتحقق</small><strong>{evidenceMatchedDate}</strong></span>}
     {evidenceMatchedAccount&&<span><small>حساب الإثبات</small><strong>{evidenceMatchedAccount}</strong></span>}
     {evidenceMatchedRow&&<span><small>مرجع صف الكشف</small><strong>{evidenceMatchedRow}</strong></span>}
+    {recoveryOutstanding!==null&&<span><small>التعرض بعد إعادة الحساب</small><strong>{formatSar(recoveryOutstanding)} ر.س</strong></span>}
+    {recoveryOverdueCount!==null&&recoveryOverdueCount>0&&<span><small>دفعات متأخرة بعد إعادة الحساب</small><strong>{recoveryOverdueCount}</strong></span>}
+    {recoveryOverdueAmount!==null&&recoveryOverdueAmount>0&&<span><small>قيمة التأخر بعد إعادة الحساب</small><strong>{formatSar(recoveryOverdueAmount)} ر.س</strong></span>}
+    {recoveryTrigger&&<span><small>سبب إعادة الحساب</small><strong>{recoveryTrigger==='PAYMENT_RECORDED'?'سداد مسجل':'مراجعة التأخر الدورية'}</strong></span>}
+    {recoveryHardStop===true&&<span><small>تمويل جديد</small><strong>متوقف حتى معالجة التأخر</strong></span>}
     {policyGovernanceStatus&&<span><small>حوكمة POLICY_CAP</small><strong>{policyGovernanceStatus==='HARD_STOP_OVERDUE'?'متوقف بسبب استرداد متأخر':policyGovernanceStatus==='NUMERIC_CALIBRATION_REQUIRED'?'إشارات مكتملة — المعايرة الرقمية مطلوبة':policyGovernanceStatus}</strong></span>}
     {policyHardStop===true&&<span><small>منع تمويل جديد</small><strong>مفعل حتى معالجة التأخر</strong></span>}
     {calibrationStatus&&<span><small>معايرة الأهلية</small><strong>{calibrationStatus==='CALIBRATION_NOT_ACTIVE'?'بانتظار معايرة رقمية معتمدة':calibrationStatus==='SCORED'?'معايرة مفعلة':calibrationStatus}</strong></span>}
