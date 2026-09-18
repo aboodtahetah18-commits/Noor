@@ -75,7 +75,7 @@ export async function startGovernedDecisionFollowupAfterVerifiedExecution(input:
     return {started:false,decisionId,reason:'REVIEW_DATE_REQUIRED'};
   }
 
-  if(row.latest_run_id && row.monitoring_run_status==='RUNNING'){
+  if(row.latest_run_id){
     return {started:false,decisionId,reason:'FOLLOWUP_ALREADY_ACTIVE'};
   }
 
