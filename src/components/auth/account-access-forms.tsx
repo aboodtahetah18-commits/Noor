@@ -8,6 +8,7 @@ import styles from './public-auth-shell.module.css';
 function messageFor(code: string): string {
   if (code === 'AUTH_RATE_LIMITED') return 'تمت محاولات كثيرة خلال وقت قصير. حاول لاحقًا.';
   if (code === 'AUTH_EMAIL_NOT_CONFIGURED') return 'خدمة البريد لم تُهيأ بعد. تواصل مع مسؤول المنصة.';
+  if (code === 'AUTH_PILOT_ACCESS_REQUIRED') return 'هذا البريد غير مضاف إلى قائمة التجربة الحالية.';
   if (code === 'AUTH_PASSWORD_WEAK') return 'استخدم كلمة مرور من 10 أحرف على الأقل وتتضمن حرفًا ورقمًا.';
   if (code === 'AUTH_TOKEN_INVALID_OR_EXPIRED') return 'الرابط غير صالح أو انتهت صلاحيته. اطلب رابطًا جديدًا.';
   if (code === 'AUTH_INPUT_INVALID') return 'تحقق من البيانات المدخلة.';
