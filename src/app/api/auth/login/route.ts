@@ -7,9 +7,12 @@ import { AUTH_SESSION_COOKIE, authCookieOptions } from '@/lib/auth/session-cooki
 import { normalizeAuthEmail } from '@/lib/auth/http-auth';
 import { assertTrustedMutationOrigin } from '@/security/request-origin';
 import { enforceRateLimit } from '@/security/rate-limit';
+import { isNamaaPilotMode } from '@/lib/auth/namaa-account-access';
 
 export async function POST(request: Request) {
-  try { await assertTrustedMutationOrigin(); } catch { return NextResponse.json({ code: 'AUTH_ORIGIN_REJECTED' }, { status: 403 }); }
+  if (!isNamaaPilotMode()) {
+    try { await assertTrustedMutationOrigin(); } catch { return NextResponse.json({ code: 'AUTH_ORIGIN_REJECTED' }, { status: 403 }); }
+  }
   try { enforceRateLimit('auth-login', 10, 60_000); } catch { return NextResponse.json({ code: 'AUTH_RATE_LIMITED' }, { status: 429 }); }
   let body: { email?: unknown; password?: unknown };
   try { body = await request.json(); } catch { return NextResponse.json({ code: 'AUTH_INPUT_INVALID' }, { status: 400 }); }
