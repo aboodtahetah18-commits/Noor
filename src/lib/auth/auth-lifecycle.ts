@@ -127,8 +127,8 @@ export async function setInitialPassword(input: { token: string; password: strin
       where user_id = ${userId}::uuid and provider_id = 'credential'
     `,
     rawSql`
-      insert into auth.account (id, account_id, provider_id, issuer, user_id, password, created_at, updated_at)
-      values (${randomUUID()}::uuid, ${userId}, 'credential', 'local:credential', ${userId}::uuid, ${passwordHash}, now(), now())
+      insert into auth.account (id, account_id, provider_id, user_id, password, created_at, updated_at)
+      values (${randomUUID()}::uuid, ${userId}, 'credential', ${userId}::uuid, ${passwordHash}, now(), now())
     `,
     rawSql`delete from auth.session where user_id = ${userId}::uuid`,
   ]);
