@@ -1,4 +1,5 @@
 import { getRawSql } from '@/infrastructure/db/client';
+import { getCentralPolicyNumericParameter } from './central-policy-parameters';
 import { evaluateUnifiedEvidenceVerification } from './evidence-verification-contract';
 
 export async function verifyUnifiedEvidenceCase(userId: string, evidenceCaseId: string) {
@@ -14,6 +15,7 @@ export async function verifyUnifiedEvidenceCase(userId: string, evidenceCaseId: 
       ec.counterparty_ref,
       ec.file_or_reference,
       ec.decision_reference,
+      ec.confidence::text as match_confidence,
       ee.execution_task_id::text as execution_task_id,
       ee.external_reference
     from public.evidence_cases ec
@@ -31,47 +33,75 @@ export async function verifyUnifiedEvidenceCase(userId: string, evidenceCaseId: 
   const claimedDate = evidence.claimed_date == null
     ? null
     : String(evidence.claimed_date).slice(0, 10);
-  const sourceAccountRef = evidence.source_account_ref == null ? null : String(evidence.source_account_ref);
+  const sourceAccountRef = evidence.source_account_ref == null
+    ? null
+    : String(evidence.source_account_ref);
   const externalReference = evidence.external_reference == null
     ? (evidence.file_or_reference == null ? null : String(evidence.file_or_reference))
     : String(evidence.external_reference);
-  const counterpartyRef = evidence.counterparty_ref == null ? null : String(evidence.counterparty_ref);
+  const counterpartyRef = evidence.counterparty_ref == null
+    ? null
+    : String(evidence.counterparty_ref);
+  const locator = externalReference ?? counterpartyRef;
+  const completeEvidence = (
+    claimedAmount !== null
+    && Boolean(claimedDate)
+    && Boolean(sourceAccountRef)
+    && Boolean(locator)
+  );
 
-  const readiness = evaluateUnifiedEvidenceVerification({
-    claimedAmount,
-    claimedDate,
-    sourceAccountRef,
-    externalReference,
-    counterpartyRef,
-    candidateCount: 0,
-  });
+  const [dateTolerance, autoMatchThreshold] = await Promise.all([
+    getCentralPolicyNumericParameter('SET-RC-001'),
+    getCentralPolicyNumericParameter('SET-RC-002'),
+  ]);
 
-  if (readiness.status === 'PENDING') {
+  if (!completeEvidence) {
+    const pending = evaluateUnifiedEvidenceVerification({
+      completeEvidence: false,
+      candidateCount: 0,
+      matchConfidence: null,
+      autoMatchThreshold: autoMatchThreshold.value,
+      hasMaterialDifference: false,
+    });
     await sql`
       update public.evidence_cases
-      set verification_status='PENDING',
-          verification_reason=${readiness.reason},
-          candidate_count=0
+      set verification_status=${pending.status},
+          verification_reason=${pending.reason},
+          candidate_count=0,
+          matched_statement_row_id=null,
+          reviewer_type='SYSTEM_BANK_STATEMENT',
+          verified_at=null
       where id=${evidenceCaseId}::uuid and user_id=${userId}::uuid
     `;
     return {
       evidenceCaseId,
       decisionReference: evidence.decision_reference == null ? null : String(evidence.decision_reference),
-      status: readiness.status,
-      reason: readiness.reason,
+      ...pending,
       candidateCount: 0,
       matchedStatementRowId: null,
+      policySnapshot: {
+        dateTolerance: { id: 'SET-RC-001', ...dateTolerance },
+        autoMatchThreshold: { id: 'SET-RC-002', ...autoMatchThreshold },
+      },
     };
   }
 
-  const locator = externalReference ?? counterpartyRef;
   const candidates = await sql`
     select
       r.id::text as row_id,
       r.transaction_date::text as transaction_date,
       r.amount::text as amount,
+      r.description,
       a.id::text as account_id,
-      a.name as account_name
+      a.name as account_name,
+      a.iban,
+      a.account_number,
+      (
+        lower(a.name)=lower(${sourceAccountRef})
+        or a.id::text=${sourceAccountRef}
+        or lower(coalesce(a.iban,''))=lower(${sourceAccountRef})
+        or lower(coalesce(a.account_number,''))=lower(${sourceAccountRef})
+      ) as account_matches
     from public.bank_statement_rows r
     join public.bank_statement_imports i
       on i.id=r.import_id and i.user_id=r.user_id
@@ -81,51 +111,55 @@ export async function verifyUnifiedEvidenceCase(userId: string, evidenceCaseId: 
       and i.status='APPROVED'
       and r.review_status in ('AUTO','CONFIRMED')
       and r.direction='DEBIT'
-      and abs(r.amount-${claimedAmount}) < 0.01
-      and r.transaction_date=${claimedDate}::date
-      and (
-        lower(a.name)=lower(${sourceAccountRef})
-        or a.id::text=${sourceAccountRef}
-        or lower(coalesce(a.iban,''))=lower(${sourceAccountRef})
-        or lower(coalesce(a.account_number,''))=lower(${sourceAccountRef})
-      )
+      and abs(r.transaction_date-${claimedDate}::date) <= ${dateTolerance.value}
       and (
         position(lower(${locator}) in lower(r.description)) > 0
         or position(lower(${locator}) in lower(coalesce(r.normalized_merchant,''))) > 0
       )
-    order by r.created_at desc
-    limit 5
+    order by abs(r.transaction_date-${claimedDate}::date),r.created_at desc
+    limit 10
   `;
 
+  const exactCandidates = candidates.filter((row) =>
+    row.account_matches === true
+    && Math.abs(Number(row.amount ?? 0) - (claimedAmount ?? 0)) < 0.01,
+  );
+  const hasMaterialDifference = candidates.length > 0 && exactCandidates.length === 0;
+
+  const existingConfidence = evidence.match_confidence == null
+    ? null
+    : Number(evidence.match_confidence);
+  const matchConfidence = Number.isFinite(existingConfidence)
+    ? existingConfidence
+    : null;
+
   const result = evaluateUnifiedEvidenceVerification({
-    claimedAmount,
-    claimedDate,
-    sourceAccountRef,
-    externalReference,
-    counterpartyRef,
-    candidateCount: candidates.length,
+    completeEvidence: true,
+    candidateCount: exactCandidates.length,
+    matchConfidence,
+    autoMatchThreshold: autoMatchThreshold.value,
+    hasMaterialDifference,
   });
 
-  const matchedStatementRowId = result.status === 'VERIFIED'
-    ? String(candidates[0]?.row_id ?? '')
+  const matchedStatementRowId = result.status === 'FINAL_MATCHED'
+    ? String(exactCandidates[0]?.row_id ?? '')
     : null;
 
   await sql`
     update public.evidence_cases
     set verification_status=${result.status},
         verification_reason=${result.reason},
-        candidate_count=${candidates.length},
+        candidate_count=${hasMaterialDifference ? candidates.length : exactCandidates.length},
         matched_statement_row_id=${matchedStatementRowId},
-        confidence=${result.status === 'VERIFIED' ? 1 : result.status === 'AMBIGUOUS' ? 0.5 : 0},
         reviewer_type='SYSTEM_BANK_STATEMENT',
-        verified_at=${result.status === 'VERIFIED' ? new Date().toISOString() : null}
+        verified_at=${result.status === 'FINAL_MATCHED' ? new Date().toISOString() : null}
     where id=${evidenceCaseId}::uuid and user_id=${userId}::uuid
   `;
 
   const taskId = String(evidence.execution_task_id);
   const eventId = String(evidence.execution_event_id);
 
-  if (result.status === 'VERIFIED') {
+  if (result.status === 'FINAL_MATCHED') {
     await sql.transaction([
       sql`
         update public.execution_events
@@ -140,7 +174,20 @@ export async function verifyUnifiedEvidenceCase(userId: string, evidenceCaseId: 
         where id=${taskId}::uuid and user_id=${userId}::uuid
       `,
     ]);
-  } else if (result.status === 'AMBIGUOUS') {
+  } else if (result.status === 'RECONCILIATION_REQUIRED') {
+    await sql.transaction([
+      sql`
+        update public.execution_events
+        set status='RECONCILIATION'
+        where id=${eventId}::uuid and user_id=${userId}::uuid
+      `,
+      sql`
+        update public.execution_tasks
+        set status='RECONCILIATION',updated_at=now()
+        where id=${taskId}::uuid and user_id=${userId}::uuid
+      `,
+    ]);
+  } else {
     await sql.transaction([
       sql`
         update public.execution_events
@@ -153,27 +200,17 @@ export async function verifyUnifiedEvidenceCase(userId: string, evidenceCaseId: 
         where id=${taskId}::uuid and user_id=${userId}::uuid
       `,
     ]);
-  } else {
-    await sql.transaction([
-      sql`
-        update public.execution_events
-        set status='EVIDENCE_REJECTED'
-        where id=${eventId}::uuid and user_id=${userId}::uuid
-      `,
-      sql`
-        update public.execution_tasks
-        set status='WAITING_USER_CONFIRMATION',updated_at=now()
-        where id=${taskId}::uuid and user_id=${userId}::uuid
-      `,
-    ]);
   }
 
   return {
     evidenceCaseId,
     decisionReference: evidence.decision_reference == null ? null : String(evidence.decision_reference),
-    status: result.status,
-    reason: result.reason,
-    candidateCount: candidates.length,
+    ...result,
+    candidateCount: hasMaterialDifference ? candidates.length : exactCandidates.length,
     matchedStatementRowId,
+    policySnapshot: {
+      dateTolerance: { id: 'SET-RC-001', ...dateTolerance },
+      autoMatchThreshold: { id: 'SET-RC-002', ...autoMatchThreshold },
+    },
   };
 }
