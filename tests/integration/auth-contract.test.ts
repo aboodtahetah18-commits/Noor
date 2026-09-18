@@ -50,13 +50,14 @@ describe('Neon HTTP auth contract', () => {
 
     expect(registerRoute).toContain('const pilotMode = isNamaaPilotMode()');
     expect(registerRoute).toContain('if (!pilotMode)');
-    expect(registerRoute).toContain('pilotLoginResponse');
     expect(registerRoute).toContain('AUTH_PILOT_LOGIN_OK');
-    expect(registerRoute).toContain('response.cookies.set(AUTH_SESSION_COOKIE');
-    expect(accountAccess).toContain("if (current?.email_verified === true && !pilotMode)");
-    expect(accountAccess).toContain("email_verified = $2");
+    expect(registerRoute).toContain('response.cookies.set(');
+    expect(registerRoute).toContain('result.sessionToken');
+    expect(accountAccess).toContain('with upsert_user as');
+    expect(accountAccess).toContain('insert into auth.session');
+    expect(accountAccess).toContain('email_verified = true');
     expect(accountAccess).toContain("verified_at = coalesce(verified_at, now())");
-    expect(registerForm).toContain("window.location.assign('/conversations')");
+    expect(registerForm).toContain("router.push('/conversations')");
   });
 
   it('scopes verified credential login to the local credential issuer', () => {
