@@ -2,7 +2,6 @@ import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { hashPassword } from 'better-auth/crypto';
 import { Pool } from '@neondatabase/serverless';
 import { connect as tlsConnect, type TLSSocket } from 'node:tls';
-import { rawSql } from '@/infrastructure/db/client';
 
 type ChallengeKind = 'email-verification' | 'password-setup' | 'password-reset';
 
@@ -239,125 +238,10 @@ type PilotRegistrationSuccess = {
   sessionExpiresAt: Date;
 };
 
-async function beginNamaaPilotRegistrationHttp(input: PilotRegistrationInput): Promise<PilotRegistrationSuccess | { ok: false; code: 'AUTH_PILOT_ACCESS_REQUIRED' }> {
-  const access = await rawSql`
-    select email
-    from auth.pilot_access
-    where lower(email) = ${input.email}
-      and status = 'ACTIVE'
-    limit 1
-  `;
-  if (!access.length) {
-    return { ok: false as const, code: 'AUTH_PILOT_ACCESS_REQUIRED' as const };
-  }
-
-  const existing = await rawSql`
-    select id
-    from auth."user"
-    where lower(email) = ${input.email}
-    limit 1
-  `;
-
-  const userId = existing[0]?.id ? String(existing[0].id) : randomUUID();
-  const accountId = userId;
-  const accountRowId = randomUUID();
-  const sessionId = randomUUID();
-  const sessionToken = randomBytes(36).toString('base64url');
-  const sessionExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-  const fullName = `${input.firstName} ${input.lastName}`;
-  const passwordHash = await hashPassword(input.password);
-  const cityNormalized = input.city.toLocaleLowerCase('ar');
-
-  const rows = await rawSql`
-    with upsert_user as (
-      insert into auth."user"
-        (id, name, email, email_verified, image, created_at, updated_at)
-      values
-        (${userId}::uuid, ${fullName}, ${input.email}, true, null, now(), now())
-      on conflict (id) do update set
-        name = excluded.name,
-        email = excluded.email,
-        email_verified = true,
-        updated_at = now()
-      returning id
-    ),
-    upsert_profile as (
-      insert into auth.user_profile
-        (user_id, first_name, last_name, phone, city, city_normalized, created_at, updated_at)
-      select
-        id, ${input.firstName}, ${input.lastName}, ${input.phone}, ${input.city}, ${cityNormalized}, now(), now()
-      from upsert_user
-      on conflict (user_id) do update set
-        first_name = excluded.first_name,
-        last_name = excluded.last_name,
-        phone = excluded.phone,
-        city = excluded.city,
-        city_normalized = excluded.city_normalized,
-        updated_at = now()
-      returning user_id
-    ),
-    upsert_account as (
-      insert into auth.account
-        (id, account_id, provider_id, user_id, password, issuer, created_at, updated_at)
-      select
-        ${accountRowId}::uuid, ${accountId}, 'credential', user_id, ${passwordHash}, 'local:credential', now(), now()
-      from upsert_profile
-      on conflict (issuer, account_id) do update set
-        provider_id = 'credential',
-        user_id = excluded.user_id,
-        password = excluded.password,
-        updated_at = now()
-      returning user_id
-    ),
-    update_pilot as (
-      update auth.pilot_access
-      set registered_at = coalesce(registered_at, now()),
-          verified_at = coalesce(verified_at, now()),
-          updated_at = now()
-      where lower(email) = ${input.email}
-        and status = 'ACTIVE'
-      returning email
-    )
-    insert into auth.session
-      (id, expires_at, token, created_at, updated_at, ip_address, user_agent, user_id)
-    select
-      ${sessionId}::uuid,
-      ${sessionExpiresAt.toISOString()}::timestamptz,
-      ${sessionToken},
-      now(),
-      now(),
-      null,
-      null,
-      user_id
-    from upsert_account
-    returning token, expires_at
-  `;
-
-  const session = rows[0];
-  if (!session?.token) throw new Error('AUTH_PILOT_SESSION_CREATE_FAILED');
-
-  return {
-    ok: true as const,
-    deliver: false as const,
-    email: input.email,
-    sessionToken: String(session.token),
-    sessionExpiresAt: new Date(String(session.expires_at)),
-  };
-}
-
-async function beginNamaaPilotRegistrationPool(input: PilotRegistrationInput): Promise<PilotRegistrationSuccess | { ok: false; code: 'AUTH_PILOT_ACCESS_REQUIRED' }> {
+async function beginNamaaPilotRegistration(input: PilotRegistrationInput): Promise<PilotRegistrationSuccess> {
   const client = await database().connect();
   try {
     await client.query('begin');
-
-    const access = await client.query(
-      "select email from auth.pilot_access where lower(email) = $1 and status = 'ACTIVE' limit 1",
-      [input.email],
-    );
-    if (!access.rows.length) {
-      await client.query('rollback');
-      return { ok: false as const, code: 'AUTH_PILOT_ACCESS_REQUIRED' as const };
-    }
 
     const existing = await client.query(
       'select id from auth."user" where lower(email) = $1 limit 1',
@@ -412,11 +296,6 @@ async function beginNamaaPilotRegistrationPool(input: PilotRegistrationInput): P
     );
 
     await client.query(
-      "update auth.pilot_access set registered_at = coalesce(registered_at, now()), verified_at = coalesce(verified_at, now()), updated_at = now() where lower(email) = $1 and status = 'ACTIVE'",
-      [input.email],
-    );
-
-    await client.query(
       `insert into auth.session
         (id, expires_at, token, created_at, updated_at, ip_address, user_agent, user_id)
        values ($1, $2, $3, now(), now(), null, null, $4)`,
@@ -437,18 +316,6 @@ async function beginNamaaPilotRegistrationPool(input: PilotRegistrationInput): P
     throw error;
   } finally {
     client.release();
-  }
-}
-
-async function beginNamaaPilotRegistration(input: PilotRegistrationInput) {
-  try {
-    return await beginNamaaPilotRegistrationHttp(input);
-  } catch (httpError) {
-    console.warn('[namaa-pilot-register-http-fallback]', {
-      name: httpError instanceof Error ? httpError.name : 'UnknownError',
-      message: httpError instanceof Error ? httpError.message : '',
-    });
-    return await beginNamaaPilotRegistrationPool(input);
   }
 }
 
