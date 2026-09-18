@@ -20,7 +20,7 @@ function parseOptionalAmount(value:string|null|undefined){
 export async function listOpenExecutionTasks(userId:string){
   const sql=getRawSql();
   const rows=await sql`
-    SELECT t.id,t.decision_request_id,t.user_decision_id,t.action_type,t.amount,t.currency,t.instructions,
+    SELECT t.id,t.decision_request_id,t.user_decision_id,t.action_type,t.amount,t.currency,t.instructions,t.decision_reference,
       t.evidence_requirement,t.required_by,t.status,t.created_at,
       r.recommendation_id,r.decision_type,r.materiality
     FROM public.execution_tasks t
@@ -30,7 +30,7 @@ export async function listOpenExecutionTasks(userId:string){
     ORDER BY COALESCE(t.required_by,t.created_at) ASC,t.created_at ASC
   `;
   return rows.map(row=>({
-    id:String(row.id),decisionRequestId:String(row.decision_request_id),userDecisionId:String(row.user_decision_id),
+    id:String(row.id),decisionRequestId:String(row.decision_request_id),userDecisionId:String(row.user_decision_id),decisionReference:row.decision_reference==null?null:String(row.decision_reference),
     actionType:String(row.action_type),amount:row.amount==null?null:String(row.amount),currency:String(row.currency).trim(),
     instructions:row.instructions==null?null:String(row.instructions),evidenceRequirement:String(row.evidence_requirement),
     requiredBy:row.required_by==null?null:String(row.required_by),status:String(row.status),createdAt:String(row.created_at),
@@ -49,7 +49,7 @@ export async function reportUserExecution(input:{
 }){
   const sql=getRawSql();
   const tasks=await sql`
-    SELECT id,status,evidence_requirement,amount,currency,action_type
+    SELECT id,status,evidence_requirement,amount,currency,action_type,decision_reference
     FROM public.execution_tasks
     WHERE id=${input.executionTaskId}::uuid AND user_id=${input.userId}::uuid
     LIMIT 1
@@ -89,11 +89,11 @@ export async function reportUserExecution(input:{
 
     const eventRows=await sql`
       INSERT INTO public.execution_events(
-        user_id,execution_task_id,execution_type,reported_amount,currency,external_reference,status,irreversible,executed_at
+        user_id,execution_task_id,execution_type,reported_amount,currency,external_reference,status,irreversible,executed_at,decision_reference
       ) VALUES(
         ${input.userId}::uuid,${input.executionTaskId}::uuid,${String(task.action_type)},${reportedAmount},${String(task.currency).trim()},
-        ${input.externalReference??null},'REPORTED',${input.irreversible??false},${executedAt?executedAt.toISOString():null}
-      ) RETURNING id,status,reported_amount,currency,external_reference,executed_at,created_at
+        ${input.externalReference??null},'REPORTED',${input.irreversible??false},${executedAt?executedAt.toISOString():null},${task.decision_reference??null}
+      ) RETURNING id,status,reported_amount,currency,external_reference,executed_at,decision_reference,created_at
     `;
     const event=eventRows[0];
     if(!event)throw new FinancialPlatformError('EXECUTION_EVENT_WRITE_FAILED',500);
@@ -103,11 +103,11 @@ export async function reportUserExecution(input:{
     if(input.evidence){
       const evidenceRows=await sql`
         INSERT INTO public.evidence_cases(
-          user_id,execution_event_id,evidence_type,file_or_reference,claimed_amount,claimed_date,source_account_ref,counterparty_ref,verification_status
+          user_id,execution_event_id,evidence_type,file_or_reference,claimed_amount,claimed_date,source_account_ref,counterparty_ref,verification_status,decision_reference
         ) VALUES(
           ${input.userId}::uuid,${eventId}::uuid,${input.evidence.type},${input.evidence.fileOrReference??null},
-          ${claimedAmount},${claimedDate?claimedDate.toISOString():null},${input.evidence.sourceAccountRef??null},${input.evidence.counterpartyRef??null},'PENDING'
-        ) RETURNING id,evidence_type,file_or_reference,verification_status,created_at
+          ${claimedAmount},${claimedDate?claimedDate.toISOString():null},${input.evidence.sourceAccountRef??null},${input.evidence.counterpartyRef??null},'PENDING',${task.decision_reference??null}
+        ) RETURNING id,evidence_type,file_or_reference,verification_status,decision_reference,created_at
       `;
       evidenceCase=evidenceRows[0]??null;
       if(!evidenceCase)throw new FinancialPlatformError('EVIDENCE_WRITE_FAILED',500);
