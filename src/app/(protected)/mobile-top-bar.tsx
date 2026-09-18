@@ -19,7 +19,7 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
   const triggerRef=useRef<HTMLButtonElement>(null);
   const closeRef=useRef<HTMLButtonElement>(null);
   useEffect(()=>{if(!open)return;closeRef.current?.focus();const onKey=(e:KeyboardEvent)=>{if(e.key==='Escape'){setOpen(false);triggerRef.current?.focus();}};window.addEventListener('keydown',onKey);return()=>window.removeEventListener('keydown',onKey);},[open]);
-  if (pathname.startsWith('/onboarding')) return null;
+  if (pathname.startsWith('/onboarding') || pathname.startsWith('/conversations')) return null;
   return <>
     <header className="p47-mobile-topbar mustaqbali-mobile-header namaa-mobile-header" dir="rtl">
       <div className="mustaqbali-mobile-brand-zone">
