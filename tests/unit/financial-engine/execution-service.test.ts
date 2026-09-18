@@ -12,7 +12,7 @@ const taskId='22222222-2222-4222-8222-222222222222';
 const decisionReference='DEC-55555555-5555-4555-8555-555555555555';
 
 describe('reportUserExecution',()=>{
-  beforeEach(()=>{sqlMock.mockReset();verifyEvidenceMock.mockReset();verifyEvidenceMock.mockResolvedValue({status:'PENDING',reason:'EVIDENCE_FIELDS_INCOMPLETE',candidateCount:0,matchedStatementRowId:null});});
+  beforeEach(()=>{sqlMock.mockReset();verifyEvidenceMock.mockReset();verifyEvidenceMock.mockResolvedValue({status:'PENDING_MATCH',storage_status:'PENDING',reason:'EVIDENCE_FIELDS_INCOMPLETE',candidateCount:0,matchedStatementRowId:null});});
 
   it('requires evidence when the execution task requires it',async()=>{
     sqlMock
