@@ -41,6 +41,7 @@ export const account = authSchema.table('account', {
   userId: uuid('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
   accountId: text('account_id').notNull(),
   providerId: text('provider_id').notNull(),
+  issuer: text('issuer').notNull(),
   accessToken: text('access_token'),
   refreshToken: text('refresh_token'),
   accessTokenExpiresAt: timestamp('access_token_expires_at', { withTimezone: true }),
