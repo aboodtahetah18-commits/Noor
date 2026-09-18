@@ -17,10 +17,14 @@ type RegistrationInput = {
 const CHALLENGE_TTL_MS = 30 * 60 * 1000;
 let pool: Pool | null = null;
 
-function database(): Pool {
-  const connectionString = process.env.DATABASE_URL?.trim();
+function databaseConnectionString(): string {
+  const connectionString = process.env.DATABASE_URL?.trim() || process.env.DATABASEURL?.trim();
   if (!connectionString) throw new Error('DATABASE_URL_REQUIRED');
-  if (!pool) pool = new Pool({ connectionString });
+  return connectionString;
+}
+
+function database(): Pool {
+  if (!pool) pool = new Pool({ connectionString: databaseConnectionString() });
   return pool;
 }
 
