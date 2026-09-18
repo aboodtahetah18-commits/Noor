@@ -239,10 +239,19 @@ type PilotRegistrationSuccess = {
 };
 
 async function beginNamaaPilotRegistration(input: PilotRegistrationInput): Promise<PilotRegistrationSuccess> {
-  const client = await database().connect();
+  let stage = 'database-connect';
+  const client = await database().connect().catch((error) => {
+    if (typeof error === 'object' && error !== null) {
+      (error as { namaaStage?: string }).namaaStage = stage;
+    }
+    throw error;
+  });
+
   try {
+    stage = 'begin-transaction';
     await client.query('begin');
 
+    stage = 'lookup-user';
     const existing = await client.query(
       'select id from auth."user" where lower(email) = $1 limit 1',
       [input.email],
@@ -257,6 +266,7 @@ async function beginNamaaPilotRegistration(input: PilotRegistrationInput): Promi
     const passwordHash = await hashPassword(input.password);
     const cityNormalized = input.city.toLocaleLowerCase('ar');
 
+    stage = existing.rows.length ? 'update-user' : 'insert-user';
     if (existing.rows.length) {
       await client.query(
         'update auth."user" set name = $1, email = $2, email_verified = true, updated_at = now() where id = $3',
@@ -269,6 +279,7 @@ async function beginNamaaPilotRegistration(input: PilotRegistrationInput): Promi
       );
     }
 
+    stage = 'insert-profile';
     await client.query(
       `insert into auth.user_profile
         (user_id, first_name, last_name, phone, city, city_normalized, created_at, updated_at)
@@ -283,6 +294,7 @@ async function beginNamaaPilotRegistration(input: PilotRegistrationInput): Promi
       [userId, input.firstName, input.lastName, input.phone, input.city, cityNormalized],
     );
 
+    stage = 'insert-account';
     await client.query(
       `insert into auth.account
         (id, account_id, provider_id, user_id, password, issuer, created_at, updated_at)
@@ -295,6 +307,7 @@ async function beginNamaaPilotRegistration(input: PilotRegistrationInput): Promi
       [accountRowId, userId, userId, passwordHash],
     );
 
+    stage = 'insert-session';
     await client.query(
       `insert into auth.session
         (id, expires_at, token, created_at, updated_at, ip_address, user_agent, user_id)
@@ -302,6 +315,7 @@ async function beginNamaaPilotRegistration(input: PilotRegistrationInput): Promi
       [sessionId, sessionExpiresAt, sessionToken, userId],
     );
 
+    stage = 'commit';
     await client.query('commit');
 
     return {
@@ -313,6 +327,9 @@ async function beginNamaaPilotRegistration(input: PilotRegistrationInput): Promi
     };
   } catch (error) {
     await client.query('rollback').catch(() => undefined);
+    if (typeof error === 'object' && error !== null) {
+      (error as { namaaStage?: string }).namaaStage = stage;
+    }
     throw error;
   } finally {
     client.release();
