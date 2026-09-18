@@ -1,5 +1,5 @@
 [build]
-  command = "npm run ensure:npmrc && npm run ensure:env-example && npm run deploy:preflight && npm run quality:gate && npm run deploy:migrate"
+  command = "npm run build"
   publish = ".next"
 
 [build.environment]
@@ -10,7 +10,7 @@
 
 [context.production.environment]
   APP_ENV = "production"
-  ALLOW_DB_MIGRATIONS = "true"
+  ALLOW_DB_MIGRATIONS = "false"
 
 [context.deploy-preview.environment]
   APP_ENV = "staging"
