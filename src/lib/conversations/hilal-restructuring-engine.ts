@@ -237,7 +237,7 @@ async function persistReply(
   return (result[0]?.[0] ?? null) as AgentReply | null;
 }
 
-function buildProposal(
+export function buildHilalRestructuringProposal(
   selectedCase: FundingCase,
   safeMonthlyCapacity: number,
   requestedMonthlyCap?: number,
@@ -444,7 +444,7 @@ export async function createHilalRestructuringReply(userId: string, userText: st
     confirmedMonthlyIncome: baseline.monthly_net_income_confirmed,
     recurringCoreObligations: baseline.recurring_core_obligations_total,
   });
-  const proposal = buildProposal(selected, repayment.max_monthly_repayment, monthlyCap, cycles);
+  const proposal = buildHilalRestructuringProposal(selected, repayment.max_monthly_repayment, monthlyCap, cycles);
   draft = { ...draft, proposal };
 
   if (!proposal.feasible) {
