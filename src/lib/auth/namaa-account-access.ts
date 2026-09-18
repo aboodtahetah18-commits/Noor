@@ -203,6 +203,16 @@ export async function beginNamaaRegistration(input: RegistrationInput) {
     return { ok: false as const, code: 'AUTH_INPUT_INVALID' as const };
   }
 
+  if (process.env.PILOT_MODE?.trim().toLowerCase() === 'true') {
+    const access = await database().query(
+      "select email from auth.pilot_access where lower(email) = $1 and status = 'ACTIVE' limit 1",
+      [email],
+    );
+    if (!access.rows.length) {
+      return { ok: false as const, code: 'AUTH_PILOT_ACCESS_REQUIRED' as const };
+    }
+  }
+
   const existing = await database().query(
     'select id, email_verified from auth."user" where lower(email) = $1 limit 1',
     [email],
@@ -241,6 +251,12 @@ export async function beginNamaaRegistration(input: RegistrationInput) {
          updated_at = now()`,
       [userId, firstName, lastName, phone, city, city.toLocaleLowerCase('ar')],
     );
+    if (process.env.PILOT_MODE?.trim().toLowerCase() === 'true') {
+      await client.query(
+        "update auth.pilot_access set registered_at = coalesce(registered_at, now()), updated_at = now() where lower(email) = $1 and status = 'ACTIVE'",
+        [email],
+      );
+    }
     await client.query('commit');
   } catch (error) {
     await client.query('rollback');
@@ -261,6 +277,12 @@ export async function verifyNamaaEmail(token: string) {
     [email],
   );
   if (!result.rows.length) return { ok: false as const, code: 'AUTH_TOKEN_INVALID_OR_EXPIRED' as const };
+  if (process.env.PILOT_MODE?.trim().toLowerCase() === 'true') {
+    await database().query(
+      "update auth.pilot_access set verified_at = coalesce(verified_at, now()), updated_at = now() where lower(email) = $1 and status = 'ACTIVE'",
+      [email],
+    );
+  }
   const setupToken = await createChallenge('password-setup', email);
   return { ok: true as const, setupToken };
 }
