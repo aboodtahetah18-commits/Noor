@@ -86,6 +86,9 @@ function StructuredFacts({data}:{data?:Record<string,unknown>}){
   const exposureIncomeRatio=policySignals&&typeof policySignals.exposure_to_realized_income_ratio==='number'?policySignals.exposure_to_realized_income_ratio:null;
   const utilizationRatio=policySignals&&typeof policySignals.category_utilization_ratio==='number'?policySignals.category_utilization_ratio:null;
   const financingFrequency=policySignals&&typeof policySignals.financing_frequency==='number'?policySignals.financing_frequency:null;
+  const restructuringTotal=policySignals&&typeof policySignals.restructuring_applied_count_total==='number'?policySignals.restructuring_applied_count_total:null;
+  const restructuringMax=policySignals&&typeof policySignals.restructuring_max_applied_per_case==='number'?policySignals.restructuring_max_applied_per_case:null;
+  const restructuringCapReached=policySignals&&typeof policySignals.restructuring_precautionary_cap_reached==='boolean'?policySignals.restructuring_precautionary_cap_reached:null;
   if(confidence===null&&!routed&&income===null&&!missing.length&&!goalName&&safeCapacity===null&&requested===null&&!financingPurpose&&!decisionState&&eligibilityScore===null&&!calibrationStatus)return null;
   return <div className={styles.facts}>
     {confidence!==null&&<span><small>درجة الثقة</small><strong>{confidence}٪</strong></span>}
@@ -135,6 +138,9 @@ function StructuredFacts({data}:{data?:Record<string,unknown>}){
     {utilizationRatio!==null&&<span><small>استخدام مخصص البند</small><strong>{(utilizationRatio*100).toFixed(1)}٪</strong></span>}
     {exposureIncomeRatio!==null&&<span><small>التعرض إلى الدخل المتحقق</small><strong>{(exposureIncomeRatio*100).toFixed(1)}٪</strong></span>}
     {financingFrequency!==null&&<span><small>تكرار تمويل البند</small><strong>{financingFrequency}</strong></span>}
+    {restructuringTotal!==null&&<span><small>إعادات الجدولة المطبقة</small><strong>{restructuringTotal}</strong></span>}
+    {restructuringMax!==null&&<span><small>أعلى إعادة جدولة لتمويل واحد</small><strong>{restructuringMax} / 3</strong></span>}
+    {restructuringCapReached===true&&<span><small>سقف إعادة الجدولة</small><strong>بلغ السقف الاحترازي</strong></span>}
     {policyGovernanceStatus&&<span><small>حوكمة POLICY_CAP</small><strong>{policyGovernanceStatus==='HARD_STOP_OVERDUE'?'متوقف بسبب استرداد متأخر':policyGovernanceStatus==='NUMERIC_CALIBRATION_REQUIRED'?'إشارات مكتملة — المعايرة الرقمية مطلوبة':policyGovernanceStatus}</strong></span>}
     {policyHardStop===true&&<span><small>منع تمويل جديد</small><strong>مفعل حتى معالجة التأخر</strong></span>}
     {calibrationStatus&&<span><small>معايرة الأهلية</small><strong>{calibrationStatus==='CALIBRATION_NOT_ACTIVE'?'بانتظار معايرة رقمية معتمدة':calibrationStatus==='SCORED'?'معايرة مفعلة':calibrationStatus}</strong></span>}
