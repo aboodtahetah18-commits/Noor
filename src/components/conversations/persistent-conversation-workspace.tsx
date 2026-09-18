@@ -58,6 +58,8 @@ function StructuredFacts({data}:{data?:Record<string,unknown>}){
   const eligibilityBand=typeof data.eligibility_band==='string'?data.eligibility_band:null;
   const financeLimitComponents=data.finance_limit_components&&typeof data.finance_limit_components==='object'?data.finance_limit_components as Record<string,unknown>:null;
   const financeLimit=financeLimitComponents&&typeof financeLimitComponents.finance_limit==='number'?financeLimitComponents.finance_limit:null;
+  const financingGate=data.financing_gate&&typeof data.financing_gate==='object'?data.financing_gate as Record<string,unknown>:null;
+  const financingBlockReasons=financingGate&&Array.isArray(financingGate.block_reasons)?financingGate.block_reasons.filter((item):item is string=>typeof item==='string'):[];
   const missingLimit=financeLimitComponents&&Array.isArray(financeLimitComponents.missing_limit_components)?financeLimitComponents.missing_limit_components.filter((item):item is string=>typeof item==='string'):[];
   const calibrationStatus=typeof data.calibration_status==='string'?data.calibration_status:null;
   const eligibilityCalibration=data.eligibility_calibration&&typeof data.eligibility_calibration==='object'?data.eligibility_calibration as Record<string,unknown>:null;
@@ -149,6 +151,7 @@ function StructuredFacts({data}:{data?:Record<string,unknown>}){
     {eligibilityScore!==null&&<span><small>درجة أهلية الهلال</small><strong>{eligibilityScore.toFixed(1)} / 100</strong></span>}
     {eligibilityBand&&<span><small>فئة الأهلية</small><strong>{eligibilityBand==='ELIGIBLE_WITHIN_LIMIT'?'مؤهل داخل السقف':eligibilityBand==='ELIGIBLE_WITH_CONDITIONS'?'مؤهل بشروط أو مبلغ أقل':eligibilityBand==='RESTRICTED'?'مقيد':'مرفوض'}</strong></span>}
     {financeLimit!==null&&<span><small>سقف التمويل المحسوب</small><strong>{formatSar(financeLimit)} ر.س</strong></span>}
+    {financingBlockReasons.length>0&&<span><small>أسباب إيقاف التمويل</small><strong>{financingBlockReasons.map(item=>item==='SAFE_CAPACITY_EXCEEDED'?'المبلغ يتجاوز السعة الآمنة':item==='PROTECTION_COMMITMENT_GAP'?'فجوة في تغطية الالتزامات المحمية':item==='FINANCE_LIMIT_EXCEEDED'?'المبلغ يتجاوز سقف التمويل الحاكم':item==='INSTALLMENT_ABOVE_APPROVED_BAND'?'القسط يتجاوز النطاق المعتمد من الوفر الآمن':item==='OVERDUE_REPAYMENT_HARD_STOP'?'يوجد استرداد متأخر يوقف التمويل الجديد':item==='ELIGIBILITY_REJECTED'?'معايرة الأهلية الحاكمة صنفت الطلب مرفوضًا':item).join('، ')}</strong></span>}
     {missingLimit.length>0&&<span><small>مكونات سقف ناقصة</small><strong>{missingLimit.join('، ')}</strong></span>}
     {repaymentMin!==null&&repaymentMax!==null&&<span><small>نطاق القسط من الوفر الآمن</small><strong>{formatSar(repaymentMin)}–{formatSar(repaymentMax)} ر.س</strong></span>}
     {realizedSalary!==null&&<span><small>راتب متحقق في الدورة</small><strong>{formatSar(realizedSalary)} ر.س</strong></span>}
