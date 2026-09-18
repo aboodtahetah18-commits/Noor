@@ -67,9 +67,11 @@ export function RegisterForm() {
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(payload),
       });
-      const body = await response.json().catch(() => ({})) as { code?: string };
+      const body = await response.json().catch(() => ({})) as { code?: string; authenticated?: boolean };
       if (!response.ok) {
         setError(messageFor(body.code ?? 'AUTH_REGISTER_FAILED'));
+      } else if (body.authenticated) {
+        window.location.assign('/conversations');
       } else {
         setRegistrationCode(body.code ?? 'AUTH_REGISTERED');
         setRegisteredEmail(email);
