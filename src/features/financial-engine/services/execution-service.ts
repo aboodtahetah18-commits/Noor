@@ -23,9 +23,18 @@ export async function listOpenExecutionTasks(userId:string){
   const rows=await sql`
     SELECT t.id,t.decision_request_id,t.user_decision_id,t.action_type,t.amount,t.currency,t.instructions,t.decision_reference,
       t.evidence_requirement,t.required_by,t.status,t.created_at,
-      r.recommendation_id,r.decision_type,r.materiality
+      r.recommendation_id,r.decision_type,r.materiality,
+      ev.verification_status,ev.verification_reason,ev.candidate_count
     FROM public.execution_tasks t
     JOIN public.decision_requests r ON r.id=t.decision_request_id AND r.user_id=t.user_id
+    LEFT JOIN LATERAL (
+      SELECT ec.verification_status,ec.verification_reason,ec.candidate_count
+      FROM public.execution_events ee
+      JOIN public.evidence_cases ec ON ec.execution_event_id=ee.id AND ec.user_id=ee.user_id
+      WHERE ee.execution_task_id=t.id AND ee.user_id=t.user_id
+      ORDER BY ec.created_at DESC
+      LIMIT 1
+    ) ev ON true
     WHERE t.user_id=${userId}::uuid
       AND t.status NOT IN ('CLOSED','CANCELLED')
     ORDER BY COALESCE(t.required_by,t.created_at) ASC,t.created_at ASC
@@ -36,6 +45,9 @@ export async function listOpenExecutionTasks(userId:string){
     instructions:row.instructions==null?null:String(row.instructions),evidenceRequirement:String(row.evidence_requirement),
     requiredBy:row.required_by==null?null:String(row.required_by),status:String(row.status),createdAt:String(row.created_at),
     recommendationId:row.recommendation_id==null?null:String(row.recommendation_id),materiality:String(row.materiality),
+    verificationStatus:row.verification_status==null?null:String(row.verification_status),
+    verificationReason:row.verification_reason==null?null:String(row.verification_reason),
+    verificationCandidateCount:row.candidate_count==null?null:Number(row.candidate_count),
   }));
 }
 
