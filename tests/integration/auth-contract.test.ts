@@ -56,8 +56,11 @@ describe('Neon HTTP auth contract', () => {
     expect(accountAccess).toContain("await client.query('begin')");
     expect(accountAccess).toContain('insert into auth.session');
     expect(accountAccess).toContain('email_verified = true');
-    expect(accountAccess).not.toContain("select email from auth.pilot_access");
-    expect(accountAccess).not.toContain("update auth.pilot_access set registered_at");
+    const pilotSection = accountAccess.slice(
+      accountAccess.indexOf('async function beginNamaaPilotRegistration'),
+      accountAccess.indexOf('export async function beginNamaaRegistration'),
+    );
+    expect(pilotSection).not.toContain('auth.pilot_access');
     expect(registerForm).toContain("setError('كلمتا المرور غير متطابقتين.')");
     expect(registerForm).toContain("router.push('/conversations')");
     expect(registerForm).toContain('يمكن لأي مستخدم يملك الرابط إنشاء حساب والدخول مباشرة بعد التسجيل');
