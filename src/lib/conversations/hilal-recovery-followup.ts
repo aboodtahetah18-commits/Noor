@@ -46,7 +46,7 @@ async function readBaseline(userId: string): Promise<BaselineState> {
     : {};
 }
 
-function meaningfulChange(previous: Record<string, unknown> | null, next: HilalRecoveryFollowupSnapshot) {
+export function hasMeaningfulHilalRecoveryChange(previous: Record<string, unknown> | null, next: HilalRecoveryFollowupSnapshot) {
   if (!previous) return true;
   return Number(previous.outstanding_exposure ?? -1) !== next.outstanding_exposure
     || Number(previous.overdue_installment_count ?? -1) !== next.overdue_installment_count
@@ -137,7 +137,7 @@ export async function refreshHilalRecoveryGovernance(
   const previous = byCase[caseId] && typeof byCase[caseId] === 'object'
     ? byCase[caseId] as Record<string, unknown>
     : null;
-  const changed = meaningfulChange(previous, snapshot);
+  const changed = hasMeaningfulHilalRecoveryChange(previous, snapshot);
 
   const nextMetadata = {
     ...metadata,
