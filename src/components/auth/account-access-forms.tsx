@@ -9,7 +9,6 @@ import styles from './public-auth-shell.module.css';
 function messageFor(code: string): string {
   if (code === 'AUTH_RATE_LIMITED') return 'تمت محاولات كثيرة خلال وقت قصير. حاول لاحقًا.';
   if (code === 'AUTH_EMAIL_NOT_CONFIGURED') return 'خدمة البريد لم تُهيأ بعد. تواصل مع مسؤول المنصة.';
-  if (code === 'AUTH_PILOT_ACCESS_REQUIRED') return 'هذا البريد غير مضاف إلى قائمة التجربة الحالية.';
   if (code === 'AUTH_UNTRUSTED_ORIGIN') return 'تم رفض الطلب بسبب عنوان غير موثوق. حدّث الصفحة وحاول مرة أخرى.';
   if (code === 'AUTH_PASSWORD_WEAK') return 'استخدم كلمة مرور من 10 أحرف على الأقل وتتضمن حرفًا ورقمًا.';
   if (code === 'AUTH_ACCOUNT_EXISTS') return 'يوجد حساب مفعّل بهذا البريد. انتقل إلى تسجيل الدخول.';
@@ -139,7 +138,7 @@ export function RegisterForm() {
     <p className={styles.helper}>استخدم 10 أحرف على الأقل، مع حرف واحد ورقم واحد على الأقل.</p>
     {error ? <p className={styles.alert} role="alert">{error}</p> : null}
     <button className={styles.submit} type="submit" disabled={pending}>{pending ? 'جاري إنشاء الحساب...' : 'إنشاء الحساب'}</button>
-    <p className={styles.helper}>في النسخة التجريبية، تُفعّل الحسابات المصرح بها مباشرة بعد التسجيل.</p>
+    <p className={styles.helper}>في النسخة التجريبية، يمكن لأي مستخدم يملك الرابط إنشاء حساب والدخول مباشرة بعد التسجيل.</p>
     <p className={styles.helper}><Link href="/login">لديك حساب؟ تسجيل الدخول</Link></p>
   </form>;
 }
