@@ -11,6 +11,7 @@ type RegistrationInput = {
   phone: string;
   email: string;
   city: string;
+  password: string;
 };
 
 const CHALLENGE_TTL_MS = 30 * 60 * 1000;
@@ -198,9 +199,13 @@ export async function beginNamaaRegistration(input: RegistrationInput) {
   const phone = normalizePhone(input.phone);
   const email = normalizeEmail(input.email);
   const city = normalizeText(input.city, 120);
+  const password = input.password;
 
   if (!firstName || !lastName || !phone || !city || !email.includes('@') || email.length > 254) {
     return { ok: false as const, code: 'AUTH_INPUT_INVALID' as const };
+  }
+  if (!validNamaaPassword(password)) {
+    return { ok: false as const, code: 'AUTH_PASSWORD_WEAK' as const };
   }
 
   if (process.env.PILOT_MODE?.trim().toLowerCase() === 'true') {
@@ -219,11 +224,12 @@ export async function beginNamaaRegistration(input: RegistrationInput) {
   );
   const current = existing.rows[0];
   if (current?.email_verified === true) {
-    return { ok: true as const, deliver: false as const, email };
+    return { ok: false as const, code: 'AUTH_ACCOUNT_EXISTS' as const };
   }
 
   const userId = current?.id ? String(current.id) : randomUUID();
   const fullName = `${firstName} ${lastName}`;
+  const passwordHash = await hashPassword(password);
   const client = await database().connect();
   try {
     await client.query('begin');
@@ -250,6 +256,17 @@ export async function beginNamaaRegistration(input: RegistrationInput) {
          city_normalized = excluded.city_normalized,
          updated_at = now()`,
       [userId, firstName, lastName, phone, city, city.toLocaleLowerCase('ar')],
+    );
+    await client.query(
+      `insert into auth.account
+        (id, account_id, provider_id, user_id, password, issuer, created_at, updated_at)
+       values ($1, $2, 'credential', $3, $4, 'local:credential', now(), now())
+       on conflict (issuer, account_id) do update set
+         provider_id = 'credential',
+         user_id = excluded.user_id,
+         password = excluded.password,
+         updated_at = now()`,
+      [randomUUID(), userId, userId, passwordHash],
     );
     if (process.env.PILOT_MODE?.trim().toLowerCase() === 'true') {
       await client.query(
@@ -283,8 +300,7 @@ export async function verifyNamaaEmail(token: string) {
       [email],
     );
   }
-  const setupToken = await createChallenge('password-setup', email);
-  return { ok: true as const, setupToken };
+  return { ok: true as const };
 }
 
 export async function setNamaaInitialPassword(token: string, password: string) {
@@ -304,7 +320,7 @@ export async function setNamaaInitialPassword(token: string, password: string) {
     await client.query('begin');
     await client.query("delete from auth.account where user_id = $1 and provider_id = 'credential'", [userId]);
     await client.query(
-      "insert into auth.account (id, account_id, provider_id, user_id, password, created_at, updated_at) values ($1, $2, 'credential', $2, $3, now(), now())",
+      "insert into auth.account (id, account_id, provider_id, user_id, password, issuer, created_at, updated_at) values ($1, $2, 'credential', $2, $3, 'local:credential', now(), now())",
       [randomUUID(), userId, passwordHash],
     );
     await client.query('delete from auth.session where user_id = $1', [userId]);
@@ -316,6 +332,30 @@ export async function setNamaaInitialPassword(token: string, password: string) {
     client.release();
   }
   return { ok: true as const };
+}
+
+export async function beginNamaaVerificationResend(emailInput: string) {
+  const email = normalizeEmail(emailInput);
+  if (!email.includes('@') || email.length > 254) {
+    return { ok: true as const, deliver: false as const };
+  }
+
+  if (process.env.PILOT_MODE?.trim().toLowerCase() === 'true') {
+    const access = await database().query(
+      "select email from auth.pilot_access where lower(email) = $1 and status = 'ACTIVE' limit 1",
+      [email],
+    );
+    if (!access.rows.length) return { ok: true as const, deliver: false as const };
+  }
+
+  const result = await database().query(
+    'select id from auth."user" where lower(email) = $1 and email_verified = false limit 1',
+    [email],
+  );
+  if (!result.rows.length) return { ok: true as const, deliver: false as const };
+
+  const token = await createChallenge('email-verification', email);
+  return { ok: true as const, deliver: true as const, email, token };
 }
 
 export async function beginNamaaPasswordReset(emailInput: string) {
@@ -385,9 +425,9 @@ export async function sendNamaaAccountEmail(input: {
   const subject = verify ? 'تأكيد بريدك الإلكتروني في نماء' : 'إعادة تعيين كلمة المرور في نماء';
   const heading = verify ? 'تأكيد البريد الإلكتروني' : 'إعادة تعيين كلمة المرور';
   const intro = verify
-    ? 'اضغط الرابط التالي لتأكيد بريدك ثم إنشاء كلمة المرور لأول مرة.'
+    ? 'اضغط الرابط التالي لتأكيد بريدك الإلكتروني وتفعيل حسابك في نماء.'
     : 'وصلنا طلبًا لإعادة تعيين كلمة مرور حسابك في نماء.';
-  const label = verify ? 'تأكيد البريد وإنشاء كلمة المرور' : 'إنشاء كلمة مرور جديدة';
+  const label = verify ? 'تأكيد البريد الإلكتروني' : 'إنشاء كلمة مرور جديدة';
   const html = `<div dir="rtl" style="font-family:Arial,sans-serif;line-height:1.8"><h2>${heading}</h2><p>${intro}</p><p><a href="${input.url}">${label}</a></p><p>ينتهي الرابط خلال 30 دقيقة. إذا لم تطلب هذه العملية فتجاهل الرسالة.</p></div>`;
 
   if (apiKey) {
