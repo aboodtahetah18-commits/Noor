@@ -4,6 +4,7 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { getAuthenticatedUser, requireAuthenticatedMutationUser } from '@/auth/require-authenticated-user';
 import { createRoutedReply } from '@/lib/conversations/reply-engine';
+import { createAssetGoalReply } from '@/lib/conversations/asset-goal-engine';
 import { createProtectionGuardReply, createSolvencyReply } from '@/lib/conversations/solvency-engine';
 import { appendUserMessage, getConversationRoom, isConversationRoomKey } from '@/lib/conversations/store';
 
@@ -37,6 +38,10 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
     let reply;
     if (roomKey === 'solvency') {
       reply = await createSolvencyReply(user.id, text);
+    } else if (roomKey === 'assets') {
+      const goalReply = await createAssetGoalReply(user.id, text);
+      const guardReply = goalReply ? null : await createProtectionGuardReply(user.id, roomKey, text);
+      reply = goalReply ?? guardReply ?? await createRoutedReply(user.id, roomKey, text);
     } else {
       const guardReply = await createProtectionGuardReply(user.id, roomKey, text);
       reply = guardReply ?? await createRoutedReply(user.id, roomKey, text);
