@@ -21,6 +21,7 @@ export type UnifiedEvidenceVerificationInput = {
   matchConfidence: number | null;
   autoMatchThreshold: number;
   hasMaterialDifference: boolean;
+  accountingClassificationReady: boolean;
 };
 
 export type UnifiedEvidenceVerificationResult = {
@@ -34,7 +35,8 @@ export type UnifiedEvidenceVerificationResult = {
     | 'MATCH_CONFIDENCE_BELOW_THRESHOLD'
     | 'UNIQUE_BANK_STATEMENT_MATCH'
     | 'MULTIPLE_BANK_STATEMENT_MATCHES'
-    | 'MATERIAL_DIFFERENCE_REQUIRES_RECONCILIATION';
+    | 'MATERIAL_DIFFERENCE_REQUIRES_RECONCILIATION'
+    | 'ACCOUNTING_CLASSIFICATION_REQUIRED';
 };
 
 export function evaluateUnifiedEvidenceVerification(
@@ -64,6 +66,15 @@ export function evaluateUnifiedEvidenceVerification(
       state_machine_id: 'حالة-تنفيذ-٣٦',
       storage_status: 'PENDING',
       reason: 'BANK_MATCH_NOT_AVAILABLE_YET',
+    };
+  }
+
+  if (!input.accountingClassificationReady && input.candidateCount === 1) {
+    return {
+      status: 'REVIEW_REQUIRED',
+      state_machine_id: 'حالة-تنفيذ-٣٦',
+      storage_status: 'NEEDS_CLARIFICATION',
+      reason: 'ACCOUNTING_CLASSIFICATION_REQUIRED',
     };
   }
 
