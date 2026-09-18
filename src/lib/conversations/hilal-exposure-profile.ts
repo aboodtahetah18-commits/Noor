@@ -1,4 +1,5 @@
 import { getRawSql } from '@/infrastructure/db/client';
+import { getHilalRestructuringSummary, type HilalRestructuringSummary } from './hilal-restructuring-ledger';
 
 export type HilalExposureProfile = {
   category_id: string;
@@ -16,8 +17,7 @@ export type HilalExposureProfile = {
   overdue_installment_count: number;
   next_installment_number: number | null;
   financing_history_available: boolean;
-  reschedule_count: null;
-  reschedule_tracking_status: 'NOT_TRACKED_IN_CANONICAL_LEDGER';
+  restructuring: HilalRestructuringSummary;
   source: 'INTERNAL_FUNDING_LEDGER';
 };
 
@@ -41,7 +41,7 @@ function numberValue(value: unknown) {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
-export function summarizeHilalExposureRow(categoryId: string, row: ExposureRow): HilalExposureProfile {
+export function summarizeHilalExposureRow(categoryId: string, row: ExposureRow, restructuring: HilalRestructuringSummary): HilalExposureProfile {
   const usedPrincipal = numberValue(row.total_used_principal);
   const growth = numberValue(row.total_growth_contribution);
   const paid = numberValue(row.total_paid_repayments);
@@ -64,15 +64,15 @@ export function summarizeHilalExposureRow(categoryId: string, row: ExposureRow):
     overdue_installment_count: Math.max(0, Math.trunc(numberValue(row.overdue_installment_count))),
     next_installment_number: Number.isInteger(nextRaw) && nextRaw > 0 ? nextRaw : null,
     financing_history_available: totalCases > 0,
-    reschedule_count: null,
-    reschedule_tracking_status: 'NOT_TRACKED_IN_CANONICAL_LEDGER',
+    restructuring,
     source: 'INTERNAL_FUNDING_LEDGER',
   };
 }
 
 export async function getHilalExposureProfile(userId: string, categoryId: string): Promise<HilalExposureProfile> {
   const sql = getRawSql();
-  const rows = await sql`
+  const [rows, restructuring] = await Promise.all([
+    sql`
     with category_cases as (
       select c.id,c.status,c.approved_amount
       from public.internal_funding_cases c
@@ -125,7 +125,9 @@ export async function getHilalExposureProfile(userId: string, categoryId: string
       (select overdue_count from schedule) as overdue_installment_count,
       (select next_installment from schedule) as next_installment_number
     from category_cases
-  `;
+  `,
+    getHilalRestructuringSummary(userId, categoryId),
+  ]);
 
-  return summarizeHilalExposureRow(categoryId, (rows[0] ?? {}) as ExposureRow);
+  return summarizeHilalExposureRow(categoryId, (rows[0] ?? {}) as ExposureRow, restructuring);
 }
