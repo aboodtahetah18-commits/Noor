@@ -73,9 +73,12 @@ if (env === 'production') {
   }
 
   const resendApiKey=process.env.RESEND_API_KEY?.trim();
+  const smtpUser=process.env.SMTP_USER?.trim();
+  const smtpPassword=process.env.SMTP_PASSWORD?.trim();
+  const smtpConfigured=Boolean(smtpUser && smtpPassword);
   const authEmailFrom=process.env.AUTH_EMAIL_FROM?.trim();
-  if (!resendApiKey) {
-    const message='RESEND_API_KEY is not configured; verification/password recovery email is unavailable at runtime';
+  if (!resendApiKey && !smtpConfigured) {
+    const message='Account email provider is not configured; set RESEND_API_KEY or SMTP_USER + SMTP_PASSWORD';
     if (strictRuntimeEnv) errors.push(message); else warnings.push(message);
   }
   if (!authEmailFrom) {
