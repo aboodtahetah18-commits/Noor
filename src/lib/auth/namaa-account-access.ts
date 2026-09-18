@@ -160,6 +160,26 @@ export function validNamaaPassword(password: string): boolean {
   return password.length >= 10 && password.length <= 128 && /[A-Za-z]/.test(password) && /\d/.test(password);
 }
 
+export function classifyNamaaAccountError(error: unknown): string {
+  const code =
+    typeof error === 'object' && error !== null && 'code' in error
+      ? String((error as { code?: unknown }).code ?? '')
+      : '';
+  const message = error instanceof Error ? error.message : '';
+
+  if (code === '42P01' || code === '42703' || code === '23502' || code === '23503') {
+    return 'AUTH_DATABASE_SCHEMA_MISMATCH';
+  }
+  if (code === '28P01' || code === '3D000' || code.startsWith('08') || message === 'DATABASE_URL_REQUIRED') {
+    return 'AUTH_DATABASE_UNAVAILABLE';
+  }
+  if (message === 'AUTH_EMAIL_NOT_CONFIGURED') return 'AUTH_EMAIL_NOT_CONFIGURED';
+  if (message === 'AUTH_EMAIL_DELIVERY_FAILED' || message === 'AUTH_EMAIL_SMTP_TIMEOUT') {
+    return 'AUTH_EMAIL_DELIVERY_FAILED';
+  }
+  return 'AUTH_REGISTER_FAILED';
+}
+
 async function createChallenge(kind: ChallengeKind, email: string): Promise<string> {
   const token = newToken();
   const identifier = challengeIdentifier(kind, email);
