@@ -62,6 +62,10 @@ function emailFromIdentifier(kind: ChallengeKind, value: string): string | null 
   return email.includes('@') ? email : null;
 }
 
+export function isNamaaPilotMode(): boolean {
+  return process.env.PILOT_MODE?.trim().toLowerCase() === 'true';
+}
+
 export function isNamaaAccountEmailConfigured(): boolean {
   const from = process.env.AUTH_EMAIL_FROM?.trim();
   const resend = process.env.RESEND_API_KEY?.trim();
@@ -228,7 +232,9 @@ export async function beginNamaaRegistration(input: RegistrationInput) {
     return { ok: false as const, code: 'AUTH_PASSWORD_WEAK' as const };
   }
 
-  if (process.env.PILOT_MODE?.trim().toLowerCase() === 'true') {
+  const pilotMode = isNamaaPilotMode();
+
+  if (pilotMode) {
     const access = await database().query(
       "select email from auth.pilot_access where lower(email) = $1 and status = 'ACTIVE' limit 1",
       [email],
@@ -255,13 +261,13 @@ export async function beginNamaaRegistration(input: RegistrationInput) {
     await client.query('begin');
     if (current) {
       await client.query(
-        'update auth."user" set name = $1, updated_at = now() where id = $2 and email_verified = false',
-        [fullName, userId],
+        'update auth."user" set name = $1, email_verified = $2, updated_at = now() where id = $3 and email_verified = false',
+        [fullName, pilotMode, userId],
       );
     } else {
       await client.query(
-        'insert into auth."user" (id, name, email, email_verified, image, created_at, updated_at) values ($1, $2, $3, false, null, now(), now())',
-        [userId, fullName, email],
+        'insert into auth."user" (id, name, email, email_verified, image, created_at, updated_at) values ($1, $2, $3, $4, null, now(), now())',
+        [userId, fullName, email, pilotMode],
       );
     }
     await client.query(
@@ -288,9 +294,9 @@ export async function beginNamaaRegistration(input: RegistrationInput) {
          updated_at = now()`,
       [randomUUID(), userId, userId, passwordHash],
     );
-    if (process.env.PILOT_MODE?.trim().toLowerCase() === 'true') {
+    if (pilotMode) {
       await client.query(
-        "update auth.pilot_access set registered_at = coalesce(registered_at, now()), updated_at = now() where lower(email) = $1 and status = 'ACTIVE'",
+        "update auth.pilot_access set registered_at = coalesce(registered_at, now()), verified_at = coalesce(verified_at, now()), updated_at = now() where lower(email) = $1 and status = 'ACTIVE'",
         [email],
       );
     }
@@ -300,6 +306,10 @@ export async function beginNamaaRegistration(input: RegistrationInput) {
     throw error;
   } finally {
     client.release();
+  }
+
+  if (pilotMode) {
+    return { ok: true as const, deliver: false as const, email };
   }
 
   const token = await createChallenge('email-verification', email);
