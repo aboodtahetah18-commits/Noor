@@ -20,6 +20,7 @@ const steps = [
   ['rich structured message hero contract','node',['scripts/verify-rich-structured-message-hero.mjs']],
   ['onboarding rich question card contract','node',['scripts/verify-onboarding-rich-question-card.mjs']],
   ['compact user message bubble contract','node',['scripts/verify-compact-user-message-bubble.mjs']],
+  ['conversation message grouping contract','node',['scripts/verify-conversation-message-grouping.mjs']],
   ['dependency policy','node',['scripts/verify-dependency-policy.mjs']],
   ['database provider policy','node',['scripts/verify-database-provider-policy.mjs']],
   ['algorithm governance schema contract','node',['scripts/verify-algorithm-governance-schema-contract.mjs']],

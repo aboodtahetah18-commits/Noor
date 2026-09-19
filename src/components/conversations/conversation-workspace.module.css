@@ -2189,6 +2189,8 @@
     font-size:var(--ux-type-body-sm-size);
   line-height:1.72
   }
+  .groupContinuation{margin-top:calc(var(--ux-space-1) * -1)}
+  .conversationTimeDivider{padding:0;margin:var(--ux-space-1) 0}
   .messageIdentity{
     margin-bottom:var(--ux-space-1);
   gap:var(--ux-space-2)
@@ -3476,3 +3478,49 @@
 }
 .userStructuredBadges small{color:var(--ux-text-secondary)}
 .userStructuredBadges strong{color:var(--namaa-green-900);overflow-wrap:anywhere}
+
+.messageClusterItem{
+  display:contents
+}
+.groupContinuation{
+  margin-top:calc(var(--ux-space-1) * -1)
+}
+.agentMessage.groupContinuation{
+  border-start-start-radius:var(--ux-radius-2)
+}
+.userMessage.groupContinuation{
+  border-start-end-radius:var(--ux-radius-2)
+}
+.agentMessage.groupHasNext{
+  border-end-start-radius:var(--ux-radius-2)
+}
+.userMessage.groupHasNext{
+  border-end-end-radius:var(--ux-radius-2)
+}
+.conversationTimeDivider{
+  align-self:center;
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:var(--ux-space-1) 0;
+  margin:var(--ux-space-1) 0;
+  pointer-events:none
+}
+.conversationTimeDivider>span{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:26px;
+  padding:var(--ux-space-1) var(--ux-space-2);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-full);
+  background:color-mix(in srgb,var(--namaa-card) 88%,transparent);
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  line-height:1
+}
+.groupContinuation .messageIdentity,
+.groupContinuation .userMessageIdentity{
+  display:none
+}
