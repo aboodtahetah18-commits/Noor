@@ -59,6 +59,9 @@ function OnboardingMessageContent({message}:{message:Message}){
   const step=typeof data.onboarding_step==='string'?data.onboarding_step:'';
   const stepNumber=onboardingStepNumber[step];
   const body=message.body.trim();
+  const goalAnalysis=Array.isArray(data.goal_analysis)
+    ? data.goal_analysis.filter((item):item is Record<string,unknown>=>Boolean(item)&&typeof item==='object'&&!Array.isArray(item))
+    : [];
   const intro=question&&body.endsWith(question)?body.slice(0,Math.max(0,body.length-question.length)).trim():body;
   return <div className={styles.onboardingMessageContent}>
     {intro&&intro!==question&&<p>{intro}</p>}
@@ -67,6 +70,28 @@ function OnboardingMessageContent({message}:{message:Message}){
       <strong>{question}</strong>
     </div>}
     {!question&&<p>{body}</p>}
+    {goalAnalysis.length>0&&<div className={styles.goalAnalysisList}>
+      {goalAnalysis.map((goal,index)=>{
+        const name=String(goal.name??`هدف ${index+1}`);
+        const status=String(goal.status??'لا توجد بيانات كافية');
+        const required=typeof goal.required_monthly==='number'?goal.required_monthly:null;
+        const capacity=typeof goal.sustainable_capacity==='number'?goal.sustainable_capacity:null;
+        const remaining=typeof goal.remaining_amount==='number'?goal.remaining_amount:null;
+        const reasons=Array.isArray(goal.reasons)?goal.reasons.filter((x):x is string=>typeof x==='string'):[];
+        const alternatives=Array.isArray(goal.alternatives)?goal.alternatives.filter((x):x is string=>typeof x==='string'):[];
+        return <section key={name+index} className={styles.goalAnalysisCard}>
+          <header><strong>{name}</strong><span>{status}</span></header>
+          <div>
+            {remaining!==null&&<span><small>المتبقي للهدف</small><strong>{formatSar(remaining)} ر.س</strong></span>}
+            {required!==null&&<span><small>المساهمة الشهرية المطلوبة</small><strong>{formatSar(required)} ر.س</strong></span>}
+            {capacity!==null&&<span><small>السعة المبدئية الحالية</small><strong>{formatSar(capacity)} ر.س</strong></span>}
+          </div>
+          {reasons.length>0&&<p>{reasons.join(' ')}</p>}
+          {alternatives.length>0&&<ul>{alternatives.map(item=><li key={item}>{item}</li>)}</ul>}
+          <small>هذه خطة مقترحة للمراجعة وليست تنفيذًا أو تخصيصًا تلقائيًا.</small>
+        </section>;
+      })}
+    </div>}
   </div>;
 }
 
