@@ -1013,3 +1013,95 @@
     flex-basis:38px;
   }
 }
+
+
+/* Structured onboarding bottom sheet */
+.onboardingIntakeLauncher{
+  margin:var(--ux-space-2);
+  padding:var(--ux-space-2) var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-card);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--ux-space-2);
+}
+.onboardingIntakeLauncher>div{
+  display:grid;
+  gap:var(--ux-space-1);
+}
+.onboardingIntakeLauncher strong{
+  font-size:var(--ux-type-caption-size);
+}
+.onboardingIntakeLauncher small{
+  font-size:var(--ux-type-caption-size);
+  color:var(--ux-text-secondary);
+  line-height:1.45;
+}
+.intakeOverlay{
+  position:fixed;
+  inset:0;
+  z-index:140;
+  display:block;
+}
+.intakeBottomSheet{
+  position:absolute;
+  inset-inline:var(--ux-space-2);
+  bottom:var(--ux-space-2);
+  max-height:88dvh;
+  overflow:hidden;
+  border-radius:var(--ux-radius-xl);
+  background:var(--namaa-card);
+  border:1px solid var(--namaa-border);
+  box-shadow:var(--ux-shadow-lg);
+  display:grid;
+  grid-template-rows:auto auto minmax(0,1fr);
+}
+.sheetHandle{
+  width:42px;
+  height:4px;
+  border-radius:var(--ux-radius-full);
+  background:var(--namaa-border-strong);
+  margin:var(--ux-space-2) auto var(--ux-space-1);
+}
+.intakeBottomSheet .sheetHeader{
+  position:relative;
+  top:auto;
+  padding:var(--ux-space-2) var(--ux-space-3);
+}
+.intakeBottomSheet .sheetHeader>div{
+  display:grid;
+  gap:var(--ux-space-1);
+}
+.intakeBottomSheet .sheetHeader small{
+  font-size:var(--ux-type-caption-size);
+  color:var(--ux-text-secondary);
+}
+.intakeBottomSheet .onboardingIntake{
+  margin:0;
+  border:0;
+  border-radius:0;
+  max-height:none;
+  height:100%;
+  overflow:auto;
+  background:var(--namaa-card);
+  padding:var(--ux-space-2) var(--ux-space-3) calc(var(--ux-space-4) + env(safe-area-inset-bottom));
+}
+.intakeBottomSheet .onboardingIntakeHeader{
+  display:none;
+}
+@media(max-width:767px){
+  .onboardingIntakeLauncher{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+  .onboardingIntakeLauncher .primaryActionButton{
+    width:100%;
+  }
+  .intakeBottomSheet{
+    inset-inline:var(--ux-space-1);
+    bottom:var(--ux-space-1);
+    max-height:90dvh;
+  }
+}
