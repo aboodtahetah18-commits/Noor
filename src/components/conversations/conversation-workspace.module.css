@@ -1099,3 +1099,48 @@
   .documentCard{grid-template-columns:auto minmax(0,1fr)}
   .documentCard time{grid-column:2}
 }
+
+
+.extendedProfileSheet{display:block;overflow:auto}
+.extendedProfileIntro{
+  display:flex;
+  align-items:flex-start;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-3);
+  margin-bottom:var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-surface-warm);
+}
+.extendedProfileIntro>div{display:grid;gap:var(--ux-space-1)}
+.extendedProfileIntro strong{font-size:var(--ux-type-body-sm-size);color:var(--ux-text-primary)}
+.extendedProfileIntro small{font-size:var(--ux-type-caption-size);line-height:1.6;color:var(--ux-text-secondary)}
+.extendedProfileLayout{display:grid;grid-template-columns:minmax(170px,.7fr) minmax(0,1.5fr);gap:var(--ux-space-3)}
+.extendedSectionTabs{display:grid;gap:var(--ux-space-1);align-content:start}
+.extendedSectionTabs button{
+  display:grid;
+  gap:var(--ux-space-1);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-card);
+  color:var(--ux-text-primary);
+  text-align:right;
+  font:inherit;
+}
+.extendedSectionTabs button strong{font-size:var(--ux-type-caption-size)}
+.extendedSectionTabs button small{font-size:var(--ux-type-caption-size);color:var(--ux-text-secondary)}
+.extendedSectionTabs .extendedTabActive{border-color:var(--namaa-gold-500);background:var(--namaa-cream)}
+.extendedEditor{display:grid;gap:var(--ux-space-3);min-width:0}
+.extendedEditor>header{display:grid;gap:var(--ux-space-1)}
+.extendedEditor>header strong{font-size:var(--ux-type-section-title-size)}
+.extendedEditor>header small{font-size:var(--ux-type-caption-size);line-height:1.6;color:var(--ux-text-secondary)}
+.extendedActions{display:grid;gap:var(--ux-space-2);padding-top:var(--ux-space-2);border-top:1px solid var(--namaa-border)}
+.extendedActions small{font-size:var(--ux-type-caption-size);line-height:1.6;color:var(--ux-text-secondary)}
+@media(max-width:767px){
+  .extendedProfileSheet{inset-inline:var(--ux-space-1);bottom:var(--ux-space-1);max-height:94dvh}
+  .extendedProfileLayout{grid-template-columns:1fr}
+  .extendedSectionTabs{display:flex;overflow-x:auto;padding-bottom:var(--ux-space-1);scrollbar-width:none}
+  .extendedSectionTabs::-webkit-scrollbar{display:none}
+  .extendedSectionTabs button{min-width:148px;flex:0 0 auto}
+}
