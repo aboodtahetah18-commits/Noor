@@ -47,6 +47,7 @@ const steps = [
   ['governance oversight filter sort contract','node',['scripts/verify-governance-oversight-filter-sort.mjs']],
   ['governance oversight executive summary contract','node',['scripts/verify-governance-oversight-executive-summary.mjs']],
   ['governance oversight priority now contract','node',['scripts/verify-governance-oversight-priority-now.mjs']],
+  ['governance user action center contract','node',['scripts/verify-governance-user-action-center.mjs']],
   ['authorization RBAC ABAC contract','node',['scripts/verify-authorization-contract.mjs']],
   ['authorization provisioning contract','node',['scripts/verify-authorization-provisioning-contract.mjs']],
   ['authorization admin console contract','node',['scripts/verify-authorization-admin-console-contract.mjs']],

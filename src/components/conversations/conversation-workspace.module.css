@@ -3058,3 +3058,57 @@
   cursor:pointer
 }
 .oversightPriorityPolicy{line-height:1.6}
+
+.oversightUserActionCenter{
+  display:grid;
+  gap:var(--ux-space-2);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-green-700);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-card)
+}
+.oversightUserActionCenter>header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--ux-space-2)
+}
+.oversightUserActionCenter>header strong{font-size:var(--ux-type-body-sm-size);color:var(--namaa-green-900)}
+.oversightUserActionCenter>header small,.oversightUserActionPolicy{font-size:var(--ux-type-caption-size);color:var(--ux-text-secondary)}
+.oversightUserActionList{display:grid;gap:var(--ux-space-2)}
+.oversightUserActionList article{
+  display:grid;
+  gap:var(--ux-space-2);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-surface-warm)
+}
+.oversightUserActionList article>div:first-child{display:grid;gap:2px}
+.oversightUserActionList article strong{font-size:var(--ux-type-caption-size);color:var(--ux-text-primary)}
+.oversightUserActionList article small,.oversightUserActionList article p{font-size:var(--ux-type-caption-size);color:var(--ux-text-secondary)}
+.oversightUserActionList article p{margin:0;line-height:1.65}
+.oversightUserActionMeta{display:flex;flex-wrap:wrap;gap:var(--ux-space-1)}
+.oversightUserActionMeta span{
+  padding:var(--ux-space-1) var(--ux-space-2);
+  border-radius:var(--ux-radius-full);
+  background:var(--namaa-card);
+  color:var(--namaa-green-900);
+  font-size:var(--ux-type-caption-size);
+  font-weight:800
+}
+.oversightUserActionList article>button{
+  width:fit-content;
+  min-height:36px;
+  border:1px solid var(--namaa-green-700);
+  border-radius:var(--ux-radius-full);
+  background:var(--namaa-green-900);
+  color:var(--namaa-card);
+  padding:var(--ux-space-1) var(--ux-space-3);
+  font:inherit;
+  font-size:var(--ux-type-caption-size);
+  font-weight:900;
+  cursor:pointer
+}
+.oversightUserActionList article>button:disabled{opacity:.55;cursor:not-allowed}
+.oversightUserActionPolicy{line-height:1.6}

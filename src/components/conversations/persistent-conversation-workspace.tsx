@@ -11,6 +11,7 @@ import { GovernanceMobileSheet } from '@/components/conversations/governance-mob
 import { ExtendedProfileSheet } from '@/components/conversations/extended-profile-sheet';
 import { governedRoomDetails } from '@/lib/conversations/governed-room-details';
 import { buildOversightPriorityItems, buildOversightSummaryMetrics, filterAndSortOversightItems, type OversightViewFilter, type OversightViewSort } from '@/lib/governance/governance-oversight-view';
+import { buildGovernanceUserActionItems } from '@/lib/governance/governance-user-action-center';
 import styles from './conversation-workspace.module.css';
 
 type RoomKey = 'central' | 'operations' | 'solvency' | 'assets' | 'hilal' | 'advisor' | 'secretary' | 'council';
@@ -203,6 +204,7 @@ function OversightStructuredCards({
   const escalationRefs=dashboard&&Array.isArray(dashboard.openEscalations)?dashboard.openEscalations.filter((item):item is Record<string,unknown>=>Boolean(item)&&typeof item==='object'&&!Array.isArray(item)):[];
   const summaryMetrics=dashboard?buildOversightSummaryMetrics({items:followups,escalations:escalationRefs}):[];
   const priorityItems=dashboard?buildOversightPriorityItems({items:followups,escalations:escalationRefs}):[];
+  const userActionItems=dashboard?buildGovernanceUserActionItems(followups):[];
   const visibleFollowups=dashboard?filterAndSortOversightItems({items:followups,escalations:escalationRefs,filter:viewFilter,sort:viewSort}):followups;
   const renderActions=(actions:unknown)=>Array.isArray(actions)?actions.filter((item):item is Record<string,unknown>=>Boolean(item)&&typeof item==='object'&&!Array.isArray(item)).map((action,index)=>{
     const label=typeof action.label==='string'?action.label:'إجراء';
@@ -230,6 +232,24 @@ function OversightStructuredCards({
   }):null;
   if(dashboard)return <section className={styles.oversightPanel} aria-label="اللوحة الرقابية">
     <header className={styles.oversightPanelHeader}><span>اللوحة الرقابية</span><small>{visibleFollowups.length} ظاهرة من {followups.length} · تحديث حي</small></header>
+    <section className={styles.oversightUserActionCenter} aria-label="ما ينتظر منك">
+      <header><strong>ما ينتظر منك</strong><small>{userActionItems.length?userActionItems.length+' عناصر تحتاج تدخلك':'لا توجد إجراءات مطلوبة منك الآن'}</small></header>
+      {userActionItems.length>0&&<div className={styles.oversightUserActionList}>
+        {userActionItems.map(item=><article key={item.followupId}>
+          <div>
+            <strong>{item.title}</strong>
+            <small>{item.decisionTitle}</small>
+          </div>
+          <p>{item.requestDetail??'هذه المتابعة مصنفة صراحة بأنها بانتظار ردك. لم يحدد النظام طلبًا إضافيًا من عنده.'}</p>
+          <div className={styles.oversightUserActionMeta}>
+            <span>{item.actionLabel}</span>
+            <span>{item.dueDate?'الموعد: '+item.dueDate:'لا يوجد موعد معتمد'}</span>
+          </div>
+          <button type="button" disabled={disabled} onClick={()=>onCommand(item.openCommand)}>فتح المتابعة</button>
+        </article>)}
+      </div>}
+      <small className={styles.oversightUserActionPolicy}>يعرض هذا القسم فقط المتابعات التي حالتها WAITING_USER؛ ولا يخلط معها مهام المسؤولين أو الجهات الداخلية.</small>
+    </section>
     <section className={styles.oversightPriorityNow} aria-label="الأولوية الآن">
       <header><strong>الأولوية الآن</strong><small>{priorityItems.length?priorityItems.length+' تحتاج انتباهًا':'لا توجد عناصر حرجة حاليًا'}</small></header>
       {priorityItems.length>0&&<div className={styles.oversightPriorityList}>{priorityItems.slice(0,4).map(entry=>{
