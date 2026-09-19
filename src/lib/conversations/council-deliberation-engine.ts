@@ -4,6 +4,7 @@ import type { ConversationMessageKind } from '@/lib/conversations/store';
 import { FINANCIAL_RESPONSIBILITY_BY_KEY } from '@/lib/advisors/approved-advisors';
 import { buildFinancialResponsibilityClaims, getFinancialCycleAllocationSnapshot, summarizeAllocationConflict } from '@/lib/allocation/financial-cycle-allocation-engine';
 import { negotiateAllocationClaims } from '@/lib/allocation/financial-cycle-negotiation-engine';
+import { carryForwardNoteForOwner, getLatestClosedCycleCarryForward } from '@/lib/allocation/financial-cycle-carry-forward';
 
 export type CouncilDeliberationReply={
   id:string;
@@ -127,16 +128,22 @@ export async function createCouncilDeliberationReplies(userId:string,userText:st
   const topic=topicFrom(userText);
   const allocationProposalId=randomUUID();
   const allocationSnapshot=await getFinancialCycleAllocationSnapshot(userId);
+  const carryForward=await getLatestClosedCycleCarryForward(userId);
   const allocationClaims=buildFinancialResponsibilityClaims(allocationSnapshot);
   const allocationSummary=summarizeAllocationConflict(allocationSnapshot,allocationClaims);
   const negotiation=negotiateAllocationClaims(allocationSnapshot,allocationClaims);
-  const baseViews=makeViews(topic,allocationClaims);
+  const baseViews=makeViews(topic,allocationClaims).map(view=>{
+    const prior=carryForwardNoteForOwner(carryForward,view.key);
+    if(!prior||!prior.guidance.length) return view;
+    return {...view,body:`${view.body} من الدورة السابقة: ${prior.guidance.join(' ')}`};
+  });
   const views=allocationSummary.conflict||allocationSummary.unresolved_owners.length
     ? [...baseViews,...negotiationViews(negotiation)]
     : baseViews;
   const replies:CouncilDeliberationReply[]=[];
   for(const view of views){
     const responsibility=FINANCIAL_RESPONSIBILITY_BY_KEY.get(view.key);
+    const priorCycleContext=carryForwardNoteForOwner(carryForward,view.key);
     const structured={
       council_deliberation:true,
       allocation_proposal_id:allocationProposalId,
@@ -160,6 +167,15 @@ export async function createCouncilDeliberationReplies(userId:string,userText:st
         prohibited:responsibility.prohibited,
       }:null,
       accountability_boundary:responsibility?'يدافع عن مجاله لكنه لا يملك نسبة ثابتة، ويحاسب على النتيجة لا على حجم الحصة.':'لا يطالب بحصة مالية خاصة.',
+      prior_cycle_carry_forward:priorCycleContext,
+      prior_cycle_carry_forward_source:carryForward?{
+        source_cycle_id:carryForward.sourceCycleId,
+        source_plan_version_id:carryForward.sourcePlanVersionId,
+        source_plan_version_number:carryForward.sourcePlanVersionNumber,
+        plan_revision_count:carryForward.planRevisionCount,
+        no_automatic_score:true,
+        no_automatic_amount_adjustment:true,
+      }:null,
       allocation_snapshot:allocationSnapshot,
       allocation_summary:allocationSummary,
       allocation_claim:allocationClaims.find(claim=>claim.ownerKey===view.key)??null,
