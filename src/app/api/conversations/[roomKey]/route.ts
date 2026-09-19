@@ -11,6 +11,7 @@ import { createHilalFinancingReply } from '@/lib/conversations/hilal-financing-e
 import { createHilalRestructuringReply } from '@/lib/conversations/hilal-restructuring-engine';
 import { appendUserMessage, getConversationRoom, isConversationRoomKey, type ConversationMessageKind } from '@/lib/conversations/store';
 import { getGovernorOnboardingStatus, getGovernorWelcome, processGovernorOnboardingMessage } from '@/lib/conversations/governor-onboarding';
+import { routePurchaseMessageToOperations } from '@/lib/conversations/operations-message-router';
 
 export async function GET(_request: Request, context: { params: Promise<{ roomKey: string }> }) {
   const user = await getAuthenticatedUser();
@@ -97,6 +98,9 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
   try {
     const text = String(body.body ?? '');
     const message = await appendUserMessage(user.id, user.name || 'أنت', roomKey, text);
+    const capturedOperation = message?.id
+      ? await routePurchaseMessageToOperations({userId:user.id,sourceRoom:roomKey,sourceMessageId:String(message.id),text})
+      : null;
 
     const onboarding = await getGovernorOnboardingStatus(user.id);
     if (!onboarding.complete && roomKey !== 'central') {
@@ -157,7 +161,7 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
     }
 
     const governedReply = await attachUnifiedDecisionLifecycle(user.id, roomKey, reply ?? null);
-    return NextResponse.json({ message, reply: governedReply }, { status: 201 });
+    return NextResponse.json({ message, reply: governedReply, captured_operation: capturedOperation }, { status: 201 });
   } catch (error) {
     const code = error instanceof Error ? error.message : 'CONVERSATION_WRITE_FAILED';
     if (code === 'CONVERSATION_MESSAGE_INVALID') return NextResponse.json({ code }, { status: 400 });
