@@ -20,6 +20,7 @@ import { createFinancialPlanDeviationReplies, isDeviationReviewRequest } from '@
 import { parseDeviationResolutionCommand, resolveLatestDeviationCase } from '@/lib/allocation/financial-plan-deviation-resolution';
 import { closeFinancialCycleAfterApproval, createFinancialCycleClosureReview, isCycleClosureReviewRequest, isExplicitCycleClosureApproval } from '@/lib/allocation/financial-cycle-closure';
 import { createGovernorPreMeetingBriefReply, isGovernorPreMeetingBriefRequest } from '@/lib/allocation/governor-pre-meeting-brief';
+import { createMeetingOpeningAgendaReply, isMeetingOpeningAgendaRequest } from '@/lib/allocation/financial-meeting-opening-agenda';
 
 export async function GET(_request: Request, context: { params: Promise<{ roomKey: string }> }) {
   const user = await getAuthenticatedUser();
@@ -168,6 +169,11 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
       const financingReply = restructuringReply ? null : await createHilalFinancingReply(user.id, text);
       reply = restructuringReply ?? financingReply ?? await createRoutedReply(user.id, roomKey, text);
     } else if (roomKey === 'council') {
+      if(isMeetingOpeningAgendaRequest(text)){
+        const agendaReply=await createMeetingOpeningAgendaReply(user.id);
+        if(!agendaReply) return NextResponse.json({message,code:'MEETING_OPENING_AGENDA_UNAVAILABLE',captured_operation:capturedOperation},{status:409});
+        return NextResponse.json({message,reply:agendaReply,replies:[agendaReply],captured_operation:capturedOperation},{status:201});
+      }
       if(isCycleClosureReviewRequest(text)){
         const closureReview=await createFinancialCycleClosureReview(user.id);
         if(!closureReview) return NextResponse.json({message,code:'NO_ACTIVE_CYCLE_TO_CLOSE',captured_operation:capturedOperation},{status:409});

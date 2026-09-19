@@ -6,6 +6,7 @@ import { buildFinancialResponsibilityClaims, getFinancialCycleAllocationSnapshot
 import { negotiateAllocationClaims } from '@/lib/allocation/financial-cycle-negotiation-engine';
 import { carryForwardNoteForOwner, getLatestClosedCycleCarryForward } from '@/lib/allocation/financial-cycle-carry-forward';
 import { getGovernorPreMeetingBrief } from '@/lib/allocation/governor-pre-meeting-brief';
+import { formatMeetingOpeningAgenda, getFinancialMeetingOpeningAgenda } from '@/lib/allocation/financial-meeting-opening-agenda';
 
 export type CouncilDeliberationReply={
   id:string;
@@ -129,14 +130,22 @@ export async function createCouncilDeliberationReplies(userId:string,userText:st
   const topic=topicFrom(userText);
   const allocationProposalId=randomUUID();
   const allocationSnapshot=await getFinancialCycleAllocationSnapshot(userId);
-  const [carryForward,governorBrief]=await Promise.all([
+  const [carryForward,governorBrief,openingAgenda]=await Promise.all([
     getLatestClosedCycleCarryForward(userId),
     getGovernorPreMeetingBrief(userId),
+    getFinancialMeetingOpeningAgenda(userId),
   ]);
   const allocationClaims=buildFinancialResponsibilityClaims(allocationSnapshot);
   const allocationSummary=summarizeAllocationConflict(allocationSnapshot,allocationClaims);
   const negotiation=negotiateAllocationClaims(allocationSnapshot,allocationClaims);
-  const baseViews=makeViews(topic,allocationClaims).map(view=>{
+  const agendaView={
+    key:'central-secretary',
+    name:'أمين السر المركزي',
+    kind:'message' as ConversationMessageKind,
+    body:formatMeetingOpeningAgenda(openingAgenda),
+    role:'محضر افتتاح الاجتماع',
+  };
+  const baseViews=[agendaView,...makeViews(topic,allocationClaims)].map(view=>{
     const prior=carryForwardNoteForOwner(carryForward,view.key);
     if(!prior||!prior.guidance.length) return view;
     return {...view,body:`${view.body} من الدورة السابقة: ${prior.guidance.join(' ')}`};
@@ -173,6 +182,7 @@ export async function createCouncilDeliberationReplies(userId:string,userText:st
       accountability_boundary:responsibility?'يدافع عن مجاله لكنه لا يملك نسبة ثابتة، ويحاسب على النتيجة لا على حجم الحصة.':'لا يطالب بحصة مالية خاصة.',
       prior_cycle_carry_forward:priorCycleContext,
       governor_pre_meeting_brief:view.key==='central-governor'?governorBrief:null,
+      meeting_opening_agenda:view.role==='محضر افتتاح الاجتماع'?openingAgenda:null,
       prior_cycle_carry_forward_source:carryForward?{
         source_cycle_id:carryForward.sourceCycleId,
         source_plan_version_id:carryForward.sourcePlanVersionId,
