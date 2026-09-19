@@ -154,9 +154,12 @@ export async function reviewStatementRow(userId:string,rowId:string,input:Review
   const amount=Number(row.amount);
   const direction=String(row.direction);
   const description=String(row.description);
-  const transactionDate=assertIsoDate(
-    typeof input.transaction_date==='string' && input.transaction_date ? input.transaction_date : row.transaction_date ? String(row.transaction_date) : null
-  );
+  const resolvedDate=
+    typeof input.transaction_date==='string' && input.transaction_date
+      ? input.transaction_date
+      : row.transaction_date
+        ? String(row.transaction_date)
+        : null;
 
   if(input.action==='IGNORE'){
     await sql`
@@ -200,6 +203,7 @@ export async function reviewStatementRow(userId:string,rowId:string,input:Review
   }
 
   if(input.action==='INTERNAL_TRANSFER'){
+    const transactionDate=assertIsoDate(resolvedDate);
     if(!input.other_account_id) throw new Error('STATEMENT_TRANSFER_ACCOUNT_REQUIRED');
     const owned=await sql`
       select id from public.accounts
@@ -248,6 +252,7 @@ export async function reviewStatementRow(userId:string,rowId:string,input:Review
   }
 
   if(input.action==='REFUND'){
+    const transactionDate=assertIsoDate(resolvedDate);
     if(direction!=='CREDIT') throw new Error('STATEMENT_REFUND_MUST_BE_CREDIT');
     if(!input.related_transaction_id) throw new Error('STATEMENT_REFUND_ORIGINAL_REQUIRED');
     const originals=await sql`
@@ -309,6 +314,7 @@ export async function reviewStatementRow(userId:string,rowId:string,input:Review
   }
 
   if(input.action==='EXPENSE'){
+    const transactionDate=assertIsoDate(resolvedDate);
     if(direction!=='DEBIT') throw new Error('STATEMENT_EXPENSE_MUST_BE_DEBIT');
     if(!input.category_id) throw new Error('STATEMENT_EXPENSE_CATEGORY_REQUIRED');
     if(!input.planning_status || !PLANNING_STATUSES.has(input.planning_status)) throw new Error('STATEMENT_EXPENSE_PLANNING_REQUIRED');
@@ -358,6 +364,7 @@ export async function reviewStatementRow(userId:string,rowId:string,input:Review
   }
 
   if(input.action==='INCOME'){
+    const transactionDate=assertIsoDate(resolvedDate);
     if(direction!=='CREDIT') throw new Error('STATEMENT_INCOME_MUST_BE_CREDIT');
     if(!input.income_kind || !INCOME_KINDS.has(input.income_kind)) throw new Error('STATEMENT_INCOME_KIND_REQUIRED');
     const source=(input.income_source_name?.trim()||description).slice(0,240);
