@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { LucideIcon } from '@/components/ui/lucide-icon';
 import { ThemeToggle } from '@/app/theme-toggle';
@@ -224,6 +225,7 @@ function StructuredFacts({data}:{data?:Record<string,unknown>}){
 }
 
 export function PersistentConversationWorkspace(){
+  const router=useRouter();
   const [activeRoomId,setActiveRoomId]=useState<RoomKey>('central');
   const [loadedRoomId,setLoadedRoomId]=useState<RoomKey|null>(null);
   const [messages,setMessages]=useState<Message[]>([]);
@@ -392,7 +394,8 @@ export function PersistentConversationWorkspace(){
     try{
       await fetch('/api/auth/logout',{method:'POST'});
     }finally{
-      window.location.assign('/login');
+      router.push('/login');
+      router.refresh();
     }
   }
 
