@@ -9,6 +9,8 @@ export type GovernedRoomDetail = {
   avoids:string;
   governanceNote:string;
   sourceRefs:string[];
+  records:string[];
+  policies:string[];
 };
 
 export const governedRoomDetails:Record<ConversationRoomKey,GovernedRoomDetail>={
@@ -21,6 +23,8 @@ export const governedRoomDetails:Record<ConversationRoomKey,GovernedRoomDetail>=
     avoids:'لا يدير المعاملات الروتينية بعد التأسيس، ولا يعتمد الحركة النقدية نيابة عن المستخدم.',
     governanceNote:'هو الواجهة البشرية الخوارزمية الأولى للمستخدم الجديد، ويستخدم المعلومات الموثوقة الموجودة بدل إعادة السؤال عنها.',
     sourceRefs:['ROLE-GOV','حوكمة-تأسيس-٢٢'],
+    records:["سجل القرارات المركزية","سجل التصعيدات العابرة للجهات","محاضر مجلس نماء واللجان"],
+    policies:["السياسة المالية العليا","مصفوفة الصلاحيات والاعتمادات","قاعدة التنفيذ البشري والإثبات"],
   },
   operations:{
     roleTitle:'مركز العمليات والمطابقة',
@@ -31,6 +35,8 @@ export const governedRoomDetails:Record<ConversationRoomKey,GovernedRoomDetail>=
     avoids:'لا ينشئ حركة مالية خارجية ولا يفترض تصنيفًا نهائيًا عند انخفاض الثقة.',
     governanceNote:'وحدة تشغيلية مستقلة داخل بنك نماء المركزي وليست مستشارًا ولا بنكًا تابعًا. وظيفتها إثبات ومطابقة وتسوية البيانات؛ لا تملك الميزانية ولا البنود. تستدعي أحد أصحاب المسؤوليات المالية الخمسة أو المستشار الاقتصادي عند الحاجة، وتوجّه الناتج للجهة المختصة.',
     sourceRefs:['دور-مركز-المطابقة','عمليات-استقبال-٢٠٩','خوارزمية-توجيه-١٦٤'],
+    records:["سجل الرسائل والحركات المستلمة","سجل المطابقات والتعارضات","سجل التسويات والتصحيحات"],
+    policies:["سياسة المطابقة والتسوية","سياسة التحقق من الرسائل وكشوف الحساب","سياسة أقل صلاحية والوصول للبيانات"],
   },
   solvency:{
     roleTitle:'مدير بنك ملاءة',
@@ -41,6 +47,8 @@ export const governedRoomDetails:Record<ConversationRoomKey,GovernedRoomDetail>=
     avoids:'لا يتدخل في المصروفات اليومية العادية التي تخص التشغيل المعتاد.',
     governanceNote:'يعتمد العرض المؤسسي ضمن السياسة، لا الحركة النقدية الفعلية للمستخدم.',
     sourceRefs:['ROLE-MAL-MGR','ENTITY-MAL'],
+    records:["سجل الاحتياط والحماية","سجل حالات الطوارئ","سجل طلبات الاستثناء"],
+    policies:["سياسة الحماية والاحتياط","سياسة السيولة المحمية","ضوابط الطوارئ والاستمرارية"],
   },
   assets:{
     roleTitle:'مدير بنك الأصول الاستثماري',
@@ -51,6 +59,8 @@ export const governedRoomDetails:Record<ConversationRoomKey,GovernedRoomDetail>=
     avoids:'لا يتدخل في الحركات اليومية غير المرتبطة بالأهداف أو الأصول.',
     governanceNote:'يعتمد الخطة المؤسسية لا تنفيذ الاستثمار النقدي الفعلي.',
     sourceRefs:['ROLE-AI-MGR'],
+    records:["سجل الأصول","سجل الفرص الاستثمارية","سجل قرارات التخصيص والتسييل"],
+    policies:["سياسة الاستثمار والأصول","سياسة تقييم الفرص","سياسة التسييل والسيولة الاستثمارية"],
   },
   hilal:{
     roleTitle:'مدير بنك الهلال',
@@ -61,6 +71,8 @@ export const governedRoomDetails:Record<ConversationRoomKey,GovernedRoomDetail>=
     avoids:'لا يتدخل في العمليات الاعتيادية المتوافقة مع السياسة.',
     governanceNote:'يعتمد العرض المؤسسي لا التنفيذ النقدي، ولا يستخدم حدودًا رقمية ثابتة غير معتمدة.',
     sourceRefs:['ROLE-HL'],
+    records:["سجل طلبات التمويل","سجل العروض والقرارات","سجل الأقساط وإعادة الجدولة"],
+    policies:["سياسة التمويل","ضوابط القدرة على السداد","سياسة إعادة الجدولة"],
   },
   advisor:{
     roleTitle:'المستشار الاقتصادي',
@@ -71,6 +83,8 @@ export const governedRoomDetails:Record<ConversationRoomKey,GovernedRoomDetail>=
     avoids:'لا يدير تفاصيل كل بند يوميًا إذا لم تمس الصورة الكلية.',
     governanceNote:'دوره استشاري، ولا يعتمد حركة نقدية.',
     sourceRefs:['ROLE-EA'],
+    records:["سجل التحليلات الاقتصادية","سجل السيناريوهات","سجل تنبيهات الاتجاه"],
+    policies:["ميثاق أصحاب المسؤوليات المالية والمستشار الاقتصادي","سياسة استخدام الافتراضات الاقتصادية","ضوابط الرأي الاستشاري"],
   },
   secretary:{
     roleTitle:'أمين السر المركزي',
@@ -81,6 +95,8 @@ export const governedRoomDetails:Record<ConversationRoomKey,GovernedRoomDetail>=
     avoids:'لا يصدر قرارًا ماليًا ولا يغيّر سياسة حاكمة مباشرة.',
     governanceNote:'هو المدخل الحواري لمركز الحوكمة والاجتماعات، مع حفظ النسخ التاريخية والتعديلات الرسمية.',
     sourceRefs:['دور-أمين-السر','حوكمة-عرض-٢١١','حوكمة-مراجعة-٢١٢'],
+    records:["سجل المحاضر","سجل القرارات والاعتمادات","سجل المتابعة والإجراءات"],
+    policies:["سياسة إدارة الاجتماعات","سياسة الإصدارات والسجلات","مصفوفة الصلاحيات"],
   },
   council:{
     roleTitle:'مجلس نماء الأعلى',
@@ -91,5 +107,7 @@ export const governedRoomDetails:Record<ConversationRoomKey,GovernedRoomDetail>=
     avoids:'لا يحل محل البنوك أو المستشارين في التشغيل اليومي.',
     governanceNote:'يرأسه المحافظ، والاعتماد المؤسسي يبقى ضمن Hard Guards، والتنفيذ المالي الفعلي يبقى بحسب صلاحيات المستخدم.',
     sourceRefs:['ENTITY-COUNCIL','ROLE-CHAIR'],
+    records:["سجل قرارات المجلس","سجل إحالات اللجان","سجل الاعتمادات العليا"],
+    policies:["ميثاق مجلس نماء الأعلى","السياسة المالية العليا","سياسة اللجان والقرارات والاجتماعات"],
   },
 };

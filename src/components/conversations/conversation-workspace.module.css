@@ -307,6 +307,7 @@
   align-self:flex-end;
   margin-inline-start:auto;
   margin-inline-end:var(--ux-space-0);
+  min-width:96px;
   background:var(--namaa-user-message);
   border-color:var(--namaa-green-700)
 }
@@ -887,11 +888,8 @@
   border-bottom:1px solid var(--namaa-border)
 }
 
-.chatBrandBar img,.mobileBrandLogo{
-  width:calc(var(--ux-space-8) * 3);
-  height:auto;
-  object-fit:contain
-}
+.chatBrandBar img,.mobileBrandLockup{display:inline-flex;align-items:center;gap:var(--ux-space-1);color:var(--ux-text-inverse);font-size:var(--ux-type-section-title-size);font-weight:900;line-height:1;white-space:nowrap}
+.mobileBrandLockup img{width:30px;height:30px;object-fit:contain;filter:none}
 
 .persona_sm{
   width:38px;
@@ -2266,21 +2264,7 @@
   position:relative;
   z-index:2
   }
-  .mobileBrandLogo{
-    position:absolute;
-    left:50%;
-    top:50%;
-    transform:translate(-50%,-50%);
-    width:96px;
-    min-width:88px;
-    max-width:104px;
-    height:auto;
-    max-height:40px;
-    object-fit:contain;
-    object-position:center;
-    pointer-events:none;
-    user-select:none
-  }
+  .mobileBrandLockup{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;user-select:none}
   .mobileTopButton,.mobileUserButton{
     width:40px;
   height:40px;
@@ -2842,3 +2826,17 @@
 .councilHilal{border-inline-start-width:4px;border-inline-start-color:color-mix(in srgb,var(--namaa-gold-action) 65%,var(--namaa-green-900))}
 .councilAdvisor{border-inline-start-width:4px;border-inline-start-color:var(--namaa-border-strong)}
 .councilSecretary{border-inline-start-width:4px;border-inline-start-color:color-mix(in srgb,var(--namaa-green-700) 55%,var(--namaa-gold-500))}
+
+.userMessageIdentity{display:flex;align-items:baseline;gap:var(--ux-space-2);margin-bottom:var(--ux-space-1)}
+.userMessageIdentity strong{font-size:var(--ux-type-caption-size);color:var(--namaa-green-900)}
+.userMessageIdentity small{font-size:var(--ux-type-caption-size);color:var(--ux-text-secondary)}
+.entityDetailSheet{max-height:88dvh}
+.entityDetailTabs{position:sticky;top:45px;z-index:2;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--ux-space-1);padding:var(--ux-space-1);border:1px solid var(--namaa-border);border-radius:var(--ux-radius-3);background:var(--namaa-card)}
+.entityDetailTabs button{min-height:40px;border:0;border-radius:var(--ux-radius-2);background:transparent;color:var(--ux-text-secondary);font:inherit;font-size:var(--ux-type-caption-size);font-weight:800;cursor:pointer}
+.entityDetailTabs .activeEntityDetailTab{background:var(--namaa-surface-warm);color:var(--namaa-green-900);box-shadow:inset 0 -2px 0 var(--namaa-green-700)}
+.entityDetailPanel{display:grid;gap:var(--ux-space-2)}
+.entityDetailPanel>section{display:grid;gap:var(--ux-space-2);padding:var(--ux-space-3);border:1px solid var(--namaa-border);border-radius:var(--ux-radius-3);background:var(--namaa-surface-warm)}
+.entityDetailPanel>section>small{font-size:var(--ux-type-caption-size);font-weight:900;color:var(--namaa-green-900)}
+.entityDetailPanel>section>p{margin:0;font-size:var(--ux-type-body-sm-size);line-height:1.7;color:var(--ux-text-secondary)}
+.detailList{display:grid;gap:var(--ux-space-2)}
+.detailList>span{display:flex;align-items:center;gap:var(--ux-space-2);padding:var(--ux-space-2);border-radius:var(--ux-radius-2);background:var(--namaa-card);color:var(--ux-text-primary);font-size:var(--ux-type-caption-size)}

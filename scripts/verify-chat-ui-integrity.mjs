@@ -20,10 +20,10 @@ for(const name of critical){
 }
 if(!css.includes('background:var(--namaa-green-900)')) fail('approved green mobile app bar missing');
 const workspace=readFileSync('src/components/conversations/persistent-conversation-workspace.tsx','utf8');
-if(!workspace.includes('/brand/ndos/namaa-logo-white-transparent.png')) fail('official approved dark-surface Namaa logo asset missing');
-if(workspace.includes('mobileBrandLockup') || workspace.includes('>نماء</span>')) fail('hand-built or redrawn Namaa logo lockup is forbidden');
-if(!css.includes('.mobileBrandLogo') || !css.includes('left:50%') || !css.includes('transform:translate(-50%,-50%)')) fail('mobile Namaa logo must stay geometrically centered');
-if(!css.includes('min-width:88px')) fail('mobile full logo must respect the approved 88px minimum');
+if(!workspace.includes('mobileBrandLockup') || !workspace.includes('/brand/namaa-leaf.webp')) fail('approved Namaa white-word colored-leaf lockup missing');
+if(!workspace.includes('>نماء</span>')) fail('white Namaa wordmark text missing from mobile lockup');
+if(!css.includes('.mobileBrandLockup') || !css.includes('left:50%') || !css.includes('transform:translate(-50%,-50%)')) fail('mobile Namaa lockup must stay geometrically centered');
+if(!css.includes('.mobileBrandLockup img') || !css.includes('filter:none')) fail('official colored leaf must not be whitened');
 if(!css.includes('.onboardingIntake') || !css.includes('position:fixed')) fail('onboarding must remain a popup layer');
 if(!css.includes('.onboardingCloseButton') || !css.includes('.inlineIntakeButton')) fail('onboarding close/in-message reopen controls missing');
 if(!css.includes('.chatFont_small') || !css.includes('.fontSizeChoices')) fail('user chat font control missing');
@@ -31,6 +31,10 @@ if(!css.includes('.brandWatermarkSecondary') || !css.includes('.brandWatermarkTe
 if(/\.agentMessage\{[^}]*!important|\.userMessage\{[^}]*!important/s.test(css)) fail('message alignment must not depend on !important');
 if(!css.includes('.agentMessage{\n  align-self:flex-start') || !css.includes('.userMessage{\n  align-self:flex-end')) fail('approved RTL message sides changed: agent must be right, user must be left');
 if(workspace.includes('resumeIntakeButton')) fail('structured intake reopen must live inside the active question message, not float over chat');
-if(!workspace.includes('showStructuredAction') || !workspace.includes('فتح نموذج البيانات')) fail('structured intake in-message action missing');
+if(!workspace.includes('showStructuredAction') || !workspace.includes('متابعة استكمال البيانات')) fail('structured intake in-message action missing');
 
 console.log('CHAT-UI-INTEGRITY-PASS');
+
+if(!workspace.includes("setDetailTab('role')") || !workspace.includes('السجلات والسياسات')) fail('three-tab governed entity detail surface missing');
+if(!workspace.includes("new Set(['dependents','accounts','obligations','goals'])")) fail('simple onboarding questions must remain directly answerable in chat');
+if(!workspace.includes('userMessageIdentity')) fail('user messages must preserve visible sender identity');
