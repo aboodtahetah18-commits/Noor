@@ -1173,3 +1173,153 @@
 .goalAnalysisCard p,.goalAnalysisCard li{font-size:var(--ux-type-caption-size);line-height:1.65;color:var(--ux-text-secondary)}
 .goalAnalysisCard p{margin:0}
 .goalAnalysisCard ul{margin:0;padding-inline-start:var(--ux-space-5);display:grid;gap:var(--ux-space-1)}
+
+
+/* Conversation polish — aligned with the approved Namaa token system */
+.messageTime{
+  display:block;
+  margin-top:var(--ux-space-1);
+  font-size:var(--ux-type-caption-size);
+  color:var(--ux-text-muted);
+  font-weight:500;
+}
+.userMessageIdentity{justify-content:flex-start}
+.userMessageAvatar{
+  width:30px;
+  height:30px;
+  flex:0 0 30px;
+  border-radius:var(--ux-radius-full);
+  border:1px solid var(--namaa-border);
+  background:var(--namaa-card);
+  color:var(--namaa-green-900);
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+}
+.onboardingMessageContent .onboardingQuestionBox{
+  margin-top:var(--ux-space-1);
+  padding:var(--ux-space-2) var(--ux-space-0) var(--ux-space-0);
+  border:0;
+  border-top:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-0);
+  background:transparent;
+}
+.onboardingMessageContent .onboardingQuestionBox>span{
+  padding:var(--ux-space-0);
+  border-radius:var(--ux-radius-0);
+  background:transparent;
+  font-size:var(--ux-type-caption-size);
+}
+.inlineIntakeButton{
+  width:max-content;
+  min-height:32px;
+  margin-top:var(--ux-space-1);
+  padding:var(--ux-space-1) var(--ux-space-2);
+  border:1px solid var(--namaa-green-700);
+  border-radius:var(--ux-radius-3);
+  background:transparent;
+  color:var(--namaa-green-900);
+  font:inherit;
+  font-size:var(--ux-type-caption-size);
+  font-weight:800;
+  display:inline-flex;
+  align-items:center;
+  gap:var(--ux-space-1);
+  cursor:pointer;
+}
+.intakeOverlay{
+  position:fixed;
+  inset:var(--ux-space-0);
+  z-index:140;
+}
+.intakeDialog{
+  position:absolute;
+  inset-inline:50%;
+  top:50%;
+  transform:translate(50%,-50%);
+  width:min(760px,calc(100% - (var(--ux-space-4) * 2)));
+  max-height:min(86dvh,760px);
+  overflow:auto;
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-xl);
+  background:var(--namaa-card);
+  box-shadow:var(--ux-shadow-lg);
+  padding:var(--ux-space-3);
+}
+.intakeDialog .onboardingIntake{
+  margin:var(--ux-space-0);
+  border:0;
+  border-radius:var(--ux-radius-0);
+  box-shadow:none;
+  max-height:none;
+  padding:var(--ux-space-1);
+}
+.mobileBrandLockup{
+  display:flex;
+  align-items:center;
+  gap:var(--ux-space-1);
+  white-space:nowrap;
+}
+.mobileBrandLockup img{
+  width:32px;
+  height:32px;
+  object-fit:contain;
+}
+.mobileBrandLockup span{
+  color:var(--ux-text-inverse);
+  font-size:var(--ux-type-section-title-size);
+  font-weight:900;
+  line-height:1;
+}
+@media(max-width:767px){
+  .mobileAppBar{
+    background:var(--namaa-green-900);
+    border-bottom-color:var(--namaa-green-900);
+  }
+  .mobileAppBarPrimary{
+    direction:rtl;
+  }
+  .mobileTopButton{
+    background:transparent;
+    border-color:color-mix(in srgb,var(--ux-text-inverse) 32%,transparent);
+    color:var(--ux-text-inverse);
+  }
+  .mobileBrandLockup{
+    margin-inline-start:var(--ux-space-1);
+  }
+  .message{
+    max-width:90%;
+  }
+  .messageIdentity{
+    align-items:center;
+  }
+  .messageIdentity>span:last-child{
+    gap:var(--ux-space-0);
+  }
+  .messageTime{
+    line-height:1.25;
+  }
+  .inlineIntakeButton{
+    min-height:30px;
+  }
+  .composer{
+    margin:var(--ux-space-0) var(--ux-space-2) var(--ux-space-2);
+    padding:var(--ux-space-2);
+    border:1px solid var(--namaa-border);
+    border-radius:var(--ux-radius-4);
+    box-shadow:var(--ux-shadow-sm);
+  }
+  .composer textarea{
+    min-width:0;
+  }
+  .intakeDialog{
+    inset-inline:var(--ux-space-2);
+    top:auto;
+    bottom:var(--ux-space-2);
+    transform:none;
+    width:auto;
+    max-height:90dvh;
+    border-radius:var(--ux-radius-xl);
+    padding-bottom:calc(var(--ux-space-3) + env(safe-area-inset-bottom));
+  }
+}
