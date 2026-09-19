@@ -246,6 +246,7 @@ export function PersistentConversationWorkspace(){
   const [userMenuOpen,setUserMenuOpen]=useState(false);
   const [profileOpen,setProfileOpen]=useState(false);
   const [settingsOpen,setSettingsOpen]=useState(false);
+  const [settingsSection,setSettingsSection]=useState<'general'|'accounts'>('general');
   const [profileName,setProfileName]=useState('');
   const [profileSaving,setProfileSaving]=useState(false);
   const [reviewOpen,setReviewOpen]=useState(false);
@@ -392,6 +393,19 @@ export function PersistentConversationWorkspace(){
       await fetch('/api/auth/logout',{method:'POST'});
     }finally{
       window.location.assign('/login');
+    }
+  }
+
+  async function openAccountsSettings(){
+    setRoomsOpen(false);
+    setSettingsSection('accounts');
+    setSettingsOpen(true);
+    try{
+      const response=await fetch('/api/conversations/central/statement',{cache:'no-store'});
+      const data=await response.json() as {accounts?:StatementAccount[]};
+      if(response.ok) setStatementAccounts(Array.isArray(data.accounts)?data.accounts:[]);
+    }catch{
+      setError('تعذر تحميل الحسابات الآن.');
     }
   }
 
