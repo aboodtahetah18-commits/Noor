@@ -41,7 +41,7 @@ export function GovernanceCenter({
         {section.items.map((item,index)=><details key={`${section.id}-${item.title}-${index}`} className={styles.card} open={index===0}>
           <summary><span><strong>{item.title}</strong>{item.meta&&<small>{item.meta}</small>}</span><LucideIcon name="chevronDown" size={18}/></summary>
           <p>{item.body}</p>
-          <button type="button" onClick={onOpenSecretary}><LucideIcon name="messagesSquare" size={16}/><span>ناقش هذه الفقرة مع أمين السر</span></button>
+          <button type="button" onClick={onOpenSecretary}><LucideIcon name="messageSquareText" size={16}/><span>ناقش هذه الفقرة مع أمين السر</span></button>
         </details>)}
       </div>
 
@@ -51,7 +51,7 @@ export function GovernanceCenter({
       </section>}
 
       <footer className={styles.footer}>
-        <button type="button" className={styles.primary} onClick={onOpenSecretary}><LucideIcon name="messagesSquare" size={18}/><span>اسأل أمين السر أو اطلب اجتماعًا</span></button>
+        <button type="button" className={styles.primary} onClick={onOpenSecretary}><LucideIcon name="messageSquareText" size={18}/><span>اسأل أمين السر أو اطلب اجتماعًا</span></button>
         <small>التعديل الحاكم يمر بمراجعة وإصدار جديد؛ لا تُمحى النسخة التاريخية.</small>
       </footer>
     </aside>
