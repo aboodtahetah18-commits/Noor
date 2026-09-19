@@ -10,6 +10,7 @@ import { GovernorOnboardingIntake } from '@/components/conversations/governor-on
 import { GovernanceMobileSheet } from '@/components/conversations/governance-mobile-sheet';
 import { ExtendedProfileSheet } from '@/components/conversations/extended-profile-sheet';
 import { governedRoomDetails } from '@/lib/conversations/governed-room-details';
+import { filterAndSortOversightItems, type OversightViewFilter, type OversightViewSort } from '@/lib/governance/governance-oversight-view';
 import styles from './conversation-workspace.module.css';
 
 type RoomKey = 'central' | 'operations' | 'solvency' | 'assets' | 'hilal' | 'advisor' | 'secretary' | 'council';
@@ -192,11 +193,15 @@ function OversightStructuredCards({
   onConfirmSensitive:()=>void;
   onCancelSensitive:()=>void;
 }){
+  const [viewFilter,setViewFilter]=useState<OversightViewFilter>('ALL');
+  const [viewSort,setViewSort]=useState<OversightViewSort>('DEFAULT');
   if(!data)return null;
   const dashboard=data.governance_oversight_dashboard===true&&data.dashboard&&typeof data.dashboard==='object'?data.dashboard as Record<string,unknown>:null;
   const detail=data.governance_oversight_followup_detail===true?data:null;
   const context=data.governance_oversight_decision_context===true?data:null;
   const followups=dashboard&&Array.isArray(dashboard.allOpenFollowups)?dashboard.allOpenFollowups.filter((item):item is Record<string,unknown>=>Boolean(item)&&typeof item==='object'&&!Array.isArray(item)):[];
+  const escalationRefs=dashboard&&Array.isArray(dashboard.openEscalations)?dashboard.openEscalations.filter((item):item is Record<string,unknown>=>Boolean(item)&&typeof item==='object'&&!Array.isArray(item)):[];
+  const visibleFollowups=dashboard?filterAndSortOversightItems({items:followups,escalations:escalationRefs,filter:viewFilter,sort:viewSort}):followups;
   const renderActions=(actions:unknown)=>Array.isArray(actions)?actions.filter((item):item is Record<string,unknown>=>Boolean(item)&&typeof item==='object'&&!Array.isArray(item)).map((action,index)=>{
     const label=typeof action.label==='string'?action.label:'إجراء';
     const command=typeof action.command==='string'?action.command:null;
@@ -222,7 +227,27 @@ function OversightStructuredCards({
     >{isPending&&<span className={styles.oversightActionSpinner} aria-hidden="true"/>}{buttonLabel}</button>;
   }):null;
   if(dashboard)return <section className={styles.oversightPanel} aria-label="اللوحة الرقابية">
-    <header className={styles.oversightPanelHeader}><span>اللوحة الرقابية</span><small>{followups.length} متابعة مفتوحة · تحديث حي</small></header>
+    <header className={styles.oversightPanelHeader}><span>اللوحة الرقابية</span><small>{visibleFollowups.length} ظاهرة من {followups.length} · تحديث حي</small></header>
+    <div className={styles.oversightViewControls} aria-label="تصفية وفرز اللوحة الرقابية">
+      <div className={styles.oversightFilterChips} role="group" aria-label="تصفية المتابعات">
+        {([
+          ['ALL','الكل'],
+          ['OVERDUE','المتأخر'],
+          ['WAITING_USER','بانتظار المستخدم'],
+          ['UNASSIGNED','غير المسند'],
+          ['BLOCKED','المعلّق'],
+          ['ESCALATED','التصعيدات'],
+        ] as Array<[OversightViewFilter,string]>).map(([value,label])=><button key={value} type="button" className={viewFilter===value?styles.oversightFilterActive:''} aria-pressed={viewFilter===value} onClick={()=>setViewFilter(value)}>{label}</button>)}
+      </div>
+      <label className={styles.oversightSortControl}>
+        <span>الفرز</span>
+        <select value={viewSort} onChange={event=>setViewSort(event.target.value as OversightViewSort)}>
+          <option value="DEFAULT">الترتيب الأساسي</option>
+          <option value="DUE_DATE">حسب الموعد</option>
+          <option value="LAST_UPDATE">حسب آخر تحديث</option>
+        </select>
+      </label>
+    </div>
 {pendingConfirmation&&<div className={styles.oversightSensitiveConfirm} role="alertdialog" aria-modal="false" aria-labelledby="oversight-sensitive-title">
       <div>
         <strong id="oversight-sensitive-title">{pendingConfirmation.title}</strong>
@@ -237,7 +262,8 @@ function OversightStructuredCards({
       {actionFeedback.status==='pending'&&<span className={styles.oversightActionSpinner} aria-hidden="true"/>}
       <span>{actionFeedback.message}</span>
     </div>}
-    <div className={styles.oversightCardGrid}>{followups.map((item,index)=>{
+    {visibleFollowups.length===0&&<div className={styles.oversightEmptyState}>لا توجد متابعات ضمن هذا الفلتر.</div>}
+    <div className={styles.oversightCardGrid}>{visibleFollowups.map((item,index)=>{
       const number=typeof item.number==='number'?item.number:index+1;
       const title=String(item.title??('متابعة '+number));
       const status=String(item.status??'OPEN');

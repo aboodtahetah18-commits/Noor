@@ -2934,3 +2934,48 @@
 .oversightHistory li p{margin:0;font-size:var(--ux-type-caption-size);line-height:1.5;color:var(--ux-text-secondary)}
 .oversightHistory li small{font-size:var(--ux-type-caption-size);color:var(--ux-text-secondary)}
 .oversightHistoryDot{width:8px;height:8px;margin-top:6px;border-radius:var(--ux-radius-full);background:var(--namaa-green-700);box-shadow:0 0 0 3px var(--namaa-card)}
+
+.oversightViewControls{display:grid;gap:var(--ux-space-2)}
+.oversightFilterChips{display:flex;flex-wrap:wrap;gap:var(--ux-space-1)}
+.oversightFilterChips button{
+  min-height:32px;
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-full);
+  background:var(--namaa-card);
+  color:var(--ux-text-secondary);
+  padding:var(--ux-space-1) var(--ux-space-2);
+  font:inherit;
+  font-size:var(--ux-type-caption-size);
+  font-weight:800;
+  cursor:pointer
+}
+.oversightFilterChips .oversightFilterActive{
+  border-color:var(--namaa-green-700);
+  background:var(--namaa-surface-warm);
+  color:var(--namaa-green-900)
+}
+.oversightSortControl{
+  display:flex;
+  align-items:center;
+  gap:var(--ux-space-2);
+  width:fit-content
+}
+.oversightSortControl>span{font-size:var(--ux-type-caption-size);color:var(--ux-text-secondary);font-weight:800}
+.oversightSortControl select{
+  min-height:34px;
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-2);
+  background:var(--namaa-card);
+  color:var(--ux-text-primary);
+  padding-inline:var(--ux-space-2);
+  font:inherit;
+  font-size:var(--ux-type-caption-size)
+}
+.oversightEmptyState{
+  padding:var(--ux-space-3);
+  border:1px dashed var(--namaa-border);
+  border-radius:var(--ux-radius-2);
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  text-align:center
+}
