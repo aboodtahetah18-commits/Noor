@@ -63,6 +63,20 @@ const meetingUserDisplayName=(name?:string|null)=>{
 };
 
 function formatSar(value:number){return new Intl.NumberFormat('ar-SA',{maximumFractionDigits:2}).format(value)}
+function formatConversationMessageTime(value?:string){
+  if(!value)return 'الآن';
+  const date=new Date(value);
+  if(!Number.isFinite(date.getTime()))return 'الآن';
+  return new Intl.DateTimeFormat('ar-SA',{hour:'numeric',minute:'2-digit'}).format(date);
+}
+function messageKindIcon(kind:MessageKind){
+  if(kind==='risk')return 'triangleAlert';
+  if(kind==='decision')return 'circleCheck';
+  if(kind==='recommendation')return 'sparkles';
+  if(kind==='followup')return 'listChecks';
+  if(kind==='request')return 'upload';
+  return 'info';
+}
 function roomTitle(value:unknown){if(typeof value!=='string')return null;return rooms.find(room=>room.id===value)?.title??null}
 function chatRoleTitle(room:Room){return room.id==='central'?'محافظ البنك المركزي':room.lead}
 function chatEntityTitle(room:Room){return room.id==='central'?'بنك نماء المركزي':room.title}
@@ -970,17 +984,34 @@ export function PersistentConversationWorkspace(){
     <div className={`${styles.workspace} ${styles.withoutRooms} ${desktopContextVisible?'':styles.withoutContext}`}>
       <main className={styles.chatPane}><header className={styles.chatHeader}><div className={styles.chatIdentity}><RoomPortrait room={activeRoom} size="md"/><div><div className={styles.entityTitle}><strong>{chatRoleTitle(activeRoom)}</strong></div><small>{chatEntityTitle(activeRoom)}</small></div></div><div className={styles.mobileTools}><button type="button" aria-label="معلومات الجهة" onClick={()=>{setDetailRoomId(activeRoomId);setDetailTab('role')}}><LucideIcon name="info" size={20}/></button></div></header>
         <div className={styles.routingNote}><LucideIcon name="sparkles" size={16}/><span>{activeRoom.specialists}</span></div>
-        <div className={styles.messages} aria-live="polite">{loading&&<p>جارٍ تحميل سجل المحادثة…</p>}{!loading&&!messages.length&&<article className={`${styles.message} ${styles.agentMessage}`}><p>{onboardingComplete===false?'أنا محافظ بنك نماء المركزي. سأبدأ معك بسؤال واحد في كل مرة حتى أبني ملفك من معلوماتك أنت، دون افتراضات.':'هذه بداية محادثتك مع '+activeRoom.title+'. اكتب سؤالك أو القرار الذي تريد دراسته.'}</p></article>}{messages.map(message=><article key={message.id} className={`${styles.message} ${message.sender_type==='user'?styles.userMessage:styles.agentMessage} ${activeRoom.id==='council'&&message.sender_type!=='user'?councilSpeakerClass(message.sender_key):''}`}>{message.sender_type!=='user'&&<div className={styles.messageIdentity}>{activeRoom.id==='council'?<span className={styles.councilInitial} aria-hidden="true">{speakerInitial(message.sender_name)}</span>:<RoomPortrait room={activeRoom} size="sm"/>}<span><strong>{activeRoom.id==='central'?'محافظ البنك المركزي':message.sender_name}</strong><small>{message.structured_data?.speaker_role?String(message.structured_data.speaker_role):message.sender_type==='system'?'رسالة نظام':'شخصية خوارزمية'}</small></span></div>}{message.sender_type==='user'&&<div className={styles.userMessageIdentity}><strong>{meetingUserDisplayName(profile?.name||message.sender_name)}</strong><small>{activeRoom.id==='council'?'صاحب المحفظة':'أنت'}</small></div>}{message.structured_data?.onboarding===true?<OnboardingMessageContent message={message} showStructuredAction={onboardingComplete===false&&message.sender_type!=='user'&&String(message.structured_data?.onboarding_step??'')===String(onboardingStep??'')&&STRUCTURED_INTAKE_STEPS.has(String(onboardingStep??''))} onOpenStructuredIntake={()=>setIntakeDismissed(false)}/>:<p>{message.body}</p>}{message.message_kind!=='message'&&message.structured_data?.onboarding!==true&&<section className={`${styles.structuredCard} ${styles[`kind_${message.message_kind}`]}`}><header><strong>{labels[message.message_kind]}</strong></header><OversightStructuredCards
-  data={message.structured_data}
-  disabled={sending}
-  actionFeedback={oversightActionFeedback}
-  pendingConfirmation={pendingOversightConfirmation}
-  onConfirmSensitive={confirmOversightSensitiveAction}
-  onCancelSensitive={cancelOversightSensitiveAction}
-  onSubmitUserResponse={submitOversightUserResponse}
-  onCommand={requestOversightCommand}
-  onTemplate={template=>{setPendingOversightConfirmation(null);setOversightActionFeedback({command:'',status:'idle',message:null});setDraft(template);requestAnimationFrame(()=>composerTextareaRef.current?.focus())}}
-/><StructuredFacts data={message.structured_data}/>{(message.message_kind==='decision'||message.message_kind==='request')&&<small className={styles.executionBoundary}>أي تنفيذ مالي خارجي يظل بيد المستخدم، ويحتاج تأكيدًا وإثباتًا قبل الإغلاق.</small>}</section>}</article>)}</div>
+        <div className={styles.messages} aria-live="polite">{loading&&<p>جارٍ تحميل سجل المحادثة…</p>}{!loading&&!messages.length&&<article className={`${styles.message} ${styles.agentMessage}`}><p>{onboardingComplete===false?'أنا محافظ بنك نماء المركزي. سأبدأ معك بسؤال واحد في كل مرة حتى أبني ملفك من معلوماتك أنت، دون افتراضات.':'هذه بداية محادثتك مع '+activeRoom.title+'. اكتب سؤالك أو القرار الذي تريد دراسته.'}</p></article>}{messages.map((message,messageIndex)=>{
+  const hasLaterAgentResponse=message.sender_type==='user'&&messages.slice(messageIndex+1).some(next=>next.sender_type!=='user');
+  return <article key={message.id} className={`${styles.message} ${message.sender_type==='user'?styles.userMessage:styles.agentMessage} ${activeRoom.id==='council'&&message.sender_type!=='user'?councilSpeakerClass(message.sender_key):''}`}>
+    {message.sender_type!=='user'&&<div className={styles.messageIdentity}>{activeRoom.id==='council'?<span className={styles.councilInitial} aria-hidden="true">{speakerInitial(message.sender_name)}</span>:<RoomPortrait room={activeRoom} size="sm"/>}<span><strong>{activeRoom.id==='central'?'محافظ البنك المركزي':message.sender_name}</strong><small>{message.structured_data?.speaker_role?String(message.structured_data.speaker_role):message.sender_type==='system'?'رسالة نظام':'شخصية خوارزمية'}</small></span></div>}
+    {message.sender_type==='user'&&<div className={styles.userMessageIdentity}><strong>{meetingUserDisplayName(profile?.name||message.sender_name)}</strong><small>{activeRoom.id==='council'?'صاحب المحفظة':'أنت'}</small></div>}
+    {message.structured_data?.onboarding===true?<OnboardingMessageContent message={message} showStructuredAction={onboardingComplete===false&&message.sender_type!=='user'&&String(message.structured_data?.onboarding_step??'')===String(onboardingStep??'')&&STRUCTURED_INTAKE_STEPS.has(String(onboardingStep??''))} onOpenStructuredIntake={()=>setIntakeDismissed(false)}/>:<p className={styles.messageCopy}>{message.body}</p>}
+    {message.message_kind!=='message'&&message.structured_data?.onboarding!==true&&<section className={`${styles.structuredCard} ${styles[`kind_${message.message_kind}`]}`}>
+      <header className={styles.structuredCardHeader}><span aria-hidden="true"><LucideIcon name={messageKindIcon(message.message_kind)} size={16}/></span><strong>{labels[message.message_kind]}</strong></header>
+      <OversightStructuredCards
+        data={message.structured_data}
+        disabled={sending}
+        actionFeedback={oversightActionFeedback}
+        pendingConfirmation={pendingOversightConfirmation}
+        onConfirmSensitive={confirmOversightSensitiveAction}
+        onCancelSensitive={cancelOversightSensitiveAction}
+        onSubmitUserResponse={submitOversightUserResponse}
+        onCommand={requestOversightCommand}
+        onTemplate={template=>{setPendingOversightConfirmation(null);setOversightActionFeedback({command:'',status:'idle',message:null});setDraft(template);requestAnimationFrame(()=>composerTextareaRef.current?.focus())}}
+      />
+      <StructuredFacts data={message.structured_data}/>
+      {(message.message_kind==='decision'||message.message_kind==='request')&&<small className={styles.executionBoundary}>أي تنفيذ مالي خارجي يظل بيد المستخدم، ويحتاج تأكيدًا وإثباتًا قبل الإغلاق.</small>}
+    </section>}
+    <footer className={styles.messageMeta}>
+      <time dateTime={message.created_at??undefined}>{formatConversationMessageTime(message.created_at)}</time>
+      {message.sender_type==='user'&&<span className={`${styles.messageReceipt} ${hasLaterAgentResponse?styles.messageReceiptRead:''}`} title={hasLaterAgentResponse?'مقروءة ومعالجة بواسطة نماء':'تم الإرسال'} aria-label={hasLaterAgentResponse?'مقروءة ومعالجة بواسطة نماء':'تم الإرسال'}>{hasLaterAgentResponse?'✓✓':'✓'}</span>}
+    </footer>
+  </article>;
+})}</div>
         {error&&<div className={styles.routingNote} role="alert"><LucideIcon name="triangleAlert" size={16}/><span>{error}</span></div>}
         {onboardingComplete===false&&!intakeDismissed&&<GovernorOnboardingIntake
           step={onboardingStep??''}
