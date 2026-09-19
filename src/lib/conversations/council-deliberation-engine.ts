@@ -3,6 +3,7 @@ import { getRawSql } from '@/infrastructure/db/client';
 import type { ConversationMessageKind } from '@/lib/conversations/store';
 import { FINANCIAL_RESPONSIBILITY_BY_KEY } from '@/lib/advisors/approved-advisors';
 import { buildFinancialResponsibilityClaims, getFinancialCycleAllocationSnapshot, summarizeAllocationConflict } from '@/lib/allocation/financial-cycle-allocation-engine';
+import { negotiateAllocationClaims } from '@/lib/allocation/financial-cycle-negotiation-engine';
 
 export type CouncilDeliberationReply={
   id:string;
@@ -24,6 +25,32 @@ function topicFrom(text:string){
 }
 
 function claimAmount(value:number|null){return value===null?'غير محدد حتى تكتمل الأدلة':`${new Intl.NumberFormat('ar-SA',{maximumFractionDigits:2}).format(value)} ر.س`;}
+function negotiationViews(result:ReturnType<typeof negotiateAllocationClaims>){
+  const turns=result.turns.filter(turn=>turn.action==='YIELD'||turn.action==='HOLD'||turn.action==='NEEDS_EVIDENCE');
+  const bodies=turns.map(turn=>({
+    key:turn.ownerKey,
+    name:turn.ownerName,
+    kind:(turn.action==='NEEDS_EVIDENCE'?'request':turn.action==='YIELD'?'recommendation':'message') as ConversationMessageKind,
+    body:turn.action==='YIELD'
+      ? `أستطيع خفض طلبي من ${claimAmount(turn.beforeAmount)} إلى ${claimAmount(turn.afterAmount)} دون كسر الحد الأدنى المثبت. مقدار التنازل ${claimAmount(turn.reduction)}. ${turn.reason}`
+      : turn.action==='NEEDS_EVIDENCE'
+        ? `لا أستطيع تثبيت أو خفض مطالبة رقمية الآن: ${turn.reason}`
+        : `أتمسك بالمطالبة الحالية ${claimAmount(turn.beforeAmount)} في هذه الجولة. ${turn.reason}`,
+    role:'جولة تفاوض على التوزيع',
+  }));
+  bodies.push({
+    key:'central-secretary',
+    name:'أمين السر المركزي',
+    kind:'followup' as ConversationMessageKind,
+    body:result.status==='BALANCED_DRAFT'
+      ? `انتهت جولة التفاوض إلى مشروع توزيع متوازن رقميًا بإجمالي ${claimAmount(result.requestedAfter)} من دخل متاح ${claimAmount(result.availableIncome)}. هذا مشروع فقط ولا يعتمد أو ينفذ حتى تصادق عليه.`
+      : result.status==='NEEDS_EVIDENCE'
+        ? `لا يمكن إنهاء التفاوض بعد. توجد مطالب تحتاج أدلة أو حدودًا معتمدة: ${result.unresolvedOwners.join('، ')||'بيانات غير مكتملة'}. لن أملأ الفراغ بنسب افتراضية.`
+        : `ما زال هناك عجز غير محلول مقداره ${claimAmount(result.remainingGap)} بعد حدود التنازل المسموحة. نحتاج قرارًا منك أو بيانات/بدائل جديدة، ولا يجوز كسر الحدود المحمية تلقائيًا.`,
+    role:'محضر جولة التفاوض',
+  });
+  return bodies;
+}
 function makeViews(topic:string,claims=buildFinancialResponsibilityClaims({availableIncome:null,budgetPlannedAmount:null,knownHouseholdEssentials:0,monthlyObligations:0,monthlyGoalNeed:null,liquidBalance:null,liquidityTarget:null,investableOpportunityAmount:null,cycleId:null,evidence:[]})){
   return [
     {
@@ -101,7 +128,11 @@ export async function createCouncilDeliberationReplies(userId:string,userText:st
   const allocationSnapshot=await getFinancialCycleAllocationSnapshot(userId);
   const allocationClaims=buildFinancialResponsibilityClaims(allocationSnapshot);
   const allocationSummary=summarizeAllocationConflict(allocationSnapshot,allocationClaims);
-  const views=makeViews(topic,allocationClaims);
+  const negotiation=negotiateAllocationClaims(allocationSnapshot,allocationClaims);
+  const baseViews=makeViews(topic,allocationClaims);
+  const views=allocationSummary.conflict||allocationSummary.unresolved_owners.length
+    ? [...baseViews,...negotiationViews(negotiation)]
+    : baseViews;
   const replies:CouncilDeliberationReply[]=[];
   for(const view of views){
     const responsibility=FINANCIAL_RESPONSIBILITY_BY_KEY.get(view.key);
@@ -130,6 +161,10 @@ export async function createCouncilDeliberationReplies(userId:string,userText:st
       allocation_snapshot:allocationSnapshot,
       allocation_summary:allocationSummary,
       allocation_claim:allocationClaims.find(claim=>claim.ownerKey===view.key)??null,
+      negotiation,
+      ratification_required:true,
+      ratified:false,
+      auto_execution:false,
     };
     const inserted=await sql`
       insert into public.conversation_messages(
