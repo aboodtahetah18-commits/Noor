@@ -10,6 +10,13 @@ export const profiles = pgTable('profiles', {
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
+export const userPreferences = pgTable('user_preferences', {
+  userId: uuid('user_id').primaryKey().references(() => profiles.id, { onDelete: 'cascade' }),
+  matchingToleranceDays: integer('matching_tolerance_days').notNull().default(2),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const accounts = pgTable('accounts', {
   id: uuid('id').primaryKey(),
   userId: uuid('user_id').notNull().references(() => profiles.id, { onDelete: 'restrict' }),
