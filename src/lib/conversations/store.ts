@@ -96,7 +96,7 @@ export async function getConversationRoom(userId: string, roomKey: ConversationR
   const [messages, participants, attachments] = await Promise.all([
     sql`select id,sender_type,sender_key,sender_name,message_kind,body,structured_data,created_at from public.conversation_messages where thread_id=${threadId} and user_id=${userId} order by created_at asc limit 250`,
     sql`select participant_key,display_name,participant_type,role_label,is_active from public.conversation_participants where thread_id=${threadId} and is_active=true order by created_at asc`,
-    sql`select id,file_name,content_type,verification_status,created_at from public.conversation_attachments where thread_id=${threadId} and user_id=${userId} order by created_at desc limit 40`,
+    sql`select id,message_id,file_name,content_type,verification_status,created_at from public.conversation_attachments where thread_id=${threadId} and user_id=${userId} order by created_at desc limit 40`,
   ]);
   return { threadId, room: governedRooms[roomKey], messages, participants, attachments };
 }

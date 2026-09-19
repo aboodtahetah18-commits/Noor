@@ -2363,7 +2363,9 @@
   min-height:0
   }
   .agentMessage{width:94%;max-width:94%}
-  .userMessage{max-width:80%}
+  .userMessage{max-width:82%;padding:var(--ux-space-2)}
+  .userAttachmentCard{grid-template-columns:30px minmax(0,1fr);padding:var(--ux-space-1) var(--ux-space-2)}
+  .userAttachmentCard>span{width:30px;height:30px}
   .facts{
     display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -3391,3 +3393,86 @@
   margin-top:2px;
   color:var(--namaa-green-700)
 }
+
+.userMessage{
+  padding:var(--ux-space-2) var(--ux-space-3)
+}
+.userMessageIdentity{
+  justify-content:space-between;
+  margin-bottom:var(--ux-space-1)
+}
+.userMessageIdentity small{
+  opacity:.72
+}
+.userMessage .messageCopy{
+  line-height:1.62;
+  margin:0
+}
+.userMessage .messageMeta{
+  margin-top:var(--ux-space-1);
+  min-height:16px
+}
+.userMessageExtras{
+  display:grid;
+  gap:var(--ux-space-2);
+  margin-top:var(--ux-space-2)
+}
+.userAttachmentList{
+  display:grid;
+  gap:var(--ux-space-1)
+}
+.userAttachmentCard{
+  display:grid;
+  grid-template-columns:34px minmax(0,1fr);
+  align-items:center;
+  gap:var(--ux-space-2);
+  padding:var(--ux-space-2);
+  border:1px solid color-mix(in srgb,var(--namaa-green-700) 28%,var(--namaa-border));
+  border-radius:var(--ux-radius-2);
+  background:color-mix(in srgb,var(--namaa-card) 76%,transparent)
+}
+.userAttachmentCard>span{
+  width:34px;
+  height:34px;
+  display:grid;
+  place-items:center;
+  border-radius:var(--ux-radius-2);
+  background:var(--namaa-card);
+  color:var(--namaa-green-900)
+}
+.userAttachmentCard>div{
+  min-width:0;
+  display:grid;
+  gap:2px
+}
+.userAttachmentCard strong{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:var(--ux-type-caption-size);
+  color:var(--ux-text-primary)
+}
+.userAttachmentCard small{
+  font-size:var(--ux-type-caption-size);
+  color:var(--ux-text-secondary)
+}
+.userStructuredBadges{
+  display:flex;
+  flex-wrap:wrap;
+  gap:var(--ux-space-1)
+}
+.userStructuredBadges>span{
+  display:flex;
+  align-items:center;
+  gap:var(--ux-space-1);
+  min-width:0;
+  padding:var(--ux-space-1) var(--ux-space-2);
+  border:1px solid color-mix(in srgb,var(--namaa-green-700) 26%,var(--namaa-border));
+  border-radius:var(--ux-radius-full);
+  background:color-mix(in srgb,var(--namaa-card) 72%,transparent)
+}
+.userStructuredBadges small,.userStructuredBadges strong{
+  font-size:var(--ux-type-caption-size)
+}
+.userStructuredBadges small{color:var(--ux-text-secondary)}
+.userStructuredBadges strong{color:var(--namaa-green-900);overflow-wrap:anywhere}

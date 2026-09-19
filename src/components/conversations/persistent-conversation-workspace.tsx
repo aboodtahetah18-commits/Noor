@@ -22,7 +22,7 @@ type OnboardingStatus = { status:string; current_step:string; complete:boolean; 
 type StatementAccount = { id:string; name:string; account_type:string; bank_name?:string|null };
 type UserProfile = { id:string; name:string; email:string|null; image:string|null; emailVerified:boolean };
 type OnboardingReviewFact = { key:string; label:string; raw:string; verified_at?:string; confidence:number };
-type ConversationAttachment = { id:string; file_name:string; content_type?:string|null; verification_status?:string|null; created_at?:string };
+type ConversationAttachment = { id:string; message_id?:string|null; file_name:string; content_type?:string|null; verification_status?:string|null; created_at?:string };
 type ChatFontSize='small'|'medium'|'large';
 type OversightActionFeedback={command:string;status:'idle'|'pending'|'success'|'error';message:string|null};
 type OversightPendingConfirmation={command:string;title:string;message:string;confirmLabel:string}|null;
@@ -63,6 +63,61 @@ const meetingUserDisplayName=(name?:string|null)=>{
 };
 
 function formatSar(value:number){return new Intl.NumberFormat('ar-SA',{maximumFractionDigits:2}).format(value)}
+
+function attachmentStatusLabel(status?:string|null){
+  if(status==='PENDING_REVIEW')return 'بانتظار المراجعة';
+  if(status==='VERIFIED')return 'تم التحقق';
+  if(status==='REJECTED')return 'مرفوض';
+  return status||'مرفق';
+}
+
+function userMessageStructuredBadges(data?:Record<string,unknown>){
+  if(!data)return [];
+  const badges:Array<{label:string;value:string}>=[];
+  if(data.institutional_decision_followup_user_response===true){
+    badges.push({label:'الحالة',value:'أُرسل للتحقق'});
+  }
+  if(typeof data.verification_status==='string'){
+    badges.push({label:'التحقق',value:String(data.verification_status)});
+  }
+  if(typeof data.followup_title==='string'){
+    badges.push({label:'المتابعة',value:String(data.followup_title)});
+  }
+  return badges.slice(0,2);
+}
+
+function UserMessageExtras({
+  message,attachments,
+}:{message:Message;attachments:ConversationAttachment[]}){
+  const linked=attachments.filter(item=>item.message_id===message.id);
+  const structured=userMessageStructuredBadges(message.structured_data);
+  const evidence=message.structured_data?.evidence_attachment&&typeof message.structured_data.evidence_attachment==='object'
+    ? message.structured_data.evidence_attachment as Record<string,unknown>
+    : null;
+  const syntheticEvidence=evidence&&typeof evidence.file_name==='string'&&!linked.some(item=>item.file_name===evidence.file_name)
+    ? [{
+        id:String(evidence.id??message.id+'-evidence'),
+        message_id:message.id,
+        file_name:String(evidence.file_name),
+        content_type:typeof evidence.content_type==='string'?evidence.content_type:null,
+        verification_status:'PENDING_REVIEW',
+      } satisfies ConversationAttachment]
+    : [];
+  const files=[...linked,...syntheticEvidence];
+  if(!files.length&&!structured.length)return null;
+  return <div className={styles.userMessageExtras}>
+    {files.length>0&&<div className={styles.userAttachmentList}>
+      {files.map(file=><div key={file.id} className={styles.userAttachmentCard}>
+        <span aria-hidden="true"><LucideIcon name={file.content_type?.startsWith('image/')?'image':'upload'} size={17}/></span>
+        <div><strong>{file.file_name}</strong><small>{attachmentStatusLabel(file.verification_status)}</small></div>
+      </div>)}
+    </div>}
+    {structured.length>0&&<div className={styles.userStructuredBadges}>
+      {structured.map(item=><span key={item.label}><small>{item.label}</small><strong>{item.value}</strong></span>)}
+    </div>}
+  </div>;
+}
+
 function formatConversationMessageTime(value?:string){
   if(!value)return 'الآن';
   const date=new Date(value);
@@ -795,6 +850,7 @@ export function PersistentConversationWorkspace(){
     const data=await response.json();
     setMessages(Array.isArray(data.messages)?data.messages:[]);
     setParticipants(Array.isArray(data.participants)?data.participants:[]);
+    setAttachments(Array.isArray(data.attachments)?data.attachments:[]);
     const onboarding=(data.onboarding??null) as OnboardingStatus|null;
     if(onboarding){
       setOnboardingComplete(Boolean(onboarding.complete));
@@ -1092,6 +1148,7 @@ export function PersistentConversationWorkspace(){
     {message.sender_type!=='user'&&<div className={styles.messageIdentity}>{activeRoom.id==='council'?<span className={styles.councilInitial} aria-hidden="true">{speakerInitial(message.sender_name)}</span>:<RoomPortrait room={activeRoom} size="sm"/>}<span><strong>{activeRoom.id==='central'?'محافظ البنك المركزي':message.sender_name}</strong><small>{message.structured_data?.speaker_role?String(message.structured_data.speaker_role):message.sender_type==='system'?'رسالة نظام':'شخصية خوارزمية'}</small></span></div>}
     {message.sender_type==='user'&&<div className={styles.userMessageIdentity}><strong>{meetingUserDisplayName(profile?.name||message.sender_name)}</strong><small>{activeRoom.id==='council'?'صاحب المحفظة':'أنت'}</small></div>}
     {message.structured_data?.onboarding===true?<OnboardingMessageContent message={message} showStructuredAction={onboardingComplete===false&&message.sender_type!=='user'&&String(message.structured_data?.onboarding_step??'')===String(onboardingStep??'')&&STRUCTURED_INTAKE_STEPS.has(String(onboardingStep??''))} onOpenStructuredIntake={()=>setIntakeDismissed(false)}/>:<p className={styles.messageCopy}>{message.body}</p>}
+    {message.sender_type==='user'&&<UserMessageExtras message={message} attachments={attachments}/>}
     {message.message_kind!=='message'&&message.structured_data?.onboarding!==true&&<section className={`${styles.structuredCard} ${styles[`kind_${message.message_kind}`]}`}>
       <RichStructuredMessageHero room={activeRoom} kind={message.message_kind} data={message.structured_data} senderName={activeRoom.id==='central'?'محافظ البنك المركزي':message.sender_name}/>
       <header className={styles.structuredCardHeader}><span aria-hidden="true"><LucideIcon name={messageKindIcon(message.message_kind)} size={16}/></span><strong>التفاصيل</strong></header>
