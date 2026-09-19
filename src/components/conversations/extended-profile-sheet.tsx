@@ -27,7 +27,7 @@ export function ExtendedProfileSheet({
   useEffect(()=>{
     if(!open) return;
     let cancelled=false;
-    setLoading(true);setError('');
+    queueMicrotask(()=>{if(!cancelled){setLoading(true);setError('');}});
     fetch('/api/onboarding/extended-profile',{cache:'no-store'})
       .then(async response=>{
         const data=await response.json() as {sections?:ExtendedProfileSection[];facts?:Record<string,FactEnvelope>;code?:string};
@@ -51,7 +51,7 @@ export function ExtendedProfileSheet({
       const value=source[field.key];
       next[field.key]=value===null||value===undefined?'':String(value);
     }
-    setValues(next);
+    queueMicrotask(()=>setValues(next));
   },[active,facts]);
 
   if(!open) return null;
