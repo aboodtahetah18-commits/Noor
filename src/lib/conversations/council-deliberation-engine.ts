@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { getRawSql } from '@/infrastructure/db/client';
 import type { ConversationMessageKind } from '@/lib/conversations/store';
+import { FINANCIAL_RESPONSIBILITY_BY_KEY } from '@/lib/advisors/approved-advisors';
 
 export type CouncilDeliberationReply={
   id:string;
@@ -98,6 +99,7 @@ export async function createCouncilDeliberationReplies(userId:string,userText:st
   const views=makeViews(topic);
   const replies:CouncilDeliberationReply[]=[];
   for(const view of views){
+    const responsibility=FINANCIAL_RESPONSIBILITY_BY_KEY.get(view.key);
     const structured={
       council_deliberation:true,
       deliberation_stage:'discussion',
@@ -109,6 +111,17 @@ export async function createCouncilDeliberationReplies(userId:string,userText:st
       execution_boundary:'advisory_only_until_user_ratification',
       allocation_meeting:true,
       responsibility_claim_schema:['requested_amount','minimum_amount','ideal_amount','impact_if_reduced'],
+      responsibility_policy:responsibility?{
+        mandate:responsibility.mandate,
+        accountable_for:responsibility.accountableFor,
+        must_protect:responsibility.mustProtect,
+        may_yield_when:responsibility.mayYieldWhen,
+        escalation:responsibility.escalation,
+        kpis:responsibility.kpis,
+        partner_entities:responsibility.partnerEntities,
+        prohibited:responsibility.prohibited,
+      }:null,
+      accountability_boundary:responsibility?'يدافع عن مجاله لكنه لا يملك نسبة ثابتة، ويحاسب على النتيجة لا على حجم الحصة.':'لا يطالب بحصة مالية خاصة.',
     };
     const inserted=await sql`
       insert into public.conversation_messages(

@@ -19,6 +19,7 @@ const steps = [
   ['dependency policy','node',['scripts/verify-dependency-policy.mjs']],
   ['database provider policy','node',['scripts/verify-database-provider-policy.mjs']],
   ['algorithm governance schema contract','node',['scripts/verify-algorithm-governance-schema-contract.mjs']],
+  ['financial responsibility roles contract','node',['scripts/verify-financial-responsibility-roles.mjs']],
   ['authorization RBAC ABAC contract','node',['scripts/verify-authorization-contract.mjs']],
   ['authorization provisioning contract','node',['scripts/verify-authorization-provisioning-contract.mjs']],
   ['authorization admin console contract','node',['scripts/verify-authorization-admin-console-contract.mjs']],
