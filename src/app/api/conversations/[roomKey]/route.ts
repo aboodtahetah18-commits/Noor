@@ -17,6 +17,7 @@ import { syncGovernanceMeetingInvitations } from '@/lib/governance/governance-me
 import { createCouncilDeliberationReplies } from '@/lib/conversations/council-deliberation-engine';
 import { isExplicitAllocationRatification, isExplicitAllocationRejection, ratifyLatestAllocationDraft, rejectLatestAllocationDraft } from '@/lib/allocation/allocation-ratification';
 import { createFinancialPlanDeviationReplies, isDeviationReviewRequest } from '@/lib/allocation/financial-plan-deviation-engine';
+import { parseDeviationResolutionCommand, resolveLatestDeviationCase } from '@/lib/allocation/financial-plan-deviation-resolution';
 
 export async function GET(_request: Request, context: { params: Promise<{ roomKey: string }> }) {
   const user = await getAuthenticatedUser();
@@ -161,6 +162,12 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
       const financingReply = restructuringReply ? null : await createHilalFinancingReply(user.id, text);
       reply = restructuringReply ?? financingReply ?? await createRoutedReply(user.id, roomKey, text);
     } else if (roomKey === 'council') {
+      const deviationResolutionCommand=parseDeviationResolutionCommand(text);
+      if(deviationResolutionCommand){
+        const deviationResolutionReply=await resolveLatestDeviationCase(user.id,deviationResolutionCommand);
+        if(!deviationResolutionReply) return NextResponse.json({ message, code:'NO_ACTIVE_DEVIATION_CASE', captured_operation:capturedOperation }, { status:409 });
+        return NextResponse.json({ message, reply:deviationResolutionReply, replies:[deviationResolutionReply], captured_operation:capturedOperation }, { status:201 });
+      }
       if (isDeviationReviewRequest(text)) {
         const deviationReplies=await createFinancialPlanDeviationReplies(user.id);
         if(!deviationReplies.length) return NextResponse.json({ message, code:'NO_ACTIVE_PLAN_DEVIATION', captured_operation:capturedOperation }, { status:409 });
