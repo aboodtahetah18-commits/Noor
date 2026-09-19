@@ -28,6 +28,7 @@ import { createInstitutionalDecisionRegistryReply, isInstitutionalDecisionRegist
 import { applyDecisionFollowupCommand, parseDecisionFollowupCommand } from '@/lib/governance/institutional-decision-followups';
 import { applyFollowupDeadlineCommand, parseFollowupDeadlineCommand } from '@/lib/governance/institutional-decision-followup-deadlines';
 import { createGovernanceOversightDashboardReply, isGovernanceOversightDashboardRequest } from '@/lib/governance/governance-oversight-dashboard';
+import { applyOversightQuickActionCommand, parseOversightQuickActionCommand } from '@/lib/governance/governance-oversight-actions';
 
 export async function GET(_request: Request, context: { params: Promise<{ roomKey: string }> }) {
   const user = await getAuthenticatedUser();
@@ -161,6 +162,10 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
       } else {
         reply = await createRoutedReply(user.id, roomKey, text);
       }
+    } else if (roomKey === 'central' && onboarding.complete && parseOversightQuickActionCommand(text)) {
+      const quickActionReply=await applyOversightQuickActionCommand(user.id,'central',parseOversightQuickActionCommand(text)!);
+      if(!quickActionReply) return NextResponse.json({message,code:'GOVERNANCE_QUICK_ACTION_UNAVAILABLE',captured_operation:capturedOperation},{status:409});
+      return NextResponse.json({message,reply:quickActionReply,replies:[quickActionReply],captured_operation:capturedOperation},{status:201});
     } else if (roomKey === 'central' && onboarding.complete && isGovernanceOversightDashboardRequest(text)) {
       const dashboardReply=await createGovernanceOversightDashboardReply(user.id,'central');
       if(!dashboardReply) return NextResponse.json({message,code:'GOVERNANCE_DASHBOARD_UNAVAILABLE',captured_operation:capturedOperation},{status:409});
@@ -243,6 +248,10 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
       }
       const replies = await createCouncilDeliberationReplies(user.id, text);
       return NextResponse.json({ message, reply: replies.at(-1) ?? null, replies, captured_operation: capturedOperation }, { status: 201 });
+    } else if (roomKey === 'secretary' && parseOversightQuickActionCommand(text)) {
+      const quickActionReply=await applyOversightQuickActionCommand(user.id,'secretary',parseOversightQuickActionCommand(text)!);
+      if(!quickActionReply) return NextResponse.json({message,code:'GOVERNANCE_QUICK_ACTION_UNAVAILABLE',captured_operation:capturedOperation},{status:409});
+      return NextResponse.json({message,reply:quickActionReply,replies:[quickActionReply],captured_operation:capturedOperation},{status:201});
     } else if (roomKey === 'secretary' && isGovernanceOversightDashboardRequest(text)) {
       const dashboardReply=await createGovernanceOversightDashboardReply(user.id,'secretary');
       if(!dashboardReply) return NextResponse.json({message,code:'GOVERNANCE_DASHBOARD_UNAVAILABLE',captured_operation:capturedOperation},{status:409});

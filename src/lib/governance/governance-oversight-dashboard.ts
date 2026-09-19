@@ -3,11 +3,14 @@ import { getRawSql } from '@/infrastructure/db/client';
 import type { ConversationMessageKind, ConversationRoomKey } from '@/lib/conversations/store';
 import { getInstitutionalDecisionRegistry } from '@/lib/governance/institutional-decision-registry';
 import { evaluateFollowupTiming } from '@/lib/governance/institutional-decision-followup-deadlines';
+import { buildOversightQuickActions } from '@/lib/governance/governance-oversight-actions';
 
 export type GovernanceOversightFollowupItem={
   number:number;
   registryId:string;
   decisionTitle:string;
+  sourceMessageId:string;
+  sourceDecisionId:string|null;
   followupId:string;
   title:string;
   status:string;
@@ -15,6 +18,7 @@ export type GovernanceOversightFollowupItem={
   dueDate:string|null;
   timingState:string;
   daysUntilDue:number|null;
+  quickActions:Array<Record<string,unknown>>;
 };
 
 export type GovernanceOversightEscalation={
@@ -75,6 +79,8 @@ export function buildGovernanceOversightDashboard(args:{
         number,
         registryId:decision.registryId,
         decisionTitle:decision.title,
+        sourceMessageId:decision.sourceMessageId,
+        sourceDecisionId:decision.sourceDecisionId,
         followupId:followup.followupId,
         title:followup.title,
         status:followup.status,
@@ -82,6 +88,13 @@ export function buildGovernanceOversightDashboard(args:{
         dueDate:followup.dueDate??null,
         timingState:timing.state,
         daysUntilDue:timing.daysUntilDue,
+        quickActions:buildOversightQuickActions({
+          followupNumber:number,
+          status:followup.status,
+          assignedTo:followup.assignedTo,
+          timingState:timing.state,
+          escalationEligible:timing.escalationEligible,
+        }),
       });
     }
   }
