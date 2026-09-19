@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { getRawSql } from '@/infrastructure/db/client';
+import { syncGovernanceMeetingInvitations } from '@/lib/governance/governance-meeting-scheduler';
 
 export type ConversationRoomKey = 'central' | 'operations' | 'solvency' | 'assets' | 'hilal' | 'advisor' | 'secretary' | 'council';
 export type ConversationMessageKind = 'message' | 'risk' | 'decision' | 'recommendation' | 'followup' | 'request';
@@ -67,6 +68,7 @@ async function ensureThread(userId: string, roomKey: ConversationRoomKey) {
 
 export async function listConversationRooms(userId: string) {
   await Promise.all((Object.keys(governedRooms) as ConversationRoomKey[]).map((key) => ensureThread(userId, key)));
+  await syncGovernanceMeetingInvitations(userId);
   const sql = getRawSql();
   const rows = await sql`select t.id,t.room_key,t.title,t.subtitle,t.room_kind,t.status,t.updated_at,
     (select body from public.conversation_messages m where m.thread_id=t.id order by m.created_at desc limit 1) as last_message,
