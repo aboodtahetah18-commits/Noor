@@ -5,6 +5,7 @@ import { FINANCIAL_RESPONSIBILITY_BY_KEY } from '@/lib/advisors/approved-advisor
 import { buildFinancialResponsibilityClaims, getFinancialCycleAllocationSnapshot, summarizeAllocationConflict } from '@/lib/allocation/financial-cycle-allocation-engine';
 import { negotiateAllocationClaims } from '@/lib/allocation/financial-cycle-negotiation-engine';
 import { carryForwardNoteForOwner, getLatestClosedCycleCarryForward } from '@/lib/allocation/financial-cycle-carry-forward';
+import { getGovernorPreMeetingBrief } from '@/lib/allocation/governor-pre-meeting-brief';
 
 export type CouncilDeliberationReply={
   id:string;
@@ -65,7 +66,7 @@ function makeViews(topic:string,claims=buildFinancialResponsibilityClaims({avail
       key:'central-governor',
       name:'محافظ بنك نماء المركزي',
       kind:'recommendation' as ConversationMessageKind,
-      body:'في مرحلة التأسيس لا أريد وزنًا كبيرًا يُعامل كأنه ثابت قبل أن نرى السلوك الفعلي لعدة دورات. أريد موازنة الحماية والنمو، مع تجربة أولية قابلة للخفض أو الرفع بدل اعتماد نسبة نهائية من أول اجتماع.',
+      body:'سأبدأ الاجتماع من الصورة الرقابية: ما الذي تجاوز سابقًا، ما الذي بقي بلا تنفيذ موثق، ما المطالب الحالية الناقصة، وما الذي تغير عن آخر مخصص معتمد. هذه نقاط مساءلة وليست أوامر لرفع أو خفض أي حصة.',
       role:'رئيس المجلس',
     },
     {
@@ -128,7 +129,10 @@ export async function createCouncilDeliberationReplies(userId:string,userText:st
   const topic=topicFrom(userText);
   const allocationProposalId=randomUUID();
   const allocationSnapshot=await getFinancialCycleAllocationSnapshot(userId);
-  const carryForward=await getLatestClosedCycleCarryForward(userId);
+  const [carryForward,governorBrief]=await Promise.all([
+    getLatestClosedCycleCarryForward(userId),
+    getGovernorPreMeetingBrief(userId),
+  ]);
   const allocationClaims=buildFinancialResponsibilityClaims(allocationSnapshot);
   const allocationSummary=summarizeAllocationConflict(allocationSnapshot,allocationClaims);
   const negotiation=negotiateAllocationClaims(allocationSnapshot,allocationClaims);
@@ -168,6 +172,7 @@ export async function createCouncilDeliberationReplies(userId:string,userText:st
       }:null,
       accountability_boundary:responsibility?'يدافع عن مجاله لكنه لا يملك نسبة ثابتة، ويحاسب على النتيجة لا على حجم الحصة.':'لا يطالب بحصة مالية خاصة.',
       prior_cycle_carry_forward:priorCycleContext,
+      governor_pre_meeting_brief:view.key==='central-governor'?governorBrief:null,
       prior_cycle_carry_forward_source:carryForward?{
         source_cycle_id:carryForward.sourceCycleId,
         source_plan_version_id:carryForward.sourcePlanVersionId,

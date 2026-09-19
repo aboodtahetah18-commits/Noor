@@ -19,6 +19,7 @@ import { isExplicitAllocationRatification, isExplicitAllocationRejection, ratify
 import { createFinancialPlanDeviationReplies, isDeviationReviewRequest } from '@/lib/allocation/financial-plan-deviation-engine';
 import { parseDeviationResolutionCommand, resolveLatestDeviationCase } from '@/lib/allocation/financial-plan-deviation-resolution';
 import { closeFinancialCycleAfterApproval, createFinancialCycleClosureReview, isCycleClosureReviewRequest, isExplicitCycleClosureApproval } from '@/lib/allocation/financial-cycle-closure';
+import { createGovernorPreMeetingBriefReply, isGovernorPreMeetingBriefRequest } from '@/lib/allocation/governor-pre-meeting-brief';
 
 export async function GET(_request: Request, context: { params: Promise<{ roomKey: string }> }) {
   const user = await getAuthenticatedUser();
@@ -152,6 +153,10 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
       } else {
         reply = await createRoutedReply(user.id, roomKey, text);
       }
+    } else if (roomKey === 'central' && onboarding.complete && isGovernorPreMeetingBriefRequest(text)) {
+      const governorBriefReply=await createGovernorPreMeetingBriefReply(user.id);
+      if(!governorBriefReply) return NextResponse.json({message,code:'GOVERNOR_PRE_MEETING_BRIEF_UNAVAILABLE',captured_operation:capturedOperation},{status:409});
+      return NextResponse.json({message,reply:governorBriefReply,replies:[governorBriefReply],captured_operation:capturedOperation},{status:201});
     } else if (roomKey === 'solvency') {
       reply = await createSolvencyReply(user.id, text);
     } else if (roomKey === 'assets') {
