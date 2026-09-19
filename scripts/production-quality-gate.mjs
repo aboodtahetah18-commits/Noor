@@ -45,6 +45,7 @@ const steps = [
   ['governance sensitive action confirmation contract','node',['scripts/verify-governance-sensitive-action-confirmation.mjs']],
   ['governance followup mini history contract','node',['scripts/verify-governance-followup-mini-history.mjs']],
   ['governance oversight filter sort contract','node',['scripts/verify-governance-oversight-filter-sort.mjs']],
+  ['governance oversight executive summary contract','node',['scripts/verify-governance-oversight-executive-summary.mjs']],
   ['authorization RBAC ABAC contract','node',['scripts/verify-authorization-contract.mjs']],
   ['authorization provisioning contract','node',['scripts/verify-authorization-provisioning-contract.mjs']],
   ['authorization admin console contract','node',['scripts/verify-authorization-admin-console-contract.mjs']],

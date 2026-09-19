@@ -58,3 +58,34 @@ export function filterAndSortOversightItems(args:{
     return Number(a.number??0)-Number(b.number??0);
   });
 }
+
+
+export type OversightSummaryMetric={
+  filter:OversightViewFilter;
+  label:string;
+  count:number;
+};
+
+export function buildOversightSummaryMetrics(args:{
+  items:OversightViewItem[];
+  escalations:OversightEscalationRef[];
+}):OversightSummaryMetric[]{
+  const filters:Array<[OversightViewFilter,string]>=[
+    ['ALL','المفتوحة'],
+    ['OVERDUE','المتأخرة'],
+    ['WAITING_USER','بانتظار المستخدم'],
+    ['UNASSIGNED','غير المسندة'],
+    ['BLOCKED','المعلّقة'],
+    ['ESCALATED','التصعيدات'],
+  ];
+  return filters.map(([filter,label])=>({
+    filter,
+    label,
+    count:filterAndSortOversightItems({
+      items:args.items,
+      escalations:args.escalations,
+      filter,
+      sort:'DEFAULT',
+    }).length,
+  }));
+}

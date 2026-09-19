@@ -10,7 +10,7 @@ import { GovernorOnboardingIntake } from '@/components/conversations/governor-on
 import { GovernanceMobileSheet } from '@/components/conversations/governance-mobile-sheet';
 import { ExtendedProfileSheet } from '@/components/conversations/extended-profile-sheet';
 import { governedRoomDetails } from '@/lib/conversations/governed-room-details';
-import { filterAndSortOversightItems, type OversightViewFilter, type OversightViewSort } from '@/lib/governance/governance-oversight-view';
+import { buildOversightSummaryMetrics, filterAndSortOversightItems, type OversightViewFilter, type OversightViewSort } from '@/lib/governance/governance-oversight-view';
 import styles from './conversation-workspace.module.css';
 
 type RoomKey = 'central' | 'operations' | 'solvency' | 'assets' | 'hilal' | 'advisor' | 'secretary' | 'council';
@@ -201,6 +201,7 @@ function OversightStructuredCards({
   const context=data.governance_oversight_decision_context===true?data:null;
   const followups=dashboard&&Array.isArray(dashboard.allOpenFollowups)?dashboard.allOpenFollowups.filter((item):item is Record<string,unknown>=>Boolean(item)&&typeof item==='object'&&!Array.isArray(item)):[];
   const escalationRefs=dashboard&&Array.isArray(dashboard.openEscalations)?dashboard.openEscalations.filter((item):item is Record<string,unknown>=>Boolean(item)&&typeof item==='object'&&!Array.isArray(item)):[];
+  const summaryMetrics=dashboard?buildOversightSummaryMetrics({items:followups,escalations:escalationRefs}):[];
   const visibleFollowups=dashboard?filterAndSortOversightItems({items:followups,escalations:escalationRefs,filter:viewFilter,sort:viewSort}):followups;
   const renderActions=(actions:unknown)=>Array.isArray(actions)?actions.filter((item):item is Record<string,unknown>=>Boolean(item)&&typeof item==='object'&&!Array.isArray(item)).map((action,index)=>{
     const label=typeof action.label==='string'?action.label:'إجراء';
@@ -228,6 +229,18 @@ function OversightStructuredCards({
   }):null;
   if(dashboard)return <section className={styles.oversightPanel} aria-label="اللوحة الرقابية">
     <header className={styles.oversightPanelHeader}><span>اللوحة الرقابية</span><small>{visibleFollowups.length} ظاهرة من {followups.length} · تحديث حي</small></header>
+    <div className={styles.oversightSummaryBar} role="group" aria-label="الملخص التنفيذي للمتابعات">
+      {summaryMetrics.map(metric=><button
+        key={metric.filter}
+        type="button"
+        className={viewFilter===metric.filter?styles.oversightSummaryActive:''}
+        aria-pressed={viewFilter===metric.filter}
+        onClick={()=>setViewFilter(metric.filter)}
+      >
+        <strong>{metric.count}</strong>
+        <span>{metric.label}</span>
+      </button>)}
+    </div>
     <div className={styles.oversightViewControls} aria-label="تصفية وفرز اللوحة الرقابية">
       <div className={styles.oversightFilterChips} role="group" aria-label="تصفية المتابعات">
         {([

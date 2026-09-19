@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { filterAndSortOversightItems } from '@/lib/governance/governance-oversight-view';
+import { buildOversightSummaryMetrics, filterAndSortOversightItems } from '@/lib/governance/governance-oversight-view';
 
 const items=[
   {number:1,registryId:'r1',followupId:'f1',status:'WAITING_USER',assignedTo:null,dueDate:null,timingState:'NO_DUE_DATE',history:[{createdAt:'2026-09-20T10:00:00Z'}]},
@@ -22,5 +22,21 @@ describe('governance oversight view',()=>{
 
   it('sorts by latest recorded update',()=>{
     expect(filterAndSortOversightItems({items,escalations:[],filter:'ALL',sort:'LAST_UPDATE'}).map(x=>x.number)).toEqual([2,3,1]);
+  });
+
+  it('builds clickable summary counts from the same filter rules',()=>{
+    const metrics=buildOversightSummaryMetrics({
+      items,
+      escalations:[{registryId:'r1',followupId:'f2'}],
+    });
+    const byFilter=Object.fromEntries(metrics.map(item=>[item.filter,item.count]));
+    expect(byFilter).toMatchObject({
+      ALL:3,
+      OVERDUE:1,
+      WAITING_USER:1,
+      UNASSIGNED:1,
+      BLOCKED:1,
+      ESCALATED:1,
+    });
   });
 });
