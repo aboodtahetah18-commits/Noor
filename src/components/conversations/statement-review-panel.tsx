@@ -101,8 +101,22 @@ export function StatementReviewPanel({
   const [matchedTransactionId,setMatchedTransactionId]=useState('');
   const [transactionDate,setTransactionDate]=useState('');
 
+  function activateRow(row:ReviewRow){
+    setActiveRowId(row.id);
+    setAction(row.direction==='DEBIT'?'EXPENSE':'INCOME');
+    setTransactionDate(row.transaction_date??'');
+    setIncomeSource(row.description);
+    setCategoryId('');
+    setRelatedTransactionId('');
+    setOtherAccountId('');
+    setMatchedTransactionId('');
+    setPlanningStatus('UNPLANNED');
+    setExpenseNature('UNPLANNED');
+    setIncomeKind('OTHER');
+  }
+
   async function load(){
-    if(!enabled){setBundle(null);return;}
+    if(!enabled) return;
     setLoading(true);
     try{
       const response=await fetch('/api/conversations/central/statement/review',{cache:'no-store'});
@@ -110,11 +124,8 @@ export function StatementReviewPanel({
       if(!response.ok) throw new Error('load');
       setBundle(data);
       const pending=(data.rows??[]).find(row=>row.review_status==='NEEDS_REVIEW');
-      if(pending){
-        setActiveRowId(current=>current&&data.rows.some(row=>row.id===current&&row.review_status==='NEEDS_REVIEW')?current:pending.id);
-      }else{
-        setActiveRowId('');
-      }
+      if(pending) activateRow(pending);
+      else setActiveRowId('');
       setError('');
     }catch{
       setError('تعذر تحميل مراجعة كشف الحساب الآن.');
@@ -123,7 +134,43 @@ export function StatementReviewPanel({
     }
   }
 
-  useEffect(()=>{void load();},[enabled,refreshKey]);
+  useEffect(()=>{
+    if(!enabled) return;
+    let cancelled=false;
+    void fetch('/api/conversations/central/statement/review',{cache:'no-store'})
+      .then(async response=>{
+        if(!response.ok) throw new Error('load');
+        return response.json() as Promise<ReviewBundle>;
+      })
+      .then(data=>{
+        if(cancelled) return;
+        setBundle(data);
+        const pending=(data.rows??[]).find(row=>row.review_status==='NEEDS_REVIEW');
+        if(pending){
+          setActiveRowId(pending.id);
+          setAction(pending.direction==='DEBIT'?'EXPENSE':'INCOME');
+          setTransactionDate(pending.transaction_date??'');
+          setIncomeSource(pending.description);
+          setCategoryId('');
+          setRelatedTransactionId('');
+          setOtherAccountId('');
+          setMatchedTransactionId('');
+          setPlanningStatus('UNPLANNED');
+          setExpenseNature('UNPLANNED');
+          setIncomeKind('OTHER');
+        }else{
+          setActiveRowId('');
+        }
+        setError('');
+        setLoading(false);
+      })
+      .catch(()=>{
+        if(cancelled) return;
+        setError('تعذر تحميل مراجعة كشف الحساب الآن.');
+        setLoading(false);
+      });
+    return()=>{cancelled=true};
+  },[enabled,refreshKey]);
 
   const pendingRows=useMemo(
     ()=>bundle?.rows.filter(row=>row.review_status==='NEEDS_REVIEW')??[],
@@ -133,21 +180,6 @@ export function StatementReviewPanel({
     ()=>pendingRows.find(row=>row.id===activeRowId)??pendingRows[0]??null,
     [pendingRows,activeRowId],
   );
-
-  useEffect(()=>{
-    if(!activeRow) return;
-    setActiveRowId(activeRow.id);
-    setAction(activeRow.direction==='DEBIT'?'EXPENSE':'INCOME');
-    setTransactionDate(activeRow.transaction_date??'');
-    setIncomeSource(activeRow.description);
-    setCategoryId('');
-    setRelatedTransactionId('');
-    setOtherAccountId('');
-    setMatchedTransactionId('');
-    setPlanningStatus('UNPLANNED');
-    setExpenseNature('UNPLANNED');
-    setIncomeKind('OTHER');
-  },[activeRow?.id]);
 
   const availableActions:ReviewAction[]=activeRow?.direction==='DEBIT'
     ? ['EXPENSE','INTERNAL_TRANSFER','MATCH_EXISTING','IGNORE']
@@ -226,7 +258,7 @@ export function StatementReviewPanel({
             key={row.id}
             type="button"
             className={row.id===activeRow?.id?styles.statementRowActive:''}
-            onClick={()=>setActiveRowId(row.id)}
+            onClick={()=>activateRow(row)}
           >
             <small>#{row.row_number}</small>
             <strong>{row.description}</strong>
