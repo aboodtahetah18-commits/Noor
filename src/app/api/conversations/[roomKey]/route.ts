@@ -12,6 +12,7 @@ import { createHilalRestructuringReply } from '@/lib/conversations/hilal-restruc
 import { appendUserMessage, getConversationRoom, isConversationRoomKey, type ConversationMessageKind } from '@/lib/conversations/store';
 import { getGovernorOnboardingStatus, getGovernorWelcome, processGovernorOnboardingMessage } from '@/lib/conversations/governor-onboarding';
 import { routePurchaseMessageToOperations } from '@/lib/conversations/operations-message-router';
+import { attachGovernanceContext } from '@/lib/governance/governance-context';
 
 export async function GET(_request: Request, context: { params: Promise<{ roomKey: string }> }) {
   const user = await getAuthenticatedUser();
@@ -160,7 +161,8 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
       reply = crossBankGuardReply ?? guardReply ?? await createRoutedReply(user.id, roomKey, text);
     }
 
-    const governedReply = await attachUnifiedDecisionLifecycle(user.id, roomKey, reply ?? null);
+    const governanceBoundReply = await attachGovernanceContext(user.id, roomKey, reply ?? null);
+    const governedReply = await attachUnifiedDecisionLifecycle(user.id, roomKey, governanceBoundReply);
     return NextResponse.json({ message, reply: governedReply, captured_operation: capturedOperation }, { status: 201 });
   } catch (error) {
     const code = error instanceof Error ? error.message : 'CONVERSATION_WRITE_FAILED';
