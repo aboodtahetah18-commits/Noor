@@ -93,12 +93,30 @@ const onboardingStepNumber:Record<string,number>={
   marital_status:1,dependents:2,home_city:3,housing:4,employment:5,work_city:6,
   commute:7,income:8,accounts:9,obligations:10,goals:11,statements:12,review:13,
 };
+const onboardingStepMeta:Record<string,{title:string;reason:string;icon:string}>={
+  marital_status:{title:'الوضع الأسري',reason:'لبناء صورة واقعية للالتزامات وتكوين الأسرة.',icon:'circleUserRound'},
+  dependents:{title:'المعالون',reason:'لفهم من يعتمد عليك ماليًا وما قد يرتبط بهم من مصروفات.',icon:'users'},
+  home_city:{title:'مدينة السكن',reason:'لربط تكاليف المعيشة والتنقل بواقعك الفعلي.',icon:'mapPin'},
+  housing:{title:'السكن',reason:'لتحديد طبيعة التزام السكن وأثره على الميزانية.',icon:'home'},
+  employment:{title:'العمل',reason:'لفهم مصدر الدخل واستقراره دون افتراضات.',icon:'briefcaseBusiness'},
+  work_city:{title:'مدينة العمل',reason:'لقياس أثر مكان العمل على التنقل والتكاليف المتكررة.',icon:'building2'},
+  commute:{title:'التنقل',reason:'لتقدير المصروفات المنتظمة المرتبطة بالعمل والتنقل.',icon:'car'},
+  income:{title:'الدخل',reason:'لبناء أساس مالي واقعي يمكن الاعتماد عليه في التحليل.',icon:'walletCards'},
+  accounts:{title:'الحسابات',reason:'لتجميع مصادر السيولة والحسابات دون تنفيذ أي حركة مالية.',icon:'creditCard'},
+  obligations:{title:'الالتزامات',reason:'لحماية الاستحقاقات الأساسية قبل أي توصية أو تخصيص.',icon:'receiptText'},
+  goals:{title:'الأهداف',reason:'لترتيب الأهداف وتقدير أثرها على التدفق النقدي.',icon:'target'},
+  statements:{title:'كشوف الحساب',reason:'لتحسين دقة المطابقة والمراجعة من بياناتك الفعلية.',icon:'fileSpreadsheet'},
+  review:{title:'مراجعة التأسيس',reason:'لتأكيد أن البيانات صحيحة قبل اعتماد الملف وبدء التشغيل الكامل.',icon:'listChecks'},
+};
 
 function OnboardingMessageContent({message,showStructuredAction,onOpenStructuredIntake}:{message:Message;showStructuredAction?:boolean;onOpenStructuredIntake?:()=>void}){
   const data=message.structured_data&&typeof message.structured_data==='object'?message.structured_data:{};
   const question=typeof data.next_question==='string'?data.next_question.trim():'';
   const step=typeof data.onboarding_step==='string'?data.onboarding_step:'';
   const stepNumber=onboardingStepNumber[step];
+  const stepMeta=onboardingStepMeta[step];
+  const totalSteps=Object.keys(onboardingStepNumber).length;
+  const progressPercent=stepNumber?Math.round((stepNumber/totalSteps)*100):0;
   const body=message.body.trim();
   const goalAnalysis=Array.isArray(data.goal_analysis)
     ? data.goal_analysis.filter((item):item is Record<string,unknown>=>Boolean(item)&&typeof item==='object'&&!Array.isArray(item))
@@ -106,11 +124,23 @@ function OnboardingMessageContent({message,showStructuredAction,onOpenStructured
   const intro=question&&body.endsWith(question)?body.slice(0,Math.max(0,body.length-question.length)).trim():body;
   return <div className={styles.onboardingMessageContent}>
     {intro&&intro!==question&&<p>{intro}</p>}
-    {question&&<div className={styles.onboardingQuestionBox}>
-      {stepNumber&&<span>السؤال {stepNumber}</span>}
-      <strong>{question}</strong>
+    {question&&<section className={styles.onboardingQuestionCard} aria-label={stepMeta?.title??'سؤال التأسيس'}>
+      <header className={styles.onboardingQuestionHeader}>
+        <span className={styles.onboardingQuestionIcon} aria-hidden="true"><LucideIcon name={stepMeta?.icon??'listChecks'} size={18}/></span>
+        <div>
+          <strong>{stepMeta?.title??'استكمال بيانات التأسيس'}</strong>
+          {stepNumber&&<small>المرحلة {stepNumber} من {totalSteps}</small>}
+        </div>
+        {stepNumber&&<b>{progressPercent}٪</b>}
+      </header>
+      {stepNumber&&<div className={styles.onboardingProgressTrack} aria-label={'تقدم التأسيس '+progressPercent+'٪'}><span style={{width:progressPercent+'%'}}/></div>}
+      {stepMeta?.reason&&<p className={styles.onboardingQuestionReason}><LucideIcon name="info" size={15}/><span>{stepMeta.reason}</span></p>}
+      <div className={styles.onboardingQuestionBox}>
+        {stepNumber&&<span>السؤال {stepNumber}</span>}
+        <strong>{question}</strong>
+      </div>
       {showStructuredAction&&onOpenStructuredIntake&&<button type="button" className={styles.inlineIntakeButton} onClick={onOpenStructuredIntake}><LucideIcon name="listChecks" size={16}/><span>متابعة استكمال البيانات</span></button>}
-    </div>}
+    </section>}
     {!question&&<p>{body}</p>}
     {goalAnalysis.length>0&&<div className={styles.goalAnalysisList}>
       {goalAnalysis.map((goal,index)=>{
