@@ -11,6 +11,7 @@ import { createHilalFinancingReply } from '@/lib/conversations/hilal-financing-e
 import { createHilalRestructuringReply } from '@/lib/conversations/hilal-restructuring-engine';
 import { appendUserMessage, getConversationRoom, isConversationRoomKey, type ConversationMessageKind } from '@/lib/conversations/store';
 import { getGovernorOnboardingStatus, getGovernorWelcome, processGovernorOnboardingMessage } from '@/lib/conversations/governor-onboarding';
+import { routeBankMovementMessage } from '@/lib/conversations/bank-message-routing';
 
 export async function GET(_request: Request, context: { params: Promise<{ roomKey: string }> }) {
   const user = await getAuthenticatedUser();
@@ -101,6 +102,16 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
     const onboarding = await getGovernorOnboardingStatus(user.id);
     if (!onboarding.complete && roomKey !== 'central') {
       return NextResponse.json({ code: 'ONBOARDING_REQUIRED', onboarding }, { status: 423 });
+    }
+
+    const routedBankReply = await routeBankMovementMessage({
+      userId:user.id,
+      originRoom:roomKey,
+      originMessageId:String(message?.id ?? ''),
+      text,
+    });
+    if(routedBankReply){
+      return NextResponse.json({ message, reply:routedBankReply }, { status:201 });
     }
 
     let reply: PersistedReply | null = null;
