@@ -14,7 +14,7 @@ import styles from './conversation-workspace.module.css';
 
 type RoomKey = 'central' | 'operations' | 'solvency' | 'assets' | 'hilal' | 'advisor' | 'secretary' | 'council';
 type MessageKind = 'message' | 'risk' | 'decision' | 'recommendation' | 'followup' | 'request';
-type Message = { id:string; sender_type:'user'|'agent'|'system'; sender_name:string; message_kind:MessageKind; body:string; structured_data?:Record<string,unknown>; created_at?:string };
+type Message = { id:string; sender_type:'user'|'agent'|'system'; sender_key?:string; sender_name:string; message_kind:MessageKind; body:string; structured_data?:Record<string,unknown>; created_at?:string };
 type Participant = { participant_key:string; display_name:string; participant_type:string; role_label?:string };
 type OnboardingStatus = { status:string; current_step:string; complete:boolean; question?:string|null };
 type StatementAccount = { id:string; name:string; account_type:string; bank_name?:string|null };
@@ -34,6 +34,16 @@ const rooms: [Room, ...Room[]] = [
   { id:'council', title:'مجلس نماء الأعلى', subtitle:'القرارات واللجان', lead:'محافظ بنك نماء المركزي بصفته رئيس المجلس', specialists:'أعضاء اللجنة ذات الصلة فقط، وليس جميع الشخصيات', avatar:'/brand/governor.webp', bankLogo:'/brand/bank-central.webp' },
 ];
 const labels:Record<MessageKind,string>={message:'',risk:'تقييم مخاطر',decision:'قرار / اعتماد',recommendation:'توصية',followup:'متابعة',request:'طلب إجراء'};
+const councilSpeakerClass=(senderKey?:string)=>{
+  if(senderKey==='central-governor') return styles.councilGovernor;
+  if(senderKey==='solvency-manager') return styles.councilSolvency;
+  if(senderKey==='assets-manager') return styles.councilAssets;
+  if(senderKey==='hilal-manager') return styles.councilHilal;
+  if(senderKey==='financial-advisor') return styles.councilAdvisor;
+  if(senderKey==='central-secretary'||senderKey==='council-secretary') return styles.councilSecretary;
+  return styles.councilMember;
+};
+const speakerInitial=(name:string)=>name.trim().split(/\s+/).slice(-2).map(part=>part[0]??'').join('').slice(0,2);
 
 function formatSar(value:number){return new Intl.NumberFormat('ar-SA',{maximumFractionDigits:2}).format(value)}
 function roomTitle(value:unknown){if(typeof value!=='string')return null;return rooms.find(room=>room.id===value)?.title??null}
@@ -540,11 +550,13 @@ export function PersistentConversationWorkspace(){
   async function send(event:FormEvent){ event.preventDefault(); const body=draft.trim(); if(!body||sending)return; setSending(true); setError('');
     try{
       const response=await fetch(`/api/conversations/${activeRoomId}`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({body})});
-      const data=await response.json() as {message?:Message;reply?:Message};
+      const data=await response.json() as {message?:Message;reply?:Message;replies?:Message[]};
       if(!response.ok||!data.message)throw new Error('write');
-      setMessages(current=>[...current,data.message as Message,...(data.reply?[data.reply as Message]:[])]);
-      const completed=Boolean(data.reply?.structured_data?.onboarding_complete);
-      const nextStep=data.reply?.structured_data?.onboarding_step;
+      const responseMessages=Array.isArray(data.replies)&&data.replies.length?data.replies:(data.reply?[data.reply]:[]);
+      setMessages(current=>[...current,data.message as Message,...responseMessages]);
+      const lifecycleReply=data.reply??responseMessages.at(-1);
+      const completed=Boolean(lifecycleReply?.structured_data?.onboarding_complete);
+      const nextStep=lifecycleReply?.structured_data?.onboarding_step;
       if(typeof nextStep==='string') setOnboardingStep(nextStep);
       if(completed){ setOnboardingComplete(true); setOnboardingStep('complete'); }
       setDraft('');
@@ -577,7 +589,7 @@ export function PersistentConversationWorkspace(){
     <div className={`${styles.workspace} ${styles.withoutRooms} ${desktopContextVisible?'':styles.withoutContext}`}>
       <main className={styles.chatPane}><header className={styles.chatHeader}><div className={styles.chatIdentity}><RoomPortrait room={activeRoom} size="md"/><div><div className={styles.entityTitle}><strong>{chatRoleTitle(activeRoom)}</strong></div><small>{chatEntityTitle(activeRoom)}</small></div></div><div className={styles.mobileTools}><button type="button" aria-label="معلومات الجهة" onClick={()=>setContextOpen(true)}><LucideIcon name="info" size={20}/></button></div></header>
         <div className={styles.routingNote}><LucideIcon name="sparkles" size={16}/><span>{activeRoom.specialists}</span></div>
-        <div className={styles.messages} aria-live="polite">{loading&&<p>جارٍ تحميل سجل المحادثة…</p>}{!loading&&!messages.length&&<article className={`${styles.message} ${styles.agentMessage}`}><p>{onboardingComplete===false?'أنا محافظ بنك نماء المركزي. سأبدأ معك بسؤال واحد في كل مرة حتى أبني ملفك من معلوماتك أنت، دون افتراضات.':'هذه بداية محادثتك مع '+activeRoom.title+'. اكتب سؤالك أو القرار الذي تريد دراسته.'}</p></article>}{messages.map(message=><article key={message.id} className={`${styles.message} ${message.sender_type==='user'?styles.userMessage:styles.agentMessage}`}>{message.sender_type!=='user'&&<div className={styles.messageIdentity}><RoomPortrait room={activeRoom} size="sm"/><span><strong>{activeRoom.id==='central'?'محافظ البنك المركزي':message.sender_name}</strong><small>{message.sender_type==='system'?'رسالة نظام':'شخصية خوارزمية'}</small></span></div>}{message.structured_data?.onboarding===true?<OnboardingMessageContent message={message}/>:<p>{message.body}</p>}{message.message_kind!=='message'&&message.structured_data?.onboarding!==true&&<section className={`${styles.structuredCard} ${styles[`kind_${message.message_kind}`]}`}><header><strong>{labels[message.message_kind]}</strong></header><StructuredFacts data={message.structured_data}/>{(message.message_kind==='decision'||message.message_kind==='request')&&<small className={styles.executionBoundary}>أي تنفيذ مالي خارجي يظل بيد المستخدم، ويحتاج تأكيدًا وإثباتًا قبل الإغلاق.</small>}</section>}</article>)}</div>
+        <div className={styles.messages} aria-live="polite">{loading&&<p>جارٍ تحميل سجل المحادثة…</p>}{!loading&&!messages.length&&<article className={`${styles.message} ${styles.agentMessage}`}><p>{onboardingComplete===false?'أنا محافظ بنك نماء المركزي. سأبدأ معك بسؤال واحد في كل مرة حتى أبني ملفك من معلوماتك أنت، دون افتراضات.':'هذه بداية محادثتك مع '+activeRoom.title+'. اكتب سؤالك أو القرار الذي تريد دراسته.'}</p></article>}{messages.map(message=><article key={message.id} className={`${styles.message} ${message.sender_type==='user'?styles.userMessage:styles.agentMessage} ${activeRoom.id==='council'&&message.sender_type!=='user'?councilSpeakerClass(message.sender_key):''}`}>{message.sender_type!=='user'&&<div className={styles.messageIdentity}>{activeRoom.id==='council'?<span className={styles.councilInitial} aria-hidden="true">{speakerInitial(message.sender_name)}</span>:<RoomPortrait room={activeRoom} size="sm"/>}<span><strong>{activeRoom.id==='central'?'محافظ البنك المركزي':message.sender_name}</strong><small>{message.structured_data?.speaker_role?String(message.structured_data.speaker_role):message.sender_type==='system'?'رسالة نظام':'شخصية خوارزمية'}</small></span></div>}{message.sender_type==='user'&&activeRoom.id==='council'&&<div className={styles.userMeetingIdentity}><strong>{profile?.name||message.sender_name||'أنت'}</strong><small>صاحب المحفظة</small></div>}{message.structured_data?.onboarding===true?<OnboardingMessageContent message={message}/>:<p>{message.body}</p>}{message.message_kind!=='message'&&message.structured_data?.onboarding!==true&&<section className={`${styles.structuredCard} ${styles[`kind_${message.message_kind}`]}`}><header><strong>{labels[message.message_kind]}</strong></header><StructuredFacts data={message.structured_data}/>{(message.message_kind==='decision'||message.message_kind==='request')&&<small className={styles.executionBoundary}>أي تنفيذ مالي خارجي يظل بيد المستخدم، ويحتاج تأكيدًا وإثباتًا قبل الإغلاق.</small>}</section>}</article>)}</div>
         {error&&<div className={styles.routingNote} role="alert"><LucideIcon name="triangleAlert" size={16}/><span>{error}</span></div>}
         {onboardingComplete===false&&<GovernorOnboardingIntake
           step={onboardingStep??''}
