@@ -585,11 +585,10 @@ export function PersistentConversationWorkspace(){
   </div>;
 
   return <section className={styles.page} dir="rtl" aria-label="محادثات نماء">
-    <Image className={styles.brandWatermark} src="/brand/namaa-leaf.webp" alt="" width={256} height={256} aria-hidden="true" />
     <header className={styles.mobileAppBar}>
       <div className={styles.mobileAppBarPrimary}>
         <button type="button" className={styles.mobileTopButton} aria-label="فتح القائمة الجانبية" onClick={()=>setRoomsOpen(true)}><LucideIcon name="menu" size={20}/></button>
-        <div className={styles.mobileBrandLockup} aria-label="نماء"><Image src="/brand/namaa-leaf.webp" alt="" width={30} height={30} priority/><span>نماء</span></div>
+        <div className={styles.mobileBrandLockup} aria-label="نماء"><Image src="/brand/namaa-logo.webp" alt="نماء" width={96} height={40} priority/></div>
       </div>
       <div className={styles.mobileAppBarActions}>
         <ThemeToggle className={styles.mobileThemeToggle}/>
