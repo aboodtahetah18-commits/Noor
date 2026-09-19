@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
-import { LucideIcon } from '@/components/ui/lucide-icon';
+import { LucideIcon, type LucideIconName } from '@/components/ui/lucide-icon';
 import { ThemeToggle } from '@/app/theme-toggle';
 import { StatementReviewPanel } from '@/components/conversations/statement-review-panel';
 import { GovernorOnboardingIntake } from '@/components/conversations/governor-onboarding-intake';
@@ -108,7 +108,7 @@ function UserMessageExtras({
   return <div className={styles.userMessageExtras}>
     {files.length>0&&<div className={styles.userAttachmentList}>
       {files.map(file=><div key={file.id} className={styles.userAttachmentCard}>
-        <span aria-hidden="true"><LucideIcon name={file.content_type?.startsWith('image/')?'image':'upload'} size={17}/></span>
+        <span aria-hidden="true"><LucideIcon name="upload" size={16}/></span>
         <div><strong>{file.file_name}</strong><small>{attachmentStatusLabel(file.verification_status)}</small></div>
       </div>)}
     </div>}
@@ -163,7 +163,7 @@ function formatConversationMessageTime(value?:string){
   if(!Number.isFinite(date.getTime()))return 'الآن';
   return new Intl.DateTimeFormat('ar-SA',{hour:'numeric',minute:'2-digit'}).format(date);
 }
-function messageKindIcon(kind:MessageKind){
+function messageKindIcon(kind:MessageKind):LucideIconName{
   if(kind==='risk')return 'triangleAlert';
   if(kind==='decision')return 'circleCheck';
   if(kind==='recommendation')return 'sparkles';
@@ -187,19 +187,19 @@ const onboardingStepNumber:Record<string,number>={
   marital_status:1,dependents:2,home_city:3,housing:4,employment:5,work_city:6,
   commute:7,income:8,accounts:9,obligations:10,goals:11,statements:12,review:13,
 };
-const onboardingStepMeta:Record<string,{title:string;reason:string;icon:string}>={
+const onboardingStepMeta:Record<string,{title:string;reason:string;icon:LucideIconName}>={
   marital_status:{title:'الوضع الأسري',reason:'لبناء صورة واقعية للالتزامات وتكوين الأسرة.',icon:'circleUserRound'},
-  dependents:{title:'المعالون',reason:'لفهم من يعتمد عليك ماليًا وما قد يرتبط بهم من مصروفات.',icon:'users'},
-  home_city:{title:'مدينة السكن',reason:'لربط تكاليف المعيشة والتنقل بواقعك الفعلي.',icon:'mapPin'},
-  housing:{title:'السكن',reason:'لتحديد طبيعة التزام السكن وأثره على الميزانية.',icon:'home'},
-  employment:{title:'العمل',reason:'لفهم مصدر الدخل واستقراره دون افتراضات.',icon:'briefcaseBusiness'},
-  work_city:{title:'مدينة العمل',reason:'لقياس أثر مكان العمل على التنقل والتكاليف المتكررة.',icon:'building2'},
-  commute:{title:'التنقل',reason:'لتقدير المصروفات المنتظمة المرتبطة بالعمل والتنقل.',icon:'car'},
+  dependents:{title:'المعالون',reason:'لفهم من يعتمد عليك ماليًا وما قد يرتبط بهم من مصروفات.',icon:'circleUserRound'},
+  home_city:{title:'مدينة السكن',reason:'لربط تكاليف المعيشة والتنقل بواقعك الفعلي.',icon:'landmark'},
+  housing:{title:'السكن',reason:'لتحديد طبيعة التزام السكن وأثره على الميزانية.',icon:'house'},
+  employment:{title:'العمل',reason:'لفهم مصدر الدخل واستقراره دون افتراضات.',icon:'store'},
+  work_city:{title:'مدينة العمل',reason:'لقياس أثر مكان العمل على التنقل والتكاليف المتكررة.',icon:'landmark'},
+  commute:{title:'التنقل',reason:'لتقدير المصروفات المنتظمة المرتبطة بالعمل والتنقل.',icon:'arrowUpDown'},
   income:{title:'الدخل',reason:'لبناء أساس مالي واقعي يمكن الاعتماد عليه في التحليل.',icon:'walletCards'},
   accounts:{title:'الحسابات',reason:'لتجميع مصادر السيولة والحسابات دون تنفيذ أي حركة مالية.',icon:'creditCard'},
   obligations:{title:'الالتزامات',reason:'لحماية الاستحقاقات الأساسية قبل أي توصية أو تخصيص.',icon:'receiptText'},
   goals:{title:'الأهداف',reason:'لترتيب الأهداف وتقدير أثرها على التدفق النقدي.',icon:'target'},
-  statements:{title:'كشوف الحساب',reason:'لتحسين دقة المطابقة والمراجعة من بياناتك الفعلية.',icon:'fileSpreadsheet'},
+  statements:{title:'كشوف الحساب',reason:'لتحسين دقة المطابقة والمراجعة من بياناتك الفعلية.',icon:'receiptText'},
   review:{title:'مراجعة التأسيس',reason:'لتأكيد أن البيانات صحيحة قبل اعتماد الملف وبدء التشغيل الكامل.',icon:'listChecks'},
 };
 
@@ -220,7 +220,7 @@ function OnboardingMessageContent({message,showStructuredAction,onOpenStructured
     {intro&&intro!==question&&<p>{intro}</p>}
     {question&&<section className={styles.onboardingQuestionCard} aria-label={stepMeta?.title??'سؤال التأسيس'}>
       <header className={styles.onboardingQuestionHeader}>
-        <span className={styles.onboardingQuestionIcon} aria-hidden="true"><LucideIcon name={stepMeta?.icon??'listChecks'} size={18}/></span>
+        <span className={styles.onboardingQuestionIcon} aria-hidden="true"><LucideIcon name={stepMeta?.icon??'listChecks'} size={20}/></span>
         <div>
           <strong>{stepMeta?.title??'استكمال بيانات التأسيس'}</strong>
           {stepNumber&&<small>المرحلة {stepNumber} من {totalSteps}</small>}
@@ -228,7 +228,7 @@ function OnboardingMessageContent({message,showStructuredAction,onOpenStructured
         {stepNumber&&<b>{progressPercent}٪</b>}
       </header>
       {stepNumber&&<div className={styles.onboardingProgressTrack} aria-label={'تقدم التأسيس '+progressPercent+'٪'}><span style={{width:progressPercent+'%'}}/></div>}
-      {stepMeta?.reason&&<p className={styles.onboardingQuestionReason}><LucideIcon name="info" size={15}/><span>{stepMeta.reason}</span></p>}
+      {stepMeta?.reason&&<p className={styles.onboardingQuestionReason}><LucideIcon name="info" size={16}/><span>{stepMeta.reason}</span></p>}
       <div className={styles.onboardingQuestionBox}>
         {stepNumber&&<span>السؤال {stepNumber}</span>}
         <strong>{question}</strong>
@@ -277,7 +277,7 @@ function OversightMiniHistory({history}:{history:unknown}){
       <span className={styles.oversightHistoryDot} aria-hidden="true"/>
       <div>
         <strong>{String(event.label??'تحديث')}</strong>
-        {event.detail&&<p>{String(event.detail)}</p>}
+        {typeof event.detail==='string'&&event.detail&&<p>{event.detail}</p>}
         <small>{String(event.actorName??'نماء')} · {formatOversightHistoryTime(event.createdAt)}</small>
       </div>
     </li>)}</ol>}
@@ -1163,10 +1163,7 @@ export function PersistentConversationWorkspace(){
     <header className={styles.mobileAppBar}>
       <div className={styles.mobileAppBarPrimary}>
         <button type="button" className={styles.mobileTopButton} aria-label="فتح القائمة الجانبية" onClick={()=>setRoomsOpen(true)}><LucideIcon name="menu" size={20}/></button>
-        <div className={styles.mobileBrandLockup} aria-label="نماء">
-          <span>نماء</span>
-          <Image src="/brand/namaa-leaf.webp" alt="" width={30} height={30} priority aria-hidden="true" />
-        </div>
+        <Image className={styles.mobileBrandLogo} src="/brand/ndos/namaa-logo-white-transparent.png" alt="نماء" width={112} height={44} priority />
       </div>
       <div className={styles.mobileAppBarActions}>
         <ThemeToggle className={styles.mobileThemeToggle}/>
@@ -1185,7 +1182,7 @@ export function PersistentConversationWorkspace(){
   const previous=messages[messageIndex-1];
   const next=messages[messageIndex+1];
   const groupedWithPrevious=isSameConversationGroup(previous,message);
-  const groupedWithNext=Boolean(next)&&isSameConversationGroup(message,next);
+  const groupedWithNext=next?isSameConversationGroup(message,next):false;
   const groupPosition=groupedWithPrevious?(groupedWithNext?'middle':'end'):(groupedWithNext?'start':'single');
   const showTimeDivider=shouldShowConversationTimeDivider(previous,message);
   const hasLaterAgentResponse=message.sender_type==='user'&&messages.slice(messageIndex+1).some(nextMessage=>nextMessage.sender_type!=='user');
