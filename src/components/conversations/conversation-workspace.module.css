@@ -1226,3 +1226,14 @@
     flex-direction:column;
   }
 }
+
+.intakeSecurityNote{
+  display:block;
+  padding:var(--ux-space-2);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-surface-warm);
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  line-height:1.6;
+}
