@@ -206,8 +206,12 @@ function finiteNonNegative(value:unknown){
 
 function isoDateOrNull(value:unknown){
   if(value===null||value===undefined||value==='') return null;
-  if(typeof value!=='string'||!/^(\d{4})-(\d{2})-(\d{2})$/.test(value)) throw new Error('ONBOARDING_STRUCTURED_DATE_INVALID');
-  const [y,m,d]=value.split('-').map(Number);
+  if(typeof value!=='string') throw new Error('ONBOARDING_STRUCTURED_DATE_INVALID');
+  const match=value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if(!match) throw new Error('ONBOARDING_STRUCTURED_DATE_INVALID');
+  const y=Number(match[1]??'');
+  const m=Number(match[2]??'');
+  const d=Number(match[3]??'');
   const date=new Date(Date.UTC(y,m-1,d));
   if(date.getUTCFullYear()!==y||date.getUTCMonth()!==m-1||date.getUTCDate()!==d) throw new Error('ONBOARDING_STRUCTURED_DATE_INVALID');
   return value;
