@@ -51,7 +51,7 @@ export function parseMeetingAgendaCommand(text:string):MeetingAgendaCommand|null
   if(ready) return {kind:'UPDATE',itemNumber:Number(ready[1]),status:'READY_FOR_DECISION',note:ready[2]?.trim()||null,referredTo:null};
 
   const referred=normalized.match(/^إحالة البند\s*(\d+)\s*(?:إلى|الى)\s*(.+)$/i);
-  if(referred) return {kind:'UPDATE',itemNumber:Number(referred[1]),status:'REFERRED',note:null,referredTo:referred[2].trim()};
+  if(referred) return {kind:'UPDATE',itemNumber:Number(referred[1]),status:'REFERRED',note:null,referredTo:referred[2]?.trim()||''};
 
   const reopen=normalized.match(/^إعادة فتح البند\s*(\d+)(?:\s*[:：-]\s*(.+))?$/i);
   if(reopen) return {kind:'UPDATE',itemNumber:Number(reopen[1]),status:'OPEN',note:reopen[2]?.trim()||null,referredTo:null};
