@@ -1180,7 +1180,7 @@
   box-shadow:var(--ux-shadow-lg);
   padding:var(--ux-space-3);
 }
-.intakeDialog .onboardingIntake{margin:var(--ux-space-0);border:0;border-radius:var(--ux-radius-0);box-shadow:none;max-height:none;padding:var(--ux-space-1)}
+.intakeDialog .onboardingIntake{margin:var(--ux-space-0);border:0;border-radius:var(--ux-radius-0);box-shadow:var(--ux-shadow-none);max-height:none;padding:var(--ux-space-1)}
   .contextTabs{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
