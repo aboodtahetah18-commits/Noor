@@ -27,6 +27,7 @@ const steps = [
   ['financial plan monitoring contract','node',['scripts/verify-financial-plan-monitoring.mjs']],
   ['financial plan deviation contract','node',['scripts/verify-financial-plan-deviation.mjs']],
   ['financial plan deviation resolution contract','node',['scripts/verify-financial-plan-deviation-resolution.mjs']],
+  ['financial cycle closure contract','node',['scripts/verify-financial-cycle-closure.mjs']],
   ['authorization RBAC ABAC contract','node',['scripts/verify-authorization-contract.mjs']],
   ['authorization provisioning contract','node',['scripts/verify-authorization-provisioning-contract.mjs']],
   ['authorization admin console contract','node',['scripts/verify-authorization-admin-console-contract.mjs']],

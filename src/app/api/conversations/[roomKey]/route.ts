@@ -18,6 +18,7 @@ import { createCouncilDeliberationReplies } from '@/lib/conversations/council-de
 import { isExplicitAllocationRatification, isExplicitAllocationRejection, ratifyLatestAllocationDraft, rejectLatestAllocationDraft } from '@/lib/allocation/allocation-ratification';
 import { createFinancialPlanDeviationReplies, isDeviationReviewRequest } from '@/lib/allocation/financial-plan-deviation-engine';
 import { parseDeviationResolutionCommand, resolveLatestDeviationCase } from '@/lib/allocation/financial-plan-deviation-resolution';
+import { closeFinancialCycleAfterApproval, createFinancialCycleClosureReview, isCycleClosureReviewRequest, isExplicitCycleClosureApproval } from '@/lib/allocation/financial-cycle-closure';
 
 export async function GET(_request: Request, context: { params: Promise<{ roomKey: string }> }) {
   const user = await getAuthenticatedUser();
@@ -162,6 +163,16 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
       const financingReply = restructuringReply ? null : await createHilalFinancingReply(user.id, text);
       reply = restructuringReply ?? financingReply ?? await createRoutedReply(user.id, roomKey, text);
     } else if (roomKey === 'council') {
+      if(isCycleClosureReviewRequest(text)){
+        const closureReview=await createFinancialCycleClosureReview(user.id);
+        if(!closureReview) return NextResponse.json({message,code:'NO_ACTIVE_CYCLE_TO_CLOSE',captured_operation:capturedOperation},{status:409});
+        return NextResponse.json({message,reply:closureReview,replies:[closureReview],captured_operation:capturedOperation},{status:201});
+      }
+      if(isExplicitCycleClosureApproval(text)){
+        const closureReply=await closeFinancialCycleAfterApproval(user.id);
+        if(!closureReply) return NextResponse.json({message,code:'NO_ACTIVE_CYCLE_TO_CLOSE',captured_operation:capturedOperation},{status:409});
+        return NextResponse.json({message,reply:closureReply,replies:[closureReply],captured_operation:capturedOperation},{status:201});
+      }
       const deviationResolutionCommand=parseDeviationResolutionCommand(text);
       if(deviationResolutionCommand){
         const deviationResolutionReply=await resolveLatestDeviationCase(user.id,deviationResolutionCommand);
