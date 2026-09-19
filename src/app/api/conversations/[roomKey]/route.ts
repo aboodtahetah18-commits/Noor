@@ -13,6 +13,7 @@ import { appendUserMessage, getConversationRoom, isConversationRoomKey, type Con
 import { getGovernorOnboardingStatus, getGovernorWelcome, processGovernorOnboardingMessage } from '@/lib/conversations/governor-onboarding';
 import { routePurchaseMessageToOperations } from '@/lib/conversations/operations-message-router';
 import { attachGovernanceContext } from '@/lib/governance/governance-context';
+import { syncGovernanceMeetingInvitations } from '@/lib/governance/governance-meeting-scheduler';
 
 export async function GET(_request: Request, context: { params: Promise<{ roomKey: string }> }) {
   const user = await getAuthenticatedUser();
@@ -142,6 +143,7 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
             ? row.structured_data as Record<string, unknown>
             : {},
         } : null;
+        if (onboardingReply.completed) await syncGovernanceMeetingInvitations(user.id);
       } else {
         reply = await createRoutedReply(user.id, roomKey, text);
       }
@@ -155,6 +157,8 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
       const restructuringReply = await createHilalRestructuringReply(user.id, text);
       const financingReply = restructuringReply ? null : await createHilalFinancingReply(user.id, text);
       reply = restructuringReply ?? financingReply ?? await createRoutedReply(user.id, roomKey, text);
+    } else if (roomKey === 'operations' || roomKey === 'secretary') {
+      reply = await createRoutedReply(user.id, roomKey, text);
     } else {
       const crossBankGuardReply = await createCrossBankHardGuardReply(user.id, roomKey, text);
       const guardReply = crossBankGuardReply ? null : await createProtectionGuardReply(user.id, roomKey, text);
