@@ -6,10 +6,13 @@ export type InstitutionalDecisionType='ALLOCATION'|'PLAN_DEVIATION'|'CYCLE_CLOSU
 export type InstitutionalDecisionStatus='APPROVED'|'FOLLOWUP_PENDING'|'CLOSED';
 
 export type InstitutionalDecisionFollowup={
+  followupId:string;
   title:string;
   status:string;
   assignedTo:string|null;
   completed:boolean;
+  note?:string|null;
+  updatedAt?:string|null;
 };
 
 export type InstitutionalDecisionRecord={
@@ -48,14 +51,16 @@ function stableId(value:unknown){
 function text(value:unknown){
   return typeof value==='string'&&value.trim()?value.trim():null;
 }
-function followupsFrom(value:unknown):InstitutionalDecisionFollowup[]{
+function followupsFrom(value:unknown,registrySeed='decision'):InstitutionalDecisionFollowup[]{
   if(!Array.isArray(value)) return [];
-  return value.flatMap(item=>{
+  return value.flatMap((item,index)=>{
     const row=record(item);
     if(!row) return [];
     const status=String(row.status??'OPEN');
+    const title=String(row.title??'متابعة');
     return [{
-      title:String(row.title??'متابعة'),
+      followupId:`FUP-${stableId({registrySeed,index,title})}`,
+      title,
       status,
       assignedTo:text(row.assignedTo??row.assigned_to),
       completed:status==='RESOLVED'||status==='CLOSED'||row.completed===true,
@@ -72,9 +77,9 @@ export function normalizeInstitutionalDecisionMessage(args:{
 
   if(data.allocation_decision_minutes===true){
     const minutes=record(data.decision_minutes)??{};
-    const followups=followupsFrom(data.followups??minutes.followups);
-    const pending=followups.some(item=>!item.completed);
     const decisionId=text(data.allocation_decision_id??minutes.decisionId);
+    const followups=followupsFrom(data.followups??minutes.followups,decisionId??args.id);
+    const pending=followups.some(item=>!item.completed);
     return {
       registryId:`REG-${stableId({type:'ALLOCATION',id:decisionId??args.id})}`,
       decisionType:'ALLOCATION',
@@ -104,9 +109,9 @@ export function normalizeInstitutionalDecisionMessage(args:{
     const kind=text(resolution.kind)??'UNKNOWN';
     const followups:InstitutionalDecisionFollowup[]=[];
     if(kind==='OPEN_REPLAN'){
-      followups.push({title:'إعادة تفاوض على الخطة',status:'OPEN',assignedTo:null,completed:false});
+      followups.push({followupId:`FUP-${stableId({seed:data.deviation_case_id??args.id,title:'إعادة تفاوض على الخطة'})}`,title:'إعادة تفاوض على الخطة',status:'OPEN',assignedTo:null,completed:false});
     }else if(kind==='KEEP_PLAN'&&resolution.requires_followup===true){
-      followups.push({title:'متابعة الانحراف مع الإبقاء على الخطة',status:'OPEN',assignedTo:null,completed:false});
+      followups.push({followupId:`FUP-${stableId({seed:data.deviation_case_id??args.id,title:'متابعة الانحراف مع الإبقاء على الخطة'})}`,title:'متابعة الانحراف مع الإبقاء على الخطة',status:'OPEN',assignedTo:null,completed:false});
     }
     return {
       registryId:`REG-${stableId({type:'PLAN_DEVIATION',id:data.deviation_case_id??args.id})}`,
@@ -175,6 +180,42 @@ export async function getInstitutionalDecisionRegistry(userId:string):Promise<In
     });
     return normalized?[normalized]:[];
   });
+  const followupEvents=await sql`
+    select structured_data,created_at
+    from public.conversation_messages
+    where user_id=${userId}::uuid
+      and structured_data->>'institutional_decision_followup_event'='true'
+    order by created_at asc
+  `;
+  const eventMap=new Map<string,{status:string;assignedTo:string|null;note:string|null;updatedAt:string}>();
+  for(const event of followupEvents){
+    const data=record(event.structured_data);
+    const registryId=text(data?.registry_id);
+    const followupId=text(data?.followup_id);
+    if(!registryId||!followupId) continue;
+    const key=`${registryId}:${followupId}`;
+    const previous=eventMap.get(key);
+    eventMap.set(key,{
+      status:text(data?.followup_status)??previous?.status??'OPEN',
+      assignedTo:text(data?.followup_assigned_to)??previous?.assignedTo??null,
+      note:text(data?.followup_note)??previous?.note??null,
+      updatedAt:String(event.created_at??''),
+    });
+  }
+  for(const decision of decisions){
+    for(const followup of decision.followups){
+      const event=eventMap.get(`${decision.registryId}:${followup.followupId}`);
+      if(!event) continue;
+      followup.status=event.status;
+      followup.assignedTo=event.assignedTo;
+      followup.note=event.note;
+      followup.updatedAt=event.updatedAt;
+      followup.completed=event.status==='COMPLETED';
+    }
+    if(decision.status!=='CLOSED'){
+      decision.status=decision.followups.some(item=>!item.completed)?'FOLLOWUP_PENDING':'APPROVED';
+    }
+  }
   return {
     generatedAt:new Date().toISOString(),
     total:decisions.length,

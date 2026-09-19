@@ -25,6 +25,7 @@ import { applyMeetingAgendaCommand, parseMeetingAgendaCommand } from '@/lib/allo
 import { createAllocationFinalProposalReply, isAllocationFinalProposalRequest } from '@/lib/allocation/allocation-final-proposal';
 import { createRatifiedAllocationDecisionMinutes } from '@/lib/allocation/allocation-decision-minutes';
 import { createInstitutionalDecisionRegistryReply, isInstitutionalDecisionRegistryRequest } from '@/lib/governance/institutional-decision-registry';
+import { applyDecisionFollowupCommand, parseDecisionFollowupCommand } from '@/lib/governance/institutional-decision-followups';
 
 export async function GET(_request: Request, context: { params: Promise<{ roomKey: string }> }) {
   const user = await getAuthenticatedUser();
@@ -158,6 +159,10 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
       } else {
         reply = await createRoutedReply(user.id, roomKey, text);
       }
+    } else if (roomKey === 'central' && onboarding.complete && parseDecisionFollowupCommand(text)) {
+      const followupReply=await applyDecisionFollowupCommand(user.id,'central',parseDecisionFollowupCommand(text)!);
+      if(!followupReply) return NextResponse.json({message,code:'DECISION_FOLLOWUP_UNAVAILABLE',captured_operation:capturedOperation},{status:409});
+      return NextResponse.json({message,reply:followupReply,replies:[followupReply],captured_operation:capturedOperation},{status:201});
     } else if (roomKey === 'central' && onboarding.complete && isInstitutionalDecisionRegistryRequest(text)) {
       const registryReply=await createInstitutionalDecisionRegistryReply(user.id,'central');
       if(!registryReply) return NextResponse.json({message,code:'DECISION_REGISTRY_UNAVAILABLE',captured_operation:capturedOperation},{status:409});
@@ -228,6 +233,10 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
       }
       const replies = await createCouncilDeliberationReplies(user.id, text);
       return NextResponse.json({ message, reply: replies.at(-1) ?? null, replies, captured_operation: capturedOperation }, { status: 201 });
+    } else if (roomKey === 'secretary' && parseDecisionFollowupCommand(text)) {
+      const followupReply=await applyDecisionFollowupCommand(user.id,'secretary',parseDecisionFollowupCommand(text)!);
+      if(!followupReply) return NextResponse.json({message,code:'DECISION_FOLLOWUP_UNAVAILABLE',captured_operation:capturedOperation},{status:409});
+      return NextResponse.json({message,reply:followupReply,replies:[followupReply],captured_operation:capturedOperation},{status:201});
     } else if (roomKey === 'secretary' && isInstitutionalDecisionRegistryRequest(text)) {
       const registryReply=await createInstitutionalDecisionRegistryReply(user.id,'secretary');
       if(!registryReply) return NextResponse.json({message,code:'DECISION_REGISTRY_UNAVAILABLE',captured_operation:capturedOperation},{status:409});
