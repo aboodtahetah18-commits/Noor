@@ -1630,7 +1630,7 @@
   .composer textarea{
     min-height:42px;
     height:42px;
-    max-height:104px;
+    max-height:96px;
     border:1px solid var(--namaa-border);
     border-radius:var(--ux-radius-full);
     background:var(--namaa-card);
