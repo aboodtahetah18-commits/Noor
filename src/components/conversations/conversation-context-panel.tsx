@@ -83,16 +83,16 @@ export function ConversationContextPanel({
   },[onboardingComplete,onboardingStep]);
 
   return <div className={styles.contextWorkspace}>
-    <nav className={styles.contextTabs} aria-label="أقسام سياق المحادثة">
-      <button type="button" className={tab==='governor'?styles.contextTabActive:''} onClick={()=>setTab('governor')}>المحافظ</button>
-      <button type="button" className={tab==='files'?styles.contextTabActive:''} onClick={()=>setTab('files')}>الملفات</button>
-      <button type="button" className={tab==='analysis'?styles.contextTabActive:''} onClick={()=>setTab('analysis')}>السياق والتحليل</button>
+    <nav className={styles.contextTabs} aria-label="أقسام سياق المحادثة" role="tablist">
+      <button id="context-tab-governor" type="button" role="tab" aria-selected={tab==='governor'} aria-controls="context-panel-governor" className={tab==='governor'?styles.contextTabActive:''} onClick={()=>setTab('governor')}>المحافظ</button>
+      <button id="context-tab-files" type="button" role="tab" aria-selected={tab==='files'} aria-controls="context-panel-files" className={tab==='files'?styles.contextTabActive:''} onClick={()=>setTab('files')}>الملفات</button>
+      <button id="context-tab-analysis" type="button" role="tab" aria-selected={tab==='analysis'} aria-controls="context-panel-analysis" className={tab==='analysis'?styles.contextTabActive:''} onClick={()=>setTab('analysis')}>السياق والتحليل</button>
     </nav>
 
-    {tab==='governor'&&<div className={styles.contextTabPanel}>
+    {tab==='governor'&&<div id="context-panel-governor" role="tabpanel" aria-labelledby="context-tab-governor" className={styles.contextTabPanel}>
       <section className={styles.contextHero}>
         <div><small>{detail.entityTitle}</small><strong>{detail.roleTitle}</strong></div>
-        <span>{participants.length||1} مشارك فعلي</span>
+        <span>{participants.length ? `${participants.length} مشارك فعلي` : 'لا يوجد مشاركون مسجلون'}</span>
       </section>
       <section className={styles.contextSection}>
         <small>المهام والاختصاص</small>
@@ -112,7 +112,7 @@ export function ConversationContextPanel({
       </section>
     </div>}
 
-    {tab==='files'&&<div className={styles.contextTabPanel}>
+    {tab==='files'&&<div id="context-panel-files" role="tabpanel" aria-labelledby="context-tab-files" className={styles.contextTabPanel}>
       <section className={styles.contextSection}>
         <small>الملفات المشتركة في هذه المحادثة</small>
         {attachments.length?<div className={styles.contextFiles}>{attachments.map(file=><article key={file.id}>
@@ -122,7 +122,7 @@ export function ConversationContextPanel({
       </section>
     </div>}
 
-    {tab==='analysis'&&<div className={styles.contextTabPanel}>
+    {tab==='analysis'&&<div id="context-panel-analysis" role="tabpanel" aria-labelledby="context-tab-analysis" className={styles.contextTabPanel}>
       <section className={styles.contextAnalysisGrid}>
         <span><small>حالة الملف</small><strong>{analysis.state}</strong></span>
         <span><small>الرسائل</small><strong>{messageCount}</strong></span>
