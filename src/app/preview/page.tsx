@@ -23,7 +23,7 @@ export default function PreviewPage(){
             ['المستشار الاقتصادي','الصورة المالية الكلية'],
             ['أمين السر المركزي','الحوكمة والاجتماعات والمحاضر'],
             ['مجلس نماء الأعلى','القرارات واللجان'],
-          ].map(([name,sub],i)=><div key={name} className={i===1?styles.activeChat:''}><i>{name.slice(0,1)}</i><span><strong>{name}</strong><small>{sub}</small></span></div>)}
+          ].map(([name,sub],i)=><div key={name} className={i===1?styles.activeChat:''}><i>{(name??'ن').slice(0,1)}</i><span><strong>{name}</strong><small>{sub}</small></span></div>)}
         </div>
       </article>
 
