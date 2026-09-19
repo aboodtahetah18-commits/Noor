@@ -1063,3 +1063,39 @@
   .meetingCard time{text-align:start}
   .meetingCard em{grid-column:1;justify-self:start}
 }
+
+
+.recordsBlock,.documentsList{display:grid;gap:var(--ux-space-2)}
+.recordsHeader{display:flex;align-items:center;justify-content:space-between;gap:var(--ux-space-2);padding-top:var(--ux-space-2)}
+.recordsHeader>div{display:grid;gap:var(--ux-space-1)}
+.recordsHeader strong{font-size:var(--ux-type-body-sm-size);color:var(--ux-text-primary)}
+.recordsHeader small{font-size:var(--ux-type-caption-size);color:var(--ux-text-secondary)}
+.recordCard{
+  display:grid;
+  gap:var(--ux-space-2);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-card);
+}
+.recordCard>div{display:flex;align-items:center;justify-content:space-between;gap:var(--ux-space-2)}
+.recordCard strong{font-size:var(--ux-type-caption-size);color:var(--ux-text-primary)}
+.recordCard small,.recordCard time{font-size:var(--ux-type-caption-size);color:var(--ux-text-secondary)}
+.recordCard p{margin:0;font-size:var(--ux-type-caption-size);line-height:1.7;color:var(--ux-text-secondary)}
+.documentCard{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-card);
+}
+.documentCard>div{display:grid;gap:var(--ux-space-1);min-width:0}
+.documentCard strong{font-size:var(--ux-type-body-sm-size);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.documentCard small,.documentCard time{font-size:var(--ux-type-caption-size);color:var(--ux-text-secondary)}
+@media(max-width:767px){
+  .documentCard{grid-template-columns:auto minmax(0,1fr)}
+  .documentCard time{grid-column:2}
+}
