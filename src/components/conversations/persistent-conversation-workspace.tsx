@@ -429,19 +429,6 @@ export function PersistentConversationWorkspace(){
     }
   }
 
-  async function openAccountsSettings(){
-    setRoomsOpen(false);
-    setSettingsSection('accounts');
-    setSettingsOpen(true);
-    try{
-      const response=await fetch('/api/conversations/central/statement',{cache:'no-store'});
-      const data=await response.json() as {accounts?:StatementAccount[]};
-      if(response.ok) setStatementAccounts(Array.isArray(data.accounts)?data.accounts:[]);
-    }catch{
-      setError('تعذر تحميل الحسابات الآن.');
-    }
-  }
-
   async function openOnboardingReview(){
     setReviewOpen(true);
     setReviewEditingKey('');
