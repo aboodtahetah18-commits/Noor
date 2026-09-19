@@ -6,16 +6,28 @@ describe('governed structured governor onboarding', () => {
     const result=normalizeStructuredOnboardingPayload({
       step:'accounts',
       items:[
-        {bank_name:'البنك الأول',account_type:'BANK',short_identifier:'الراتب',usage:'راتب',opening_balance:1000,included_in_namaa:true},
+        {bank_name:'البنك الأول',account_type:'BANK',short_identifier:'الراتب',iban:'SA0380000000608010167519',card_last4:'6883',card_type:'فيزا',usage:'راتب',opening_balance:1000,included_in_namaa:true},
         {bank_name:'البنك الثاني',account_type:'SAVINGS',short_identifier:'ادخار',usage:'احتياطي',opening_balance:5000,included_in_namaa:true},
       ],
     });
     expect(result).toMatchObject({
       items:[
-        {bank_name:'البنك الأول',short_identifier:'الراتب',opening_balance:1000,included_in_namaa:true},
+        {bank_name:'البنك الأول',short_identifier:'الراتب',iban:'SA0380000000608010167519',card_last4:'6883',card_type:'فيزا',opening_balance:1000,included_in_namaa:true},
         {bank_name:'البنك الثاني',short_identifier:'ادخار',opening_balance:5000,included_in_namaa:true},
       ],
     });
+  });
+
+  it('rejects malformed account identifiers without guessing', () => {
+    expect(()=>normalizeStructuredOnboardingPayload({
+      step:'accounts',
+      items:[{bank_name:'بنك',account_type:'BANK',iban:'SA123',opening_balance:100,included_in_namaa:true}],
+    })).toThrow('ONBOARDING_ACCOUNT_IBAN_INVALID');
+
+    expect(()=>normalizeStructuredOnboardingPayload({
+      step:'accounts',
+      items:[{bank_name:'بنك',account_type:'BANK',card_last4:'123',opening_balance:100,included_in_namaa:true}],
+    })).toThrow('ONBOARDING_ACCOUNT_CARD_LAST4_INVALID');
   });
 
   it('requires an explanation when computed and actual net income differ', () => {
