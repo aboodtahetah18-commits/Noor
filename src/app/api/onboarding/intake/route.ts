@@ -66,6 +66,7 @@ export async function POST(request:Request){
           onboarding_complete:false,
           next_question:result.next_question,
           structured_intake:true,
+          goal_analysis:'goal_analysis' in result ? result.goal_analysis : null,
           execution_boundary:'advisory_only',
         })}::jsonb
       )
