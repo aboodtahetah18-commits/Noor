@@ -30,7 +30,6 @@ if(!css.includes('.chatFont_small') || !css.includes('.fontSizeChoices')) fail('
 if(!css.includes('.brandWatermarkSecondary') || !css.includes('.brandWatermarkTertiary')) fail('approved Namaa watermark pattern missing');
 if(/\.agentMessage\{[^}]*!important|\.userMessage\{[^}]*!important/s.test(css)) fail('message alignment must not depend on !important');
 if(!css.includes('.agentMessage{\n  align-self:flex-start') || !css.includes('.userMessage{\n  align-self:flex-end')) fail('approved RTL message sides changed: agent must be right, user must be left');
-const workspace=readFileSync('src/components/conversations/persistent-conversation-workspace.tsx','utf8');
 if(workspace.includes('resumeIntakeButton')) fail('structured intake reopen must live inside the active question message, not float over chat');
 if(!workspace.includes('showStructuredAction') || !workspace.includes('فتح نموذج البيانات')) fail('structured intake in-message action missing');
 
