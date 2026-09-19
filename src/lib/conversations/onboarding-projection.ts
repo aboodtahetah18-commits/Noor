@@ -61,9 +61,20 @@ function parseTargetDate(raw:string){
   return iso>=todayIso ? iso : null;
 }
 
+function factRecord(value:unknown){
+  return value&&typeof value==='object'&&!Array.isArray(value) ? value as Record<string,unknown> : null;
+}
+
+function factItems(value:unknown){
+  const record=factRecord(value);
+  return record&&Array.isArray(record.items)
+    ? record.items.filter((item):item is Record<string,unknown>=>Boolean(item)&&typeof item==='object'&&!Array.isArray(item))
+    : [];
+}
+
 function rawFact(value:unknown){
-  if(!value || typeof value!=='object') return '';
-  const raw=(value as Record<string,unknown>).raw;
+  const record=factRecord(value);
+  const raw=record?.raw;
   return typeof raw==='string' ? raw.trim() : '';
 }
 
@@ -86,103 +97,140 @@ export async function projectConfirmedOnboardingFacts(userId:string):Promise<Pro
   let incomesCreated=0;
   let incomeDeferred=false;
 
-  const accountsRaw=rawFact(byKey.get('accounts'));
-  if(accountsRaw && !/^(لا يوجد|لايوجد|لا)$/i.test(accountsRaw)){
-    for(const line of lines(accountsRaw)){
-      const amounts=extractNumbers(line);
-      const balance=amounts.at(-1) ?? 0;
-      const label=cleanLabel(line) || 'حساب مالي';
-      const type=accountType(line);
-      const existing=await sql`
-        select id
-        from public.accounts
-        where user_id=${userId}::uuid
-          and lower(trim(name))=lower(trim(${label}))
-        order by created_at asc
-        limit 1
-      `;
-      let accountId=existing[0]?.id as string|undefined;
-      if(!accountId){
-        const inserted=await sql`
-          insert into public.accounts(user_id,name,account_type,bank_name,financial_role)
-          values(${userId}::uuid,${label},${type},${type==='BANK'?label:null},'OPERATING')
-          returning id
-        `;
-        accountId=inserted[0]?.id as string|undefined;
-        if(accountId) accountsCreated+=1;
-      }
-      if(accountId && balance>=0){
-        await sql`
-          insert into public.account_opening_balances(user_id,account_id,amount,effective_date)
-          select ${userId}::uuid,${accountId}::uuid,${balance},current_date
-          where not exists(
-            select 1
-            from public.account_opening_balances
-            where user_id=${userId}::uuid
-              and account_id=${accountId}::uuid
-          )
-        `;
-      }
-    }
-  }
+  const accountFact=byKey.get('accounts');
+  const structuredAccounts=factItems(accountFact);
+  const accountInputs=structuredAccounts.length
+    ? structuredAccounts.map(item=>({
+        label:String(item.short_identifier||item.bank_name||'حساب مالي').trim(),
+        bankName:String(item.bank_name||'').trim()||null,
+        type:String(item.account_type||'BANK').trim().toUpperCase(),
+        balance:Number(item.opening_balance??0),
+        included:item.included_in_namaa!==false,
+      }))
+    : lines(rawFact(accountFact)).map(line=>({
+        label:cleanLabel(line)||'حساب مالي',
+        bankName:cleanLabel(line)||null,
+        type:accountType(line),
+        balance:extractNumbers(line).at(-1)??0,
+        included:true,
+      }));
 
-  const goalsRaw=rawFact(byKey.get('goals'));
-  if(goalsRaw && !/^(لا يوجد|لايوجد|لا)$/i.test(goalsRaw)){
-    for(const line of lines(goalsRaw)){
-      const amount=extractNumbers(line)[0];
-      if(!amount || amount<=0) continue;
-      const label=cleanLabel(line) || 'هدف مالي';
-      const targetDate=parseTargetDate(line);
-      const existing=await sql`
-        select id
-        from public.financial_goals
-        where user_id=${userId}::uuid
-          and lower(trim(name))=lower(trim(${label}))
-          and status<>'CANCELLED'
-        order by created_at asc
-        limit 1
+  for(const input of accountInputs){
+    if(!input.included) continue;
+    const label=input.label||input.bankName||'حساب مالي';
+    const existing=await sql`
+      select id
+      from public.accounts
+      where user_id=${userId}::uuid
+        and lower(trim(name))=lower(trim(${label}))
+      order by created_at asc
+      limit 1
+    `;
+    let accountId=existing[0]?.id as string|undefined;
+    if(!accountId){
+      const inserted=await sql`
+        insert into public.accounts(user_id,name,account_type,bank_name,financial_role)
+        values(${userId}::uuid,${label},${input.type},${input.bankName},'OPERATING')
+        returning id
       `;
-      if(existing[0]?.id) continue;
+      accountId=inserted[0]?.id as string|undefined;
+      if(accountId) accountsCreated+=1;
+    }
+    if(accountId && Number.isFinite(input.balance) && input.balance>=0){
       await sql`
-        insert into public.financial_goals(
-          user_id,name,target_amount,target_date,priority,status,start_date,opening_balance
-        ) values(
-          ${userId}::uuid,${label},${amount},${targetDate},null,'DRAFT',current_date,0
+        insert into public.account_opening_balances(user_id,account_id,amount,effective_date)
+        select ${userId}::uuid,${accountId}::uuid,${input.balance},current_date
+        where not exists(
+          select 1
+          from public.account_opening_balances
+          where user_id=${userId}::uuid
+            and account_id=${accountId}::uuid
         )
       `;
-      goalsCreated+=1;
     }
   }
 
-  const obligationsRaw=rawFact(byKey.get('obligations'));
-  if(obligationsRaw && !/^(لا يوجد|لايوجد|لا)$/i.test(obligationsRaw)){
-    for(const line of lines(obligationsRaw)){
-      const amount=extractNumbers(line)[0];
-      if(!amount || amount<=0) continue;
-      const label=cleanLabel(line) || 'التزام شهري';
-      const existing=await sql`
-        select id
-        from public.obligation_templates
-        where user_id=${userId}::uuid
-          and lower(trim(name))=lower(trim(${label}))
-          and is_active=true
-        order by created_at asc
-        limit 1
-      `;
-      if(existing[0]?.id) continue;
-      await sql`
-        insert into public.obligation_templates(
-          user_id,name,default_amount,recurrence,priority,is_active
-        ) values(
-          ${userId}::uuid,${label},${amount},'MONTHLY',null,true
-        )
-      `;
-      obligationsCreated+=1;
-    }
+  const goalFact=byKey.get('goals');
+  const structuredGoals=factItems(goalFact);
+  const goalInputs=structuredGoals.length
+    ? structuredGoals.map(item=>({
+        label:String(item.name||'هدف مالي').trim(),
+        amount:Number(item.target_amount??0),
+        targetDate:typeof item.target_date==='string'?item.target_date:null,
+        allocated:Number(item.allocated_amount??0),
+      }))
+    : lines(rawFact(goalFact)).map(line=>({
+        label:cleanLabel(line)||'هدف مالي',
+        amount:extractNumbers(line)[0]??0,
+        targetDate:parseTargetDate(line),
+        allocated:0,
+      }));
+
+  for(const input of goalInputs){
+    if(!Number.isFinite(input.amount)||input.amount<=0) continue;
+    const existing=await sql`
+      select id
+      from public.financial_goals
+      where user_id=${userId}::uuid
+        and lower(trim(name))=lower(trim(${input.label}))
+        and status<>'CANCELLED'
+      order by created_at asc
+      limit 1
+    `;
+    if(existing[0]?.id) continue;
+    await sql`
+      insert into public.financial_goals(
+        user_id,name,target_amount,target_date,priority,status,start_date,opening_balance
+      ) values(
+        ${userId}::uuid,${input.label},${input.amount},${input.targetDate},null,'DRAFT',current_date,${Math.max(0,input.allocated)}
+      )
+    `;
+    goalsCreated+=1;
   }
 
-  const incomeRaw=rawFact(byKey.get('income'));
-  const incomeAmount=incomeRaw ? extractNumbers(incomeRaw).find(value=>value>0) : undefined;
+  const obligationFact=byKey.get('obligations');
+  const structuredObligations=factItems(obligationFact);
+  const obligationInputs=structuredObligations.length
+    ? structuredObligations.map(item=>({
+        label:String(item.name||'التزام').trim(),
+        amount:Number(item.amount??0),
+        recurrence:String(item.recurrence||'MONTHLY').trim().toUpperCase(),
+      }))
+    : lines(rawFact(obligationFact)).map(line=>({
+        label:cleanLabel(line)||'التزام شهري',
+        amount:extractNumbers(line)[0]??0,
+        recurrence:'MONTHLY',
+      }));
+
+  for(const input of obligationInputs){
+    if(!Number.isFinite(input.amount)||input.amount<=0) continue;
+    const existing=await sql`
+      select id
+      from public.obligation_templates
+      where user_id=${userId}::uuid
+        and lower(trim(name))=lower(trim(${input.label}))
+        and is_active=true
+      order by created_at asc
+      limit 1
+    `;
+    if(existing[0]?.id) continue;
+    await sql`
+      insert into public.obligation_templates(
+        user_id,name,default_amount,recurrence,priority,is_active
+      ) values(
+        ${userId}::uuid,${input.label},${input.amount},${input.recurrence},null,true
+      )
+    `;
+    obligationsCreated+=1;
+  }
+
+  const incomeFact=byKey.get('income');
+  const incomeRecord=factRecord(incomeFact);
+  const structuredIncome=incomeRecord&&typeof incomeRecord.actual_net==='number' ? incomeRecord.actual_net : undefined;
+  const incomeRaw=rawFact(incomeFact);
+  const incomeAmount=typeof structuredIncome==='number'&&structuredIncome>0
+    ? structuredIncome
+    : incomeRaw ? extractNumbers(incomeRaw).find(value=>value>0) : undefined;
   if(incomeAmount){
     const cycles=await sql`
       select id,expected_next_income_date,status
