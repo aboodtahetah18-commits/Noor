@@ -25,6 +25,7 @@ const steps = [
   ['allocation ratification contract','node',['scripts/verify-allocation-ratification.mjs']],
   ['allocation plan materialization contract','node',['scripts/verify-allocation-plan-materialization.mjs']],
   ['financial plan monitoring contract','node',['scripts/verify-financial-plan-monitoring.mjs']],
+  ['financial plan deviation contract','node',['scripts/verify-financial-plan-deviation.mjs']],
   ['authorization RBAC ABAC contract','node',['scripts/verify-authorization-contract.mjs']],
   ['authorization provisioning contract','node',['scripts/verify-authorization-provisioning-contract.mjs']],
   ['authorization admin console contract','node',['scripts/verify-authorization-admin-console-contract.mjs']],
