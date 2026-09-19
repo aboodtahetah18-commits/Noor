@@ -213,7 +213,7 @@ function isoDateOrNull(value:unknown){
   return value;
 }
 
-function normalizeStructuredPayload(payload:StructuredOnboardingPayload){
+export function normalizeStructuredOnboardingPayload(payload:StructuredOnboardingPayload){
   if(payload.step==='dependents'){
     const items=Array.isArray(payload.items)?payload.items:[];
     return {items:items.map(item=>{
@@ -311,7 +311,7 @@ export async function processGovernorStructuredOnboarding(userId:string,payload:
   if(status.complete) throw new Error('ONBOARDING_ALREADY_COMPLETED');
   if(status.current_step!==payload.step) throw new Error('ONBOARDING_STEP_MISMATCH');
 
-  const normalized=normalizeStructuredPayload(payload);
+  const normalized=normalizeStructuredOnboardingPayload(payload);
   await sql`
     insert into public.user_foundation_facts(
       user_id,fact_key,category,value_json,source,confidence,verified_at,uses,requires_confirmation,status
