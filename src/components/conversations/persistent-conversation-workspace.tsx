@@ -23,6 +23,7 @@ type OnboardingReviewFact = { key:string; label:string; raw:string; verified_at?
 type ConversationAttachment = { id:string; file_name:string; content_type?:string|null; verification_status?:string|null; created_at?:string };
 type ChatFontSize='small'|'medium'|'large';
 type OversightActionFeedback={command:string;status:'idle'|'pending'|'success'|'error';message:string|null};
+type OversightPendingConfirmation={command:string;title:string;message:string;confirmLabel:string}|null;
 const CHAT_FONT_STORAGE_KEY='namaa-chat-font-size';
 const STRUCTURED_INTAKE_STEPS=new Set(['dependents','accounts','obligations','goals']);
 
@@ -158,13 +159,16 @@ function patchLiveOversightDashboard(messages:Message[],dashboard:unknown){
   });
 }
 function OversightStructuredCards({
-  data,onCommand,onTemplate,disabled,actionFeedback,
+  data,onCommand,onTemplate,disabled,actionFeedback,pendingConfirmation,onConfirmSensitive,onCancelSensitive,
 }:{
   data?:Record<string,unknown>;
-  onCommand:(command:string)=>void;
+  onCommand:(command:string,confirmation?:{title:string;message:string;confirmLabel:string})=>void;
   onTemplate:(template:string)=>void;
   disabled:boolean;
   actionFeedback:OversightActionFeedback;
+  pendingConfirmation:OversightPendingConfirmation;
+  onConfirmSensitive:()=>void;
+  onCancelSensitive:()=>void;
 }){
   if(!data)return null;
   const dashboard=data.governance_oversight_dashboard===true&&data.dashboard&&typeof data.dashboard==='object'?data.dashboard as Record<string,unknown>:null;
@@ -175,6 +179,12 @@ function OversightStructuredCards({
     const label=typeof action.label==='string'?action.label:'إجراء';
     const command=typeof action.command==='string'?action.command:null;
     const template=typeof action.command_template==='string'?action.command_template:null;
+    const requiresConfirmation=action.requires_confirmation===true;
+    const confirmation=requiresConfirmation?{
+      title:typeof action.confirmation_title==='string'?action.confirmation_title:'تأكيد الإجراء',
+      message:typeof action.confirmation_message==='string'?action.confirmation_message:'راجع أثر الإجراء قبل التأكيد.',
+      confirmLabel:typeof action.confirmation_confirm_label==='string'?action.confirmation_confirm_label:'تأكيد',
+    }:undefined;
     const isPending=Boolean(command)&&actionFeedback.status==='pending'&&actionFeedback.command===command;
     const isSuccess=Boolean(command)&&actionFeedback.status==='success'&&actionFeedback.command===command;
     const isError=Boolean(command)&&actionFeedback.status==='error'&&actionFeedback.command===command;
@@ -186,11 +196,21 @@ function OversightStructuredCards({
       disabled={disabled||isPending}
       aria-busy={isPending}
       aria-live="polite"
-      onClick={()=>command?onCommand(command):template?onTemplate(template):undefined}
+      onClick={()=>command?onCommand(command,confirmation):template?onTemplate(template):undefined}
     >{isPending&&<span className={styles.oversightActionSpinner} aria-hidden="true"/>}{buttonLabel}</button>;
   }):null;
   if(dashboard)return <section className={styles.oversightPanel} aria-label="اللوحة الرقابية">
     <header className={styles.oversightPanelHeader}><span>اللوحة الرقابية</span><small>{followups.length} متابعة مفتوحة · تحديث حي</small></header>
+{pendingConfirmation&&<div className={styles.oversightSensitiveConfirm} role="alertdialog" aria-modal="false" aria-labelledby="oversight-sensitive-title">
+      <div>
+        <strong id="oversight-sensitive-title">{pendingConfirmation.title}</strong>
+        <p>{pendingConfirmation.message}</p>
+      </div>
+      <div className={styles.oversightSensitiveActions}>
+        <button type="button" className={styles.oversightCancelButton} disabled={disabled} onClick={onCancelSensitive}>إلغاء</button>
+        <button type="button" className={styles.oversightConfirmButton} disabled={disabled} onClick={onConfirmSensitive}>{pendingConfirmation.confirmLabel}</button>
+      </div>
+    </div>}
     {actionFeedback.status!=='idle'&&<div className={`${styles.oversightActionFeedback} ${actionFeedback.status==='success'?styles.oversightFeedbackSuccess:actionFeedback.status==='error'?styles.oversightFeedbackError:styles.oversightFeedbackPending}`} role="status" aria-live="polite">
       {actionFeedback.status==='pending'&&<span className={styles.oversightActionSpinner} aria-hidden="true"/>}
       <span>{actionFeedback.message}</span>
@@ -215,7 +235,16 @@ function OversightStructuredCards({
     const followup=detail.followup&&typeof detail.followup==='object'?detail.followup as Record<string,unknown>:null;
     const timing=detail.timing&&typeof detail.timing==='object'?detail.timing as Record<string,unknown>:null;
     const number=typeof detail.followup_number==='number'?detail.followup_number:null;
-    return <section className={styles.oversightPanel} aria-label="تفاصيل المتابعة"><header className={styles.oversightPanelHeader}><span>{number?'تفاصيل المتابعة #'+number:'تفاصيل المتابعة'}</span><small>{String(followup?.status??'OPEN')}</small></header>{actionFeedback.status!=='idle'&&<div className={`${styles.oversightActionFeedback} ${actionFeedback.status==='success'?styles.oversightFeedbackSuccess:actionFeedback.status==='error'?styles.oversightFeedbackError:styles.oversightFeedbackPending}`} role="status" aria-live="polite">{actionFeedback.status==='pending'&&<span className={styles.oversightActionSpinner} aria-hidden="true"/>}<span>{actionFeedback.message}</span></div>}<article className={styles.oversightItemCard}><strong>{String(followup?.title??'متابعة مؤسسية')}</strong><dl className={styles.oversightMeta}><div><dt>المسؤول</dt><dd>{String(followup?.assignedTo??'غير مسند')}</dd></div><div><dt>الموعد</dt><dd>{String(followup?.dueDate??'غير محدد')}</dd></div><div><dt>الحالة الزمنية</dt><dd>{String(timing?.state??'NO_DUE_DATE')}</dd></div><div><dt>آخر تحديث</dt><dd>{String(followup?.updatedAt??'غير متاح')}</dd></div></dl><div className={styles.oversightActions}>{renderActions(detail.quick_actions)}</div></article></section>;
+    return <section className={styles.oversightPanel} aria-label="تفاصيل المتابعة"><header className={styles.oversightPanelHeader}><span>{number?'تفاصيل المتابعة #'+number:'تفاصيل المتابعة'}</span><small>{String(followup?.status??'OPEN')}</small></header>{pendingConfirmation&&<div className={styles.oversightSensitiveConfirm} role="alertdialog" aria-modal="false" aria-labelledby="oversight-sensitive-title">
+      <div>
+        <strong id="oversight-sensitive-title">{pendingConfirmation.title}</strong>
+        <p>{pendingConfirmation.message}</p>
+      </div>
+      <div className={styles.oversightSensitiveActions}>
+        <button type="button" className={styles.oversightCancelButton} disabled={disabled} onClick={onCancelSensitive}>إلغاء</button>
+        <button type="button" className={styles.oversightConfirmButton} disabled={disabled} onClick={onConfirmSensitive}>{pendingConfirmation.confirmLabel}</button>
+      </div>
+    </div>}{actionFeedback.status!=='idle'&&<div className={`${styles.oversightActionFeedback} ${actionFeedback.status==='success'?styles.oversightFeedbackSuccess:actionFeedback.status==='error'?styles.oversightFeedbackError:styles.oversightFeedbackPending}`} role="status" aria-live="polite">{actionFeedback.status==='pending'&&<span className={styles.oversightActionSpinner} aria-hidden="true"/>}<span>{actionFeedback.message}</span></div>}<article className={styles.oversightItemCard}><strong>{String(followup?.title??'متابعة مؤسسية')}</strong><dl className={styles.oversightMeta}><div><dt>المسؤول</dt><dd>{String(followup?.assignedTo??'غير مسند')}</dd></div><div><dt>الموعد</dt><dd>{String(followup?.dueDate??'غير محدد')}</dd></div><div><dt>الحالة الزمنية</dt><dd>{String(timing?.state??'NO_DUE_DATE')}</dd></div><div><dt>آخر تحديث</dt><dd>{String(followup?.updatedAt??'غير متاح')}</dd></div></dl><div className={styles.oversightActions}>{renderActions(detail.quick_actions)}</div></article></section>;
   }
   if(context){
     const decision=context.decision&&typeof context.decision==='object'?context.decision as Record<string,unknown>:null;
@@ -422,6 +451,7 @@ export function PersistentConversationWorkspace(){
   const [draft,setDraft]=useState('');
   const [sending,setSending]=useState(false);
   const [oversightActionFeedback,setOversightActionFeedback]=useState<OversightActionFeedback>({command:'',status:'idle',message:null});
+  const [pendingOversightConfirmation,setPendingOversightConfirmation]=useState<OversightPendingConfirmation>(null);
   const [error,setError]=useState('');
   const [roomsOpen,setRoomsOpen]=useState(false);
   const [contextOpen,setContextOpen]=useState(false);
@@ -681,9 +711,32 @@ export function PersistentConversationWorkspace(){
     }
   }
 
+  function requestOversightCommand(command:string,confirmation?:{title:string;message:string;confirmLabel:string}){
+    if(confirmation){
+      setOversightActionFeedback({command:'',status:'idle',message:null});
+      setPendingOversightConfirmation({command,title:confirmation.title,message:confirmation.message,confirmLabel:confirmation.confirmLabel});
+      return;
+    }
+    void sendQuickCommand(command);
+  }
+
+  function confirmOversightSensitiveAction(){
+    const pending=pendingOversightConfirmation;
+    if(!pending||sending||oversightActionFeedback.status==='pending')return;
+    setPendingOversightConfirmation(null);
+    void sendQuickCommand(pending.command);
+  }
+
+  function cancelOversightSensitiveAction(){
+    if(sending||oversightActionFeedback.status==='pending')return;
+    setPendingOversightConfirmation(null);
+    setOversightActionFeedback({command:'',status:'idle',message:null});
+  }
+
   async function sendQuickCommand(body:string){
     const command=body.trim();
     if(!command||sending||oversightActionFeedback.status==='pending')return;
+    setPendingOversightConfirmation(null);
     setSending(true);
     setError('');
     setOversightActionFeedback({command,status:'pending',message:'جارٍ تنفيذ الإجراء والتحقق من الحالة الفعلية.'});
@@ -753,8 +806,11 @@ export function PersistentConversationWorkspace(){
   data={message.structured_data}
   disabled={sending}
   actionFeedback={oversightActionFeedback}
-  onCommand={command=>void sendQuickCommand(command)}
-  onTemplate={template=>{setOversightActionFeedback({command:'',status:'idle',message:null});setDraft(template);requestAnimationFrame(()=>composerTextareaRef.current?.focus())}}
+  pendingConfirmation={pendingOversightConfirmation}
+  onConfirmSensitive={confirmOversightSensitiveAction}
+  onCancelSensitive={cancelOversightSensitiveAction}
+  onCommand={requestOversightCommand}
+  onTemplate={template=>{setPendingOversightConfirmation(null);setOversightActionFeedback({command:'',status:'idle',message:null});setDraft(template);requestAnimationFrame(()=>composerTextareaRef.current?.focus())}}
 /><StructuredFacts data={message.structured_data}/>{(message.message_kind==='decision'||message.message_kind==='request')&&<small className={styles.executionBoundary}>أي تنفيذ مالي خارجي يظل بيد المستخدم، ويحتاج تأكيدًا وإثباتًا قبل الإغلاق.</small>}</section>}</article>)}</div>
         {error&&<div className={styles.routingNote} role="alert"><LucideIcon name="triangleAlert" size={16}/><span>{error}</span></div>}
         {onboardingComplete===false&&!intakeDismissed&&<GovernorOnboardingIntake

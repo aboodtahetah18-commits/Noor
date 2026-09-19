@@ -2897,3 +2897,28 @@
 @media (prefers-reduced-motion:reduce){
   .oversightActionSpinner{animation:none}
 }
+
+.oversightSensitiveConfirm{
+  display:grid;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border-strong);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-surface-warm)
+}
+.oversightSensitiveConfirm>div:first-child{display:grid;gap:var(--ux-space-1)}
+.oversightSensitiveConfirm strong{font-size:var(--ux-type-body-sm-size);color:var(--namaa-green-900)}
+.oversightSensitiveConfirm p{margin:0;font-size:var(--ux-type-caption-size);line-height:1.65;color:var(--ux-text-secondary)}
+.oversightSensitiveActions{display:flex;justify-content:flex-end;gap:var(--ux-space-2)}
+.oversightSensitiveActions button{
+  min-height:36px;
+  border-radius:var(--ux-radius-full);
+  padding:var(--ux-space-1) var(--ux-space-3);
+  font:inherit;
+  font-size:var(--ux-type-caption-size);
+  font-weight:900;
+  cursor:pointer
+}
+.oversightCancelButton{border:1px solid var(--namaa-border);background:var(--namaa-card);color:var(--ux-text-primary)}
+.oversightConfirmButton{border:1px solid var(--namaa-green-700);background:var(--namaa-green-900);color:var(--namaa-card)}
+.oversightSensitiveActions button:disabled{opacity:.55;cursor:not-allowed}

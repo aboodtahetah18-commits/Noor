@@ -14,4 +14,12 @@ describe('governance oversight quick actions',()=>{
     const overdue=buildOversightQuickActions({followupNumber:1,status:'IN_PROGRESS',assignedTo:'مسؤول',timingState:'OVERDUE',escalationEligible:true});
     expect(overdue.some(item=>item.key==='ESCALATE')).toBe(true);
   });
+
+  it('marks escalation and completion as confirmation-required',()=>{
+    const actions=buildOversightQuickActions({followupNumber:4,status:'IN_PROGRESS',assignedTo:'مسؤول',timingState:'OVERDUE',escalationEligible:true});
+    const escalation=actions.find(item=>item.key==='ESCALATE');
+    const completion=actions.find(item=>item.key==='COMPLETE');
+    expect(escalation).toMatchObject({requires_confirmation:true,confirmation_confirm_label:'تأكيد التصعيد'});
+    expect(completion).toMatchObject({requires_confirmation:true,confirmation_confirm_label:'تأكيد الإغلاق'});
+  });
 });

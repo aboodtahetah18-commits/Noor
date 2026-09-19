@@ -59,8 +59,25 @@ export function buildOversightQuickActions(args:{
     actions.push({key:'REQUEST_USER_DATA',label:'طلب بيانات من المستخدم',command_template:`طلب بيانات المتابعة ${args.followupNumber}: [البيانات المطلوبة]`});
   }
   if(args.escalationEligible){
-    actions.push({key:'ESCALATE',label:'تصعيد للمحافظ',command:`تصعيد المتابعة ${args.followupNumber} إلى المحافظ`});
+    actions.push({
+      key:'ESCALATE',
+      label:'تصعيد للمحافظ',
+      command:`تصعيد المتابعة ${args.followupNumber} إلى المحافظ`,
+      requires_confirmation:true,
+      confirmation_title:'تأكيد التصعيد',
+      confirmation_message:'سيُسجل تصعيد إداري رسمي لهذه المتابعة إلى المحافظ بسبب تجاوز موعد الاستحقاق المعتمد. لا يغير القرار المالي ولا ينفذ أي حركة مالية.',
+      confirmation_confirm_label:'تأكيد التصعيد',
+    });
   }
+  actions.push({
+    key:'COMPLETE',
+    label:'إغلاق المتابعة',
+    command:`إكمال المتابعة ${args.followupNumber}`,
+    requires_confirmation:true,
+    confirmation_title:'تأكيد إغلاق المتابعة',
+    confirmation_message:'سيتم تسجيل المتابعة كمكتملة وإزالتها من قائمة المتابعات المفتوحة. القرار الأصلي وسجل الأحداث سيبقيان محفوظين دون حذف.',
+    confirmation_confirm_label:'تأكيد الإغلاق',
+  });
   return actions;
 }
 

@@ -42,6 +42,7 @@ const steps = [
   ['governance oversight card UI contract','node',['scripts/verify-governance-oversight-card-ui.mjs']],
   ['governance live oversight cards contract','node',['scripts/verify-governance-live-oversight-cards.mjs']],
   ['governance oversight action feedback contract','node',['scripts/verify-governance-oversight-action-feedback.mjs']],
+  ['governance sensitive action confirmation contract','node',['scripts/verify-governance-sensitive-action-confirmation.mjs']],
   ['authorization RBAC ABAC contract','node',['scripts/verify-authorization-contract.mjs']],
   ['authorization provisioning contract','node',['scripts/verify-authorization-provisioning-contract.mjs']],
   ['authorization admin console contract','node',['scripts/verify-authorization-admin-console-contract.mjs']],
