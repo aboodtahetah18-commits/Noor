@@ -182,6 +182,7 @@ export async function getGovernorOnboardingStatus(userId:string){
     status:String(state.status),
     current_step:currentStep,
     complete:String(state.status)==='COMPLETED',
+    completed_at:state.completed_at ? String(state.completed_at) : null,
     question: getGovernorOnboardingQuestion(currentStep),
     facts:factRows,
   };

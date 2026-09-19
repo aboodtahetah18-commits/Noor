@@ -193,6 +193,11 @@ function buildRoomReply(roomKey: ConversationRoomKey, amounts: number[]) {
   if (roomKey === 'assets') return { kind:'recommendation' as ConversationMessageKind, body: amount === null ? 'أرسل قيمة المبلغ والهدف والمدة المتوقعة، وسأتحقق أولًا من المبلغ الآمن المتاح بعد حماية الالتزامات.' : `استلمت مبلغًا قدره ${formatSar(amount)} ريال للتحليل. سأقارنه أولًا بالسعة الآمنة بعد حماية أموال الملاءة والأهداف القريبة.`, confidence: amount === null ? 0.4 : 0.72 };
   if (roomKey === 'hilal') return { kind:'request' as ConversationMessageKind, body: amount === null ? 'اذكر مبلغ التمويل المطلوب والغرض وموعد السداد المتوقع.' : `استلمت طلبًا بقيمة ${formatSar(amount)} ريال. سأختبره مقابل السعة الآمنة والتغطية الأساسية قبل أي اعتماد.`, confidence: amount === null ? 0.44 : 0.74 };
   if (roomKey === 'advisor') return { kind:'recommendation' as ConversationMessageKind, body:'سأبني التحليل على البيانات المؤكدة فقط وأوضح درجة الثقة والبيانات الناقصة.', confidence:0.58 };
+  if (roomKey === 'operations') return { kind:'request' as ConversationMessageKind, body:'ألصق رسالة البنك أو المحفظة كما وصلتك. سأربطها بالحساب والتاجر وأمنع التكرار، وإذا لم يكفِ الدليل سأطلب منك معلومة محددة فقط.', confidence:0.95 };
+  if (roomKey === 'secretary') {
+    const body = 'أستطيع عرض السياسات ومصفوفة الصلاحيات واللجان والمحاضر والإصدارات، وجدولة أو فتح طلب اجتماع لمناقشة أي فقرة. افتح مركز الحوكمة من القائمة أو اكتب اسم السياسة أو المحضر الذي تريد مراجعته.';
+    return { kind:'followup' as ConversationMessageKind, body, confidence:0.95 };
+  }
   if (roomKey === 'council') return { kind:'request' as ConversationMessageKind, body:'أرسل القرار المطلوب اعتماده وسببه والبيانات المؤيدة؛ ولن يُعد أي قرار تنفيذًا ماليًا خارجيًا.', confidence:0.58 };
   return { kind:'message' as ConversationMessageKind, body:'استلمت رسالتك وسأتعامل معها وفق البيانات المؤكدة فقط.', confidence:0.5 };
 }
