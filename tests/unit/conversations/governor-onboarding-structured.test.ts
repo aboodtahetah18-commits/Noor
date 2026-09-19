@@ -18,6 +18,35 @@ describe('governed structured governor onboarding', () => {
     });
   });
 
+  it('keeps only a valid Saudi IBAN and the last four card digits as governed identifiers', () => {
+    const result=normalizeStructuredOnboardingPayload({
+      step:'accounts',
+      items:[{
+        bank_name:'بنك',
+        account_type:'BANK',
+        iban:'SA0380000000608010167519',
+        card_last4:'6883',
+        card_type:'فيزا',
+        opening_balance:100,
+        included_in_namaa:true,
+      }],
+    });
+    expect(result).toMatchObject({items:[{iban:'SA0380000000608010167519',card_last4:'6883',card_type:'فيزا'}]});
+  });
+
+  it('rejects a full or malformed card identifier instead of storing it', () => {
+    expect(()=>normalizeStructuredOnboardingPayload({
+      step:'accounts',
+      items:[{
+        bank_name:'بنك',
+        account_type:'BANK',
+        card_last4:'4111111111111111',
+        opening_balance:100,
+        included_in_namaa:true,
+      }],
+    })).toThrow('ONBOARDING_ACCOUNT_CARD_LAST4_INVALID');
+  });
+
   it('requires an explanation when computed and actual net income differ', () => {
     expect(()=>normalizeStructuredOnboardingPayload({
       step:'income',
