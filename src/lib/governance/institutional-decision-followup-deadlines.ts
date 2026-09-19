@@ -22,7 +22,7 @@ export function parseFollowupDeadlineCommand(text:string):FollowupDeadlineComman
   if(/^(مواعيد المتابعات|حالة مواعيد المتابعات|عرض مواعيد المتابعات)$/i.test(normalized)) return {kind:'SHOW_DEADLINES'};
 
   const due=normalized.match(/^موعد المتابعة\s*(\d+)\s*(\d{4}-\d{2}-\d{2})$/i);
-  if(due&&validIsoDate(due[2])) return {kind:'SET_DUE_DATE',followupNumber:Number(due[1]),dueDate:due[2]};
+  if(due?.[1]&&due[2]&&validIsoDate(due[2])) return {kind:'SET_DUE_DATE',followupNumber:Number(due[1]),dueDate:due[2]};
 
   const lead=normalized.match(/^تنبيه المتابعة\s*(\d+)\s*قبل\s*(\d+)\s*أيام?$/i);
   if(lead) return {kind:'SET_REMINDER_LEAD',followupNumber:Number(lead[1]),leadDays:Number(lead[2])};
