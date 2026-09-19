@@ -86,11 +86,31 @@ export function looksLikePurchaseMessage(input:string){
   return parsePurchaseMessage(input)!==null;
 }
 
+type PurchaseRouteReply={
+  id:unknown;
+  sender_type:unknown;
+  sender_key:unknown;
+  sender_name:unknown;
+  message_kind:unknown;
+  body:unknown;
+  structured_data:unknown;
+  created_at:unknown;
+};
+
+type PurchaseRouteResult={
+  duplicate:boolean;
+  parsed:ParsedPurchaseMessage;
+  fingerprint:string;
+  summary:string;
+  operationId?:string;
+  reply:PurchaseRouteReply|null;
+};
+
 export async function routePurchaseMessage(input:{
   userId:string;
   sourceRoom:ConversationRoomKey;
   text:string;
-}){
+}):Promise<PurchaseRouteResult|null>{
   const parsed=parsePurchaseMessage(input.text);
   if(!parsed)return null;
 
