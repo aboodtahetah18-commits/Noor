@@ -30,7 +30,7 @@ function topicFrom(text:string){
 function claimAmount(value:number|null){return value===null?'غير محدد حتى تكتمل الأدلة':`${new Intl.NumberFormat('ar-SA',{maximumFractionDigits:2}).format(value)} ر.س`;}
 function negotiationViews(result:ReturnType<typeof negotiateAllocationClaims>){
   const turns=result.turns.filter(turn=>turn.action==='YIELD'||turn.action==='HOLD'||turn.action==='NEEDS_EVIDENCE');
-  const bodies=turns.map(turn=>({
+  const bodies:Array<{key:string;name:string;kind:ConversationMessageKind;body:string;role:string}>=turns.map(turn=>({
     key:turn.ownerKey,
     name:turn.ownerName,
     kind:(turn.action==='NEEDS_EVIDENCE'?'request':turn.action==='YIELD'?'recommendation':'message') as ConversationMessageKind,
