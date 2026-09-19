@@ -2070,3 +2070,93 @@
     height:34px!important;
   }
 }
+
+
+/* Mobile typography + governor intro action */
+@media(max-width:767px){
+  .entityTitle strong{
+    font-size:14px!important;
+    line-height:1.25!important;
+  }
+
+  .chatIdentity small{
+    font-size:12px!important;
+    line-height:1.25!important;
+  }
+
+  .message>p,
+  .onboardingMessageContent>p{
+    font-size:14px!important;
+    line-height:1.6!important;
+  }
+
+  .messageIdentity strong{
+    font-size:12px!important;
+    line-height:1.3!important;
+  }
+
+  .messageIdentity small{
+    font-size:11px!important;
+    line-height:1.3!important;
+  }
+
+  .onboardingQuestionBox strong{
+    font-size:15px!important;
+    line-height:1.5!important;
+  }
+
+  .onboardingQuestionBox>span{
+    font-size:12px!important;
+  }
+
+  .routingNote{
+    font-size:12px!important;
+    line-height:1.45!important;
+  }
+
+  .composer textarea{
+    font-size:14px!important;
+  }
+
+  .mobileTools{
+    display:flex!important;
+    align-items:center;
+    gap:var(--ux-space-1)!important;
+  }
+
+  .governorIntroButton{
+    width:auto!important;
+    min-width:0!important;
+    height:34px!important;
+    padding:0 var(--ux-space-2)!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    gap:var(--ux-space-1)!important;
+    border:1px solid color-mix(in srgb,var(--namaa-green-700) 28%,var(--namaa-border) 72%)!important;
+    border-radius:var(--ux-radius-full)!important;
+    background:color-mix(in srgb,var(--namaa-green-900) 5%,var(--namaa-card) 95%)!important;
+    color:var(--namaa-green-900)!important;
+    box-shadow:none!important;
+    white-space:nowrap;
+  }
+
+  .governorIntroButton span{
+    display:inline!important;
+    font-size:11px!important;
+    font-weight:900;
+    line-height:1;
+  }
+}
+
+@media(max-width:390px){
+  .governorIntroButton span{
+    display:none!important;
+  }
+
+  .governorIntroButton{
+    width:34px!important;
+    flex-basis:34px!important;
+    padding:0!important;
+    justify-content:center!important;
+  }
+}
