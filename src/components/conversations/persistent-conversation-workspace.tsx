@@ -315,14 +315,13 @@ export function PersistentConversationWorkspace(){
       if(onboarding){
         setOnboardingComplete(Boolean(onboarding.complete));
         setOnboardingStep(onboarding.current_step??null);
-        if(activeRoomId==='central' && onboarding.complete) setMobileRoomList(true);
         if(!onboarding.complete && activeRoomId!=='central') setActiveRoomId('central');
       }
       setLoadedRoomId(activeRoomId);
     } })
     .catch(()=>{ if(!cancelled){ setError('تعذر تحميل المحادثة الآن. حاول مرة أخرى.'); setLoadedRoomId(activeRoomId); } }); return()=>{cancelled=true}; },[activeRoomId]);
 
-  function chooseRoom(id:RoomKey){if(onboardingComplete===false&&id!=='central')return;setError('');setActiveRoomId(id);setRoomsOpen(false);setMobileRoomList(false)}
+  function chooseRoom(id:RoomKey){if(onboardingComplete===false&&id!=='central')return;setError('');setActiveRoomId(id);setRoomsOpen(false)}
 
   async function refreshActiveRoom(){
     const response=await fetch(`/api/conversations/${activeRoomId}`,{cache:'no-store'});
@@ -605,7 +604,7 @@ export function PersistentConversationWorkspace(){
       <button type="button" className={styles.scrim} aria-label="إغلاق" onClick={()=>setRoomsOpen(false)}/>
       <aside className={styles.mobileSideSheet}>
         <div className={styles.sideSheetTop}>
-          <button type="button" className={styles.sideCloseButton} onClick={()=>setRoomsOpen(false)} aria-label="إغلاق"><LucideIcon name="x" size={22}/></button>
+          <button type="button" className={styles.sideCloseButton} onClick={()=>setRoomsOpen(false)} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button>
           <Image className={styles.sideSheetLogo} src="/brand/ndos/namaa-logo-color-transparent.png" alt="نماء" width={96} height={48}/>
         </div>
         <div className={styles.sideTabs} role="tablist" aria-label="أقسام المحادثات">
@@ -621,9 +620,9 @@ export function PersistentConversationWorkspace(){
           {mobileSideTab==='meetings'&&meetingRooms.length===0&&<p className={styles.sideEmpty}>لا توجد اجتماعات أو مجالس متاحة حاليًا.</p>}
         </div>
         <div className={styles.sideUtilityList}>
-          <button type="button" onClick={()=>{setRoomsOpen(false);setSettingsSection('general');setSettingsOpen(true)}}><LucideIcon name="settings" size={20}/><span>الإعدادات</span><LucideIcon name="chevronLeft" size={18}/></button>
-          <button type="button" onClick={()=>{setRoomsOpen(false);void openConversationContext()}}><LucideIcon name="info" size={20}/><span>المساعدة والسياق</span><LucideIcon name="chevronLeft" size={18}/></button>
-          <button type="button" className={styles.secretaryDock} onClick={()=>setMobileSideTab('meetings')} aria-label="عرض الاجتماعات التي يديرها أمين السر"><LucideIcon name="messageSquareText" size={20}/><span>أمين السر</span><LucideIcon name="chevronLeft" size={18}/></button>
+          <button type="button" onClick={()=>{setRoomsOpen(false);setSettingsSection('general');setSettingsOpen(true)}}><LucideIcon name="settings" size={20}/><span>الإعدادات</span><LucideIcon name="chevronLeft" size={16}/></button>
+          <button type="button" onClick={()=>{setRoomsOpen(false);void openConversationContext()}}><LucideIcon name="info" size={20}/><span>المساعدة والسياق</span><LucideIcon name="chevronLeft" size={16}/></button>
+          <button type="button" className={styles.secretaryDock} onClick={()=>setMobileSideTab('meetings')} aria-label="عرض الاجتماعات التي يديرها أمين السر"><LucideIcon name="messageSquareText" size={20}/><span>أمين السر</span><LucideIcon name="chevronLeft" size={16}/></button>
         </div>
       </aside>
     </div>}
