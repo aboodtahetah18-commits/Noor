@@ -29,7 +29,7 @@ export function parsePurchaseMessage(text:string):CapturedPurchaseMessage{
   const cardMatch=normalized.match(/(?:مدى|فيزا|visa|بطاقة)[^\d]{0,16}\*{0,2}(\d{4})/i);
   const accountMatch=normalized.match(/(?:حساب|account)[^\d]{0,16}\*{0,2}(\d{4})/i);
   const dateMatch=normalized.match(/\b(20\d{2}-\d{2}-\d{2}|\d{1,2}\/\d{1,2}\/\d{2,4})\b/);
-  const merchantMatch=normalized.match(/(?:لدى|عند|merchant\s*:?|at\s+)([^\n;،]{2,60})/i)
+  const merchantMatch=normalized.match(/(?:لدى|عند|merchant\s*:?|at\s+)([^\n;،]{2,60}?)(?=\s+(?:بتاريخ|تاريخ|date\s*:?)\b|$)/i)
     ?? normalized.match(/\b(APPLE\.COM\/BILL|[A-Za-z][A-Za-z0-9 .&'_-]{2,50})\b/);
   return {
     amount:amountMatch?Number(amountMatch[1]):null,
