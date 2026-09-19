@@ -2864,3 +2864,36 @@
 .oversightActions{display:flex;flex-wrap:wrap;gap:var(--ux-space-2);padding-top:var(--ux-space-1)}
 .oversightActionButton{min-height:36px;border:1px solid var(--namaa-border-strong);border-radius:var(--ux-radius-full);background:var(--namaa-card);color:var(--namaa-green-900);padding:var(--ux-space-1) var(--ux-space-3);font:inherit;font-size:var(--ux-type-caption-size);font-weight:900;cursor:pointer}
 .oversightActionButton:disabled{opacity:.55;cursor:not-allowed}
+
+.oversightActionPending{cursor:wait}
+.oversightActionSuccess{box-shadow:inset 0 0 0 1px var(--namaa-green-700)}
+.oversightActionError{border-style:dashed}
+.oversightActionSpinner{
+  width:14px;
+  height:14px;
+  flex:0 0 14px;
+  border:2px solid var(--namaa-border);
+  border-inline-start-color:var(--namaa-green-700);
+  border-radius:var(--ux-radius-full);
+  animation:namaaOversightSpin .8s linear infinite
+}
+.oversightActionFeedback{
+  display:flex;
+  align-items:center;
+  gap:var(--ux-space-2);
+  min-height:34px;
+  padding:var(--ux-space-2);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-2);
+  background:var(--namaa-surface-warm);
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  line-height:1.5
+}
+.oversightFeedbackSuccess{border-color:var(--namaa-green-700);color:var(--namaa-green-900)}
+.oversightFeedbackError{border-color:var(--namaa-border-strong);color:var(--ux-text-primary)}
+.oversightFeedbackPending{color:var(--ux-text-secondary)}
+@keyframes namaaOversightSpin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){
+  .oversightActionSpinner{animation:none}
+}
