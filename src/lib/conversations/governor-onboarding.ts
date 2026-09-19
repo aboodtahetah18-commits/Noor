@@ -269,8 +269,9 @@ export function normalizeStructuredOnboardingPayload(payload:StructuredOnboardin
       const ibanRaw=cleanText(item.iban,40).replace(/\s+/g,'').toUpperCase();
       const iban=ibanRaw?ibanRaw:null;
       if(iban&&!/^SA\d{22}$/.test(iban)) throw new Error('ONBOARDING_ACCOUNT_IBAN_INVALID');
-      const cardLast4=cleanText(item.card_last4,4);
-      if(cardLast4&&!/^\d{4}$/.test(cardLast4)) throw new Error('ONBOARDING_ACCOUNT_CARD_LAST4_INVALID');
+      const cardLast4Raw=typeof item.card_last4==='string'?item.card_last4.trim():'';
+      if(cardLast4Raw&&!/^\d{4}$/.test(cardLast4Raw)) throw new Error('ONBOARDING_ACCOUNT_CARD_LAST4_INVALID');
+      const cardLast4=cardLast4Raw;
       const cardType=cleanText(item.card_type,40)||null;
       return {
         bank_name:bank,account_type:type,

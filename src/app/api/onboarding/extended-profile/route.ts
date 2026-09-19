@@ -27,7 +27,7 @@ export async function GET(){
         and fact_key like 'extended:%'
       order by updated_at desc,created_at desc
     `;
-    const facts:Object=Object.fromEntries(rows.map(row=>[
+    const facts:Record<string,unknown>=Object.fromEntries(rows.map(row=>[
       String(row.fact_key).replace(/^extended:/,''),
       {value:row.value_json,confidence:Number(row.confidence??1),verified_at:row.verified_at,updated_at:row.updated_at},
     ]));
