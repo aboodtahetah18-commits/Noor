@@ -119,6 +119,52 @@ function OnboardingMessageContent({message,showStructuredAction,onOpenStructured
   </div>;
 }
 
+function OversightStructuredCards({
+  data,onCommand,onTemplate,disabled,
+}:{
+  data?:Record<string,unknown>;onCommand:(command:string)=>void;onTemplate:(template:string)=>void;disabled:boolean;
+}){
+  if(!data)return null;
+  const dashboard=data.governance_oversight_dashboard===true&&data.dashboard&&typeof data.dashboard==='object'?data.dashboard as Record<string,unknown>:null;
+  const detail=data.governance_oversight_followup_detail===true?data:null;
+  const context=data.governance_oversight_decision_context===true?data:null;
+  const followups=dashboard&&Array.isArray(dashboard.allOpenFollowups)?dashboard.allOpenFollowups.filter((item):item is Record<string,unknown>=>Boolean(item)&&typeof item==='object'&&!Array.isArray(item)):[];
+  const renderActions=(actions:unknown)=>Array.isArray(actions)?actions.filter((item):item is Record<string,unknown>=>Boolean(item)&&typeof item==='object'&&!Array.isArray(item)).map((action,index)=>{
+    const label=typeof action.label==='string'?action.label:'إجراء';
+    const command=typeof action.command==='string'?action.command:null;
+    const template=typeof action.command_template==='string'?action.command_template:null;
+    return <button key={String(action.key??label)+index} type="button" className={styles.oversightActionButton} disabled={disabled} onClick={()=>command?onCommand(command):template?onTemplate(template):undefined}>{label}</button>;
+  }):null;
+  if(dashboard)return <section className={styles.oversightPanel} aria-label="اللوحة الرقابية">
+    <header className={styles.oversightPanelHeader}><span>اللوحة الرقابية</span><small>{followups.length} متابعة مفتوحة</small></header>
+    <div className={styles.oversightCardGrid}>{followups.map((item,index)=>{
+      const number=typeof item.number==='number'?item.number:index+1;
+      const title=String(item.title??('متابعة '+number));
+      const status=String(item.status??'OPEN');
+      const assignedTo=typeof item.assignedTo==='string'&&item.assignedTo.trim()?item.assignedTo:null;
+      const dueDate=typeof item.dueDate==='string'&&item.dueDate?item.dueDate:null;
+      const timing=String(item.timingState??'NO_DUE_DATE');
+      const decisionTitle=typeof item.decisionTitle==='string'?item.decisionTitle:'قرار مؤسسي';
+      return <article key={String(item.followupId??number)} className={styles.oversightItemCard}>
+        <div className={styles.oversightItemTop}><span className={styles.oversightNumber}>#{number}</span><span className={`${styles.oversightStatus} ${timing==='OVERDUE'?styles.oversightStatusRisk:''}`}>{status}</span></div>
+        <strong>{title}</strong><small className={styles.oversightDecisionRef}>{decisionTitle}</small>
+        <dl className={styles.oversightMeta}><div><dt>المسؤول</dt><dd>{assignedTo??'غير مسند'}</dd></div><div><dt>الموعد</dt><dd>{dueDate??'غير محدد'}</dd></div><div><dt>الحالة الزمنية</dt><dd>{timing}</dd></div></dl>
+        <div className={styles.oversightActions}>{renderActions(item.quickActions)}</div>
+      </article>;
+    })}</div>
+  </section>;
+  if(detail){
+    const followup=detail.followup&&typeof detail.followup==='object'?detail.followup as Record<string,unknown>:null;
+    const timing=detail.timing&&typeof detail.timing==='object'?detail.timing as Record<string,unknown>:null;
+    const number=typeof detail.followup_number==='number'?detail.followup_number:null;
+    return <section className={styles.oversightPanel} aria-label="تفاصيل المتابعة"><header className={styles.oversightPanelHeader}><span>{number?'تفاصيل المتابعة #'+number:'تفاصيل المتابعة'}</span><small>{String(followup?.status??'OPEN')}</small></header><article className={styles.oversightItemCard}><strong>{String(followup?.title??'متابعة مؤسسية')}</strong><dl className={styles.oversightMeta}><div><dt>المسؤول</dt><dd>{String(followup?.assignedTo??'غير مسند')}</dd></div><div><dt>الموعد</dt><dd>{String(followup?.dueDate??'غير محدد')}</dd></div><div><dt>الحالة الزمنية</dt><dd>{String(timing?.state??'NO_DUE_DATE')}</dd></div><div><dt>آخر تحديث</dt><dd>{String(followup?.updatedAt??'غير متاح')}</dd></div></dl><div className={styles.oversightActions}>{renderActions(detail.quick_actions)}</div></article></section>;
+  }
+  if(context){
+    const decision=context.decision&&typeof context.decision==='object'?context.decision as Record<string,unknown>:null;
+    return <section className={styles.oversightPanel} aria-label="سياق القرار"><header className={styles.oversightPanelHeader}><span>القرار المرتبط</span><small>{String(decision?.status??'')}</small></header><article className={styles.oversightItemCard}><strong>{String(decision?.title??'قرار مؤسسي')}</strong><dl className={styles.oversightMeta}><div><dt>معرف السجل</dt><dd>{String(decision?.registryId??'—')}</dd></div><div><dt>تاريخ القرار</dt><dd>{String(decision?.decidedAt??'—')}</dd></div><div><dt>الدورة</dt><dd>{String(decision?.cycleId??'—')}</dd></div><div><dt>إصدار الخطة</dt><dd>{String(decision?.planVersionId??'—')}</dd></div></dl></article></section>;
+  }
+  return null;
+}
 function StructuredFacts({data}:{data?:Record<string,unknown>}){
   if(!data)return null;
   const confidence=typeof data.confidence_percent==='number'?data.confidence_percent:null;
@@ -576,6 +622,19 @@ export function PersistentConversationWorkspace(){
     }
   }
 
+  async function sendQuickCommand(body:string){
+    const command=body.trim();
+    if(!command||sending)return;
+    setSending(true);setError('');
+    try{
+      const response=await fetch('/api/conversations/'+activeRoomId,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({body:command})});
+      const data=await response.json() as {message?:Message;reply?:Message;replies?:Message[]};
+      if(!response.ok||!data.message)throw new Error('write');
+      const responseMessages=Array.isArray(data.replies)&&data.replies.length?data.replies:(data.reply?[data.reply]:[]);
+      setMessages(current=>[...current,data.message as Message,...responseMessages]);
+    }catch{setError('تعذر تنفيذ الإجراء الرقابي الآن. لم يعتبر نماء الإجراء مكتملًا؛ أعد المحاولة.')}finally{setSending(false)}
+  }
+
   async function send(event:FormEvent){ event.preventDefault(); const body=draft.trim(); if(!body||sending)return; setSending(true); setError('');
     try{
       const response=await fetch(`/api/conversations/${activeRoomId}`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({body})});
@@ -623,7 +682,7 @@ export function PersistentConversationWorkspace(){
     <div className={`${styles.workspace} ${styles.withoutRooms} ${desktopContextVisible?'':styles.withoutContext}`}>
       <main className={styles.chatPane}><header className={styles.chatHeader}><div className={styles.chatIdentity}><RoomPortrait room={activeRoom} size="md"/><div><div className={styles.entityTitle}><strong>{chatRoleTitle(activeRoom)}</strong></div><small>{chatEntityTitle(activeRoom)}</small></div></div><div className={styles.mobileTools}><button type="button" aria-label="معلومات الجهة" onClick={()=>{setDetailRoomId(activeRoomId);setDetailTab('role')}}><LucideIcon name="info" size={20}/></button></div></header>
         <div className={styles.routingNote}><LucideIcon name="sparkles" size={16}/><span>{activeRoom.specialists}</span></div>
-        <div className={styles.messages} aria-live="polite">{loading&&<p>جارٍ تحميل سجل المحادثة…</p>}{!loading&&!messages.length&&<article className={`${styles.message} ${styles.agentMessage}`}><p>{onboardingComplete===false?'أنا محافظ بنك نماء المركزي. سأبدأ معك بسؤال واحد في كل مرة حتى أبني ملفك من معلوماتك أنت، دون افتراضات.':'هذه بداية محادثتك مع '+activeRoom.title+'. اكتب سؤالك أو القرار الذي تريد دراسته.'}</p></article>}{messages.map(message=><article key={message.id} className={`${styles.message} ${message.sender_type==='user'?styles.userMessage:styles.agentMessage} ${activeRoom.id==='council'&&message.sender_type!=='user'?councilSpeakerClass(message.sender_key):''}`}>{message.sender_type!=='user'&&<div className={styles.messageIdentity}>{activeRoom.id==='council'?<span className={styles.councilInitial} aria-hidden="true">{speakerInitial(message.sender_name)}</span>:<RoomPortrait room={activeRoom} size="sm"/>}<span><strong>{activeRoom.id==='central'?'محافظ البنك المركزي':message.sender_name}</strong><small>{message.structured_data?.speaker_role?String(message.structured_data.speaker_role):message.sender_type==='system'?'رسالة نظام':'شخصية خوارزمية'}</small></span></div>}{message.sender_type==='user'&&<div className={styles.userMessageIdentity}><strong>{meetingUserDisplayName(profile?.name||message.sender_name)}</strong><small>{activeRoom.id==='council'?'صاحب المحفظة':'أنت'}</small></div>}{message.structured_data?.onboarding===true?<OnboardingMessageContent message={message} showStructuredAction={onboardingComplete===false&&message.sender_type!=='user'&&String(message.structured_data?.onboarding_step??'')===String(onboardingStep??'')&&STRUCTURED_INTAKE_STEPS.has(String(onboardingStep??''))} onOpenStructuredIntake={()=>setIntakeDismissed(false)}/>:<p>{message.body}</p>}{message.message_kind!=='message'&&message.structured_data?.onboarding!==true&&<section className={`${styles.structuredCard} ${styles[`kind_${message.message_kind}`]}`}><header><strong>{labels[message.message_kind]}</strong></header><StructuredFacts data={message.structured_data}/>{(message.message_kind==='decision'||message.message_kind==='request')&&<small className={styles.executionBoundary}>أي تنفيذ مالي خارجي يظل بيد المستخدم، ويحتاج تأكيدًا وإثباتًا قبل الإغلاق.</small>}</section>}</article>)}</div>
+        <div className={styles.messages} aria-live="polite">{loading&&<p>جارٍ تحميل سجل المحادثة…</p>}{!loading&&!messages.length&&<article className={`${styles.message} ${styles.agentMessage}`}><p>{onboardingComplete===false?'أنا محافظ بنك نماء المركزي. سأبدأ معك بسؤال واحد في كل مرة حتى أبني ملفك من معلوماتك أنت، دون افتراضات.':'هذه بداية محادثتك مع '+activeRoom.title+'. اكتب سؤالك أو القرار الذي تريد دراسته.'}</p></article>}{messages.map(message=><article key={message.id} className={`${styles.message} ${message.sender_type==='user'?styles.userMessage:styles.agentMessage} ${activeRoom.id==='council'&&message.sender_type!=='user'?councilSpeakerClass(message.sender_key):''}`}>{message.sender_type!=='user'&&<div className={styles.messageIdentity}>{activeRoom.id==='council'?<span className={styles.councilInitial} aria-hidden="true">{speakerInitial(message.sender_name)}</span>:<RoomPortrait room={activeRoom} size="sm"/>}<span><strong>{activeRoom.id==='central'?'محافظ البنك المركزي':message.sender_name}</strong><small>{message.structured_data?.speaker_role?String(message.structured_data.speaker_role):message.sender_type==='system'?'رسالة نظام':'شخصية خوارزمية'}</small></span></div>}{message.sender_type==='user'&&<div className={styles.userMessageIdentity}><strong>{meetingUserDisplayName(profile?.name||message.sender_name)}</strong><small>{activeRoom.id==='council'?'صاحب المحفظة':'أنت'}</small></div>}{message.structured_data?.onboarding===true?<OnboardingMessageContent message={message} showStructuredAction={onboardingComplete===false&&message.sender_type!=='user'&&String(message.structured_data?.onboarding_step??'')===String(onboardingStep??'')&&STRUCTURED_INTAKE_STEPS.has(String(onboardingStep??''))} onOpenStructuredIntake={()=>setIntakeDismissed(false)}/>:<p>{message.body}</p>}{message.message_kind!=='message'&&message.structured_data?.onboarding!==true&&<section className={`${styles.structuredCard} ${styles[`kind_${message.message_kind}`]}`}><header><strong>{labels[message.message_kind]}</strong></header><OversightStructuredCards data={message.structured_data} disabled={sending} onCommand={command=>void sendQuickCommand(command)} onTemplate={template=>{setDraft(template);requestAnimationFrame(()=>composerTextareaRef.current?.focus())}}/><StructuredFacts data={message.structured_data}/>{(message.message_kind==='decision'||message.message_kind==='request')&&<small className={styles.executionBoundary}>أي تنفيذ مالي خارجي يظل بيد المستخدم، ويحتاج تأكيدًا وإثباتًا قبل الإغلاق.</small>}</section>}</article>)}</div>
         {error&&<div className={styles.routingNote} role="alert"><LucideIcon name="triangleAlert" size={16}/><span>{error}</span></div>}
         {onboardingComplete===false&&!intakeDismissed&&<GovernorOnboardingIntake
           step={onboardingStep??''}

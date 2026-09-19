@@ -39,6 +39,7 @@ const steps = [
   ['institutional decision followup deadline contract','node',['scripts/verify-institutional-decision-followup-deadline.mjs']],
   ['governance oversight dashboard contract','node',['scripts/verify-governance-oversight-dashboard.mjs']],
   ['governance oversight quick actions contract','node',['scripts/verify-governance-oversight-quick-actions.mjs']],
+  ['governance oversight card UI contract','node',['scripts/verify-governance-oversight-card-ui.mjs']],
   ['authorization RBAC ABAC contract','node',['scripts/verify-authorization-contract.mjs']],
   ['authorization provisioning contract','node',['scripts/verify-authorization-provisioning-contract.mjs']],
   ['authorization admin console contract','node',['scripts/verify-authorization-admin-console-contract.mjs']],
