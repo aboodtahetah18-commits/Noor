@@ -1,11 +1,47 @@
-export const APPROVED_ADVISORS = [
-  { key:'budget-spending-advisor', name:'مستشار الميزانية والإنفاق' },
-  { key:'obligations-advisor', name:'مستشار الالتزامات' },
-  { key:'goals-advisor', name:'مستشار الأهداف' },
-  { key:'investment-advisor', name:'مستشار الاستثمار' },
-  { key:'liquidity-advisor', name:'مستشار السيولة' },
-  { key:'economic-advisor', name:'المستشار الاقتصادي' },
+export const FINANCIAL_RESPONSIBILITY_ROLES = [
+  {
+    key:'budget-spending-owner',
+    name:'مسؤول الميزانية والإنفاق',
+    mandate:'حماية واقعية الميزانية وضبط البنود والانحرافات، والدفاع عن كفاية مخصصات المعيشة والتشغيل دون تضخيمها.',
+    accountableFor:['سلامة الميزانية','انحراف البنود','جودة إعادة التوزيع','استدامة الإنفاق'],
+    meetingClaim:['المطلوب','الحد الأدنى المقبول','الهدف المثالي','أثر التخفيض'],
+  },
+  {
+    key:'obligations-owner',
+    name:'مسؤول الالتزامات',
+    mandate:'حماية الاستحقاقات والأقساط والديون والفواتير ذات الأولوية ومنع أي توزيع يعرّضها للنقص أو التأخر.',
+    accountableFor:['تغطية الالتزامات','الاستحقاقات في موعدها','ضغط الدين','التزامات الدورة'],
+    meetingClaim:['المطلوب','الحد غير القابل للتخفيض','موعد الاستحقاق','أثر النقص'],
+  },
+  {
+    key:'goals-owner',
+    name:'مسؤول الأهداف',
+    mandate:'حماية تمويل الأهداف ومواعيدها ورفع جودة التخطيط، مع بيان مقدار الخفض الممكن دون كسر موعد الهدف أو احتمالية تحقيقه.',
+    accountableFor:['تقدم الأهداف','الالتزام بالمواعيد','واقعية المساهمات','حل تعارض الأهداف'],
+    meetingClaim:['المطلوب','الحد الأدنى','الموعد المستهدف','أثر التخفيض'],
+  },
+  {
+    key:'investment-owner',
+    name:'مسؤول الاستثمار',
+    mandate:'تنمية المال المؤهل للاستثمار والدفاع عن استمرار مسار النمو ضمن حدود المخاطر والسيولة، والتنسيق مع بنك الأصول لاقتراح الفرص.',
+    accountableFor:['نمو المال المؤهل','جودة الفرص','العائد المعدل بالمخاطر','عدم الإضرار بالسيولة والأهداف'],
+    meetingClaim:['المطلوب','الحد الأدنى','الفرصة أو الخطة','أثر التأجيل'],
+  },
+  {
+    key:'liquidity-protection-owner',
+    name:'مسؤول السيولة والحماية',
+    mandate:'حماية الادخار والاحتياط والطوارئ والسيولة الفورية، وإعادة بناء الحماية عند استخدامها ثم تنميتها بكفاءة بعد بلوغ الحد الآمن.',
+    accountableFor:['كفاية الاحتياط','سيولة الطوارئ','سرعة الوصول للنقد','استعادة الحماية','كفاءة الفائض'],
+    meetingClaim:['المطلوب','الحد الأدنى الآمن','الهدف المثالي','أثر التخفيض على الحماية'],
+  },
 ] as const;
 
+export const ECONOMIC_ADVISOR = {
+  key:'economic-advisor',
+  name:'المستشار الاقتصادي',
+  mandate:'تحليل البيئة الاقتصادية والسيناريوهات العابرة للمجالات وتعديل الافتراضات؛ لا يطالب بحصة مالية خاصة ولا يملك بندًا.',
+} as const;
+
+export const APPROVED_ADVISORS = [...FINANCIAL_RESPONSIBILITY_ROLES,ECONOMIC_ADVISOR] as const;
 export type ApprovedAdvisorKey = typeof APPROVED_ADVISORS[number]['key'];
 export const APPROVED_ADVISOR_NAMES = new Set(APPROVED_ADVISORS.map(item=>item.name));

@@ -67,8 +67,8 @@ export async function routePurchaseMessageToOperations(args:{
     insert into public.conversation_messages(
       id,thread_id,user_id,sender_type,sender_key,sender_name,message_kind,body,structured_data
     ) values(
-      ${randomUUID()},${room.threadId}::uuid,${args.userId}::uuid,'agent',
-      'operations-manager','مسؤول مركز العمليات والمطابقة','followup',${body},${JSON.stringify(structured)}::jsonb
+      ${randomUUID()},${room.threadId}::uuid,${args.userId}::uuid,'system',
+      'operations-center','مركز العمليات والمطابقة','followup',${body},${JSON.stringify(structured)}::jsonb
     )
     returning id,sender_type,sender_key,sender_name,message_kind,body,structured_data,created_at
   `;
