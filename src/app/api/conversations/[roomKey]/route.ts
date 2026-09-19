@@ -24,6 +24,7 @@ import { createMeetingOpeningAgendaReply, isMeetingOpeningAgendaRequest } from '
 import { applyMeetingAgendaCommand, parseMeetingAgendaCommand } from '@/lib/allocation/financial-meeting-agenda-tracking';
 import { createAllocationFinalProposalReply, isAllocationFinalProposalRequest } from '@/lib/allocation/allocation-final-proposal';
 import { createRatifiedAllocationDecisionMinutes } from '@/lib/allocation/allocation-decision-minutes';
+import { createInstitutionalDecisionRegistryReply, isInstitutionalDecisionRegistryRequest } from '@/lib/governance/institutional-decision-registry';
 
 export async function GET(_request: Request, context: { params: Promise<{ roomKey: string }> }) {
   const user = await getAuthenticatedUser();
@@ -157,6 +158,10 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
       } else {
         reply = await createRoutedReply(user.id, roomKey, text);
       }
+    } else if (roomKey === 'central' && onboarding.complete && isInstitutionalDecisionRegistryRequest(text)) {
+      const registryReply=await createInstitutionalDecisionRegistryReply(user.id,'central');
+      if(!registryReply) return NextResponse.json({message,code:'DECISION_REGISTRY_UNAVAILABLE',captured_operation:capturedOperation},{status:409});
+      return NextResponse.json({message,reply:registryReply,replies:[registryReply],captured_operation:capturedOperation},{status:201});
     } else if (roomKey === 'central' && onboarding.complete && isGovernorPreMeetingBriefRequest(text)) {
       const governorBriefReply=await createGovernorPreMeetingBriefReply(user.id);
       if(!governorBriefReply) return NextResponse.json({message,code:'GOVERNOR_PRE_MEETING_BRIEF_UNAVAILABLE',captured_operation:capturedOperation},{status:409});
@@ -223,6 +228,10 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
       }
       const replies = await createCouncilDeliberationReplies(user.id, text);
       return NextResponse.json({ message, reply: replies.at(-1) ?? null, replies, captured_operation: capturedOperation }, { status: 201 });
+    } else if (roomKey === 'secretary' && isInstitutionalDecisionRegistryRequest(text)) {
+      const registryReply=await createInstitutionalDecisionRegistryReply(user.id,'secretary');
+      if(!registryReply) return NextResponse.json({message,code:'DECISION_REGISTRY_UNAVAILABLE',captured_operation:capturedOperation},{status:409});
+      return NextResponse.json({message,reply:registryReply,replies:[registryReply],captured_operation:capturedOperation},{status:201});
     } else if (roomKey === 'operations' || roomKey === 'secretary') {
       reply = await createRoutedReply(user.id, roomKey, text);
     } else {
