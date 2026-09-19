@@ -964,3 +964,102 @@
     gap:var(--ux-space-1);
   }
 }
+
+
+/* Governed mobile governance and meetings center */
+.governanceSheet{
+  display:block;
+  overflow:auto;
+}
+.governanceCards,.meetingsList{
+  display:grid;
+  gap:var(--ux-space-3);
+}
+.governanceIntro{
+  display:flex;
+  align-items:flex-start;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-surface-warm);
+  color:var(--namaa-green-900);
+}
+.governanceIntro>div{display:grid;gap:var(--ux-space-1)}
+.governanceIntro strong{font-size:var(--ux-type-body-sm-size);color:var(--ux-text-primary)}
+.governanceIntro small{font-size:var(--ux-type-caption-size);line-height:1.6;color:var(--ux-text-secondary)}
+.governanceCard{
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-card);
+  overflow:hidden;
+}
+.governanceCard summary{
+  list-style:none;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-3);
+  cursor:pointer;
+}
+.governanceCard summary::-webkit-details-marker{display:none}
+.governanceCard summary>span{display:grid;gap:var(--ux-space-1)}
+.governanceCard summary strong{font-size:var(--ux-type-body-sm-size);color:var(--ux-text-primary)}
+.governanceCard summary small{font-size:var(--ux-type-caption-size);line-height:1.5;color:var(--ux-text-secondary)}
+.governanceCard[open] summary svg{transform:rotate(180deg)}
+.governanceBody{
+  display:grid;
+  gap:var(--ux-space-2);
+  padding:var(--ux-space-3);
+  border-top:1px solid var(--namaa-border);
+  background:var(--namaa-surface-warm);
+}
+.governanceBody>span{display:grid;gap:var(--ux-space-1)}
+.governanceBody>span small{font-size:var(--ux-type-caption-size);color:var(--ux-text-secondary)}
+.governanceBody>span strong{font-size:var(--ux-type-caption-size);color:var(--ux-text-primary)}
+.governanceBody ul{margin:var(--ux-space-1) 0 0;padding-inline-start:var(--ux-space-5);display:grid;gap:var(--ux-space-2)}
+.governanceBody li{font-size:var(--ux-type-caption-size);line-height:1.7;color:var(--ux-text-secondary)}
+.meetingCard{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:var(--ux-space-2) var(--ux-space-3);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-card);
+}
+.meetingCard>div{display:grid;gap:var(--ux-space-1)}
+.meetingCard>div>span,.meetingCard em{
+  width:max-content;
+  padding:var(--ux-space-1) var(--ux-space-2);
+  border-radius:var(--ux-radius-full);
+  background:var(--namaa-surface-warm);
+  color:var(--namaa-green-900);
+  font-size:var(--ux-type-caption-size);
+  font-style:normal;
+}
+.meetingCard strong{font-size:var(--ux-type-body-sm-size);color:var(--ux-text-primary)}
+.meetingCard small,.meetingCard time{font-size:var(--ux-type-caption-size);color:var(--ux-text-secondary)}
+.meetingCard time{text-align:end}
+.meetingCard em{grid-column:2;justify-self:end}
+.sheetMessage{
+  margin:0;
+  padding:var(--ux-space-3);
+  border:1px dashed var(--namaa-border-strong);
+  border-radius:var(--ux-radius-3);
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  text-align:center;
+}
+
+@media(max-width:767px){
+  .governanceSheet{
+    inset-inline:var(--ux-space-1);
+    bottom:var(--ux-space-1);
+    max-height:92dvh;
+  }
+  .meetingCard{grid-template-columns:1fr}
+  .meetingCard time{text-align:start}
+  .meetingCard em{grid-column:1;justify-self:start}
+}
