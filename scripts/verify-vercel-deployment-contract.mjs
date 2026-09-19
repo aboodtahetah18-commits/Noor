@@ -7,6 +7,7 @@ for (const file of required) if (!fs.existsSync(file)) fail.push(`missing ${file
 const configText=fs.readFileSync('vercel.json','utf8');
 const config=JSON.parse(configText);
 if (config.framework !== 'nextjs') fail.push('Vercel framework must be nextjs');
+if (config.git?.deploymentEnabled !== false) fail.push('Automatic Vercel Git deployments must remain disabled until explicit release approval.');
 if (!configText.includes('npm run vercel:build')) fail.push('Vercel build must use vercel:build');
 if (configText.includes('deploy:migrate')) fail.push('Database migration must not run inside Vercel build');
 
@@ -19,5 +20,5 @@ if (fail.length) {
   for (const item of fail) console.error(`- ${item}`);
   process.exit(1);
 }
-console.log('VERCEL-DEPLOYMENT-CONTRACT-PASS');
+console.log('VERCEL-DEPLOYMENT-CONTRACT-PASS automatic Git deployments are disabled; manual release remains possible after explicit approval.');
 
