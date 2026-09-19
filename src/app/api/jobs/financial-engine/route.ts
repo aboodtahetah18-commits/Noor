@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { runFinancialEngineRecalcJob } from '@/features/financial-engine/jobs/run-financial-engine-recalc';
 import { logServerError } from '@/security/safe-logging';
 import { runHilalRecoveryFollowupJob } from '@/lib/conversations/hilal-recovery-followup';
+import { runFinancialPlanMonitoringJob } from '@/lib/allocation/financial-plan-monitoring';
 
 export const dynamic='force-dynamic';
 export const runtime='nodejs';
@@ -15,19 +16,22 @@ function authorized(request:Request){
 async function run(request:Request){
   if(!authorized(request))return NextResponse.json({ok:false,error:'UNAUTHORIZED'},{status:401,headers:{'Cache-Control':'no-store'}});
   try{
-    const [results,hilalRecovery]=await Promise.all([
+    const [results,hilalRecovery,planMonitoring]=await Promise.all([
       runFinancialEngineRecalcJob(),
       runHilalRecoveryFollowupJob(),
+      runFinancialPlanMonitoringJob(),
     ]);
     const failed=results.filter((x)=>x.status==='FAILED').length;
     const hilalFailed=hilalRecovery.filter((x)=>x.status==='FAILED').length;
-    const totalFailed=failed+hilalFailed;
+    const planMonitoringFailed=planMonitoring.filter((x)=>x.status==='FAILED').length;
+    const totalFailed=failed+hilalFailed+planMonitoringFailed;
     return NextResponse.json({
       ok:totalFailed===0,
       processed:results.length,
       failed,
       results,
       hilalRecovery:{processed:hilalRecovery.length,failed:hilalFailed,results:hilalRecovery},
+      planMonitoring:{processed:planMonitoring.length,failed:planMonitoringFailed,results:planMonitoring},
     },{status:totalFailed===0?200:207,headers:{'Cache-Control':'no-store'}});
   }catch{
     const requestId=logServerError('financial-engine-recalc-job-failed',{endpoint:'/api/jobs/financial-engine'});
