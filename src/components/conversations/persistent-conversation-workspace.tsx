@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { LucideIcon } from '@/components/ui/lucide-icon';
+import { ThemeToggle } from '@/app/theme-toggle';
 import { StatementReviewPanel } from '@/components/conversations/statement-review-panel';
 import styles from './conversation-workspace.module.css';
 
@@ -12,6 +13,8 @@ type Message = { id:string; sender_type:'user'|'agent'|'system'; sender_name:str
 type Participant = { participant_key:string; display_name:string; participant_type:string; role_label?:string };
 type OnboardingStatus = { status:string; current_step:string; complete:boolean; question?:string|null };
 type StatementAccount = { id:string; name:string; account_type:string; bank_name?:string|null };
+type UserProfile = { id:string; name:string; email:string|null; image:string|null; emailVerified:boolean };
+type OnboardingReviewFact = { key:string; label:string; raw:string; verified_at?:string; confidence:number };
 
 type Room = { id:RoomKey; title:string; subtitle:string; lead:string; specialists:string; avatar:string; bankLogo:string };
 const rooms: [Room, ...Room[]] = [
@@ -26,6 +29,8 @@ const labels:Record<MessageKind,string>={message:'',risk:'تقييم مخاطر'
 
 function formatSar(value:number){return new Intl.NumberFormat('ar-SA',{maximumFractionDigits:2}).format(value)}
 function roomTitle(value:unknown){if(typeof value!=='string')return null;return rooms.find(room=>room.id===value)?.title??null}
+function chatRoleTitle(room:Room){return room.id==='central'?'محافظ البنك المركزي':room.lead}
+function chatEntityTitle(room:Room){return room.id==='central'?'بنك نماء المركزي':room.title}
 function missingLabel(value:string){if(value==='monthly_net_income')return 'الدخل الشهري الصافي';if(value==='recurring_core_obligations')return 'الالتزامات الأساسية';if(value==='financing_purpose')return 'غرض التمويل';if(value==='requested_amount')return 'مبلغ التمويل';if(value==='expected_installment')return 'القسط الشهري المتوقع';return value}
 
 function RoomPortrait({room,size='md'}:{room:Room;size?:'sm'|'md'|'lg'}) {
@@ -237,10 +242,34 @@ export function PersistentConversationWorkspace(){
   const [statementUploading,setStatementUploading]=useState(false);
   const [statementReviewVersion,setStatementReviewVersion]=useState(0);
   const statementFileRef=useRef<HTMLInputElement|null>(null);
+  const [profile,setProfile]=useState<UserProfile|null>(null);
+  const [userMenuOpen,setUserMenuOpen]=useState(false);
+  const [profileOpen,setProfileOpen]=useState(false);
+  const [settingsOpen,setSettingsOpen]=useState(false);
+  const [profileName,setProfileName]=useState('');
+  const [profileSaving,setProfileSaving]=useState(false);
+  const [reviewOpen,setReviewOpen]=useState(false);
+  const [reviewFacts,setReviewFacts]=useState<OnboardingReviewFact[]>([]);
+  const [reviewEditingKey,setReviewEditingKey]=useState('');
+  const [reviewDraft,setReviewDraft]=useState('');
+  const [reviewSaving,setReviewSaving]=useState(false);
   const [desktopRoomsVisible,setDesktopRoomsVisible]=useState(true);
   const [desktopContextVisible,setDesktopContextVisible]=useState(true);
   const activeRoom=useMemo(()=>rooms.find(r=>r.id===activeRoomId)??rooms[0],[activeRoomId]);
   const loading=loadedRoomId!==activeRoomId;
+
+  useEffect(()=>{
+    let cancelled=false;
+    fetch('/api/account/profile',{cache:'no-store'})
+      .then(async response=>response.ok?response.json():null)
+      .then(data=>{
+        if(cancelled||!data?.user)return;
+        setProfile(data.user as UserProfile);
+        setProfileName(String(data.user.name??''));
+      })
+      .catch(()=>{});
+    return()=>{cancelled=true};
+  },[]);
 
   useEffect(()=>{ let cancelled=false; fetch(`/api/conversations/${activeRoomId}`,{cache:'no-store'})
     .then(async response=>{ if(!response.ok) throw new Error('تعذر تحميل المحادثة.'); return response.json(); })
@@ -333,6 +362,97 @@ export function PersistentConversationWorkspace(){
     }finally{
       setStatementUploading(false);
       if(statementFileRef.current) statementFileRef.current.value='';
+    }
+  }
+
+  async function saveProfile(){
+    const name=profileName.trim();
+    if(!profile||name.length<2||profileSaving)return;
+    setProfileSaving(true);
+    try{
+      const response=await fetch('/api/account/profile',{
+        method:'PATCH',
+        headers:{'content-type':'application/json'},
+        body:JSON.stringify({name}),
+      });
+      const data=await response.json() as {user?:UserProfile};
+      if(!response.ok||!data.user) throw new Error('profile');
+      setProfile(data.user);
+      setProfileName(data.user.name);
+      setProfileOpen(false);
+    }catch{
+      setError('تعذر حفظ بيانات المستخدم الآن.');
+    }finally{
+      setProfileSaving(false);
+    }
+  }
+
+  async function logout(){
+    try{
+      await fetch('/api/auth/logout',{method:'POST'});
+    }finally{
+      window.location.assign('/login');
+    }
+  }
+
+  async function openOnboardingReview(){
+    setReviewOpen(true);
+    setReviewEditingKey('');
+    setReviewDraft('');
+    try{
+      const response=await fetch('/api/onboarding/review',{cache:'no-store'});
+      const data=await response.json() as {facts?:OnboardingReviewFact[]};
+      if(!response.ok) throw new Error('review');
+      setReviewFacts(Array.isArray(data.facts)?data.facts:[]);
+    }catch{
+      setError('تعذر تحميل مراجعة بيانات التأسيس الآن.');
+    }
+  }
+
+  async function saveReviewFact(){
+    if(!reviewEditingKey||reviewSaving)return;
+    setReviewSaving(true);
+    try{
+      const response=await fetch('/api/onboarding/review',{
+        method:'PATCH',
+        headers:{'content-type':'application/json'},
+        body:JSON.stringify({key:reviewEditingKey,raw:reviewDraft}),
+      });
+      const data=await response.json() as {message?:string;raw?:string};
+      if(!response.ok){
+        setError(data.message||'تعذر حفظ التعديل.');
+        return;
+      }
+      setReviewFacts(current=>current.map(fact=>fact.key===reviewEditingKey?{...fact,raw:data.raw??reviewDraft}:fact));
+      setReviewEditingKey('');
+      setReviewDraft('');
+    }catch{
+      setError('تعذر حفظ تعديل بيانات التأسيس.');
+    }finally{
+      setReviewSaving(false);
+    }
+  }
+
+  async function confirmOnboarding(){
+    if(sending)return;
+    setSending(true);
+    setError('');
+    try{
+      const response=await fetch('/api/conversations/central',{
+        method:'POST',
+        headers:{'content-type':'application/json'},
+        body:JSON.stringify({body:'تأكيد'}),
+      });
+      const data=await response.json() as {message?:Message;reply?:Message};
+      if(!response.ok||!data.message) throw new Error('confirm');
+      setMessages(current=>[...current,data.message as Message,...(data.reply?[data.reply as Message]:[])]);
+      setOnboardingComplete(true);
+      setOnboardingStep('complete');
+      setReviewOpen(false);
+    }catch{
+      setError('تعذر تأكيد ملف التأسيس الآن.');
+    }finally{
+      setSending(false);
     }
   }
 
