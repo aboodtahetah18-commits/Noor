@@ -105,7 +105,7 @@ export async function getGovernanceMeetingSchedule(userId:string){
       cadence:'اليوم السابع من كل ثالث دورة مالية',
       status:'دوري',
       agenda:['الأصول والسيولة المؤهلة','المخاطر والتركيز','الفرص والتسييل المرتبط بالأهداف'],
-      minimum_annual_meetings:4,periodic:true,sensitivity:'عادية',
+      minimum_annual_meetings:4,periodic:true,sensitivity:'عادية' as const,
     }]:[]),
     ...(thirdCycle?[{
       id:`governance-${cycleId}`,
@@ -115,7 +115,7 @@ export async function getGovernanceMeetingSchedule(userId:string){
       cadence:'اليوم العاشر من كل ثالث دورة مالية',
       status:'دوري',
       agenda:['مراجعة السياسات','التدقيق وجودة القرارات','مقترحات التحسين والتصعيد'],
-      minimum_annual_meetings:4,periodic:true,sensitivity:'رقابية حساسة',
+      minimum_annual_meetings:4,periodic:true,sensitivity:'رقابية حساسة' as const,
     }]:[]),
   ];
 
