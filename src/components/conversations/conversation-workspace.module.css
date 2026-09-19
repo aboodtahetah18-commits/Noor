@@ -2262,7 +2262,24 @@
   .mobileAppBarPrimary,.mobileAppBarActions{
     display:flex;
   align-items:center;
-  gap:var(--ux-space-2)
+  gap:var(--ux-space-2);
+  position:relative;
+  z-index:2
+  }
+  .mobileBrandLogo{
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    width:96px;
+    min-width:88px;
+    max-width:104px;
+    height:auto;
+    max-height:40px;
+    object-fit:contain;
+    object-position:center;
+    pointer-events:none;
+    user-select:none
   }
   .mobileTopButton,.mobileUserButton{
     width:40px;
@@ -2276,22 +2293,6 @@
   place-items:center;
   padding:var(--ux-space-0);
   border-color:color-mix(in srgb,var(--ux-text-inverse) 34%,transparent)
-  }
-  .mobileBrandLockup{
-    display:inline-flex;
-    align-items:center;
-    gap:var(--ux-space-1);
-    color:var(--ux-text-inverse);
-    font-size:var(--ux-type-section-title-size);
-    font-weight:900;
-    line-height:1;
-    white-space:nowrap
-  }
-  .mobileBrandLockup img{
-    width:30px;
-    height:30px;
-    object-fit:contain;
-    filter:none
   }
   .mobileThemeToggle{
     width:40px!important;

@@ -602,10 +602,14 @@ export function PersistentConversationWorkspace(){
     <header className={styles.mobileAppBar}>
       <div className={styles.mobileAppBarPrimary}>
         <button type="button" className={styles.mobileTopButton} aria-label="فتح القائمة الجانبية" onClick={()=>setRoomsOpen(true)}><LucideIcon name="menu" size={20}/></button>
-        <div className={styles.mobileBrandLockup} aria-label="نماء">
-          <span>نماء</span>
-          <Image src="/brand/namaa-leaf.webp" alt="" width={30} height={30} priority aria-hidden="true" />
-        </div>
+        <Image
+          className={styles.mobileBrandLogo}
+          src="/brand/ndos/namaa-logo-white-transparent.png"
+          alt="نماء"
+          width={96}
+          height={40}
+          priority
+        />
       </div>
       <div className={styles.mobileAppBarActions}>
         <ThemeToggle className={styles.mobileThemeToggle}/>

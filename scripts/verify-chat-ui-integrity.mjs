@@ -19,8 +19,11 @@ for(const name of critical){
   if(total>2) fail(name+' has conflicting duplicate definitions: '+total);
 }
 if(!css.includes('background:var(--namaa-green-900)')) fail('approved green mobile app bar missing');
-if(!css.includes('.mobileBrandLockup') || !css.includes('color:var(--ux-text-inverse)')) fail('approved white Namaa word lockup missing');
-if(!css.includes('.mobileBrandLockup img') || !css.includes('filter:none')) fail('colored brand leaf treatment missing');
+const workspace=readFileSync('src/components/conversations/persistent-conversation-workspace.tsx','utf8');
+if(!workspace.includes('/brand/ndos/namaa-logo-white-transparent.png')) fail('official approved dark-surface Namaa logo asset missing');
+if(workspace.includes('mobileBrandLockup') || workspace.includes('>نماء</span>')) fail('hand-built or redrawn Namaa logo lockup is forbidden');
+if(!css.includes('.mobileBrandLogo') || !css.includes('left:50%') || !css.includes('transform:translate(-50%,-50%)')) fail('mobile Namaa logo must stay geometrically centered');
+if(!css.includes('min-width:88px')) fail('mobile full logo must respect the approved 88px minimum');
 if(!css.includes('.onboardingIntake') || !css.includes('position:fixed')) fail('onboarding must remain a popup layer');
 if(!css.includes('.onboardingCloseButton') || !css.includes('.resumeIntakeButton')) fail('onboarding close/reopen controls missing');
 if(!css.includes('.chatFont_small') || !css.includes('.fontSizeChoices')) fail('user chat font control missing');
