@@ -75,7 +75,6 @@
     min-height:100dvh;
     background:var(--namaa-chat-canvas);
   }
-  .mobileConversationList .roomList{display:block}
 .chatPane{
     height:100dvh;
     min-height:100dvh;
