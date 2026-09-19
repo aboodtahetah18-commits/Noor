@@ -66,7 +66,7 @@ function isNone(raw:string){
   return /^(لا يوجد|لايوجد|لا أحد|لا احد|ما عندي|ليس لدي|لا)$/i.test(raw.trim());
 }
 
-function validateOnboardingAnswer(step:OnboardingStep,text:string): string | null {
+export function validateOnboardingAnswer(step:OnboardingStep,text:string): string | null {
   const raw=text.trim();
   if(!raw) return 'أحتاج إجابة قصيرة على السؤال الحالي قبل أن ننتقل للخطوة التالية.';
 
@@ -132,7 +132,7 @@ function validateOnboardingAnswer(step:OnboardingStep,text:string): string | nul
   return null;
 }
 
-function parseValue(step:OnboardingStep,text:string){
+export function parseOnboardingValue(step:OnboardingStep,text:string){
   const raw=text.trim();
   if(step==='dependents'){
     if(/^(لا يوجد|لايوجد|لا أحد|لا احد)$/i.test(raw)) return {raw,items:[]};
@@ -243,7 +243,7 @@ export async function processGovernorOnboardingMessage(userId:string,text:string
     };
   }
 
-  const parsed=parseValue(step,text);
+  const parsed=parseOnboardingValue(step,text);
   await sql`
     insert into public.user_foundation_facts(
       user_id,fact_key,category,value_json,source,confidence,verified_at,uses,requires_confirmation,status
