@@ -13,7 +13,7 @@ export type LucideIconName =
   | 'lockKeyhole' | 'arrowUpDown' | 'arrowUp' | 'arrowDown' | 'chevronDown'
   | 'chevronUp' | 'chevronLeft' | 'chevronRight' | 'store' | 'banknote'
   | 'badgeDollarSign' | 'listChecks' | 'circleUserRound' | 'creditCard' | 'save' | 'menu'
-  | 'ban' | 'repeat2' | 'messageSquareText' | 'layoutGrid' | 'sun' | 'moon' | 'logOut' | 'printer';
+  | 'ban' | 'repeat2' | 'messageSquareText' | 'layoutGrid' | 'sun' | 'moon' | 'logOut' | 'printer' | 'send';
 
 const paths: Record<LucideIconName, React.ReactNode> = {
   house:<><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-6h6v6"/></>,
@@ -61,6 +61,7 @@ const paths: Record<LucideIconName, React.ReactNode> = {
   moon:<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/>,
   logOut:<><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/></>,
   printer:<><path d="M6 9V3h12v6"/><rect x="6" y="14" width="12" height="7" rx="1"/><path d="M6 17H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"/><path d="M18 12h.01"/></>,
+  send:<><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></>,
 };
 
 export function LucideIcon({name,size=20,className,...props}:{name:LucideIconName;size?:16|20|24|32;className?:string} & Omit<SVGProps<SVGSVGElement>,'name'>){
