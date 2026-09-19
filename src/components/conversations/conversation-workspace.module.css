@@ -278,7 +278,6 @@
     place-items:center;
     padding:var(--ux-space-0);
   }
-  .mobileTopLogo{width:auto;height:36px;object-fit:contain}
   .mobileThemeToggle{width:40px!important;height:40px!important;border-radius:var(--ux-radius-full)!important}
   .mobileUserButton{overflow:hidden}
   .userImage{display:block;width:100%;height:100%;border-radius:inherit;background-position:center;background-size:cover;background-repeat:no-repeat}
@@ -904,7 +903,7 @@
 .governanceBody>span{display:grid;gap:var(--ux-space-1)}
 .governanceBody>span small{font-size:var(--ux-type-caption-size);color:var(--ux-text-secondary)}
 .governanceBody>span strong{font-size:var(--ux-type-caption-size);color:var(--ux-text-primary)}
-.governanceBody ul{margin:var(--ux-space-1) 0 0;padding-inline-start:var(--ux-space-5);display:grid;gap:var(--ux-space-2)}
+.governanceBody ul{margin:var(--ux-space-1) var(--ux-space-0) var(--ux-space-0);padding-inline-start:var(--ux-space-5);display:grid;gap:var(--ux-space-2)}
 .governanceBody li{font-size:var(--ux-type-caption-size);line-height:1.7;color:var(--ux-text-secondary)}
 .meetingCard{
   display:grid;
@@ -930,7 +929,7 @@
 .meetingCard time{text-align:end}
 .meetingCard em{grid-column:2;justify-self:end}
 .sheetMessage{
-  margin:0;
+  margin:var(--ux-space-0);
   padding:var(--ux-space-3);
   border:1px dashed var(--namaa-border-strong);
   border-radius:var(--ux-radius-3);
@@ -965,7 +964,7 @@
 .recordCard>div{display:flex;align-items:center;justify-content:space-between;gap:var(--ux-space-2)}
 .recordCard strong{font-size:var(--ux-type-caption-size);color:var(--ux-text-primary)}
 .recordCard small,.recordCard time{font-size:var(--ux-type-caption-size);color:var(--ux-text-secondary)}
-.recordCard p{margin:0;font-size:var(--ux-type-caption-size);line-height:1.7;color:var(--ux-text-secondary)}
+.recordCard p{margin:var(--ux-space-0);font-size:var(--ux-type-caption-size);line-height:1.7;color:var(--ux-text-secondary)}
 .documentCard{
   display:grid;
   grid-template-columns:auto minmax(0,1fr) auto;
@@ -1051,8 +1050,8 @@
 .goalAnalysisCard small{font-size:var(--ux-type-caption-size);line-height:1.55;color:var(--ux-text-secondary)}
 .goalAnalysisCard>div strong{font-size:var(--ux-type-caption-size);color:var(--ux-text-primary)}
 .goalAnalysisCard p,.goalAnalysisCard li{font-size:var(--ux-type-caption-size);line-height:1.65;color:var(--ux-text-secondary)}
-.goalAnalysisCard p{margin:0}
-.goalAnalysisCard ul{margin:0;padding-inline-start:var(--ux-space-5);display:grid;gap:var(--ux-space-1)}
+.goalAnalysisCard p{margin:var(--ux-space-0)}
+.goalAnalysisCard ul{margin:var(--ux-space-0);padding-inline-start:var(--ux-space-5);display:grid;gap:var(--ux-space-1)}
 
 /* Current Namaa conversation UI contract — single source for message, composer, sheet and theme polish. */
 .page,.page :where(button,input,select,textarea,time){font-family:var(--ux-font-family-base)!important}
@@ -1070,10 +1069,10 @@
   display:flex;
   align-items:center;
   gap:var(--ux-space-2);
-  margin:0;
+  margin:var(--ux-space-0);
   min-width:0;
 }
-.messageIdentity>span:last-child{display:grid;gap:0;min-width:0}
+.messageIdentity>span:last-child{display:grid;gap:var(--ux-space-0);min-width:0}
 .messageIdentity strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .userMessageIdentity{justify-content:flex-start}
 .userMessageAvatar{
@@ -1090,7 +1089,7 @@
 }
 .messageBody{min-width:0;overflow-wrap:anywhere}
 .messageBody>p{
-  margin:0;
+  margin:var(--ux-space-0);
   font-size:var(--ux-type-body-sm-size);
   line-height:1.75;
   color:var(--ux-text-primary);
@@ -1106,7 +1105,7 @@
   direction:ltr;
   unicode-bidi:isolate;
   font-variant-numeric:tabular-nums;
-  font-size:10px!important;
+  font-size:var(--ux-type-caption-size)!important;
   line-height:1.2!important;
   font-weight:500!important;
   color:var(--ux-text-muted)!important;
@@ -1115,16 +1114,16 @@
 .onboardingMessageContent{min-width:0}
 .onboardingMessageContent .onboardingQuestionBox{
   margin-top:var(--ux-space-1);
-  padding:var(--ux-space-2) 0 0;
+  padding:var(--ux-space-2) var(--ux-space-0) var(--ux-space-0);
   border:0;
   border-top:1px solid var(--namaa-border);
-  border-radius:0;
+  border-radius:var(--ux-radius-0);
   background:transparent;
   min-width:0;
 }
 .onboardingMessageContent .onboardingQuestionBox>span{
-  padding:0;
-  border-radius:0;
+  padding:var(--ux-space-0);
+  border-radius:var(--ux-radius-0);
   background:transparent;
   font-size:var(--ux-type-caption-size);
 }
@@ -1164,7 +1163,7 @@
   height:auto!important;
   overflow-y:auto;
 }
-.attachButton,.sendButton{flex:0 0 40px;width:40px;height:40px;padding:0;justify-content:center}
+.attachButton,.sendButton{flex:0 0 40px;width:40px;height:40px;padding:var(--ux-space-0);justify-content:center}
 .sendButton span{display:none}
   .intakeOverlay{position:fixed;inset:0;z-index:140}
 .intakeDialog{
@@ -1181,7 +1180,7 @@
   box-shadow:var(--ux-shadow-lg);
   padding:var(--ux-space-3);
 }
-.intakeDialog .onboardingIntake{margin:0;border:0;border-radius:0;box-shadow:none;max-height:none;padding:var(--ux-space-1)}
+.intakeDialog .onboardingIntake{margin:var(--ux-space-0);border:0;border-radius:var(--ux-radius-0);box-shadow:none;max-height:none;padding:var(--ux-space-1)}
   .contextTabs{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -1198,7 +1197,7 @@
 .contextFiles{display:grid;gap:var(--ux-space-2);margin-top:var(--ux-space-2)}
 .contextFiles>span{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:var(--ux-space-2);padding:var(--ux-space-2);border:1px solid var(--namaa-border);border-radius:var(--ux-radius-2);background:var(--namaa-card)}
 .contextFiles b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:var(--ux-type-caption-size)}
-.contextFiles em{font-style:normal;color:var(--ux-text-secondary);font-size:11px}
+.contextFiles em{font-style:normal;color:var(--ux-text-secondary);font-size:var(--ux-type-caption-size)}
   .settingsSheet{overflow-x:hidden}
 .settingsList{display:grid;gap:var(--ux-space-2);min-width:0}
 .settingsList .settingsCard{
@@ -1229,7 +1228,7 @@
   --namaa-surface-warm:var(--ux-page-bg);
   --namaa-chat-canvas:var(--ux-page-bg);
   --namaa-agent-message:var(--ux-card-bg);
-  --namaa-user-message:#123c31;
+  --namaa-user-message:var(--ux-dark-soft-teal);
   --namaa-border:var(--ux-border-default);
   --namaa-border-strong:var(--ux-border-emphasis);
   background:var(--ux-page-bg);
@@ -1251,7 +1250,7 @@
 :global(html[data-theme="dark"]) .settingsCard strong{color:var(--ux-text-primary)!important}
 :global(html[data-theme="dark"]) .settingsCard small,
 :global(html[data-theme="dark"]) .messageTime{color:var(--ux-text-secondary)!important}
-:global(html[data-theme="dark"]) .scrim{background:rgb(0 0 0 / .50)}
+:global(html[data-theme="dark"]) .scrim{background:var(--ux-alpha-overlay)}
 
 @media(max-width:767px){
   .mobileAppBar{
@@ -1266,11 +1265,11 @@
   .mobileOverlay,.intakeOverlay{top:64px!important;z-index:120}
   .contextSheet{max-height:calc(100dvh - 80px)}
   .contextTabs{position:sticky;top:52px;z-index:3;margin-bottom:var(--ux-space-3)}
-  .contextTabs button{min-width:0;padding-inline:var(--ux-space-1);font-size:11px}
+  .contextTabs button{min-width:0;padding-inline:var(--ux-space-1);font-size:var(--ux-type-caption-size)}
   .contextCard{padding:var(--ux-space-3);border-radius:var(--ux-radius-3)}
   .message{width:auto;max-width:88%;padding:var(--ux-space-2) var(--ux-space-3)}
   .userMessage{min-width:min(72%,320px)}
   .messageFooter{justify-content:flex-end}
-  .composer{margin:0 var(--ux-space-2) var(--ux-space-2);padding:var(--ux-space-2);border:1px solid var(--namaa-border);border-radius:var(--ux-radius-4);box-shadow:var(--ux-shadow-sm)}
+  .composer{margin:var(--ux-space-0) var(--ux-space-2) var(--ux-space-2);padding:var(--ux-space-2);border:1px solid var(--namaa-border);border-radius:var(--ux-radius-4);box-shadow:var(--ux-shadow-sm)}
   .intakeDialog{inset-inline:var(--ux-space-2);top:auto;bottom:var(--ux-space-2);transform:none;width:auto;max-height:90dvh;border-radius:var(--ux-radius-xl);padding-bottom:calc(var(--ux-space-3) + env(safe-area-inset-bottom))}
 }
