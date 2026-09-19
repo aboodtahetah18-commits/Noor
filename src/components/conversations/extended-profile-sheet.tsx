@@ -92,7 +92,7 @@ export function ExtendedProfileSheet({
         <button type="button" onClick={onClose} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button>
       </div>
       <div className={styles.extendedProfileIntro}>
-        <LucideIcon name="listChecks" size={22}/>
+        <LucideIcon name="listChecks" size={24}/>
         <div><strong>تعلم ممتد بدون استبيان ثقيل</strong><small>املأ ما ينطبق عليك فقط. الحقائق الموجودة يعاد استخدامها، وهذه التفاصيل لا تمنع فتح المنصة إذا لم تكن جوهرية الآن.</small></div>
       </div>
       {loading&&<p className={styles.sheetMessage}>جارٍ تحميل الأقسام…</p>}
@@ -122,7 +122,7 @@ export function ExtendedProfileSheet({
           <div className={styles.extendedActions}>
             <small>الحفظ يحدّث الحقيقة المرجعية لهذا القسم؛ لا ينشئ عملية مالية أو تنفيذًا خارجيًا.</small>
             <button type="button" className={styles.primaryActionButton} disabled={saving} onClick={()=>void save()}>
-              <LucideIcon name="save" size={18}/><span>{saving?'جارٍ الحفظ…':'حفظ القسم'}</span>
+              <LucideIcon name="save" size={20}/><span>{saving?'جارٍ الحفظ…':'حفظ القسم'}</span>
             </button>
           </div>
         </section>}
