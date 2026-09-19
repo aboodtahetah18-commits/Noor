@@ -10,7 +10,7 @@ import { GovernorOnboardingIntake } from '@/components/conversations/governor-on
 import { GovernanceMobileSheet } from '@/components/conversations/governance-mobile-sheet';
 import { ExtendedProfileSheet } from '@/components/conversations/extended-profile-sheet';
 import { governedRoomDetails } from '@/lib/conversations/governed-room-details';
-import { buildOversightSummaryMetrics, filterAndSortOversightItems, type OversightViewFilter, type OversightViewSort } from '@/lib/governance/governance-oversight-view';
+import { buildOversightPriorityItems, buildOversightSummaryMetrics, filterAndSortOversightItems, type OversightViewFilter, type OversightViewSort } from '@/lib/governance/governance-oversight-view';
 import styles from './conversation-workspace.module.css';
 
 type RoomKey = 'central' | 'operations' | 'solvency' | 'assets' | 'hilal' | 'advisor' | 'secretary' | 'council';
@@ -202,6 +202,7 @@ function OversightStructuredCards({
   const followups=dashboard&&Array.isArray(dashboard.allOpenFollowups)?dashboard.allOpenFollowups.filter((item):item is Record<string,unknown>=>Boolean(item)&&typeof item==='object'&&!Array.isArray(item)):[];
   const escalationRefs=dashboard&&Array.isArray(dashboard.openEscalations)?dashboard.openEscalations.filter((item):item is Record<string,unknown>=>Boolean(item)&&typeof item==='object'&&!Array.isArray(item)):[];
   const summaryMetrics=dashboard?buildOversightSummaryMetrics({items:followups,escalations:escalationRefs}):[];
+  const priorityItems=dashboard?buildOversightPriorityItems({items:followups,escalations:escalationRefs}):[];
   const visibleFollowups=dashboard?filterAndSortOversightItems({items:followups,escalations:escalationRefs,filter:viewFilter,sort:viewSort}):followups;
   const renderActions=(actions:unknown)=>Array.isArray(actions)?actions.filter((item):item is Record<string,unknown>=>Boolean(item)&&typeof item==='object'&&!Array.isArray(item)).map((action,index)=>{
     const label=typeof action.label==='string'?action.label:'إجراء';
@@ -229,6 +230,24 @@ function OversightStructuredCards({
   }):null;
   if(dashboard)return <section className={styles.oversightPanel} aria-label="اللوحة الرقابية">
     <header className={styles.oversightPanelHeader}><span>اللوحة الرقابية</span><small>{visibleFollowups.length} ظاهرة من {followups.length} · تحديث حي</small></header>
+    <section className={styles.oversightPriorityNow} aria-label="الأولوية الآن">
+      <header><strong>الأولوية الآن</strong><small>{priorityItems.length?priorityItems.length+' تحتاج انتباهًا':'لا توجد عناصر حرجة حاليًا'}</small></header>
+      {priorityItems.length>0&&<div className={styles.oversightPriorityList}>{priorityItems.slice(0,4).map(entry=>{
+        const item=entry.item;
+        const number=typeof item.number==='number'?item.number:null;
+        return <article key={String(item.followupId??number??'priority')}>
+          <div>
+            <strong>{String(item.title??(number?'متابعة #'+number:'متابعة'))}</strong>
+            <small>{String(item.decisionTitle??'قرار مؤسسي')}</small>
+          </div>
+          <div className={styles.oversightPriorityReasons}>
+            {entry.reasons.map(reason=><button key={reason.code} type="button" onClick={()=>setViewFilter(reason.filter)}>{reason.label}</button>)}
+          </div>
+        </article>;
+      })}</div>}
+      {priorityItems.length>4&&<small className={styles.oversightPriorityMore}>+{priorityItems.length-4} عناصر أخرى تظهر ضمن الفلاتر</small>}
+      <small className={styles.oversightPriorityPolicy}>يظهر العنصر هنا فقط إذا كان متأخرًا عن موعد معتمد، أو له تصعيد مفتوح، أو كان معلقًا، أو غير مسند.</small>
+    </section>
     <div className={styles.oversightSummaryBar} role="group" aria-label="الملخص التنفيذي للمتابعات">
       {summaryMetrics.map(metric=><button
         key={metric.filter}

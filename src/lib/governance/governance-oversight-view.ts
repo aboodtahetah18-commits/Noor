@@ -89,3 +89,34 @@ export function buildOversightSummaryMetrics(args:{
     }).length,
   }));
 }
+
+
+export type OversightAttentionReason='OVERDUE'|'ESCALATED'|'BLOCKED'|'UNASSIGNED';
+
+export type OversightPriorityItem={
+  item:OversightViewItem;
+  reasons:Array<{code:OversightAttentionReason;label:string;filter:OversightViewFilter}>;
+};
+
+export function buildOversightPriorityItems(args:{
+  items:OversightViewItem[];
+  escalations:OversightEscalationRef[];
+}):OversightPriorityItem[]{
+  const escalated=new Set(args.escalations.map(item=>String(item.registryId??'')+':'+String(item.followupId??'')));
+  return args.items.flatMap(item=>{
+    const reasons:OversightPriorityItem['reasons']=[];
+    if(item.timingState==='OVERDUE'){
+      reasons.push({code:'OVERDUE',label:'متأخرة عن موعد معتمد',filter:'OVERDUE'});
+    }
+    if(escalated.has(String(item.registryId??'')+':'+String(item.followupId??''))){
+      reasons.push({code:'ESCALATED',label:'لها تصعيد مفتوح',filter:'ESCALATED'});
+    }
+    if(item.status==='BLOCKED'){
+      reasons.push({code:'BLOCKED',label:'معلّقة بمانع قائم',filter:'BLOCKED'});
+    }
+    if(!item.assignedTo){
+      reasons.push({code:'UNASSIGNED',label:'غير مسندة لمسؤول',filter:'UNASSIGNED'});
+    }
+    return reasons.length?[{item,reasons}]:[];
+  });
+}
