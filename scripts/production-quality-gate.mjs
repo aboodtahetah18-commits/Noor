@@ -33,6 +33,7 @@ const steps = [
   ['financial meeting opening agenda contract','node',['scripts/verify-financial-meeting-opening-agenda.mjs']],
   ['financial meeting agenda tracking contract','node',['scripts/verify-financial-meeting-agenda-tracking.mjs']],
   ['allocation final proposal contract','node',['scripts/verify-allocation-final-proposal.mjs']],
+  ['allocation decision minutes contract','node',['scripts/verify-allocation-decision-minutes.mjs']],
   ['authorization RBAC ABAC contract','node',['scripts/verify-authorization-contract.mjs']],
   ['authorization provisioning contract','node',['scripts/verify-authorization-provisioning-contract.mjs']],
   ['authorization admin console contract','node',['scripts/verify-authorization-admin-console-contract.mjs']],

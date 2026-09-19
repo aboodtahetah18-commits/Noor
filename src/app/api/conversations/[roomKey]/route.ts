@@ -23,6 +23,7 @@ import { createGovernorPreMeetingBriefReply, isGovernorPreMeetingBriefRequest } 
 import { createMeetingOpeningAgendaReply, isMeetingOpeningAgendaRequest } from '@/lib/allocation/financial-meeting-opening-agenda';
 import { applyMeetingAgendaCommand, parseMeetingAgendaCommand } from '@/lib/allocation/financial-meeting-agenda-tracking';
 import { createAllocationFinalProposalReply, isAllocationFinalProposalRequest } from '@/lib/allocation/allocation-final-proposal';
+import { createRatifiedAllocationDecisionMinutes } from '@/lib/allocation/allocation-decision-minutes';
 
 export async function GET(_request: Request, context: { params: Promise<{ roomKey: string }> }) {
   const user = await getAuthenticatedUser();
@@ -211,7 +212,9 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
       if (isExplicitAllocationRatification(text)) {
         const ratificationReply=await ratifyLatestAllocationDraft(user.id);
         if(!ratificationReply) return NextResponse.json({ message, code:'NO_RATIFIABLE_ALLOCATION_PROPOSAL', captured_operation:capturedOperation }, { status:409 });
-        return NextResponse.json({ message, reply:ratificationReply, replies:[ratificationReply], captured_operation:capturedOperation }, { status:201 });
+        const decisionMinutes=await createRatifiedAllocationDecisionMinutes(user.id,String(ratificationReply.id));
+        const ratificationReplies=decisionMinutes?[ratificationReply,decisionMinutes]:[ratificationReply];
+        return NextResponse.json({ message, reply:ratificationReplies.at(-1)??ratificationReply, replies:ratificationReplies, captured_operation:capturedOperation }, { status:201 });
       }
       if (isExplicitAllocationRejection(text)) {
         const rejectionReply=await rejectLatestAllocationDraft(user.id);

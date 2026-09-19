@@ -13,7 +13,7 @@ export type AllocationFinalProposal={
   allocationSnapshot:Record<string,unknown>|null;
   agendaState:MeetingAgendaTrackingState|null;
   resolvedAgendaItems:Array<{itemNumber:number;title:string;note:string|null}>;
-  nonBlockingFollowups:Array<{itemNumber:number;title:string;status:string;note:string|null;referredTo:string|null}>;
+  nonBlockingFollowups:Array<{itemNumber:number;title:string;status:string;note:string|null;referredTo:string|null;ownerKey:string|null;ownerName:string|null}>;
   blockingItems:Array<{itemNumber:number;title:string;status:string}>;
   ratificationReady:boolean;
   requiresUserRatification:true;
@@ -42,7 +42,7 @@ export function buildAllocationFinalProposal(args:{
     .map(item=>({itemNumber:item.itemNumber,title:item.title,note:item.note}));
   const nonBlockingFollowups=(agenda?.items??[])
     .filter(item=>item.priority!=='BLOCKING'&&item.status!=='RESOLVED')
-    .map(item=>({itemNumber:item.itemNumber,title:item.title,status:item.status,note:item.note,referredTo:item.referredTo}));
+    .map(item=>({itemNumber:item.itemNumber,title:item.title,status:item.status,note:item.note,referredTo:item.referredTo,ownerKey:item.ownerKey,ownerName:item.ownerName}));
 
   if(!args.allocationProposalId||!args.negotiation||!args.allocationSnapshot||!agenda){
     return {
