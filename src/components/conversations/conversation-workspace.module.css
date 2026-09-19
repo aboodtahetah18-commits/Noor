@@ -2027,3 +2027,46 @@
 }
 
 /* preview rebuild marker — mobile chat verified */
+
+
+/* Mobile full-width chat — desktop side columns are never rendered visually */
+@media(max-width:767px){
+  .roomsPane,
+  .contextPane{
+    display:none!important;
+  }
+
+  .workspace,
+  .workspace.withoutRooms,
+  .workspace.withoutContext,
+  .workspace.withoutRooms.withoutContext{
+    display:block!important;
+    width:100%!important;
+    max-width:100%!important;
+    grid-template-columns:none!important;
+    overflow:hidden!important;
+  }
+
+  .chatPane{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+  }
+
+  .chatHeader{
+    min-height:58px!important;
+    height:58px!important;
+    padding:var(--ux-space-1) var(--ux-space-2)!important;
+  }
+
+  .chatIdentity .personaAvatar{
+    width:42px!important;
+    height:42px!important;
+    flex-basis:42px!important;
+  }
+
+  .mobileTools button{
+    width:34px!important;
+    height:34px!important;
+  }
+}
