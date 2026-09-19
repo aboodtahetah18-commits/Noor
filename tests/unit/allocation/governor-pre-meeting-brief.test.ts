@@ -21,8 +21,8 @@ describe('governor pre-meeting brief',()=>{
       carry,claims:[claim('budget-spending-owner','مسؤول الميزانية والإنفاق',4500)],currentCycleId:'new',availableIncome:10000,
     });
     expect(brief.priorExceededOwners).toContain('مسؤول الميزانية والإنفاق');
-    expect(brief.items[0].requestDeltaFromPreviousApproved).toBe(500);
-    expect(brief.items[0].attention.join(' ')).toContain('تبرير الزيادة');
+    expect(brief.items[0]!.requestDeltaFromPreviousApproved).toBe(500);
+    expect(brief.items[0]!.attention.join(' ')).toContain('تبرير الزيادة');
     expect(brief.noAutomaticDecision).toBe(true);
   });
 
@@ -32,6 +32,6 @@ describe('governor pre-meeting brief',()=>{
       currentCycleId:'new',availableIncome:10000,
     });
     expect(brief.currentMissingEvidenceOwners).toContain('مسؤول السيولة والحماية');
-    expect(brief.items[0].currentRequestedAmount).toBeNull();
+    expect(brief.items[0]!.currentRequestedAmount).toBeNull();
   });
 });
