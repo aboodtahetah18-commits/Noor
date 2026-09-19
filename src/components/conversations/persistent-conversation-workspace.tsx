@@ -10,7 +10,7 @@ import { GovernorOnboardingIntake } from '@/components/conversations/governor-on
 import { governedRoomDetails } from '@/lib/conversations/governed-room-details';
 import styles from './conversation-workspace.module.css';
 
-type RoomKey = 'central' | 'solvency' | 'assets' | 'hilal' | 'advisor' | 'council';
+type RoomKey = 'central' | 'operations' | 'solvency' | 'assets' | 'hilal' | 'advisor' | 'secretary' | 'council';
 type MessageKind = 'message' | 'risk' | 'decision' | 'recommendation' | 'followup' | 'request';
 type Message = { id:string; sender_type:'user'|'agent'|'system'; sender_name:string; message_kind:MessageKind; body:string; structured_data?:Record<string,unknown>; created_at?:string };
 type Participant = { participant_key:string; display_name:string; participant_type:string; role_label?:string };
@@ -23,10 +23,12 @@ type ConversationAttachment = { id:string; file_name:string; content_type?:strin
 type Room = { id:RoomKey; title:string; subtitle:string; lead:string; specialists:string; avatar:string; bankLogo:string };
 const rooms: [Room, ...Room[]] = [
   { id:'central', title:'بنك نماء المركزي', subtitle:'الحوكمة والاستقرار', lead:'محافظ بنك نماء المركزي', specialists:'المحافظ والمستشار المختص فقط عند الحاجة', avatar:'/brand/governor.webp', bankLogo:'/brand/bank-central.webp' },
+  { id:'operations', title:'العمليات والمطابقة', subtitle:'رسائل المشتريات والحركات', lead:'مركز العمليات والمطابقة', specialists:'محرك المطابقة والتصنيف والتسوية', avatar:'/brand/governor.webp', bankLogo:'/brand/bank-central.webp' },
   { id:'solvency', title:'بنك ملاءة', subtitle:'الحماية والاحتياطي', lead:'مدير بنك ملاءة', specialists:'مدير بنك ملاءة ومستشار المخاطر', avatar:'/brand/malaa-manager.webp', bankLogo:'/brand/bank-malaa.webp' },
   { id:'assets', title:'بنك الأصول الاستثماري', subtitle:'الأصول والأهداف والاستثمار', lead:'مدير بنك الأصول الاستثماري', specialists:'مدير بنك الأصول الاستثماري ومستشار الاستثمار عند صلة الموضوع', avatar:'/brand/assets-manager.webp', bankLogo:'/brand/bank-assets.webp' },
   { id:'hilal', title:'بنك الهلال', subtitle:'التمويل الداخلي', lead:'مدير بنك الهلال', specialists:'مدير بنك الهلال ومستشار التمويل', avatar:'/brand/hilal-manager.webp', bankLogo:'/brand/bank-hilal.webp' },
   { id:'advisor', title:'المستشار الاقتصادي', subtitle:'تحليل الصورة المالية الكلية', lead:'المستشار الاقتصادي', specialists:'المستشار الاقتصادي أو المختص بحسب موضوع الرسالة', avatar:'/brand/economic-advisor.webp', bankLogo:'/brand/namaa-logo.webp' },
+  { id:'secretary', title:'أمين السر المركزي', subtitle:'المحاضر والسياسات والاجتماعات', lead:'أمين السر المركزي', specialists:'أمين السر المركزي مع الجهة المختصة عند الحاجة', avatar:'/brand/governor.webp', bankLogo:'/brand/bank-central.webp' },
   { id:'council', title:'مجلس نماء الأعلى', subtitle:'القرارات واللجان', lead:'محافظ بنك نماء المركزي بصفته رئيس المجلس', specialists:'أعضاء اللجنة ذات الصلة فقط، وليس جميع الشخصيات', avatar:'/brand/governor.webp', bankLogo:'/brand/bank-central.webp' },
 ];
 const labels:Record<MessageKind,string>={message:'',risk:'تقييم مخاطر',decision:'قرار / اعتماد',recommendation:'توصية',followup:'متابعة',request:'طلب إجراء'};
@@ -307,13 +309,12 @@ export function PersistentConversationWorkspace(){
     .then(data=>{ if(!cancelled){
       setMessages(Array.isArray(data.messages)?data.messages:[]);
       setParticipants(Array.isArray(data.participants)?data.participants:[]);
-    setAttachments(Array.isArray(data.attachments)?data.attachments:[]);
       setAttachments(Array.isArray(data.attachments)?data.attachments:[]);
       const onboarding=(data.onboarding??null) as OnboardingStatus|null;
       if(onboarding){
         setOnboardingComplete(Boolean(onboarding.complete));
         setOnboardingStep(onboarding.current_step??null);
-        if(activeRoomId==='central' && onboarding.complete) setMobileRoomList(true);
+        if(activeRoomId==='central' && onboarding.complete) setMobileRoomList(false);
         if(!onboarding.complete && activeRoomId!=='central') setActiveRoomId('central');
       }
       setLoadedRoomId(activeRoomId);
@@ -512,7 +513,7 @@ export function PersistentConversationWorkspace(){
       const completed=Boolean(data.reply?.structured_data?.onboarding_complete);
       const nextStep=data.reply?.structured_data?.onboarding_step;
       if(typeof nextStep==='string') setOnboardingStep(nextStep);
-      if(completed){ setOnboardingComplete(true); setOnboardingStep('complete'); }
+      if(completed){ setOnboardingComplete(true); setOnboardingStep('complete'); setMobileRoomList(false); }
       setDraft('');
       if(composerTextareaRef.current) composerTextareaRef.current.style.height='40px';
     }
