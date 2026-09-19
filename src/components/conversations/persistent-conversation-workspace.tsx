@@ -260,8 +260,8 @@ export function PersistentConversationWorkspace(){
   const [sending,setSending]=useState(false);
   const [error,setError]=useState('');
   const [roomsOpen,setRoomsOpen]=useState(false);
+  const [mobileSideTab,setMobileSideTab]=useState<'banks'|'advisors'|'meetings'>('banks');
   const [contextOpen,setContextOpen]=useState(false);
-  const [mobileRoomList,setMobileRoomList]=useState(false);
   const [onboardingComplete,setOnboardingComplete]=useState<boolean|null>(null);
   const [onboardingStep,setOnboardingStep]=useState<string|null>(null);
   const [statementAccounts,setStatementAccounts]=useState<StatementAccount[]>([]);
@@ -565,10 +565,6 @@ export function PersistentConversationWorkspace(){
       </div>
     </header>
     <header className={styles.workspaceHeader}><div className={styles.headingCopy}><span className={styles.eyebrow}>محادثات نماء</span><h1>مركز الحوار والقرار</h1><p>المحادثات محفوظة في حسابك، وتصل رسالتك إلى الجهة والمتخصصين المرتبطين بالموضوع.</p></div><div className={styles.headerActions}><button type="button" className={styles.secondaryButton} onClick={()=>setDesktopRoomsVisible(v=>!v)}><LucideIcon name="layoutGrid" size={16}/><span>{desktopRoomsVisible?'إخفاء الجهات':'إظهار الجهات'}</span></button><button type="button" className={styles.secondaryButton} onClick={()=>setDesktopContextVisible(v=>!v)}><LucideIcon name="info" size={16}/><span>{desktopContextVisible?'إخفاء السياق':'إظهار السياق'}</span></button></div></header>
-    <section className={`${styles.mobileConversationList} ${mobileRoomList?styles.mobileConversationListVisible:''}`} aria-label="محادثات نماء">
-      <header className={styles.mobileListHeader}><div><strong>المحادثات</strong><small>{onboardingComplete===false?'ابدأ التأسيس مع المحافظ':'اختر الجهة التي تريد محادثتها'}</small></div></header>
-      {roomButtons}
-    </section>
     <div className={`${styles.workspace} ${desktopRoomsVisible?'':styles.withoutRooms} ${desktopContextVisible?'':styles.withoutContext}`}>
       {desktopRoomsVisible&&<aside className={styles.roomsPane} aria-label="قائمة المحادثات">
         <div className={styles.desktopSideBrand}><Image src="/brand/ndos/namaa-logo-color-transparent.png" alt="نماء" width={96} height={48}/><span aria-hidden="true"/></div>
@@ -577,7 +573,7 @@ export function PersistentConversationWorkspace(){
         {advisorRooms.length>0&&<div className={styles.desktopSideSection}><small>المستشارون</small>{renderRoomList(advisorRooms)}</div>}
         {meetingRooms.length>0&&<div className={styles.desktopSideSection}><small>الاجتماعات والمجالس</small>{renderRoomList(meetingRooms)}</div>}
       </aside>}
-      <main className={`${styles.chatPane} ${mobileRoomList?styles.mobileChatHidden:''}`}><header className={styles.chatHeader}><div className={styles.chatIdentity}>{onboardingComplete!==false&&<button type="button" className={styles.mobileBack} aria-label="العودة إلى المحادثات" onClick={()=>setMobileRoomList(true)}><LucideIcon name="chevronRight" size={20}/></button>}<RoomPortrait room={activeRoom} size="md"/><div><div className={styles.entityTitle}><strong>{chatRoleTitle(activeRoom)}</strong></div><small>{chatEntityTitle(activeRoom)}</small></div></div><div className={styles.mobileTools}><button type="button" aria-label="معلومات الجهة" onClick={()=>void openConversationContext()}><LucideIcon name="info" size={20}/></button></div></header>
+      <main className={styles.chatPane}><header className={styles.chatHeader}><div className={styles.chatIdentity}><RoomPortrait room={activeRoom} size="md"/><div><div className={styles.entityTitle}><strong>{chatRoleTitle(activeRoom)}</strong></div><small>{chatEntityTitle(activeRoom)}</small></div></div><div className={styles.mobileTools}><button type="button" aria-label="معلومات الجهة" onClick={()=>void openConversationContext()}><LucideIcon name="info" size={20}/></button></div></header>
         <div className={styles.chatScrollRegion}>
         <div className={styles.routingNote}><LucideIcon name="sparkles" size={16}/><span>{activeRoom.specialists}</span></div>
         <div className={styles.messages} aria-live="polite">{loading&&<p>جارٍ تحميل سجل المحادثة…</p>}{!loading&&!messages.length&&<article className={`${styles.message} ${styles.agentMessage}`}><p>{onboardingComplete===false?'أنا محافظ بنك نماء المركزي. سأبدأ معك بسؤال واحد في كل مرة حتى أبني ملفك من معلوماتك أنت، دون افتراضات.':'هذه بداية محادثتك مع '+activeRoom.title+'. اكتب سؤالك أو القرار الذي تريد دراسته.'}</p></article>}{messages.map(message=><article key={message.id} className={`${styles.message} ${message.sender_type==='user'?styles.userMessage:styles.agentMessage}`}>{message.sender_type!=='user'&&<div className={styles.messageIdentity}><RoomPortrait room={activeRoom} size="sm"/><span><strong>{activeRoom.id==='central'?'محافظ البنك المركزي':message.sender_name}</strong><small>{message.sender_type==='system'?'رسالة نظام':'شخصية خوارزمية'}</small></span></div>}{message.structured_data?.onboarding===true?<OnboardingMessageContent message={message}/>:<p>{message.body}</p>}{message.message_kind!=='message'&&message.structured_data?.onboarding!==true&&<section className={`${styles.structuredCard} ${styles[`kind_${message.message_kind}`]}`}><header><strong>{labels[message.message_kind]}</strong></header><StructuredFacts data={message.structured_data}/>{(message.message_kind==='decision'||message.message_kind==='request')&&<small className={styles.executionBoundary}>أي تنفيذ مالي خارجي يظل بيد المستخدم، ويحتاج تأكيدًا وإثباتًا قبل الإغلاق.</small>}</section>}</article>)}</div>
@@ -605,7 +601,32 @@ export function PersistentConversationWorkspace(){
         latestMessage={messages.length?messages[messages.length-1]?.body:null}
       /></aside>}
     </div>
-    {roomsOpen&&<div className={styles.mobileOverlay} role="dialog" aria-modal="true" aria-label="القائمة الجانبية"><button type="button" className={styles.scrim} aria-label="إغلاق" onClick={()=>setRoomsOpen(false)}/><aside className={styles.mobileSideSheet}><div className={styles.sideBrand}><Image src="/brand/ndos/namaa-logo-color-transparent.png" alt="نماء" width={96} height={48}/><span aria-hidden="true"/></div><div className={styles.sheetHeader}><strong>المحادثات</strong><button type="button" onClick={()=>setRoomsOpen(false)} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button></div>{bankRooms.length>0&&<div className={styles.sideSection}><small>البنوك</small>{renderRoomList(bankRooms)}</div>}{advisorRooms.length>0&&<div className={styles.sideSection}><small>المستشارون</small>{renderRoomList(advisorRooms)}</div>}{meetingRooms.length>0&&<div className={styles.sideSection}><small>الاجتماعات والمجالس</small>{renderRoomList(meetingRooms)}</div>}<div className={styles.sideUtilityList}>{onboardingComplete!==false&&<button type="button" onClick={()=>void openAccountsSettings()}><LucideIcon name="walletCards" size={20}/><span>الحسابات</span></button>}<button type="button" onClick={()=>{setRoomsOpen(false);setSettingsSection('general');setSettingsOpen(true)}}><LucideIcon name="settings" size={20}/><span>الإعدادات</span></button><button type="button" onClick={()=>{setRoomsOpen(false);void openConversationContext()}}><LucideIcon name="info" size={20}/><span>المساعدة والسياق</span></button></div></aside></div>}
+    {roomsOpen&&<div className={styles.mobileOverlay} role="dialog" aria-modal="true" aria-label="القائمة الجانبية">
+      <button type="button" className={styles.scrim} aria-label="إغلاق" onClick={()=>setRoomsOpen(false)}/>
+      <aside className={styles.mobileSideSheet}>
+        <div className={styles.sideSheetTop}>
+          <button type="button" className={styles.sideCloseButton} onClick={()=>setRoomsOpen(false)} aria-label="إغلاق"><LucideIcon name="x" size={22}/></button>
+          <Image className={styles.sideSheetLogo} src="/brand/ndos/namaa-logo-color-transparent.png" alt="نماء" width={96} height={48}/>
+        </div>
+        <div className={styles.sideTabs} role="tablist" aria-label="أقسام المحادثات">
+          <button type="button" role="tab" aria-selected={mobileSideTab==='banks'} className={mobileSideTab==='banks'?styles.sideTabActive:''} onClick={()=>setMobileSideTab('banks')}>البنوك</button>
+          <button type="button" role="tab" aria-selected={mobileSideTab==='advisors'} className={mobileSideTab==='advisors'?styles.sideTabActive:''} onClick={()=>setMobileSideTab('advisors')}>المستشارون</button>
+          <button type="button" role="tab" aria-selected={mobileSideTab==='meetings'} className={mobileSideTab==='meetings'?styles.sideTabActive:''} onClick={()=>setMobileSideTab('meetings')}>الاجتماعات</button>
+        </div>
+        <div className={styles.sideTabPanel}>
+          {mobileSideTab==='banks'&&renderRoomList(bankRooms)}
+          {mobileSideTab==='advisors'&&renderRoomList(advisorRooms)}
+          {mobileSideTab==='meetings'&&renderRoomList(meetingRooms)}
+          {mobileSideTab==='advisors'&&advisorRooms.length===0&&<p className={styles.sideEmpty}>لا يوجد مستشارون متاحون حاليًا.</p>}
+          {mobileSideTab==='meetings'&&meetingRooms.length===0&&<p className={styles.sideEmpty}>لا توجد اجتماعات أو مجالس متاحة حاليًا.</p>}
+        </div>
+        <div className={styles.sideUtilityList}>
+          <button type="button" onClick={()=>{setRoomsOpen(false);setSettingsSection('general');setSettingsOpen(true)}}><LucideIcon name="settings" size={20}/><span>الإعدادات</span><LucideIcon name="chevronLeft" size={18}/></button>
+          <button type="button" onClick={()=>{setRoomsOpen(false);void openConversationContext()}}><LucideIcon name="info" size={20}/><span>المساعدة والسياق</span><LucideIcon name="chevronLeft" size={18}/></button>
+          <button type="button" className={styles.secretaryDock} onClick={()=>setMobileSideTab('meetings')} aria-label="عرض الاجتماعات التي يديرها أمين السر"><LucideIcon name="headphones" size={20}/><span>أمين السر</span><LucideIcon name="chevronLeft" size={18}/></button>
+        </div>
+      </aside>
+    </div>}
     {intakeOpen&&structuredOnboardingActive&&<div className={styles.intakeOverlay} role="dialog" aria-modal="true" aria-label={structuredOnboardingLabel[onboardingStep??'']??'بيانات التأسيس'}><button type="button" className={styles.scrim} aria-label="إغلاق" onClick={()=>setIntakeOpen(false)}/><aside className={styles.intakeBottomSheet}><div className={styles.sheetHandle} aria-hidden="true"/><div className={styles.sheetHeader}><div><strong>{structuredOnboardingLabel[onboardingStep??'']??'بيانات التأسيس'}</strong><small>أكمل البيانات ثم أكد المجموعة للعودة إلى الدردشة.</small></div><button type="button" onClick={()=>setIntakeOpen(false)} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button></div><GovernorOnboardingIntake
       step={onboardingStep??''}
       onAccepted={(message,reply,nextStep)=>{
