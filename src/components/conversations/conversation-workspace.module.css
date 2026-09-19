@@ -52,24 +52,12 @@
   pointer-events:none;
   z-index:0;
 }
-.chatBrandBar{
-  display:none;
-  background:var(--namaa-card);
-  border-bottom:1px solid var(--namaa-border);
-}
-.chatBrandBar img,.mobileBrandLogo{
-  width:calc(var(--ux-space-8) * 3);
-  height:auto;
-  object-fit:contain;
-}
 
 .persona_sm{width:38px;height:38px;flex-basis:38px}
 .persona_md{width:48px;height:48px;flex-basis:48px}
 .persona_lg{width:58px;height:58px;flex-basis:58px}
 .roomCopy em{font-style:normal;font-size:var(--ux-type-caption-size);color:var(--ux-text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .roomItem>svg{margin-inline-start:auto;color:var(--ux-text-muted);flex:0 0 auto}
-.mobileConversationList{display:none}
-.mobileBack{display:none}
 
 @media(max-width:767px){
   .page{
@@ -88,30 +76,7 @@
     height:100dvh;
     min-height:100dvh;
     background:var(--namaa-chat-canvas);
-  }
-  .mobileConversationList{
-    display:none;
-    height:100dvh;
-    background:var(--namaa-card);
-    overflow:auto;
-  }
-  .mobileConversationListVisible{display:block}
-  .mobileListHeader{
-    min-height:84px;
-    padding:calc(var(--ux-space-3) + env(safe-area-inset-top)) var(--ux-space-4) var(--ux-space-3);
-    position:sticky;
-    top:var(--ux-space-0);
-    z-index:5;
-    background:var(--namaa-card);
-    border-bottom:1px solid var(--namaa-border);
-    display:flex;
-    align-items:center;
-    gap:var(--ux-space-3);
-  }
-  .mobileListHeader>div{display:grid;gap:var(--ux-space-1)}
-  .mobileListHeader strong{font-size:var(--ux-type-section-title-size);line-height:1.25;color:var(--ux-text-primary)}
-  .mobileListHeader small{font-size:var(--ux-type-caption-size);color:var(--ux-text-secondary)}
-  .mobileConversationList .roomList{display:block}
+  }  .mobileConversationList .roomList{display:block}
   .mobileConversationList .roomItem{
     min-height:76px;
     border:0;
@@ -156,20 +121,7 @@
     background:var(--namaa-card);
   }
   .chatIdentity{gap:var(--ux-space-2);flex:1}
-  .chatIdentity .personaAvatar{width:40px;height:40px;flex-basis:40px}
-  .mobileBack{
-    display:grid;
-    place-items:center;
-    width:36px;
-    height:36px;
-    flex:0 0 36px;
-    border:0;
-    border-radius:var(--ux-radius-full);
-    background:transparent;
-    color:var(--ux-text-primary);
-    padding:var(--ux-space-0);
-  }
-  .entityTitle{gap:var(--ux-space-1)}
+  .chatIdentity .personaAvatar{width:40px;height:40px;flex-basis:40px}  .entityTitle{gap:var(--ux-space-1)}
   .entityTitle strong{font-size:var(--ux-type-body-sm-size);line-height:1.35}
   .chatIdentity small{font-size:var(--ux-type-caption-size);line-height:1.35}
   .mobileTools{display:flex;gap:var(--ux-space-1)}
@@ -1174,20 +1126,33 @@
 .goalAnalysisCard p{margin:0}
 .goalAnalysisCard ul{margin:0;padding-inline-start:var(--ux-space-5);display:grid;gap:var(--ux-space-1)}
 
+/* Current Namaa conversation UI contract — single source for message, composer, sheet and theme polish. */
+.page,.page :where(button,input,select,textarea,time){font-family:var(--ux-font-family-base)!important}
 
-/* Conversation polish — aligned with the approved Namaa token system */
-.messageTime{
-  display:block;
-  margin-top:var(--ux-space-1);
-  font-size:var(--ux-type-caption-size);
-  color:var(--ux-text-muted);
-  font-weight:500;
+.message{
+  box-sizing:border-box;
+  width:min(100%,680px);
+  max-width:86%;
+  overflow:hidden;
+  display:grid;
+  gap:var(--ux-space-2);
 }
+.agentMessage{align-self:flex-start}
+.userMessage{align-self:flex-end}
+.messageIdentity{
+  display:flex;
+  align-items:center;
+  gap:var(--ux-space-2);
+  margin:0;
+  min-width:0;
+}
+.messageIdentity>span:last-child{display:grid;gap:0;min-width:0}
+.messageIdentity strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .userMessageIdentity{justify-content:flex-start}
 .userMessageAvatar{
-  width:30px;
-  height:30px;
-  flex:0 0 30px;
+  width:32px;
+  height:32px;
+  flex:0 0 32px;
   border-radius:var(--ux-radius-full);
   border:1px solid var(--namaa-border);
   background:var(--namaa-card);
@@ -1196,23 +1161,50 @@
   place-items:center;
   overflow:hidden;
 }
+.messageBody{min-width:0;overflow-wrap:anywhere}
+.messageBody>p{
+  margin:0;
+  font-size:var(--ux-type-body-sm-size);
+  line-height:1.75;
+  color:var(--ux-text-primary);
+}
+.messageFooter{
+  display:flex;
+  justify-content:flex-end;
+  direction:ltr;
+  min-width:0;
+  margin-top:var(--ux-space-1);
+}
+.messageTime{
+  direction:ltr;
+  unicode-bidi:isolate;
+  font-variant-numeric:tabular-nums;
+  font-size:10px!important;
+  line-height:1.2!important;
+  font-weight:500!important;
+  color:var(--ux-text-muted)!important;
+  white-space:nowrap;
+}
+.onboardingMessageContent{min-width:0}
 .onboardingMessageContent .onboardingQuestionBox{
   margin-top:var(--ux-space-1);
-  padding:var(--ux-space-2) var(--ux-space-0) var(--ux-space-0);
+  padding:var(--ux-space-2) 0 0;
   border:0;
   border-top:1px solid var(--namaa-border);
-  border-radius:var(--ux-radius-0);
+  border-radius:0;
   background:transparent;
+  min-width:0;
 }
 .onboardingMessageContent .onboardingQuestionBox>span{
-  padding:var(--ux-space-0);
-  border-radius:var(--ux-radius-0);
+  padding:0;
+  border-radius:0;
   background:transparent;
   font-size:var(--ux-type-caption-size);
 }
 .inlineIntakeButton{
   width:max-content;
-  min-height:32px;
+  max-width:100%;
+  min-height:30px;
   margin-top:var(--ux-space-1);
   padding:var(--ux-space-1) var(--ux-space-2);
   border:1px solid var(--namaa-green-700);
@@ -1225,13 +1217,32 @@
   display:inline-flex;
   align-items:center;
   gap:var(--ux-space-1);
-  cursor:pointer;
 }
-.intakeOverlay{
-  position:fixed;
-  inset:var(--ux-space-0);
-  z-index:140;
+
+.mobileBrandLockup{display:flex;align-items:center;gap:var(--ux-space-2);white-space:nowrap;min-width:0}
+.mobileBrandLockup img{width:30px;height:30px;object-fit:contain;flex:0 0 30px}
+.mobileBrandLockup span{color:var(--ux-text-inverse);font-size:var(--ux-type-card-title-size);font-weight:700;line-height:1}
+
+.composer{align-items:center}
+.composer textarea{
+  min-width:0;
+  height:42px!important;
+  min-height:42px!important;
+  max-height:42px!important;
+  resize:none!important;
+  overflow:hidden;
+  transition:max-height var(--ux-motion-duration-base) var(--ux-motion-ease-standard),min-height var(--ux-motion-duration-base) var(--ux-motion-ease-standard);
 }
+.composer textarea:focus{
+  min-height:68px!important;
+  max-height:92px!important;
+  height:auto!important;
+  overflow-y:auto;
+}
+.attachButton,.sendButton{flex:0 0 40px;width:40px;height:40px;padding:0;justify-content:center}
+.sendButton span{display:none}
+
+.intakeOverlay{position:fixed;inset:0;z-index:140}
 .intakeDialog{
   position:absolute;
   inset-inline:50%;
@@ -1246,103 +1257,8 @@
   box-shadow:var(--ux-shadow-lg);
   padding:var(--ux-space-3);
 }
-.intakeDialog .onboardingIntake{
-  margin:var(--ux-space-0);
-  border:0;
-  border-radius:var(--ux-radius-0);
-  box-shadow:none;
-  max-height:none;
-  padding:var(--ux-space-1);
-}
-.mobileBrandLockup{
-  display:flex;
-  align-items:center;
-  gap:var(--ux-space-1);
-  white-space:nowrap;
-}
-.mobileBrandLockup img{
-  width:32px;
-  height:32px;
-  object-fit:contain;
-}
-.mobileBrandLockup span{
-  color:var(--ux-text-inverse);
-  font-size:var(--ux-type-section-title-size);
-  font-weight:900;
-  line-height:1;
-}
-@media(max-width:767px){
-  .mobileAppBar{
-    background:var(--namaa-green-900);
-    border-bottom-color:var(--namaa-green-900);
-  }
-  .mobileAppBarPrimary{
-    direction:rtl;
-  }
-  .mobileTopButton{
-    background:transparent;
-    border-color:color-mix(in srgb,var(--ux-text-inverse) 32%,transparent);
-    color:var(--ux-text-inverse);
-  }
-  .mobileBrandLockup{
-    margin-inline-start:var(--ux-space-1);
-  }
-  .message{
-    max-width:90%;
-  }
-  .messageIdentity{
-    align-items:center;
-  }
-  .messageIdentity>span:last-child{
-    gap:var(--ux-space-0);
-  }
-  .messageTime{
-    line-height:1.25;
-  }
-  .inlineIntakeButton{
-    min-height:30px;
-  }
-  .composer{
-    margin:var(--ux-space-0) var(--ux-space-2) var(--ux-space-2);
-    padding:var(--ux-space-2);
-    border:1px solid var(--namaa-border);
-    border-radius:var(--ux-radius-4);
-    box-shadow:var(--ux-shadow-sm);
-  }
-  .composer textarea{
-    min-width:0;
-  }
-  .intakeDialog{
-    inset-inline:var(--ux-space-2);
-    top:auto;
-    bottom:var(--ux-space-2);
-    transform:none;
-    width:auto;
-    max-height:90dvh;
-    border-radius:var(--ux-radius-xl);
-    padding-bottom:calc(var(--ux-space-3) + env(safe-area-inset-bottom));
-  }
-}
+.intakeDialog .onboardingIntake{margin:0;border:0;border-radius:0;box-shadow:none;max-height:none;padding:var(--ux-space-1)}
 
-
-/* Approved correction pass — Fresh deployment review */
-.page,.page :where(button,input,select,textarea,time){
-  font-family:var(--ux-font-family-base)!important;
-}
-.messageTime{
-  direction:ltr;
-  unicode-bidi:isolate;
-  font-variant-numeric:tabular-nums;
-  font-size:calc(var(--ux-type-caption-size) - 2px)!important;
-  line-height:1.2!important;
-  font-weight:500!important;
-  color:var(--ux-text-muted)!important;
-  white-space:nowrap;
-}
-.messageIdentity>span:last-child{
-  display:grid;
-  gap:var(--ux-space-0);
-}
 .contextTabs{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -1352,100 +1268,69 @@
   border-radius:var(--ux-radius-3);
   background:var(--namaa-surface-warm);
 }
-.contextTabs button{
-  min-height:34px;
-  border:0;
-  border-radius:var(--ux-radius-2);
-  background:transparent;
-  color:var(--ux-text-secondary);
-  font:inherit;
-  font-size:var(--ux-type-caption-size);
-  font-weight:700;
-  cursor:pointer;
-}
-.contextTabs .contextTabActive{
-  background:var(--namaa-card);
-  color:var(--namaa-green-900);
-  box-shadow:var(--ux-shadow-xs);
-}
-.contextPage{
-  display:grid;
-  gap:var(--ux-space-2);
-}
-.contextAction{
-  min-height:40px;
-  width:100%;
-  border:1px solid var(--namaa-border-strong);
-  border-radius:var(--ux-radius-3);
-  background:var(--namaa-card);
-  color:var(--namaa-green-900);
-  font:inherit;
-  font-size:var(--ux-type-caption-size);
-  font-weight:800;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:var(--ux-space-2);
-}
-.contextFiles{
-  display:grid;
-  gap:var(--ux-space-2);
-  margin-top:var(--ux-space-2);
-}
-.contextFiles>span{
-  display:grid;
-  grid-template-columns:auto minmax(0,1fr) auto;
-  align-items:center;
-  gap:var(--ux-space-2);
-  padding:var(--ux-space-2);
-  border:1px solid var(--namaa-border);
-  border-radius:var(--ux-radius-2);
-  background:var(--namaa-card);
-}
-.contextFiles b{
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-  font-size:var(--ux-type-caption-size);
-}
-.contextFiles em{
-  font-style:normal;
-  color:var(--ux-text-secondary);
-  font-size:calc(var(--ux-type-caption-size) - 1px);
-}
-.settingsList{
-  display:grid;
-  gap:var(--ux-space-2);
-}
+.contextTabs button{min-height:34px;border:0;border-radius:var(--ux-radius-2);background:transparent;color:var(--ux-text-secondary);font:inherit;font-size:var(--ux-type-caption-size);font-weight:700;cursor:pointer}
+.contextTabs .contextTabActive{background:var(--namaa-card);color:var(--namaa-green-900);box-shadow:var(--ux-shadow-xs)}
+.contextPage{display:grid;gap:var(--ux-space-2)}
+.contextAction{min-height:40px;width:100%;border:1px solid var(--namaa-border-strong);border-radius:var(--ux-radius-3);background:var(--namaa-card);color:var(--namaa-green-900);font:inherit;font-size:var(--ux-type-caption-size);font-weight:800;display:flex;align-items:center;justify-content:center;gap:var(--ux-space-2)}
+.contextFiles{display:grid;gap:var(--ux-space-2);margin-top:var(--ux-space-2)}
+.contextFiles>span{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:var(--ux-space-2);padding:var(--ux-space-2);border:1px solid var(--namaa-border);border-radius:var(--ux-radius-2);background:var(--namaa-card)}
+.contextFiles b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:var(--ux-type-caption-size)}
+.contextFiles em{font-style:normal;color:var(--ux-text-secondary);font-size:11px}
+
+.settingsSheet{overflow-x:hidden}
+.settingsList{display:grid;gap:var(--ux-space-2);min-width:0}
 .settingsList .settingsCard{
   width:100%;
-  min-height:72px;
+  min-width:0;
+  min-height:68px;
   display:grid;
-  grid-template-columns:auto minmax(0,1fr) auto;
+  grid-template-columns:24px minmax(0,1fr) 18px;
   align-items:center;
   gap:var(--ux-space-3);
-  padding:var(--ux-space-3);
+  padding:var(--ux-space-2) var(--ux-space-3);
   border:1px solid var(--namaa-border);
   border-radius:var(--ux-radius-3);
   background:var(--namaa-surface-warm);
   color:var(--ux-text-primary);
   text-align:right;
   font:inherit;
+  overflow:hidden;
 }
-.settingsList div.settingsCard{
-  grid-template-columns:minmax(0,1fr) auto;
+.settingsList .settingsCard:first-child{grid-template-columns:minmax(0,1fr) auto}
+.settingsCard>span{display:grid;gap:var(--ux-space-1);min-width:0}
+.settingsCard strong{font-size:var(--ux-type-body-sm-size);line-height:1.4;overflow-wrap:anywhere}
+.settingsCard small{font-size:var(--ux-type-caption-size);line-height:1.5;color:var(--ux-text-secondary);overflow-wrap:anywhere}
+
+/* Dark theme uses the governed theme tokens; no light-only Namaa surfaces leak into the chat. */
+:global(html[data-theme="dark"]) .page{
+  --namaa-card:var(--ux-card-bg);
+  --namaa-surface-warm:var(--ux-page-bg);
+  --namaa-chat-canvas:var(--ux-page-bg);
+  --namaa-agent-message:var(--ux-card-bg);
+  --namaa-user-message:#123c31;
+  --namaa-border:var(--ux-border-default);
+  --namaa-border-strong:var(--ux-border-emphasis);
+  background:var(--ux-page-bg);
+  color:var(--ux-text-primary);
 }
-.settingsCard>span{
-  display:grid;
-  gap:var(--ux-space-1);
-  min-width:0;
+:global(html[data-theme="dark"]) .mobileSheet,
+:global(html[data-theme="dark"]) .userMenuCard,
+:global(html[data-theme="dark"]) .intakeDialog,
+:global(html[data-theme="dark"]) .composer,
+:global(html[data-theme="dark"]) .chatHeader,
+:global(html[data-theme="dark"]) .settingsCard{
+  background:var(--ux-card-bg)!important;
+  color:var(--ux-text-primary)!important;
+  border-color:var(--ux-border-default)!important;
 }
-.settingsCard strong{font-size:var(--ux-type-body-sm-size)}
-.settingsCard small{
-  font-size:var(--ux-type-caption-size);
-  line-height:1.55;
-  color:var(--ux-text-secondary);
-}
+:global(html[data-theme="dark"]) .messageBody>p,
+:global(html[data-theme="dark"]) .messageIdentity strong,
+:global(html[data-theme="dark"]) .sheetHeader strong,
+:global(html[data-theme="dark"]) .settingsCard strong{color:var(--ux-text-primary)!important}
+:global(html[data-theme="dark"]) .settingsCard small,
+:global(html[data-theme="dark"]) .messageTime{color:var(--ux-text-secondary)!important}
+:global(html[data-theme="dark"]) .scrim{background:rgb(0 0 0 / .50)}
+
 @media(max-width:767px){
   .mobileAppBar{
     min-height:64px;
@@ -1454,64 +1339,16 @@
     border-bottom:1px solid color-mix(in srgb,var(--ux-text-inverse) 16%,transparent)!important;
     z-index:130;
   }
-  .mobileAppBarPrimary{
-    direction:rtl;
-    min-width:0;
-  }
-  .mobileBrandLockup{
-    display:flex;
-    align-items:center;
-    gap:var(--ux-space-2);
-    min-width:0;
-  }
-  .mobileBrandLockup img{
-    width:30px!important;
-    height:30px!important;
-    object-fit:contain!important;
-    flex:0 0 30px;
-  }
-  .mobileBrandLockup span{
-    color:var(--ux-text-inverse)!important;
-    font-size:var(--ux-type-card-title-size)!important;
-    font-weight:700!important;
-    line-height:1!important;
-  }
-  .mobileTopButton{
-    order:0;
-    border-color:color-mix(in srgb,var(--ux-text-inverse) 30%,transparent)!important;
-    background:transparent!important;
-    color:var(--ux-text-inverse)!important;
-  }
-  .mobileOverlay,.intakeOverlay{
-    top:64px!important;
-    z-index:120;
-  }
-  .contextSheet{
-    max-height:calc(100dvh - 80px);
-  }
-  .contextTabs{
-    position:sticky;
-    top:52px;
-    z-index:3;
-    margin-bottom:var(--ux-space-3);
-  }
-  .contextTabs button{
-    min-width:0;
-    padding-inline:var(--ux-space-1);
-    font-size:calc(var(--ux-type-caption-size) - 1px);
-  }
-  .contextCard{
-    padding:var(--ux-space-3);
-    border-radius:var(--ux-radius-3);
-  }
-  .messageTime{
-    font-size:calc(var(--ux-type-caption-size) - 2px)!important;
-  }
-  .messageIdentity{
-    margin-bottom:var(--ux-space-2);
-  }
-  .settingsList .settingsCard{
-    min-height:68px;
-    padding:var(--ux-space-2) var(--ux-space-3);
-  }
+  .mobileAppBarPrimary{direction:rtl;min-width:0}
+  .mobileTopButton{border-color:color-mix(in srgb,var(--ux-text-inverse) 30%,transparent)!important;background:transparent!important;color:var(--ux-text-inverse)!important}
+  .mobileOverlay,.intakeOverlay{top:64px!important;z-index:120}
+  .contextSheet{max-height:calc(100dvh - 80px)}
+  .contextTabs{position:sticky;top:52px;z-index:3;margin-bottom:var(--ux-space-3)}
+  .contextTabs button{min-width:0;padding-inline:var(--ux-space-1);font-size:11px}
+  .contextCard{padding:var(--ux-space-3);border-radius:var(--ux-radius-3)}
+  .message{width:auto;max-width:88%;padding:var(--ux-space-2) var(--ux-space-3)}
+  .userMessage{min-width:min(72%,320px)}
+  .messageFooter{justify-content:flex-end}
+  .composer{margin:0 var(--ux-space-2) var(--ux-space-2);padding:var(--ux-space-2);border:1px solid var(--namaa-border);border-radius:var(--ux-radius-4);box-shadow:var(--ux-shadow-sm)}
+  .intakeDialog{inset-inline:var(--ux-space-2);top:auto;bottom:var(--ux-space-2);transform:none;width:auto;max-height:90dvh;border-radius:var(--ux-radius-xl);padding-bottom:calc(var(--ux-space-3) + env(safe-area-inset-bottom))}
 }
