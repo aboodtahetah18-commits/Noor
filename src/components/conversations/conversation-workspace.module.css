@@ -1323,3 +1323,67 @@
   color:var(--ux-text-muted);
   text-align:center;
 }
+
+
+/* Mobile side navigation identity */
+.sideBrand{
+  position:relative;
+  min-height:72px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-4);
+  background:color-mix(in srgb,var(--namaa-surface-warm) 82%,var(--namaa-green-900) 18%);
+  margin-bottom:var(--ux-space-3);
+}
+.sideBrand img{
+  width:auto;
+  height:40px;
+  position:relative;
+  z-index:2;
+}
+.sideBrand>span{
+  position:absolute;
+  inset-inline-end:calc(var(--ux-space-6) * -1);
+  bottom:calc(var(--ux-space-6) * -1);
+  width:120px;
+  height:120px;
+  background:url('/brand/namaa-leaf.webp') center/contain no-repeat;
+  opacity:.08;
+}
+.mobileSideSheet .sideSection{
+  padding-block:var(--ux-space-2);
+}
+.mobileSideSheet .sideSection+ .sideSection{
+  border-top:1px solid var(--namaa-border);
+}
+.mobileSideSheet .sideSection>small{
+  display:block;
+  padding:0 var(--ux-space-2) var(--ux-space-2);
+  font-weight:900;
+  color:var(--namaa-green-900);
+}
+.mobileSideSheet .roomItemShell{
+  min-height:60px;
+  border-radius:var(--ux-radius-3);
+}
+.mobileSideSheet .roomItem{
+  min-height:58px;
+  padding:var(--ux-space-1) var(--ux-space-2);
+}
+.mobileSideSheet .roomItem .personaAvatar{
+  width:44px;
+  height:44px;
+  flex-basis:44px;
+}
+.mobileSideSheet .roomCopy strong{
+  font-size:var(--ux-type-caption-size);
+  line-height:1.35;
+}
+.mobileSideSheet .roomDetailButton{
+  width:32px;
+  height:32px;
+  flex-basis:32px;
+}
