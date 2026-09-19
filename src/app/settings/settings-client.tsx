@@ -54,7 +54,7 @@ export function SettingsClient(){
         setData(payload);
         setName(payload.user.name||'');
         setTolerance(payload.operational_settings?.matching_tolerance_days??2);
-        if(!payload.onboarding_complete&&(section==='accounts'||section==='matching')) setSection('profile');
+        if(!payload.onboarding_complete) setSection(current=>current==='accounts'||current==='matching'?'profile':current);
       })
       .catch(()=>{if(!cancelled)setMessage('تعذر تحميل الإعدادات الآن.');});
     return()=>{cancelled=true};
