@@ -219,7 +219,7 @@ export function StatementReviewPanel({
     </header>
 
     {!pendingRows.length
-      ? <div className={styles.statementReviewDone}><LucideIcon name="circleCheck" size={18}/><span>اكتملت مراجعة صفوف هذا الكشف. بقيت المطابقات المرحلية بحسب نوع كل حركة.</span></div>
+      ? <div className={styles.statementReviewDone}><LucideIcon name="circleCheck" size={20}/><span>اكتملت مراجعة صفوف هذا الكشف. بقيت المطابقات المرحلية بحسب نوع كل حركة.</span></div>
       : <>
         <div className={styles.statementRowStrip}>
           {pendingRows.map(row=><button
@@ -333,7 +333,7 @@ export function StatementReviewPanel({
           </label>}
 
           <button type="submit" className={styles.statementReviewSubmit} disabled={saving}>
-            <LucideIcon name={action==='IGNORE'?'x':'circleCheck'} size={17}/>
+            <LucideIcon name={action==='IGNORE'?'x':'circleCheck'} size={16}/>
             <span>{saving?'جارٍ الحفظ…':action==='IGNORE'?'تجاهل هذه الحركة':'اعتماد تصنيف الحركة'}</span>
           </button>
           <p className={styles.statementReviewSafety}>اعتماد التصنيف لا ينفذ تحويلًا أو سدادًا أو استثمارًا خارجيًا. التحويل الداخلي يبقى بانتظار المطابقة المقابلة.</p>
