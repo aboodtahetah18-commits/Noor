@@ -49,7 +49,7 @@ describe('governance oversight dashboard',()=>{
         }],
       },
     });
-    expect(dashboard.allOpenFollowups[0].history[0]).toMatchObject({eventType:'ASSIGNED',actorName:'أمين السر المركزي'});
+    expect(dashboard.allOpenFollowups[0]!.history[0]!).toMatchObject({eventType:'ASSIGNED',actorName:'أمين السر المركزي'});
   });
 
   it('does not mark undated followups overdue',()=>{
@@ -65,6 +65,6 @@ describe('governance oversight dashboard',()=>{
       },
     });
     expect(dashboard.overdueFollowups).toEqual([]);
-    expect(dashboard.allOpenFollowups[0].timingState).toBe('NO_DUE_DATE');
+    expect(dashboard.allOpenFollowups[0]!.timingState).toBe('NO_DUE_DATE');
   });
 });
