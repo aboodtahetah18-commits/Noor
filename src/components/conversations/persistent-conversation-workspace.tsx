@@ -623,7 +623,7 @@ export function PersistentConversationWorkspace(){
         <div className={styles.sideUtilityList}>
           <button type="button" onClick={()=>{setRoomsOpen(false);setSettingsSection('general');setSettingsOpen(true)}}><LucideIcon name="settings" size={20}/><span>الإعدادات</span><LucideIcon name="chevronLeft" size={18}/></button>
           <button type="button" onClick={()=>{setRoomsOpen(false);void openConversationContext()}}><LucideIcon name="info" size={20}/><span>المساعدة والسياق</span><LucideIcon name="chevronLeft" size={18}/></button>
-          <button type="button" className={styles.secretaryDock} onClick={()=>setMobileSideTab('meetings')} aria-label="عرض الاجتماعات التي يديرها أمين السر"><LucideIcon name="headphones" size={20}/><span>أمين السر</span><LucideIcon name="chevronLeft" size={18}/></button>
+          <button type="button" className={styles.secretaryDock} onClick={()=>setMobileSideTab('meetings')} aria-label="عرض الاجتماعات التي يديرها أمين السر"><LucideIcon name="messageSquareText" size={20}/><span>أمين السر</span><LucideIcon name="chevronLeft" size={18}/></button>
         </div>
       </aside>
     </div>}
