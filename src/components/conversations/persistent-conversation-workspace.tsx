@@ -409,6 +409,78 @@ function OversightStructuredCards({
   }
   return null;
 }
+
+function richMetric(label:string,value:unknown,format:'sar'|'percent'|'plain'='plain'){
+  if(typeof value!=='number'&&typeof value!=='string')return null;
+  let display=String(value);
+  if(typeof value==='number'){
+    if(format==='sar')display=formatSar(value)+' ر.س';
+    else if(format==='percent')display=new Intl.NumberFormat('ar-SA',{maximumFractionDigits:1}).format(value*100)+'٪';
+    else display=new Intl.NumberFormat('ar-SA',{maximumFractionDigits:2}).format(value);
+  }
+  return {label,value:display};
+}
+
+function buildRichMessageMetrics(data?:Record<string,unknown>){
+  if(!data)return [];
+  const financial=data.financial_metrics&&typeof data.financial_metrics==='object'?data.financial_metrics as Record<string,unknown>:null;
+  const exposure=data.policy_cap_evidence&&typeof data.policy_cap_evidence==='object'&&
+    (data.policy_cap_evidence as Record<string,unknown>).exposure_profile&&typeof (data.policy_cap_evidence as Record<string,unknown>).exposure_profile==='object'
+    ?(data.policy_cap_evidence as Record<string,unknown>).exposure_profile as Record<string,unknown>:null;
+  const candidates=[
+    richMetric('المبلغ المطلوب',data.requested_amount,'sar'),
+    richMetric('المبلغ المستهدف',data.target_amount,'sar'),
+    richMetric('السعة الآمنة',data.safe_capacity??data.safe_capacity_after_goal,'sar'),
+    richMetric('المتبقي الآمن',data.remaining_safe_capacity,'sar'),
+    richMetric('الدخل الشهري',financial?.monthly_net_income,'sar'),
+    richMetric('الالتزامات',financial?.recurring_core_obligations_total,'sar'),
+    richMetric('هامش الأمان',financial?.safety_margin,'sar'),
+    richMetric('نسبة الالتزامات',financial?.obligation_ratio,'percent'),
+    richMetric('القسط المتوقع',data.expected_installment,'sar'),
+    richMetric('التعرض القائم',exposure?.outstanding_exposure,'sar'),
+    richMetric('الثقة',data.confidence_percent,'plain'),
+  ].filter((item):item is {label:string;value:string}=>Boolean(item));
+  return candidates.slice(0,3);
+}
+
+function richMessageStatus(data?:Record<string,unknown>){
+  if(!data)return null;
+  const raw=[
+    data.decision_state,
+    data.protection_gate_state,
+    data.restructuring_state,
+    data.calibration_status,
+    data.status,
+  ].find(value=>typeof value==='string'&&value.trim());
+  return typeof raw==='string'?raw:null;
+}
+
+function RichStructuredMessageHero({
+  room,kind,data,senderName,
+}:{room:Room;kind:MessageKind;data?:Record<string,unknown>;senderName:string}){
+  if(kind==='message')return null;
+  const metrics=buildRichMessageMetrics(data);
+  const status=richMessageStatus(data);
+  return <section className={styles.richMessageHero} aria-label="ملخص الرسالة المنظم">
+    <div className={styles.richMessageVisual} aria-hidden="true">
+      <Image src={room.bankLogo} alt="" fill sizes="92px"/>
+      <span className={styles.richMessageWatermark}><Image src="/brand/namaa-leaf.webp" alt="" fill sizes="72px"/></span>
+    </div>
+    <div className={styles.richMessageHeroCopy}>
+      <div className={styles.richMessageEyebrow}>
+        <span><LucideIcon name={messageKindIcon(kind)} size={16}/></span>
+        <b>{labels[kind]}</b>
+        {status&&<em>{status}</em>}
+      </div>
+      <strong>{senderName}</strong>
+      <small>{chatEntityTitle(room)}</small>
+      {metrics.length>0&&<div className={styles.richMessageMetrics}>
+        {metrics.map(metric=><span key={metric.label}><small>{metric.label}</small><strong>{metric.value}</strong></span>)}
+      </div>}
+    </div>
+  </section>;
+}
+
 function StructuredFacts({data}:{data?:Record<string,unknown>}){
   if(!data)return null;
   const confidence=typeof data.confidence_percent==='number'?data.confidence_percent:null;
@@ -991,7 +1063,8 @@ export function PersistentConversationWorkspace(){
     {message.sender_type==='user'&&<div className={styles.userMessageIdentity}><strong>{meetingUserDisplayName(profile?.name||message.sender_name)}</strong><small>{activeRoom.id==='council'?'صاحب المحفظة':'أنت'}</small></div>}
     {message.structured_data?.onboarding===true?<OnboardingMessageContent message={message} showStructuredAction={onboardingComplete===false&&message.sender_type!=='user'&&String(message.structured_data?.onboarding_step??'')===String(onboardingStep??'')&&STRUCTURED_INTAKE_STEPS.has(String(onboardingStep??''))} onOpenStructuredIntake={()=>setIntakeDismissed(false)}/>:<p className={styles.messageCopy}>{message.body}</p>}
     {message.message_kind!=='message'&&message.structured_data?.onboarding!==true&&<section className={`${styles.structuredCard} ${styles[`kind_${message.message_kind}`]}`}>
-      <header className={styles.structuredCardHeader}><span aria-hidden="true"><LucideIcon name={messageKindIcon(message.message_kind)} size={16}/></span><strong>{labels[message.message_kind]}</strong></header>
+      <RichStructuredMessageHero room={activeRoom} kind={message.message_kind} data={message.structured_data} senderName={activeRoom.id==='central'?'محافظ البنك المركزي':message.sender_name}/>
+      <header className={styles.structuredCardHeader}><span aria-hidden="true"><LucideIcon name={messageKindIcon(message.message_kind)} size={16}/></span><strong>التفاصيل</strong></header>
       <OversightStructuredCards
         data={message.structured_data}
         disabled={sending}
