@@ -891,9 +891,7 @@
   border-bottom:1px solid var(--namaa-border)
 }
 
-.chatBrandBar img,.mobileBrandLockup{display:inline-flex;align-items:center;gap:var(--ux-space-1);color:var(--ux-text-inverse);font-size:var(--ux-type-section-title-size);font-weight:900;line-height:1;white-space:nowrap}
-.mobileBrandLockup img{width:30px;height:30px;object-fit:contain;filter:none}
-
+.chatBrandBar img,
 .persona_sm{
   width:38px;
   height:38px;
@@ -2269,8 +2267,7 @@
   position:relative;
   z-index:2
   }
-  .mobileBrandLockup{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;user-select:none}
-  .mobileTopButton,.mobileUserButton{
+    .mobileTopButton,.mobileUserButton{
     width:40px;
   height:40px;
   flex:0 0 40px;
@@ -3245,7 +3242,7 @@
   inset-inline-end:-10px;
   inset-block-end:-12px;
   opacity:.12;
-  filter:saturate(.75)
+  
 }
 .richMessageWatermark img{object-fit:contain}
 .richMessageHeroCopy{
@@ -3523,4 +3520,24 @@
 .groupContinuation .messageIdentity,
 .groupContinuation .userMessageIdentity{
   display:none
+}
+
+
+.mobileBrandLogo{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:112px;
+  min-width:88px;
+  height:auto;
+  object-fit:contain;
+  z-index:1
+}
+@media(max-width:767px){
+  .mobileBrandLogo{
+    width:104px;
+    min-width:88px;
+    max-height:38px
+  }
 }
