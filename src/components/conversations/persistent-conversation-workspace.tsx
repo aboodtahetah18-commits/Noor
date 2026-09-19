@@ -502,6 +502,7 @@ export function PersistentConversationWorkspace(){
       setMessages(current=>[...current,data.message as Message,...(data.reply?[data.reply as Message]:[])]);
       setOnboardingComplete(true);
       setOnboardingStep('complete');
+      setOnboardingCompletedAt(new Date().toISOString());
       setReviewOpen(false);
     }catch{
       setError('تعذر تأكيد ملف التأسيس الآن.');
@@ -519,7 +520,7 @@ export function PersistentConversationWorkspace(){
       const completed=Boolean(data.reply?.structured_data?.onboarding_complete);
       const nextStep=data.reply?.structured_data?.onboarding_step;
       if(typeof nextStep==='string') setOnboardingStep(nextStep);
-      if(completed){ setOnboardingComplete(true); setOnboardingStep('complete'); }
+      if(completed){ setOnboardingComplete(true); setOnboardingStep('complete'); setOnboardingCompletedAt(new Date().toISOString()); }
       setDraft('');
       if(composerTextareaRef.current) composerTextareaRef.current.style.height='40px';
     }
