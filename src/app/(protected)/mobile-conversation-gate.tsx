@@ -11,7 +11,7 @@ export function MobileConversationGate({children}:{children:ReactNode}){
   const router=useRouter();
 
   useEffect(()=>{
-    if(pathname.startsWith('/onboarding') || pathname.startsWith('/conversations')) return;
+    if(pathname.startsWith('/onboarding') || pathname.startsWith('/conversations') || pathname.startsWith('/settings')) return;
 
     const media=window.matchMedia(MOBILE_QUERY);
     const enforce=()=>{
