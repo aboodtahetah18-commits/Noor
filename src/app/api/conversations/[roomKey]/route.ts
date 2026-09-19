@@ -11,6 +11,9 @@ import { createHilalFinancingReply } from '@/lib/conversations/hilal-financing-e
 import { createHilalRestructuringReply } from '@/lib/conversations/hilal-restructuring-engine';
 import { appendUserMessage, getConversationRoom, isConversationRoomKey, type ConversationMessageKind } from '@/lib/conversations/store';
 import { getGovernorOnboardingStatus, getGovernorWelcome, processGovernorOnboardingMessage } from '@/lib/conversations/governor-onboarding';
+import { routePurchaseMessageToOperations } from '@/lib/conversations/operations-message-router';
+import { attachGovernanceContext } from '@/lib/governance/governance-context';
+import { syncGovernanceMeetingInvitations } from '@/lib/governance/governance-meeting-scheduler';
 
 export async function GET(_request: Request, context: { params: Promise<{ roomKey: string }> }) {
   const user = await getAuthenticatedUser();
@@ -97,6 +100,9 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
   try {
     const text = String(body.body ?? '');
     const message = await appendUserMessage(user.id, user.name || 'أنت', roomKey, text);
+    const capturedOperation = message?.id
+      ? await routePurchaseMessageToOperations({userId:user.id,sourceRoom:roomKey,sourceMessageId:String(message.id),text})
+      : null;
 
     const onboarding = await getGovernorOnboardingStatus(user.id);
     if (!onboarding.complete && roomKey !== 'central') {
@@ -137,6 +143,7 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
             ? row.structured_data as Record<string, unknown>
             : {},
         } : null;
+        if (onboardingReply.completed) await syncGovernanceMeetingInvitations(user.id);
       } else {
         reply = await createRoutedReply(user.id, roomKey, text);
       }
@@ -150,14 +157,17 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
       const restructuringReply = await createHilalRestructuringReply(user.id, text);
       const financingReply = restructuringReply ? null : await createHilalFinancingReply(user.id, text);
       reply = restructuringReply ?? financingReply ?? await createRoutedReply(user.id, roomKey, text);
+    } else if (roomKey === 'operations' || roomKey === 'secretary') {
+      reply = await createRoutedReply(user.id, roomKey, text);
     } else {
       const crossBankGuardReply = await createCrossBankHardGuardReply(user.id, roomKey, text);
       const guardReply = crossBankGuardReply ? null : await createProtectionGuardReply(user.id, roomKey, text);
       reply = crossBankGuardReply ?? guardReply ?? await createRoutedReply(user.id, roomKey, text);
     }
 
-    const governedReply = await attachUnifiedDecisionLifecycle(user.id, roomKey, reply ?? null);
-    return NextResponse.json({ message, reply: governedReply }, { status: 201 });
+    const governanceBoundReply = await attachGovernanceContext(user.id, roomKey, reply ?? null);
+    const governedReply = await attachUnifiedDecisionLifecycle(user.id, roomKey, governanceBoundReply);
+    return NextResponse.json({ message, reply: governedReply, captured_operation: capturedOperation }, { status: 201 });
   } catch (error) {
     const code = error instanceof Error ? error.message : 'CONVERSATION_WRITE_FAILED';
     if (code === 'CONVERSATION_MESSAGE_INVALID') return NextResponse.json({ code }, { status: 400 });

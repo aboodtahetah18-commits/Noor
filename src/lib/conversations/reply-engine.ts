@@ -188,11 +188,24 @@ function buildCentralReply(text: string, intent: Intent, amounts: number[], meta
   return { body, kind, confidence, baseline, routedRoom, confirmedFact };
 }
 
-function buildRoomReply(roomKey: ConversationRoomKey, amounts: number[]) {
+function buildRoomReply(roomKey: ConversationRoomKey, amounts: number[], text: string) {
   const amount = firstAmount(amounts);
   if (roomKey === 'assets') return { kind:'recommendation' as ConversationMessageKind, body: amount === null ? 'أرسل قيمة المبلغ والهدف والمدة المتوقعة، وسأتحقق أولًا من المبلغ الآمن المتاح بعد حماية الالتزامات.' : `استلمت مبلغًا قدره ${formatSar(amount)} ريال للتحليل. سأقارنه أولًا بالسعة الآمنة بعد حماية أموال الملاءة والأهداف القريبة.`, confidence: amount === null ? 0.4 : 0.72 };
   if (roomKey === 'hilal') return { kind:'request' as ConversationMessageKind, body: amount === null ? 'اذكر مبلغ التمويل المطلوب والغرض وموعد السداد المتوقع.' : `استلمت طلبًا بقيمة ${formatSar(amount)} ريال. سأختبره مقابل السعة الآمنة والتغطية الأساسية قبل أي اعتماد.`, confidence: amount === null ? 0.44 : 0.74 };
   if (roomKey === 'advisor') return { kind:'recommendation' as ConversationMessageKind, body:'سأبني التحليل على البيانات المؤكدة فقط وأوضح درجة الثقة والبيانات الناقصة.', confidence:0.58 };
+  if (roomKey === 'operations') return { kind:'message' as ConversationMessageKind, body:'استلمت الرسالة في مركز العمليات والمطابقة. سأحفظها كعملية قيد المراجعة، وأطابق المبلغ والتاجر والحساب أو البطاقة دون اعتبارها تنفيذًا جديدًا.', confidence:0.9 };
+  if (roomKey === 'secretary') {
+    if (/(سياسة|السياسات|صلاحية|الصلاحيات|مصفوفة|حوكمة|خوارزمية|الخوارزميات)/i.test(text)) {
+      return { kind:'message' as ConversationMessageKind, body:'طلبك مرتبط بمركز الحوكمة والسياسات. سأعرض النص الحاكم وإصداره والمالك والمحاضر المرتبطة، وإذا أردت تعديل فقرة سأفتح لها مسار مراجعة رسمي دون تغيير النسخة التاريخية.', confidence:0.97 };
+    }
+    if (/(محضر|محاضر|قرار|قرارات)/i.test(text)) {
+      return { kind:'message' as ConversationMessageKind, body:'سأرجع إلى محاضر المجلس واللجان وسجل القرارات المرتبط بالموضوع، مع تاريخ الاجتماع والإصدار الذي كان نافذًا وقت القرار.', confidence:0.97 };
+    }
+    if (/(اجتماع|اجتماعات|لجنة|اللجان|موعد|جدول)/i.test(text)) {
+      return { kind:'message' as ConversationMessageKind, body:'سأتعامل معه كطلب اجتماع أو إضافة موضوع إلى جدول الأعمال. الاجتماعات الدورية تبقى ثابتة حسب الدورة المالية، وأي طارئ يضاف كجلسة مستقلة ولا يلغي الموعد الدوري.', confidence:0.97 };
+    }
+    return { kind:'message' as ConversationMessageKind, body:'أنا أمين السر المركزي. أستطيع عرض السياسات والصلاحيات والخوارزميات والمحاضر والاجتماعات والوثائق، أو فتح طلب مراجعة رسمي لأي فقرة دون تعديل السجل التاريخي بصمت.', confidence:0.95 };
+  }
   if (roomKey === 'council') return { kind:'request' as ConversationMessageKind, body:'أرسل القرار المطلوب اعتماده وسببه والبيانات المؤيدة؛ ولن يُعد أي قرار تنفيذًا ماليًا خارجيًا.', confidence:0.58 };
   return { kind:'message' as ConversationMessageKind, body:'استلمت رسالتك وسأتعامل معها وفق البيانات المؤكدة فقط.', confidence:0.5 };
 }
@@ -229,7 +242,7 @@ export async function createRoutedReply(userId: string, roomKey: ConversationRoo
     missingFields = missingBaselineFields(result.baseline);
     nextMetadata = { ...metadata, financial_baseline: result.baseline, onboarding_started:true, last_detected_intent:intent, last_confidence:confidence };
   } else {
-    const result = buildRoomReply(roomKey, amounts);
+    const result = buildRoomReply(roomKey, amounts, text);
     body = result.body;
     kind = result.kind;
     confidence = result.confidence;

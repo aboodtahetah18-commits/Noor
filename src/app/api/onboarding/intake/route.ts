@@ -66,6 +66,7 @@ export async function POST(request:Request){
           onboarding_complete:false,
           next_question:result.next_question,
           structured_intake:true,
+          goal_analysis:'goal_analysis' in result ? result.goal_analysis : null,
           execution_boundary:'advisory_only',
         })}::jsonb
       )
@@ -79,7 +80,7 @@ export async function POST(request:Request){
       'ONBOARDING_ALREADY_COMPLETED','ONBOARDING_STEP_MISMATCH','ONBOARDING_STRUCTURED_DATE_INVALID',
       'ONBOARDING_DEPENDENT_INVALID','ONBOARDING_INCOME_INVALID',
       'ONBOARDING_INCOME_DIFFERENCE_EXPLANATION_REQUIRED','ONBOARDING_ACCOUNTS_REQUIRED',
-      'ONBOARDING_ACCOUNT_INVALID','ONBOARDING_OBLIGATION_INVALID','ONBOARDING_GOAL_INVALID',
+      'ONBOARDING_ACCOUNT_INVALID','ONBOARDING_ACCOUNT_IBAN_INVALID','ONBOARDING_ACCOUNT_CARD_LAST4_INVALID','ONBOARDING_OBLIGATION_INVALID','ONBOARDING_GOAL_INVALID',
     ]);
     if(badRequest.has(code)) return NextResponse.json({code},{status:400});
     console.error('[onboarding-structured-intake]',{name:error instanceof Error?error.name:'UnknownError'});

@@ -191,7 +191,7 @@ export async function getGovernorOnboardingStatus(userId:string){
 type StructuredOnboardingPayload =
   | {step:'dependents';items:Array<{name:string;relationship:string;age?:number|null;monthly_support:number;annual_support?:number|null;special_needs?:string;financial_dependency:boolean}>}
   | {step:'income';base_salary:number;fixed_allowances?:number;variable_allowances?:number;deductions?:number;actual_net:number;other_recurring_income?:number;difference_explanation?:string}
-  | {step:'accounts';items:Array<{bank_name:string;account_type:string;short_identifier?:string;usage?:string;opening_balance:number;included_in_namaa:boolean}>}
+  | {step:'accounts';items:Array<{bank_name:string;account_type:string;short_identifier?:string;iban?:string;card_last4?:string;card_type?:string;usage?:string;opening_balance:number;included_in_namaa:boolean}>}
   | {step:'obligations';items:Array<{name:string;amount:number;recurrence:string;provider?:string;due_day?:number|null;remaining_balance?:number|null;end_date?:string|null;finance_cost?:number|null}>}
   | {step:'goals';items:Array<{name:string;target_amount:number;target_date?:string|null;priority?:string;flexibility?:string;allocated_amount?:number}>};
 
@@ -266,9 +266,18 @@ export function normalizeStructuredOnboardingPayload(payload:StructuredOnboardin
       const type=cleanText(item.account_type,80);
       const opening=finiteNonNegative(item.opening_balance);
       if(!bank||!type||opening===null) throw new Error('ONBOARDING_ACCOUNT_INVALID');
+      const ibanRaw=cleanText(item.iban,40).replace(/\s+/g,'').toUpperCase();
+      const iban=ibanRaw?ibanRaw:null;
+      if(iban&&!/^SA\d{22}$/.test(iban)) throw new Error('ONBOARDING_ACCOUNT_IBAN_INVALID');
+      const cardLast4=cleanText(item.card_last4,4);
+      if(cardLast4&&!/^\d{4}$/.test(cardLast4)) throw new Error('ONBOARDING_ACCOUNT_CARD_LAST4_INVALID');
+      const cardType=cleanText(item.card_type,40)||null;
       return {
         bank_name:bank,account_type:type,
         short_identifier:cleanText(item.short_identifier,40)||null,
+        iban,
+        card_last4:cardLast4||null,
+        card_type:cardType,
         usage:cleanText(item.usage,160)||null,
         opening_balance:opening,
         included_in_namaa:Boolean(item.included_in_namaa),
@@ -309,6 +318,100 @@ export function normalizeStructuredOnboardingPayload(payload:StructuredOnboardin
   })};
 }
 
+type GoalFeasibility={
+  name:string;
+  target_amount:number;
+  allocated_amount:number;
+  remaining_amount:number;
+  target_date:string|null;
+  months_remaining:number|null;
+  required_monthly:number|null;
+  sustainable_capacity:number|null;
+  status:'قابل مبدئيًا'|'يحتاج تعديل'|'لا توجد بيانات كافية';
+  reasons:string[];
+  alternatives:string[];
+  confidence:'مرتفعة'|'متوسطة'|'منخفضة';
+};
+
+function monthlyEquivalentObligation(item:Record<string,unknown>){
+  const amount=Number(item.amount??0);
+  if(!Number.isFinite(amount)||amount<=0) return 0;
+  const recurrence=String(item.recurrence??'MONTHLY').toUpperCase();
+  if(recurrence==='WEEKLY') return amount*52/12;
+  if(recurrence==='YEARLY') return amount/12;
+  if(recurrence==='MONTHLY') return amount;
+  return 0;
+}
+
+function monthsUntil(targetDate:string|null){
+  if(!targetDate) return null;
+  const target=new Date(targetDate+'T00:00:00Z');
+  if(Number.isNaN(target.getTime())) return null;
+  const now=new Date();
+  const months=(target.getUTCFullYear()-now.getUTCFullYear())*12+(target.getUTCMonth()-now.getUTCMonth());
+  const adjusted=target.getUTCDate()>=now.getUTCDate()?months:months-1;
+  return Math.max(1,adjusted);
+}
+
+export async function analyzeStructuredGoals(userId:string,goals:Array<Record<string,unknown>>):Promise<GoalFeasibility[]>{
+  const sql=getRawSql();
+  const rows=await sql`
+    select fact_key,value_json
+    from public.user_foundation_facts
+    where user_id=${userId}::uuid and status='ACTIVE'
+      and fact_key in ('income','obligations')
+  `;
+  const facts=new Map(rows.map(row=>[String(row.fact_key),row.value_json]));
+  const incomeRecord=facts.get('income')&&typeof facts.get('income')==='object'?facts.get('income') as Record<string,unknown>:null;
+  const income=incomeRecord&&typeof incomeRecord.actual_net==='number'?incomeRecord.actual_net:null;
+  const obligationRecord=facts.get('obligations')&&typeof facts.get('obligations')==='object'?facts.get('obligations') as Record<string,unknown>:null;
+  const obligationItems=obligationRecord&&Array.isArray(obligationRecord.items)
+    ? obligationRecord.items.filter((item):item is Record<string,unknown>=>Boolean(item)&&typeof item==='object'&&!Array.isArray(item))
+    : [];
+  const monthlyObligations=obligationItems.reduce((sum,item)=>sum+monthlyEquivalentObligation(item),0);
+  const sustainableCapacity=typeof income==='number'?Math.max(0,income-monthlyObligations):null;
+
+  return goals.map(goal=>{
+    const name=String(goal.name??'هدف مالي');
+    const target=Number(goal.target_amount??0);
+    const allocated=Math.max(0,Number(goal.allocated_amount??0));
+    const remaining=Math.max(0,target-allocated);
+    const targetDate=typeof goal.target_date==='string'?goal.target_date:null;
+    const months=monthsUntil(targetDate);
+    const required=months?remaining/months:null;
+    const reasons:string[]=[];
+    const alternatives:string[]=[];
+    let status:GoalFeasibility['status']='لا توجد بيانات كافية';
+    let confidence:GoalFeasibility['confidence']='منخفضة';
+
+    if(sustainableCapacity!==null&&required!==null){
+      confidence='متوسطة';
+      if(required<=sustainableCapacity){
+        status='قابل مبدئيًا';
+        reasons.push('المساهمة الشهرية المطلوبة لا تتجاوز السعة المتبقية بعد الدخل والالتزامات المسجلة.');
+      }else{
+        status='يحتاج تعديل';
+        reasons.push('المساهمة الشهرية المطلوبة تتجاوز السعة المتبقية من البيانات الحالية.');
+        if(sustainableCapacity>0){
+          const requiredMonths=Math.ceil(remaining/sustainableCapacity);
+          alternatives.push(`تمديد المدة إلى نحو ${requiredMonths} شهرًا إذا بقيت السعة الحالية كما هي.`);
+        }
+        alternatives.push('تقليل المبلغ المستهدف أو زيادة المبلغ المخصص إذا كان ذلك مناسبًا للمستخدم.');
+      }
+      reasons.push('التحليل مبدئي حتى تكتمل السيولة المحمية والاحتياطيات والاستحقاقات القريبة.');
+    }else{
+      if(sustainableCapacity===null) reasons.push('يلزم دخل فعلي مؤكد قبل حساب القدرة الشهرية.');
+      if(required===null) reasons.push('يلزم موعد أو نافذة زمنية للهدف لحساب المساهمة المطلوبة.');
+    }
+
+    return {
+      name,target_amount:target,allocated_amount:allocated,remaining_amount:remaining,target_date:targetDate,
+      months_remaining:months,required_monthly:required,sustainable_capacity:sustainableCapacity,
+      status,reasons,alternatives,confidence,
+    };
+  });
+}
+
 export async function processGovernorStructuredOnboarding(userId:string,payload:StructuredOnboardingPayload){
   const sql=getRawSql();
   const status=await getGovernorOnboardingStatus(userId);
@@ -341,12 +444,16 @@ export async function processGovernorStructuredOnboarding(userId:string,payload:
     where user_id=${userId}::uuid
   `;
 
+  const goalAnalysis=payload.step==='goals'
+    ? await analyzeStructuredGoals(userId,(normalized as {items:Array<Record<string,unknown>>}).items)
+    : null;
   return {
     completed:false,
     current_step:next,
     next_question:next==='complete'?null:QUESTIONS[next as Exclude<OnboardingStep,'complete'>],
     accepted:true,
     structured:true,
+    goal_analysis:goalAnalysis,
   };
 }
 
