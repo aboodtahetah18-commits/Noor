@@ -1697,3 +1697,331 @@
     box-shadow:var(--ux-shadow-xs);
   }
 }
+
+
+/* Approved mobile composition — compact chat + white tabbed drawer */
+@media(max-width:767px){
+  .workspaceHeader{
+    display:none!important;
+  }
+
+  .workspace,
+  .workspace.withoutRooms,
+  .workspace.withoutContext,
+  .workspace.withoutRooms.withoutContext{
+    height:calc(100dvh - 64px);
+    min-height:calc(100dvh - 64px);
+  }
+
+  .chatPane{
+    height:calc(100dvh - 64px);
+    min-height:calc(100dvh - 64px);
+    grid-template-rows:auto minmax(0,1fr) auto!important;
+    overflow:hidden;
+  }
+
+  .chatHeader{
+    position:relative;
+    top:auto;
+    z-index:10;
+    min-height:66px!important;
+    height:66px;
+    padding:var(--ux-space-1) var(--ux-space-3)!important;
+    background:var(--namaa-card)!important;
+    border-bottom:1px solid var(--namaa-border)!important;
+    box-shadow:0 3px 12px color-mix(in srgb,var(--namaa-text) 5%,transparent);
+  }
+
+  .chatIdentity{
+    gap:var(--ux-space-2)!important;
+  }
+
+  .chatIdentity .personaAvatar{
+    width:46px!important;
+    height:46px!important;
+    flex-basis:46px!important;
+  }
+
+  .entityTitle strong{
+    font-size:var(--ux-type-body-sm-size)!important;
+    line-height:1.25!important;
+  }
+
+  .chatIdentity small{
+    font-size:var(--ux-type-caption-size)!important;
+    line-height:1.25!important;
+  }
+
+  .mobileTools button{
+    width:36px;
+    height:36px;
+  }
+
+  .chatScrollRegion{
+    min-height:0;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    scrollbar-gutter:auto;
+    padding-bottom:var(--ux-space-2);
+  }
+
+  .routingNote{
+    margin:var(--ux-space-2) var(--ux-space-2) var(--ux-space-0)!important;
+    padding:var(--ux-space-1) var(--ux-space-2)!important;
+    max-width:calc(100% - (var(--ux-space-4)))!important;
+    font-size:var(--ux-type-caption-size);
+    border-radius:var(--ux-radius-3)!important;
+  }
+
+  .messages{
+    padding:var(--ux-space-2)!important;
+    gap:var(--ux-space-2)!important;
+  }
+
+  .message{
+    max-width:90%!important;
+    padding:var(--ux-space-2) var(--ux-space-3)!important;
+    border-radius:var(--ux-radius-3)!important;
+  }
+
+  .message>p,
+  .onboardingMessageContent>p{
+    font-size:var(--ux-type-body-sm-size)!important;
+    line-height:1.65!important;
+  }
+
+  .messageIdentity{
+    margin-bottom:var(--ux-space-1)!important;
+  }
+
+  .messageIdentity .personaAvatar{
+    width:30px!important;
+    height:30px!important;
+    flex-basis:30px!important;
+  }
+
+  .messageIdentity strong,
+  .messageIdentity small{
+    font-size:var(--ux-type-caption-size)!important;
+  }
+
+  .onboardingQuestionBox{
+    padding:var(--ux-space-2)!important;
+    gap:var(--ux-space-1)!important;
+  }
+
+  .onboardingQuestionBox strong{
+    font-size:var(--ux-type-body-sm-size)!important;
+    line-height:1.55!important;
+  }
+
+  .composer{
+    position:relative!important;
+    bottom:auto!important;
+    z-index:12;
+    min-height:58px!important;
+    margin:0!important;
+    padding:var(--ux-space-2) var(--ux-space-2) calc(var(--ux-space-2) + env(safe-area-inset-bottom))!important;
+    background:var(--namaa-card)!important;
+    border:0!important;
+    border-top:1px solid var(--namaa-border)!important;
+    border-radius:0!important;
+    box-shadow:0 -6px 18px color-mix(in srgb,var(--namaa-text) 7%,transparent)!important;
+    align-items:center!important;
+  }
+
+  .composer textarea{
+    min-height:40px!important;
+    height:40px!important;
+    max-height:96px!important;
+    font-size:var(--ux-type-body-sm-size)!important;
+    line-height:1.4!important;
+    padding:9px var(--ux-space-3)!important;
+    background:var(--namaa-card)!important;
+    border:1px solid var(--namaa-border)!important;
+    border-radius:var(--ux-radius-full)!important;
+  }
+
+  .attachButton,
+  .sendButton{
+    width:40px!important;
+    height:40px!important;
+    flex-basis:40px!important;
+    border-radius:var(--ux-radius-full)!important;
+  }
+
+  .sendButton{
+    padding:0!important;
+    justify-content:center!important;
+  }
+
+  .sendButton span{
+    display:none!important;
+  }
+
+  .mobileConversationList,
+  .mobileBack{
+    display:none!important;
+  }
+
+  .mobileSideSheet{
+    display:grid!important;
+    grid-template-rows:auto auto minmax(0,1fr) auto;
+    position:absolute;
+    inset-block:0;
+    inset-inline-start:0;
+    width:min(88vw,360px);
+    overflow:hidden!important;
+    background:var(--namaa-card)!important;
+    border-inline-end:1px solid var(--namaa-border);
+    box-shadow:0 0 36px color-mix(in srgb,var(--namaa-text) 18%,transparent);
+    padding:0!important;
+  }
+
+  .sideSheetTop{
+    min-height:86px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:var(--ux-space-3);
+    padding:calc(var(--ux-space-3) + env(safe-area-inset-top)) var(--ux-space-4) var(--ux-space-3);
+    background:var(--namaa-card);
+    border-bottom:1px solid var(--namaa-border);
+  }
+
+  .sideSheetLogo{
+    width:auto;
+    height:42px;
+    object-fit:contain;
+  }
+
+  .sideCloseButton{
+    width:42px;
+    height:42px;
+    display:grid;
+    place-items:center;
+    border:1px solid var(--namaa-border);
+    border-radius:var(--ux-radius-3);
+    background:var(--namaa-card);
+    color:var(--namaa-green-900);
+  }
+
+  .sideTabs{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    margin:var(--ux-space-3);
+    border:1px solid var(--namaa-border);
+    border-radius:var(--ux-radius-3);
+    overflow:hidden;
+    background:var(--namaa-card);
+  }
+
+  .sideTabs button{
+    min-height:44px;
+    border:0;
+    border-inline-start:1px solid var(--namaa-border);
+    background:var(--namaa-card);
+    color:var(--ux-text-secondary);
+    font:inherit;
+    font-size:var(--ux-type-caption-size);
+    font-weight:800;
+    padding:var(--ux-space-1) var(--ux-space-2);
+  }
+
+  .sideTabs button:first-child{
+    border-inline-start:0;
+  }
+
+  .sideTabs .sideTabActive{
+    background:var(--namaa-green-900);
+    color:var(--ux-text-inverse);
+  }
+
+  .sideTabPanel{
+    min-height:0;
+    overflow-y:auto;
+    padding:0 var(--ux-space-3) var(--ux-space-3);
+  }
+
+  .sideTabPanel .roomList{
+    gap:var(--ux-space-2)!important;
+  }
+
+  .sideTabPanel .roomItemShell{
+    min-height:64px!important;
+    margin:0!important;
+    border:1px solid var(--namaa-border);
+    border-radius:var(--ux-radius-3)!important;
+    background:var(--namaa-card);
+    overflow:hidden;
+  }
+
+  .sideTabPanel .activeRoom{
+    background:color-mix(in srgb,var(--namaa-cream) 62%,var(--namaa-card) 38%);
+    border-color:color-mix(in srgb,var(--namaa-gold-500) 55%,var(--namaa-border) 45%);
+  }
+
+  .sideTabPanel .roomItem{
+    min-height:62px!important;
+    padding:var(--ux-space-2)!important;
+    gap:var(--ux-space-2)!important;
+  }
+
+  .sideTabPanel .roomItem .personaAvatar{
+    width:46px!important;
+    height:46px!important;
+    flex-basis:46px!important;
+  }
+
+  .sideTabPanel .roomCopy strong{
+    font-size:var(--ux-type-body-sm-size)!important;
+    line-height:1.3!important;
+  }
+
+  .sideTabPanel .roomDetailButton{
+    width:34px!important;
+    height:34px!important;
+    flex-basis:34px!important;
+    margin-inline-end:var(--ux-space-1)!important;
+  }
+
+  .sideEmpty{
+    margin:var(--ux-space-4) 0;
+    padding:var(--ux-space-3);
+    text-align:center;
+    color:var(--ux-text-secondary);
+    font-size:var(--ux-type-caption-size);
+  }
+
+  .sideUtilityList{
+    display:grid!important;
+    gap:var(--ux-space-1)!important;
+    padding:var(--ux-space-2) var(--ux-space-3) calc(var(--ux-space-3) + env(safe-area-inset-bottom))!important;
+    margin:0!important;
+    border-top:1px solid var(--namaa-border)!important;
+    background:var(--namaa-card);
+  }
+
+  .sideUtilityList button{
+    min-height:44px!important;
+    display:grid!important;
+    grid-template-columns:auto 1fr auto;
+    align-items:center;
+    gap:var(--ux-space-2)!important;
+    padding:var(--ux-space-2) var(--ux-space-3)!important;
+    border:0!important;
+    border-radius:var(--ux-radius-3)!important;
+    background:transparent!important;
+    color:var(--ux-text-primary)!important;
+    font-size:var(--ux-type-body-sm-size)!important;
+    text-align:right!important;
+  }
+
+  .sideUtilityList .secretaryDock{
+    margin-top:var(--ux-space-1);
+    border:1px solid color-mix(in srgb,var(--namaa-green-700) 28%,var(--namaa-border) 72%)!important;
+    background:color-mix(in srgb,var(--namaa-green-900) 6%,var(--namaa-card) 94%)!important;
+    color:var(--namaa-green-900)!important;
+    font-weight:900;
+  }
+}
