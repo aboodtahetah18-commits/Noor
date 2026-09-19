@@ -570,7 +570,13 @@ export function PersistentConversationWorkspace(){
       {roomButtons}
     </section>
     <div className={`${styles.workspace} ${desktopRoomsVisible?'':styles.withoutRooms} ${desktopContextVisible?'':styles.withoutContext}`}>
-      {desktopRoomsVisible&&<aside className={styles.roomsPane} aria-label="قائمة المحادثات"><div className={styles.paneTitle}><span>الجهات والمحادثات</span><small>{visibleRooms.length} جهات</small></div>{roomButtons}</aside>}
+      {desktopRoomsVisible&&<aside className={styles.roomsPane} aria-label="قائمة المحادثات">
+        <div className={styles.desktopSideBrand}><Image src="/brand/ndos/namaa-logo-color-transparent.png" alt="نماء" width={96} height={48}/><span aria-hidden="true"/></div>
+        <div className={styles.paneTitle}><span>الجهات والمحادثات</span><small>{visibleRooms.length} جهات</small></div>
+        {bankRooms.length>0&&<div className={styles.desktopSideSection}><small>البنوك</small>{renderRoomList(bankRooms)}</div>}
+        {advisorRooms.length>0&&<div className={styles.desktopSideSection}><small>المستشارون</small>{renderRoomList(advisorRooms)}</div>}
+        {meetingRooms.length>0&&<div className={styles.desktopSideSection}><small>الاجتماعات والمجالس</small>{renderRoomList(meetingRooms)}</div>}
+      </aside>}
       <main className={`${styles.chatPane} ${mobileRoomList?styles.mobileChatHidden:''}`}><header className={styles.chatHeader}><div className={styles.chatIdentity}>{onboardingComplete!==false&&<button type="button" className={styles.mobileBack} aria-label="العودة إلى المحادثات" onClick={()=>setMobileRoomList(true)}><LucideIcon name="chevronRight" size={20}/></button>}<RoomPortrait room={activeRoom} size="md"/><div><div className={styles.entityTitle}><strong>{chatRoleTitle(activeRoom)}</strong></div><small>{chatEntityTitle(activeRoom)}</small></div></div><div className={styles.mobileTools}><button type="button" aria-label="معلومات الجهة" onClick={()=>void openConversationContext()}><LucideIcon name="info" size={20}/></button></div></header>
         <div className={styles.chatScrollRegion}>
         <div className={styles.routingNote}><LucideIcon name="sparkles" size={16}/><span>{activeRoom.specialists}</span></div>
