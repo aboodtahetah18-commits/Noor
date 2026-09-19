@@ -3112,3 +3112,52 @@
 }
 .oversightUserActionList article>button:disabled{opacity:.55;cursor:not-allowed}
 .oversightUserActionPolicy{line-height:1.6}
+
+.oversightUserActionList textarea{
+  width:100%;
+  min-height:70px;
+  resize:vertical;
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-2);
+  background:var(--namaa-card);
+  color:var(--ux-text-primary);
+  padding:var(--ux-space-2);
+  font:inherit;
+  font-size:var(--ux-type-body-sm-size);
+  line-height:1.6
+}
+.oversightEvidencePicker{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:var(--ux-space-2);
+  font-size:var(--ux-type-caption-size);
+  color:var(--ux-text-secondary)
+}
+.oversightEvidencePicker>span{
+  font-weight:900;
+  color:var(--namaa-green-900)
+}
+.oversightEvidencePicker input{
+  max-width:100%;
+  font:inherit;
+  font-size:var(--ux-type-caption-size)
+}
+.oversightUserActionButtons{display:flex;flex-wrap:wrap;gap:var(--ux-space-2)}
+.oversightUserActionButtons button{
+  min-height:36px;
+  border:1px solid var(--namaa-green-700);
+  border-radius:var(--ux-radius-full);
+  background:var(--namaa-card);
+  color:var(--namaa-green-900);
+  padding:var(--ux-space-1) var(--ux-space-3);
+  font:inherit;
+  font-size:var(--ux-type-caption-size);
+  font-weight:900;
+  cursor:pointer
+}
+.oversightUserActionButtons button:last-child{
+  background:var(--namaa-green-900);
+  color:var(--namaa-card)
+}
+.oversightUserActionButtons button:disabled{opacity:.55;cursor:not-allowed}

@@ -9,7 +9,8 @@ export type GovernanceFollowupHistoryEventType=
   | 'DUE_DATE_CLEARED'
   | 'ESCALATED'
   | 'COMPLETED'
-  | 'REOPENED';
+  | 'REOPENED'
+  | 'USER_RESPONDED';
 
 export type GovernanceFollowupHistoryEvent={
   eventId:string;
@@ -56,6 +57,7 @@ export async function loadGovernanceFollowupHistories(
         or structured_data->>'institutional_decision_followup_deadline_event'='true'
         or structured_data->>'institutional_decision_followup_user_request'='true'
         or structured_data->>'institutional_decision_followup_escalation'='true'
+        or structured_data->>'institutional_decision_followup_user_response'='true'
       )
     order by created_at desc
   `;
@@ -76,7 +78,11 @@ export async function loadGovernanceFollowupHistories(
     const eventId=String(row.id);
     let event:GovernanceFollowupHistoryEvent|null=null;
 
-    if(data?.institutional_decision_followup_escalation===true){
+    if(data?.institutional_decision_followup_user_response===true){
+      const attachment=record(data.evidence_attachment);
+      const detail=text(data.response_text)??(attachment?('إثبات مرفق: '+String(attachment.file_name??'ملف')):null);
+      event={eventId,eventType:'USER_RESPONDED',label:'استلم رد المستخدم وانتقل للتحقق',detail,actorKey,actorName,createdAt};
+    }else if(data?.institutional_decision_followup_escalation===true){
       event={eventId,eventType:'ESCALATED',label:'تم التصعيد إلى المحافظ',detail:text(data.escalation_reason),actorKey,actorName,createdAt};
     }else if(data?.institutional_decision_followup_user_request===true){
       event={eventId,eventType:'DATA_REQUESTED',label:'طُلبت بيانات من المستخدم',detail:text(data.requested_data),actorKey,actorName,createdAt};

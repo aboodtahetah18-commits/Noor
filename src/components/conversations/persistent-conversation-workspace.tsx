@@ -183,7 +183,7 @@ function patchLiveOversightDashboard(messages:Message[],dashboard:unknown){
   });
 }
 function OversightStructuredCards({
-  data,onCommand,onTemplate,disabled,actionFeedback,pendingConfirmation,onConfirmSensitive,onCancelSensitive,
+  data,onCommand,onTemplate,disabled,actionFeedback,pendingConfirmation,onConfirmSensitive,onCancelSensitive,onSubmitUserResponse,
 }:{
   data?:Record<string,unknown>;
   onCommand:(command:string,confirmation?:{title:string;message:string;confirmLabel:string})=>void;
@@ -193,9 +193,13 @@ function OversightStructuredCards({
   pendingConfirmation:OversightPendingConfirmation;
   onConfirmSensitive:()=>void;
   onCancelSensitive:()=>void;
+  onSubmitUserResponse:(args:{registryId:string;followupId:string;responseText:string;file:File|null})=>Promise<boolean>;
 }){
   const [viewFilter,setViewFilter]=useState<OversightViewFilter>('ALL');
   const [viewSort,setViewSort]=useState<OversightViewSort>('DEFAULT');
+  const [userActionDrafts,setUserActionDrafts]=useState<Record<string,string>>({});
+  const [userActionFiles,setUserActionFiles]=useState<Record<string,File|null>>({});
+  const [submittingUserAction,setSubmittingUserAction]=useState<string|null>(null);
   if(!data)return null;
   const dashboard=data.governance_oversight_dashboard===true&&data.dashboard&&typeof data.dashboard==='object'?data.dashboard as Record<string,unknown>:null;
   const detail=data.governance_oversight_followup_detail===true?data:null;
@@ -245,7 +249,45 @@ function OversightStructuredCards({
             <span>{item.actionLabel}</span>
             <span>{item.dueDate?'الموعد: '+item.dueDate:'لا يوجد موعد معتمد'}</span>
           </div>
-          <button type="button" disabled={disabled} onClick={()=>onCommand(item.openCommand)}>فتح المتابعة</button>
+          <textarea
+            rows={2}
+            maxLength={8000}
+            value={userActionDrafts[item.followupId]??''}
+            onChange={event=>setUserActionDrafts(current=>({...current,[item.followupId]:event.target.value}))}
+            placeholder="اكتب ردك أو توضيحك هنا…"
+            aria-label={'رد المستخدم على '+item.title}
+          />
+          <label className={styles.oversightEvidencePicker}>
+            <span>إرفاق إثبات</span>
+            <input
+              type="file"
+              accept=".pdf,.png,.jpg,.jpeg,.webp,.csv,application/pdf,image/png,image/jpeg,image/webp,text/csv"
+              onChange={event=>setUserActionFiles(current=>({...current,[item.followupId]:event.target.files?.[0]??null}))}
+              disabled={disabled||submittingUserAction===item.followupId}
+            />
+            {userActionFiles[item.followupId]&&<small>{userActionFiles[item.followupId]?.name}</small>}
+          </label>
+          <div className={styles.oversightUserActionButtons}>
+            <button type="button" disabled={disabled} onClick={()=>onCommand(item.openCommand)}>فتح المتابعة</button>
+            <button
+              type="button"
+              disabled={disabled||submittingUserAction===item.followupId||(!(userActionDrafts[item.followupId]??'').trim()&&!userActionFiles[item.followupId])}
+              onClick={async()=>{
+                setSubmittingUserAction(item.followupId);
+                const ok=await onSubmitUserResponse({
+                  registryId:item.registryId,
+                  followupId:item.followupId,
+                  responseText:userActionDrafts[item.followupId]??'',
+                  file:userActionFiles[item.followupId]??null,
+                });
+                if(ok){
+                  setUserActionDrafts(current=>({...current,[item.followupId]:''}));
+                  setUserActionFiles(current=>({...current,[item.followupId]:null}));
+                }
+                setSubmittingUserAction(null);
+              }}
+            >{submittingUserAction===item.followupId?'جارٍ الإرسال والتحويل للتحقق…':'إرسال للتحقق'}</button>
+          </div>
         </article>)}
       </div>}
       <small className={styles.oversightUserActionPolicy}>يعرض هذا القسم فقط المتابعات التي حالتها WAITING_USER؛ ولا يخلط معها مهام المسؤولين أو الجهات الداخلية.</small>
@@ -834,6 +876,31 @@ export function PersistentConversationWorkspace(){
     setOversightActionFeedback({command:'',status:'idle',message:null});
   }
 
+  async function submitOversightUserResponse(args:{registryId:string;followupId:string;responseText:string;file:File|null}){
+    if(sending)return false;
+    setSending(true);
+    setError('');
+    try{
+      const form=new FormData();
+      form.set('room_key',activeRoomId==='secretary'?'secretary':'central');
+      form.set('registry_id',args.registryId);
+      form.set('followup_id',args.followupId);
+      form.set('response_text',args.responseText);
+      if(args.file)form.set('file',args.file);
+      const response=await fetch('/api/conversations/followups/respond',{method:'POST',body:form});
+      const data=await response.json() as {message?:Message;reply?:Message;oversight_dashboard?:Record<string,unknown>;code?:string};
+      if(!response.ok||!data.message)throw new Error(data.code||'write');
+      const nextMessages=[data.message as Message,...(data.reply?[data.reply]:[])];
+      setMessages(current=>[...patchLiveOversightDashboard(current,data.oversight_dashboard),...nextMessages]);
+      return true;
+    }catch{
+      setError('تعذر إرسال الرد أو الإثبات للتحقق. لم تُغلق المتابعة ولم تتغير حالتها على أنها مكتملة.');
+      return false;
+    }finally{
+      setSending(false);
+    }
+  }
+
   async function sendQuickCommand(body:string){
     const command=body.trim();
     if(!command||sending||oversightActionFeedback.status==='pending')return;
@@ -910,6 +977,7 @@ export function PersistentConversationWorkspace(){
   pendingConfirmation={pendingOversightConfirmation}
   onConfirmSensitive={confirmOversightSensitiveAction}
   onCancelSensitive={cancelOversightSensitiveAction}
+  onSubmitUserResponse={submitOversightUserResponse}
   onCommand={requestOversightCommand}
   onTemplate={template=>{setPendingOversightConfirmation(null);setOversightActionFeedback({command:'',status:'idle',message:null});setDraft(template);requestAnimationFrame(()=>composerTextareaRef.current?.focus())}}
 /><StructuredFacts data={message.structured_data}/>{(message.message_kind==='decision'||message.message_kind==='request')&&<small className={styles.executionBoundary}>أي تنفيذ مالي خارجي يظل بيد المستخدم، ويحتاج تأكيدًا وإثباتًا قبل الإغلاق.</small>}</section>}</article>)}</div>

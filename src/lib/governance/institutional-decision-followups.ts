@@ -3,7 +3,7 @@ import { getRawSql } from '@/infrastructure/db/client';
 import type { ConversationMessageKind, ConversationRoomKey } from '@/lib/conversations/store';
 import { getInstitutionalDecisionRegistry, type InstitutionalDecisionFollowup } from '@/lib/governance/institutional-decision-registry';
 
-export type DecisionFollowupStatus='OPEN'|'ASSIGNED'|'IN_PROGRESS'|'WAITING_USER'|'WAITING_OWNER'|'BLOCKED'|'COMPLETED';
+export type DecisionFollowupStatus='OPEN'|'ASSIGNED'|'IN_PROGRESS'|'WAITING_USER'|'WAITING_OWNER'|'VERIFICATION_PENDING'|'BLOCKED'|'COMPLETED';
 
 export type DecisionFollowupCommand=
   | {kind:'SHOW'}
