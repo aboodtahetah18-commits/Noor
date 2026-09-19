@@ -27,6 +27,40 @@ const LABELS:Record<string,string>={
 
 const EDITABLE=new Set(Object.keys(LABELS));
 
+function foundationFactDisplay(value:unknown){
+  if(!value||typeof value!=='object'||Array.isArray(value)) return {raw:'',editable:false};
+  const record=value as Record<string,unknown>;
+  if(typeof record.raw==='string') return {raw:record.raw.trim(),editable:true};
+
+  if(Array.isArray(record.items)){
+    const items=record.items.filter((item):item is Record<string,unknown>=>Boolean(item)&&typeof item==='object'&&!Array.isArray(item));
+    if(!items.length) return {raw:'لا يوجد',editable:false};
+    const labels=items.map(item=>{
+      const name=typeof item.name==='string'?item.name.trim():'';
+      const bank=typeof item.bank_name==='string'?item.bank_name.trim():'';
+      const amount=
+        typeof item.monthly_support==='number'?item.monthly_support:
+        typeof item.amount==='number'?item.amount:
+        typeof item.target_amount==='number'?item.target_amount:
+        typeof item.opening_balance==='number'?item.opening_balance:null;
+      const title=name||bank||'عنصر';
+      return amount===null?title:`${title} — ${new Intl.NumberFormat('ar-SA',{maximumFractionDigits:2}).format(amount)} ر.س`;
+    });
+    return {raw:labels.join(' · '),editable:false};
+  }
+
+  if(typeof record.actual_net==='number'){
+    const net=new Intl.NumberFormat('ar-SA',{maximumFractionDigits:2}).format(record.actual_net);
+    const base=typeof record.base_salary==='number'
+      ? new Intl.NumberFormat('ar-SA',{maximumFractionDigits:2}).format(record.base_salary)
+      : null;
+    return {raw:`الصافي الفعلي ${net} ر.س${base?` · الأساسي ${base} ر.س`:''}`,editable:false};
+  }
+
+  return {raw:'بيانات منظمة محفوظة',editable:false};
+}
+
+
 export async function GET(){
   const user=await getAuthenticatedUser();
   if(!user) return NextResponse.json({code:'AUTH_REQUIRED'},{status:401});
@@ -41,16 +75,17 @@ export async function GET(){
   return NextResponse.json({
     facts:rows
       .filter(row=>EDITABLE.has(String(row.fact_key)))
-      .map(row=>({
-        key:String(row.fact_key),
-        label:LABELS[String(row.fact_key)]??String(row.fact_key),
-        raw:
-          row.value_json && typeof row.value_json==='object' && 'raw' in row.value_json
-            ? String((row.value_json as Record<string,unknown>).raw??'')
-            : '',
-        verified_at:row.verified_at,
-        confidence:Number(row.confidence??1),
-      })),
+      .map(row=>{
+        const display=foundationFactDisplay(row.value_json);
+        return {
+          key:String(row.fact_key),
+          label:LABELS[String(row.fact_key)]??String(row.fact_key),
+          raw:display.raw,
+          editable:display.editable,
+          verified_at:row.verified_at,
+          confidence:Number(row.confidence??1),
+        };
+      }),
   });
 }
 
