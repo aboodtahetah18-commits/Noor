@@ -863,6 +863,24 @@
   z-index:2
 }
 
+.brandWatermarkSecondary{
+  inset-inline-start:auto;
+  inset-inline-end:calc(var(--ux-space-8) * -1);
+  bottom:auto;
+  top:18%;
+  width:calc(var(--ux-space-16) * 3);
+  opacity:.035;
+  transform:rotate(-18deg)
+}
+
+.brandWatermarkTertiary{
+  inset-inline-start:18%;
+  bottom:34%;
+  width:calc(var(--ux-space-16) * 2);
+  opacity:.025;
+  transform:rotate(24deg)
+}
+
 .chatBrandBar{
   display:none;
   background:var(--namaa-card);
@@ -1351,7 +1369,7 @@
   line-height:1.5
 }
 
-.onboardingIntakeHeader>span{
+ .onboardingHeaderActions>span{
   display:inline-flex;
   align-items:center;
   gap:var(--ux-space-1);
@@ -2005,6 +2023,13 @@
   background:var(--namaa-card)
 }
 
+:global(html[data-theme='dark']) .councilGovernor{border-inline-start-color:color-mix(in srgb,var(--namaa-green-900) 38%,var(--ux-text-inverse))}
+:global(html[data-theme='dark']) .councilSolvency{border-inline-start-color:color-mix(in srgb,var(--namaa-green-700) 42%,var(--ux-text-inverse))}
+:global(html[data-theme='dark']) .councilAssets{border-inline-start-color:color-mix(in srgb,var(--namaa-gold-500) 52%,var(--ux-text-inverse))}
+:global(html[data-theme='dark']) .councilHilal{border-inline-start-color:color-mix(in srgb,var(--namaa-gold-action) 52%,var(--ux-text-inverse))}
+:global(html[data-theme='dark']) .councilAdvisor{border-inline-start-color:color-mix(in srgb,var(--namaa-border-strong) 48%,var(--ux-text-inverse))}
+:global(html[data-theme='dark']) .councilSecretary{border-inline-start-color:color-mix(in srgb,var(--namaa-green-700) 36%,var(--ux-text-inverse))}
+
 .councilInitial{
   width:34px;
   height:34px;
@@ -2252,11 +2277,21 @@
   padding:var(--ux-space-0);
   border-color:color-mix(in srgb,var(--ux-text-inverse) 34%,transparent)
   }
-  .mobileTopLogo{
-    width:auto;
-  height:36px;
-  object-fit:contain;
-  filter:brightness(0) invert(1)
+  .mobileBrandLockup{
+    display:inline-flex;
+    align-items:center;
+    gap:var(--ux-space-1);
+    color:var(--ux-text-inverse);
+    font-size:var(--ux-type-section-title-size);
+    font-weight:900;
+    line-height:1;
+    white-space:nowrap
+  }
+  .mobileBrandLockup img{
+    width:30px;
+    height:30px;
+    object-fit:contain;
+    filter:none
   }
   .mobileThemeToggle{
     width:40px!important;
@@ -2587,7 +2622,7 @@
   inset-inline-end:auto;
   transform:translate(50%,-50%)
   }
-  .onboardingIntakeHeader>span{
+  .onboardingHeaderActions>span{
     display:none
   }
   .intakeCard{
@@ -2660,3 +2695,151 @@
   margin-right:var(--ux-space-0)
   }
 }
+
+
+/* User-controlled chat typography and governed settings */
+.chatFont_small{--namaa-chat-copy-size:var(--ux-type-caption-size)}
+.chatFont_medium{--namaa-chat-copy-size:var(--ux-type-body-sm-size)}
+.chatFont_large{--namaa-chat-copy-size:var(--ux-type-body-size)}
+.chatFont_small .message>p,.chatFont_medium .message>p,.chatFont_large .message>p,
+.chatFont_small .onboardingMessageContent>p,.chatFont_medium .onboardingMessageContent>p,.chatFont_large .onboardingMessageContent>p,
+.chatFont_small .onboardingQuestionBox strong,.chatFont_medium .onboardingQuestionBox strong,.chatFont_large .onboardingQuestionBox strong{
+  font-size:var(--namaa-chat-copy-size)
+}
+
+.onboardingHeaderActions{
+  display:flex;
+  align-items:center;
+  gap:var(--ux-space-2)
+}
+.onboardingHeaderActions>span{
+  display:inline-flex;
+  align-items:center;
+  gap:var(--ux-space-1);
+  padding:var(--ux-space-1) var(--ux-space-2);
+  border-radius:var(--ux-radius-full);
+  border:1px solid var(--namaa-border);
+  background:var(--namaa-surface-warm);
+  color:var(--namaa-green-900);
+  font-size:var(--ux-type-caption-size);
+  font-weight:900;
+  white-space:nowrap
+}
+.onboardingCloseButton{
+  width:36px;
+  height:36px;
+  flex:0 0 36px;
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-full);
+  background:var(--namaa-card);
+  color:var(--ux-text-primary);
+  display:grid;
+  place-items:center;
+  cursor:pointer
+}
+.resumeIntakeButton{
+  position:absolute;
+  inset-inline-end:var(--ux-space-3);
+  bottom:calc(64px + var(--ux-space-3));
+  z-index:12;
+  min-height:40px;
+  border:1px solid var(--namaa-green-700);
+  border-radius:var(--ux-radius-full);
+  background:var(--namaa-card);
+  color:var(--namaa-green-900);
+  padding:var(--ux-space-2) var(--ux-space-3);
+  display:inline-flex;
+  align-items:center;
+  gap:var(--ux-space-2);
+  font:inherit;
+  font-size:var(--ux-type-button-size);
+  font-weight:900;
+  box-shadow:var(--ux-shadow-md)
+}
+.settingsSectionBlock{
+  display:grid;
+  gap:var(--ux-space-2);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-surface-warm)
+}
+.settingsRow,.settingsSectionHeading{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--ux-space-3)
+}
+.settingsSectionHeading>span,.settingsRow>span{
+  display:grid;
+  gap:var(--ux-space-1);
+  flex:1
+}
+.settingsSectionHeading strong,.settingsRow strong{
+  font-size:var(--ux-type-body-sm-size);
+  color:var(--ux-text-primary)
+}
+.settingsSectionHeading small,.settingsRow small,.settingsLockedNote{
+  font-size:var(--ux-type-caption-size);
+  line-height:1.55;
+  color:var(--ux-text-secondary)
+}
+.fontSizeChoices{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:var(--ux-space-2)
+}
+.fontSizeChoices button,.settingsActionGrid button{
+  min-height:40px;
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-card);
+  color:var(--ux-text-primary);
+  font:inherit;
+  font-size:var(--ux-type-button-size);
+  font-weight:800;
+  padding:var(--ux-space-2)
+}
+.fontSizeChoices .activeFontChoice{
+  border-color:var(--namaa-green-700);
+  color:var(--namaa-green-900);
+  background:color-mix(in srgb,var(--namaa-surface-warm) 76%,var(--namaa-green-700) 24%)
+}
+.settingsActionGrid{
+  display:grid;
+  gap:var(--ux-space-2)
+}
+.settingsActionGrid button{
+  display:flex;
+  align-items:center;
+  gap:var(--ux-space-2);
+  text-align:start
+}
+.settingsStatusList{
+  display:grid;
+  gap:var(--ux-space-2)
+}
+.settingsStatusList span{
+  display:flex;
+  justify-content:space-between;
+  gap:var(--ux-space-2);
+  border-top:1px solid var(--namaa-border);
+  padding-top:var(--ux-space-2)
+}
+.settingsStatusList b{
+  font-size:var(--ux-type-caption-size);
+  color:var(--ux-text-primary)
+}
+.settingsStatusList em{
+  font-style:normal;
+  font-size:var(--ux-type-caption-size);
+  color:var(--namaa-green-700)
+}
+
+/* Strong distinct meeting rails in light mode; lightened brand rails in dark mode */
+.councilGovernor{border-inline-start-width:4px;border-inline-start-color:var(--namaa-green-900)}
+.councilSolvency{border-inline-start-width:4px;border-inline-start-color:color-mix(in srgb,var(--namaa-green-700) 72%,var(--namaa-green-900))}
+.councilAssets{border-inline-start-width:4px;border-inline-start-color:color-mix(in srgb,var(--namaa-gold-500) 58%,var(--namaa-green-900))}
+.councilHilal{border-inline-start-width:4px;border-inline-start-color:color-mix(in srgb,var(--namaa-gold-action) 65%,var(--namaa-green-900))}
+.councilAdvisor{border-inline-start-width:4px;border-inline-start-color:var(--namaa-border-strong)}
+.councilSecretary{border-inline-start-width:4px;border-inline-start-color:color-mix(in srgb,var(--namaa-green-700) 55%,var(--namaa-gold-500))}

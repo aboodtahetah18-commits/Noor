@@ -19,8 +19,12 @@ for(const name of critical){
   if(total>2) fail(name+' has conflicting duplicate definitions: '+total);
 }
 if(!css.includes('background:var(--namaa-green-900)')) fail('approved green mobile app bar missing');
-if(!css.includes('filter:brightness(0) invert(1)')) fail('approved white mobile logo treatment missing');
+if(!css.includes('.mobileBrandLockup') || !css.includes('color:var(--ux-text-inverse)')) fail('approved white Namaa word lockup missing');
+if(!css.includes('.mobileBrandLockup img') || !css.includes('filter:none')) fail('colored brand leaf treatment missing');
 if(!css.includes('.onboardingIntake') || !css.includes('position:fixed')) fail('onboarding must remain a popup layer');
+if(!css.includes('.onboardingCloseButton') || !css.includes('.resumeIntakeButton')) fail('onboarding close/reopen controls missing');
+if(!css.includes('.chatFont_small') || !css.includes('.fontSizeChoices')) fail('user chat font control missing');
+if(!css.includes('.brandWatermarkSecondary') || !css.includes('.brandWatermarkTertiary')) fail('approved Namaa watermark pattern missing');
 if(/\.agentMessage\{[^}]*!important|\.userMessage\{[^}]*!important/s.test(css)) fail('message alignment must not depend on !important');
 
 console.log('CHAT-UI-INTEGRITY-PASS');
