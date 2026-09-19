@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { getRawSql } from '@/infrastructure/db/client';
 
-export type ConversationRoomKey = 'central' | 'solvency' | 'assets' | 'hilal' | 'advisor' | 'council';
+export type ConversationRoomKey = 'central' | 'solvency' | 'assets' | 'hilal' | 'advisor' | 'council' | 'operations' | 'governance' | 'secretary';
 export type ConversationMessageKind = 'message' | 'risk' | 'decision' | 'recommendation' | 'followup' | 'request';
 
 export const governedRooms: Record<ConversationRoomKey, { title: string; subtitle: string; kind: string; participants: Array<{ key: string; name: string; type: 'agent' | 'system'; role: string }> }> = {
@@ -11,6 +11,9 @@ export const governedRooms: Record<ConversationRoomKey, { title: string; subtitl
   hilal: { title: 'بنك الهلال', subtitle: 'التمويل الداخلي', kind: 'bank', participants: [{ key: 'hilal-manager', name: 'مدير بنك الهلال', type: 'agent', role: 'مدير خوارزمي' }, { key: 'funding-advisor', name: 'مستشار التمويل', type: 'agent', role: 'مستشار مختص' }] },
   advisor: { title: 'المستشار الاقتصادي', subtitle: 'تحليل الصورة المالية الكلية', kind: 'advisor', participants: [{ key: 'financial-advisor', name: 'المستشار الاقتصادي', type: 'agent', role: 'مستشار خوارزمي' }] },
   council: { title: 'مجلس نماء الأعلى', subtitle: 'القرارات واللجان', kind: 'council', participants: [{ key: 'council-secretary', name: 'أمين مجلس نماء الأعلى', type: 'agent', role: 'أمين خوارزمي' }] },
+  operations: { title: 'العمليات والمطابقة', subtitle: 'رسائل المشتريات والحركات', kind: 'operations', participants: [{ key: 'operations-matcher', name: 'مركز العمليات والمطابقة', type: 'system', role: 'مطابقة وتصنيف وتسجيل مبدئي' }] },
+  governance: { title: 'الحوكمة والسياسات', subtitle: 'السياسات والصلاحيات والآليات والسجلات', kind: 'governance', participants: [{ key: 'governance-center', name: 'مركز الحوكمة والسياسات والسجلات', type: 'system', role: 'عرض المراجع الحاكمة وطلبات المراجعة' }] },
+  secretary: { title: 'أمين السر والاجتماعات', subtitle: 'الاجتماعات والمحاضر والمتابعة', kind: 'secretary', participants: [{ key: 'council-secretary', name: 'أمين السر المركزي', type: 'agent', role: 'أمين مجلس نماء الأعلى واللجان' }] },
 };
 
 const onboardingMessage = {

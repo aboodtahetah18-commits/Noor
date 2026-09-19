@@ -11,6 +11,7 @@ import { createHilalFinancingReply } from '@/lib/conversations/hilal-financing-e
 import { createHilalRestructuringReply } from '@/lib/conversations/hilal-restructuring-engine';
 import { appendUserMessage, getConversationRoom, isConversationRoomKey, type ConversationMessageKind } from '@/lib/conversations/store';
 import { getGovernorOnboardingStatus, getGovernorWelcome, processGovernorOnboardingMessage } from '@/lib/conversations/governor-onboarding';
+import { routePurchaseMessage } from '@/lib/conversations/purchase-message-intake';
 
 export async function GET(_request: Request, context: { params: Promise<{ roomKey: string }> }) {
   const user = await getAuthenticatedUser();
@@ -104,7 +105,24 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
     }
 
     let reply: PersistedReply | null = null;
-    if (roomKey === 'central' && !onboarding.complete) {
+    const purchaseRoute = onboarding.complete ? await routePurchaseMessage({ userId:user.id, sourceRoom:roomKey, text }) : null;
+    if (purchaseRoute?.duplicate) {
+      const room = await getConversationRoom(user.id, roomKey);
+      const sql = (await import('@/infrastructure/db/client')).getRawSql();
+      const rows = await sql`
+        insert into public.conversation_messages(
+          id,thread_id,user_id,sender_type,sender_key,sender_name,message_kind,body,structured_data
+        ) values(
+          gen_random_uuid(),${room.threadId}::uuid,${user.id}::uuid,'agent','operations-router',
+          'نظام توجيه العمليات','followup','هذه الرسالة مسجلة مسبقًا، لذلك لم أنشئ عملية مكررة.',
+          ${JSON.stringify({purchase_duplicate:true,routed_room:'operations',execution_boundary:'record_and_review_only'})}::jsonb
+        )
+        returning id,sender_type,sender_key,sender_name,message_kind,body,structured_data,created_at
+      `;
+      reply = rows[0] as PersistedReply;
+    } else if (purchaseRoute?.reply) {
+      reply = purchaseRoute.reply as PersistedReply;
+    } else if (roomKey === 'central' && !onboarding.complete) {
       const onboardingReply = await processGovernorOnboardingMessage(user.id, text);
       if (onboardingReply) {
         const thread = await getConversationRoom(user.id, 'central');

@@ -191,7 +191,7 @@ export async function getGovernorOnboardingStatus(userId:string){
 type StructuredOnboardingPayload =
   | {step:'dependents';items:Array<{name:string;relationship:string;age?:number|null;monthly_support:number;annual_support?:number|null;special_needs?:string;financial_dependency:boolean}>}
   | {step:'income';base_salary:number;fixed_allowances?:number;variable_allowances?:number;deductions?:number;actual_net:number;other_recurring_income?:number;difference_explanation?:string}
-  | {step:'accounts';items:Array<{bank_name:string;account_type:string;short_identifier?:string;usage?:string;opening_balance:number;included_in_namaa:boolean}>}
+  | {step:'accounts';items:Array<{bank_name:string;account_type:string;short_identifier?:string;iban?:string;card_last4?:string;card_type?:string;usage?:string;opening_balance:number;included_in_namaa:boolean}>}
   | {step:'obligations';items:Array<{name:string;amount:number;recurrence:string;provider?:string;due_day?:number|null;remaining_balance?:number|null;end_date?:string|null;finance_cost?:number|null}>}
   | {step:'goals';items:Array<{name:string;target_amount:number;target_date?:string|null;priority?:string;flexibility?:string;allocated_amount?:number}>};
 
@@ -265,10 +265,18 @@ export function normalizeStructuredOnboardingPayload(payload:StructuredOnboardin
       const bank=cleanText(item.bank_name,120);
       const type=cleanText(item.account_type,80);
       const opening=finiteNonNegative(item.opening_balance);
+      const iban=cleanText(item.iban,34).replace(/\s/g,'').toUpperCase();
+      const cardLast4=cleanText(item.card_last4,8).replace(/\D/g,'');
+      const cardType=cleanText(item.card_type,40);
       if(!bank||!type||opening===null) throw new Error('ONBOARDING_ACCOUNT_INVALID');
+      if(iban&&!/^SA\d{22}$/.test(iban)) throw new Error('ONBOARDING_ACCOUNT_IBAN_INVALID');
+      if(cardLast4&&!/^\d{4}$/.test(cardLast4)) throw new Error('ONBOARDING_ACCOUNT_CARD_LAST4_INVALID');
       return {
         bank_name:bank,account_type:type,
         short_identifier:cleanText(item.short_identifier,40)||null,
+        iban:iban||null,
+        card_last4:cardLast4||null,
+        card_type:cardType||null,
         usage:cleanText(item.usage,160)||null,
         opening_balance:opening,
         included_in_namaa:Boolean(item.included_in_namaa),
