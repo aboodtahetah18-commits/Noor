@@ -5,6 +5,7 @@ import { NextResponse } from 'next/server';
 import { getAuthenticatedUser, requireAuthenticatedMutationUser } from '@/auth/require-authenticated-user';
 import { getRawSql } from '@/infrastructure/db/client';
 import { getGovernorOnboardingStatus } from '@/lib/conversations/governor-onboarding';
+import { MATCHING_TOLERANCE_ALLOWED_DAYS, MATCHING_TOLERANCE_POLICY_REF, normalizeMatchingToleranceDays } from '@/lib/settings/user-preferences';
 
 export async function GET(){
   const user=await getAuthenticatedUser();
@@ -76,8 +77,8 @@ export async function GET(){
     contact_profile:authProfileRows[0]??null,
     operational_settings:{
       matching_tolerance_days:Number(preferences[0]?.matching_tolerance_days??2),
-      policy_ref:'POL-RC-001',
-      allowed_values:[2,3],
+      policy_ref:MATCHING_TOLERANCE_POLICY_REF,
+      allowed_values:MATCHING_TOLERANCE_ALLOWED_DAYS,
     },
     accounts,
   });
@@ -92,8 +93,10 @@ export async function PATCH(request:Request){
 
   try{
     const body=await request.json() as Record<string,unknown>;
-    const tolerance=Number(body.matching_tolerance_days);
-    if(!Number.isInteger(tolerance)||![2,3].includes(tolerance)){
+    let tolerance:2|3;
+    try{
+      tolerance=normalizeMatchingToleranceDays(body.matching_tolerance_days);
+    }catch{
       return NextResponse.json({code:'MATCHING_TOLERANCE_INVALID'},{status:400});
     }
 
@@ -110,7 +113,7 @@ export async function PATCH(request:Request){
     return NextResponse.json({
       ok:true,
       matching_tolerance_days:Number(rows[0]?.matching_tolerance_days??tolerance),
-      policy_ref:'POL-RC-001',
+      policy_ref:MATCHING_TOLERANCE_POLICY_REF,
     });
   }catch{
     return NextResponse.json({code:'ACCOUNT_SETTINGS_UPDATE_FAILED'},{status:503});
