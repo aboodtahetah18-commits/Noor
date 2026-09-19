@@ -1144,3 +1144,32 @@
   .extendedSectionTabs::-webkit-scrollbar{display:none}
   .extendedSectionTabs button{min-width:148px;flex:0 0 auto}
 }
+
+
+.goalAnalysisList{display:grid;gap:var(--ux-space-2);margin-top:var(--ux-space-2)}
+.goalAnalysisCard{
+  display:grid;
+  gap:var(--ux-space-2);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-surface-warm);
+}
+.goalAnalysisCard>header{display:flex;align-items:center;justify-content:space-between;gap:var(--ux-space-2)}
+.goalAnalysisCard>header strong{font-size:var(--ux-type-body-sm-size);color:var(--ux-text-primary)}
+.goalAnalysisCard>header span{
+  padding:var(--ux-space-1) var(--ux-space-2);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-full);
+  background:var(--namaa-card);
+  color:var(--namaa-green-900);
+  font-size:var(--ux-type-caption-size);
+  font-weight:800;
+}
+.goalAnalysisCard>div{display:flex;flex-wrap:wrap;gap:var(--ux-space-2)}
+.goalAnalysisCard>div>span{display:grid;gap:var(--ux-space-1);padding:var(--ux-space-2);border-radius:var(--ux-radius-2);background:var(--namaa-card)}
+.goalAnalysisCard small{font-size:var(--ux-type-caption-size);line-height:1.55;color:var(--ux-text-secondary)}
+.goalAnalysisCard>div strong{font-size:var(--ux-type-caption-size);color:var(--ux-text-primary)}
+.goalAnalysisCard p,.goalAnalysisCard li{font-size:var(--ux-type-caption-size);line-height:1.65;color:var(--ux-text-secondary)}
+.goalAnalysisCard p{margin:0}
+.goalAnalysisCard ul{margin:0;padding-inline-start:var(--ux-space-5);display:grid;gap:var(--ux-space-1)}
