@@ -31,7 +31,7 @@ export function GovernanceMobileSheet({
   useEffect(()=>{
     if(!mode) return;
     let cancelled=false;
-    setLoading(true);setError('');
+    queueMicrotask(()=>{if(!cancelled){setLoading(true);setError('');}});
     const endpoint=mode==='meetings'
       ?'/api/governance/meetings'
       :mode==='documents'
