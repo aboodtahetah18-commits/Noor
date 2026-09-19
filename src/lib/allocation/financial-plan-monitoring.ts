@@ -124,9 +124,7 @@ export async function getCurrentFinancialPlanMonitoring(userId:string):Promise<F
     planVersionId:String(plan.version_id),
     cycleId:String(plan.cycle_id),
     versionNumber:Number(plan.version_number),
-    items:items.map(item=>({
-      ownerKey:item.ownerKey,plannedAmount:item.plannedAmount,realizedAmount:item.realizedAmount,status:item.status,evidenceCount:item.evidenceCount,
-    })),
+    items,
   };
   return {
     ...stable,
