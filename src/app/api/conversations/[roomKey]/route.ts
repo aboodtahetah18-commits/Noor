@@ -14,6 +14,7 @@ import { getGovernorOnboardingStatus, getGovernorWelcome, processGovernorOnboard
 import { routePurchaseMessageToOperations } from '@/lib/conversations/operations-message-router';
 import { attachGovernanceContext } from '@/lib/governance/governance-context';
 import { syncGovernanceMeetingInvitations } from '@/lib/governance/governance-meeting-scheduler';
+import { createCouncilDeliberationReplies } from '@/lib/conversations/council-deliberation-engine';
 
 export async function GET(_request: Request, context: { params: Promise<{ roomKey: string }> }) {
   const user = await getAuthenticatedUser();
@@ -157,6 +158,9 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
       const restructuringReply = await createHilalRestructuringReply(user.id, text);
       const financingReply = restructuringReply ? null : await createHilalFinancingReply(user.id, text);
       reply = restructuringReply ?? financingReply ?? await createRoutedReply(user.id, roomKey, text);
+    } else if (roomKey === 'council') {
+      const replies = await createCouncilDeliberationReplies(user.id, text);
+      return NextResponse.json({ message, reply: replies.at(-1) ?? null, replies, captured_operation: capturedOperation }, { status: 201 });
     } else if (roomKey === 'operations' || roomKey === 'secretary') {
       reply = await createRoutedReply(user.id, roomKey, text);
     } else {
