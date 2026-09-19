@@ -990,7 +990,7 @@
   height:auto;
   min-height:0;
   max-height:none;
-  overflow:visible;
+  overflow:hidden;
   border:1px solid var(--namaa-border);
   border-radius:var(--ux-radius-4);
   box-shadow:var(--ux-shadow-none);
@@ -1041,11 +1041,21 @@
   overflow-wrap:anywhere;
   word-break:break-word;
 }
-.messageBody :where(p,strong,span,div,section,ul,li,button){
+.messageBody :where(p,strong,span,div,section,ul,li,button,img,svg){
   box-sizing:border-box;
   max-width:100%;
+  min-width:0;
   overflow-wrap:anywhere;
   word-break:break-word;
+}
+.messageBody :where(.structuredCard,.facts,.goalAnalysisList,.goalAnalysisCard){
+  width:100%;
+  max-width:100%;
+  min-width:0;
+}
+.messageBody .facts>span{
+  min-width:0;
+  max-width:100%;
 }
 .messageBody>p{
   margin:var(--ux-space-0);
@@ -1261,7 +1271,10 @@
     overflow-y:auto;
     padding-bottom:var(--ux-space-3);
   }
-  .message{max-width:92%}
+  .message{
+    max-width:calc(100% - (var(--ux-space-4) * 2));
+    overflow:hidden;
+  }
   .messageIdentity,.messageBody,.messageFooter{max-width:100%;min-width:0}
   .messageBody>p,
   .onboardingMessageContent>p{
