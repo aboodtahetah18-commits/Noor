@@ -27,7 +27,7 @@ import { createRatifiedAllocationDecisionMinutes } from '@/lib/allocation/alloca
 import { createInstitutionalDecisionRegistryReply, isInstitutionalDecisionRegistryRequest } from '@/lib/governance/institutional-decision-registry';
 import { applyDecisionFollowupCommand, parseDecisionFollowupCommand } from '@/lib/governance/institutional-decision-followups';
 import { applyFollowupDeadlineCommand, parseFollowupDeadlineCommand } from '@/lib/governance/institutional-decision-followup-deadlines';
-import { createGovernanceOversightDashboardReply, isGovernanceOversightDashboardRequest } from '@/lib/governance/governance-oversight-dashboard';
+import { createGovernanceOversightDashboardReply, getGovernanceOversightDashboard, isGovernanceOversightDashboardRequest } from '@/lib/governance/governance-oversight-dashboard';
 import { applyOversightQuickActionCommand, parseOversightQuickActionCommand } from '@/lib/governance/governance-oversight-actions';
 
 export async function GET(_request: Request, context: { params: Promise<{ roomKey: string }> }) {
@@ -165,7 +165,7 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
     } else if (roomKey === 'central' && onboarding.complete && parseOversightQuickActionCommand(text)) {
       const quickActionReply=await applyOversightQuickActionCommand(user.id,'central',parseOversightQuickActionCommand(text)!);
       if(!quickActionReply) return NextResponse.json({message,code:'GOVERNANCE_QUICK_ACTION_UNAVAILABLE',captured_operation:capturedOperation},{status:409});
-      return NextResponse.json({message,reply:quickActionReply,replies:[quickActionReply],captured_operation:capturedOperation},{status:201});
+      return NextResponse.json({message,reply:quickActionReply,replies:[quickActionReply],oversight_dashboard:await getGovernanceOversightDashboard(user.id),captured_operation:capturedOperation},{status:201});
     } else if (roomKey === 'central' && onboarding.complete && isGovernanceOversightDashboardRequest(text)) {
       const dashboardReply=await createGovernanceOversightDashboardReply(user.id,'central');
       if(!dashboardReply) return NextResponse.json({message,code:'GOVERNANCE_DASHBOARD_UNAVAILABLE',captured_operation:capturedOperation},{status:409});
@@ -173,11 +173,11 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
     } else if (roomKey === 'central' && onboarding.complete && parseFollowupDeadlineCommand(text)) {
       const deadlineReply=await applyFollowupDeadlineCommand(user.id,'central',parseFollowupDeadlineCommand(text)!);
       if(!deadlineReply) return NextResponse.json({message,code:'FOLLOWUP_DEADLINE_UNAVAILABLE',captured_operation:capturedOperation},{status:409});
-      return NextResponse.json({message,reply:deadlineReply,replies:[deadlineReply],captured_operation:capturedOperation},{status:201});
+      return NextResponse.json({message,reply:deadlineReply,replies:[deadlineReply],oversight_dashboard:await getGovernanceOversightDashboard(user.id),captured_operation:capturedOperation},{status:201});
     } else if (roomKey === 'central' && onboarding.complete && parseDecisionFollowupCommand(text)) {
       const followupReply=await applyDecisionFollowupCommand(user.id,'central',parseDecisionFollowupCommand(text)!);
       if(!followupReply) return NextResponse.json({message,code:'DECISION_FOLLOWUP_UNAVAILABLE',captured_operation:capturedOperation},{status:409});
-      return NextResponse.json({message,reply:followupReply,replies:[followupReply],captured_operation:capturedOperation},{status:201});
+      return NextResponse.json({message,reply:followupReply,replies:[followupReply],oversight_dashboard:await getGovernanceOversightDashboard(user.id),captured_operation:capturedOperation},{status:201});
     } else if (roomKey === 'central' && onboarding.complete && isInstitutionalDecisionRegistryRequest(text)) {
       const registryReply=await createInstitutionalDecisionRegistryReply(user.id,'central');
       if(!registryReply) return NextResponse.json({message,code:'DECISION_REGISTRY_UNAVAILABLE',captured_operation:capturedOperation},{status:409});

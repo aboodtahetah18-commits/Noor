@@ -119,6 +119,43 @@ function OnboardingMessageContent({message,showStructuredAction,onOpenStructured
   </div>;
 }
 
+
+function liveOversightSummary(dashboard:Record<string,unknown>){
+  const openDecisions=typeof dashboard.openDecisions==='number'?dashboard.openDecisions:0;
+  const pending=typeof dashboard.pendingFollowups==='number'?dashboard.pendingFollowups:0;
+  const overdue=Array.isArray(dashboard.overdueFollowups)?dashboard.overdueFollowups.length:0;
+  const waitingUser=Array.isArray(dashboard.waitingUser)?dashboard.waitingUser.length:0;
+  const waitingOwner=Array.isArray(dashboard.waitingOwner)?dashboard.waitingOwner.length:0;
+  const unassigned=Array.isArray(dashboard.unassigned)?dashboard.unassigned.length:0;
+  const blocked=Array.isArray(dashboard.blocked)?dashboard.blocked.length:0;
+  const escalations=Array.isArray(dashboard.openEscalations)?dashboard.openEscalations.length:0;
+  return `اللوحة الرقابية: ${openDecisions} قرارًا ما زال تحت المتابعة، و${pending} متابعة مفتوحة، منها ${overdue} متأخرة فعليًا، ${waitingUser} بانتظار المستخدم، ${waitingOwner} بانتظار مسؤول/جهة، ${unassigned} بلا إسناد، ${blocked} معلقة، و${escalations} تصعيدًا مفتوحًا.`;
+}
+
+function patchLiveOversightDashboard(messages:Message[],dashboard:unknown){
+  if(!dashboard||typeof dashboard!=='object'||Array.isArray(dashboard))return messages;
+  const next=dashboard as Record<string,unknown>;
+  return messages.map(message=>{
+    if(message.structured_data?.governance_oversight_dashboard!==true)return message;
+    return {
+      ...message,
+      body:liveOversightSummary(next),
+      structured_data:{
+        ...(message.structured_data??{}),
+        dashboard:next,
+        open_decisions:next.openDecisions,
+        pending_followups:next.pendingFollowups,
+        overdue_followups:next.overdueFollowups,
+        waiting_user:next.waitingUser,
+        waiting_owner:next.waitingOwner,
+        unassigned_followups:next.unassigned,
+        blocked_followups:next.blocked,
+        open_escalations:next.openEscalations,
+        live_updated_at:next.generatedAt,
+      },
+    };
+  });
+}
 function OversightStructuredCards({
   data,onCommand,onTemplate,disabled,
 }:{
@@ -136,7 +173,7 @@ function OversightStructuredCards({
     return <button key={String(action.key??label)+index} type="button" className={styles.oversightActionButton} disabled={disabled} onClick={()=>command?onCommand(command):template?onTemplate(template):undefined}>{label}</button>;
   }):null;
   if(dashboard)return <section className={styles.oversightPanel} aria-label="اللوحة الرقابية">
-    <header className={styles.oversightPanelHeader}><span>اللوحة الرقابية</span><small>{followups.length} متابعة مفتوحة</small></header>
+    <header className={styles.oversightPanelHeader}><span>اللوحة الرقابية</span><small>{followups.length} متابعة مفتوحة · تحديث حي</small></header>
     <div className={styles.oversightCardGrid}>{followups.map((item,index)=>{
       const number=typeof item.number==='number'?item.number:index+1;
       const title=String(item.title??('متابعة '+number));
@@ -628,20 +665,20 @@ export function PersistentConversationWorkspace(){
     setSending(true);setError('');
     try{
       const response=await fetch('/api/conversations/'+activeRoomId,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({body:command})});
-      const data=await response.json() as {message?:Message;reply?:Message;replies?:Message[]};
+      const data=await response.json() as {message?:Message;reply?:Message;replies?:Message[];oversight_dashboard?:Record<string,unknown>};
       if(!response.ok||!data.message)throw new Error('write');
       const responseMessages=Array.isArray(data.replies)&&data.replies.length?data.replies:(data.reply?[data.reply]:[]);
-      setMessages(current=>[...current,data.message as Message,...responseMessages]);
+      setMessages(current=>[...patchLiveOversightDashboard(current,data.oversight_dashboard),data.message as Message,...responseMessages]);
     }catch{setError('تعذر تنفيذ الإجراء الرقابي الآن. لم يعتبر نماء الإجراء مكتملًا؛ أعد المحاولة.')}finally{setSending(false)}
   }
 
   async function send(event:FormEvent){ event.preventDefault(); const body=draft.trim(); if(!body||sending)return; setSending(true); setError('');
     try{
       const response=await fetch(`/api/conversations/${activeRoomId}`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({body})});
-      const data=await response.json() as {message?:Message;reply?:Message;replies?:Message[]};
+      const data=await response.json() as {message?:Message;reply?:Message;replies?:Message[];oversight_dashboard?:Record<string,unknown>};
       if(!response.ok||!data.message)throw new Error('write');
       const responseMessages=Array.isArray(data.replies)&&data.replies.length?data.replies:(data.reply?[data.reply]:[]);
-      setMessages(current=>[...current,data.message as Message,...responseMessages]);
+      setMessages(current=>[...patchLiveOversightDashboard(current,data.oversight_dashboard),data.message as Message,...responseMessages]);
       const lifecycleReply=data.reply??responseMessages.at(-1);
       const completed=Boolean(lifecycleReply?.structured_data?.onboarding_complete);
       const nextStep=lifecycleReply?.structured_data?.onboarding_step;
