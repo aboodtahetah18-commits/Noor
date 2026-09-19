@@ -964,3 +964,52 @@
     gap:var(--ux-space-1);
   }
 }
+
+
+/* Chat shell rework — isolated scroll region and compact fixed composer */
+.chatScrollRegion{display:contents}
+@media(max-width:767px){
+  .chatPane{
+    display:grid;
+    grid-template-rows:auto minmax(0,1fr) auto;
+    overflow:hidden;
+  }
+  .chatScrollRegion{
+    display:flex;
+    flex-direction:column;
+    min-height:0;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    scrollbar-gutter:stable;
+    scroll-padding-bottom:var(--ux-space-4);
+  }
+  .chatScrollRegion .messages{
+    overflow:visible;
+    flex:0 0 auto;
+  }
+  .composer{
+    position:relative;
+    bottom:auto;
+    z-index:8;
+    min-height:54px;
+    padding:var(--ux-space-1) var(--ux-space-2) calc(var(--ux-space-1) + env(safe-area-inset-bottom));
+    border-top:1px solid var(--namaa-border);
+    background:var(--namaa-card);
+    box-shadow:0 -1px 0 var(--namaa-border);
+    align-items:center;
+  }
+  .composer textarea{
+    min-height:38px;
+    height:38px;
+    max-height:96px;
+    line-height:1.45;
+    padding:calc(var(--ux-space-1) + 1px) var(--ux-space-3);
+    border-radius:var(--ux-radius-full);
+    overflow-y:auto;
+  }
+  .attachButton,.sendButton{
+    width:38px;
+    height:38px;
+    flex-basis:38px;
+  }
+}
