@@ -24,16 +24,16 @@ const ORDER: OnboardingStep[] = [
 
 const QUESTIONS: Record<Exclude<OnboardingStep,'complete'>,string> = {
   marital_status:'نبدأ من وضعك الأسري. هل أنت أعزب، متزوج، مطلق أو أرمل؟',
-  dependents:'من الأشخاص الذين تعولهم ماليًا؟ اكتب كل شخص في سطر بهذا الشكل: الاسم — المبلغ الشهري التقريبي. وإذا لا يوجد أحد اكتب «لا يوجد».',
+  dependents:'من الأشخاص الذين تعولهم ماليًا؟ أضف كل فرد في البطاقة المخصصة، ثم أكد المجموعة مرة واحدة. وإذا لا يوجد أحد استخدم خيار «لا يوجد».',
   home_city:'في أي مدينة تسكن حاليًا؟ يكفيني اسم المدينة، ولا أحتاج عنوانًا دقيقًا.',
   housing:'ما وضع السكن الحالي: ملك، إيجار، مع العائلة، أو غير ذلك؟ وإذا كان عليك إيجار شهري اذكر قيمته.',
   employment:'ما طبيعة عملك الحالية؟ اذكر المسمى الوظيفي أو النشاط، واسم جهة العمل إن رغبت.',
   work_city:'في أي مدينة يقع عملك الأساسي؟ إذا كان عن بعد بالكامل قل «عن بعد».',
   commute:'كم تبعد جهة عملك تقريبًا عن سكنك؟ اذكر المسافة بالكيلومتر أو مدة الرحلة المعتادة، ووسيلة النقل التي تستخدمها.',
-  income:'كم متوسط راتبك أو دخلك الشهري الصافي الذي يصل فعليًا إلى حسابك؟ اذكر الدخل الثابت وأي دخل متكرر آخر بشكل منفصل إن وجد.',
-  accounts:'اذكر حساباتك المالية الحالية. اكتب كل حساب في سطر: اسم البنك — نوع الحساب — الرصيد التقريبي. لا ترسل كلمة المرور أو الرقم السري أو رمز التحقق.',
-  obligations:'ما الالتزامات الأساسية والمتكررة عليك؟ اكتب كل التزام مع قيمته الشهرية، مثل إيجار، قرض، نفقة، فاتورة ثابتة أو التزام عائلي.',
-  goals:'ما أهدافك المالية الحالية؟ اكتب كل هدف في سطر: اسم الهدف — المبلغ المستهدف — الموعد التقريبي إن وجد.',
+  income:'أدخل مكونات راتبك ودخلك في النموذج: الأساسي، البدلات، الاستقطاعات، الدخل المتكرر الآخر، ثم الصافي الفعلي الذي يصل إلى الحساب.',
+  accounts:'أضف حساباتك المالية واحدًا واحدًا في المكوّن. يكفيني البنك، نوع الحساب، معرف مختصر إن رغبت، الاستخدام الحالي والرصيد الافتتاحي. لا ترسل كلمة مرور أو رمز تحقق.',
+  obligations:'أضف الالتزامات القائمة واحدًا واحدًا في المكوّن، مع المبلغ والتكرار والموعد أو الرصيد المتبقي إن توفر. وإذا لا يوجد أي التزام، أكد ذلك من داخل المكوّن.',
+  goals:'أضف أهدافك المالية واحدًا واحدًا في المكوّن، مع المبلغ المستهدف والموعد والأولوية والمرونة والمبلغ المخصص حاليًا إن وجد.',
   statements:'هل لديك كشوف حساب حديثة تساعدني على التحقق من الدخل والمصروفات والأرصدة؟ اكتب «نعم» أو «لا» الآن. لن أعتبر أي كشف حركة مالية منفذة؛ هو مصدر للتحليل والمطابقة فقط.',
   review:'جمعت الحد الأدنى الأساسي. اكتب «تأكيد» إذا تريد تثبيت ملف التأسيس وفتح بقية جهات نماء، أو اذكر المعلومة التي تريد تعديلها.',
 };
@@ -160,7 +160,7 @@ export function getGovernorWelcome(step:OnboardingStep='marital_status'){
   return question ? `${intro} ${question}` : intro;
 }
 
-function nextStep(step:OnboardingStep):OnboardingStep{
+export function nextGovernorOnboardingStep(step:OnboardingStep):OnboardingStep{
   const index=ORDER.indexOf(step);
   return ORDER[Math.min(index+1,ORDER.length-1)] ?? 'complete';
 }
@@ -184,6 +184,169 @@ export async function getGovernorOnboardingStatus(userId:string){
     complete:String(state.status)==='COMPLETED',
     question: getGovernorOnboardingQuestion(currentStep),
     facts:factRows,
+  };
+}
+
+
+type StructuredOnboardingPayload =
+  | {step:'dependents';items:Array<{name:string;relationship:string;age?:number|null;monthly_support:number;annual_support?:number|null;special_needs?:string;financial_dependency:boolean}>}
+  | {step:'income';base_salary:number;fixed_allowances?:number;variable_allowances?:number;deductions?:number;actual_net:number;other_recurring_income?:number;difference_explanation?:string}
+  | {step:'accounts';items:Array<{bank_name:string;account_type:string;short_identifier?:string;usage?:string;opening_balance:number;included_in_namaa:boolean}>}
+  | {step:'obligations';items:Array<{name:string;amount:number;recurrence:string;provider?:string;due_day?:number|null;remaining_balance?:number|null;end_date?:string|null;finance_cost?:number|null}>}
+  | {step:'goals';items:Array<{name:string;target_amount:number;target_date?:string|null;priority?:string;flexibility?:string;allocated_amount?:number}>};
+
+function cleanText(value:unknown,max=240){
+  return typeof value==='string' ? value.trim().slice(0,max) : '';
+}
+
+function finiteNonNegative(value:unknown){
+  const number=typeof value==='number'?value:Number(value);
+  return Number.isFinite(number)&&number>=0 ? number : null;
+}
+
+function isoDateOrNull(value:unknown){
+  if(value===null||value===undefined||value==='') return null;
+  if(typeof value!=='string') throw new Error('ONBOARDING_STRUCTURED_DATE_INVALID');
+  const match=value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if(!match) throw new Error('ONBOARDING_STRUCTURED_DATE_INVALID');
+  const y=Number(match[1]??'');
+  const m=Number(match[2]??'');
+  const d=Number(match[3]??'');
+  const date=new Date(Date.UTC(y,m-1,d));
+  if(date.getUTCFullYear()!==y||date.getUTCMonth()!==m-1||date.getUTCDate()!==d) throw new Error('ONBOARDING_STRUCTURED_DATE_INVALID');
+  return value;
+}
+
+export function normalizeStructuredOnboardingPayload(payload:StructuredOnboardingPayload){
+  if(payload.step==='dependents'){
+    const items=Array.isArray(payload.items)?payload.items:[];
+    return {items:items.map(item=>{
+      const name=cleanText(item.name,120);
+      const relationship=cleanText(item.relationship,80);
+      const monthly=finiteNonNegative(item.monthly_support);
+      const annual=item.annual_support===undefined||item.annual_support===null?null:finiteNonNegative(item.annual_support);
+      const age=item.age===undefined||item.age===null?null:Number(item.age);
+      if(!name||!relationship||monthly===null||annual===null&&item.annual_support!==undefined&&item.annual_support!==null||age!==null&&(!Number.isInteger(age)||age<0||age>120)){
+        throw new Error('ONBOARDING_DEPENDENT_INVALID');
+      }
+      return {
+        name,relationship,age,monthly_support:monthly,annual_support:annual,
+        special_needs:cleanText(item.special_needs,500)||null,
+        financial_dependency:Boolean(item.financial_dependency),
+      };
+    })};
+  }
+
+  if(payload.step==='income'){
+    const base=finiteNonNegative(payload.base_salary);
+    const fixed=finiteNonNegative(payload.fixed_allowances??0);
+    const variable=finiteNonNegative(payload.variable_allowances??0);
+    const deductions=finiteNonNegative(payload.deductions??0);
+    const actual=finiteNonNegative(payload.actual_net);
+    const other=finiteNonNegative(payload.other_recurring_income??0);
+    if(base===null||fixed===null||variable===null||deductions===null||actual===null||other===null||actual<=0){
+      throw new Error('ONBOARDING_INCOME_INVALID');
+    }
+    const expected=Math.max(0,base+fixed+variable+other-deductions);
+    const explanation=cleanText(payload.difference_explanation,500);
+    if(expected!==actual&&!explanation) throw new Error('ONBOARDING_INCOME_DIFFERENCE_EXPLANATION_REQUIRED');
+    return {
+      base_salary:base,fixed_allowances:fixed,variable_allowances:variable,deductions,
+      other_recurring_income:other,expected_net:expected,actual_net:actual,
+      reconciliation_status:expected===actual?'MATCHED':'EXPLAINED_DIFFERENCE',
+      difference_explanation:explanation||null,
+    };
+  }
+
+  if(payload.step==='accounts'){
+    const items=Array.isArray(payload.items)?payload.items:[];
+    if(items.length===0) throw new Error('ONBOARDING_ACCOUNTS_REQUIRED');
+    return {items:items.map(item=>{
+      const bank=cleanText(item.bank_name,120);
+      const type=cleanText(item.account_type,80);
+      const opening=finiteNonNegative(item.opening_balance);
+      if(!bank||!type||opening===null) throw new Error('ONBOARDING_ACCOUNT_INVALID');
+      return {
+        bank_name:bank,account_type:type,
+        short_identifier:cleanText(item.short_identifier,40)||null,
+        usage:cleanText(item.usage,160)||null,
+        opening_balance:opening,
+        included_in_namaa:Boolean(item.included_in_namaa),
+      };
+    })};
+  }
+
+  if(payload.step==='obligations'){
+    const items=Array.isArray(payload.items)?payload.items:[];
+    return {items:items.map(item=>{
+      const name=cleanText(item.name,160);
+      const amount=finiteNonNegative(item.amount);
+      const recurrence=cleanText(item.recurrence,40);
+      const dueDay=item.due_day===undefined||item.due_day===null?null:Number(item.due_day);
+      const remaining=item.remaining_balance===undefined||item.remaining_balance===null?null:finiteNonNegative(item.remaining_balance);
+      const cost=item.finance_cost===undefined||item.finance_cost===null?null:finiteNonNegative(item.finance_cost);
+      if(!name||amount===null||amount<=0||!recurrence||dueDay!==null&&(!Number.isInteger(dueDay)||dueDay<1||dueDay>31)||remaining===null&&item.remaining_balance!==undefined&&item.remaining_balance!==null||cost===null&&item.finance_cost!==undefined&&item.finance_cost!==null){
+        throw new Error('ONBOARDING_OBLIGATION_INVALID');
+      }
+      return {
+        name,amount,recurrence,provider:cleanText(item.provider,160)||null,due_day:dueDay,
+        remaining_balance:remaining,end_date:isoDateOrNull(item.end_date),finance_cost:cost,
+      };
+    })};
+  }
+
+  const items=Array.isArray(payload.items)?payload.items:[];
+  return {items:items.map(item=>{
+    const name=cleanText(item.name,160);
+    const target=finiteNonNegative(item.target_amount);
+    const allocated=finiteNonNegative(item.allocated_amount??0);
+    if(!name||target===null||target<=0||allocated===null) throw new Error('ONBOARDING_GOAL_INVALID');
+    return {
+      name,target_amount:target,target_date:isoDateOrNull(item.target_date),
+      priority:cleanText(item.priority,80)||null,flexibility:cleanText(item.flexibility,80)||null,
+      allocated_amount:allocated,
+    };
+  })};
+}
+
+export async function processGovernorStructuredOnboarding(userId:string,payload:StructuredOnboardingPayload){
+  const sql=getRawSql();
+  const status=await getGovernorOnboardingStatus(userId);
+  if(status.complete) throw new Error('ONBOARDING_ALREADY_COMPLETED');
+  if(status.current_step!==payload.step) throw new Error('ONBOARDING_STEP_MISMATCH');
+
+  const normalized=normalizeStructuredOnboardingPayload(payload);
+  await sql`
+    insert into public.user_foundation_facts(
+      user_id,fact_key,category,value_json,source,confidence,verified_at,uses,requires_confirmation,status
+    ) values(
+      ${userId}::uuid,${payload.step},${payload.step},${JSON.stringify(normalized)}::jsonb,
+      'USER_STATEMENT',1,now(),${USES[payload.step]},false,'ACTIVE'
+    )
+    on conflict(user_id,fact_key) do update set
+      value_json=excluded.value_json,
+      source=excluded.source,
+      confidence=excluded.confidence,
+      verified_at=excluded.verified_at,
+      uses=excluded.uses,
+      requires_confirmation=false,
+      status='ACTIVE',
+      updated_at=now()
+  `;
+
+  const next=nextGovernorOnboardingStep(payload.step);
+  await sql`
+    update public.user_onboarding_state
+    set current_step=${next},updated_at=now()
+    where user_id=${userId}::uuid
+  `;
+
+  return {
+    completed:false,
+    current_step:next,
+    next_question:next==='complete'?null:QUESTIONS[next as Exclude<OnboardingStep,'complete'>],
+    accepted:true,
+    structured:true,
   };
 }
 
@@ -261,7 +424,7 @@ export async function processGovernorOnboardingMessage(userId:string,text:string
       updated_at=now()
   `;
 
-  const next=nextStep(step);
+  const next=nextGovernorOnboardingStep(step);
   await sql`
     update public.user_onboarding_state
     set current_step=${next},updated_at=now()
