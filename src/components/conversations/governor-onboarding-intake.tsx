@@ -8,12 +8,12 @@ type IntakeStep='dependents'|'income'|'accounts'|'obligations'|'goals';
 type MessagePayload={id:string;sender_type:'user'|'agent'|'system';sender_name:string;message_kind:'message'|'risk'|'decision'|'recommendation'|'followup'|'request';body:string;structured_data?:Record<string,unknown>;created_at?:string};
 
 type Dependent={name:string;relationship:string;age:string;monthly_support:string;annual_support:string;special_needs:string;financial_dependency:boolean};
-type Account={bank_name:string;account_type:string;short_identifier:string;usage:string;opening_balance:string;included_in_namaa:boolean};
+type Account={bank_name:string;account_type:string;short_identifier:string;iban:string;card_last4:string;card_type:string;usage:string;opening_balance:string;included_in_namaa:boolean};
 type Obligation={name:string;amount:string;recurrence:string;provider:string;due_day:string;remaining_balance:string;end_date:string;finance_cost:string};
 type Goal={name:string;target_amount:string;target_date:string;priority:string;flexibility:string;allocated_amount:string};
 
 const emptyDependent=():Dependent=>({name:'',relationship:'',age:'',monthly_support:'',annual_support:'',special_needs:'',financial_dependency:true});
-const emptyAccount=():Account=>({bank_name:'',account_type:'BANK',short_identifier:'',usage:'',opening_balance:'',included_in_namaa:true});
+const emptyAccount=():Account=>({bank_name:'',account_type:'BANK',short_identifier:'',iban:'',card_last4:'',card_type:'',usage:'',opening_balance:'',included_in_namaa:true});
 const emptyObligation=():Obligation=>({name:'',amount:'',recurrence:'MONTHLY',provider:'',due_day:'',remaining_balance:'',end_date:'',finance_cost:''});
 const emptyGoal=():Goal=>({name:'',target_amount:'',target_date:'',priority:'',flexibility:'',allocated_amount:''});
 
@@ -30,6 +30,8 @@ function errorText(code:string){
     ONBOARDING_INCOME_DIFFERENCE_EXPLANATION_REQUIRED:'الصافي المحسوب لا يطابق الصافي الفعلي. اكتب سبب الفرق قبل التأكيد.',
     ONBOARDING_ACCOUNTS_REQUIRED:'أضف حسابًا واحدًا على الأقل قبل تأكيد المجموعة.',
     ONBOARDING_ACCOUNT_INVALID:'راجع اسم البنك ونوع الحساب والرصيد الافتتاحي.',
+    ONBOARDING_ACCOUNT_IBAN_INVALID:'راجع رقم الآيبان. للحساب السعودي استخدم صيغة تبدأ بـ SA ويتبعها 22 رقمًا.',
+    ONBOARDING_ACCOUNT_CARD_LAST4_INVALID:'أدخل آخر أربعة أرقام من البطاقة فقط، ولا تدخل رقم البطاقة الكامل.',
     ONBOARDING_OBLIGATION_INVALID:'راجع بيانات الالتزامات، خصوصًا الاسم والمبلغ والتكرار.',
     ONBOARDING_GOAL_INVALID:'راجع اسم الهدف والمبلغ المستهدف.',
     ONBOARDING_STEP_MISMATCH:'تغيرت خطوة التأسيس. أعد تحميل المحادثة قبل المتابعة.',
@@ -143,6 +145,9 @@ export function GovernorOnboardingIntake({
           bank_name:item.bank_name.trim(),
           account_type:item.account_type,
           short_identifier:item.short_identifier.trim()||undefined,
+          iban:item.iban.trim()||undefined,
+          card_last4:item.card_last4.trim()||undefined,
+          card_type:item.card_type.trim()||undefined,
           usage:item.usage.trim()||undefined,
           opening_balance:Number(item.opening_balance||0),
           included_in_namaa:item.included_in_namaa,
@@ -230,7 +235,11 @@ export function GovernorOnboardingIntake({
           <label><span>البنك أو الجهة</span><input value={item.bank_name} onChange={e=>updateAccount(index,{bank_name:e.target.value})}/></label>
           <label><span>نوع الحساب</span><select value={item.account_type} onChange={e=>updateAccount(index,{account_type:e.target.value})}><option value="BANK">جاري/بنكي</option><option value="SAVINGS">ادخاري</option><option value="CASH">نقدي</option><option value="INVESTMENT">استثماري</option><option value="OTHER">أخرى</option></select></label>
           <label><span>معرف مختصر</span><input placeholder="مثال: حساب الراتب" value={item.short_identifier} onChange={e=>updateAccount(index,{short_identifier:e.target.value})}/></label>
+          <label><span>رقم الآيبان</span><input dir="ltr" inputMode="text" autoCapitalize="characters" placeholder="SA…" value={item.iban} onChange={e=>updateAccount(index,{iban:e.target.value.toUpperCase().replace(/\s/g,'')})}/></label>
+          <label><span>آخر 4 أرقام من البطاقة</span><input dir="ltr" inputMode="numeric" maxLength={4} placeholder="مثال: 6883" value={item.card_last4} onChange={e=>updateAccount(index,{card_last4:e.target.value.replace(/\D/g,'').slice(0,4)})}/></label>
+          <label><span>نوع البطاقة إن وجد</span><select value={item.card_type} onChange={e=>updateAccount(index,{card_type:e.target.value})}><option value="">غير محدد</option><option value="مدى">مدى</option><option value="فيزا">فيزا</option><option value="ماستركارد">ماستركارد</option><option value="أخرى">أخرى</option></select></label>
           <label><span>الاستخدام الحالي</span><input placeholder="راتب، ادخار، مصروف…" value={item.usage} onChange={e=>updateAccount(index,{usage:e.target.value})}/></label>
+          <div className={styles.intakeWide}><small className={styles.intakeSecurityNote}>لحمايتك: لا تدخل رقم البطاقة الكامل، ولا رمز الأمان، ولا الرقم السري، ولا رمز التحقق.</small></div>
           <label><span>الرصيد الافتتاحي</span><input type="number" min="0" inputMode="decimal" value={item.opening_balance} onChange={e=>updateAccount(index,{opening_balance:e.target.value})}/></label>
           <label className={styles.intakeCheckbox}><input type="checkbox" checked={item.included_in_namaa} onChange={e=>updateAccount(index,{included_in_namaa:e.target.checked})}/><span>إدخاله ضمن نماء</span></label>
         </div>
