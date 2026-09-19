@@ -50,7 +50,7 @@
   height:auto;
   opacity:.055;
   pointer-events:none;
-  z-index:0;
+  z-index:2;
 }
 .chatBrandBar{
   display:none;
@@ -761,15 +761,22 @@
 
 /* Phase 2 — structured governor onboarding */
 .onboardingIntake{
-  margin:var(--ux-space-2) var(--ux-space-3) var(--ux-space-3);
-  padding:var(--ux-space-3);
+  position:fixed;
+  inset-inline:50%;
+  top:50%;
+  transform:translate(50%,-50%);
+  width:min(720px,calc(100vw - (var(--ux-space-4) * 2)));
+  margin:var(--ux-space-0);
+  padding:var(--ux-space-4);
   border:1px solid var(--namaa-border);
   border-radius:var(--ux-radius-4);
   background:var(--namaa-card);
   display:grid;
   gap:var(--ux-space-3);
-  max-height:min(58dvh,640px);
+  max-height:min(82dvh,720px);
   overflow:auto;
+  z-index:120;
+  box-shadow:0 0 0 100vmax color-mix(in srgb,var(--namaa-green-900) 22%,transparent),var(--ux-shadow-lg);
 }
 .onboardingIntakeHeader{
   display:flex;
@@ -941,10 +948,13 @@
 
 @media(max-width:767px){
   .onboardingIntake{
-    margin:var(--ux-space-2);
-    padding:var(--ux-space-2);
-    max-height:50dvh;
-    border-radius:var(--ux-radius-3);
+    inset-inline:50%;
+    top:50%;
+    width:calc(100vw - (var(--ux-space-3) * 2));
+    margin:var(--ux-space-0);
+    padding:var(--ux-space-3);
+    max-height:84dvh;
+    border-radius:var(--ux-radius-4);
   }
   .onboardingIntakeHeader>span{
     display:none;
@@ -1209,7 +1219,6 @@
 .userMeetingIdentity small{font-size:var(--ux-type-caption-size);color:var(--ux-text-secondary)}
 
 @media(max-width:767px){
-  .mobileTopLogo{filter:brightness(0) invert(1)}
-  .agentMessage{margin-right:auto!important;margin-left:0!important}
-  .userMessage{margin-left:auto!important;margin-right:0!important}
+  .agentMessage{margin-right:auto!important;margin-left:var(--ux-space-0)!important}
+  .userMessage{margin-left:auto!important;margin-right:var(--ux-space-0)!important}
 }
