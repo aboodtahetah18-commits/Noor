@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { getRawSql } from '@/infrastructure/db/client';
 import type { ConversationMessageKind } from '@/lib/conversations/store';
 import { FINANCIAL_RESPONSIBILITY_BY_KEY } from '@/lib/advisors/approved-advisors';
+import { buildFinancialResponsibilityClaims, getFinancialCycleAllocationSnapshot, summarizeAllocationConflict } from '@/lib/allocation/financial-cycle-allocation-engine';
 
 export type CouncilDeliberationReply={
   id:string;
@@ -22,7 +23,8 @@ function topicFrom(text:string){
   return 'الصورة المالية والتأسيس';
 }
 
-function makeViews(topic:string){
+function claimAmount(value:number|null){return value===null?'غير محدد حتى تكتمل الأدلة':`${new Intl.NumberFormat('ar-SA',{maximumFractionDigits:2}).format(value)} ر.س`;}
+function makeViews(topic:string,claims=buildFinancialResponsibilityClaims({availableIncome:null,budgetPlannedAmount:null,knownHouseholdEssentials:0,monthlyObligations:0,monthlyGoalNeed:null,liquidBalance:null,liquidityTarget:null,investableOpportunityAmount:null,cycleId:null,evidence:[]})){
   return [
     {
       key:'central-secretary',
@@ -42,35 +44,35 @@ function makeViews(topic:string){
       key:'budget-spending-owner',
       name:'مسؤول الميزانية والإنفاق',
       kind:'recommendation' as ConversationMessageKind,
-      body:'أعرض احتياج البنود التشغيلية للدورة على شكل: المطلوب، الحد الأدنى، والهدف المثالي. سأدافع عن كفاية المعيشة والتشغيل، لكنني ملزم أيضًا بإظهار أين يمكن الخفض دون الإضرار بالأساسيات.',
+      body:`مطالبتي الحالية: ${claimAmount(claims.find(c=>c.ownerKey==='budget-spending-owner')?.requestedAmount??null)}. سأدافع عن البنود التشغيلية المثبتة فقط، وأوضح أي نقص في البيانات قبل أن أطلب مبلغًا إضافيًا.`,
       role:'مسؤول الميزانية والإنفاق',
     },
     {
       key:'obligations-owner',
       name:'مسؤول الالتزامات',
       kind:'risk' as ConversationMessageKind,
-      body:'أبدأ بالاستحقاقات والأقساط والديون والفواتير ذات الأولوية. أي مبلغ مستحق خلال الدورة سأوضح إن كان غير قابل للتخفيض، وما أثر أي نقص أو تأخير عليه قبل أن يذهب المال لاستخدام أكثر مرونة.',
+      body:`مطالبتي الحالية للالتزامات: ${claimAmount(claims.find(c=>c.ownerKey==='obligations-owner')?.requestedAmount??null)}. هذا مبني على الاستحقاقات المثبتة، وأي خفض يحتاج تعديلًا حقيقيًا في الالتزام أو بديلًا موثقًا.`,
       role:'مسؤول الالتزامات',
     },
     {
       key:'liquidity-protection-owner',
       name:'مسؤول السيولة والحماية',
       kind:'recommendation' as ConversationMessageKind,
-      body:'أطالب بحصة تكفي الادخار والاحتياط والطوارئ والسيولة الفورية. سأذكر الحد الأدنى الآمن والهدف المثالي، وإذا خُفّض طلبي سأوضح بدقة كيف يتأخر بناء الحماية أو يرتفع خطر نقص السيولة.',
+      body:`مطالبتي الحالية للحماية والسيولة: ${claimAmount(claims.find(c=>c.ownerKey==='liquidity-protection-owner')?.requestedAmount??null)}. لن أختلق نسبة احتياط؛ إذا كان حد الحماية غير معاير سأطلب استكمال الدليل بدل رقم وهمي.`,
       role:'مسؤول السيولة والحماية',
     },
     {
       key:'goals-owner',
       name:'مسؤول الأهداف',
       kind:'recommendation' as ConversationMessageKind,
-      body:'أعرض لكل هدف المساهمة المطلوبة هذه الدورة والحد الأدنى الذي يبقي موعد الإنجاز واقعيًا. إذا أمكن تخفيض مساهمة هدف دون كسر موعده أو احتمال تحقيقه سأصرّح بذلك ولا أطلب أكثر من اللازم.',
+      body:`مطالبتي الحالية للأهداف: ${claimAmount(claims.find(c=>c.ownerKey==='goals-owner')?.requestedAmount??null)}. المبلغ لا يُحسب إلا من أهداف لها مبلغ وموعد صالحان، وسأبين أثر أي خفض على موعد الإنجاز.`,
       role:'مسؤول الأهداف',
     },
     {
       key:'investment-owner',
       name:'مسؤول الاستثمار',
       kind:'recommendation' as ConversationMessageKind,
-      body:'أدافع عن استمرار مسار النمو للمال المؤهل للاستثمار، لكن فقط بعد حماية الالتزامات والسيولة. سأحدد المبلغ المطلوب والحد الأدنى وأثر التأجيل، ثم أطلب من بنك الأصول الفرص المناسبة بدل أن أفترض منتجًا من عندي.',
+      body:`مطالبتي الاستثمارية الحالية: ${claimAmount(claims.find(c=>c.ownerKey==='investment-owner')?.requestedAmount??null)}. لا أطالب بنسبة ثابتة؛ يلزم فائض محمي وفرصة مؤهلة من بنك الأصول قبل تثبيت رقم.`,
       role:'مسؤول الاستثمار',
     },
     {
@@ -96,7 +98,10 @@ export async function createCouncilDeliberationReplies(userId:string,userText:st
   const threadId=rows[0]?.id?String(rows[0].id):null;
   if(!threadId) return [];
   const topic=topicFrom(userText);
-  const views=makeViews(topic);
+  const allocationSnapshot=await getFinancialCycleAllocationSnapshot(userId);
+  const allocationClaims=buildFinancialResponsibilityClaims(allocationSnapshot);
+  const allocationSummary=summarizeAllocationConflict(allocationSnapshot,allocationClaims);
+  const views=makeViews(topic,allocationClaims);
   const replies:CouncilDeliberationReply[]=[];
   for(const view of views){
     const responsibility=FINANCIAL_RESPONSIBILITY_BY_KEY.get(view.key);
@@ -122,6 +127,9 @@ export async function createCouncilDeliberationReplies(userId:string,userText:st
         prohibited:responsibility.prohibited,
       }:null,
       accountability_boundary:responsibility?'يدافع عن مجاله لكنه لا يملك نسبة ثابتة، ويحاسب على النتيجة لا على حجم الحصة.':'لا يطالب بحصة مالية خاصة.',
+      allocation_snapshot:allocationSnapshot,
+      allocation_summary:allocationSummary,
+      allocation_claim:allocationClaims.find(claim=>claim.ownerKey===view.key)??null,
     };
     const inserted=await sql`
       insert into public.conversation_messages(
