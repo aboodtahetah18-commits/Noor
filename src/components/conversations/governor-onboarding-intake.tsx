@@ -42,9 +42,11 @@ function errorText(code:string){
 export function GovernorOnboardingIntake({
   step,
   onAccepted,
+  onClose,
 }:{
   step:string;
   onAccepted:(message:MessagePayload,reply:MessagePayload|null,nextStep:string)=>void;
+  onClose:()=>void;
 }){
   const intakeStep=(['dependents','income','accounts','obligations','goals'] as IntakeStep[]).includes(step as IntakeStep)
     ? step as IntakeStep
@@ -195,7 +197,7 @@ export function GovernorOnboardingIntake({
   return <section className={styles.onboardingIntake} aria-label={title}>
     <header className={styles.onboardingIntakeHeader}>
       <div><strong>{title}</strong><small>أدخل العناصر هنا ثم أكد المجموعة مرة واحدة.</small></div>
-      <span><LucideIcon name="listChecks" size={16}/>تأسيس</span>
+      <div className={styles.onboardingHeaderActions}><span><LucideIcon name="listChecks" size={16}/>تأسيس</span><button type="button" className={styles.onboardingCloseButton} onClick={onClose} aria-label="إغلاق نافذة البيانات"><LucideIcon name="x" size={20}/></button></div>
     </header>
 
     {intakeStep==='dependents'&&<div className={styles.intakeCards}>
