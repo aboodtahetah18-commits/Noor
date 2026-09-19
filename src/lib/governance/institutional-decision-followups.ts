@@ -15,7 +15,7 @@ export function parseDecisionFollowupCommand(text:string):DecisionFollowupComman
   if(/^(متابعات القرارات|متابعات السجل|حالة متابعات القرارات|عرض المتابعات)$/i.test(normalized)) return {kind:'SHOW'};
 
   const assign=normalized.match(/^إسناد المتابعة\s*(\d+)\s*(?:إلى|الى)\s*(.+)$/i);
-  if(assign) return {kind:'ASSIGN',followupNumber:Number(assign[1]),assignedTo:assign[2].trim()};
+  if(assign?.[1]&&assign[2]) return {kind:'ASSIGN',followupNumber:Number(assign[1]),assignedTo:assign[2].trim()};
 
   const inProgress=normalized.match(/^بدء المتابعة\s*(\d+)(?:\s*[:：-]\s*(.+))?$/i);
   if(inProgress) return {kind:'STATUS',followupNumber:Number(inProgress[1]),status:'IN_PROGRESS',note:inProgress[2]?.trim()||null};
