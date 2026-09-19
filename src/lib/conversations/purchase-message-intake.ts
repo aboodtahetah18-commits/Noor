@@ -138,7 +138,7 @@ export async function routePurchaseMessage(input:{
   const merchant=parsed.merchantRaw??'تاجر غير معروف';
   const summary=`سجلت عملية شراء مبدئيًا: ${parsed.amount.toFixed(2)} ريال لدى ${merchant}. ستبقى تحت المطابقة والتصنيف حتى يكتمل الربط.`;
 
-  await sql`
+  const operationRows=await sql`
     insert into public.conversation_messages(
       id,thread_id,user_id,sender_type,sender_key,sender_name,message_kind,body,structured_data
     ) values(
@@ -164,7 +164,32 @@ export async function routePurchaseMessage(input:{
         execution_boundary:'record_and_review_only'
       })}::jsonb
     )
+    returning id,sender_type,sender_key,sender_name,message_kind,body,structured_data,created_at
   `;
 
-  return {duplicate:false,parsed,fingerprint,summary,operationId};
+  let reply=(operationRows[0]??null) as PurchaseRouteReply|null;
+
+  if(input.sourceRoom!=='operations'){
+    const source=await getConversationRoom(input.userId,input.sourceRoom);
+    const ackRows=await sql`
+      insert into public.conversation_messages(
+        id,thread_id,user_id,sender_type,sender_key,sender_name,message_kind,body,structured_data
+      ) values(
+        gen_random_uuid(),${source.threadId}::uuid,${input.userId}::uuid,'agent',
+        'operations-router','نظام توجيه العمليات','followup',
+        ${`حوّلت رسالة المشتريات إلى مركز العمليات والمطابقة وسجلتها مرة واحدة للمراجعة. ${summary}`},
+        ${JSON.stringify({
+          purchase_routed:true,
+          operations_message_id:operationId,
+          purchase_fingerprint:fingerprint,
+          routed_room:'operations',
+          execution_boundary:'record_and_review_only'
+        })}::jsonb
+      )
+      returning id,sender_type,sender_key,sender_name,message_kind,body,structured_data,created_at
+    `;
+    reply=(ackRows[0]??reply) as PurchaseRouteReply|null;
+  }
+
+  return {duplicate:false,parsed,fingerprint,summary,operationId,reply};
 }
