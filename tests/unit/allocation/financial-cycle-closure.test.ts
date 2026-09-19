@@ -13,9 +13,9 @@ describe('financial cycle closure accountability',()=>{
         {ownerKey:'investment-owner',requestedAmount:1500,minimumAmount:0,idealAmount:1500},
       ],
     });
-    expect(rows[0]).toMatchObject({requestedAmount:4500,approvedAmount:4000,realizedAmount:4200,status:'EXCEEDED_APPROVED'});
-    expect(rows[1]).toMatchObject({requestedAmount:1500,approvedAmount:1000,realizedAmount:0,status:'UNUSED_ALLOCATION'});
-    expect('score' in rows[0]).toBe(false);
+    expect(rows[0]!).toMatchObject({requestedAmount:4500,approvedAmount:4000,realizedAmount:4200,status:'EXCEEDED_APPROVED'});
+    expect(rows[1]!).toMatchObject({requestedAmount:1500,approvedAmount:1000,realizedAmount:0,status:'UNUSED_ALLOCATION'});
+    expect('score' in rows[0]!).toBe(false);
   });
 
   it('requires explicit review and explicit closure commands',()=>{
