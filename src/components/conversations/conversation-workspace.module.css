@@ -41,17 +41,7 @@
   place-items:center;
 }
 .bankBadge>img{width:82%;height:82%;object-fit:contain}
-.brandWatermark{
-  position:fixed;
-  inset-inline-start:calc(var(--ux-space-8) * -1);
-  bottom:calc(var(--ux-space-8) * -1);
-  width:calc(var(--ux-space-16) * 4);
-  height:auto;
-  opacity:.055;
-  pointer-events:none;
-  z-index:0;
-}
-  .persona_sm{width:38px;height:38px;flex-basis:38px}
+.persona_sm{width:38px;height:38px;flex-basis:38px}
 .persona_md{width:48px;height:48px;flex-basis:48px}
 .persona_lg{width:58px;height:58px;flex-basis:58px}
 .roomCopy em{font-style:normal;font-size:var(--ux-type-caption-size);color:var(--ux-text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -1087,7 +1077,18 @@
   place-items:center;
   overflow:hidden;
 }
-.messageBody{min-width:0;overflow-wrap:anywhere}
+.messageBody{
+  min-width:0;
+  max-width:100%;
+  overflow-wrap:anywhere;
+  word-break:break-word;
+}
+.messageBody :where(p,strong,span,div,section,ul,li,button){
+  box-sizing:border-box;
+  max-width:100%;
+  overflow-wrap:anywhere;
+  word-break:break-word;
+}
 .messageBody>p{
   margin:var(--ux-space-0);
   font-size:var(--ux-type-body-sm-size);
@@ -1111,7 +1112,11 @@
   color:var(--ux-text-muted)!important;
   white-space:nowrap;
 }
-.onboardingMessageContent{min-width:0}
+.onboardingMessageContent{
+  min-width:0;
+  max-width:100%;
+  overflow:hidden;
+}
 .onboardingMessageContent .onboardingQuestionBox{
   margin-top:var(--ux-space-1);
   padding:var(--ux-space-2) var(--ux-space-0) var(--ux-space-0);
@@ -1126,6 +1131,15 @@
   border-radius:var(--ux-radius-0);
   background:transparent;
   font-size:var(--ux-type-caption-size);
+}
+.onboardingMessageContent .onboardingQuestionBox>strong{
+  display:block;
+  max-width:100%;
+  font-size:var(--ux-type-body-sm-size);
+  font-weight:700;
+  line-height:1.55;
+  overflow-wrap:anywhere;
+  word-break:break-word;
 }
 .inlineIntakeButton{
   width:max-content;
@@ -1144,9 +1158,19 @@
   align-items:center;
   gap:var(--ux-space-1);
 }
-  .mobileBrandLockup{display:flex;align-items:center;gap:var(--ux-space-2);white-space:nowrap;min-width:0}
-.mobileBrandLockup img{width:30px;height:30px;object-fit:contain;flex:0 0 30px}
-.mobileBrandLockup span{color:var(--ux-text-inverse);font-size:var(--ux-type-card-title-size);font-weight:700;line-height:1}
+  .mobileBrandLockup{
+  display:flex;
+  align-items:center;
+  min-width:0;
+  overflow:hidden;
+}
+.mobileBrandLockup img{
+  width:auto;
+  height:var(--ux-space-8);
+  max-width:calc(var(--ux-space-16) + var(--ux-space-8));
+  object-fit:contain;
+  display:block;
+}
   .composer{align-items:center}
 .composer textarea{
   min-width:0;
@@ -1267,9 +1291,40 @@
   .contextTabs{position:sticky;top:52px;z-index:3;margin-bottom:var(--ux-space-3)}
   .contextTabs button{min-width:0;padding-inline:var(--ux-space-1);font-size:var(--ux-type-caption-size)}
   .contextCard{padding:var(--ux-space-3);border-radius:var(--ux-radius-3)}
-  .message{width:auto;max-width:88%;padding:var(--ux-space-2) var(--ux-space-3)}
-  .userMessage{min-width:min(72%,320px)}
+  .chatPane{
+    grid-template-rows:auto auto minmax(0,1fr) auto;
+    min-height:calc(100dvh - 64px);
+    height:calc(100dvh - 64px);
+  }
+  .messages{
+    min-height:0;
+    overflow-y:auto;
+    padding-bottom:var(--ux-space-3);
+  }
+  .message{
+    width:fit-content;
+    max-width:90%;
+    min-width:0;
+    height:auto;
+    max-height:none;
+    padding:var(--ux-space-2) var(--ux-space-3);
+    overflow:hidden;
+    align-content:start;
+  }
+  .agentMessage,.userMessage{min-width:0}
+  .messageIdentity,.messageBody,.messageFooter{width:100%;max-width:100%;min-width:0}
+  .messageBody>p,
+  .onboardingMessageContent>p{
+    font-size:var(--ux-type-body-sm-size);
+    line-height:1.65;
+  }
   .messageFooter{justify-content:flex-end}
+  .attachmentPolicy,.executionNote{display:none}
+  .composer{
+    position:relative;
+    z-index:8;
+    flex:0 0 auto;
+  }
   .composer{margin:var(--ux-space-0) var(--ux-space-2) var(--ux-space-2);padding:var(--ux-space-2);border:1px solid var(--namaa-border);border-radius:var(--ux-radius-4);box-shadow:var(--ux-shadow-sm)}
   .intakeDialog{inset-inline:var(--ux-space-2);top:auto;bottom:var(--ux-space-2);transform:none;width:auto;max-height:90dvh;border-radius:var(--ux-radius-xl);padding-bottom:calc(var(--ux-space-3) + env(safe-area-inset-bottom))}
 }
