@@ -25,7 +25,7 @@ export function parseOversightQuickActionCommand(text:string):OversightQuickActi
   if(context) return {kind:'OPEN_DECISION_CONTEXT',followupNumber:Number(context[1])};
 
   const request=normalized.match(/^طلب بيانات المتابعة\s*(\d+)\s*[:：-]\s*(.+)$/i);
-  if(request) return {kind:'REQUEST_USER_DATA',followupNumber:Number(request[1]),request:request[2].trim()};
+  if(request) return {kind:'REQUEST_USER_DATA',followupNumber:Number(request[1]),request:request[2]?.trim()||''};
 
   return null;
 }
