@@ -224,7 +224,7 @@ export function GovernorOnboardingIntake({
         <label><span>دخل متكرر آخر</span><input type="number" min="0" inputMode="decimal" value={income.other_recurring_income} onChange={e=>setIncome(v=>({...v,other_recurring_income:e.target.value}))}/></label>
         <label><span>الصافي الفعلي الذي يصل للحساب</span><input type="number" min="0" inputMode="decimal" value={income.actual_net} onChange={e=>setIncome(v=>({...v,actual_net:e.target.value}))}/></label>
       </div>
-      <div className={styles.incomeReconciliation}><small>الصافي المحسوب من المكونات</small><strong>{new Intl.NumberFormat('ar-SA',{maximumFractionDigits:2}).format(expectedNet)} ر.س</strong></div>
+      <div className={styles.incomeReconciliation}><small>الصافي المحسوب من المكونات</small><strong>{new Intl.NumberFormat('en-US',{maximumFractionDigits:2}).format(expectedNet)} ر.س</strong></div>
       {income.actual_net&&Number(income.actual_net)!==expectedNet&&<label className={styles.intakeDifference}><span>سبب الفرق بين المحسوب والفعلي</span><textarea rows={2} value={income.difference_explanation} onChange={e=>setIncome(v=>({...v,difference_explanation:e.target.value}))}/></label>}
     </div>}
 
