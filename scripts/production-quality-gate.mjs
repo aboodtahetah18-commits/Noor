@@ -22,6 +22,7 @@ const steps = [
   ['financial responsibility roles contract','node',['scripts/verify-financial-responsibility-roles.mjs']],
   ['financial cycle allocation contract','node',['scripts/verify-financial-cycle-allocation.mjs']],
   ['financial cycle negotiation contract','node',['scripts/verify-financial-cycle-negotiation.mjs']],
+  ['allocation ratification contract','node',['scripts/verify-allocation-ratification.mjs']],
   ['authorization RBAC ABAC contract','node',['scripts/verify-authorization-contract.mjs']],
   ['authorization provisioning contract','node',['scripts/verify-authorization-provisioning-contract.mjs']],
   ['authorization admin console contract','node',['scripts/verify-authorization-admin-console-contract.mjs']],

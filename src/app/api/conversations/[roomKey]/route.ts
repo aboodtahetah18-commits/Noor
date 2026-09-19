@@ -15,6 +15,7 @@ import { routePurchaseMessageToOperations } from '@/lib/conversations/operations
 import { attachGovernanceContext } from '@/lib/governance/governance-context';
 import { syncGovernanceMeetingInvitations } from '@/lib/governance/governance-meeting-scheduler';
 import { createCouncilDeliberationReplies } from '@/lib/conversations/council-deliberation-engine';
+import { isExplicitAllocationRatification, isExplicitAllocationRejection, ratifyLatestAllocationDraft, rejectLatestAllocationDraft } from '@/lib/allocation/allocation-ratification';
 
 export async function GET(_request: Request, context: { params: Promise<{ roomKey: string }> }) {
   const user = await getAuthenticatedUser();
@@ -159,6 +160,16 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
       const financingReply = restructuringReply ? null : await createHilalFinancingReply(user.id, text);
       reply = restructuringReply ?? financingReply ?? await createRoutedReply(user.id, roomKey, text);
     } else if (roomKey === 'council') {
+      if (isExplicitAllocationRatification(text)) {
+        const ratificationReply=await ratifyLatestAllocationDraft(user.id);
+        if(!ratificationReply) return NextResponse.json({ message, code:'NO_BALANCED_ALLOCATION_DRAFT', captured_operation:capturedOperation }, { status:409 });
+        return NextResponse.json({ message, reply:ratificationReply, replies:[ratificationReply], captured_operation:capturedOperation }, { status:201 });
+      }
+      if (isExplicitAllocationRejection(text)) {
+        const rejectionReply=await rejectLatestAllocationDraft(user.id);
+        if(!rejectionReply) return NextResponse.json({ message, code:'NO_BALANCED_ALLOCATION_DRAFT', captured_operation:capturedOperation }, { status:409 });
+        return NextResponse.json({ message, reply:rejectionReply, replies:[rejectionReply], captured_operation:capturedOperation }, { status:201 });
+      }
       const replies = await createCouncilDeliberationReplies(user.id, text);
       return NextResponse.json({ message, reply: replies.at(-1) ?? null, replies, captured_operation: capturedOperation }, { status: 201 });
     } else if (roomKey === 'operations' || roomKey === 'secretary') {

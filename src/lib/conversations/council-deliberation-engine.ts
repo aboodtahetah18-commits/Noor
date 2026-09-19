@@ -125,6 +125,7 @@ export async function createCouncilDeliberationReplies(userId:string,userText:st
   const threadId=rows[0]?.id?String(rows[0].id):null;
   if(!threadId) return [];
   const topic=topicFrom(userText);
+  const allocationProposalId=randomUUID();
   const allocationSnapshot=await getFinancialCycleAllocationSnapshot(userId);
   const allocationClaims=buildFinancialResponsibilityClaims(allocationSnapshot);
   const allocationSummary=summarizeAllocationConflict(allocationSnapshot,allocationClaims);
@@ -138,6 +139,7 @@ export async function createCouncilDeliberationReplies(userId:string,userText:st
     const responsibility=FINANCIAL_RESPONSIBILITY_BY_KEY.get(view.key);
     const structured={
       council_deliberation:true,
+      allocation_proposal_id:allocationProposalId,
       deliberation_stage:'discussion',
       topic,
       speaker_role:view.role,
