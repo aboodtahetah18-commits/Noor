@@ -1455,3 +1455,245 @@
   outline:2px solid var(--namaa-green-700);
   outline-offset:2px;
 }
+
+
+/* Mobile visual refinement — approved Namaa identity only */
+@media(max-width:767px){
+  .page{
+    background:
+      radial-gradient(circle at 100% 0%, color-mix(in srgb,var(--namaa-gold-500) 8%,transparent) 0 18%, transparent 42%),
+      var(--namaa-chat-canvas);
+  }
+
+  .mobileAppBar{
+    min-height:64px;
+    padding:calc(var(--ux-space-2) + env(safe-area-inset-top)) var(--ux-space-3) var(--ux-space-2);
+    background:color-mix(in srgb,var(--namaa-green-900) 92%,var(--namaa-card) 8%);
+    border-bottom:1px solid color-mix(in srgb,var(--namaa-gold-500) 38%,var(--namaa-green-900) 62%);
+    box-shadow:0 8px 24px color-mix(in srgb,var(--namaa-green-900) 18%,transparent);
+    isolation:isolate;
+    overflow:hidden;
+  }
+  .mobileAppBar::after{
+    content:"";
+    position:absolute;
+    inset-inline-end:-28px;
+    bottom:-44px;
+    width:132px;
+    height:132px;
+    background:url('/brand/namaa-leaf.webp') center/contain no-repeat;
+    opacity:.08;
+    pointer-events:none;
+    z-index:-1;
+  }
+  .mobileTopLogo{
+    height:38px;
+    width:auto;
+    filter:drop-shadow(0 1px 0 color-mix(in srgb,var(--namaa-card) 18%,transparent));
+  }
+  .mobileTopButton,
+  .mobileUserButton,
+  .mobileThemeToggle{
+    background:color-mix(in srgb,var(--namaa-card) 10%,transparent)!important;
+    border-color:color-mix(in srgb,var(--namaa-gold-500) 42%,transparent)!important;
+    color:var(--ux-text-inverse)!important;
+    box-shadow:none!important;
+  }
+  .mobileUserButton{
+    outline:1px solid color-mix(in srgb,var(--namaa-card) 20%,transparent);
+    outline-offset:2px;
+  }
+
+  .chatPane{
+    background:
+      linear-gradient(180deg,color-mix(in srgb,var(--namaa-surface-warm) 72%,transparent),transparent 28%),
+      var(--namaa-chat-canvas);
+  }
+  .chatHeader{
+    min-height:76px;
+    padding:var(--ux-space-2) var(--ux-space-3);
+    background:color-mix(in srgb,var(--namaa-card) 93%,var(--namaa-surface-warm) 7%);
+    border-bottom:1px solid var(--namaa-border-strong);
+    box-shadow:0 1px 0 var(--namaa-border);
+  }
+  .chatIdentity .personaAvatar{
+    width:54px;
+    height:54px;
+    flex-basis:54px;
+    border:2px solid color-mix(in srgb,var(--namaa-gold-500) 72%,var(--namaa-card) 28%);
+    box-shadow:0 0 0 3px color-mix(in srgb,var(--namaa-gold-500) 10%,transparent),var(--ux-shadow-xs);
+  }
+  .chatIdentity>div>small{
+    margin-top:2px;
+    display:block;
+    color:var(--ux-text-secondary);
+  }
+  .entityTitle strong{
+    color:var(--namaa-green-900);
+    font-weight:900;
+  }
+  .mobileTools button{
+    background:var(--namaa-surface-warm);
+    border:1px solid var(--namaa-border);
+    color:var(--namaa-green-900);
+    box-shadow:var(--ux-shadow-xs);
+  }
+
+  .routingNote{
+    margin:var(--ux-space-2) var(--ux-space-3) var(--ux-space-1);
+    background:color-mix(in srgb,var(--namaa-cream) 68%,var(--namaa-card) 32%);
+    border:1px solid color-mix(in srgb,var(--namaa-gold-500) 42%,var(--namaa-border) 58%);
+    border-radius:var(--ux-radius-4);
+    box-shadow:var(--ux-shadow-xs);
+  }
+  .routingNote svg{
+    color:var(--namaa-green-900);
+  }
+
+  .messages{
+    gap:var(--ux-space-3);
+    padding:var(--ux-space-3) var(--ux-space-3) var(--ux-space-4);
+  }
+  .message{
+    max-width:88%;
+    padding:var(--ux-space-3);
+    border-radius:var(--ux-radius-4);
+    box-shadow:0 5px 16px color-mix(in srgb,var(--namaa-text) 5%,transparent);
+  }
+  .agentMessage{
+    background:color-mix(in srgb,var(--namaa-card) 88%,var(--namaa-surface-warm) 12%);
+    border-color:var(--namaa-border);
+    border-start-start-radius:var(--ux-radius-2);
+  }
+  .userMessage{
+    background:color-mix(in srgb,var(--namaa-green-900) 94%,var(--namaa-green-700) 6%);
+    border-color:var(--namaa-green-900);
+    color:var(--ux-text-inverse);
+    border-start-end-radius:var(--ux-radius-2);
+  }
+  .userMessage p,
+  .userMessage strong,
+  .userMessage small{
+    color:var(--ux-text-inverse);
+  }
+  .messageIdentity{
+    margin-bottom:var(--ux-space-2);
+  }
+  .messageIdentity .personaAvatar{
+    width:34px;
+    height:34px;
+    flex-basis:34px;
+    border:1px solid color-mix(in srgb,var(--namaa-gold-500) 58%,var(--namaa-border) 42%);
+  }
+
+  .structuredCard{
+    border-radius:var(--ux-radius-3);
+    background:color-mix(in srgb,var(--namaa-card) 90%,var(--namaa-surface-warm) 10%);
+    box-shadow:none;
+  }
+
+  .onboardingIntakeLauncher,
+  .onboardingReviewPrompt{
+    margin-inline:var(--ux-space-3);
+    border-radius:var(--ux-radius-4);
+    border-color:color-mix(in srgb,var(--namaa-gold-500) 32%,var(--namaa-border) 68%);
+    background:linear-gradient(135deg,var(--namaa-card),color-mix(in srgb,var(--namaa-cream) 55%,var(--namaa-card) 45%));
+    box-shadow:var(--ux-shadow-xs);
+  }
+  .onboardingIntakeLauncher .primaryActionButton,
+  .reviewConfirm .primaryActionButton{
+    min-height:42px;
+    border-radius:var(--ux-radius-full);
+    background:var(--namaa-green-900);
+    color:var(--ux-text-inverse);
+  }
+
+  .attachmentPolicy{
+    margin-inline:var(--ux-space-3);
+    background:color-mix(in srgb,var(--namaa-card) 82%,var(--namaa-surface-warm) 18%);
+    border-radius:var(--ux-radius-3);
+  }
+  .executionNote{
+    margin-inline:var(--ux-space-3);
+    border-radius:var(--ux-radius-3);
+    background:color-mix(in srgb,var(--namaa-green-900) 5%,var(--namaa-card) 95%);
+  }
+
+  .composer{
+    min-height:60px;
+    gap:var(--ux-space-2);
+    padding:var(--ux-space-2) var(--ux-space-3) calc(var(--ux-space-2) + env(safe-area-inset-bottom));
+    background:color-mix(in srgb,var(--namaa-card) 96%,var(--namaa-surface-warm) 4%);
+    border-top:1px solid var(--namaa-border-strong);
+    box-shadow:0 -8px 24px color-mix(in srgb,var(--namaa-text) 7%,transparent);
+  }
+  .composer textarea{
+    min-height:42px;
+    height:42px;
+    max-height:104px;
+    border:1px solid var(--namaa-border);
+    border-radius:var(--ux-radius-full);
+    background:var(--namaa-card);
+    padding:10px var(--ux-space-3);
+    box-shadow:inset 0 1px 0 color-mix(in srgb,var(--namaa-text) 3%,transparent);
+  }
+  .attachButton,
+  .sendButton{
+    width:42px;
+    height:42px;
+    flex-basis:42px;
+    border-radius:var(--ux-radius-full);
+  }
+  .attachButton{
+    border:1px solid var(--namaa-border);
+    background:var(--namaa-surface-warm);
+  }
+  .sendButton{
+    background:var(--namaa-green-900);
+    color:var(--ux-text-inverse);
+    box-shadow:0 4px 12px color-mix(in srgb,var(--namaa-green-900) 20%,transparent);
+  }
+
+  .mobileSideSheet{
+    border-start-start-radius:var(--ux-radius-xl);
+    border-end-start-radius:var(--ux-radius-xl);
+    background:var(--namaa-card);
+  }
+  .sideBrand{
+    min-height:86px;
+    background:color-mix(in srgb,var(--namaa-green-900) 91%,var(--namaa-card) 9%);
+    border-color:color-mix(in srgb,var(--namaa-gold-500) 38%,var(--namaa-green-900) 62%);
+  }
+  .sideBrand img{
+    height:44px;
+  }
+  .mobileSideSheet .sideSection>small{
+    color:var(--namaa-green-900);
+    letter-spacing:.01em;
+  }
+  .mobileSideSheet .roomItemShell{
+    background:var(--namaa-card);
+  }
+  .mobileSideSheet .activeRoom{
+    background:color-mix(in srgb,var(--namaa-cream) 68%,var(--namaa-card) 32%);
+    border-color:color-mix(in srgb,var(--namaa-gold-500) 52%,var(--namaa-border) 48%);
+  }
+
+  .mobileSheet,
+  .contextSheet,
+  .intakeBottomSheet{
+    border-color:var(--namaa-border-strong);
+    box-shadow:0 -18px 48px color-mix(in srgb,var(--namaa-text) 16%,transparent);
+  }
+  .sheetHandle{
+    background:color-mix(in srgb,var(--namaa-green-900) 22%,var(--namaa-border) 78%);
+  }
+  .contextTabs{
+    background:color-mix(in srgb,var(--namaa-surface-warm) 90%,var(--namaa-cream) 10%);
+  }
+  .contextTabs .contextTabActive{
+    background:var(--namaa-green-900);
+    color:var(--ux-text-inverse);
+    box-shadow:var(--ux-shadow-xs);
+  }
+}
