@@ -1,15 +1,17 @@
 import { randomUUID } from 'node:crypto';
 import { getRawSql } from '@/infrastructure/db/client';
 
-export type ConversationRoomKey = 'central' | 'solvency' | 'assets' | 'hilal' | 'advisor' | 'council';
+export type ConversationRoomKey = 'central' | 'operations' | 'solvency' | 'assets' | 'hilal' | 'advisor' | 'secretary' | 'council';
 export type ConversationMessageKind = 'message' | 'risk' | 'decision' | 'recommendation' | 'followup' | 'request';
 
 export const governedRooms: Record<ConversationRoomKey, { title: string; subtitle: string; kind: string; participants: Array<{ key: string; name: string; type: 'agent' | 'system'; role: string }> }> = {
   central: { title: 'بنك نماء المركزي', subtitle: 'الحوكمة والاستقرار', kind: 'governor', participants: [{ key: 'central-governor', name: 'محافظ بنك نماء المركزي', type: 'agent', role: 'محافظ خوارزمي' }] },
+  operations: { title: 'العمليات والمطابقة', subtitle: 'رسائل المشتريات والحركات والإيصالات', kind: 'operations', participants: [{ key: 'operations-matcher', name: 'مركز العمليات والمطابقة', type: 'system', role: 'محرك مطابقة وتدقيق' }] },
   solvency: { title: 'بنك ملاءة', subtitle: 'الحماية والاحتياطي', kind: 'bank', participants: [{ key: 'solvency-manager', name: 'مدير بنك ملاءة', type: 'agent', role: 'مدير خوارزمي' }, { key: 'risk-advisor', name: 'مستشار المخاطر', type: 'agent', role: 'مستشار مختص' }] },
   assets: { title: 'بنك الأصول الاستثماري', subtitle: 'الأصول والأهداف والاستثمار', kind: 'bank', participants: [{ key: 'assets-manager', name: 'مدير بنك الأصول الاستثماري', type: 'agent', role: 'مدير خوارزمي' }, { key: 'investment-advisor', name: 'مستشار الاستثمار', type: 'agent', role: 'مستشار مختص' }] },
   hilal: { title: 'بنك الهلال', subtitle: 'التمويل الداخلي', kind: 'bank', participants: [{ key: 'hilal-manager', name: 'مدير بنك الهلال', type: 'agent', role: 'مدير خوارزمي' }, { key: 'funding-advisor', name: 'مستشار التمويل', type: 'agent', role: 'مستشار مختص' }] },
   advisor: { title: 'المستشار الاقتصادي', subtitle: 'تحليل الصورة المالية الكلية', kind: 'advisor', participants: [{ key: 'financial-advisor', name: 'المستشار الاقتصادي', type: 'agent', role: 'مستشار خوارزمي' }] },
+  secretary: { title: 'أمين السر المركزي', subtitle: 'المحاضر والسياسات والاجتماعات والمتابعة', kind: 'secretary', participants: [{ key: 'central-secretary', name: 'أمين السر المركزي', type: 'agent', role: 'أمين سر خوارزمي' }] },
   council: { title: 'مجلس نماء الأعلى', subtitle: 'القرارات واللجان', kind: 'council', participants: [{ key: 'council-secretary', name: 'أمين مجلس نماء الأعلى', type: 'agent', role: 'أمين خوارزمي' }] },
 };
 
