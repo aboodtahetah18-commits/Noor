@@ -273,7 +273,7 @@ export function PersistentConversationWorkspace(){
   const [userMenuOpen,setUserMenuOpen]=useState(false);
   const [profileOpen,setProfileOpen]=useState(false);
   const [settingsOpen,setSettingsOpen]=useState(false);
-  const [settingsSection,setSettingsSection]=useState<'general'|'accounts'>('general');
+  const [settingsSection]=useState<'general'|'accounts'>('general');
   const [profileName,setProfileName]=useState('');
   const [profileSaving,setProfileSaving]=useState(false);
   const [reviewOpen,setReviewOpen]=useState(false);
