@@ -71,7 +71,7 @@ export function GovernanceMobileSheet({
           <div><strong>المرجع الحاكم للمستخدم</strong><small>كل قاعدة قابلة للعرض والمراجعة، والتعديل يمر بمسار موثق ويحفظ النسخة السابقة.</small></div>
         </div>
         {governanceCatalog.map(item=><details key={item.id} className={styles.governanceCard}>
-          <summary><span><strong>{item.title}</strong><small>{item.summary}</small></span><LucideIcon name="chevronDown" size={18}/></summary>
+          <summary><span><strong>{item.title}</strong><small>{item.summary}</small></span><LucideIcon name="chevronDown" size={16}/></summary>
           <div className={styles.governanceBody}>
             <span><small>المالك</small><strong>{item.owner}</strong></span>
             <span><small>الحالة</small><strong>{item.status} · {item.version}</strong></span>
@@ -108,7 +108,7 @@ export function GovernanceMobileSheet({
           <em>{meeting.status}</em>
         </article>)}
         <button type="button" className={styles.secondaryButton} onClick={onOpenSecretary}>
-          <LucideIcon name="messageSquareText" size={18}/><span>اطلب إضافة موضوع أو اجتماع</span>
+          <LucideIcon name="messageSquareText" size={20}/><span>اطلب إضافة موضوع أو اجتماع</span>
         </button>
       </div>}
 
