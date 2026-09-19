@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { LucideIcon } from '@/components/ui/lucide-icon';
+import { StatementReviewPanel } from '@/components/conversations/statement-review-panel';
 import styles from './conversation-workspace.module.css';
 
 type RoomKey = 'central' | 'solvency' | 'assets' | 'hilal' | 'advisor' | 'council';
@@ -234,6 +235,7 @@ export function PersistentConversationWorkspace(){
   const [statementAccountId,setStatementAccountId]=useState('');
   const [statementPickerOpen,setStatementPickerOpen]=useState(false);
   const [statementUploading,setStatementUploading]=useState(false);
+  const [statementReviewVersion,setStatementReviewVersion]=useState(0);
   const statementFileRef=useRef<HTMLInputElement|null>(null);
   const [desktopRoomsVisible,setDesktopRoomsVisible]=useState(true);
   const [desktopContextVisible,setDesktopContextVisible]=useState(true);
@@ -324,6 +326,7 @@ export function PersistentConversationWorkspace(){
         return;
       }
       setStatementPickerOpen(false);
+      setStatementReviewVersion(version=>version+1);
       await refreshActiveRoom();
     }catch{
       setError('تعذر رفع كشف الحساب الآن. لم تُنشأ أي حركة مالية.');
@@ -365,6 +368,11 @@ export function PersistentConversationWorkspace(){
         <div className={styles.routingNote}><LucideIcon name="sparkles" size={16}/><span>{activeRoom.specialists}</span></div>
         <div className={styles.messages} aria-live="polite">{loading&&<p>جارٍ تحميل سجل المحادثة…</p>}{!loading&&!messages.length&&<article className={`${styles.message} ${styles.agentMessage}`}><p>{onboardingComplete===false?'أنا محافظ بنك نماء المركزي. سأبدأ معك بسؤال واحد في كل مرة حتى أبني ملفك من معلوماتك أنت، دون افتراضات.':'هذه بداية محادثتك مع '+activeRoom.title+'. اكتب سؤالك أو القرار الذي تريد دراسته.'}</p></article>}{messages.map(message=><article key={message.id} className={`${styles.message} ${message.sender_type==='user'?styles.userMessage:styles.agentMessage}`}>{message.sender_type!=='user'&&<div className={styles.messageIdentity}><RoomPortrait room={activeRoom} size="sm"/><span><strong>{message.sender_name}</strong><small>{message.sender_type==='system'?'رسالة نظام':'شخصية خوارزمية'}</small></span></div>}<p>{message.body}</p>{message.message_kind!=='message'&&<section className={`${styles.structuredCard} ${styles[`kind_${message.message_kind}`]}`}><header><strong>{labels[message.message_kind]}</strong></header><StructuredFacts data={message.structured_data}/>{(message.message_kind==='decision'||message.message_kind==='request')&&<small className={styles.executionBoundary}>أي تنفيذ مالي خارجي يظل بيد المستخدم، ويحتاج تأكيدًا وإثباتًا قبل الإغلاق.</small>}</section>}</article>)}</div>
         {error&&<div className={styles.routingNote} role="alert"><LucideIcon name="triangleAlert" size={16}/><span>{error}</span></div>}
+        <StatementReviewPanel
+          enabled={activeRoomId==='central'}
+          refreshKey={statementReviewVersion}
+          onChanged={async()=>{setStatementReviewVersion(version=>version+1);await refreshActiveRoom();}}
+        />
         {statementPickerOpen&&<div className={styles.statementPicker}><div><strong>اختر الحساب المرتبط بالكشف</strong><small>سيُقرأ الملف للمراجعة فقط، ولن ينشئ معاملات تلقائيًا.</small></div><select value={statementAccountId} onChange={event=>setStatementAccountId(event.target.value)} aria-label="الحساب المرتبط بكشف الحساب">{statementAccounts.map(account=><option key={account.id} value={account.id}>{account.bank_name||account.name} — {account.name}</option>)}</select><button type="button" className={styles.secondaryButton} onClick={()=>statementFileRef.current?.click()} disabled={statementUploading}>{statementUploading?'جارٍ الاستيراد…':'اختيار ملف CSV'}</button></div>}
         <div className={styles.attachmentPolicy}><LucideIcon name="upload" size={16}/><span>{onboardingStep==='statements'?'ارفع كشف CSV إن كان متاحًا. كل صف يبقى تحت المراجعة حتى تؤكده.':'المرفق للمراجعة والتحقق فقط؛ لا ينشئ حركة مالية ولا يثبت التنفيذ تلقائيًا.'}</span></div><div className={styles.executionNote}><LucideIcon name="circleCheck" size={16}/><span>نماء يوصي ويتابع؛ التنفيذ المالي الخارجي يتم بواسطة المستخدم.</span></div>
         <form className={styles.composer} onSubmit={send}><input ref={statementFileRef} className={styles.hiddenFileInput} type="file" accept=".csv,text/csv" onChange={event=>{const file=event.target.files?.[0];if(file)void uploadStatement(file)}}/><button type="button" className={styles.attachButton} aria-label="إرفاق كشف حساب CSV" title="إرفاق كشف حساب CSV للمراجعة" onClick={()=>void prepareStatementUpload()} disabled={statementUploading}><LucideIcon name="upload" size={20}/></button><textarea value={draft} onChange={e=>setDraft(e.target.value)} placeholder={`اكتب إلى ${activeRoom.title}…`} rows={1} aria-label="نص الرسالة" maxLength={8000}/><button type="submit" className={styles.sendButton} disabled={!draft.trim()||sending}><span>{sending?'جارٍ التحليل…':'إرسال'}</span><LucideIcon name="chevronLeft" size={20}/></button></form>
