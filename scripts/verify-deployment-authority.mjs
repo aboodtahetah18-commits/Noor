@@ -38,8 +38,7 @@ const legacySmokeCommands=Object.keys(pkg.scripts??{}).filter(name=>name.include
 if(build.includes('namaa:final-ui:materialize')) errors.push('Vercel build must not materialize the legacy Namaa P0.4.30 artifact.');
 if(build.includes('apps/namaa-final-ui') && !build.includes('rmSync')) errors.push('Vercel build must not build the generated legacy apps/namaa-final-ui runtime.');
 if(vercel.outputDirectory!=='.next') errors.push(`Vercel outputDirectory must be .next, got ${vercel.outputDirectory}`);
-const oneTimePreviewAllowed=process.env.VERCEL_ENV==='preview'&&vercel.git?.deploymentEnabled===true;
-if(vercel.git?.deploymentEnabled!==false&&!oneTimePreviewAllowed) errors.push('Vercel Git auto-deployments must stay disabled except during an explicitly approved preview build.');
+if(vercel.git?.deploymentEnabled!==false) errors.push('Vercel Git auto-deployments must stay disabled until explicit user approval to release.');
 if(!build.includes('npm run build')) errors.push('Vercel build must compile the repository root Next.js application.');
 if(legacyScriptNames.length) errors.push(`Legacy generated UI commands remain in package.json: ${legacyScriptNames.join(', ')}`);
 if(legacySmokeCommands.length) errors.push(`Legacy P0.4.30 commands remain in package.json: ${legacySmokeCommands.join(', ')}`);
