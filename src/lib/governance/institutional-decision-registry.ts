@@ -13,6 +13,8 @@ export type InstitutionalDecisionFollowup={
   completed:boolean;
   note?:string|null;
   updatedAt?:string|null;
+  dueDate?:string|null;
+  reminderLeadDays?:number|null;
 };
 
 export type InstitutionalDecisionRecord={
@@ -180,6 +182,27 @@ export async function getInstitutionalDecisionRegistry(userId:string):Promise<In
     });
     return normalized?[normalized]:[];
   });
+  const deadlineEvents=await sql`
+    select structured_data,created_at
+    from public.conversation_messages
+    where user_id=${userId}::uuid
+      and structured_data->>'institutional_decision_followup_deadline_event'='true'
+    order by created_at asc
+  `;
+  const deadlineMap=new Map<string,{dueDate:string|null;reminderLeadDays:number|null;updatedAt:string}>();
+  for(const event of deadlineEvents){
+    const data=record(event.structured_data);
+    const registryId=text(data?.registry_id);
+    const followupId=text(data?.followup_id);
+    if(!registryId||!followupId) continue;
+    const key=`${registryId}:${followupId}`;
+    const previous=deadlineMap.get(key);
+    const dueDate=data?.followup_due_date===null?null:text(data?.followup_due_date)??previous?.dueDate??null;
+    const leadRaw=data?.followup_reminder_lead_days;
+    const reminderLeadDays=leadRaw===null?null:Number.isFinite(Number(leadRaw))?Number(leadRaw):previous?.reminderLeadDays??null;
+    deadlineMap.set(key,{dueDate,reminderLeadDays,updatedAt:String(event.created_at??'')});
+  }
+
   const followupEvents=await sql`
     select structured_data,created_at
     from public.conversation_messages
@@ -211,6 +234,13 @@ export async function getInstitutionalDecisionRegistry(userId:string):Promise<In
       followup.note=event.note;
       followup.updatedAt=event.updatedAt;
       followup.completed=event.status==='COMPLETED';
+    }
+    for(const followup of decision.followups){
+      const deadline=deadlineMap.get(`${decision.registryId}:${followup.followupId}`);
+      if(!deadline) continue;
+      followup.dueDate=deadline.dueDate;
+      followup.reminderLeadDays=deadline.reminderLeadDays;
+      followup.updatedAt=deadline.updatedAt;
     }
     if(decision.status!=='CLOSED'){
       decision.status=decision.followups.some(item=>!item.completed)?'FOLLOWUP_PENDING':'APPROVED';

@@ -26,6 +26,7 @@ import { createAllocationFinalProposalReply, isAllocationFinalProposalRequest } 
 import { createRatifiedAllocationDecisionMinutes } from '@/lib/allocation/allocation-decision-minutes';
 import { createInstitutionalDecisionRegistryReply, isInstitutionalDecisionRegistryRequest } from '@/lib/governance/institutional-decision-registry';
 import { applyDecisionFollowupCommand, parseDecisionFollowupCommand } from '@/lib/governance/institutional-decision-followups';
+import { applyFollowupDeadlineCommand, parseFollowupDeadlineCommand } from '@/lib/governance/institutional-decision-followup-deadlines';
 
 export async function GET(_request: Request, context: { params: Promise<{ roomKey: string }> }) {
   const user = await getAuthenticatedUser();
@@ -159,6 +160,10 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
       } else {
         reply = await createRoutedReply(user.id, roomKey, text);
       }
+    } else if (roomKey === 'central' && onboarding.complete && parseFollowupDeadlineCommand(text)) {
+      const deadlineReply=await applyFollowupDeadlineCommand(user.id,'central',parseFollowupDeadlineCommand(text)!);
+      if(!deadlineReply) return NextResponse.json({message,code:'FOLLOWUP_DEADLINE_UNAVAILABLE',captured_operation:capturedOperation},{status:409});
+      return NextResponse.json({message,reply:deadlineReply,replies:[deadlineReply],captured_operation:capturedOperation},{status:201});
     } else if (roomKey === 'central' && onboarding.complete && parseDecisionFollowupCommand(text)) {
       const followupReply=await applyDecisionFollowupCommand(user.id,'central',parseDecisionFollowupCommand(text)!);
       if(!followupReply) return NextResponse.json({message,code:'DECISION_FOLLOWUP_UNAVAILABLE',captured_operation:capturedOperation},{status:409});
@@ -233,6 +238,10 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
       }
       const replies = await createCouncilDeliberationReplies(user.id, text);
       return NextResponse.json({ message, reply: replies.at(-1) ?? null, replies, captured_operation: capturedOperation }, { status: 201 });
+    } else if (roomKey === 'secretary' && parseFollowupDeadlineCommand(text)) {
+      const deadlineReply=await applyFollowupDeadlineCommand(user.id,'secretary',parseFollowupDeadlineCommand(text)!);
+      if(!deadlineReply) return NextResponse.json({message,code:'FOLLOWUP_DEADLINE_UNAVAILABLE',captured_operation:capturedOperation},{status:409});
+      return NextResponse.json({message,reply:deadlineReply,replies:[deadlineReply],captured_operation:capturedOperation},{status:201});
     } else if (roomKey === 'secretary' && parseDecisionFollowupCommand(text)) {
       const followupReply=await applyDecisionFollowupCommand(user.id,'secretary',parseDecisionFollowupCommand(text)!);
       if(!followupReply) return NextResponse.json({message,code:'DECISION_FOLLOWUP_UNAVAILABLE',captured_operation:capturedOperation},{status:409});
