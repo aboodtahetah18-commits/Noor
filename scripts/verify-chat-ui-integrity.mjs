@@ -25,9 +25,13 @@ if(workspace.includes('mobileBrandLockup') || workspace.includes('>نماء</spa
 if(!css.includes('.mobileBrandLogo') || !css.includes('left:50%') || !css.includes('transform:translate(-50%,-50%)')) fail('mobile Namaa logo must stay geometrically centered');
 if(!css.includes('min-width:88px')) fail('mobile full logo must respect the approved 88px minimum');
 if(!css.includes('.onboardingIntake') || !css.includes('position:fixed')) fail('onboarding must remain a popup layer');
-if(!css.includes('.onboardingCloseButton') || !css.includes('.resumeIntakeButton')) fail('onboarding close/reopen controls missing');
+if(!css.includes('.onboardingCloseButton') || !css.includes('.inlineIntakeButton')) fail('onboarding close/in-message reopen controls missing');
 if(!css.includes('.chatFont_small') || !css.includes('.fontSizeChoices')) fail('user chat font control missing');
 if(!css.includes('.brandWatermarkSecondary') || !css.includes('.brandWatermarkTertiary')) fail('approved Namaa watermark pattern missing');
 if(/\.agentMessage\{[^}]*!important|\.userMessage\{[^}]*!important/s.test(css)) fail('message alignment must not depend on !important');
+if(!css.includes('.agentMessage{\n  align-self:flex-start') || !css.includes('.userMessage{\n  align-self:flex-end')) fail('approved RTL message sides changed: agent must be right, user must be left');
+const workspace=readFileSync('src/components/conversations/persistent-conversation-workspace.tsx','utf8');
+if(workspace.includes('resumeIntakeButton')) fail('structured intake reopen must live inside the active question message, not float over chat');
+if(!workspace.includes('showStructuredAction') || !workspace.includes('فتح نموذج البيانات')) fail('structured intake in-message action missing');
 
 console.log('CHAT-UI-INTEGRITY-PASS');

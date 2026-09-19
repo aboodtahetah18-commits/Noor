@@ -23,6 +23,7 @@ type OnboardingReviewFact = { key:string; label:string; raw:string; verified_at?
 type ConversationAttachment = { id:string; file_name:string; content_type?:string|null; verification_status?:string|null; created_at?:string };
 type ChatFontSize='small'|'medium'|'large';
 const CHAT_FONT_STORAGE_KEY='namaa-chat-font-size';
+const STRUCTURED_INTAKE_STEPS=new Set(['dependents','income','accounts','obligations','goals']);
 
 type Room = { id:RoomKey; title:string; subtitle:string; lead:string; specialists:string; avatar:string; bankLogo:string };
 const rooms: [Room, ...Room[]] = [
@@ -75,7 +76,7 @@ const onboardingStepNumber:Record<string,number>={
   commute:7,income:8,accounts:9,obligations:10,goals:11,statements:12,review:13,
 };
 
-function OnboardingMessageContent({message}:{message:Message}){
+function OnboardingMessageContent({message,showStructuredAction,onOpenStructuredIntake}:{message:Message;showStructuredAction?:boolean;onOpenStructuredIntake?:()=>void}){
   const data=message.structured_data&&typeof message.structured_data==='object'?message.structured_data:{};
   const question=typeof data.next_question==='string'?data.next_question.trim():'';
   const step=typeof data.onboarding_step==='string'?data.onboarding_step:'';
@@ -90,6 +91,7 @@ function OnboardingMessageContent({message}:{message:Message}){
     {question&&<div className={styles.onboardingQuestionBox}>
       {stepNumber&&<span>السؤال {stepNumber}</span>}
       <strong>{question}</strong>
+      {showStructuredAction&&onOpenStructuredIntake&&<button type="button" className={styles.inlineIntakeButton} onClick={onOpenStructuredIntake}><LucideIcon name="listChecks" size={16}/><span>فتح نموذج البيانات</span></button>}
     </div>}
     {!question&&<p>{body}</p>}
     {goalAnalysis.length>0&&<div className={styles.goalAnalysisList}>
@@ -342,7 +344,7 @@ export function PersistentConversationWorkspace(){
   const [detailRoomId,setDetailRoomId]=useState<RoomKey|null>(null);
   const [governanceMode,setGovernanceMode]=useState<'governance'|'meetings'|'documents'|null>(null);
   const [extendedProfileOpen,setExtendedProfileOpen]=useState(false);
-  const [intakeDismissed,setIntakeDismissed]=useState(false);
+  const [intakeDismissed,setIntakeDismissed]=useState(true);
   const [chatFontSize,setChatFontSize]=useState<ChatFontSize>('small');
   const composerTextareaRef=useRef<HTMLTextAreaElement|null>(null);
   const [desktopContextVisible,setDesktopContextVisible]=useState(true);
@@ -624,7 +626,7 @@ export function PersistentConversationWorkspace(){
     <div className={`${styles.workspace} ${styles.withoutRooms} ${desktopContextVisible?'':styles.withoutContext}`}>
       <main className={styles.chatPane}><header className={styles.chatHeader}><div className={styles.chatIdentity}><RoomPortrait room={activeRoom} size="md"/><div><div className={styles.entityTitle}><strong>{chatRoleTitle(activeRoom)}</strong></div><small>{chatEntityTitle(activeRoom)}</small></div></div><div className={styles.mobileTools}><button type="button" aria-label="معلومات الجهة" onClick={()=>setContextOpen(true)}><LucideIcon name="info" size={20}/></button></div></header>
         <div className={styles.routingNote}><LucideIcon name="sparkles" size={16}/><span>{activeRoom.specialists}</span></div>
-        <div className={styles.messages} aria-live="polite">{loading&&<p>جارٍ تحميل سجل المحادثة…</p>}{!loading&&!messages.length&&<article className={`${styles.message} ${styles.agentMessage}`}><p>{onboardingComplete===false?'أنا محافظ بنك نماء المركزي. سأبدأ معك بسؤال واحد في كل مرة حتى أبني ملفك من معلوماتك أنت، دون افتراضات.':'هذه بداية محادثتك مع '+activeRoom.title+'. اكتب سؤالك أو القرار الذي تريد دراسته.'}</p></article>}{messages.map(message=><article key={message.id} className={`${styles.message} ${message.sender_type==='user'?styles.userMessage:styles.agentMessage} ${activeRoom.id==='council'&&message.sender_type!=='user'?councilSpeakerClass(message.sender_key):''}`}>{message.sender_type!=='user'&&<div className={styles.messageIdentity}>{activeRoom.id==='council'?<span className={styles.councilInitial} aria-hidden="true">{speakerInitial(message.sender_name)}</span>:<RoomPortrait room={activeRoom} size="sm"/>}<span><strong>{activeRoom.id==='central'?'محافظ البنك المركزي':message.sender_name}</strong><small>{message.structured_data?.speaker_role?String(message.structured_data.speaker_role):message.sender_type==='system'?'رسالة نظام':'شخصية خوارزمية'}</small></span></div>}{message.sender_type==='user'&&activeRoom.id==='council'&&<div className={styles.userMeetingIdentity}><strong>{meetingUserDisplayName(profile?.name||message.sender_name)}</strong><small>صاحب المحفظة</small></div>}{message.structured_data?.onboarding===true?<OnboardingMessageContent message={message}/>:<p>{message.body}</p>}{message.message_kind!=='message'&&message.structured_data?.onboarding!==true&&<section className={`${styles.structuredCard} ${styles[`kind_${message.message_kind}`]}`}><header><strong>{labels[message.message_kind]}</strong></header><StructuredFacts data={message.structured_data}/>{(message.message_kind==='decision'||message.message_kind==='request')&&<small className={styles.executionBoundary}>أي تنفيذ مالي خارجي يظل بيد المستخدم، ويحتاج تأكيدًا وإثباتًا قبل الإغلاق.</small>}</section>}</article>)}</div>
+        <div className={styles.messages} aria-live="polite">{loading&&<p>جارٍ تحميل سجل المحادثة…</p>}{!loading&&!messages.length&&<article className={`${styles.message} ${styles.agentMessage}`}><p>{onboardingComplete===false?'أنا محافظ بنك نماء المركزي. سأبدأ معك بسؤال واحد في كل مرة حتى أبني ملفك من معلوماتك أنت، دون افتراضات.':'هذه بداية محادثتك مع '+activeRoom.title+'. اكتب سؤالك أو القرار الذي تريد دراسته.'}</p></article>}{messages.map(message=><article key={message.id} className={`${styles.message} ${message.sender_type==='user'?styles.userMessage:styles.agentMessage} ${activeRoom.id==='council'&&message.sender_type!=='user'?councilSpeakerClass(message.sender_key):''}`}>{message.sender_type!=='user'&&<div className={styles.messageIdentity}>{activeRoom.id==='council'?<span className={styles.councilInitial} aria-hidden="true">{speakerInitial(message.sender_name)}</span>:<RoomPortrait room={activeRoom} size="sm"/>}<span><strong>{activeRoom.id==='central'?'محافظ البنك المركزي':message.sender_name}</strong><small>{message.structured_data?.speaker_role?String(message.structured_data.speaker_role):message.sender_type==='system'?'رسالة نظام':'شخصية خوارزمية'}</small></span></div>}{message.sender_type==='user'&&activeRoom.id==='council'&&<div className={styles.userMeetingIdentity}><strong>{meetingUserDisplayName(profile?.name||message.sender_name)}</strong><small>صاحب المحفظة</small></div>}{message.structured_data?.onboarding===true?<OnboardingMessageContent message={message} showStructuredAction={onboardingComplete===false&&message.sender_type!=='user'&&String(message.structured_data?.onboarding_step??'')===String(onboardingStep??'')&&STRUCTURED_INTAKE_STEPS.has(String(onboardingStep??''))} onOpenStructuredIntake={()=>setIntakeDismissed(false)}/>:<p>{message.body}</p>}{message.message_kind!=='message'&&message.structured_data?.onboarding!==true&&<section className={`${styles.structuredCard} ${styles[`kind_${message.message_kind}`]}`}><header><strong>{labels[message.message_kind]}</strong></header><StructuredFacts data={message.structured_data}/>{(message.message_kind==='decision'||message.message_kind==='request')&&<small className={styles.executionBoundary}>أي تنفيذ مالي خارجي يظل بيد المستخدم، ويحتاج تأكيدًا وإثباتًا قبل الإغلاق.</small>}</section>}</article>)}</div>
         {error&&<div className={styles.routingNote} role="alert"><LucideIcon name="triangleAlert" size={16}/><span>{error}</span></div>}
         {onboardingComplete===false&&!intakeDismissed&&<GovernorOnboardingIntake
           step={onboardingStep??''}
@@ -632,10 +634,9 @@ export function PersistentConversationWorkspace(){
           onAccepted={(message,reply,nextStep)=>{
             setMessages(current=>[...current,message,...(reply?[reply]:[])]);
             setOnboardingStep(nextStep);
-            setIntakeDismissed(false);
+            setIntakeDismissed(true);
           }}
         />}
-        {onboardingComplete===false&&intakeDismissed&&['dependents','income','accounts','obligations','goals'].includes(onboardingStep??'')&&<button type="button" className={styles.resumeIntakeButton} onClick={()=>setIntakeDismissed(false)}><LucideIcon name="listChecks" size={16}/><span>متابعة استكمال البيانات</span></button>}
         {onboardingComplete===false&&onboardingStep==='review'&&<div className={styles.onboardingReviewPrompt}><div><strong>راجع بياناتك قبل التأكيد</strong><small>يمكنك تعديل أي معلومة يدويًا، ثم تثبيت الملف بعد التأكد.</small></div><button type="button" className={styles.secondaryButton} onClick={()=>void openOnboardingReview()}><LucideIcon name="listChecks" size={16}/><span>مراجعة البيانات</span></button></div>}
         <StatementReviewPanel
           enabled={activeRoomId==='central'}
@@ -644,7 +645,7 @@ export function PersistentConversationWorkspace(){
         />
         {statementPickerOpen&&<div className={styles.statementPicker}><div><strong>اختر الحساب المرتبط بالكشف</strong><small>سيُقرأ الملف للمراجعة فقط، ولن ينشئ معاملات تلقائيًا.</small></div><select value={statementAccountId} onChange={event=>setStatementAccountId(event.target.value)} aria-label="الحساب المرتبط بكشف الحساب">{statementAccounts.map(account=><option key={account.id} value={account.id}>{account.bank_name||account.name} — {account.name}</option>)}</select><button type="button" className={styles.secondaryButton} onClick={()=>statementFileRef.current?.click()} disabled={statementUploading}>{statementUploading?'جارٍ الاستيراد…':'اختيار ملف CSV'}</button></div>}
         <div className={styles.attachmentPolicy}><LucideIcon name="upload" size={16}/><span>{onboardingStep==='statements'?'ارفع كشف CSV إن كان متاحًا. كل صف يبقى تحت المراجعة حتى تؤكده.':'المرفق للمراجعة والتحقق فقط؛ لا ينشئ حركة مالية ولا يثبت التنفيذ تلقائيًا.'}</span></div><div className={styles.executionNote}><LucideIcon name="circleCheck" size={16}/><span>نماء يوصي ويتابع؛ التنفيذ المالي الخارجي يتم بواسطة المستخدم.</span></div>
-        {!['dependents','income','accounts','obligations','goals'].includes(onboardingStep??'')&&<form className={styles.composer} onSubmit={send}><input ref={statementFileRef} className={styles.hiddenFileInput} type="file" accept=".csv,text/csv" onChange={event=>{const file=event.target.files?.[0];if(file)void uploadStatement(file)}}/><button type="button" className={styles.attachButton} aria-label="إرفاق كشف حساب CSV" title="إرفاق كشف حساب CSV للمراجعة" onClick={()=>void prepareStatementUpload()} disabled={statementUploading}><LucideIcon name="upload" size={20}/></button><textarea ref={composerTextareaRef} value={draft} onChange={e=>{setDraft(e.target.value);e.currentTarget.style.height='40px';e.currentTarget.style.height=`${Math.min(e.currentTarget.scrollHeight,112)}px`;}} placeholder={`اكتب إلى ${chatRoleTitle(activeRoom)}…`} rows={1} aria-label="نص الرسالة" maxLength={8000}/><button type="submit" className={styles.sendButton} disabled={!draft.trim()||sending} aria-label="إرسال"><span>{sending?'جارٍ التحليل…':'إرسال'}</span><LucideIcon name="send" size={20}/></button></form>}
+        {!STRUCTURED_INTAKE_STEPS.has(onboardingStep??'')&&<form className={styles.composer} onSubmit={send}><input ref={statementFileRef} className={styles.hiddenFileInput} type="file" accept=".csv,text/csv" onChange={event=>{const file=event.target.files?.[0];if(file)void uploadStatement(file)}}/><button type="button" className={styles.attachButton} aria-label="إرفاق كشف حساب CSV" title="إرفاق كشف حساب CSV للمراجعة" onClick={()=>void prepareStatementUpload()} disabled={statementUploading}><LucideIcon name="upload" size={20}/></button><textarea ref={composerTextareaRef} value={draft} onChange={e=>{setDraft(e.target.value);e.currentTarget.style.height='40px';e.currentTarget.style.height=`${Math.min(e.currentTarget.scrollHeight,112)}px`;}} placeholder={`اكتب إلى ${chatRoleTitle(activeRoom)}…`} rows={1} aria-label="نص الرسالة" maxLength={8000}/><button type="submit" className={styles.sendButton} disabled={!draft.trim()||sending} aria-label="إرسال"><span>{sending?'جارٍ التحليل…':'إرسال'}</span><LucideIcon name="send" size={20}/></button></form>}
       </main>
       {desktopContextVisible&&<aside className={styles.contextPane} aria-label="سياق المحادثة"><div className={styles.paneTitle}><span>السياق</span><small>حيّز العمل</small></div>{contextCards}</aside>}
     </div>

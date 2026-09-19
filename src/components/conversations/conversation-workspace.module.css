@@ -298,15 +298,15 @@
 
 .agentMessage{
   align-self:flex-start;
-  margin-right:auto;
-  margin-left:var(--ux-space-0);
+  margin-inline-start:var(--ux-space-0);
+  margin-inline-end:auto;
   background:var(--namaa-agent-message)
 }
 
 .userMessage{
   align-self:flex-end;
-  margin-left:auto;
-  margin-right:var(--ux-space-0);
+  margin-inline-start:auto;
+  margin-inline-end:var(--ux-space-0);
   background:var(--namaa-user-message);
   border-color:var(--namaa-green-700)
 }
@@ -2686,14 +2686,14 @@
     align-self:flex-start;
   border-end-start-radius:var(--ux-radius-2);
   background:color-mix(in srgb,var(--namaa-agent-message) 88%,var(--namaa-surface-warm) 12%);
-  margin-right:auto;
-  margin-left:var(--ux-space-0)
+  margin-inline-start:var(--ux-space-0);
+  margin-inline-end:auto
   }
   .userMessage{
     align-self:flex-end;
   border-end-end-radius:var(--ux-radius-2);
-  margin-left:auto;
-  margin-right:var(--ux-space-0)
+  margin-inline-start:auto;
+  margin-inline-end:var(--ux-space-0)
   }
 }
 
@@ -2738,11 +2738,8 @@
   place-items:center;
   cursor:pointer
 }
-.resumeIntakeButton{
-  position:absolute;
-  inset-inline-end:var(--ux-space-3);
-  bottom:calc(64px + var(--ux-space-3));
-  z-index:12;
+.inlineIntakeButton{
+  width:fit-content;
   min-height:40px;
   border:1px solid var(--namaa-green-700);
   border-radius:var(--ux-radius-full);
@@ -2751,11 +2748,12 @@
   padding:var(--ux-space-2) var(--ux-space-3);
   display:inline-flex;
   align-items:center;
+  justify-content:center;
   gap:var(--ux-space-2);
   font:inherit;
   font-size:var(--ux-type-button-size);
   font-weight:900;
-  box-shadow:var(--ux-shadow-md)
+  cursor:pointer
 }
 .settingsSectionBlock{
   display:grid;
