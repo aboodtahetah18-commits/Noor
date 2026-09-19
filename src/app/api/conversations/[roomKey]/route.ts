@@ -22,6 +22,7 @@ import { closeFinancialCycleAfterApproval, createFinancialCycleClosureReview, is
 import { createGovernorPreMeetingBriefReply, isGovernorPreMeetingBriefRequest } from '@/lib/allocation/governor-pre-meeting-brief';
 import { createMeetingOpeningAgendaReply, isMeetingOpeningAgendaRequest } from '@/lib/allocation/financial-meeting-opening-agenda';
 import { applyMeetingAgendaCommand, parseMeetingAgendaCommand } from '@/lib/allocation/financial-meeting-agenda-tracking';
+import { createAllocationFinalProposalReply, isAllocationFinalProposalRequest } from '@/lib/allocation/allocation-final-proposal';
 
 export async function GET(_request: Request, context: { params: Promise<{ roomKey: string }> }) {
   const user = await getAuthenticatedUser();
@@ -202,9 +203,14 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
         if(!deviationReplies.length) return NextResponse.json({ message, code:'NO_ACTIVE_PLAN_DEVIATION', captured_operation:capturedOperation }, { status:409 });
         return NextResponse.json({ message, reply:deviationReplies.at(-1)??null, replies:deviationReplies, captured_operation:capturedOperation }, { status:201 });
       }
+      if(isAllocationFinalProposalRequest(text)){
+        const finalProposalReply=await createAllocationFinalProposalReply(user.id);
+        if(!finalProposalReply) return NextResponse.json({message,code:'NO_BALANCED_MEETING_TO_FINALIZE',captured_operation:capturedOperation},{status:409});
+        return NextResponse.json({message,reply:finalProposalReply,replies:[finalProposalReply],captured_operation:capturedOperation},{status:201});
+      }
       if (isExplicitAllocationRatification(text)) {
         const ratificationReply=await ratifyLatestAllocationDraft(user.id);
-        if(!ratificationReply) return NextResponse.json({ message, code:'NO_BALANCED_ALLOCATION_DRAFT', captured_operation:capturedOperation }, { status:409 });
+        if(!ratificationReply) return NextResponse.json({ message, code:'NO_RATIFIABLE_ALLOCATION_PROPOSAL', captured_operation:capturedOperation }, { status:409 });
         return NextResponse.json({ message, reply:ratificationReply, replies:[ratificationReply], captured_operation:capturedOperation }, { status:201 });
       }
       if (isExplicitAllocationRejection(text)) {

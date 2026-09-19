@@ -38,7 +38,9 @@ export async function ratifyLatestAllocationDraft(userId:string):Promise<Allocat
       and t.user_id=${userId}::uuid
       and t.room_key='council'
       and m.sender_key='central-secretary'
-      and coalesce(m.structured_data->>'allocation_proposal_id','')<>''
+      and m.structured_data->>'allocation_final_proposal'='true'
+      and m.structured_data->>'ratification_ready'='true'
+      and coalesce(m.structured_data->>'allocation_final_proposal_id','')<>''
       and m.structured_data->'negotiation'->>'status'='BALANCED_DRAFT'
     order by m.created_at desc
     limit 1
@@ -49,14 +51,17 @@ export async function ratifyLatestAllocationDraft(userId:string):Promise<Allocat
   const data=draft.structured_data&&typeof draft.structured_data==='object'
     ? draft.structured_data as Record<string,unknown>
     : {};
-  const proposalId=String(data.allocation_proposal_id??'');
+  const proposalId=String(data.allocation_final_proposal_id??'');
   const negotiation=data.negotiation&&typeof data.negotiation==='object'
     ? data.negotiation as Record<string,unknown>
     : {};
   const snapshot=data.allocation_snapshot&&typeof data.allocation_snapshot==='object'
     ? data.allocation_snapshot as Record<string,unknown>
     : {};
-  const fingerprint=stableFingerprint({proposalId,negotiation,snapshot});
+  const agendaState=data.agenda_tracking_state&&typeof data.agenda_tracking_state==='object'?data.agenda_tracking_state as Record<string,unknown>:null;
+  const resolvedAgendaItems=Array.isArray(data.resolved_agenda_items)?data.resolved_agenda_items:[];
+  const nonBlockingFollowups=Array.isArray(data.non_blocking_followups)?data.non_blocking_followups:[];
+  const fingerprint=stableFingerprint({proposalId,negotiation,snapshot,agendaState,resolvedAgendaItems,nonBlockingFollowups});
 
   const existing=await sql`
     select id,sender_type,sender_key,sender_name,message_kind,body,structured_data,created_at
@@ -101,6 +106,9 @@ export async function ratifyLatestAllocationDraft(userId:string):Promise<Allocat
         ratified_at:new Date().toISOString(),
         negotiation,
         allocation_snapshot:snapshot,
+        agenda_tracking_state:agendaState,
+        resolved_agenda_items:resolvedAgendaItems,
+        non_blocking_followups:nonBlockingFollowups,
         planning_materialization_pending:materialization.status!=='MATERIALIZED'&&materialization.status!=='ALREADY_MATERIALIZED',
         planning_materialization:materialization,
         plan_id:materialization.planId,
