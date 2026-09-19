@@ -1323,3 +1323,195 @@
     padding-bottom:calc(var(--ux-space-3) + env(safe-area-inset-bottom));
   }
 }
+
+
+/* Approved correction pass — Fresh deployment review */
+.page,.page :where(button,input,select,textarea,time){
+  font-family:var(--ux-font-family-base)!important;
+}
+.messageTime{
+  direction:ltr;
+  unicode-bidi:isolate;
+  font-variant-numeric:tabular-nums;
+  font-size:calc(var(--ux-type-caption-size) - 2px)!important;
+  line-height:1.2!important;
+  font-weight:500!important;
+  color:var(--ux-text-muted)!important;
+  white-space:nowrap;
+}
+.messageIdentity>span:last-child{
+  display:grid;
+  gap:var(--ux-space-0);
+}
+.contextTabs{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:var(--ux-space-1);
+  padding:var(--ux-space-1);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-surface-warm);
+}
+.contextTabs button{
+  min-height:34px;
+  border:0;
+  border-radius:var(--ux-radius-2);
+  background:transparent;
+  color:var(--ux-text-secondary);
+  font:inherit;
+  font-size:var(--ux-type-caption-size);
+  font-weight:700;
+  cursor:pointer;
+}
+.contextTabs .contextTabActive{
+  background:var(--namaa-card);
+  color:var(--namaa-green-900);
+  box-shadow:var(--ux-shadow-xs);
+}
+.contextPage{
+  display:grid;
+  gap:var(--ux-space-2);
+}
+.contextAction{
+  min-height:40px;
+  width:100%;
+  border:1px solid var(--namaa-border-strong);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-card);
+  color:var(--namaa-green-900);
+  font:inherit;
+  font-size:var(--ux-type-caption-size);
+  font-weight:800;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:var(--ux-space-2);
+}
+.contextFiles{
+  display:grid;
+  gap:var(--ux-space-2);
+  margin-top:var(--ux-space-2);
+}
+.contextFiles>span{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:var(--ux-space-2);
+  padding:var(--ux-space-2);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-2);
+  background:var(--namaa-card);
+}
+.contextFiles b{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:var(--ux-type-caption-size);
+}
+.contextFiles em{
+  font-style:normal;
+  color:var(--ux-text-secondary);
+  font-size:calc(var(--ux-type-caption-size) - 1px);
+}
+.settingsList{
+  display:grid;
+  gap:var(--ux-space-2);
+}
+.settingsList .settingsCard{
+  width:100%;
+  min-height:72px;
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-surface-warm);
+  color:var(--ux-text-primary);
+  text-align:right;
+  font:inherit;
+}
+.settingsList div.settingsCard{
+  grid-template-columns:minmax(0,1fr) auto;
+}
+.settingsCard>span{
+  display:grid;
+  gap:var(--ux-space-1);
+  min-width:0;
+}
+.settingsCard strong{font-size:var(--ux-type-body-sm-size)}
+.settingsCard small{
+  font-size:var(--ux-type-caption-size);
+  line-height:1.55;
+  color:var(--ux-text-secondary);
+}
+@media(max-width:767px){
+  .mobileAppBar{
+    min-height:64px;
+    height:64px;
+    background:var(--namaa-green-900)!important;
+    border-bottom:1px solid color-mix(in srgb,var(--ux-text-inverse) 16%,transparent)!important;
+    z-index:130;
+  }
+  .mobileAppBarPrimary{
+    direction:rtl;
+    min-width:0;
+  }
+  .mobileBrandLockup{
+    display:flex;
+    align-items:center;
+    gap:var(--ux-space-2);
+    min-width:0;
+  }
+  .mobileBrandLockup img{
+    width:30px!important;
+    height:30px!important;
+    object-fit:contain!important;
+    flex:0 0 30px;
+  }
+  .mobileBrandLockup span{
+    color:var(--ux-text-inverse)!important;
+    font-size:var(--ux-type-card-title-size)!important;
+    font-weight:700!important;
+    line-height:1!important;
+  }
+  .mobileTopButton{
+    order:0;
+    border-color:color-mix(in srgb,var(--ux-text-inverse) 30%,transparent)!important;
+    background:transparent!important;
+    color:var(--ux-text-inverse)!important;
+  }
+  .mobileOverlay,.intakeOverlay{
+    top:64px!important;
+    z-index:120;
+  }
+  .contextSheet{
+    max-height:calc(100dvh - 80px);
+  }
+  .contextTabs{
+    position:sticky;
+    top:52px;
+    z-index:3;
+    margin-bottom:var(--ux-space-3);
+  }
+  .contextTabs button{
+    min-width:0;
+    padding-inline:var(--ux-space-1);
+    font-size:calc(var(--ux-type-caption-size) - 1px);
+  }
+  .contextCard{
+    padding:var(--ux-space-3);
+    border-radius:var(--ux-radius-3);
+  }
+  .messageTime{
+    font-size:calc(var(--ux-type-caption-size) - 2px)!important;
+  }
+  .messageIdentity{
+    margin-bottom:var(--ux-space-2);
+  }
+  .settingsList .settingsCard{
+    min-height:68px;
+    padding:var(--ux-space-2) var(--ux-space-3);
+  }
+}
