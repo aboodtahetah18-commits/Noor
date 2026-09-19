@@ -13,7 +13,14 @@ export const governedRooms: Record<ConversationRoomKey, { title: string; subtitl
   hilal: { title: 'بنك الهلال', subtitle: 'التمويل الداخلي', kind: 'bank', participants: [{ key: 'hilal-manager', name: 'مدير بنك الهلال', type: 'agent', role: 'مدير خوارزمي' }, { key: 'funding-advisor', name: 'مستشار التمويل', type: 'agent', role: 'مستشار مختص' }] },
   advisor: { title: 'المستشار الاقتصادي', subtitle: 'تحليل الصورة المالية الكلية', kind: 'advisor', participants: [{ key: 'financial-advisor', name: 'المستشار الاقتصادي', type: 'agent', role: 'مستشار خوارزمي' }] },
   secretary: { title: 'أمين السر المركزي', subtitle: 'المحاضر والسياسات والاجتماعات والمتابعة', kind: 'secretary', participants: [{ key: 'central-secretary', name: 'أمين السر المركزي', type: 'agent', role: 'أمين سر خوارزمي' }] },
-  council: { title: 'مجلس نماء الأعلى', subtitle: 'القرارات واللجان', kind: 'council', participants: [{ key: 'council-secretary', name: 'أمين مجلس نماء الأعلى', type: 'agent', role: 'أمين خوارزمي' }] },
+  council: { title: 'مجلس نماء الأعلى', subtitle: 'القرارات واللجان', kind: 'council', participants: [
+    { key: 'central-secretary', name: 'أمين السر المركزي', type: 'agent', role: 'تنسيق الاجتماع والمحضر الحي' },
+    { key: 'central-governor', name: 'محافظ بنك نماء المركزي', type: 'agent', role: 'رئيس المجلس' },
+    { key: 'solvency-manager', name: 'مدير بنك ملاءة', type: 'agent', role: 'محور الملاءة والاحتياطي' },
+    { key: 'assets-manager', name: 'مدير بنك الأصول الاستثماري', type: 'agent', role: 'محور الأصول والاستثمار' },
+    { key: 'hilal-manager', name: 'مدير بنك الهلال', type: 'agent', role: 'محور التمويل والانضباط' },
+    { key: 'financial-advisor', name: 'المستشار الاقتصادي', type: 'agent', role: 'الرؤية الاقتصادية والموازنة بين البدائل' },
+  ] },
 };
 
 const onboardingMessage = {
