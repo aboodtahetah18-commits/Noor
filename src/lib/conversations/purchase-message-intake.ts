@@ -109,6 +109,7 @@ export async function routePurchaseMessage(input:{
       parsed,
       fingerprint,
       summary:'هذه الرسالة مسجلة مسبقًا، لذلك لم أنشئ عملية مكررة.',
+      reply:null,
     };
   }
 
