@@ -9,7 +9,6 @@
 
 .mobileOverlay{display:none}.scrim{position:absolute;inset:0;border:0;background:color-mix(in srgb,var(--namaa-text) 28%,transparent)}.mobileSheet{position:absolute;inset-inline:10px;bottom:10px;max-height:min(75dvh,640px);overflow:auto;border-radius:var(--ux-radius-xl);background:var(--namaa-card);border:1px solid var(--namaa-border);box-shadow:var(--ux-shadow-lg);padding:var(--ux-space-3)}.sheetHeader{position:sticky;top:0;background:var(--namaa-card);z-index:2;display:flex;align-items:center;justify-content:space-between;gap:var(--ux-space-3);padding:var(--ux-space-1) var(--ux-space-1) var(--ux-space-3)}.sheetHeader strong{font-size:var(--ux-type-body-sm-size)}
 @media(max-width:1023px){.workspace{grid-template-columns:minmax(170px,220px) minmax(390px,1fr)}.contextPane{display:none}.workspace.withoutRooms,.workspace.withoutContext,.workspace.withoutRooms.withoutContext{grid-template-columns:minmax(0,1fr)}.headerActions button:last-child{display:none}}
-@media(max-width:767px){.page{min-height:calc(100dvh - 118px);border-radius:var(--ux-radius-0);border-inline:0;box-shadow:var(--ux-shadow-none)}.workspaceHeader{display:none}.workspace,.workspace.withoutRooms,.workspace.withoutContext,.workspace.withoutRooms.withoutContext{display:block;min-height:calc(100dvh - 118px)}.roomsPane,.contextPane{display:none}.chatPane{min-height:calc(100dvh - 118px);grid-template-rows:auto auto minmax(260px,1fr) auto auto auto}.chatHeader{height:60px;padding:var(--ux-space-0) var(--ux-space-3);position:sticky;top:0;z-index:4}.chatHeader .entityTitle strong,.entityTitle span{font-size:var(--ux-type-caption-size)}.mobileTools{display:flex}.routingNote{margin:var(--ux-space-2) var(--ux-space-2) var(--ux-space-0)}.messages{padding:var(--ux-space-3) var(--ux-space-2) var(--ux-space-4)}.message{max-width:91%;border-radius:var(--ux-radius-4);padding:var(--ux-space-2)}.structuredCard{padding:var(--ux-space-2)}.facts>span{flex:1 1 72px}.attachmentPolicy,.executionNote{margin-inline:var(--ux-space-2)}.composer{position:sticky;bottom:0;z-index:4;margin:var(--ux-space-0);padding:var(--ux-space-2) var(--ux-space-2) calc(var(--ux-space-2) + env(safe-area-inset-bottom));border-radius:var(--ux-radius-0);border-inline:0;border-bottom:0}.sendButton span{display:none}.sendButton{width:40px;padding:var(--ux-space-0);justify-content:center}.mobileOverlay{display:block;position:fixed;inset:0;z-index:100}.mobileSheet{padding-bottom:calc(var(--ux-space-3) + env(safe-area-inset-bottom))}}
 
 /* Chat-first mobile conversation experience — NDOS token-only */
 .personaAvatar{
@@ -77,13 +76,10 @@
     background:var(--namaa-chat-canvas);
   }
   .workspace{
-    height:100dvh;
-    min-height:100dvh;
     background:var(--namaa-chat-canvas);
   }
   .mobileConversationList{
     display:none;
-    height:100dvh;
     background:var(--namaa-card);
     overflow:auto;
   }
@@ -124,9 +120,6 @@
   .mobileConversationList .roomCopy em{font-size:var(--ux-type-caption-size)}
   .mobileChatHidden{display:none!important}
   .chatPane{
-    height:100dvh;
-    min-height:100dvh;
-    grid-template-rows:auto auto auto minmax(0,1fr) auto;
     background:var(--namaa-chat-canvas);
     overflow:hidden;
     position:relative;
@@ -1442,4 +1435,23 @@
   .desktopSideSection{
     display:none;
   }
+}
+
+
+/* Keyboard focus — identity tokens only */
+.contextTabs button:focus-visible,
+.roomItem:focus-visible,
+.roomDetailButton:focus-visible,
+.mobileTopButton:focus-visible,
+.mobileUserButton:focus-visible,
+.mobileTools button:focus-visible,
+.attachButton:focus-visible,
+.sendButton:focus-visible,
+.secondaryButton:focus-visible,
+.primaryActionButton:focus-visible,
+.sheetHeader button:focus-visible,
+.sideUtilityList button:focus-visible,
+.userMenuCard>button:focus-visible{
+  outline:2px solid var(--namaa-green-700);
+  outline-offset:2px;
 }
