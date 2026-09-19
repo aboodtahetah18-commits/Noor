@@ -118,7 +118,7 @@ export function ConversationContextPanel({
         {attachments.length?<div className={styles.contextFiles}>{attachments.map(file=><article key={file.id}>
           <LucideIcon name="receiptText" size={20}/>
           <div><strong>{file.file_name}</strong><small>{file.verification_status||'قيد المراجعة'}</small></div>
-        </article>)}</div>:<div className={styles.contextEmpty}><LucideIcon name="folderOpen" size={24}/><span>لا توجد ملفات مشتركة مسجلة حتى الآن.</span></div>}
+        </article>)}</div>:<div className={styles.contextEmpty}><LucideIcon name="receiptText" size={24}/><span>لا توجد ملفات مشتركة مسجلة حتى الآن.</span></div>}
       </section>
     </div>}
 
