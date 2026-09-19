@@ -542,7 +542,6 @@ export function PersistentConversationWorkspace(){
 
   const visibleRooms=onboardingComplete===false?rooms.filter(room=>room.id==='central'):rooms;
   const renderRoomList=(items:Room[])=><div className={styles.roomList}>{items.map(room=><div key={room.id} className={`${styles.roomItemShell} ${activeRoom.id===room.id?styles.activeRoom:''}`}><button type="button" onClick={()=>chooseRoom(room.id)} className={styles.roomItem}><RoomPortrait room={room} size="md"/><span className={styles.roomCopy}><strong>{chatRoleTitle(room)}</strong></span></button><button type="button" className={styles.roomDetailButton} aria-label={`تفاصيل ${chatRoleTitle(room)}`} onClick={()=>setDetailRoomId(room.id)}><LucideIcon name="info" size={20}/></button></div>)}</div>;
-  const roomButtons=renderRoomList(visibleRooms);
   const bankRooms=visibleRooms.filter(room=>['central','solvency','assets','hilal'].includes(room.id));
   const advisorRooms=visibleRooms.filter(room=>room.id==='advisor');
   const meetingRooms=visibleRooms.filter(room=>room.id==='council');
