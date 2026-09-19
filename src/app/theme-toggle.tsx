@@ -5,7 +5,7 @@ import { LucideIcon, type LucideIconName } from '@/components/ui/lucide-icon';
 
 export type ThemePreference = 'light' | 'dark';
 
-const STORAGE_KEY = 'mustaqbali-theme';
+const STORAGE_KEY = 'namaa-theme';
 
 const THEME_STATES: Record<ThemePreference, {
   next: ThemePreference;
@@ -54,10 +54,10 @@ function subscribeTheme(callback: () => void) {
   const onThemeChange = () => callback();
 
   window.addEventListener('storage', onStorage);
-  window.addEventListener('mustaqbali:theme-change', onThemeChange);
+  window.addEventListener('namaa:theme-change', onThemeChange);
   return () => {
     window.removeEventListener('storage', onStorage);
-    window.removeEventListener('mustaqbali:theme-change', onThemeChange);
+    window.removeEventListener('namaa:theme-change', onThemeChange);
   };
 }
 
@@ -76,7 +76,7 @@ export function ThemeToggle({ className = '' }: { className?: string }) {
     const next = THEME_STATES[preference].next;
     window.localStorage.setItem(STORAGE_KEY, next);
     applyTheme(next);
-    window.dispatchEvent(new Event('mustaqbali:theme-change'));
+    window.dispatchEvent(new Event('namaa:theme-change'));
   }
 
   const state = THEME_STATES[preference];
@@ -84,7 +84,7 @@ export function ThemeToggle({ className = '' }: { className?: string }) {
   return (
     <button
       type="button"
-      className={`mustaqbali-theme-toggle ${className}`.trim()}
+      className={`namaa-theme-toggle ${className}`.trim()}
       onClick={toggleTheme}
       aria-label={state.label}
       aria-pressed={preference === 'dark'}
