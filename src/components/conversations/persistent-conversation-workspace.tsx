@@ -122,6 +122,28 @@ function OnboardingMessageContent({message,showStructuredAction,onOpenStructured
 }
 
 
+function formatOversightHistoryTime(value:unknown){
+  if(typeof value!=='string'||!value)return 'وقت غير متاح';
+  const date=new Date(value);
+  if(!Number.isFinite(date.getTime()))return value;
+  return new Intl.DateTimeFormat('ar-SA',{dateStyle:'short',timeStyle:'short'}).format(date);
+}
+
+function OversightMiniHistory({history}:{history:unknown}){
+  const items=Array.isArray(history)?history.filter((item):item is Record<string,unknown>=>Boolean(item)&&typeof item==='object'&&!Array.isArray(item)).slice(0,5):[];
+  return <div className={styles.oversightHistory}>
+    <div className={styles.oversightHistoryHeader}><strong>آخر التغييرات</strong><small>{items.length?items.length+' أحداث':'لا توجد تحديثات بعد'}</small></div>
+    {items.length>0&&<ol>{items.map((event,index)=><li key={String(event.eventId??index)}>
+      <span className={styles.oversightHistoryDot} aria-hidden="true"/>
+      <div>
+        <strong>{String(event.label??'تحديث')}</strong>
+        {event.detail&&<p>{String(event.detail)}</p>}
+        <small>{String(event.actorName??'نماء')} · {formatOversightHistoryTime(event.createdAt)}</small>
+      </div>
+    </li>)}</ol>}
+  </div>;
+}
+
 function liveOversightSummary(dashboard:Record<string,unknown>){
   const openDecisions=typeof dashboard.openDecisions==='number'?dashboard.openDecisions:0;
   const pending=typeof dashboard.pendingFollowups==='number'?dashboard.pendingFollowups:0;
@@ -227,6 +249,7 @@ function OversightStructuredCards({
         <div className={styles.oversightItemTop}><span className={styles.oversightNumber}>#{number}</span><span className={`${styles.oversightStatus} ${timing==='OVERDUE'?styles.oversightStatusRisk:''}`}>{status}</span></div>
         <strong>{title}</strong><small className={styles.oversightDecisionRef}>{decisionTitle}</small>
         <dl className={styles.oversightMeta}><div><dt>المسؤول</dt><dd>{assignedTo??'غير مسند'}</dd></div><div><dt>الموعد</dt><dd>{dueDate??'غير محدد'}</dd></div><div><dt>الحالة الزمنية</dt><dd>{timing}</dd></div></dl>
+        <OversightMiniHistory history={item.history}/>
         <div className={styles.oversightActions}>{renderActions(item.quickActions)}</div>
       </article>;
     })}</div>
@@ -244,7 +267,7 @@ function OversightStructuredCards({
         <button type="button" className={styles.oversightCancelButton} disabled={disabled} onClick={onCancelSensitive}>إلغاء</button>
         <button type="button" className={styles.oversightConfirmButton} disabled={disabled} onClick={onConfirmSensitive}>{pendingConfirmation.confirmLabel}</button>
       </div>
-    </div>}{actionFeedback.status!=='idle'&&<div className={`${styles.oversightActionFeedback} ${actionFeedback.status==='success'?styles.oversightFeedbackSuccess:actionFeedback.status==='error'?styles.oversightFeedbackError:styles.oversightFeedbackPending}`} role="status" aria-live="polite">{actionFeedback.status==='pending'&&<span className={styles.oversightActionSpinner} aria-hidden="true"/>}<span>{actionFeedback.message}</span></div>}<article className={styles.oversightItemCard}><strong>{String(followup?.title??'متابعة مؤسسية')}</strong><dl className={styles.oversightMeta}><div><dt>المسؤول</dt><dd>{String(followup?.assignedTo??'غير مسند')}</dd></div><div><dt>الموعد</dt><dd>{String(followup?.dueDate??'غير محدد')}</dd></div><div><dt>الحالة الزمنية</dt><dd>{String(timing?.state??'NO_DUE_DATE')}</dd></div><div><dt>آخر تحديث</dt><dd>{String(followup?.updatedAt??'غير متاح')}</dd></div></dl><div className={styles.oversightActions}>{renderActions(detail.quick_actions)}</div></article></section>;
+    </div>}{actionFeedback.status!=='idle'&&<div className={`${styles.oversightActionFeedback} ${actionFeedback.status==='success'?styles.oversightFeedbackSuccess:actionFeedback.status==='error'?styles.oversightFeedbackError:styles.oversightFeedbackPending}`} role="status" aria-live="polite">{actionFeedback.status==='pending'&&<span className={styles.oversightActionSpinner} aria-hidden="true"/>}<span>{actionFeedback.message}</span></div>}<article className={styles.oversightItemCard}><strong>{String(followup?.title??'متابعة مؤسسية')}</strong><dl className={styles.oversightMeta}><div><dt>المسؤول</dt><dd>{String(followup?.assignedTo??'غير مسند')}</dd></div><div><dt>الموعد</dt><dd>{String(followup?.dueDate??'غير محدد')}</dd></div><div><dt>الحالة الزمنية</dt><dd>{String(timing?.state??'NO_DUE_DATE')}</dd></div><div><dt>آخر تحديث</dt><dd>{String(followup?.updatedAt??'غير متاح')}</dd></div></dl><OversightMiniHistory history={detail.history}/><div className={styles.oversightActions}>{renderActions(detail.quick_actions)}</div></article></section>;
   }
   if(context){
     const decision=context.decision&&typeof context.decision==='object'?context.decision as Record<string,unknown>:null;

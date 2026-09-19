@@ -3,6 +3,7 @@ import { getRawSql } from '@/infrastructure/db/client';
 import type { ConversationMessageKind, ConversationRoomKey } from '@/lib/conversations/store';
 import { getInstitutionalDecisionRegistry } from '@/lib/governance/institutional-decision-registry';
 import { evaluateFollowupTiming } from '@/lib/governance/institutional-decision-followup-deadlines';
+import { followupHistoryKey, loadGovernanceFollowupHistories } from '@/lib/governance/governance-followup-history';
 
 export type OversightQuickActionCommand=
   | {kind:'OPEN_FOLLOWUP';followupNumber:number}
@@ -117,7 +118,10 @@ export async function applyOversightQuickActionCommand(
   roomKey:Extract<ConversationRoomKey,'central'|'secretary'>,
   command:OversightQuickActionCommand,
 ){
-  const registry=await getInstitutionalDecisionRegistry(userId);
+  const [registry,histories]=await Promise.all([
+    getInstitutionalDecisionRegistry(userId),
+    loadGovernanceFollowupHistories(userId),
+  ]);
   const target=indexFollowups(registry).find(item=>item.number===command.followupNumber);
   if(!target) throw new Error('DECISION_FOLLOWUP_NOT_FOUND');
   const threadId=await threadIdFor(userId,roomKey);
@@ -147,6 +151,7 @@ export async function applyOversightQuickActionCommand(
         registry_id:target.decision.registryId,
         followup_id:target.followup.followupId,
         followup:target.followup,
+        history:histories[followupHistoryKey(target.decision.registryId,target.followup.followupId)]??[],
         timing,
         quick_actions:quickActions,
         decision_reference:{

@@ -4,6 +4,7 @@ import type { ConversationMessageKind, ConversationRoomKey } from '@/lib/convers
 import { getInstitutionalDecisionRegistry } from '@/lib/governance/institutional-decision-registry';
 import { evaluateFollowupTiming } from '@/lib/governance/institutional-decision-followup-deadlines';
 import { buildOversightQuickActions } from '@/lib/governance/governance-oversight-actions';
+import { followupHistoryKey, loadGovernanceFollowupHistories, type GovernanceFollowupHistoryEvent } from '@/lib/governance/governance-followup-history';
 
 export type GovernanceOversightFollowupItem={
   number:number;
@@ -19,6 +20,7 @@ export type GovernanceOversightFollowupItem={
   timingState:string;
   daysUntilDue:number|null;
   quickActions:Array<Record<string,unknown>>;
+  history:GovernanceFollowupHistoryEvent[];
 };
 
 export type GovernanceOversightEscalation={
@@ -62,6 +64,7 @@ export function buildGovernanceOversightDashboard(args:{
   registry:Awaited<ReturnType<typeof getInstitutionalDecisionRegistry>>;
   now:Date;
   escalations:GovernanceOversightEscalation[];
+  histories?:Record<string,GovernanceFollowupHistoryEvent[]>;
 }):GovernanceOversightDashboard{
   let number=0;
   const allOpenFollowups:GovernanceOversightFollowupItem[]=[];
@@ -88,6 +91,7 @@ export function buildGovernanceOversightDashboard(args:{
         dueDate:followup.dueDate??null,
         timingState:timing.state,
         daysUntilDue:timing.daysUntilDue,
+        history:args.histories?.[followupHistoryKey(decision.registryId,followup.followupId)]??[],
         quickActions:buildOversightQuickActions({
           followupNumber:number,
           status:followup.status,
@@ -152,9 +156,10 @@ async function loadOpenEscalations(userId:string):Promise<GovernanceOversightEsc
 }
 
 export async function getGovernanceOversightDashboard(userId:string){
-  const [registry,escalations]=await Promise.all([
+  const [registry,escalations,histories]=await Promise.all([
     getInstitutionalDecisionRegistry(userId),
     loadOpenEscalations(userId),
+    loadGovernanceFollowupHistories(userId),
   ]);
   const completedKeys=new Set<string>();
   for(const decision of registry.decisions){
@@ -166,6 +171,7 @@ export async function getGovernanceOversightDashboard(userId:string){
     registry,
     now:new Date(),
     escalations:escalations.filter(item=>!completedKeys.has(`${item.registryId}:${item.followupId}`)),
+    histories,
   });
 }
 

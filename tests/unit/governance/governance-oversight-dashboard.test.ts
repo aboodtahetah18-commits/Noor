@@ -32,6 +32,26 @@ describe('governance oversight dashboard',()=>{
     expect(dashboard.policies.noAutomaticEscalation).toBe(true);
   });
 
+  it('carries compact followup history into the card model',()=>{
+    const dashboard=buildGovernanceOversightDashboard({
+      now:new Date('2026-09-20T12:00:00Z'),
+      escalations:[],
+      histories:{'REG-1:f1':[{
+        eventId:'e1',eventType:'ASSIGNED',label:'تم إسناد المتابعة',detail:'إلى مسؤول الأهداف',
+        actorKey:'central-secretary',actorName:'أمين السر المركزي',createdAt:'2026-09-20T10:00:00Z',
+      }]},
+      registry:{
+        generatedAt:'x',total:1,openFollowupCount:1,sourceOfTruth:'APPEND_ONLY_DECISION_MESSAGES',externalExecution:false,
+        decisions:[{
+          registryId:'REG-1',decisionType:'ALLOCATION',sourceMessageId:'m1',sourceDecisionId:'d1',decidedAt:'x',
+          status:'FOLLOWUP_PENDING',title:'قرار',rationale:null,cycleId:null,planId:null,planVersionId:null,previousPlanVersionId:null,metadata:{},externalExecution:false,
+          followups:[{followupId:'f1',title:'متابعة',status:'ASSIGNED',assignedTo:'مسؤول الأهداف',completed:false}],
+        }],
+      },
+    });
+    expect(dashboard.allOpenFollowups[0].history[0]).toMatchObject({eventType:'ASSIGNED',actorName:'أمين السر المركزي'});
+  });
+
   it('does not mark undated followups overdue',()=>{
     const dashboard=buildGovernanceOversightDashboard({
       now:new Date('2026-09-20T12:00:00Z'),escalations:[],
