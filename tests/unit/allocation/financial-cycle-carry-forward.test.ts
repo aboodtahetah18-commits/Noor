@@ -8,8 +8,8 @@ describe('financial cycle carry-forward',()=>{
       requestedAmount:4500,approvedAmount:4000,realizedAmount:4300,varianceAmount:300,evidenceCount:7,accountabilityNote:''
     }];
     const guidance=buildCarryForwardGuidance(results);
-    expect(guidance['budget-spending-owner'].join(' ')).toContain('سبب التجاوز');
-    expect(guidance['budget-spending-owner'].join(' ')).toContain('لا تكرر المبلغ السابق تلقائيًا');
+    expect(guidance['budget-spending-owner']?.join(' ')).toContain('سبب التجاوز');
+    expect(guidance['budget-spending-owner']?.join(' ')).toContain('لا تكرر المبلغ السابق تلقائيًا');
   });
 
   it('does not auto-cut unused allocations',()=>{
