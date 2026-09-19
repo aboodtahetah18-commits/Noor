@@ -1,6 +1,7 @@
 import { randomUUID, createHash } from 'node:crypto';
 import { getRawSql } from '@/infrastructure/db/client';
 import type { ConversationMessageKind } from '@/lib/conversations/store';
+import { materializeRatifiedAllocationPlan } from '@/lib/allocation/allocation-plan-materializer';
 
 export type AllocationRatificationReply={
   id:string;
@@ -77,12 +78,21 @@ export async function ratifyLatestAllocationDraft(userId:string):Promise<Allocat
     };
   }
 
+  const materialization=await materializeRatifiedAllocationPlan({
+    userId,proposalId,fingerprint,negotiation,snapshot,
+  });
+  const materializationNote=materialization.status==='MATERIALIZED'||materialization.status==='ALREADY_MATERIALIZED'
+    ? ` وتم تحويل القرار إلى خطة دورة معتمدة (الإصدار ${materialization.versionNumber??'—'}) قابلة للمتابعة.`
+    : materialization.status==='NEEDS_CYCLE'
+      ? ' تم اعتماد القرار، لكن لم أحوّله إلى خطة بعد لأن الدورة المالية نفسها غير محددة. نحتاج تحديد الدورة وموعدها قبل إنشاء الخطة.'
+      : ' تم اعتماد القرار، لكن تعذر تحويله إلى خطة لأن بيانات مشروع التوزيع لم تعد صالحة للمادة التخطيطية.';
+
   const inserted=await sql`
     insert into public.conversation_messages(
       id,thread_id,user_id,sender_type,sender_key,sender_name,message_kind,body,structured_data
     ) values(
       ${randomUUID()},${String(draft.thread_id)}::uuid,${userId}::uuid,'agent','central-secretary','أمين السر المركزي','decision',
-      'تم تسجيل اعتمادك لمشروع توزيع الدورة. أصبح التوزيع قرارًا معتمدًا داخل نماء، لكنه لا ينفذ أي تحويل أو سداد أو استثمار تلقائيًا. الخطوة التالية هي تحويل القرار المعتمد إلى خطة دورة قابلة للمتابعة والتنفيذ اليدوي.',
+      ${`تم تسجيل اعتمادك لمشروع توزيع الدورة. أصبح التوزيع قرارًا معتمدًا داخل نماء.${materializationNote} لا يوجد أي تحويل أو سداد أو استثمار تلقائي؛ التنفيذ المالي الخارجي يبقى بيدك.`},
       ${JSON.stringify({
         allocation_ratified:true,
         allocation_ratification_proposal_id:proposalId,
@@ -91,7 +101,11 @@ export async function ratifyLatestAllocationDraft(userId:string):Promise<Allocat
         ratified_at:new Date().toISOString(),
         negotiation,
         allocation_snapshot:snapshot,
-        planning_materialization_pending:true,
+        planning_materialization_pending:materialization.status!=='MATERIALIZED'&&materialization.status!=='ALREADY_MATERIALIZED',
+        planning_materialization:materialization,
+        plan_id:materialization.planId,
+        plan_version_id:materialization.planVersionId,
+        cycle_id:materialization.cycleId,
         external_execution:false,
         execution_boundary:'قرار داخلي معتمد؛ التنفيذ المالي الخارجي بيد المستخدم فقط',
       })}::jsonb
