@@ -357,13 +357,14 @@
 
 .structuredCard{
   margin-top:var(--ux-space-2);
-  padding:var(--ux-space-2);
+  padding:var(--ux-space-3);
   border:1px solid var(--namaa-border);
   border-inline-start:3px solid var(--namaa-green-700);
-  border-radius:var(--ux-radius-3);
+  border-radius:var(--ux-radius-4);
   background:var(--namaa-card);
   display:grid;
-  gap:var(--ux-space-2)
+  gap:var(--ux-space-2);
+  box-shadow:var(--ux-shadow-xs)
 }
 
 .structuredCard>header strong{
@@ -401,11 +402,13 @@
 
 .facts>span{
   min-width:0;
-  padding:var(--ux-space-2);
-  border-radius:var(--ux-radius-2);
+  min-height:64px;
+  padding:var(--ux-space-2) var(--ux-space-3);
+  border-radius:var(--ux-radius-3);
   border:1px solid var(--namaa-border);
   background:var(--namaa-surface-warm);
   display:grid;
+  align-content:center;
   gap:var(--ux-space-1);
   overflow-wrap:anywhere
 }
@@ -2617,14 +2620,32 @@
   .onboardingQuestionBox{
     padding:var(--ux-space-2) var(--ux-space-3)
   }
-  .onboardingQuestionCard{padding:var(--ux-space-2);gap:var(--ux-space-2)}
-  .onboardingQuestionHeader{grid-template-columns:32px minmax(0,1fr) auto}
-  .onboardingQuestionIcon{width:32px;height:32px}
-  .onboardingQuestionReason{padding:var(--ux-space-1) var(--ux-space-2)}
+  .onboardingQuestionCard{
+    padding:var(--ux-space-2) var(--ux-space-3);
+    gap:var(--ux-space-2)
+  }
+  .onboardingQuestionHeader{grid-template-columns:36px minmax(0,1fr) auto}
+  .onboardingQuestionIcon{width:36px;height:36px}
+  .onboardingQuestionReason{padding:var(--ux-space-2)}
   .onboardingProgressTrack{height:5px}
 
-  .richMessageHero{grid-template-columns:78px minmax(0,1fr);min-height:106px;padding:var(--ux-space-2)}
-  .richMessageVisual{min-height:78px}
+  .richMessageHero{
+    grid-template-columns:minmax(0,1fr);
+    min-height:0;
+    padding:var(--ux-space-2);
+    gap:var(--ux-space-2)
+  }
+  .richMessageVisual{
+    min-height:132px;
+    width:100%;
+    aspect-ratio:16/7
+  }
+  .richMessageVisual>img{
+    padding:var(--ux-space-3)
+  }
+  .richMessageHeroCopy{
+    gap:var(--ux-space-2)
+  }
   .richMessageMetrics{grid-template-columns:repeat(2,minmax(0,1fr))}
   .richMessageMetrics>span:nth-child(3){grid-column:1/-1}
   .oversightSummaryBar{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -3228,21 +3249,24 @@
   position:relative;
   overflow:hidden;
   display:grid;
-  grid-template-columns:104px minmax(0,1fr);
+  grid-template-columns:112px minmax(0,1fr);
   gap:var(--ux-space-3);
-  min-height:122px;
+  min-height:126px;
   padding:var(--ux-space-3);
   border:1px solid var(--namaa-border);
-  border-radius:var(--ux-radius-3);
-  background:var(--namaa-surface-warm)
+  border-radius:var(--ux-radius-4);
+  background:var(--namaa-surface-warm);
+  box-shadow:var(--ux-shadow-xs)
 }
 .richMessageVisual{
   position:relative;
-  min-height:94px;
+  min-height:98px;
   border:1px solid var(--namaa-border);
   border-radius:var(--ux-radius-3);
   background:var(--namaa-card);
-  overflow:hidden
+  overflow:hidden;
+  display:grid;
+  place-items:center
 }
 .richMessageVisual>img{
   object-fit:contain;
@@ -3332,11 +3356,12 @@
 
 .onboardingQuestionCard{
   display:grid;
-  gap:var(--ux-space-1);
-  padding:var(--ux-space-2);
+  gap:var(--ux-space-2);
+  padding:var(--ux-space-3);
   border:1px solid var(--namaa-border);
-  border-radius:var(--ux-radius-3);
-  background:var(--namaa-card)
+  border-radius:var(--ux-radius-4);
+  background:var(--namaa-card);
+  box-shadow:var(--ux-shadow-xs)
 }
 .onboardingQuestionHeader{
   display:grid;
@@ -3393,9 +3418,10 @@
   align-items:flex-start;
   gap:var(--ux-space-2);
   margin:var(--ux-space-0);
-  padding:var(--ux-space-2);
-  border-radius:var(--ux-radius-2);
-  background:var(--namaa-card);
+  padding:var(--ux-space-2) var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-surface-warm);
   color:var(--ux-text-secondary);
   font-size:var(--ux-type-caption-size);
   line-height:1.55
