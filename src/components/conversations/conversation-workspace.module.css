@@ -2261,22 +2261,30 @@
   }
   .mobileAppBar{
     min-height:56px;
-  padding:var(--ux-space-1) var(--ux-space-3);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:var(--ux-space-3);
-  background:var(--namaa-green-900);
-  border-bottom:1px solid color-mix(in srgb,var(--ux-text-inverse) 24%,transparent);
-  position:relative;
-  z-index:15
+    padding:var(--ux-space-1) var(--ux-space-3);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:var(--ux-space-3);
+    background:var(--namaa-green-900);
+    border-bottom:1px solid color-mix(in srgb,var(--ux-text-inverse) 24%,transparent);
+    position:relative;
+    z-index:15;
+    direction:ltr
   }
   .mobileAppBarPrimary,.mobileAppBarActions{
     display:flex;
-  align-items:center;
-  gap:var(--ux-space-2);
-  position:relative;
-  z-index:2
+    align-items:center;
+    gap:var(--ux-space-2);
+    position:relative;
+    z-index:2
+  }
+  .mobileAppBarPrimary{
+    flex-direction:row-reverse;
+    justify-content:flex-start
+  }
+  .mobileAppBarActions{
+    direction:rtl
   }
     .mobileTopButton,.mobileUserButton{
     width:40px;
@@ -2313,8 +2321,9 @@
   }
   .workspace,.workspace.withoutRooms,.workspace.withoutContext,.workspace.withoutRooms.withoutContext{
     display:block;
-  min-height:calc(100dvh - 56px);
-  height:calc(100dvh - 56px)
+    min-height:calc(100dvh - 56px);
+    height:calc(100dvh - 56px);
+    overflow:hidden
   }
   .mobileConversationList{
     display:none;
@@ -2335,13 +2344,15 @@
   gap:var(--ux-space-3)
   }
   .chatPane{
-    min-height:calc(100dvh - 56px);
-  grid-template-rows:auto auto minmax(0,1fr) auto;
-  height:calc(100dvh - 56px);
-  background:var(--namaa-chat-canvas);
-  overflow:hidden;
-  position:relative;
-  z-index:1
+    display:flex;
+    flex-direction:column;
+    min-height:0;
+    height:calc(100dvh - 56px);
+    max-height:calc(100dvh - 56px);
+    background:var(--namaa-chat-canvas);
+    overflow:hidden;
+    position:relative;
+    z-index:1
   }
   .chatIdentity{
     gap:var(--ux-space-2);
@@ -2356,13 +2367,16 @@
   line-height:1.35
   }
   .messages{
+    flex:1 1 auto;
     padding:var(--ux-space-2) var(--ux-space-2) var(--ux-space-3);
-  min-height:0;
-  overflow-y:auto;
-  overscroll-behavior:contain;
-  gap:var(--ux-space-2);
-  scroll-padding-bottom:var(--ux-space-16);
-  padding-top:var(--ux-space-2)
+    min-height:0;
+    overflow-y:auto;
+    overflow-x:hidden;
+    overscroll-behavior-y:contain;
+    -webkit-overflow-scrolling:touch;
+    gap:var(--ux-space-2);
+    scroll-padding-bottom:calc(72px + env(safe-area-inset-bottom));
+    padding-top:var(--ux-space-2)
   }
   .message{
     max-width:88%;
@@ -2382,12 +2396,16 @@
     margin-inline-end:auto
   }
   .userMessage{
+    width:fit-content;
     max-width:78%;
-    padding:var(--ux-space-2);
+    min-width:0;
+    padding:var(--ux-space-2) var(--ux-space-3);
     align-self:flex-end;
     border-end-end-radius:var(--ux-radius-2);
     margin-inline-start:auto;
-    margin-inline-end:var(--ux-space-0)
+    margin-inline-end:var(--ux-space-0);
+    box-sizing:border-box;
+    overflow:hidden
   }
   .userAttachmentCard{grid-template-columns:30px minmax(0,1fr);padding:var(--ux-space-1) var(--ux-space-2)}
   .userAttachmentCard>span{width:30px;height:30px}
@@ -2417,16 +2435,18 @@
   flex-basis:40px
   }
   .composer{
-    position:relative;
-    bottom:auto;
-    z-index:6;
+    position:sticky;
+    bottom:0;
+    z-index:10;
+    flex:0 0 auto;
+    width:100%;
     margin:var(--ux-space-0);
     padding:var(--ux-space-2) var(--ux-space-2) calc(var(--ux-space-2) + env(safe-area-inset-bottom));
     border-radius:var(--ux-radius-0);
     border-inline:0;
     border-bottom:0;
     background:var(--namaa-card);
-    box-shadow:var(--ux-shadow-xs);
+    box-shadow:var(--ux-shadow-sm);
     align-items:center
   }
   .composer textarea{
@@ -2567,6 +2587,25 @@
   bottom:var(--ux-space-2);
   max-height:84dvh;
   border-radius:var(--ux-radius-xl)
+  }
+  .attachmentPolicy,.executionNote{
+    display:none
+  }
+  .chatHeader,.routingNote,.composer{
+    flex-shrink:0
+  }
+  .userMessageIdentity{
+    justify-content:flex-start;
+    gap:var(--ux-space-2);
+    flex-wrap:wrap
+  }
+  .userMessage .messageCopy{
+    overflow-wrap:anywhere;
+    word-break:break-word
+  }
+  .messageMeta time,.conversationTimeDivider>span{
+    font-variant-numeric:tabular-nums;
+    unicode-bidi:plaintext
   }
   .routingNote{
     margin:var(--ux-space-1) var(--ux-space-2) var(--ux-space-0) auto;
@@ -3567,15 +3606,16 @@
 
 
 .mobileBrandLogo{
-  position:absolute;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
+  position:static;
+  left:auto;
+  top:auto;
+  transform:none;
   width:104px;
   min-width:88px;
   max-height:38px;
   height:auto;
   object-fit:contain;
   filter:none;
-  z-index:1
+  z-index:1;
+  flex:0 0 auto
 }
