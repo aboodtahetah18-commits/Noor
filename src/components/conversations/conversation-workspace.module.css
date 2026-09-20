@@ -2947,7 +2947,79 @@
 .entityDetailPanel>section>small{font-size:var(--ux-type-caption-size);font-weight:900;color:var(--namaa-green-900)}
 .entityDetailPanel>section>p{margin:var(--ux-space-0);font-size:var(--ux-type-body-sm-size);line-height:1.7;color:var(--ux-text-secondary)}
 .detailList{display:grid;gap:var(--ux-space-2)}
-.detailList>span{display:flex;align-items:center;gap:var(--ux-space-2);padding:var(--ux-space-2);border-radius:var(--ux-radius-2);background:var(--namaa-card);color:var(--ux-text-primary);font-size:var(--ux-type-caption-size)}
+.detailList>span,.detailList>button{
+  width:100%;
+  min-height:44px;
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:var(--ux-space-2);
+  padding:var(--ux-space-2) var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-card);
+  color:var(--ux-text-primary);
+  font:inherit;
+  font-size:var(--ux-type-caption-size);
+  text-align:right
+}
+.detailList>button{cursor:pointer}
+.detailList>button:hover,.detailList>button:focus-visible{
+  border-color:var(--namaa-border-strong);
+  box-shadow:var(--ux-shadow-focus);
+  outline:0
+}
+.detailList>button>span{min-width:0;overflow-wrap:anywhere}
+.detailList>button>svg:last-child{color:var(--namaa-green-900)}
+.entityReferenceSheet{max-height:74dvh}
+.entityReferenceContent{
+  display:grid;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-1) var(--ux-space-0)
+}
+.entityReferenceContent>span{
+  width:fit-content;
+  padding:var(--ux-space-1) var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-full);
+  background:var(--namaa-surface-warm);
+  color:var(--namaa-green-900);
+  font-size:var(--ux-type-caption-size);
+  font-weight:900
+}
+.entityReferenceContent>strong{
+  font-size:var(--ux-type-section-title-size);
+  color:var(--ux-text-primary)
+}
+.entityReferenceContent>small{color:var(--ux-text-secondary)}
+.entityReferenceContent>p{
+  margin:var(--ux-space-0);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-surface-warm);
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-body-sm-size);
+  line-height:1.7
+}
+.entityReferenceContent>section{
+  display:grid;
+  gap:var(--ux-space-2);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-card)
+}
+.entityReferenceContent>section>small{
+  color:var(--namaa-green-900);
+  font-weight:900
+}
+.entityReferenceContent>section>p{
+  margin:var(--ux-space-0);
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-body-sm-size);
+  line-height:1.7
+}
 
 /* Governed oversight cards */
 .oversightPanel{display:grid;gap:var(--ux-space-2);margin-top:var(--ux-space-2);padding:var(--ux-space-2);border:1px solid var(--namaa-border);border-radius:var(--ux-radius-3);background:var(--namaa-card)}
