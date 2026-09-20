@@ -34,8 +34,7 @@ const sections = [
 
 export function DesktopTopNav() {
   const pathname = usePathname();
-  if (pathname.startsWith('/onboarding')) return null;
-  return (
+    return (
     <aside className="desktop-top-nav-wrap mustaqbali-sidebar" dir="rtl">
       <div className="mustaqbali-sidebar-inner">
         <nav className="mustaqbali-sidebar-nav" aria-label="التنقل الرئيسي للكمبيوتر">
