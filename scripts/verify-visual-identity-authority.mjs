@@ -24,10 +24,14 @@ assert(chatCss.includes('.mobileBrandLogo'),'Governed mobile logo class is missi
 assert(chatCss.includes('position:static')&&chatCss.includes('transform:none')&&chatCss.includes('.mobileAppBarPrimary{\n    direction:rtl;\n    flex-direction:row')&&chatCss.includes('.mobileAppBarActions{\n    direction:ltr'),'Mobile header must keep menu and logo together on the right, with utility actions on the far left.');
 assert(chatCss.includes('min-width:88px'),'Mobile full logo must never render below 88px.');
 assert(authShell.includes('styles.mobileHeroLogoLight')&&authShell.includes('styles.mobileHeroLogoDark'),'Public auth mobile hero must render explicit official light and dark logo variants.');
-assert(authCss.includes(':global(html[data-theme="dark"]) .mobileHero{')&&authCss.includes('background:var(--ux-action-primary)'),'Public auth dark mobile hero must use the governed dark brand surface.');
-assert(authCss.includes('.mobileHero{display:block')&&authCss.includes('background:var(--ux-surface-default)'),'Public auth light mobile hero must use the governed light surface.');
+assert((authCss.match(/@media\(max-width:1023px\)\{/g)||[]).length===1,'Mobile auth must use exactly one unified max-width:1023px responsive source.');
+assert(!authCss.includes('@media(max-width:767px){'),'Legacy max-width:767px auth source must remain removed.');
+assert(!authCss.includes('@media(min-width:768px) and (max-width:1023px){'),'Legacy 768-1023px auth source must remain removed.');
+assert(authCss.includes('.page,\n  :global(html[data-theme="dark"]) .shell')===false,'Dark auth selectors must stay explicit and readable.');
+assert(authCss.includes(':global(html[data-theme="dark"]) .page,\n  :global(html[data-theme="dark"]) .shell,\n  :global(html[data-theme="dark"]) .mobileHero,\n  :global(html[data-theme="dark"]) .panel{\n    background:var(--ux-page-bg);'),'Dark mobile auth must use one coordinated page-wide dark surface.');
 assert(authCss.includes('.mobileHeroLogoDark{display:none}')&&authCss.includes(':global(html[data-theme="dark"]) .mobileHeroLogoLight{display:none}')&&authCss.includes(':global(html[data-theme="dark"]) .mobileHeroLogoDark{display:block}'),'Public auth mobile logo must switch by CSS theme state.');
-assert(!authCss.includes('@media(min-width:768px) and (max-width:1023px){\n  .page{padding:var(--ux-auth-s6)}\n  .shell{width:min(680px,100%);min-height:calc(100svh - 48px);grid-template-columns:1fr;overflow:hidden}\n  .visual{display:none}\n  .mobileHero{display:block;position:relative;padding:var(--ux-auth-s8) var(--ux-auth-s10);background:var(--ux-action-primary);color:var(--ux-text-inverse)}'),'Legacy wide-mobile auth hero must not force the green dark surface in light mode.');
+assert(authCss.includes('.mobileHero::before,\n  .mobileHero::after{')&&authCss.includes('border-radius:100% 0 100% 0')&&authCss.includes('border-radius:0 100% 0 100%'),'Mobile auth hero must retain the two-leaf identity composition.');
+assert(authCss.includes('.mobileHero{\n    position:relative;')&&authCss.includes('background:var(--ux-surface-canvas);'),'Light mobile auth hero must use the governed light surface.');
 assert(brandLogo.includes("const current=window.localStorage.getItem('mustaqbali-theme')")&&brandLogo.includes("if(current==='light'||current==='dark') return current"),'Brand logo must prefer the active theme key over the legacy fallback.');
 assert(Array.isArray(brandRegistry.assets)||Array.isArray(brandRegistry.approved)||Object.keys(brandRegistry).length>0,'Approved brand registry must remain present.');
 
