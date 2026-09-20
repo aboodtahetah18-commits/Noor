@@ -115,15 +115,20 @@
   .page{padding:var(--ux-auth-s6)}
   .shell{width:min(680px,100%);min-height:calc(100svh - 48px);grid-template-columns:1fr;overflow:hidden}
   .visual{display:none}
-  .mobileHero{display:block;position:relative;padding:var(--ux-auth-s8) var(--ux-auth-s10);background:var(--ux-action-primary);color:var(--ux-text-inverse)}
+  .mobileHero{display:block;position:relative;padding:var(--ux-auth-s8) var(--ux-auth-s10);background:var(--ux-surface-default);color:var(--ux-text-primary)}
   .mobileHeroTop{display:flex;align-items:center;justify-content:space-between}
   .mobileHeroLogo{width:130px!important;height:auto!important}
   .mobileBadge{display:inline-flex;margin-top:var(--ux-auth-s3);padding:var(--ux-auth-s2) var(--ux-auth-s3);border-radius:var(--ux-radius-6);background:var(--ux-alpha-navy-10)}
-  .mobileKicker{margin:var(--ux-auth-s4) var(--ux-auth-s0) var(--ux-auth-s1);color:var(--ux-text-inverse);opacity:.8}
-  .mobileHero h1{margin:var(--ux-auth-s0);font-size:var(--ux-type-page-title-size);color:var(--ux-text-inverse)}
-  .mobileSubtitle{margin:var(--ux-auth-s2) var(--ux-auth-s0) var(--ux-auth-s0);color:var(--ux-text-inverse);opacity:.82}
-  .panel{min-height:auto;justify-content:flex-start;padding:var(--ux-auth-s10) var(--ux-auth-s12)}
+  .mobileKicker{margin:var(--ux-auth-s4) var(--ux-auth-s0) var(--ux-auth-s1);color:var(--ux-text-secondary)}
+  .mobileHero h1{margin:var(--ux-auth-s0);font-size:var(--ux-type-page-title-size);color:var(--ux-text-primary)}
+  .mobileSubtitle{margin:var(--ux-auth-s2) var(--ux-auth-s0) var(--ux-auth-s0);color:var(--ux-text-secondary)}
+  .panel{min-height:auto;justify-content:flex-start;padding:var(--ux-auth-s10) var(--ux-auth-s12);background:var(--ux-surface-canvas)}
   .themeButton,.heading{display:none}
   .footer{margin-top:var(--ux-auth-s8)}
+  :global(html[data-theme="dark"]) .mobileHero{background:var(--ux-action-primary);color:var(--ux-text-inverse)}
+  :global(html[data-theme="dark"]) .mobileKicker,
+  :global(html[data-theme="dark"]) .mobileSubtitle{color:var(--ux-text-inverse);opacity:.82}
+  :global(html[data-theme="dark"]) .mobileHero h1{color:var(--ux-text-inverse)}
+  :global(html[data-theme="dark"]) .panel{background:var(--ux-card-bg);color:var(--ux-text-primary)}
 }
 @media(min-width:1024px){.mobileHero{display:none}}
