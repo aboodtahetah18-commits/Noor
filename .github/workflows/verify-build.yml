@@ -2,7 +2,7 @@ name: Verify Build
 
 on:
   push:
-    branches: [main]
+    branches: [main, "fix/structured-reference-and-onboarding-stages"]
   pull_request:
     branches: [main]
   workflow_dispatch:
