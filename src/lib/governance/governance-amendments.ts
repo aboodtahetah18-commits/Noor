@@ -215,3 +215,82 @@ export async function listGovernanceAmendments(userId:string):Promise<Governance
   }
   return [...map.values()].sort((a,b)=>b.requestedAt.localeCompare(a.requestedAt));
 }
+
+
+export type GovernanceAmendmentConversationCommand=
+  |{kind:'DISCUSS';requestId:string;note:string}
+  |{kind:'GOVERNOR_ACCEPT';requestId:string;note:string|null}
+  |{kind:'GOVERNOR_REJECT';requestId:string;note:string|null}
+  |{kind:'SECRETARY_ACCEPT';requestId:string;note:string|null}
+  |{kind:'COUNCIL_APPROVE';requestId:string;nextVersion:string;effectiveAt:string;decisionId:string|null;note:string|null}
+  |{kind:'COUNCIL_REJECT';requestId:string;decisionId:string|null;note:string|null};
+
+export function parseGovernanceAmendmentConversationCommand(
+  roomKey:'central'|'secretary'|'council',
+  value:string,
+):GovernanceAmendmentConversationCommand|null{
+  const textValue=value.trim().replace(/\s+/g,' ');
+  const discuss=textValue.match(/^مناقشة طلب التعديل\s+(AMD-[A-Z0-9]+)\s*[:：-]\s*(.+)$/i);
+  if(discuss?.[1]&&discuss[2]) return {kind:'DISCUSS',requestId:discuss[1].toUpperCase(),note:discuss[2].trim()};
+
+  if(roomKey==='central'){
+    const accept=textValue.match(/^إحالة طلب التعديل\s+(AMD-[A-Z0-9]+)\s+(?:إلى|الى)\s+أمين السر(?:\s*[:：-]\s*(.+))?$/i);
+    if(accept?.[1]) return {kind:'GOVERNOR_ACCEPT',requestId:accept[1].toUpperCase(),note:accept[2]?.trim()||null};
+    const reject=textValue.match(/^رفض طلب التعديل\s+(AMD-[A-Z0-9]+)(?:\s*[:：-]\s*(.+))?$/i);
+    if(reject?.[1]) return {kind:'GOVERNOR_REJECT',requestId:reject[1].toUpperCase(),note:reject[2]?.trim()||null};
+  }
+
+  if(roomKey==='secretary'){
+    const accept=textValue.match(/^إدراج طلب التعديل\s+(AMD-[A-Z0-9]+)\s+(?:على|في)\s+مجلس نماء(?:\s*[:：-]\s*(.+))?$/i);
+    if(accept?.[1]) return {kind:'SECRETARY_ACCEPT',requestId:accept[1].toUpperCase(),note:accept[2]?.trim()||null};
+  }
+
+  if(roomKey==='council'){
+    const approve=textValue.match(/^اعتماد طلب التعديل\s+(AMD-[A-Z0-9]+)\s+الإصدار\s+([^\s]+)\s+النفاذ\s+(\d{4}-\d{2}-\d{2})(?:\s+القرار\s+([^\s]+))?(?:\s*[:：-]\s*(.+))?$/i);
+    if(approve?.[1]&&approve[2]&&approve[3]) return {
+      kind:'COUNCIL_APPROVE',
+      requestId:approve[1].toUpperCase(),
+      nextVersion:approve[2],
+      effectiveAt:approve[3],
+      decisionId:approve[4]?.trim()||null,
+      note:approve[5]?.trim()||null,
+    };
+    const reject=textValue.match(/^رفض طلب التعديل\s+(AMD-[A-Z0-9]+)(?:\s+القرار\s+([^\s]+))?(?:\s*[:：-]\s*(.+))?$/i);
+    if(reject?.[1]) return {kind:'COUNCIL_REJECT',requestId:reject[1].toUpperCase(),decisionId:reject[2]?.trim()||null,note:reject[3]?.trim()||null};
+  }
+
+  return null;
+}
+
+export async function applyGovernanceAmendmentConversationCommand(args:{
+  userId:string;
+  roomKey:'central'|'secretary'|'council';
+  command:GovernanceAmendmentConversationCommand;
+}){
+  const command=args.command;
+  if(command.kind==='DISCUSS'){
+    const actor=args.roomKey==='central'?'GOVERNOR':args.roomKey==='secretary'?'SECRETARY':'COUNCIL';
+    await addGovernanceAmendmentDiscussion({userId:args.userId,requestId:command.requestId,note:command.note,actor});
+    return getGovernanceAmendment(args.userId,command.requestId);
+  }
+  if(command.kind==='GOVERNOR_ACCEPT'||command.kind==='GOVERNOR_REJECT'){
+    return advanceGovernanceAmendment({
+      userId:args.userId,requestId:command.requestId,action:command.kind,note:command.note,
+    });
+  }
+  if(command.kind==='SECRETARY_ACCEPT'){
+    return advanceGovernanceAmendment({
+      userId:args.userId,requestId:command.requestId,action:'SECRETARY_ACCEPT',note:command.note,
+    });
+  }
+  if(command.kind==='COUNCIL_APPROVE'){
+    return advanceGovernanceAmendment({
+      userId:args.userId,requestId:command.requestId,action:'COUNCIL_APPROVE',
+      note:command.note,decisionId:command.decisionId,effectiveAt:command.effectiveAt,nextVersion:command.nextVersion,
+    });
+  }
+  return advanceGovernanceAmendment({
+    userId:args.userId,requestId:command.requestId,action:'COUNCIL_REJECT',
+    note:command.note,decisionId:command.decisionId,
+  });
+}
