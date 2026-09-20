@@ -21,6 +21,76 @@ const statusLabel:Record<string,string>={
 const priorityLabel={NORMAL:'عادي',NEXT_MEETING:'للاجتماع القادم',URGENT:'عاجل — اجتماع فوري'} as const;
 const kindLabel:Record<string,string>={record:'سجل',charter:'ميثاق',policy:'سياسة',reference:'مرجع',contract:'عقد'};
 
+type DocumentBlock =
+  | {kind:'paragraph';text:string}
+  | {kind:'table';headers:string[];rows:string[][]};
+type DocumentSection={title:string;blocks:DocumentBlock[]};
+
+function markdownCells(line:string){
+  return line.trim().replace(/^\|/,'').replace(/\|$/,'').split('|').map(cell=>cell.trim());
+}
+function isMarkdownDivider(line:string){
+  const cells=markdownCells(line);
+  return cells.length>1&&cells.every(cell=>/^:?-{3,}:?$/.test(cell));
+}
+function cleanDocumentText(line:string){
+  return line.trim().replace(/^#{1,6}\s*/,'').replace(/^\*\*(.+)\*\*$/,'$1').trim();
+}
+function parseGovernedDocument(content:string):DocumentSection[]{
+  const lines=content.replace(/\r/g,'').split('\n');
+  const sections:DocumentSection[]=[];
+  let current:DocumentSection={title:'المحتوى المعتمد',blocks:[]};
+  let paragraph:string[]=[];
+  const flushParagraph=()=>{
+    if(!paragraph.length)return;
+    current.blocks.push({kind:'paragraph',text:paragraph.join(' ').trim()});
+    paragraph=[];
+  };
+  const flushSection=()=>{
+    flushParagraph();
+    if(current.blocks.length||sections.length===0&&current.title!=='المحتوى المعتمد')sections.push(current);
+  };
+
+  for(let index=0;index<lines.length;index++){
+    const raw=lines[index]??'';
+    const trimmed=raw.trim();
+    if(!trimmed){flushParagraph();continue;}
+
+    const headingMatch=trimmed.match(/^#{1,6}\s+(.+)$/);
+    const majorLine=!trimmed.startsWith('|')&&(
+      /^\d+\s*[.)-]\s+/.test(trimmed)||
+      /^\d+\s*\|\s*[^|]+/.test(trimmed)||
+      /^(?:الباب|الفصل|المادة)\s+/.test(trimmed)
+    );
+    if(headingMatch||majorLine){
+      flushParagraph();
+      if(current.blocks.length)sections.push(current);
+      current={title:cleanDocumentText(headingMatch?.[1]??trimmed),blocks:[]};
+      continue;
+    }
+
+    const next=lines[index+1]?.trim()??'';
+    if(trimmed.includes('|')&&next.includes('|')&&isMarkdownDivider(next)){
+      flushParagraph();
+      const headers=markdownCells(trimmed);
+      const rows:string[][]=[];
+      index+=1;
+      while(index+1<lines.length){
+        const candidate=lines[index+1]?.trim()??'';
+        if(!candidate||!candidate.includes('|'))break;
+        rows.push(markdownCells(candidate));
+        index+=1;
+      }
+      current.blocks.push({kind:'table',headers,rows});
+      continue;
+    }
+
+    paragraph.push(cleanDocumentText(trimmed));
+  }
+  flushSection();
+  return sections.filter(section=>section.blocks.length||section.title!=='المحتوى المعتمد');
+}
+
 export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document:GovernedDocumentRef;roomKey:string;onClose:()=>void}){
   const [amendments,setAmendments]=useState<Amendment[]>([]);
   const [documentContent,setDocumentContent]=useState('');
@@ -55,6 +125,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
     return()=>{cancelled=true};
   },[document.referenceCode]);
   const related=useMemo(()=>amendments.filter(item=>item.documentRef===document.referenceCode),[amendments,document.referenceCode]);
+  const documentSections=useMemo(()=>parseGovernedDocument(documentContent),[documentContent]);
 
   async function submit(event:FormEvent){
     event.preventDefault(); if(pending)return; setPending(true); setFeedback('');
@@ -91,15 +162,21 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
             {documentLoading
               ?<p>جارٍ تحميل المرجع المعتمد داخل نماء…</p>
               :documentContent
-                ?documentContent.split(/\n+/).map((line,index)=>{
-                    const text=line.trim();
-                    if(!text)return null;
-                    const cleaned=text.replace(/^#{1,6}\s*/,'').replace(/^\*\*(.+)\*\*$/,'$1');
-                    const heading=/^#{1,6}\s/.test(text)||/^\d+[.)\-]\s/.test(text)||/^الباب\s|^الفصل\s|^المادة\s/.test(cleaned);
-                    return heading
-                      ?<h3 key={index}>{cleaned}</h3>
-                      :<p key={index}>{cleaned}</p>;
-                  })
+                ?<div className={styles.governedStructuredDocument}>
+                  {documentSections.map((section,sectionIndex)=><details className={styles.governedContentSection} key={sectionIndex} open={sectionIndex===0}>
+                    <summary><strong>{section.title}</strong><LucideIcon name="chevronDown" size={16}/></summary>
+                    <div className={styles.governedContentSectionBody}>
+                      {section.blocks.map((block,blockIndex)=>block.kind==='paragraph'
+                        ?<p key={blockIndex}>{block.text}</p>
+                        :<div className={styles.governedTableScroll} key={blockIndex}>
+                          <table className={styles.governedContentTable}>
+                            <thead><tr>{block.headers.map((header,headerIndex)=><th key={headerIndex} scope="col">{header}</th>)}</tr></thead>
+                            <tbody>{block.rows.map((row,rowIndex)=><tr key={rowIndex}>{block.headers.map((_,cellIndex)=><td key={cellIndex}>{row[cellIndex]??''}</td>)}</tr>)}</tbody>
+                          </table>
+                        </div>)}
+                    </div>
+                  </details>)}
+                </div>
                 :<p>تعذر تحميل النسخة المحلية الآن. المرجع محفوظ في نماء ويمكن إعادة المحاولة دون الرجوع إلى مصدر خارجي.</p>}
           </div>
         </details>
