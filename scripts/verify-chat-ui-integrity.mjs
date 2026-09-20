@@ -18,9 +18,9 @@ for(const name of critical){
   const total=count(rx);
   if(total>2) fail(name+' has conflicting duplicate structural definitions: '+total);
 }
-if(!css.includes('background:var(--namaa-green-900)')) fail('approved green mobile app bar missing');
+if(!css.includes('.mobileAppBar{')||!css.includes('background:var(--namaa-card)')||!css.includes(':global(html[data-theme="dark"]) .mobileAppBar{')||!css.includes('background:var(--namaa-green-900)')) fail('mobile app bar must stay light in light theme and governed dark in dark theme');
 const workspace=readFileSync('src/components/conversations/persistent-conversation-workspace.tsx','utf8');
-if(!workspace.includes('/brand/ndos/namaa-logo-white-transparent.png')) fail('official white Namaa mobile logo missing');
+if(!workspace.includes('/brand/ndos/namaa-logo-color-transparent.png')||!workspace.includes('/brand/ndos/namaa-logo-white-transparent.png')) fail('official light and dark Namaa mobile logos missing');
 if(workspace.includes('mobileBrandLockup')) fail('Namaa logo must not be redrawn from text and symbol');
 if(!css.includes('.mobileBrandLogo') || !css.includes('position:static') || !css.includes('transform:none') || !css.includes('.mobileAppBarPrimary{\n    direction:rtl;\n    flex-direction:row') || !css.includes('.mobileAppBarActions{\n    direction:ltr')) fail('mobile header must keep menu+logo on the right and utility actions on the far left');
 if(!css.includes('filter:none')) fail('official Namaa logo must not be recolored');
@@ -32,8 +32,14 @@ if(/\.agentMessage\{[^}]*!important|\.userMessage\{[^}]*!important/s.test(css)) 
 if(!css.includes('.message{\n  flex:0 0 auto;')) fail('chat messages must never shrink and clip their content');
 if(!css.includes('touch-action:pan-y')) fail('mobile messages must preserve vertical touch scrolling');
 if(!css.includes('box-sizing:border-box;\n    min-height:40px;\n    max-height:40dvh;\n    height:40px')) fail('empty mobile composer must stay compact at 40px and expand within a mobile viewport cap');
-if(!workspace.includes("e.currentTarget.style.height='auto'")||!workspace.includes('e.currentTarget.scrollHeight')) fail('mobile composer must grow from one line with typed content');
-if(!css.includes(':global(html[data-theme="dark"]) .page{')||!css.includes('--namaa-chat-canvas:var(--ux-page-bg)')||!css.includes(':global(html[data-theme="dark"]) .agentMessage{')||!css.includes(':global(html[data-theme="dark"]) .composer textarea{')) fail('mobile dark chat surfaces must use governed dark semantic tokens');
+if(!workspace.includes("e.currentTarget.style.height='auto'")||!workspace.includes('Math.max(e.currentTarget.scrollHeight,64)')) fail('mobile composer must open to at least two lines and grow with typed content');
+const sendIndex=workspace.indexOf('className={styles.sendButton}');
+const textareaIndex=workspace.indexOf('<textarea ref={composerTextareaRef}');
+const attachIndex=workspace.indexOf('className={styles.attachButton}');
+if(!(sendIndex>=0&&textareaIndex>sendIndex&&attachIndex>textareaIndex)) fail('mobile RTL composer order must render send on the right and attachment on the left');
+if(!css.includes(':global(html[data-theme="dark"]) .page{')||!css.includes('--namaa-chat-canvas:var(--ux-page-bg)')||!css.includes(':global(html[data-theme="dark"]) .agentMessage{')||!css.includes(':global(html[data-theme="dark"]) .composer textarea{')||!css.includes('background:var(--ux-section-soft-blue)')) fail('mobile dark chat surfaces and composer must use governed layered dark semantic tokens');
+if(!css.includes('.specialistRoutingNote{\n    display:none')) fail('mobile specialist routing ribbon must stay visually hidden');
+if(!css.includes('.mobileBrandLogoDark{display:none}')||!css.includes(':global(html[data-theme="dark"]) .mobileBrandLogoLight{display:none}')||!css.includes(':global(html[data-theme="dark"]) .mobileBrandLogoDark{display:block}')) fail('mobile logo must switch between official color and white variants by theme');
 if(!workspace.includes('messagesScrollRef')||!workspace.includes('container.scrollTop=container.scrollHeight')) fail('chat must scroll its own message pane to the latest reply');
 if(!workspace.includes("onBlur={e=>{if(!draft.trim())e.currentTarget.style.height='40px'}}")) fail('empty composer must collapse after focus leaves');
 if(!css.includes('.agentMessage{\n  align-self:flex-end') || !css.includes('margin-left:auto;\n  margin-right:var(--ux-space-0)') || !css.includes('.userMessage{\n  align-self:flex-start') || !css.includes('margin-left:var(--ux-space-0);\n  margin-right:auto')) fail('approved message sides changed: governor must stay right and user must stay left');
