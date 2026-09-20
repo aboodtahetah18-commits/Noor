@@ -23,6 +23,16 @@ const priorityLabel={NORMAL:'عادي',NEXT_MEETING:'للاجتماع القاد
 const kindLabel:Record<string,string>={charter:'ميثاق',policy:'سياسة',record:'سجل',reference:'مرجع',contract:'عقد حاكم'};
 const arabicDigits=(value:string)=>value.replace(/[0-9]/g,d=>'٠١٢٣٤٥٦٧٨٩'[Number(d)]??d).replaceAll('.', '٫');
 const displayVersion=(value?:string|null)=>value?arabicDigits(value.replace(/^v/i,'')):'معتمد';
+const arabicVisibleText=(value:string)=>value
+  .replace(/RBAC/gi,'التحكم بالصلاحيات حسب الدور')
+  .replace(/ABAC/gi,'التحكم بالصلاحيات حسب السمات')
+  .replace(/API/gi,'واجهة برمجية')
+  .replace(/KPI/gi,'مؤشر أداء')
+  .replace(/AI/gi,'الذكاء الاصطناعي')
+  .replace(/Hard Guards/gi,'الضوابط الصارمة')
+  .replace(/[A-Za-z][A-Za-z0-9_.\/-]*/g,'')
+  .replace(/\s{2,}/g,' ')
+  .trim();
 
 export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document:GovernedDocumentRef;roomKey:string;onClose:()=>void}){
   const [amendments,setAmendments]=useState<Amendment[]>([]);
@@ -82,7 +92,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
         <details className={styles.governedDocumentSection}>
           <summary><span>الأبواب والبنود</span><LucideIcon name="chevronDown" size={16}/></summary>
           <div className={styles.governedInternalContent}>{embeddedSections.length
-            ?embeddedSections.map((section,index)=><article key={index}><b>الباب {arabicDigits(String(index+1))} — {section.title}</b>{section.lines.map((line,lineIndex)=><p key={lineIndex}><span>البند {arabicDigits(String(index+1)+'.'+String(lineIndex+1))}</span>{line}</p>)}</article>)
+            ?embeddedSections.map((section,index)=><article key={index}><b>الباب {arabicDigits(String(index+1))} — {arabicVisibleText(section.title)}</b>{section.lines.map((line,lineIndex)=><p key={lineIndex}><span>البند {arabicDigits(String(index+1)+'.'+String(lineIndex+1))}</span>{arabicVisibleText(line)}</p>)}</article>)
             :<p>لم يكتمل استيراد النص الداخلي لهذا المرجع بعد. تبقى النسخة المؤرشفة متاحة عند الحاجة.</p>}</div>
         </details>
 
