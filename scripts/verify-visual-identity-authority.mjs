@@ -18,7 +18,7 @@ assert(workspace.includes('/brand/ndos/namaa-logo-white-transparent.png'),'Mobil
 assert(!workspace.includes('mobileBrandLockup'),'Do not redraw Namaa with text + symbol composition.');
 assert(!/filter\s*:\s*(?:brightness|invert|hue-rotate|sepia|saturate)/i.test(chatCss),'Brand assets must not be recolored with CSS filters.');
 assert(chatCss.includes('.mobileBrandLogo'),'Governed mobile logo class is missing.');
-assert(chatCss.includes('left:50%')&&chatCss.includes('top:50%')&&chatCss.includes('transform:translate(-50%,-50%)'),'Mobile logo must remain centered in the top app bar.');
+assert(chatCss.includes('position:static')&&chatCss.includes('transform:none')&&chatCss.includes('.mobileAppBarPrimary{\n    flex-direction:row-reverse'),'Mobile logo must remain in the approved left-side top app bar position.');
 assert(chatCss.includes('min-width:88px'),'Mobile full logo must never render below 88px.');
 assert(Array.isArray(brandRegistry.assets)||Array.isArray(brandRegistry.approved)||Object.keys(brandRegistry).length>0,'Approved brand registry must remain present.');
 
