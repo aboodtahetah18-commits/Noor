@@ -10,30 +10,33 @@ type Metric={key:string;label:string;value:string;hint:string|null;status:Status
 type Plan={ownerRef:string;ownerName:string;title:string;current:string;target:string;nextAction:string;horizon:string;status:Status;basis:string[]};
 type Weekly={periodStart:string;status:string;recommendationsCreated:number;recommendationsResolved:number;obligationTransitions:number;blockedRules:number;challenges:string[]};
 type Dashboard={roomKey:string;title:string;generatedAt:string;state:Status;headline:string;metrics:Metric[];attention:string[];plans:Plan[];roles:AlgorithmRoleRef[];weeklyReport:Weekly|null;externalExecution:false};
+type DashboardLoadState={roomKey:string;dashboard:Dashboard|null;error:string};
 
 const statusLabel:Record<Status,string>={GOOD:'مستقر',WATCH:'تحت المتابعة',ACTION:'يحتاج إجراء',WAITING_DATA:'بانتظار بيانات'};
 
 export function EntityDashboardMobilePage({roomKey,onClose}:{roomKey:string;onClose:()=>void}){
-  const [dashboard,setDashboard]=useState<Dashboard|null>(null);
-  const [loading,setLoading]=useState(true);
-  const [error,setError]=useState('');
+  const [loadState,setLoadState]=useState<DashboardLoadState>({roomKey,dashboard:null,error:''});
   const [selectedRole,setSelectedRole]=useState<string>('all');
 
   useEffect(()=>{
     let cancelled=false;
-    setLoading(true); setError('');
     fetch('/api/conversations/'+roomKey+'/dashboard',{cache:'no-store'})
       .then(async response=>{if(!response.ok)throw new Error('LOAD_FAILED');return response.json()})
-      .then(data=>{if(cancelled)return;setDashboard(data.dashboard??null)})
-      .catch(()=>{if(!cancelled)setError('تعذر تحميل لوحة الجهة الآن.')})
-      .finally(()=>{if(!cancelled)setLoading(false)});
+      .then(data=>{if(cancelled)return;setLoadState({roomKey,dashboard:data.dashboard??null,error:''})})
+      .catch(()=>{if(!cancelled)setLoadState({roomKey,dashboard:null,error:'تعذر تحميل لوحة الجهة الآن.'})});
     return()=>{cancelled=true};
   },[roomKey]);
 
+  const isCurrentRoom=loadState.roomKey===roomKey;
+  const dashboard=isCurrentRoom?loadState.dashboard:null;
+  const error=isCurrentRoom?loadState.error:'';
+  const loading=!isCurrentRoom||(!dashboard&&!error);
+  const activeRole=dashboard&&selectedRole!=='all'&&dashboard.roles.some(role=>role.referenceCode===selectedRole)?selectedRole:'all';
+
   const visiblePlans=useMemo(()=>{
     if(!dashboard)return [];
-    return selectedRole==='all'?dashboard.plans:dashboard.plans.filter(item=>item.ownerRef===selectedRole);
-  },[dashboard,selectedRole]);
+    return activeRole==='all'?dashboard.plans:dashboard.plans.filter(item=>item.ownerRef===activeRole);
+  },[dashboard,activeRole]);
 
   return <div className={styles.mobileFullPage} role="dialog" aria-modal="true" aria-label="لوحة الجهة">
     <header className={styles.mobileFullPageHeader}>
@@ -62,8 +65,8 @@ export function EntityDashboardMobilePage({roomKey,onClose}:{roomKey:string;onCl
         <section className={styles.dashboardSection}>
           <header><strong>الفريق المسؤول</strong><small>اختر المسؤول لعرض خطته الخاصة.</small></header>
           <div className={styles.dashboardRoleTabs}>
-            <button type="button" className={selectedRole==='all'?styles.activeDashboardRole:''} onClick={()=>setSelectedRole('all')}>الجهة كاملة</button>
-            {dashboard.roles.map(role=><button type="button" key={role.referenceCode} className={selectedRole===role.referenceCode?styles.activeDashboardRole:''} onClick={()=>setSelectedRole(role.referenceCode)}>{role.name}</button>)}
+            <button type="button" className={activeRole==='all'?styles.activeDashboardRole:''} onClick={()=>setSelectedRole('all')}>الجهة كاملة</button>
+            {dashboard.roles.map(role=><button type="button" key={role.referenceCode} className={activeRole===role.referenceCode?styles.activeDashboardRole:''} onClick={()=>setSelectedRole(role.referenceCode)}>{role.name}</button>)}
           </div>
         </section>
 
