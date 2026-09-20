@@ -28,6 +28,7 @@ const hasDependent=(item:Dependent)=>Boolean(item.name.trim()||item.relationship
 const hasAccount=(item:Account)=>Boolean(item.bank_name.trim()||item.opening_balance.trim()||item.short_identifier.trim()||item.iban.trim()||item.card_last4.trim());
 const hasObligation=(item:Obligation)=>Boolean(item.name.trim()||item.amount.trim()||item.provider.trim());
 const hasGoal=(item:Goal)=>Boolean(item.name.trim()||item.target_amount.trim()||item.allocated_amount.trim());
+const recurrenceLabel=(value:string)=>({MONTHLY:'شهري',WEEKLY:'أسبوعي',YEARLY:'سنوي',ONE_TIME:'مرة واحدة',OTHER:'آخر'}[value]??'غير محدد');
 
 function numberOrUndefined(value:string){
   if(!value.trim()) return undefined;
@@ -274,7 +275,7 @@ export function GovernorOnboardingIntake({
         <label><span>دخل متكرر آخر</span><input type="number" min="0" inputMode="decimal" value={income.other_recurring_income} onChange={e=>setIncome(v=>({...v,other_recurring_income:e.target.value}))}/></label>
         <label><span>الصافي الفعلي الذي يصل للحساب</span><input type="number" min="0" inputMode="decimal" value={income.actual_net} onChange={e=>setIncome(v=>({...v,actual_net:e.target.value}))}/></label>
       </div>
-      <div className={styles.incomeReconciliation}><small>الصافي المحسوب من المكونات</small><strong>{new Intl.NumberFormat('en-US',{maximumFractionDigits:2}).format(expectedNet)} ر.س</strong></div>
+      <div className={styles.incomeReconciliation}><small>الصافي المحسوب من المكونات</small><strong>{new Intl.NumberFormat('ar-SA',{maximumFractionDigits:2}).format(expectedNet)} ر.س</strong></div>
       {income.actual_net&&Number(income.actual_net)!==expectedNet&&<label className={styles.intakeDifference}><span>سبب الفرق بين المحسوب والفعلي</span><textarea rows={2} value={income.difference_explanation} onChange={e=>setIncome(v=>({...v,difference_explanation:e.target.value}))}/></label>}
     </div>}
 
@@ -351,7 +352,7 @@ export function GovernorOnboardingIntake({
     {intakeStep==='obligations'&&<div className={styles.mobileStructuredIntake}>
       <div className={styles.mobileIntakePrompt}><strong>الالتزامات القائمة</strong><small>أضف كل التزام في نافذة مستقلة ثم راجع القائمة قبل الإرسال.</small></div>
       {obligationRows.length?<div className={styles.mobileIntakeTable} role="table" aria-label="الالتزامات المحفوظة">{obligationRows.map(({item,index},rowIndex)=><div className={styles.mobileIntakeRow} role="row" key={index}>
-        <div role="cell"><strong>{item.name||`التزام ${rowIndex+1}`}</strong><small>{item.amount||'0'} ر.س · {item.recurrence}</small></div>
+        <div role="cell"><strong>{item.name||`التزام ${rowIndex+1}`}</strong><small>{item.amount||'0'} ر.س · {recurrenceLabel(item.recurrence)}</small></div>
         <div className={styles.mobileIntakeRowActions}><button type="button" onClick={()=>setMobileEditor({kind:'obligations',index,draft:{...item}})} aria-label="تعديل الالتزام"><LucideIcon name="pencil" size={16}/></button><button type="button" onClick={()=>setObligations(current=>current.filter((_,i)=>i!==index))} aria-label="حذف الالتزام"><LucideIcon name="trash2" size={16}/></button></div>
       </div>)}</div>:<p className={styles.mobileIntakeEmpty}>لم تضف أي التزام بعد.</p>}
       <div className={styles.mobileIntakeFooter}><button type="button" className={styles.intakeAddButton} onClick={()=>setMobileEditor({kind:'obligations',index:null,draft:emptyObligation()})}><LucideIcon name="plus" size={16}/><span>إضافة التزام</span></button><button type="button" className={styles.intakeNoneButton} onClick={()=>setObligations([])}>لا توجد التزامات مالية قائمة</button></div>
@@ -372,27 +373,27 @@ export function GovernorOnboardingIntake({
         <header className={styles.mobileRecordEditorHeader}><div><strong>{mobileEditor.index===null?'إضافة سجل':'تعديل السجل'}</strong><small>احفظ هذا السجل ثم عد للقائمة.</small></div><button type="button" onClick={()=>setMobileEditor(null)} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button></header>
         <div className={styles.mobileRecordEditorBody}>
           {mobileEditor.kind==='dependents'&&<>
-            <label><span>الاسم</span><input value={mobileEditor.draft.name} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,name:e.target.value}})}/></label>
+            <label className={styles.mobileFieldFull}><span>الاسم</span><input value={mobileEditor.draft.name} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,name:e.target.value}})}/></label>
             <label><span>العلاقة</span><select value={mobileEditor.draft.relationship} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,relationship:e.target.value}})}><option value="">اختر</option><option>زوج/زوجة</option><option>ابن/ابنة</option><option>والد/والدة</option><option>قريب</option><option>غير ذلك</option></select></label>
             <label><span>العمر إن كان مهمًا للاحتياج</span><input type="number" min="0" value={mobileEditor.draft.age} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,age:e.target.value}})}/></label>
             <label><span>الدعم الشهري</span><input type="number" min="0" inputMode="decimal" value={mobileEditor.draft.monthly_support} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,monthly_support:e.target.value}})}/></label>
             <label><span>مصروف سنوي إضافي</span><input type="number" min="0" inputMode="decimal" value={mobileEditor.draft.annual_support} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,annual_support:e.target.value}})}/></label>
-            <label><span>احتياجات خاصة مؤثرة ماليًا إن وجدت</span><input value={mobileEditor.draft.special_needs} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,special_needs:e.target.value}})}/></label>
-            <label className={styles.intakeCheckbox}><input type="checkbox" checked={mobileEditor.draft.financial_dependency} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,financial_dependency:e.target.checked}})}/><span>يعتمد عليّ ماليًا</span></label>
+            <label className={styles.mobileFieldFull}><span>احتياجات خاصة مؤثرة ماليًا إن وجدت</span><input value={mobileEditor.draft.special_needs} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,special_needs:e.target.value}})}/></label>
+            <label className={`${styles.intakeCheckbox} ${styles.mobileFieldFull}`}><input type="checkbox" checked={mobileEditor.draft.financial_dependency} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,financial_dependency:e.target.checked}})}/><span>يعتمد عليّ ماليًا</span></label>
           </>}
           {mobileEditor.kind==='accounts'&&<>
-            <label><span>البنك أو الجهة</span><input value={mobileEditor.draft.bank_name} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,bank_name:e.target.value}})}/></label>
+            <label className={styles.mobileFieldFull}><span>البنك أو الجهة</span><input value={mobileEditor.draft.bank_name} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,bank_name:e.target.value}})}/></label>
             <label><span>نوع الحساب</span><select value={mobileEditor.draft.account_type} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,account_type:e.target.value}})}><option value="BANK">جاري/بنكي</option><option value="SAVINGS">ادخاري</option><option value="CASH">نقدي</option><option value="INVESTMENT">استثماري</option><option value="OTHER">أخرى</option></select></label>
-            <label><span>معرف مختصر</span><input value={mobileEditor.draft.short_identifier} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,short_identifier:e.target.value}})}/></label>
-            <label><span>الآيبان إن رغبت</span><input value={mobileEditor.draft.iban} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,iban:e.target.value.toUpperCase()}})}/></label>
+            <label><span>اسم مختصر للحساب</span><input value={mobileEditor.draft.short_identifier} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,short_identifier:e.target.value}})}/></label>
+            <label className={styles.mobileFieldFull}><span>الآيبان إن رغبت</span><input value={mobileEditor.draft.iban} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,iban:e.target.value.toUpperCase()}})}/></label>
             <label><span>آخر 4 أرقام من البطاقة</span><input inputMode="numeric" maxLength={4} value={mobileEditor.draft.card_last4} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,card_last4:e.target.value.replace(/\D/g,'').slice(0,4)}})}/></label>
             <label><span>نوع البطاقة</span><select value={mobileEditor.draft.card_type} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,card_type:e.target.value}})}><option>مدى</option><option>فيزا</option><option>ماستركارد</option><option>أخرى</option></select></label>
-            <label><span>الاستخدام الحالي</span><input value={mobileEditor.draft.usage} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,usage:e.target.value}})}/></label>
+            <label className={styles.mobileFieldFull}><span>الاستخدام الحالي</span><input value={mobileEditor.draft.usage} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,usage:e.target.value}})}/></label>
             <label><span>الرصيد الافتتاحي</span><input type="number" min="0" inputMode="decimal" value={mobileEditor.draft.opening_balance} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,opening_balance:e.target.value}})}/></label>
-            <label className={styles.intakeCheckbox}><input type="checkbox" checked={mobileEditor.draft.included_in_namaa} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,included_in_namaa:e.target.checked}})}/><span>إدخاله ضمن نماء</span></label>
+            <label className={`${styles.intakeCheckbox} ${styles.mobileFieldFull}`}><input type="checkbox" checked={mobileEditor.draft.included_in_namaa} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,included_in_namaa:e.target.checked}})}/><span>إدخاله ضمن نماء</span></label>
           </>}
           {mobileEditor.kind==='obligations'&&<>
-            <label><span>اسم الالتزام</span><input value={mobileEditor.draft.name} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,name:e.target.value}})}/></label>
+            <label className={styles.mobileFieldFull}><span>اسم الالتزام</span><input value={mobileEditor.draft.name} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,name:e.target.value}})}/></label>
             <label><span>المبلغ</span><input type="number" min="0" inputMode="decimal" value={mobileEditor.draft.amount} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,amount:e.target.value}})}/></label>
             <label><span>التكرار</span><select value={mobileEditor.draft.recurrence} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,recurrence:e.target.value}})}><option value="MONTHLY">شهري</option><option value="WEEKLY">أسبوعي</option><option value="YEARLY">سنوي</option><option value="ONE_TIME">مرة واحدة</option><option value="OTHER">آخر</option></select></label>
             <label><span>الجهة</span><input value={mobileEditor.draft.provider} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,provider:e.target.value}})}/></label>
@@ -402,7 +403,7 @@ export function GovernorOnboardingIntake({
             <label><span>تكلفة التمويل/الرسوم إن عُرفت</span><input type="number" min="0" inputMode="decimal" value={mobileEditor.draft.finance_cost} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,finance_cost:e.target.value}})}/></label>
           </>}
           {mobileEditor.kind==='goals'&&<>
-            <label><span>اسم الهدف</span><input value={mobileEditor.draft.name} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,name:e.target.value}})}/></label>
+            <label className={styles.mobileFieldFull}><span>اسم الهدف</span><input value={mobileEditor.draft.name} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,name:e.target.value}})}/></label>
             <label><span>المبلغ المستهدف</span><input type="number" min="0" inputMode="decimal" value={mobileEditor.draft.target_amount} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,target_amount:e.target.value}})}/></label>
             <label><span>الموعد المتوقع</span><input type="date" value={mobileEditor.draft.target_date} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,target_date:e.target.value}})}/></label>
             <label><span>الأولوية</span><input value={mobileEditor.draft.priority} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,priority:e.target.value}})}/></label>
