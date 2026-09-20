@@ -27,8 +27,12 @@ const CATEGORY_META:Record<RatifiedDraftAllocation['ownerKey'],{name:string;grou
 };
 
 function finiteAmount(value:unknown){
-  const n=typeof value==='number'?value:Number(value);
-  return Number.isFinite(n)&&n>=0?n:null;
+  if(typeof value==='number') return Number.isFinite(value)&&value>=0?value:null;
+  if(typeof value==='string'&&value.trim()!==''){
+    const n=Number(value);
+    return Number.isFinite(n)&&n>=0?n:null;
+  }
+  return null;
 }
 
 export function normalizeRatifiedDraftAllocations(value:unknown):RatifiedDraftAllocation[]{
