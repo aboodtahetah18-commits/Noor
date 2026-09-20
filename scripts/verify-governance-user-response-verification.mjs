@@ -14,6 +14,8 @@ if(!history.includes("'USER_RESPONDED'")||!history.includes('institutional_decis
 for(const token of ['submitOversightUserResponse','إرفاق إثبات','إرسال للتحقق','FormData','/api/conversations/followups/respond']){
   if(!workspace.includes(token)) throw new Error('USER-RESPONSE-UI-MISSING '+token);
 }
-if(/COMPLETED/.test(response.split('recordFollowupUserResponse')[1]??'')) throw new Error('USER-RESPONSE-MUST-NOT-AUTO-COMPLETE');
+const responseBody=response.split('recordFollowupUserResponse')[1]??'';
+if(/(?:followup_status|verification_status|nextStatus)\s*[:=]\s*['"]COMPLETED['"]/i.test(responseBody)) throw new Error('USER-RESPONSE-MUST-NOT-AUTO-COMPLETE');
+if(!responseBody.includes("nextStatus:'VERIFICATION_PENDING'")||!responseBody.includes('external_execution:false')) throw new Error('USER-RESPONSE-MUST-REMAIN-VERIFICATION-PENDING');
 if(!api.includes('oversight_dashboard:await getGovernanceOversightDashboard(user.id)')) throw new Error('USER-RESPONSE-MUST-REFRESH-OVERSIGHT');
 console.log('GOVERNANCE-USER-RESPONSE-VERIFICATION-PASS');
