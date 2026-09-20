@@ -8,7 +8,7 @@ import styles from './conversation-workspace.module.css';
 type Status='GOOD'|'WATCH'|'ACTION'|'WAITING_DATA';
 type Metric={key:string;label:string;value:string;hint:string|null;status:Status};
 type Plan={ownerRef:string;ownerName:string;title:string;current:string;target:string;nextAction:string;horizon:string;status:Status;basis:string[]};
-type Weekly={periodStart:string;status:string;recommendationsCreated:number;recommendationsResolved:number;obligationTransitions:number;blockedRules:number;challenges:string[]};
+type Weekly={periodStart:string;status:string;recommendationsCreated:number;recommendationsResolved:number;obligationTransitions:number;blockedRules:number;challenges:string[];nextPriorities:string[]};
 type Dashboard={roomKey:string;title:string;generatedAt:string;state:Status;headline:string;metrics:Metric[];attention:string[];plans:Plan[];roles:AlgorithmRoleRef[];weeklyReport:Weekly|null;externalExecution:false};
 type DashboardLoadState={roomKey:string;dashboard:Dashboard|null;error:string};
 
@@ -85,6 +85,12 @@ export function EntityDashboardMobilePage({roomKey,onClose}:{roomKey:string;onCl
             <div><strong>أسبوع {dashboard.weeklyReport.periodStart}</strong><span>{dashboard.weeklyReport.status}</span></div>
             <div className={styles.weeklyReportMetrics}><span>توصيات جديدة <b>{dashboard.weeklyReport.recommendationsCreated}</b></span><span>توصيات حُسمت <b>{dashboard.weeklyReport.recommendationsResolved}</b></span><span>تغيرات التزامات <b>{dashboard.weeklyReport.obligationTransitions}</b></span><span>قواعد محجوبة <b>{dashboard.weeklyReport.blockedRules}</b></span></div>
             {dashboard.weeklyReport.challenges.length?<div className={styles.weeklyChallenges}>{dashboard.weeklyReport.challenges.map((item,index)=><p key={index}>{item}</p>)}</div>:<p>لا توجد تحديات مسجلة في آخر تحليل أسبوعي.</p>}
+            <div className={styles.weeklyOutlook}>
+              <strong>ما الذي نحتاج فعله خلال الأسابيع والأشهر القادمة؟</strong>
+              {dashboard.weeklyReport.nextPriorities.length
+                ?dashboard.weeklyReport.nextPriorities.map((item,index)=><p key={index}>{item}</p>)
+                :<p>لا توجد أولوية مستقبلية إضافية خارج الخطة الحالية.</p>}
+            </div>
           </article>:<p className={styles.dashboardEmpty}>سيظهر أول تقرير بعد أول تشغيل أسبوعي مكتمل.</p>}
         </section>
 
