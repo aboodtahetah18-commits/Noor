@@ -2615,7 +2615,7 @@
   .attachmentPolicy,.executionNote{
     display:none
   }
-  .chatHeader,.routingNote,.composer{
+  .chatHeader,.routingNote{
     flex-shrink:0
   }
   .userMessageIdentity{
