@@ -4,7 +4,26 @@ import { useMemo, useState } from 'react';
 import { LucideIcon } from '@/components/ui/lucide-icon';
 import styles from './conversation-workspace.module.css';
 
-type IntakeStep='dependents'|'income'|'accounts'|'obligations'|'goals';
+type IntakeStep=
+  | 'marital_status'|'dependents'|'home_city'|'housing'|'employment'|'work_city'
+  | 'commute'|'income'|'accounts'|'obligations'|'goals'|'statements'|'review';
+type StructuredIntakeStep='dependents'|'income'|'accounts'|'obligations'|'goals';
+
+const INTAKE_STAGES:Array<{key:IntakeStep;title:string;question:string}>=[
+  {key:'marital_status',title:'الوضع الأسري',question:'ما حالتك الاجتماعية الحالية؟'},
+  {key:'dependents',title:'المعالون',question:'من الأشخاص الذين تعولهم أو تصرف عليهم ماليًا؟'},
+  {key:'home_city',title:'مدينة السكن',question:'في أي مدينة تسكن حاليًا؟'},
+  {key:'housing',title:'السكن',question:'ما وضع السكن الحالي؟ وهل يوجد إيجار شهري؟'},
+  {key:'employment',title:'العمل',question:'ما طبيعة عملك الحالية؟'},
+  {key:'work_city',title:'مدينة العمل',question:'في أي مدينة يقع عملك الأساسي؟'},
+  {key:'commute',title:'التنقل',question:'ما مسافة أو مدة التنقل المعتادة ووسيلته؟'},
+  {key:'income',title:'الدخل',question:'ما تفاصيل الراتب والدخل والصافي الفعلي؟'},
+  {key:'accounts',title:'الحسابات',question:'ما الحسابات المالية والأرصدة الافتتاحية؟'},
+  {key:'obligations',title:'الالتزامات',question:'ما الالتزامات المالية القائمة؟'},
+  {key:'goals',title:'الأهداف',question:'ما الأهداف المالية والمبالغ والمواعيد؟'},
+  {key:'statements',title:'كشوف الحساب',question:'هل لديك كشوف حساب حديثة للمطابقة؟'},
+  {key:'review',title:'المراجعة النهائية',question:'هل تريد تثبيت ملف التأسيس بعد مراجعته؟'},
+];
 type MessagePayload={id:string;sender_type:'user'|'agent'|'system';sender_name:string;message_kind:'message'|'risk'|'decision'|'recommendation'|'followup'|'request';body:string;structured_data?:Record<string,unknown>;created_at?:string};
 
 type Dependent={name:string;relationship:string;age:string;monthly_support:string;annual_support:string;special_needs:string;financial_dependency:boolean};
@@ -61,9 +80,10 @@ export function GovernorOnboardingIntake({
   onAccepted:(message:MessagePayload,reply:MessagePayload|null,nextStep:string)=>void;
   onClose:()=>void;
 }){
-  const intakeStep=(['dependents','income','accounts','obligations','goals'] as IntakeStep[]).includes(step as IntakeStep)
-    ? step as IntakeStep
-    : null;
+  const intakeStep=INTAKE_STAGES.some(stage=>stage.key===step) ? step as IntakeStep : null;
+  const structuredStep=([
+    'dependents','income','accounts','obligations','goals'
+  ] as StructuredIntakeStep[]).includes(step as StructuredIntakeStep) ? step as StructuredIntakeStep : null;
   const [dependents,setDependents]=useState<Dependent[]>([emptyDependent()]);
   const [accounts,setAccounts]=useState<Account[]>([emptyAccount()]);
   const [obligations,setObligations]=useState<Obligation[]>([emptyObligation()]);
@@ -75,6 +95,7 @@ export function GovernorOnboardingIntake({
   const [saving,setSaving]=useState(false);
   const [error,setError]=useState('');
   const [mobileEditor,setMobileEditor]=useState<MobileEditor>(null);
+  const [simpleAnswer,setSimpleAnswer]=useState('');
 
   const expectedNet=useMemo(()=>{
     const base=Number(income.base_salary||0);
@@ -159,7 +180,33 @@ export function GovernorOnboardingIntake({
     }
   }
 
+  async function submitSimpleCurrent(){
+    if(!intakeStep||structuredStep||saving)return;
+    const body=intakeStep==='review'?'تأكيد':simpleAnswer.trim();
+    if(!body){setError('أدخل إجابة المرحلة الحالية قبل المتابعة.');return;}
+    setSaving(true);setError('');
+    try{
+      const response=await fetch('/api/conversations/central',{
+        method:'POST',
+        headers:{'content-type':'application/json'},
+        body:JSON.stringify({body}),
+      });
+      const data=await response.json() as {message?:MessagePayload;reply?:MessagePayload;replies?:MessagePayload[]};
+      if(!response.ok||!data.message)throw new Error('ONBOARDING_SIMPLE_FAILED');
+      const replies=Array.isArray(data.replies)?data.replies:[];
+      const reply=data.reply??replies.at(-1)??null;
+      const nextStep=String(reply?.structured_data?.onboarding_step??'');
+      setSimpleAnswer('');
+      onAccepted(data.message,reply,nextStep);
+    }catch{
+      setError('تعذر حفظ هذه المرحلة الآن. لم يعتمد نماء الإجابة.');
+    }finally{
+      setSaving(false);
+    }
+  }
+
   function submitCurrent(){
+    if(!structuredStep){void submitSimpleCurrent();return;}
     if(intakeStep==='dependents'){
       const cleaned=dependents.filter(item=>item.name.trim()||item.relationship.trim()||item.monthly_support.trim());
       void submit({
@@ -235,19 +282,43 @@ export function GovernorOnboardingIntake({
     });
   }
 
-  const title={
-    dependents:'أفراد الأسرة والمعالون',
-    income:'تفاصيل الراتب والدخل',
-    accounts:'الحسابات المالية',
-    obligations:'الالتزامات القائمة',
-    goals:'الأهداف المالية',
-  }[intakeStep];
+  const currentStageIndex=Math.max(0,INTAKE_STAGES.findIndex(stage=>stage.key===intakeStep));
+  const title=INTAKE_STAGES[currentStageIndex]?.title??'استكمال بيانات التأسيس';
 
   return <section className={styles.onboardingIntake} aria-label={title}>
     <header className={styles.onboardingIntakeHeader}>
-      <div><strong>{title}</strong><small>أدخل العناصر هنا ثم أكد المجموعة مرة واحدة.</small></div>
-      <div className={styles.onboardingHeaderActions}><span><LucideIcon name="listChecks" size={16}/>تأسيس</span><button type="button" className={styles.onboardingCloseButton} onClick={onClose} aria-label="إغلاق نافذة البيانات"><LucideIcon name="x" size={20}/></button></div>
+      <div><strong>{title}</strong><small>المرحلة {currentStageIndex+1} من {INTAKE_STAGES.length}</small></div>
+      <div className={styles.onboardingHeaderActions}><button type="button" className={styles.onboardingCloseButton} onClick={onClose} aria-label="إغلاق صفحة الاستكمال"><LucideIcon name="x" size={20}/></button></div>
     </header>
+
+    <details className={styles.onboardingStageOverview} open>
+      <summary><span>جميع مراحل وأسئلة التأسيس</span><strong>{currentStageIndex+1}/{INTAKE_STAGES.length}</strong></summary>
+      <ol className={styles.onboardingStageList}>
+        {INTAKE_STAGES.map((stage,index)=><li key={stage.key} className={index<currentStageIndex?styles.onboardingStageDone:index===currentStageIndex?styles.onboardingStageCurrent:styles.onboardingStageUpcoming}>
+          <span className={styles.onboardingStageNumber}>{index+1}</span>
+          <div><strong>{stage.title}</strong><small>{stage.question}</small></div>
+          {index<currentStageIndex&&<LucideIcon name="circleCheck" size={20}/>}
+        </li>)}
+      </ol>
+    </details>
+
+    {!structuredStep&&intakeStep!=='review'&&<section className={styles.simpleOnboardingStage}>
+      <strong>{INTAKE_STAGES[currentStageIndex]?.question}</strong>
+      {intakeStep==='marital_status'
+        ?<div className={styles.simpleOnboardingChoices}>
+          {['أعزب','متزوج','مطلق','أرمل'].map(choice=><button type="button" key={choice} className={simpleAnswer===choice?styles.simpleOnboardingChoiceActive:styles.simpleOnboardingChoice} onClick={()=>setSimpleAnswer(choice)}>{choice}</button>)}
+        </div>
+        :intakeStep==='statements'
+          ?<div className={styles.simpleOnboardingChoices}>
+            {['نعم','لا'].map(choice=><button type="button" key={choice} className={simpleAnswer===choice?styles.simpleOnboardingChoiceActive:styles.simpleOnboardingChoice} onClick={()=>setSimpleAnswer(choice)}>{choice}</button>)}
+          </div>
+          :<textarea className={styles.simpleOnboardingInput} rows={3} value={simpleAnswer} onChange={event=>setSimpleAnswer(event.target.value)} placeholder="اكتب إجابتك هنا…"/>}
+    </section>}
+
+    {intakeStep==='review'&&<section className={styles.simpleOnboardingStage}>
+      <strong>المراجعة النهائية</strong>
+      <p>إذا كانت البيانات صحيحة، ثبّت ملف التأسيس. ويمكنك إغلاق الصفحة والعودة للدردشة إذا أردت تعديل معلومة أولًا.</p>
+    </section>}
 
     {intakeStep==='dependents'&&<div className={`${styles.intakeCards} ${styles.desktopStructuredIntake}`}>
       {dependents.map((item,index)=><article className={styles.intakeCard} key={index}>
@@ -421,7 +492,7 @@ export function GovernorOnboardingIntake({
       <button type="button" className={styles.mobileQuestionByQuestionButton} onClick={onClose}><LucideIcon name="messageSquareText" size={16}/><span>المتابعة سؤالًا بسؤال في الدردشة</span></button>
       <button type="button" className={styles.primaryActionButton} onClick={submitCurrent} disabled={saving}>
         <LucideIcon name="circleCheck" size={20}/>
-        <span>{saving?'جارٍ الحفظ…':'تأكيد المجموعة والمتابعة'}</span>
+        <span>{saving?'جارٍ الحفظ…':structuredStep?'تأكيد المجموعة والمتابعة':intakeStep==='review'?'تثبيت ملف التأسيس':'حفظ المرحلة والمتابعة'}</span>
       </button>
     </div>
   </section>;
