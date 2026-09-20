@@ -2474,7 +2474,7 @@
     align-self:center;
     box-sizing:border-box;
     min-height:40px;
-    max-height:112px;
+    max-height:40dvh;
     height:40px;
     padding:var(--ux-space-2) var(--ux-space-3);
     border:1px solid var(--namaa-border-strong);
@@ -2631,6 +2631,73 @@
     font-variant-numeric:tabular-nums;
     unicode-bidi:plaintext
   }
+  :global(html[data-theme="dark"]) .page{
+    --namaa-chat-canvas:var(--ux-page-bg);
+    --namaa-card:var(--ux-card-bg);
+    --namaa-surface-warm:var(--ux-section-soft-blue);
+    --namaa-border:var(--ux-border-default);
+    --namaa-border-strong:var(--ux-border-emphasis);
+    --namaa-agent-message:var(--ux-card-bg);
+    --namaa-user-message:var(--ux-section-soft-teal)
+  }
+  :global(html[data-theme="dark"]) .chatPane,
+  :global(html[data-theme="dark"]) .messages{
+    background:var(--ux-page-bg)
+  }
+  :global(html[data-theme="dark"]) .chatHeader,
+  :global(html[data-theme="dark"]) .composer,
+  :global(html[data-theme="dark"]) .mobileSheet,
+  :global(html[data-theme="dark"]) .entityDetailTabs{
+    background:var(--ux-card-bg);
+    color:var(--ux-text-primary)
+  }
+  :global(html[data-theme="dark"]) .agentMessage{
+    background:var(--ux-card-bg);
+    border-color:var(--ux-border-emphasis);
+    color:var(--ux-text-primary)
+  }
+  :global(html[data-theme="dark"]) .userMessage{
+    background:var(--ux-section-soft-teal);
+    border-color:var(--namaa-green-700);
+    color:var(--ux-text-primary)
+  }
+  :global(html[data-theme="dark"]) .structuredCard,
+  :global(html[data-theme="dark"]) .onboardingQuestionCard,
+  :global(html[data-theme="dark"]) .richMessageHero,
+  :global(html[data-theme="dark"]) .entityDetailPanel>section,
+  :global(html[data-theme="dark"]) .detailList>span,
+  :global(html[data-theme="dark"]) .detailList>button{
+    background:var(--ux-card-bg);
+    border-color:var(--ux-border-emphasis);
+    color:var(--ux-text-primary)
+  }
+  :global(html[data-theme="dark"]) .entityDetailPanel>section>p,
+  :global(html[data-theme="dark"]) .entityReferenceContent>p,
+  :global(html[data-theme="dark"]) .entityReferenceContent>section>p{
+    color:var(--ux-text-secondary)
+  }
+  :global(html[data-theme="dark"]) .entityDetailTabs .activeEntityDetailTab{
+    background:var(--ux-section-soft-teal);
+    color:var(--ux-text-primary)
+  }
+  :global(html[data-theme="dark"]) .composer textarea{
+    background:var(--ux-card-bg);
+    border-color:var(--ux-border-emphasis);
+    color:var(--ux-text-primary)
+  }
+  :global(html[data-theme="dark"]) .composer textarea::placeholder{
+    color:var(--ux-text-muted)
+  }
+  :global(html[data-theme="dark"]) .attachButton{
+    background:var(--ux-section-soft-blue);
+    border-color:var(--ux-border-emphasis);
+    color:var(--ux-text-primary)
+  }
+  :global(html[data-theme="dark"]) .messageIdentity,
+  :global(html[data-theme="dark"]) .messageMeta{
+    border-color:var(--ux-border-default)
+  }
+
   .routingNote{
     margin:var(--ux-space-1) var(--ux-space-2) var(--ux-space-0) auto;
   padding:var(--ux-space-1) var(--ux-space-2);
