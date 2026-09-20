@@ -64,9 +64,9 @@
 .footer b{color:var(--ux-text-primary);font-weight:700}
 @media(max-width:767px){
   .page{padding:var(--ux-auth-s0);background:var(--ux-surface-canvas);display:block}
-  .shell{width:100%;min-height:100dvh;display:block;border:0;box-shadow:var(--ux-shadow-xs);overflow:visible;background:var(--ux-surface-default)}
+  .shell{width:100%;min-height:100dvh;display:block;border:0;box-shadow:var(--ux-shadow-xs);overflow:visible;background:var(--ux-surface-canvas)}
   .visual{display:none}
-  .mobileHero{display:block;position:relative;min-height:225px;padding:var(--ux-auth-s4) var(--ux-auth-s5) var(--ux-auth-s8);color:var(--ux-text-primary);overflow:hidden;background:var(--ux-surface-canvas)}
+  .mobileHero{display:block;position:relative;min-height:225px;padding:var(--ux-auth-s4) var(--ux-auth-s5) var(--ux-auth-s8);color:var(--ux-text-primary);overflow:hidden;background:var(--ux-surface-default)}
   .mobileHero::before,.mobileHero::after{content:"";position:absolute;border-radius:var(--ux-radius-6);background:color-mix(in srgb,var(--ux-accent-supporting) 22%,transparent);pointer-events:none}
   .mobileHero::before{width:180px;height:180px;top:-78px;right:-42px;transform:rotate(22deg)}
   .mobileHero::after{width:130px;height:210px;left:-55px;bottom:-95px;transform:rotate(-28deg)}
@@ -77,7 +77,7 @@
   .mobileKicker{position:relative;z-index:1;margin:var(--ux-auth-s4) var(--ux-auth-s0) var(--ux-auth-s1);color:var(--ux-text-secondary);font-size:var(--ux-type-body-sm-size);font-weight:700}
   .mobileHero h1{position:relative;z-index:1;margin:var(--ux-auth-s0);color:var(--ux-text-primary);font-size:var(--ux-type-page-title-size);line-height:1.25;font-weight:800}
   .mobileSubtitle{position:relative;z-index:1;margin:var(--ux-auth-s2) var(--ux-auth-s0) var(--ux-auth-s0);color:var(--ux-text-secondary);font-size:var(--ux-type-body-sm-size);line-height:1.6}
-  .panel{position:relative;min-height:calc(100dvh - 205px);justify-content:flex-start;margin-top:calc(var(--ux-auth-s5)*-1);padding:var(--ux-auth-s6) var(--ux-auth-s5);border-radius:var(--ux-radius-6);background:var(--ux-surface-default);box-shadow:var(--ux-shadow-md)}
+  .panel{position:relative;min-height:calc(100dvh - 205px);justify-content:flex-start;margin-top:calc(var(--ux-auth-s5)*-1);padding:var(--ux-auth-s6) var(--ux-auth-s5);border-radius:var(--ux-radius-6);background:var(--ux-surface-canvas);box-shadow:var(--ux-shadow-md)}
   .themeButton{display:none}
   .heading{display:none}
   .form{gap:var(--ux-auth-s3)}
@@ -91,7 +91,7 @@
   .success{margin-top:var(--ux-auth-s1)}
   .footer{margin-top:var(--ux-auth-s6);padding-top:var(--ux-auth-s4);font-size:var(--ux-type-caption-size)}
   :global(html[data-theme="dark"]) .page{background:var(--ux-page-bg)}
-  :global(html[data-theme="dark"]) .shell{background:var(--ux-card-bg)}
+  :global(html[data-theme="dark"]) .shell{background:var(--ux-page-bg)}
   :global(html[data-theme="dark"]) .mobileHero{
     background:var(--ux-action-primary);
     color:var(--ux-text-inverse)
