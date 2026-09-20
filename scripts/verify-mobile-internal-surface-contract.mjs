@@ -18,7 +18,7 @@ assert(!governed.includes('<strong>{item.requestId}</strong>'),'VISIBLE-AMENDMEN
 assert(!role.includes('<span>{role.referenceCode}</span>'),'VISIBLE-ROLE-TECHNICAL-ID');
 assert(!workspace.includes('<small>{role.referenceCode}</small>'),'VISIBLE-ENTITY-ROLE-ID');
 assert(!workspace.includes('activeEntityReference.ref'),'VISIBLE-LEGACY-REFERENCE-ID');
-assert(workspace.includes("Math.min(Math.max(e.currentTarget.scrollHeight,40),96)"),'MOBILE-COMPOSER-THREE-LINE-CAP-MISSING');
+assert(workspace.includes("Math.min(Math.max(e.currentTarget.scrollHeight,64),96)"),'MOBILE-COMPOSER-THREE-LINE-CAP-MISSING');
 assert(css.includes('.mobileFullPageSheet')&&css.includes('height:100dvh!important'),'MOBILE-FULL-PAGE-CONTRACT-MISSING');
 assert(css.includes('.mobileRecordEditorBody')&&css.includes('grid-template-columns:repeat(2,minmax(0,1fr))'),'MOBILE-TWO-COLUMN-FORM-MISSING');
 assert(css.includes('.mobileFieldFull')&&css.includes('grid-column:1 / -1'),'MOBILE-LONG-FIELD-FULL-WIDTH-MISSING');
