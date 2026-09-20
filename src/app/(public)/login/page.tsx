@@ -27,7 +27,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           <div className={styles.heroTheme}><ThemeToggle /></div>
 
           <div className={styles.brand}>
-            <span className={styles.logoFrame}><BrandLogo surface="dark" className={styles.logo} priority /></span>
+            <span className={styles.logoFrame} aria-label="نماء"><BrandLogo surface="light" className={`${styles.logo} ${styles.logoLight}`} priority /><BrandLogo surface="dark" className={`${styles.logo} ${styles.logoDark}`} priority /></span>
             <span className={styles.brandText}><strong>نماء</strong><span>مستقبل مالي أكثر وعيًا</span></span>
           </div>
 
