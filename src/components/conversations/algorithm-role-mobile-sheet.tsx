@@ -22,7 +22,7 @@ export function AlgorithmRoleMobileSheet({role,onClose}:{role:AlgorithmRoleRef;o
       <div className={styles.algorithmRoleContent}>
         <section className={styles.algorithmRoleHero}>
           <div><span>{role.referenceCode}</span><strong>{role.name}</strong><small>{kindLabel[role.kind]} · يتبع إلى {role.reportsTo}</small></div>
-          <LucideIcon name={role.kind==='advisor'?'sparkles':'briefcaseBusiness'} size={24}/>
+          <LucideIcon name={role.kind==='advisor'?'sparkles':'circleUserRound'} size={24}/>
         </section>
         <section><small>المهمة الأساسية</small><p>{role.mandate}</p></section>
         <details open><summary>ما يُحاسب عليه</summary><ul>{role.accountableFor.map(item=><li key={item}>{item}</li>)}</ul></details>
