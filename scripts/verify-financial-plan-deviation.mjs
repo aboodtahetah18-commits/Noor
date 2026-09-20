@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 const engine=readFileSync('src/lib/allocation/financial-plan-deviation-engine.ts','utf8');
 const route=readFileSync('src/app/api/conversations/[roomKey]/route.ts','utf8');
-for(const token of ['KEEP_PLAN','OPEN_REPLAN','TRANSFER_PROPOSAL','autoPlanChange:false','externalExecution:false']){
+for(const token of ['KEEP_PLAN','OPEN_REPLAN','TRANSFER_PROPOSAL','autoPlanChange:false','external_execution:false']){
   if(!engine.includes(token)) throw new Error('DEVIATION-CONTRACT-MISSING '+token);
 }
 if(engine.includes("'liquidity-protection-owner','obligations-owner'")||engine.includes("FLEXIBLE_DONOR_ORDER=['liquidity")){
