@@ -12,10 +12,22 @@ type Account={bank_name:string;account_type:string;short_identifier:string;iban:
 type Obligation={name:string;amount:string;recurrence:string;provider:string;due_day:string;remaining_balance:string;end_date:string;finance_cost:string};
 type Goal={name:string;target_amount:string;target_date:string;priority:string;flexibility:string;allocated_amount:string};
 
+type MobileEditor =
+  | {kind:'dependents';index:number|null;draft:Dependent}
+  | {kind:'accounts';index:number|null;draft:Account}
+  | {kind:'obligations';index:number|null;draft:Obligation}
+  | {kind:'goals';index:number|null;draft:Goal}
+  | null;
+
 const emptyDependent=():Dependent=>({name:'',relationship:'',age:'',monthly_support:'',annual_support:'',special_needs:'',financial_dependency:true});
 const emptyAccount=():Account=>({bank_name:'',account_type:'BANK',short_identifier:'',iban:'',card_last4:'',card_type:'مدى',usage:'',opening_balance:'',included_in_namaa:true});
 const emptyObligation=():Obligation=>({name:'',amount:'',recurrence:'MONTHLY',provider:'',due_day:'',remaining_balance:'',end_date:'',finance_cost:''});
 const emptyGoal=():Goal=>({name:'',target_amount:'',target_date:'',priority:'',flexibility:'',allocated_amount:''});
+
+const hasDependent=(item:Dependent)=>Boolean(item.name.trim()||item.relationship.trim()||item.monthly_support.trim());
+const hasAccount=(item:Account)=>Boolean(item.bank_name.trim()||item.opening_balance.trim()||item.short_identifier.trim()||item.iban.trim()||item.card_last4.trim());
+const hasObligation=(item:Obligation)=>Boolean(item.name.trim()||item.amount.trim()||item.provider.trim());
+const hasGoal=(item:Goal)=>Boolean(item.name.trim()||item.target_amount.trim()||item.allocated_amount.trim());
 
 function numberOrUndefined(value:string){
   if(!value.trim()) return undefined;
@@ -61,6 +73,7 @@ export function GovernorOnboardingIntake({
   });
   const [saving,setSaving]=useState(false);
   const [error,setError]=useState('');
+  const [mobileEditor,setMobileEditor]=useState<MobileEditor>(null);
 
   const expectedNet=useMemo(()=>{
     const base=Number(income.base_salary||0);
@@ -86,6 +99,41 @@ export function GovernorOnboardingIntake({
   function updateGoal(index:number,patch:Partial<Goal>){
     setGoals(current=>current.map((item,i)=>i===index?{...item,...patch}:item));
   }
+
+  function saveMobileEditor(){
+    if(!mobileEditor) return;
+    if(mobileEditor.kind==='dependents'){
+      setDependents(current=>{
+        if(mobileEditor.index!==null) return current.map((item,index)=>index===mobileEditor.index?mobileEditor.draft:item);
+        if(current.length===1&&current[0]&&!hasDependent(current[0])) return [mobileEditor.draft];
+        return [...current,mobileEditor.draft];
+      });
+    }else if(mobileEditor.kind==='accounts'){
+      setAccounts(current=>{
+        if(mobileEditor.index!==null) return current.map((item,index)=>index===mobileEditor.index?mobileEditor.draft:item);
+        if(current.length===1&&current[0]&&!hasAccount(current[0])) return [mobileEditor.draft];
+        return [...current,mobileEditor.draft];
+      });
+    }else if(mobileEditor.kind==='obligations'){
+      setObligations(current=>{
+        if(mobileEditor.index!==null) return current.map((item,index)=>index===mobileEditor.index?mobileEditor.draft:item);
+        if(current.length===1&&current[0]&&!hasObligation(current[0])) return [mobileEditor.draft];
+        return [...current,mobileEditor.draft];
+      });
+    }else{
+      setGoals(current=>{
+        if(mobileEditor.index!==null) return current.map((item,index)=>index===mobileEditor.index?mobileEditor.draft:item);
+        if(current.length===1&&current[0]&&!hasGoal(current[0])) return [mobileEditor.draft];
+        return [...current,mobileEditor.draft];
+      });
+    }
+    setMobileEditor(null);
+  }
+
+  const dependentRows=dependents.map((item,index)=>({item,index})).filter(({item})=>hasDependent(item));
+  const accountRows=accounts.map((item,index)=>({item,index})).filter(({item})=>hasAccount(item));
+  const obligationRows=obligations.map((item,index)=>({item,index})).filter(({item})=>hasObligation(item));
+  const goalRows=goals.map((item,index)=>({item,index})).filter(({item})=>hasGoal(item));
 
   async function submit(payload:Record<string,unknown>){
     if(saving) return;
@@ -200,7 +248,7 @@ export function GovernorOnboardingIntake({
       <div className={styles.onboardingHeaderActions}><span><LucideIcon name="listChecks" size={16}/>تأسيس</span><button type="button" className={styles.onboardingCloseButton} onClick={onClose} aria-label="إغلاق نافذة البيانات"><LucideIcon name="x" size={20}/></button></div>
     </header>
 
-    {intakeStep==='dependents'&&<div className={styles.intakeCards}>
+    {intakeStep==='dependents'&&<div className={`${styles.intakeCards} ${styles.desktopStructuredIntake}`}>
       {dependents.map((item,index)=><article className={styles.intakeCard} key={index}>
         <div className={styles.intakeCardHeader}><strong>فرد {index+1}</strong>{dependents.length>1&&<button type="button" onClick={()=>setDependents(current=>current.filter((_,i)=>i!==index))} aria-label="حذف الفرد"><LucideIcon name="trash2" size={16}/></button>}</div>
         <div className={styles.intakeGrid}>
@@ -230,7 +278,7 @@ export function GovernorOnboardingIntake({
       {income.actual_net&&Number(income.actual_net)!==expectedNet&&<label className={styles.intakeDifference}><span>سبب الفرق بين المحسوب والفعلي</span><textarea rows={2} value={income.difference_explanation} onChange={e=>setIncome(v=>({...v,difference_explanation:e.target.value}))}/></label>}
     </div>}
 
-    {intakeStep==='accounts'&&<div className={styles.intakeCards}>
+    {intakeStep==='accounts'&&<div className={`${styles.intakeCards} ${styles.desktopStructuredIntake}`}>
       {accounts.map((item,index)=><article className={styles.intakeCard} key={index}>
         <div className={styles.intakeCardHeader}><strong>حساب {index+1}</strong>{accounts.length>1&&<button type="button" onClick={()=>setAccounts(current=>current.filter((_,i)=>i!==index))} aria-label="حذف الحساب"><LucideIcon name="trash2" size={16}/></button>}</div>
         <div className={styles.intakeGrid}>
@@ -248,7 +296,7 @@ export function GovernorOnboardingIntake({
       <button type="button" className={styles.intakeAddButton} onClick={()=>setAccounts(current=>[...current,emptyAccount()])}><LucideIcon name="plus" size={16}/><span>إضافة حساب</span></button>
     </div>}
 
-    {intakeStep==='obligations'&&<div className={styles.intakeCards}>
+    {intakeStep==='obligations'&&<div className={`${styles.intakeCards} ${styles.desktopStructuredIntake}`}>
       {obligations.map((item,index)=><article className={styles.intakeCard} key={index}>
         <div className={styles.intakeCardHeader}><strong>التزام {index+1}</strong>{obligations.length>1&&<button type="button" onClick={()=>setObligations(current=>current.filter((_,i)=>i!==index))} aria-label="حذف الالتزام"><LucideIcon name="trash2" size={16}/></button>}</div>
         <div className={styles.intakeGrid}>
@@ -266,7 +314,7 @@ export function GovernorOnboardingIntake({
       <button type="button" className={styles.intakeNoneButton} onClick={()=>setObligations([])}>لا توجد التزامات مالية قائمة</button>
     </div>}
 
-    {intakeStep==='goals'&&<div className={styles.intakeCards}>
+    {intakeStep==='goals'&&<div className={`${styles.intakeCards} ${styles.desktopStructuredIntake}`}>
       {goals.map((item,index)=><article className={styles.intakeCard} key={index}>
         <div className={styles.intakeCardHeader}><strong>هدف {index+1}</strong>{goals.length>1&&<button type="button" onClick={()=>setGoals(current=>current.filter((_,i)=>i!==index))} aria-label="حذف الهدف"><LucideIcon name="trash2" size={16}/></button>}</div>
         <div className={styles.intakeGrid}>
@@ -282,9 +330,94 @@ export function GovernorOnboardingIntake({
       <button type="button" className={styles.intakeNoneButton} onClick={()=>setGoals([])}>لا توجد أهداف أريد تسجيلها الآن</button>
     </div>}
 
+    {intakeStep==='dependents'&&<div className={styles.mobileStructuredIntake}>
+      <div className={styles.mobileIntakePrompt}><strong>هل لديك أشخاص تعولهم أو تصرف عليهم ماليًا؟</strong><small>أضف كل شخص كسجل مستقل، ثم أرسل المجموعة كاملة للمحافظ.</small></div>
+      {dependentRows.length?<div className={styles.mobileIntakeTable} role="table" aria-label="الأفراد المحفوظون">{dependentRows.map(({item,index},rowIndex)=><div className={styles.mobileIntakeRow} role="row" key={index}>
+        <div role="cell"><strong>{item.name||`فرد ${rowIndex+1}`}</strong><small>{item.relationship||'علاقة غير محددة'} · {item.monthly_support||'0'} ر.س شهريًا</small></div>
+        <div className={styles.mobileIntakeRowActions}><button type="button" onClick={()=>setMobileEditor({kind:'dependents',index,draft:{...item}})} aria-label="تعديل الفرد"><LucideIcon name="pencil" size={16}/></button><button type="button" onClick={()=>setDependents(current=>current.filter((_,i)=>i!==index))} aria-label="حذف الفرد"><LucideIcon name="trash2" size={16}/></button></div>
+      </div>)}</div>:<p className={styles.mobileIntakeEmpty}>لم تضف أي فرد بعد.</p>}
+      <div className={styles.mobileIntakeFooter}><button type="button" className={styles.intakeAddButton} onClick={()=>setMobileEditor({kind:'dependents',index:null,draft:emptyDependent()})}><LucideIcon name="plus" size={16}/><span>إضافة فرد</span></button><button type="button" className={styles.intakeNoneButton} onClick={()=>setDependents([])}>لا يوجد أشخاص أعولهم ماليًا</button></div>
+    </div>}
+
+    {intakeStep==='accounts'&&<div className={styles.mobileStructuredIntake}>
+      <div className={styles.mobileIntakePrompt}><strong>الحسابات المالية</strong><small>كل حساب يظهر كسجل مضغوط ويمكن تعديله أو حذفه قبل الإرسال.</small></div>
+      {accountRows.length?<div className={styles.mobileIntakeTable} role="table" aria-label="الحسابات المحفوظة">{accountRows.map(({item,index},rowIndex)=><div className={styles.mobileIntakeRow} role="row" key={index}>
+        <div role="cell"><strong>{item.short_identifier||item.bank_name||`حساب ${rowIndex+1}`}</strong><small>{item.bank_name||'جهة غير محددة'} · {item.opening_balance||'0'} ر.س</small></div>
+        <div className={styles.mobileIntakeRowActions}><button type="button" onClick={()=>setMobileEditor({kind:'accounts',index,draft:{...item}})} aria-label="تعديل الحساب"><LucideIcon name="pencil" size={16}/></button><button type="button" onClick={()=>setAccounts(current=>current.filter((_,i)=>i!==index))} aria-label="حذف الحساب"><LucideIcon name="trash2" size={16}/></button></div>
+      </div>)}</div>:<p className={styles.mobileIntakeEmpty}>لم تضف أي حساب بعد.</p>}
+      <div className={styles.mobileIntakeFooter}><button type="button" className={styles.intakeAddButton} onClick={()=>setMobileEditor({kind:'accounts',index:null,draft:emptyAccount()})}><LucideIcon name="plus" size={16}/><span>إضافة حساب</span></button></div>
+    </div>}
+
+    {intakeStep==='obligations'&&<div className={styles.mobileStructuredIntake}>
+      <div className={styles.mobileIntakePrompt}><strong>الالتزامات القائمة</strong><small>أضف كل التزام في نافذة مستقلة ثم راجع القائمة قبل الإرسال.</small></div>
+      {obligationRows.length?<div className={styles.mobileIntakeTable} role="table" aria-label="الالتزامات المحفوظة">{obligationRows.map(({item,index},rowIndex)=><div className={styles.mobileIntakeRow} role="row" key={index}>
+        <div role="cell"><strong>{item.name||`التزام ${rowIndex+1}`}</strong><small>{item.amount||'0'} ر.س · {item.recurrence}</small></div>
+        <div className={styles.mobileIntakeRowActions}><button type="button" onClick={()=>setMobileEditor({kind:'obligations',index,draft:{...item}})} aria-label="تعديل الالتزام"><LucideIcon name="pencil" size={16}/></button><button type="button" onClick={()=>setObligations(current=>current.filter((_,i)=>i!==index))} aria-label="حذف الالتزام"><LucideIcon name="trash2" size={16}/></button></div>
+      </div>)}</div>:<p className={styles.mobileIntakeEmpty}>لم تضف أي التزام بعد.</p>}
+      <div className={styles.mobileIntakeFooter}><button type="button" className={styles.intakeAddButton} onClick={()=>setMobileEditor({kind:'obligations',index:null,draft:emptyObligation()})}><LucideIcon name="plus" size={16}/><span>إضافة التزام</span></button><button type="button" className={styles.intakeNoneButton} onClick={()=>setObligations([])}>لا توجد التزامات مالية قائمة</button></div>
+    </div>}
+
+    {intakeStep==='goals'&&<div className={styles.mobileStructuredIntake}>
+      <div className={styles.mobileIntakePrompt}><strong>الأهداف المالية</strong><small>أضف كل هدف كسجل مستقل ثم أرسلها كمجموعة واحدة.</small></div>
+      {goalRows.length?<div className={styles.mobileIntakeTable} role="table" aria-label="الأهداف المحفوظة">{goalRows.map(({item,index},rowIndex)=><div className={styles.mobileIntakeRow} role="row" key={index}>
+        <div role="cell"><strong>{item.name||`هدف ${rowIndex+1}`}</strong><small>{item.target_amount||'0'} ر.س {item.target_date?`· ${item.target_date}`:''}</small></div>
+        <div className={styles.mobileIntakeRowActions}><button type="button" onClick={()=>setMobileEditor({kind:'goals',index,draft:{...item}})} aria-label="تعديل الهدف"><LucideIcon name="pencil" size={16}/></button><button type="button" onClick={()=>setGoals(current=>current.filter((_,i)=>i!==index))} aria-label="حذف الهدف"><LucideIcon name="trash2" size={16}/></button></div>
+      </div>)}</div>:<p className={styles.mobileIntakeEmpty}>لم تضف أي هدف بعد.</p>}
+      <div className={styles.mobileIntakeFooter}><button type="button" className={styles.intakeAddButton} onClick={()=>setMobileEditor({kind:'goals',index:null,draft:emptyGoal()})}><LucideIcon name="plus" size={16}/><span>إضافة هدف</span></button><button type="button" className={styles.intakeNoneButton} onClick={()=>setGoals([])}>لا توجد أهداف أريد تسجيلها الآن</button></div>
+    </div>}
+
+    {mobileEditor&&<div className={styles.mobileRecordEditorOverlay} role="dialog" aria-modal="true" aria-label="تحرير السجل">
+      <button type="button" className={styles.mobileRecordEditorScrim} aria-label="إغلاق محرر السجل" onClick={()=>setMobileEditor(null)}/>
+      <aside className={styles.mobileRecordEditorSheet}>
+        <header className={styles.mobileRecordEditorHeader}><div><strong>{mobileEditor.index===null?'إضافة سجل':'تعديل السجل'}</strong><small>احفظ هذا السجل ثم عد للقائمة.</small></div><button type="button" onClick={()=>setMobileEditor(null)} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button></header>
+        <div className={styles.mobileRecordEditorBody}>
+          {mobileEditor.kind==='dependents'&&<>
+            <label><span>الاسم</span><input value={mobileEditor.draft.name} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,name:e.target.value}})}/></label>
+            <label><span>العلاقة</span><select value={mobileEditor.draft.relationship} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,relationship:e.target.value}})}><option value="">اختر</option><option>زوج/زوجة</option><option>ابن/ابنة</option><option>والد/والدة</option><option>قريب</option><option>غير ذلك</option></select></label>
+            <label><span>العمر إن كان مهمًا للاحتياج</span><input type="number" min="0" value={mobileEditor.draft.age} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,age:e.target.value}})}/></label>
+            <label><span>الدعم الشهري</span><input type="number" min="0" inputMode="decimal" value={mobileEditor.draft.monthly_support} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,monthly_support:e.target.value}})}/></label>
+            <label><span>مصروف سنوي إضافي</span><input type="number" min="0" inputMode="decimal" value={mobileEditor.draft.annual_support} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,annual_support:e.target.value}})}/></label>
+            <label><span>احتياجات خاصة مؤثرة ماليًا إن وجدت</span><input value={mobileEditor.draft.special_needs} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,special_needs:e.target.value}})}/></label>
+            <label className={styles.intakeCheckbox}><input type="checkbox" checked={mobileEditor.draft.financial_dependency} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,financial_dependency:e.target.checked}})}/><span>يعتمد عليّ ماليًا</span></label>
+          </>}
+          {mobileEditor.kind==='accounts'&&<>
+            <label><span>البنك أو الجهة</span><input value={mobileEditor.draft.bank_name} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,bank_name:e.target.value}})}/></label>
+            <label><span>نوع الحساب</span><select value={mobileEditor.draft.account_type} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,account_type:e.target.value}})}><option value="BANK">جاري/بنكي</option><option value="SAVINGS">ادخاري</option><option value="CASH">نقدي</option><option value="INVESTMENT">استثماري</option><option value="OTHER">أخرى</option></select></label>
+            <label><span>معرف مختصر</span><input value={mobileEditor.draft.short_identifier} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,short_identifier:e.target.value}})}/></label>
+            <label><span>الآيبان إن رغبت</span><input value={mobileEditor.draft.iban} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,iban:e.target.value.toUpperCase()}})}/></label>
+            <label><span>آخر 4 أرقام من البطاقة</span><input inputMode="numeric" maxLength={4} value={mobileEditor.draft.card_last4} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,card_last4:e.target.value.replace(/\D/g,'').slice(0,4)}})}/></label>
+            <label><span>نوع البطاقة</span><select value={mobileEditor.draft.card_type} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,card_type:e.target.value}})}><option>مدى</option><option>فيزا</option><option>ماستركارد</option><option>أخرى</option></select></label>
+            <label><span>الاستخدام الحالي</span><input value={mobileEditor.draft.usage} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,usage:e.target.value}})}/></label>
+            <label><span>الرصيد الافتتاحي</span><input type="number" min="0" inputMode="decimal" value={mobileEditor.draft.opening_balance} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,opening_balance:e.target.value}})}/></label>
+            <label className={styles.intakeCheckbox}><input type="checkbox" checked={mobileEditor.draft.included_in_namaa} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,included_in_namaa:e.target.checked}})}/><span>إدخاله ضمن نماء</span></label>
+          </>}
+          {mobileEditor.kind==='obligations'&&<>
+            <label><span>اسم الالتزام</span><input value={mobileEditor.draft.name} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,name:e.target.value}})}/></label>
+            <label><span>المبلغ</span><input type="number" min="0" inputMode="decimal" value={mobileEditor.draft.amount} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,amount:e.target.value}})}/></label>
+            <label><span>التكرار</span><select value={mobileEditor.draft.recurrence} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,recurrence:e.target.value}})}><option value="MONTHLY">شهري</option><option value="WEEKLY">أسبوعي</option><option value="YEARLY">سنوي</option><option value="ONE_TIME">مرة واحدة</option><option value="OTHER">آخر</option></select></label>
+            <label><span>الجهة</span><input value={mobileEditor.draft.provider} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,provider:e.target.value}})}/></label>
+            <label><span>يوم الاستحقاق إن وجد</span><input type="number" min="1" max="31" value={mobileEditor.draft.due_day} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,due_day:e.target.value}})}/></label>
+            <label><span>الرصيد المتبقي إن توفر</span><input type="number" min="0" inputMode="decimal" value={mobileEditor.draft.remaining_balance} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,remaining_balance:e.target.value}})}/></label>
+            <label><span>تاريخ الانتهاء إن وجد</span><input type="date" value={mobileEditor.draft.end_date} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,end_date:e.target.value}})}/></label>
+            <label><span>تكلفة التمويل/الرسوم إن عُرفت</span><input type="number" min="0" inputMode="decimal" value={mobileEditor.draft.finance_cost} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,finance_cost:e.target.value}})}/></label>
+          </>}
+          {mobileEditor.kind==='goals'&&<>
+            <label><span>اسم الهدف</span><input value={mobileEditor.draft.name} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,name:e.target.value}})}/></label>
+            <label><span>المبلغ المستهدف</span><input type="number" min="0" inputMode="decimal" value={mobileEditor.draft.target_amount} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,target_amount:e.target.value}})}/></label>
+            <label><span>الموعد المتوقع</span><input type="date" value={mobileEditor.draft.target_date} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,target_date:e.target.value}})}/></label>
+            <label><span>الأولوية</span><input value={mobileEditor.draft.priority} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,priority:e.target.value}})}/></label>
+            <label><span>مرونة الموعد</span><input value={mobileEditor.draft.flexibility} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,flexibility:e.target.value}})}/></label>
+            <label><span>مبلغ مخصص حاليًا</span><input type="number" min="0" inputMode="decimal" value={mobileEditor.draft.allocated_amount} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,allocated_amount:e.target.value}})}/></label>
+          </>}
+        </div>
+        <footer className={styles.mobileRecordEditorActions}><button type="button" onClick={()=>setMobileEditor(null)}>إلغاء</button><button type="button" onClick={saveMobileEditor}>حفظ السجل</button></footer>
+      </aside>
+    </div>}
+
     {error&&<div className={styles.intakeError} role="alert">{error}</div>}
     <div className={styles.intakeActions}>
       <small>لن ينشئ هذا المكوّن أي تحويل أو سداد أو استثمار. لا ترسل رقم البطاقة كاملًا أو رمز الأمان أو الرقم السري أو رمز التحقق؛ يكفي آخر 4 أرقام فقط.</small>
+      <button type="button" className={styles.mobileQuestionByQuestionButton} onClick={onClose}><LucideIcon name="messageSquareText" size={16}/><span>المتابعة سؤالًا بسؤال في الدردشة</span></button>
       <button type="button" className={styles.primaryActionButton} onClick={submitCurrent} disabled={saving}>
         <LucideIcon name="circleCheck" size={20}/>
         <span>{saving?'جارٍ الحفظ…':'تأكيد المجموعة والمتابعة'}</span>
