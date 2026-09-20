@@ -297,7 +297,7 @@ export function GovernorOnboardingIntake({
         {INTAKE_STAGES.map((stage,index)=><li key={stage.key} className={index<currentStageIndex?styles.onboardingStageDone:index===currentStageIndex?styles.onboardingStageCurrent:styles.onboardingStageUpcoming}>
           <span className={styles.onboardingStageNumber}>{index+1}</span>
           <div><strong>{stage.title}</strong><small>{stage.question}</small></div>
-          {index<currentStageIndex&&<LucideIcon name="circleCheck" size={18}/>}
+          {index<currentStageIndex&&<LucideIcon name="circleCheck" size={20}/>}
         </li>)}
       </ol>
     </details>
