@@ -43,9 +43,10 @@ const governedKeys=[
   'namaa-council',
 ];
 for(const key of governedKeys){
-  if(!governedRegistry.includes(`key:'${key}'`)&&!governedRegistry.includes(`key:ECONOMIC_ADVISOR.key`)){
-    throw new Error('GOVERNED-ALGORITHM-ROLE-MISSING '+key);
-  }
+  const present=key==='economic-advisor'
+    ? governedRegistry.includes('key:ECONOMIC_ADVISOR.key')
+    : governedRegistry.includes(`key:'${key}'`);
+  if(!present) throw new Error('GOVERNED-ALGORITHM-ROLE-MISSING '+key);
 }
 const bankBindings=[
   ['solvency','liquidity-protection-owner'],
@@ -55,7 +56,8 @@ const bankBindings=[
   ['hilal','obligations-owner'],
 ];
 for(const [room,key] of bankBindings){
-  if(!governedRegistry.includes(`homeRoom:'${room}'`)||!conversations.includes(`key: '${key}'`)){
+  const registryPattern=new RegExp(`key:'${key}'.{0,120}homeRoom:'${room}'|homeRoom:'${room}'.{0,120}key:'${key}'`,'s');
+  if(!registryPattern.test(governedRegistry)||!conversations.includes(`key: '${key}'`)){
     throw new Error('RESPONSIBILITY-BANK-BINDING-MISSING '+room+' '+key);
   }
 }
