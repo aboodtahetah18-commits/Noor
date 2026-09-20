@@ -5006,3 +5006,13 @@
     overflow:auto
   }
 }
+
+@media(max-width:767px){
+  .composer textarea:not(:focus){
+    white-space:nowrap;
+    overflow:hidden
+  }
+  .composer textarea:focus{
+    white-space:pre-wrap
+  }
+}
