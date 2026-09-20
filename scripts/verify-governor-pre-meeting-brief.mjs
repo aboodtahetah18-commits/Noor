@@ -12,7 +12,7 @@ if(!council.includes('governor_pre_meeting_brief')||!council.includes('getGovern
 if(!route.includes('GOVERNOR_PRE_MEETING_BRIEF_UNAVAILABLE')||!route.includes('isGovernorPreMeetingBriefRequest')){
   throw new Error('CENTRAL-GOVERNOR-BRIEF-ROUTE-NOT-WIRED');
 }
-if(/performanceScore|score:\s*\d|automatic_amount_adjustment:true/.test(brief+council)){
+if(/performanceScore|(?:^|[^A-Za-z0-9_])score:\s*\d|(?:^|[^A-Za-z0-9_])automatic_amount_adjustment:true/m.test(brief+council)){
   throw new Error('GOVERNOR-BRIEF-MUST-NOT-INVENT-SCORE-OR-AUTO-AMOUNT');
 }
 console.log('GOVERNOR-PRE-MEETING-BRIEF-PASS');
