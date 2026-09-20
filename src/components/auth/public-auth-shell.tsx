@@ -10,7 +10,7 @@ export function PublicAuthShell({ title, kicker, children }: { title: string; ki
       <section className={styles.shell} aria-label={title}>
         <aside className={styles.visual} aria-label="هوية نماء">
           <div className={styles.brand}>
-            <span className={styles.logoFrame}><BrandLogo surface="dark" className={styles.logo} priority /></span>
+            <span className={styles.logoFrame}><BrandLogo surface="auto" className={styles.logo} priority /></span>
             <span className={styles.brandText}><strong>نماء</strong><span>مستقبل مالي أكثر وعيًا</span></span>
           </div>
           <div className={styles.visualCopy}>
@@ -22,7 +22,7 @@ export function PublicAuthShell({ title, kicker, children }: { title: string; ki
 
         <div className={styles.mobileHero} aria-label="هوية نماء">
           <div className={styles.mobileHeroTop}>
-            <BrandLogo surface="dark" className={styles.mobileHeroLogo} priority />
+            <BrandLogo surface="auto" className={styles.mobileHeroLogo} priority />
             <div className={styles.mobileHeroTheme}><ThemeToggle /></div>
           </div>
           <span className={styles.mobileBadge}>ابدأ بوعي مالي</span>
