@@ -31,7 +31,7 @@ type ChatFontSize='small'|'medium'|'large';
 type OversightActionFeedback={command:string;status:'idle'|'pending'|'success'|'error';message:string|null};
 type OversightPendingConfirmation={command:string;title:string;message:string;confirmLabel:string}|null;
 const CHAT_FONT_STORAGE_KEY='namaa-chat-font-size';
-const STRUCTURED_INTAKE_STEPS=new Set(['marital_status','dependents','home_city','housing','employment','work_city','commute','income','accounts','obligations','goals','statements','review']);
+const STRUCTURED_INTAKE_STEPS=new Set(['dependents','accounts','obligations','goals']);
 
 type Room = { id:RoomKey; title:string; subtitle:string; lead:string; specialists:string; avatar:string; bankLogo:string };
 const rooms: [Room, ...Room[]] = [
