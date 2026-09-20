@@ -2640,8 +2640,7 @@
     --namaa-agent-message:var(--ux-card-bg);
     --namaa-user-message:var(--ux-section-soft-teal)
   }
-  :global(html[data-theme="dark"]) .chatPane,
-  :global(html[data-theme="dark"]) .messages{
+  :global(html[data-theme="dark"]) .chatPane{
     background:var(--ux-page-bg)
   }
   :global(html[data-theme="dark"]) .chatHeader,
