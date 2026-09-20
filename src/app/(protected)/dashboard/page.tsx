@@ -1,11 +1,9 @@
 import type { CSSProperties } from 'react';
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
 import { requireAuthenticatedUser } from '@/auth/require-authenticated-user';
 import { getDashboardSummary } from '@/features/dashboard/queries/get-dashboard-summary';
 import { formatSar } from '@/lib/format-money';
 import { viewRecommendationAction } from '@/app/(protected)/advisor/actions';
-import { getOnboardingStatus } from '@/features/onboarding/queries/get-onboarding-status';
 import { getDailyCommandCenter } from '@/features/dashboard/queries/get-daily-command-center';
 import { CYCLE_STATUS_LABELS, OBLIGATION_STATUS_LABELS, financialStatusLabel } from '@/lib/financial-status-labels';
 import { BankMessageDialogTrigger } from '@/components/bank-message-dialog';
@@ -25,8 +23,6 @@ function StatusDot({ tone = 'neutral' }: { tone?: 'good' | 'warn' | 'danger' | '
 
 export default async function DashboardPage() {
   const user = await requireAuthenticatedUser();
-  const onboarding = await getOnboardingStatus(user.id);
-  if (!onboarding.completed) redirect('/onboarding');
   const dashboard = await getDashboardSummary(user.id);
 
   if (!dashboard) {
