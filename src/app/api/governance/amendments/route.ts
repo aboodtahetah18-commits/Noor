@@ -1,0 +1,80 @@
+export const runtime='nodejs';
+export const dynamic='force-dynamic';
+
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
+import { getAuthenticatedUser } from '@/auth/require-authenticated-user';
+import { assertTrustedMutationOrigin } from '@/security/request-origin';
+import { enforceRateLimit } from '@/security/rate-limit';
+import {
+  addGovernanceAmendmentDiscussion,
+  advanceGovernanceAmendment,
+  createGovernanceAmendmentRequest,
+  listGovernanceAmendments,
+} from '@/lib/governance/governance-amendments';
+
+const createSchema=z.object({
+  operation:z.literal('CREATE'),
+  documentRef:z.string().trim().min(3).max(120),
+  documentTitle:z.string().trim().min(3).max(300),
+  roomKey:z.string().trim().min(2).max(40),
+  clauseRef:z.string().trim().max(120).optional().nullable(),
+  currentRule:z.string().trim().max(4000).optional().nullable(),
+  proposedRule:z.string().trim().min(3).max(4000),
+  rationale:z.string().trim().min(3).max(4000),
+  priority:z.enum(['NORMAL','NEXT_MEETING','URGENT']),
+});
+const discussSchema=z.object({
+  operation:z.literal('DISCUSS'),
+  requestId:z.string().trim().min(3).max(120),
+  actor:z.enum(['GOVERNOR','SECRETARY','COUNCIL']),
+  note:z.string().trim().min(2).max(4000),
+});
+const advanceSchema=z.object({
+  operation:z.literal('ADVANCE'),
+  requestId:z.string().trim().min(3).max(120),
+  action:z.enum(['GOVERNOR_ACCEPT','GOVERNOR_REJECT','SECRETARY_ACCEPT','COUNCIL_APPROVE','COUNCIL_REJECT','MARK_EFFECTIVE']),
+  note:z.string().trim().max(4000).optional().nullable(),
+  decisionId:z.string().trim().max(160).optional().nullable(),
+  effectiveAt:z.string().trim().max(40).optional().nullable(),
+  nextVersion:z.string().trim().max(80).optional().nullable(),
+});
+const bodySchema=z.discriminatedUnion('operation',[createSchema,discussSchema,advanceSchema]);
+const headers={'Cache-Control':'no-store'};
+
+export async function GET(){
+  const user=await getAuthenticatedUser();
+  if(!user)return NextResponse.json({ok:false,error:'UNAUTHORIZED'},{status:401,headers});
+  try{
+    return NextResponse.json({ok:true,amendments:await listGovernanceAmendments(user.id)},{headers});
+  }catch(error){
+    console.error('[governance-amendments-get]',{name:error instanceof Error?error.name:'UnknownError'});
+    return NextResponse.json({ok:false,error:'GOVERNANCE_AMENDMENTS_UNAVAILABLE'},{status:503,headers});
+  }
+}
+
+export async function POST(request:Request){
+  const user=await getAuthenticatedUser();
+  if(!user)return NextResponse.json({ok:false,error:'UNAUTHORIZED'},{status:401,headers});
+  try{
+    await assertTrustedMutationOrigin();
+    enforceRateLimit(`governance-amendments:${user.id}`);
+    const parsed=bodySchema.safeParse(await request.json().catch(()=>null));
+    if(!parsed.success)return NextResponse.json({ok:false,error:'INVALID_REQUEST'},{status:422,headers});
+    const body=parsed.data;
+    const result=body.operation==='CREATE'
+      ?await createGovernanceAmendmentRequest({userId:user.id,...body})
+      :body.operation==='DISCUSS'
+        ?await addGovernanceAmendmentDiscussion({userId:user.id,requestId:body.requestId,note:body.note,actor:body.actor})
+        :await advanceGovernanceAmendment({
+          userId:user.id,requestId:body.requestId,action:body.action,note:body.note,
+          decisionId:body.decisionId,effectiveAt:body.effectiveAt,nextVersion:body.nextVersion,
+        });
+    return NextResponse.json({ok:true,...result},{status:body.operation==='CREATE'?201:200,headers});
+  }catch(error){
+    const code=error instanceof Error?error.message:'GOVERNANCE_AMENDMENT_FAILED';
+    const status=code==='GOVERNANCE_AMENDMENT_NOT_FOUND'?404:code==='GOVERNANCE_EFFECTIVE_DATE_AND_VERSION_REQUIRED'?422:500;
+    console.error('[governance-amendments-post]',{name:error instanceof Error?error.name:'UnknownError',code});
+    return NextResponse.json({ok:false,error:code},{status,headers});
+  }
+}
