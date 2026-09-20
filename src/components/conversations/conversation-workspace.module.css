@@ -2403,7 +2403,11 @@
   }
   .chatHeader{
     height:58px;
+    min-height:58px;
     padding:var(--ux-space-0) var(--ux-space-3);
+    position:relative;
+    top:var(--ux-space-0);
+    z-index:6;
     background:var(--namaa-card);
     border-bottom:1px solid var(--namaa-border)
   }
@@ -2537,20 +2541,11 @@
   color:var(--ux-text-primary)
   }
   .chatIdentity .personaAvatar{
-    width:48px;
-  height:48px;
-  flex-basis:48px
+    width:40px;
+  height:40px;
+  flex-basis:40px
   }
-  .chatHeader{
-    height:auto;
-  padding:var(--ux-space-1) var(--ux-space-3);
-  position:relative;
-  top:var(--ux-space-0);
-  z-index:6;
-  min-height:64px;
-  background:var(--namaa-card);
-  border-bottom:1px solid var(--namaa-border)
-  }
+
   .messageIdentity .personaAvatar{
     width:32px;
   height:32px;
