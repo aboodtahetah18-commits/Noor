@@ -27,7 +27,6 @@ assert(authShell.includes('styles.mobileHeroLogoLight')&&authShell.includes('sty
 assert((authCss.match(/@media\(max-width:1023px\)\{/g)||[]).length===1,'Mobile auth must use exactly one unified max-width:1023px responsive source.');
 assert(!authCss.includes('@media(max-width:767px){'),'Legacy max-width:767px auth source must remain removed.');
 assert(!authCss.includes('@media(min-width:768px) and (max-width:1023px){'),'Legacy 768-1023px auth source must remain removed.');
-assert(authCss.includes('.page,\n  :global(html[data-theme="dark"]) .shell')===false,'Dark auth selectors must stay explicit and readable.');
 assert(authCss.includes(':global(html[data-theme="dark"]) .page,\n  :global(html[data-theme="dark"]) .shell,\n  :global(html[data-theme="dark"]) .mobileHero,\n  :global(html[data-theme="dark"]) .panel{\n    background:var(--ux-page-bg);'),'Dark mobile auth must use one coordinated page-wide dark surface.');
 assert(authCss.includes('.mobileHeroLogoDark{display:none}')&&authCss.includes(':global(html[data-theme="dark"]) .mobileHeroLogoLight{display:none}')&&authCss.includes(':global(html[data-theme="dark"]) .mobileHeroLogoDark{display:block}'),'Public auth mobile logo must switch by CSS theme state.');
 assert(authCss.includes('.mobileHero::before,\n  .mobileHero::after{')&&authCss.includes('border-radius:100% 0 100% 0')&&authCss.includes('border-radius:0 100% 0 100%'),'Mobile auth hero must retain the two-leaf identity composition.');
