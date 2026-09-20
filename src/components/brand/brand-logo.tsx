@@ -23,9 +23,9 @@ function subscribe(callback: () => void) {
 
 function serverSnapshot(): 'light' | 'dark' { return 'light'; }
 function clientSnapshot(): 'light' | 'dark' {
-  return window.localStorage.getItem(THEME_KEY) === 'dark' || window.localStorage.getItem('mustaqbali-theme') === 'dark'
-    ? 'dark'
-    : 'light';
+  const current=window.localStorage.getItem('mustaqbali-theme');
+  if(current==='light'||current==='dark') return current;
+  return window.localStorage.getItem(THEME_KEY)==='dark'?'dark':'light';
 }
 
 export function BrandLogo({
