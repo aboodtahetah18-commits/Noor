@@ -31,7 +31,9 @@ if(!css.includes('.brandWatermarkSecondary') || !css.includes('.brandWatermarkTe
 if(/\.agentMessage\{[^}]*!important|\.userMessage\{[^}]*!important/s.test(css)) fail('message alignment must not depend on !important');
 if(!css.includes('.message{\n  flex:0 0 auto;')) fail('chat messages must never shrink and clip their content');
 if(!css.includes('touch-action:pan-y')) fail('mobile messages must preserve vertical touch scrolling');
-if(!css.includes('box-sizing:border-box;\n    min-height:40px;\n    max-height:112px;\n    height:40px')) fail('empty mobile composer must stay compact at 40px');
+if(!css.includes('box-sizing:border-box;\n    min-height:40px;\n    max-height:40dvh;\n    height:40px')) fail('empty mobile composer must stay compact at 40px and expand within a mobile viewport cap');
+if(!workspace.includes("e.currentTarget.style.height='auto'")||!workspace.includes('e.currentTarget.scrollHeight')) fail('mobile composer must grow from one line with typed content');
+if(!css.includes(':global(html[data-theme="dark"]) .page{')||!css.includes('--namaa-chat-canvas:var(--ux-page-bg)')||!css.includes(':global(html[data-theme="dark"]) .agentMessage{')||!css.includes(':global(html[data-theme="dark"]) .composer textarea{')) fail('mobile dark chat surfaces must use governed dark semantic tokens');
 if(!workspace.includes('messagesScrollRef')||!workspace.includes('container.scrollTop=container.scrollHeight')) fail('chat must scroll its own message pane to the latest reply');
 if(!workspace.includes("onBlur={e=>{if(!draft.trim())e.currentTarget.style.height='40px'}}")) fail('empty composer must collapse after focus leaves');
 if(!css.includes('.agentMessage{\n  align-self:flex-end') || !css.includes('margin-left:auto;\n  margin-right:var(--ux-space-0)') || !css.includes('.userMessage{\n  align-self:flex-start') || !css.includes('margin-left:var(--ux-space-0);\n  margin-right:auto')) fail('approved message sides changed: governor must stay right and user must stay left');
