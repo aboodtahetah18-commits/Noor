@@ -35,6 +35,7 @@ export type WeeklyOperationalReport={
   obligationTransitions:number;
   blockedRules:number;
   challenges:string[];
+  nextPriorities:string[];
 };
 
 export type EntityOperationalDashboard={
@@ -101,6 +102,7 @@ async function latestWeeklyReport(userId:string):Promise<WeeklyOperationalReport
       }),
       ...reasonCodes.slice(0,3).map(code=>'سبب نشط: '+code),
     ].slice(0,5),
+    nextPriorities:[],
   };
 }
 
@@ -264,6 +266,11 @@ export async function getEntityOperationalDashboard(userId:string,roomKey:Conver
   const states=[...metrics.map(item=>item.status),...plans.map(item=>item.status)];
   const state:OperationalDashboardStatus=states.includes('ACTION')?'ACTION':states.includes('WATCH')?'WATCH':states.includes('WAITING_DATA')?'WAITING_DATA':'GOOD';
 
+  const weeklyReport=weekly?{
+    ...weekly,
+    nextPriorities:plans.map(plan=>`${plan.ownerName}: ${plan.nextAction} — الأفق: ${plan.horizon}`).slice(0,6),
+  }:null;
+
   return {
     roomKey,
     title:roomKey==='central'?'بنك نماء المركزي':roomKey==='solvency'?'بنك ملاءة':roomKey==='assets'?'بنك الأصول الاستثماري':roomKey==='hilal'?'بنك الهلال':roomKey==='operations'?'مركز العمليات والمطابقة':roomKey==='advisor'?'المستشار الاقتصادي':roomKey==='secretary'?'أمين السر المركزي':'مجلس نماء الأعلى',
@@ -274,7 +281,7 @@ export async function getEntityOperationalDashboard(userId:string,roomKey:Conver
     attention,
     plans,
     roles,
-    weeklyReport:weekly,
+    weeklyReport,
     externalExecution:false,
   };
 }
@@ -309,7 +316,10 @@ export async function publishWeeklyEntityReports(userId:string,periodStart:strin
     const attention=dashboard.attention.length
       ? dashboard.attention.join(' ')
       : 'لا توجد نقطة عاجلة مسجلة ضمن البيانات الحالية.';
-    const body=`التقرير الأسبوعي — ${dashboard.title}: ${dashboard.headline} ${attention} ${planSummary}`.trim();
+    const futureSummary=dashboard.weeklyReport?.nextPriorities.length
+      ? ' الأولويات القادمة: '+dashboard.weeklyReport.nextPriorities.join(' ')
+      : '';
+    const body=`التقرير الأسبوعي — ${dashboard.title}: ${dashboard.headline} ${attention} ${planSummary}${futureSummary}`.trim();
 
     const sender=roomKey==='central'
       ? {key:'central-governor',name:'محافظ بنك نماء المركزي'}
