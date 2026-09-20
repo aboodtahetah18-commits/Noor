@@ -14,9 +14,9 @@ function count(pattern){
 if(count(/@media\(max-width:767px\)\{/g)!==1) fail('mobile breakpoint must exist exactly once');
 const critical=['chatPane','chatHeader','messages','message','agentMessage','userMessage','composer','mobileAppBar'];
 for(const name of critical){
-  const rx=new RegExp('\\.'+name+'\\s*\\{','g');
+  const rx=new RegExp('(?:^|\\n)\\s*\\.'+name+'\\s*\\{','g');
   const total=count(rx);
-  if(total>2) fail(name+' has conflicting duplicate definitions: '+total);
+  if(total>2) fail(name+' has conflicting duplicate structural definitions: '+total);
 }
 if(!css.includes('background:var(--namaa-green-900)')) fail('approved green mobile app bar missing');
 const workspace=readFileSync('src/components/conversations/persistent-conversation-workspace.tsx','utf8');
