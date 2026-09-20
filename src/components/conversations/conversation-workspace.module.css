@@ -285,7 +285,7 @@
   overflow:auto;
   display:flex;
   flex-direction:column;
-  gap:var(--ux-space-3)
+  gap:var(--ux-space-4)
 }
 
 .message{
@@ -326,7 +326,9 @@
   display:flex;
   align-items:center;
   gap:var(--ux-space-2);
-  margin-bottom:var(--ux-space-2)
+  margin-bottom:var(--ux-space-2);
+  padding-bottom:var(--ux-space-1);
+  border-bottom:1px solid var(--namaa-border)
 }
 
 .miniAvatar{
@@ -2202,8 +2204,9 @@
   .groupContinuation{margin-top:calc(var(--ux-space-1) * -1)}
   .conversationTimeDivider{padding:var(--ux-space-0);margin:var(--ux-space-1) var(--ux-space-0)}
   .messageIdentity{
-    margin-bottom:var(--ux-space-1);
-  gap:var(--ux-space-2)
+    margin-bottom:var(--ux-space-2);
+    padding-bottom:var(--ux-space-1);
+    gap:var(--ux-space-2)
   }
   .messageIdentity strong{
     font-size:var(--ux-type-caption-size)
@@ -2373,16 +2376,15 @@
   }
   .messages{
     flex:1 1 auto;
-    padding:var(--ux-space-2) var(--ux-space-2) calc(var(--ux-space-4) + env(safe-area-inset-bottom));
+    padding:var(--ux-space-3) var(--ux-space-2) calc(var(--ux-space-4) + env(safe-area-inset-bottom));
     min-height:0;
     overflow-y:auto;
     overflow-x:hidden;
     overscroll-behavior-y:contain;
     -webkit-overflow-scrolling:touch;
     touch-action:pan-y;
-    gap:var(--ux-space-2);
-    scroll-padding-bottom:calc(72px + env(safe-area-inset-bottom));
-    padding-top:var(--ux-space-2)
+    gap:var(--ux-space-3);
+    scroll-padding-bottom:calc(72px + env(safe-area-inset-bottom))
   }
   .messages>p{
     flex:0 0 auto
@@ -2961,16 +2963,17 @@
 .detailList{display:grid;gap:var(--ux-space-2)}
 .detailList>span,.detailList>button{
   width:100%;
-  min-height:44px;
+  min-height:46px;
   display:grid;
   grid-template-columns:auto minmax(0,1fr) auto;
   align-items:center;
   gap:var(--ux-space-2);
   padding:var(--ux-space-2) var(--ux-space-3);
-  border:1px solid var(--namaa-border);
+  border:1px solid var(--namaa-border-strong);
   border-radius:var(--ux-radius-3);
   background:var(--namaa-card);
   color:var(--ux-text-primary);
+  box-shadow:var(--ux-shadow-xs);
   font:inherit;
   font-size:var(--ux-type-caption-size);
   text-align:right
@@ -3356,7 +3359,9 @@
   justify-content:flex-end;
   gap:var(--ux-space-1);
   margin-top:var(--ux-space-2);
+  padding-top:var(--ux-space-1);
   min-height:18px;
+  border-top:1px solid color-mix(in srgb,var(--namaa-border) 72%,transparent);
   color:var(--ux-text-muted);
   font-size:var(--ux-type-caption-size)
 }
