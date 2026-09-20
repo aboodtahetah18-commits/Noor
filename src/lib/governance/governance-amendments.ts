@@ -113,15 +113,21 @@ export async function advanceGovernanceAmendment(args:{
     return {status:'REJECTED' as const};
   }
   if(args.action==='GOVERNOR_ACCEPT'){
-    await appendEvent({userId:args.userId,roomKey:'secretary',senderKey:'central-secretary',senderName:'أمين السر المركزي',kind:'followup',
-      body:`أحال المحافظ طلب التعديل ${args.requestId} إلى أمين السر بعد قبول المراجعة الأولية. يبدأ الآن تجهيز ملف العرض على مجلس نماء الأعلى.`,
+    await appendEvent({userId:args.userId,roomKey:'central',senderKey:'central-governor',senderName:'محافظ بنك نماء المركزي',kind:'decision',
+      body:`بعد المراجعة الأولية، وافق المحافظ على إحالة طلب التعديل ${args.requestId} إلى أمين السر لاستكمال المسار الحوكمي. ${args.note??''}`.trim(),
       structured:{governance_amendment_event:true,request_id:args.requestId,status:'SECRETARY_INTAKE',event:'GOVERNOR_ACCEPTED',note:args.note??null,at:now,council_required:true,external_execution:false}});
+    await appendEvent({userId:args.userId,roomKey:'secretary',senderKey:'central-secretary',senderName:'أمين السر المركزي',kind:'followup',
+      body:`استلم أمين السر طلب التعديل ${args.requestId} المحال من المحافظ. يبدأ الآن تجهيز ملف العرض على مجلس نماء الأعلى وتحديد توقيت المناقشة وفق الأولوية.`,
+      structured:{governance_amendment_event:true,request_id:args.requestId,status:'SECRETARY_INTAKE',event:'SECRETARY_RECEIVED',note:args.note??null,at:now,council_required:true,external_execution:false}});
     return {status:'SECRETARY_INTAKE' as const};
   }
   if(args.action==='SECRETARY_ACCEPT'){
-    await appendEvent({userId:args.userId,roomKey:'council',senderKey:'council-secretary',senderName:'أمين السر المركزي',kind:'request',
-      body:`أدرج أمين السر طلب التعديل ${args.requestId} على مجلس نماء الأعلى للمناقشة قبل أي اعتماد. ${args.note??''}`.trim(),
+    await appendEvent({userId:args.userId,roomKey:'secretary',senderKey:'central-secretary',senderName:'أمين السر المركزي',kind:'decision',
+      body:`أكمل أمين السر تجهيز طلب التعديل ${args.requestId} وأدرجه على مجلس نماء الأعلى للمناقشة. ${args.note??''}`.trim(),
       structured:{governance_amendment_event:true,request_id:args.requestId,status:'COUNCIL_DISCUSSION',event:'SECRETARY_ACCEPTED',note:args.note??null,at:now,external_execution:false}});
+    await appendEvent({userId:args.userId,roomKey:'council',senderKey:'council-secretary',senderName:'أمين السر المركزي',kind:'request',
+      body:`أُدرج طلب التعديل ${args.requestId} على مجلس نماء الأعلى للمناقشة قبل أي اعتماد. لا يصبح أي تعديل نافذًا من مجرد المناقشة.`,
+      structured:{governance_amendment_event:true,request_id:args.requestId,status:'COUNCIL_DISCUSSION',event:'COUNCIL_AGENDA_CREATED',note:args.note??null,at:now,external_execution:false}});
     return {status:'COUNCIL_DISCUSSION' as const};
   }
   if(args.action==='COUNCIL_REJECT'){
