@@ -2384,7 +2384,7 @@
     -webkit-overflow-scrolling:touch;
     touch-action:pan-y;
     gap:var(--ux-space-3);
-    scroll-padding-bottom:calc(72px + env(safe-area-inset-bottom))
+    scroll-padding-bottom:calc(var(--ux-space-16) + env(safe-area-inset-bottom))
   }
   .messages>p{
     flex:0 0 auto
