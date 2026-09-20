@@ -5067,3 +5067,24 @@
     display:none!important
   }
 }
+
+
+.governedLocalDocument{
+  display:grid;
+  gap:var(--ux-space-2)
+}
+.governedLocalDocument h3{
+  margin:var(--ux-space-3) var(--ux-space-0) var(--ux-space-1);
+  padding-bottom:var(--ux-space-1);
+  border-bottom:1px solid var(--namaa-border);
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-body-size);
+  line-height:1.6
+}
+.governedLocalDocument p{
+  margin:var(--ux-space-0);
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-body-sm-size);
+  line-height:1.85;
+  white-space:pre-wrap
+}
