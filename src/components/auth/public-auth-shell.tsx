@@ -22,7 +22,7 @@ export function PublicAuthShell({ title, kicker, children }: { title: string; ki
 
         <div className={styles.mobileHero} aria-label="هوية نماء">
           <div className={styles.mobileHeroTop}>
-            <BrandLogo surface="auto" className={styles.mobileHeroLogo} priority />
+            <span className={styles.mobileHeroLogoWrap} aria-label="نماء"><BrandLogo surface="light" className={`${styles.mobileHeroLogo} ${styles.mobileHeroLogoLight}`} priority /><BrandLogo surface="dark" className={`${styles.mobileHeroLogo} ${styles.mobileHeroLogoDark}`} priority /></span>
             <div className={styles.mobileHeroTheme}><ThemeToggle /></div>
           </div>
           <span className={styles.mobileBadge}>ابدأ بوعي مالي</span>
