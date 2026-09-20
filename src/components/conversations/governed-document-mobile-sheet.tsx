@@ -91,7 +91,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
           </div>
         </details>
 
-        {!formOpen?<button type="button" className={styles.primaryActionButton} onClick={()=>setFormOpen(true)}><LucideIcon name="pencil" size={18}/><span>طلب تعديل هذا المرجع</span></button>
+        {!formOpen?<button type="button" className={styles.primaryActionButton} onClick={()=>setFormOpen(true)}><LucideIcon name="pencil" size={20}/><span>طلب تعديل هذا المرجع</span></button>
         :<form className={styles.governedAmendmentForm} onSubmit={submit}>
           <strong>طلب تعديل — يبدأ بمراجعة المحافظ</strong>
           <label><span>رقم البند أو المادة</span><input value={clauseRef} onChange={e=>setClauseRef(e.target.value)} placeholder="مثال: المادة 4.2"/></label>
