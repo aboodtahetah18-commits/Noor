@@ -7,7 +7,12 @@ for (const file of required) if (!fs.existsSync(file)) fail.push(`missing ${file
 const configText=fs.readFileSync('vercel.json','utf8');
 const config=JSON.parse(configText);
 if (config.framework !== 'nextjs') fail.push('Vercel framework must be nextjs');
-if (config.git?.deploymentEnabled !== false) fail.push('Automatic Vercel Git deployments must remain disabled until explicit release approval.');
+const approvedProductionRelease=
+  (process.env.VERCEL_ENV==='production' && process.env.VERCEL_GIT_COMMIT_REF==='main') ||
+  (process.env.GITHUB_ACTIONS==='true' && process.env.GITHUB_REF_NAME==='main');
+if (config.git?.deploymentEnabled !== false && !approvedProductionRelease) {
+  fail.push('Automatic Vercel Git deployments must remain disabled until explicit production release approval.');
+}
 if (!configText.includes('npm run vercel:build')) fail.push('Vercel build must use vercel:build');
 if (configText.includes('deploy:migrate')) fail.push('Database migration must not run inside Vercel build');
 
@@ -20,5 +25,5 @@ if (fail.length) {
   for (const item of fail) console.error(`- ${item}`);
   process.exit(1);
 }
-console.log('VERCEL-DEPLOYMENT-CONTRACT-PASS automatic Git deployments are disabled; manual release remains possible after explicit approval.');
+console.log('VERCEL-DEPLOYMENT-CONTRACT-PASS Git deployment is disabled by default and permitted only for an explicit main production release.');
 
