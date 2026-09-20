@@ -298,17 +298,17 @@
 }
 
 .agentMessage{
-  align-self:flex-start;
-  margin-inline-start:var(--ux-space-0);
-  margin-inline-end:auto;
+  align-self:flex-end;
+  margin-left:auto;
+  margin-right:var(--ux-space-0);
   width:min(820px,92%);
   background:var(--namaa-agent-message)
 }
 
 .userMessage{
-  align-self:flex-end;
-  margin-inline-start:auto;
-  margin-inline-end:var(--ux-space-0);
+  align-self:flex-start;
+  margin-left:var(--ux-space-0);
+  margin-right:auto;
   min-width:96px;
   background:var(--namaa-user-message);
   border-color:var(--namaa-green-700)
@@ -2270,7 +2270,7 @@
     border-bottom:1px solid color-mix(in srgb,var(--ux-text-inverse) 24%,transparent);
     position:relative;
     z-index:15;
-    direction:ltr
+    direction:rtl
   }
   .mobileAppBarPrimary,.mobileAppBarActions{
     display:flex;
@@ -2280,11 +2280,13 @@
     z-index:2
   }
   .mobileAppBarPrimary{
-    flex-direction:row-reverse;
+    direction:rtl;
+    flex-direction:row;
     justify-content:flex-start
   }
   .mobileAppBarActions{
-    direction:rtl
+    direction:ltr;
+    justify-content:flex-start
   }
     .mobileTopButton,.mobileUserButton{
     width:40px;
@@ -2389,21 +2391,21 @@
   .agentMessage{
     width:88%;
     max-width:88%;
-    align-self:flex-start;
-    border-end-start-radius:var(--ux-radius-2);
+    align-self:flex-end;
+    border-end-end-radius:var(--ux-radius-2);
     background:color-mix(in srgb,var(--namaa-agent-message) 88%,var(--namaa-surface-warm) 12%);
-    margin-inline-start:var(--ux-space-0);
-    margin-inline-end:auto
+    margin-left:auto;
+    margin-right:var(--ux-space-0)
   }
   .userMessage{
     width:fit-content;
     max-width:78%;
     min-width:0;
     padding:var(--ux-space-2) var(--ux-space-3);
-    align-self:flex-end;
-    border-end-end-radius:var(--ux-radius-2);
-    margin-inline-start:auto;
-    margin-inline-end:var(--ux-space-0);
+    align-self:flex-start;
+    border-end-start-radius:var(--ux-radius-2);
+    margin-left:var(--ux-space-0);
+    margin-right:auto;
     box-sizing:border-box;
     overflow:hidden
   }
