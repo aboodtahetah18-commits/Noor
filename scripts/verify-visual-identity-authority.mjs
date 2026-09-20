@@ -18,7 +18,7 @@ assert(workspace.includes('/brand/ndos/namaa-logo-white-transparent.png'),'Mobil
 assert(!workspace.includes('mobileBrandLockup'),'Do not redraw Namaa with text + symbol composition.');
 assert(!/filter\s*:\s*(?:brightness|invert|hue-rotate|sepia|saturate)/i.test(chatCss),'Brand assets must not be recolored with CSS filters.');
 assert(chatCss.includes('.mobileBrandLogo'),'Governed mobile logo class is missing.');
-assert(chatCss.includes('position:static')&&chatCss.includes('transform:none')&&chatCss.includes('.mobileAppBarPrimary{\n    flex-direction:row-reverse'),'Mobile logo must remain in the approved left-side top app bar position.');
+assert(chatCss.includes('position:static')&&chatCss.includes('transform:none')&&chatCss.includes('.mobileAppBarPrimary{\n    direction:rtl;\n    flex-direction:row')&&chatCss.includes('.mobileAppBarActions{\n    direction:ltr'),'Mobile header must keep menu and logo together on the right, with utility actions on the far left.');
 assert(chatCss.includes('min-width:88px'),'Mobile full logo must never render below 88px.');
 assert(Array.isArray(brandRegistry.assets)||Array.isArray(brandRegistry.approved)||Object.keys(brandRegistry).length>0,'Approved brand registry must remain present.');
 
@@ -45,4 +45,4 @@ if(fail.length){
   for(const item of fail) console.error('- '+item);
   process.exit(1);
 }
-console.log('VISUAL-IDENTITY-AUTHORITY-PASS logo=official placement=centered font=NotoSansArabic colors=tokens-only');
+console.log('VISUAL-IDENTITY-AUTHORITY-PASS logo=official placement=menu-adjacent-right font=NotoSansArabic colors=tokens-only');
