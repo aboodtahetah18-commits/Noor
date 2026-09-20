@@ -23,6 +23,8 @@ const kindLabel:Record<string,string>={record:'سجل',charter:'ميثاق',poli
 
 export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document:GovernedDocumentRef;roomKey:string;onClose:()=>void}){
   const [amendments,setAmendments]=useState<Amendment[]>([]);
+  const [documentContent,setDocumentContent]=useState('');
+  const [documentLoading,setDocumentLoading]=useState(true);
   const [formOpen,setFormOpen]=useState(false);
   const [pending,setPending]=useState(false);
   const [feedback,setFeedback]=useState('');
@@ -39,9 +41,19 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
   }
   useEffect(()=>{
     let cancelled=false;
-    queueMicrotask(()=>{if(!cancelled) void load()});
+    queueMicrotask(async()=>{
+      if(cancelled)return;
+      void load();
+      try{
+        const response=await fetch('/api/governance/documents/'+encodeURIComponent(document.referenceCode),{cache:'no-store'});
+        const data=await response.json().catch(()=>({})) as {document?:{content?:string}};
+        if(!cancelled&&response.ok)setDocumentContent(String(data.document?.content??''));
+      }finally{
+        if(!cancelled)setDocumentLoading(false);
+      }
+    });
     return()=>{cancelled=true};
-  },[]);
+  },[document.referenceCode]);
   const related=useMemo(()=>amendments.filter(item=>item.documentRef===document.referenceCode),[amendments,document.referenceCode]);
 
   async function submit(event:FormEvent){
@@ -73,11 +85,23 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
           <div><p>النوع: <b>{kindLabel[document.kind]??'مرجع حاكم'}</b></p><p>الحالة: <b>نافذ ما لم يوجد قرار تعديل معتمد بتاريخ نفاذ لاحق.</b></p><p>المصدر المعتمد محفوظ داخل نماء، وتبقى النسخة الخارجية للأرشفة فقط.</p></div>
         </details>
 
-        <details className={styles.governedDocumentSection}>
-          <summary><span>الأبواب والبنود</span><LucideIcon name="chevronDown" size={16}/></summary>
-          <div>{document.sections?.length
-            ?document.sections.map((section,index)=><article key={section.ref}><b>الباب {index+1} — {section.title}</b><p>{section.summary}</p></article>)
-            :<p>سيظهر هنا النص الداخلي المرقم عند استيراد بنود هذه الوثيقة إلى سجل نماء المرجعي. لا يتم اختلاق أي بند غير موجود في المرجع الأصلي.</p>}</div>
+        <details className={styles.governedDocumentSection} open>
+          <summary><span>المحتوى الكامل</span><LucideIcon name="chevronDown" size={16}/></summary>
+          <div className={styles.governedLocalDocument}>
+            {documentLoading
+              ?<p>جارٍ تحميل المرجع المعتمد داخل نماء…</p>
+              :documentContent
+                ?documentContent.split(/\n+/).map((line,index)=>{
+                    const text=line.trim();
+                    if(!text)return null;
+                    const cleaned=text.replace(/^#{1,6}\s*/,'').replace(/^\*\*(.+)\*\*$/,'$1');
+                    const heading=/^#{1,6}\s/.test(text)||/^\d+[.)\-]\s/.test(text)||/^الباب\s|^الفصل\s|^المادة\s/.test(cleaned);
+                    return heading
+                      ?<h3 key={index}>{cleaned}</h3>
+                      :<p key={index}>{cleaned}</p>;
+                  })
+                :<p>تعذر تحميل النسخة المحلية الآن. المرجع محفوظ في نماء ويمكن إعادة المحاولة دون الرجوع إلى مصدر خارجي.</p>}
+          </div>
         </details>
 
         <details className={styles.governedDocumentSection} open>
