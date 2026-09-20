@@ -21,8 +21,7 @@ export function GlobalTopBar({profile}:{profile:HeaderProfile}){
   const pathname=usePathname();
   const collapsed=useSyncExternalStore(subscribeSidebar,sidebarSnapshot,sidebarServerSnapshot);
   useEffect(()=>{document.documentElement.dataset.sidebar=collapsed?'collapsed':'expanded';return()=>{delete document.documentElement.dataset.sidebar;};},[collapsed]);
-  if(pathname.startsWith('/onboarding')) return null;
-  const toggleSidebar=()=>{
+    const toggleSidebar=()=>{
     const next=!collapsed;
     window.localStorage.setItem('sidebarState',next?'collapsed':'expanded');
     document.documentElement.dataset.sidebar=next?'collapsed':'expanded';
