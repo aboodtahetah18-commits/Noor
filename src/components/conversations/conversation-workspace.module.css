@@ -5103,7 +5103,7 @@
     max-height:82dvh!important;
     border:1px solid var(--namaa-border)!important;
     border-bottom:0!important;
-    border-radius:var(--ux-radius-4) var(--ux-radius-4) 0 0!important;
+    border-radius:var(--ux-radius-4) var(--ux-radius-4) var(--ux-radius-0) var(--ux-radius-0)!important;
     box-shadow:var(--ux-shadow-lg)!important;
     grid-template-rows:auto minmax(0,1fr) auto!important
   }
