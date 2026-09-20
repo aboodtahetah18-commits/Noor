@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { getRawSql } from '@/infrastructure/db/client';
 import { getDashboardSummary } from '@/features/dashboard/queries/get-dashboard-summary';
 import { getGovernanceOversightDashboard } from '@/lib/governance/governance-oversight-dashboard';
@@ -276,4 +277,67 @@ export async function getEntityOperationalDashboard(userId:string,roomKey:Conver
     weeklyReport:weekly,
     externalExecution:false,
   };
+}
+
+
+export async function publishWeeklyEntityReports(userId:string,periodStart:string){
+  const sql=getRawSql();
+  const roomKeys:ConversationRoomKey[]=['central','operations','solvency','assets','hilal','advisor'];
+  const published:string[]=[];
+
+  for(const roomKey of roomKeys){
+    const threads=await sql`
+      select id from public.conversation_threads
+      where user_id=${userId}::uuid and room_key=${roomKey}
+      limit 1
+    `;
+    const threadId=threads[0]?.id?String(threads[0].id):null;
+    if(!threadId) continue;
+
+    const exists=await sql`
+      select id from public.conversation_messages
+      where user_id=${userId}::uuid
+        and thread_id=${threadId}::uuid
+        and structured_data->>'weekly_entity_report'='true'
+        and structured_data->>'period_start'=${periodStart}
+      limit 1
+    `;
+    if(exists[0]?.id) continue;
+
+    const dashboard=await getEntityOperationalDashboard(userId,roomKey);
+    const planSummary=dashboard.plans.map(plan=>`${plan.ownerName}: ${plan.nextAction}`).join(' ');
+    const attention=dashboard.attention.length
+      ? dashboard.attention.join(' ')
+      : 'لا توجد نقطة عاجلة مسجلة ضمن البيانات الحالية.';
+    const body=`التقرير الأسبوعي — ${dashboard.title}: ${dashboard.headline} ${attention} ${planSummary}`.trim();
+
+    await sql`
+      insert into public.conversation_messages(
+        id,thread_id,user_id,sender_type,sender_key,sender_name,message_kind,body,structured_data
+      ) values(
+        ${randomUUID()},${threadId}::uuid,${userId}::uuid,'agent',
+        ${roomKey==='central'?'central-governor':roomKey==='advisor'?'economic-advisor':roomKey+'-manager'},
+        ${dashboard.title},
+        'followup',
+        ${body},
+        ${JSON.stringify({
+          weekly_entity_report:true,
+          period_start:periodStart,
+          room_key:roomKey,
+          dashboard_state:dashboard.state,
+          headline:dashboard.headline,
+          metrics:dashboard.metrics,
+          attention:dashboard.attention,
+          plans:dashboard.plans,
+          weekly_report:dashboard.weeklyReport,
+          external_execution:false,
+          execution_boundary:'تقرير متابعة وتخطيط فقط؛ لا تحويل ولا سداد ولا استثمار تلقائي',
+        })}::jsonb
+      )
+    `;
+    await sql`update public.conversation_threads set updated_at=now() where id=${threadId}::uuid`;
+    published.push(roomKey);
+  }
+
+  return {published};
 }
