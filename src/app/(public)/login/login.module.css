@@ -191,7 +191,7 @@
     position:relative;
     z-index:3;
     width:calc(100% - 150px);
-    margin-top:92px;
+    margin-top:calc(var(--ux-size-12) + var(--ux-size-10));
     margin-inline-start:auto;
     color:var(--ux-text-primary);
     text-align:right
