@@ -3321,7 +3321,7 @@
   top:45px;
   z-index:2;
   display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
+  grid-template-columns:repeat(4,minmax(0,1fr));
   gap:var(--ux-space-1);
   padding:var(--ux-space-1);
   border:1px solid var(--namaa-border-strong);
@@ -4344,4 +4344,114 @@
   background:var(--namaa-surface-warm);
   color:var(--ux-text-secondary);
   font-size:var(--ux-type-caption-size)
+}
+
+
+.algorithmRoleSheet{
+  width:100%;
+  max-height:100dvh;
+  overflow:auto
+}
+.algorithmRoleContent{
+  display:grid;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-3)
+}
+.algorithmRoleHero{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border-strong);
+  border-radius:var(--ux-radius-4);
+  background:var(--namaa-surface-warm)
+}
+.algorithmRoleHero>div{
+  min-width:0;
+  display:grid;
+  gap:var(--ux-space-1)
+}
+.algorithmRoleHero span{
+  width:fit-content;
+  padding:var(--ux-space-1) var(--ux-space-2);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-full);
+  background:var(--namaa-card);
+  color:var(--namaa-green-900);
+  font-size:var(--ux-type-caption-size);
+  font-weight:900
+}
+.algorithmRoleHero strong{
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-section-title-size);
+  line-height:1.45;
+  overflow-wrap:anywhere
+}
+.algorithmRoleHero small{
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  line-height:1.6
+}
+.algorithmRoleHero>svg{
+  flex:0 0 auto;
+  color:var(--namaa-green-900)
+}
+.algorithmRoleContent>section,
+.algorithmRoleContent>details{
+  display:grid;
+  gap:var(--ux-space-2);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-card)
+}
+.algorithmRoleContent>section>small{
+  color:var(--namaa-green-900);
+  font-size:var(--ux-type-caption-size);
+  font-weight:900
+}
+.algorithmRoleContent>section>p{
+  margin:var(--ux-space-0);
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-body-sm-size);
+  line-height:1.7
+}
+.algorithmRoleContent details>summary{
+  cursor:pointer;
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-body-sm-size);
+  font-weight:900
+}
+.algorithmRoleContent ul{
+  margin:var(--ux-space-1) var(--ux-space-0) var(--ux-space-0);
+  padding-inline-start:var(--ux-space-5);
+  display:grid;
+  gap:var(--ux-space-2)
+}
+.algorithmRoleContent li{
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  line-height:1.7
+}
+.algorithmRoleRefs{
+  display:flex;
+  flex-wrap:wrap;
+  gap:var(--ux-space-1)
+}
+.algorithmRoleRefs span{
+  padding:var(--ux-space-1) var(--ux-space-2);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-full);
+  background:var(--namaa-surface-warm);
+  color:var(--namaa-green-900);
+  font-size:var(--ux-type-caption-size);
+  font-weight:800
+}
+.detailList>button>span>small{
+  display:block;
+  margin-top:calc(var(--ux-space-1) / 2);
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  font-weight:700
 }
