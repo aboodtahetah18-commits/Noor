@@ -1,7 +1,7 @@
 'use client';
 
 import { FormEvent, useEffect, useMemo, useState } from 'react';
-import { LucideIcon } from '@/components/ui/lucide-icon';
+import { LucideIcon, type LucideIconName } from '@/components/ui/lucide-icon';
 import type { GovernedDocumentRef } from '@/lib/conversations/governed-room-details';
 import styles from './conversation-workspace.module.css';
 
@@ -19,7 +19,102 @@ const statusLabel:Record<string,string>={
   EFFECTIVE:'نافذ', REJECTED:'مرفوض',
 };
 const priorityLabel={NORMAL:'عادي',NEXT_MEETING:'للاجتماع القادم',URGENT:'عاجل — اجتماع فوري'} as const;
-const kindLabel:Record<string,string>={record:'سجل',charter:'ميثاق',policy:'سياسة',reference:'مرجع',contract:'عقد'};
+
+type DocumentBlock =
+  | {kind:'paragraph';text:string}
+  | {kind:'table';headers:string[];rows:string[][]};
+type DocumentSection={title:string;blocks:DocumentBlock[]};
+
+function markdownCells(line:string){
+  return line.trim().replace(/^\|/,'').replace(/\|$/,'').split('|').map(cell=>cell.trim());
+}
+function isMarkdownDivider(line:string){
+  const cells=markdownCells(line);
+  return cells.length>1&&cells.every(cell=>/^:?-{3,}:?$/.test(cell));
+}
+function cleanDocumentText(line:string){
+  return line.trim().replace(/^#{1,6}\s*/,'').replace(/^\*\*(.+)\*\*$/,'$1').trim();
+}
+
+type GovernedDisplayType='policy'|'procedure'|'matrix'|'mechanism'|'reference';
+
+function resolveGovernedDisplayType(document:GovernedDocumentRef,content:string):GovernedDisplayType{
+  const haystack=(document.title+' '+content.slice(0,2400)).toLowerCase();
+  if(/مصفوفة/.test(haystack)) return 'matrix';
+  if(/(?:^|\s)آلية|آليه|mechanism/.test(haystack)) return 'mechanism';
+  if(/إجراء|اجراء|procedure/.test(haystack)) return 'procedure';
+  if(document.kind==='policy'||/سياسة|policy/.test(haystack)) return 'policy';
+  return 'reference';
+}
+function governedDisplayLabel(type:GovernedDisplayType){
+  return ({policy:'سياسة',procedure:'إجراء',matrix:'مصفوفة',mechanism:'آلية',reference:'مرجع حاكم'} as const)[type];
+}
+function sectionIcon(title:string,type:GovernedDisplayType):LucideIconName{
+  if(/مصفوفة|صلاحيات|مسؤوليات/.test(title)) return 'layoutGrid';
+  if(/خطوات|مسار|اعتماد/.test(title)) return 'listChecks';
+  if(/ضوابط|أحكام/.test(title)) return 'settings';
+  if(/هدف|غرض/.test(title)) return 'target';
+  if(/نطاق/.test(title)) return 'repeat2';
+  if(/مرجع|روابط/.test(title)) return 'receiptText';
+  if(type==='procedure') return 'listChecks';
+  if(type==='mechanism') return 'repeat2';
+  return 'receiptText';
+}
+
+function parseGovernedDocument(content:string):DocumentSection[]{
+  const lines=content.replace(/\r/g,'').split('\n');
+  const sections:DocumentSection[]=[];
+  let current:DocumentSection={title:'المحتوى المعتمد',blocks:[]};
+  let paragraph:string[]=[];
+  const flushParagraph=()=>{
+    if(!paragraph.length)return;
+    current.blocks.push({kind:'paragraph',text:paragraph.join(' ').trim()});
+    paragraph=[];
+  };
+  const flushSection=()=>{
+    flushParagraph();
+    if(current.blocks.length||sections.length===0&&current.title!=='المحتوى المعتمد')sections.push(current);
+  };
+
+  for(let index=0;index<lines.length;index++){
+    const raw=lines[index]??'';
+    const trimmed=raw.trim();
+    if(!trimmed){flushParagraph();continue;}
+
+    const headingMatch=trimmed.match(/^#{1,6}\s+(.+)$/);
+    const majorLine=!trimmed.startsWith('|')&&(
+      /^\d+\s*[.)-]\s+/.test(trimmed)||
+      /^\d+\s*\|\s*[^|]+/.test(trimmed)||
+      /^(?:الباب|الفصل|المادة)\s+/.test(trimmed)
+    );
+    if(headingMatch||majorLine){
+      flushParagraph();
+      if(current.blocks.length)sections.push(current);
+      current={title:cleanDocumentText(headingMatch?.[1]??trimmed),blocks:[]};
+      continue;
+    }
+
+    const next=lines[index+1]?.trim()??'';
+    if(trimmed.includes('|')&&next.includes('|')&&isMarkdownDivider(next)){
+      flushParagraph();
+      const headers=markdownCells(trimmed);
+      const rows:string[][]=[];
+      index+=1;
+      while(index+1<lines.length){
+        const candidate=lines[index+1]?.trim()??'';
+        if(!candidate||!candidate.includes('|'))break;
+        rows.push(markdownCells(candidate));
+        index+=1;
+      }
+      current.blocks.push({kind:'table',headers,rows});
+      continue;
+    }
+
+    paragraph.push(cleanDocumentText(trimmed));
+  }
+  flushSection();
+  return sections.filter(section=>section.blocks.length||section.title!=='المحتوى المعتمد');
+}
 
 export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document:GovernedDocumentRef;roomKey:string;onClose:()=>void}){
   const [amendments,setAmendments]=useState<Amendment[]>([]);
@@ -55,6 +150,12 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
     return()=>{cancelled=true};
   },[document.referenceCode]);
   const related=useMemo(()=>amendments.filter(item=>item.documentRef===document.referenceCode),[amendments,document.referenceCode]);
+  const documentSections=useMemo(()=>parseGovernedDocument(documentContent),[documentContent]);
+  const displayType=useMemo(()=>resolveGovernedDisplayType(document,documentContent),[document,documentContent]);
+  const displayLabel=governedDisplayLabel(displayType);
+  const isFlowDocument=displayType==='procedure'||displayType==='mechanism';
+  const isMatrixDocument=displayType==='matrix';
+
 
   async function submit(event:FormEvent){
     event.preventDefault(); if(pending)return; setPending(true); setFeedback('');
@@ -76,14 +177,24 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
       <div className={styles.sheetHeader}><strong>تفاصيل المرجع الحاكم</strong><button type="button" onClick={onClose} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button></div>
       <div className={styles.governedDocumentContent}>
         <section className={styles.governedDocumentHero}>
-          <div><strong>{document.title}</strong><small>{document.version?'الإصدار '+document.version.replace(/^v/i,''):'الإصدار النافذ المعتمد'}</small></div>
+          <div><strong>{document.title}</strong><small>نوع الوثيقة: {displayLabel}</small></div>
           <LucideIcon name={document.kind==='record'?'listChecks':'landmark'} size={24}/>
         </section>
 
-        <details className={styles.governedDocumentSection} open>
-          <summary><span>المرجع والنفاذ</span><LucideIcon name="chevronDown" size={16}/></summary>
-          <div><p>النوع: <b>{kindLabel[document.kind]??'مرجع حاكم'}</b></p><p>الحالة: <b>نافذ ما لم يوجد قرار تعديل معتمد بتاريخ نفاذ لاحق.</b></p><p>المصدر المعتمد محفوظ داخل نماء، وتبقى النسخة الخارجية للأرشفة فقط.</p></div>
-        </details>
+        <section className={styles.governedMetaStrip} aria-label="ملخص الوثيقة">
+          <div><small>النوع</small><strong>{displayLabel}</strong></div>
+          <div><small>الإصدار</small><strong>{document.version?document.version.replace(/^v/i,''):'المعتمد'}</strong></div>
+          <div><small>الحالة</small><strong>سارية</strong></div>
+          <div><small>المصدر</small><strong>نماء</strong></div>
+        </section>
+
+        {displayType==='mechanism'&&<section className={styles.governedFlowCard}>
+          <header><LucideIcon name="repeat2" size={20}/><div><strong>مسار الاعتماد</strong><small>المسار الحاكم حتى الاعتماد والنفاذ.</small></div></header>
+          <ol className={styles.governedFlowSteps}>
+            {['المحافظ','أمين السر','مجلس نماء الأعلى','اعتماد أو رفض','تاريخ النفاذ والإصدار'].map((label,index)=><li key={label}><span>{index+1}</span><strong>{label}</strong></li>)}
+          </ol>
+          <p>لا تستخدم النسخة المعدلة قبل اكتمال الاعتماد وبدء تاريخ النفاذ.</p>
+        </section>}
 
         <details className={styles.governedDocumentSection} open>
           <summary><span>المحتوى الكامل</span><LucideIcon name="chevronDown" size={16}/></summary>
@@ -91,15 +202,21 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
             {documentLoading
               ?<p>جارٍ تحميل المرجع المعتمد داخل نماء…</p>
               :documentContent
-                ?documentContent.split(/\n+/).map((line,index)=>{
-                    const text=line.trim();
-                    if(!text)return null;
-                    const cleaned=text.replace(/^#{1,6}\s*/,'').replace(/^\*\*(.+)\*\*$/,'$1');
-                    const heading=/^#{1,6}\s/.test(text)||/^\d+[.)\-]\s/.test(text)||/^الباب\s|^الفصل\s|^المادة\s/.test(cleaned);
-                    return heading
-                      ?<h3 key={index}>{cleaned}</h3>
-                      :<p key={index}>{cleaned}</p>;
-                  })
+                ?<div className={styles.governedStructuredDocument}>
+                  {documentSections.map((section,sectionIndex)=><details className={styles.governedContentSection+' '+(isMatrixDocument?styles.governedMatrixSection:'')+' '+(isFlowDocument?styles.governedFlowSection:'')} key={sectionIndex} open={sectionIndex===0||isMatrixDocument}>
+                    <summary><span><LucideIcon name={sectionIcon(section.title,displayType)} size={16}/><strong>{section.title}</strong></span><LucideIcon name="chevronDown" size={16}/></summary>
+                    <div className={styles.governedContentSectionBody}>
+                      {section.blocks.map((block,blockIndex)=>block.kind==='paragraph'
+                        ?<p key={blockIndex}>{block.text}</p>
+                        :<div className={styles.governedTableScroll+' '+(isMatrixDocument?styles.governedMatrixScroll:'')} key={blockIndex}>
+                          <table className={styles.governedContentTable+' '+(isMatrixDocument?styles.governedMatrixTable:'')}>
+                            <thead><tr>{block.headers.map((header,headerIndex)=><th key={headerIndex} scope="col">{header}</th>)}</tr></thead>
+                            <tbody>{block.rows.map((row,rowIndex)=><tr key={rowIndex}>{block.headers.map((_,cellIndex)=><td key={cellIndex}>{row[cellIndex]??''}</td>)}</tr>)}</tbody>
+                          </table>
+                        </div>)}
+                    </div>
+                  </details>)}
+                </div>
                 :<p>تعذر تحميل النسخة المحلية الآن. المرجع محفوظ في نماء ويمكن إعادة المحاولة دون الرجوع إلى مصدر خارجي.</p>}
           </div>
         </details>
