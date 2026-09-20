@@ -11,6 +11,7 @@ const compatibilityTokens=read('src/design-system/tokens.css');
 const themes=read('src/design-system/themes.css');
 const authShell=read('src/components/auth/public-auth-shell.tsx');
 const authCss=read('src/components/auth/public-auth-shell.module.css');
+const brandLogo=read('src/components/brand/brand-logo.tsx');
 
 function assert(condition,message){if(!condition)fail.push(message)}
 
@@ -24,7 +25,8 @@ assert(chatCss.includes('position:static')&&chatCss.includes('transform:none')&&
 assert(chatCss.includes('min-width:88px'),'Mobile full logo must never render below 88px.');
 assert((authShell.match(/<BrandLogo surface="auto"/g)||[]).length>=2,'Public auth branding must follow the active light/dark theme.');
 assert(authCss.includes(':global(html[data-theme="dark"]) .mobileHero{')&&authCss.includes('background:var(--ux-action-primary)'),'Public auth dark mobile hero must use the governed dark brand surface.');
-assert(authCss.includes('.mobileHero{display:block')&&authCss.includes('background:var(--ux-surface-canvas)'),'Public auth light mobile hero must use the governed light surface.');
+assert(authCss.includes('.mobileHero{display:block')&&authCss.includes('background:var(--ux-surface-default)'),'Public auth light mobile hero must use the governed light surface.');
+assert(brandLogo.includes("const current=window.localStorage.getItem('mustaqbali-theme')")&&brandLogo.includes("if(current==='light'||current==='dark') return current"),'Brand logo must prefer the active theme key over the legacy fallback.');
 assert(Array.isArray(brandRegistry.assets)||Array.isArray(brandRegistry.approved)||Object.keys(brandRegistry).length>0,'Approved brand registry must remain present.');
 
 const legacyIdentityLiterals=['#023C6E','#0CB6E5','#021737','#07305A','#EAF7FC','#F3F8FC','"Tajawal"'];
