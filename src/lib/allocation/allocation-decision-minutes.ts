@@ -1,6 +1,5 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { getRawSql } from '@/infrastructure/db/client';
-import type { ConversationMessageKind } from '@/lib/conversations/store';
 
 export type AllocationDecisionParticipant={
   key:string;
