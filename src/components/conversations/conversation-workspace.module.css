@@ -2407,14 +2407,29 @@
   flex-basis:40px
   }
   .composer{
-    margin:var(--ux-space-1) var(--ux-space-2) var(--ux-space-2);
-    padding:var(--ux-space-1);
-    border-radius:var(--ux-radius-4);
-    box-shadow:var(--ux-shadow-xs)
+    position:relative;
+    bottom:auto;
+    z-index:6;
+    margin:var(--ux-space-0);
+    padding:var(--ux-space-2) var(--ux-space-2) calc(var(--ux-space-2) + env(safe-area-inset-bottom));
+    border-radius:var(--ux-radius-0);
+    border-inline:0;
+    border-bottom:0;
+    background:var(--namaa-card);
+    box-shadow:var(--ux-shadow-xs);
+    align-items:center
   }
   .composer textarea{
-    padding:var(--ux-space-2);
-    line-height:1.5
+    min-height:40px;
+    max-height:112px;
+    height:40px;
+    padding:var(--ux-space-2) var(--ux-space-3);
+    border-radius:var(--ux-radius-full);
+    background:var(--namaa-surface-warm);
+    resize:none;
+    font-size:var(--ux-type-body-sm-size);
+    line-height:1.5;
+    overflow-y:auto
   }
   .chatHeader{
     height:58px;
@@ -2607,31 +2622,7 @@
   .onboardingQuestionIcon{width:32px;height:32px}
   .onboardingQuestionReason{padding:var(--ux-space-1) var(--ux-space-2)}
   .onboardingProgressTrack{height:5px}
-  .composer{
-    position:relative;
-  bottom:auto;
-  z-index:6;
-  margin:var(--ux-space-0);
-  padding:var(--ux-space-2) var(--ux-space-2) calc(var(--ux-space-2) + env(safe-area-inset-bottom));
-  border-radius:var(--ux-radius-0);
-  border-inline:0;
-  border-bottom:0;
-  background:var(--namaa-card);
-  box-shadow:var(--ux-shadow-xs);
-  align-items:center
-  }
-  .composer textarea{
-    min-height:40px;
-  max-height:112px;
-  padding:var(--ux-space-2) var(--ux-space-3);
-  border-radius:var(--ux-radius-full);
-  background:var(--namaa-surface-warm);
-  resize:none;
-  font-size:var(--ux-type-body-sm-size);
-  height:40px;
-  line-height:1.5;
-  overflow-y:auto
-  }
+
   .richMessageHero{grid-template-columns:78px minmax(0,1fr);min-height:106px;padding:var(--ux-space-2)}
   .richMessageVisual{min-height:78px}
   .richMessageMetrics{grid-template-columns:repeat(2,minmax(0,1fr))}
