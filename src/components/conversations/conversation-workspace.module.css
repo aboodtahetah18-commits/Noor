@@ -1251,7 +1251,7 @@
   padding:var(--ux-space-3);
   border:1px solid var(--namaa-border-strong);
   border-radius:var(--ux-radius-4);
-  background:linear-gradient(135deg,var(--namaa-card),var(--namaa-surface-warm));
+  background:var(--namaa-surface-warm);
   box-shadow:var(--ux-shadow-xs)
 }
 
@@ -2688,7 +2688,7 @@
     color:var(--ux-text-primary)
   }
   :global(html[data-theme="dark"]) .roomDetailHero{
-    background:linear-gradient(135deg,var(--ux-card-bg),var(--ux-section-soft-blue));
+    background:var(--ux-section-soft-blue);
     border-color:var(--ux-border-emphasis)
   }
   :global(html[data-theme="dark"]) .entityDetailTabs{
