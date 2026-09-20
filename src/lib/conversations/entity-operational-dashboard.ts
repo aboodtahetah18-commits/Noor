@@ -311,13 +311,25 @@ export async function publishWeeklyEntityReports(userId:string,periodStart:strin
       : 'لا توجد نقطة عاجلة مسجلة ضمن البيانات الحالية.';
     const body=`التقرير الأسبوعي — ${dashboard.title}: ${dashboard.headline} ${attention} ${planSummary}`.trim();
 
+    const sender=roomKey==='central'
+      ? {key:'central-governor',name:'محافظ بنك نماء المركزي'}
+      : roomKey==='operations'
+        ? {key:'operations-center',name:'مركز العمليات والمطابقة'}
+        : roomKey==='solvency'
+          ? {key:'solvency-manager',name:'مدير بنك ملاءة'}
+          : roomKey==='assets'
+            ? {key:'assets-manager',name:'مدير بنك الأصول الاستثماري'}
+            : roomKey==='hilal'
+              ? {key:'hilal-manager',name:'مدير بنك الهلال'}
+              : {key:'economic-advisor',name:'المستشار الاقتصادي'};
+
     await sql`
       insert into public.conversation_messages(
         id,thread_id,user_id,sender_type,sender_key,sender_name,message_kind,body,structured_data
       ) values(
         ${randomUUID()},${threadId}::uuid,${userId}::uuid,'agent',
-        ${roomKey==='central'?'central-governor':roomKey==='advisor'?'economic-advisor':roomKey+'-manager'},
-        ${dashboard.title},
+        ${sender.key},
+        ${sender.name},
         'followup',
         ${body},
         ${JSON.stringify({
