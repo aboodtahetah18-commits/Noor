@@ -2283,8 +2283,8 @@
     align-items:center;
     justify-content:space-between;
     gap:var(--ux-space-3);
-    background:var(--namaa-green-900);
-    border-bottom:1px solid color-mix(in srgb,var(--ux-text-inverse) 24%,transparent);
+    background:var(--namaa-card);
+    border-bottom:1px solid var(--namaa-border-strong);
     position:relative;
     z-index:15;
     direction:rtl
@@ -2312,19 +2312,19 @@
   border:1px solid var(--namaa-border);
   border-radius:var(--ux-radius-full);
   background:transparent;
-  color:var(--ux-text-inverse);
+  color:var(--namaa-green-900);
   display:grid;
   place-items:center;
   padding:var(--ux-space-0);
-  border-color:color-mix(in srgb,var(--ux-text-inverse) 34%,transparent)
+  border-color:var(--namaa-border-strong)
   }
   .mobileThemeToggle{
     width:40px!important;
   height:40px!important;
   border-radius:var(--ux-radius-full)!important;
   background:transparent;
-  color:var(--ux-text-inverse);
-  border-color:color-mix(in srgb,var(--ux-text-inverse) 34%,transparent)
+  color:var(--namaa-green-900);
+  border-color:var(--namaa-border-strong)
   }
   .mobileUserButton{
     overflow:hidden
@@ -2642,6 +2642,18 @@
     font-variant-numeric:tabular-nums;
     unicode-bidi:plaintext
   }
+  :global(html[data-theme="dark"]) .mobileAppBar{
+    background:var(--namaa-green-900);
+    border-bottom-color:var(--ux-border-emphasis)
+  }
+  :global(html[data-theme="dark"]) .mobileTopButton,
+  :global(html[data-theme="dark"]) .mobileUserButton,
+  :global(html[data-theme="dark"]) .mobileThemeToggle{
+    color:var(--ux-text-inverse);
+    border-color:color-mix(in srgb,var(--ux-text-inverse) 34%,transparent)
+  }
+  :global(html[data-theme="dark"]) .mobileBrandLogoLight{display:none}
+  :global(html[data-theme="dark"]) .mobileBrandLogoDark{display:block}
   :global(html[data-theme="dark"]) .page{
     --namaa-chat-canvas:var(--ux-page-bg);
     --namaa-card:var(--ux-card-bg);
@@ -2695,7 +2707,7 @@
     border-color:var(--ux-border-emphasis)
   }
   :global(html[data-theme="dark"]) .composer textarea{
-    background:var(--ux-card-bg);
+    background:var(--ux-section-soft-blue);
     border-color:var(--ux-border-emphasis);
     color:var(--ux-text-primary)
   }
@@ -2710,6 +2722,10 @@
   :global(html[data-theme="dark"]) .messageIdentity,
   :global(html[data-theme="dark"]) .messageMeta{
     border-color:var(--ux-border-default)
+  }
+
+  .specialistRoutingNote{
+    display:none
   }
 
   .routingNote{
@@ -3856,6 +3872,11 @@
 }
 
 
+.mobileBrandLogoWrap{
+  display:flex;
+  align-items:center;
+  flex:0 0 auto
+}
 .mobileBrandLogo{
   position:static;
   left:auto;
@@ -3870,3 +3891,5 @@
   z-index:1;
   flex:0 0 auto
 }
+.mobileBrandLogoDark{display:none}
+.mobileBrandLogoLight{display:block}
