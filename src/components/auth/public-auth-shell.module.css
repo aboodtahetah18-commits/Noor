@@ -71,7 +71,12 @@
   .mobileHero::before{width:180px;height:180px;top:-78px;right:-42px;transform:rotate(22deg)}
   .mobileHero::after{width:130px;height:210px;left:-55px;bottom:-95px;transform:rotate(-28deg)}
   .mobileHeroTop{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:var(--ux-auth-s4);margin-bottom:var(--ux-auth-s2)}
+  .mobileHeroLogoWrap{display:flex;align-items:center}
   .mobileHeroLogo{width:112px!important;height:auto!important;max-height:54px;object-fit:contain}
+  .mobileHeroLogoDark{display:none}
+  .mobileHeroLogoLight{display:block}
+  :global(html[data-theme="dark"]) .mobileHeroLogoLight{display:none}
+  :global(html[data-theme="dark"]) .mobileHeroLogoDark{display:block}
   .mobileHeroTheme{display:grid;place-items:center}
   .mobileBadge{position:relative;z-index:1;display:inline-flex;align-items:center;min-height:30px;padding:var(--ux-auth-s0) var(--ux-auth-s3);border-radius:var(--ux-radius-6);background:var(--ux-alpha-navy-10);border:1px solid var(--ux-border-default);font-size:var(--ux-type-caption-size);font-weight:700}
   .mobileKicker{position:relative;z-index:1;margin:var(--ux-auth-s4) var(--ux-auth-s0) var(--ux-auth-s1);color:var(--ux-text-secondary);font-size:var(--ux-type-body-sm-size);font-weight:700}
