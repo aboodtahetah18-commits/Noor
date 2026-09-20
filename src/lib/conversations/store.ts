@@ -9,9 +9,20 @@ export type ConversationMessageKind = 'message' | 'risk' | 'decision' | 'recomme
 export const governedRooms: Record<ConversationRoomKey, { title: string; subtitle: string; kind: string; participants: Array<{ key: string; name: string; type: 'agent' | 'system'; role: string }> }> = {
   central: { title: 'بنك نماء المركزي', subtitle: 'الحوكمة والاستقرار', kind: 'governor', participants: [{ key: 'central-governor', name: 'محافظ بنك نماء المركزي', type: 'agent', role: 'محافظ خوارزمي' }] },
   operations: { title: 'مركز العمليات والمطابقة', subtitle: 'رسائل العمليات وكشوف الحسابات والمطابقة والتسوية', kind: 'operations', participants: [{ key: 'operations-center', name: 'مركز العمليات والمطابقة', type: 'system', role: 'وحدة تشغيلية مركزية' }] },
-  solvency: { title: 'بنك ملاءة', subtitle: 'الحماية والاحتياطي', kind: 'bank', participants: [{ key: 'solvency-manager', name: 'مدير بنك ملاءة', type: 'agent', role: 'مدير خوارزمي' }] },
-  assets: { title: 'بنك الأصول الاستثماري', subtitle: 'الأصول والأهداف والاستثمار', kind: 'bank', participants: [{ key: 'assets-manager', name: 'مدير بنك الأصول الاستثماري', type: 'agent', role: 'مدير خوارزمي' }, { key: 'investment-owner', name: 'مسؤول الاستثمار', type: 'agent', role: 'صاحب مسؤولية الاستثمار للمستخدم' }] },
-  hilal: { title: 'بنك الهلال', subtitle: 'التمويل الداخلي', kind: 'bank', participants: [{ key: 'hilal-manager', name: 'مدير بنك الهلال', type: 'agent', role: 'مدير خوارزمي' }] },
+  solvency: { title: 'بنك ملاءة', subtitle: 'الحماية والاحتياطي', kind: 'bank', participants: [
+    { key: 'solvency-manager', name: 'مدير بنك ملاءة', type: 'agent', role: 'مدير خوارزمي' },
+    { key: 'liquidity-protection-owner', name: 'مسؤول السيولة والحماية', type: 'agent', role: 'صاحب مسؤولية السيولة والحماية' },
+  ] },
+  assets: { title: 'بنك الأصول الاستثماري', subtitle: 'الأصول والأهداف والاستثمار', kind: 'bank', participants: [
+    { key: 'assets-manager', name: 'مدير بنك الأصول الاستثماري', type: 'agent', role: 'مدير خوارزمي' },
+    { key: 'goals-owner', name: 'مسؤول الأهداف', type: 'agent', role: 'صاحب مسؤولية الأهداف' },
+    { key: 'investment-owner', name: 'مسؤول الاستثمار', type: 'agent', role: 'صاحب مسؤولية الاستثمار' },
+  ] },
+  hilal: { title: 'بنك الهلال', subtitle: 'التمويل الداخلي', kind: 'bank', participants: [
+    { key: 'hilal-manager', name: 'مدير بنك الهلال', type: 'agent', role: 'مدير خوارزمي' },
+    { key: 'budget-spending-owner', name: 'مسؤول الميزانية والإنفاق', type: 'agent', role: 'صاحب مسؤولية الميزانية والإنفاق' },
+    { key: 'obligations-owner', name: 'مسؤول الالتزامات', type: 'agent', role: 'صاحب مسؤولية الالتزامات' },
+  ] },
   advisor: { title: 'المستشار الاقتصادي', subtitle: 'تحليل الصورة المالية الكلية', kind: 'advisor', participants: [{ key: 'financial-advisor', name: 'المستشار الاقتصادي', type: 'agent', role: 'مستشار خوارزمي' }] },
   secretary: { title: 'أمين السر المركزي', subtitle: 'المحاضر والسياسات والاجتماعات والمتابعة', kind: 'secretary', participants: [{ key: 'central-secretary', name: 'أمين السر المركزي', type: 'agent', role: 'أمين سر خوارزمي' }] },
   council: { title: 'مجلس نماء الأعلى', subtitle: 'القرارات واللجان', kind: 'council', participants: [
