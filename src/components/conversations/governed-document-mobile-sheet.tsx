@@ -36,6 +36,32 @@ function isMarkdownDivider(line:string){
 function cleanDocumentText(line:string){
   return line.trim().replace(/^#{1,6}\s*/,'').replace(/^\*\*(.+)\*\*$/,'$1').trim();
 }
+
+type GovernedDisplayType='policy'|'procedure'|'matrix'|'mechanism'|'reference';
+
+function resolveGovernedDisplayType(document:GovernedDocumentRef,content:string):GovernedDisplayType{
+  const haystack=(document.title+' '+content.slice(0,2400)).toLowerCase();
+  if(/مصفوفة/.test(haystack)) return 'matrix';
+  if(/(?:^|\s)آلية|آليه|mechanism/.test(haystack)) return 'mechanism';
+  if(/إجراء|اجراء|procedure/.test(haystack)) return 'procedure';
+  if(document.kind==='policy'||/سياسة|policy/.test(haystack)) return 'policy';
+  return 'reference';
+}
+function governedDisplayLabel(type:GovernedDisplayType){
+  return ({policy:'سياسة',procedure:'إجراء',matrix:'مصفوفة',mechanism:'آلية',reference:'مرجع حاكم'} as const)[type];
+}
+function sectionIcon(title:string,type:GovernedDisplayType){
+  if(/مصفوفة|صلاحيات|مسؤوليات/.test(title)) return 'grid2x2';
+  if(/خطوات|مسار|اعتماد/.test(title)) return 'listChecks';
+  if(/ضوابط|أحكام/.test(title)) return 'shieldCheck';
+  if(/هدف|غرض/.test(title)) return 'target';
+  if(/نطاق/.test(title)) return 'network';
+  if(/مرجع|روابط/.test(title)) return 'link';
+  if(type==='procedure') return 'workflow';
+  if(type==='mechanism') return 'gitBranch';
+  return 'fileText';
+}
+
 function parseGovernedDocument(content:string):DocumentSection[]{
   const lines=content.replace(/\r/g,'').split('\n');
   const sections:DocumentSection[]=[];
@@ -126,6 +152,11 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
   },[document.referenceCode]);
   const related=useMemo(()=>amendments.filter(item=>item.documentRef===document.referenceCode),[amendments,document.referenceCode]);
   const documentSections=useMemo(()=>parseGovernedDocument(documentContent),[documentContent]);
+  const displayType=useMemo(()=>resolveGovernedDisplayType(document,documentContent),[document,documentContent]);
+  const displayLabel=governedDisplayLabel(displayType);
+  const isFlowDocument=displayType==='procedure'||displayType==='mechanism';
+  const isMatrixDocument=displayType==='matrix';
+
 
   async function submit(event:FormEvent){
     event.preventDefault(); if(pending)return; setPending(true); setFeedback('');
@@ -147,14 +178,24 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
       <div className={styles.sheetHeader}><strong>تفاصيل المرجع الحاكم</strong><button type="button" onClick={onClose} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button></div>
       <div className={styles.governedDocumentContent}>
         <section className={styles.governedDocumentHero}>
-          <div><strong>{document.title}</strong><small>{document.version?'الإصدار '+document.version.replace(/^v/i,''):'الإصدار النافذ المعتمد'}</small></div>
+          <div><strong>{document.title}</strong><small>نوع الوثيقة: {displayLabel}</small></div>
           <LucideIcon name={document.kind==='record'?'listChecks':'landmark'} size={24}/>
         </section>
 
-        <details className={styles.governedDocumentSection} open>
-          <summary><span>المرجع والنفاذ</span><LucideIcon name="chevronDown" size={16}/></summary>
-          <div><p>النوع: <b>{kindLabel[document.kind]??'مرجع حاكم'}</b></p><p>الحالة: <b>نافذ ما لم يوجد قرار تعديل معتمد بتاريخ نفاذ لاحق.</b></p><p>المصدر المعتمد محفوظ داخل نماء، وتبقى النسخة الخارجية للأرشفة فقط.</p></div>
-        </details>
+        <section className={styles.governedMetaStrip} aria-label="ملخص الوثيقة">
+          <div><small>النوع</small><strong>{displayLabel}</strong></div>
+          <div><small>الإصدار</small><strong>{document.version?document.version.replace(/^v/i,''):'المعتمد'}</strong></div>
+          <div><small>الحالة</small><strong>سارية</strong></div>
+          <div><small>المصدر</small><strong>نماء</strong></div>
+        </section>
+
+        {displayType==='mechanism'&&<section className={styles.governedFlowCard}>
+          <header><LucideIcon name="gitBranch" size={20}/><div><strong>مسار الاعتماد</strong><small>المسار الحاكم حتى الاعتماد والنفاذ.</small></div></header>
+          <ol className={styles.governedFlowSteps}>
+            {['المحافظ','أمين السر','مجلس نماء الأعلى','اعتماد أو رفض','تاريخ النفاذ والإصدار'].map((label,index)=><li key={label}><span>{index+1}</span><strong>{label}</strong></li>)}
+          </ol>
+          <p>لا تستخدم النسخة المعدلة قبل اكتمال الاعتماد وبدء تاريخ النفاذ.</p>
+        </section>}
 
         <details className={styles.governedDocumentSection} open>
           <summary><span>المحتوى الكامل</span><LucideIcon name="chevronDown" size={16}/></summary>
@@ -163,13 +204,13 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
               ?<p>جارٍ تحميل المرجع المعتمد داخل نماء…</p>
               :documentContent
                 ?<div className={styles.governedStructuredDocument}>
-                  {documentSections.map((section,sectionIndex)=><details className={styles.governedContentSection} key={sectionIndex} open={sectionIndex===0}>
-                    <summary><strong>{section.title}</strong><LucideIcon name="chevronDown" size={16}/></summary>
+                  {documentSections.map((section,sectionIndex)=><details className={styles.governedContentSection+' '+(isMatrixDocument?styles.governedMatrixSection:'')+' '+(isFlowDocument?styles.governedFlowSection:'')} key={sectionIndex} open={sectionIndex===0||isMatrixDocument}>
+                    <summary><span><LucideIcon name={sectionIcon(section.title,displayType)} size={16}/><strong>{section.title}</strong></span><LucideIcon name="chevronDown" size={16}/></summary>
                     <div className={styles.governedContentSectionBody}>
                       {section.blocks.map((block,blockIndex)=>block.kind==='paragraph'
                         ?<p key={blockIndex}>{block.text}</p>
-                        :<div className={styles.governedTableScroll} key={blockIndex}>
-                          <table className={styles.governedContentTable}>
+                        :<div className={styles.governedTableScroll+' '+(isMatrixDocument?styles.governedMatrixScroll:'')} key={blockIndex}>
+                          <table className={styles.governedContentTable+' '+(isMatrixDocument?styles.governedMatrixTable:'')}>
                             <thead><tr>{block.headers.map((header,headerIndex)=><th key={headerIndex} scope="col">{header}</th>)}</tr></thead>
                             <tbody>{block.rows.map((row,rowIndex)=><tr key={rowIndex}>{block.headers.map((_,cellIndex)=><td key={cellIndex}>{row[cellIndex]??''}</td>)}</tr>)}</tbody>
                           </table>
