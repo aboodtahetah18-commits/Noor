@@ -62,7 +62,7 @@ const meetingUserDisplayName=(name?:string|null)=>{
   return parts[0]||'أنت';
 };
 
-function formatSar(value:number){return new Intl.NumberFormat('ar-SA',{maximumFractionDigits:2}).format(value)}
+function formatSar(value:number){return new Intl.NumberFormat('ar-SA-u-nu-latn',{maximumFractionDigits:2}).format(value)}
 
 function attachmentStatusLabel(status?:string|null){
   if(status==='PENDING_REVIEW')return 'بانتظار المراجعة';
@@ -153,15 +153,15 @@ function formatConversationTimeDivider(value?:string){
   if(!Number.isFinite(date.getTime()))return 'الآن';
   const now=new Date();
   const sameDay=now.getFullYear()===date.getFullYear()&&now.getMonth()===date.getMonth()&&now.getDate()===date.getDate();
-  const time=new Intl.DateTimeFormat('ar-SA',{hour:'numeric',minute:'2-digit'}).format(date);
+  const time=new Intl.DateTimeFormat('ar-SA-u-nu-latn',{hour:'numeric',minute:'2-digit'}).format(date);
   if(sameDay)return 'اليوم · '+time;
-  return new Intl.DateTimeFormat('ar-SA',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'}).format(date);
+  return new Intl.DateTimeFormat('ar-SA-u-nu-latn',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'}).format(date);
 }
 function formatConversationMessageTime(value?:string){
   if(!value)return 'الآن';
   const date=new Date(value);
   if(!Number.isFinite(date.getTime()))return 'الآن';
-  return new Intl.DateTimeFormat('ar-SA',{hour:'numeric',minute:'2-digit'}).format(date);
+  return new Intl.DateTimeFormat('ar-SA-u-nu-latn',{hour:'numeric',minute:'2-digit'}).format(date);
 }
 function messageKindIcon(kind:MessageKind):LucideIconName{
   if(kind==='risk')return 'triangleAlert';
@@ -266,7 +266,7 @@ function formatOversightHistoryTime(value:unknown){
   if(typeof value!=='string'||!value)return 'وقت غير متاح';
   const date=new Date(value);
   if(!Number.isFinite(date.getTime()))return value;
-  return new Intl.DateTimeFormat('ar-SA',{dateStyle:'short',timeStyle:'short'}).format(date);
+  return new Intl.DateTimeFormat('ar-SA-u-nu-latn',{dateStyle:'short',timeStyle:'short'}).format(date);
 }
 
 function OversightMiniHistory({history}:{history:unknown}){
@@ -539,8 +539,8 @@ function richMetric(label:string,value:unknown,format:'sar'|'percent'|'plain'='p
   let display=String(value);
   if(typeof value==='number'){
     if(format==='sar')display=formatSar(value)+' ر.س';
-    else if(format==='percent')display=new Intl.NumberFormat('ar-SA',{maximumFractionDigits:1}).format(value*100)+'٪';
-    else display=new Intl.NumberFormat('ar-SA',{maximumFractionDigits:2}).format(value);
+    else if(format==='percent')display=new Intl.NumberFormat('ar-SA-u-nu-latn',{maximumFractionDigits:1}).format(value*100)+'٪';
+    else display=new Intl.NumberFormat('ar-SA-u-nu-latn',{maximumFractionDigits:2}).format(value);
   }
   return {label,value:display};
 }
@@ -1235,7 +1235,7 @@ export function PersistentConversationWorkspace(){
         />
         {statementPickerOpen&&<div className={styles.statementPicker}><div><strong>اختر الحساب المرتبط بالكشف</strong><small>سيُقرأ الملف للمراجعة فقط، ولن ينشئ معاملات تلقائيًا.</small></div><select value={statementAccountId} onChange={event=>setStatementAccountId(event.target.value)} aria-label="الحساب المرتبط بكشف الحساب">{statementAccounts.map(account=><option key={account.id} value={account.id}>{account.bank_name||account.name} — {account.name}</option>)}</select><button type="button" className={styles.secondaryButton} onClick={()=>statementFileRef.current?.click()} disabled={statementUploading}>{statementUploading?'جارٍ الاستيراد…':'اختيار ملف CSV'}</button></div>}
         <div className={styles.attachmentPolicy}><LucideIcon name="upload" size={16}/><span>{onboardingStep==='statements'?'ارفع كشف CSV إن كان متاحًا. كل صف يبقى تحت المراجعة حتى تؤكده.':'المرفق للمراجعة والتحقق فقط؛ لا ينشئ حركة مالية ولا يثبت التنفيذ تلقائيًا.'}</span></div><div className={styles.executionNote}><LucideIcon name="circleCheck" size={16}/><span>نماء يوصي ويتابع؛ التنفيذ المالي الخارجي يتم بواسطة المستخدم.</span></div>
-        {!STRUCTURED_INTAKE_STEPS.has(onboardingStep??'')&&<form className={styles.composer} onSubmit={send}><input ref={statementFileRef} className={styles.hiddenFileInput} type="file" accept=".csv,text/csv" onChange={event=>{const file=event.target.files?.[0];if(file)void uploadStatement(file)}}/><button type="button" className={styles.attachButton} aria-label="إرفاق كشف حساب CSV" title="إرفاق كشف حساب CSV للمراجعة" onClick={()=>void prepareStatementUpload()} disabled={statementUploading}><LucideIcon name="upload" size={20}/></button><textarea ref={composerTextareaRef} value={draft} onChange={e=>{setDraft(e.target.value);e.currentTarget.style.height='40px';e.currentTarget.style.height=`${Math.min(e.currentTarget.scrollHeight,112)}px`;}} placeholder={`اكتب إلى ${chatRoleTitle(activeRoom)}…`} rows={1} aria-label="نص الرسالة" maxLength={8000}/><button type="submit" className={styles.sendButton} disabled={!draft.trim()||sending} aria-label="إرسال"><span>{sending?'جارٍ التحليل…':'إرسال'}</span><LucideIcon name="send" size={20}/></button></form>}
+        <form className={styles.composer} onSubmit={send}><input ref={statementFileRef} className={styles.hiddenFileInput} type="file" accept=".csv,text/csv" onChange={event=>{const file=event.target.files?.[0];if(file)void uploadStatement(file)}}/><button type="button" className={styles.attachButton} aria-label="إرفاق كشف حساب CSV" title="إرفاق كشف حساب CSV للمراجعة" onClick={()=>void prepareStatementUpload()} disabled={statementUploading}><LucideIcon name="upload" size={20}/></button><textarea ref={composerTextareaRef} value={draft} onChange={e=>{setDraft(e.target.value);e.currentTarget.style.height='40px';e.currentTarget.style.height=`${Math.min(e.currentTarget.scrollHeight,112)}px`;}} placeholder={`اكتب إلى ${chatRoleTitle(activeRoom)}…`} rows={1} aria-label="نص الرسالة" maxLength={8000}/><button type="submit" className={styles.sendButton} disabled={!draft.trim()||sending} aria-label="إرسال"><span>{sending?'جارٍ التحليل…':'إرسال'}</span><LucideIcon name="send" size={20}/></button></form>
       </main>
       {desktopContextVisible&&<aside className={styles.contextPane} aria-label="سياق المحادثة"><div className={styles.paneTitle}><span>السياق</span><small>حيّز العمل</small></div>{contextCards}</aside>}
     </div>
