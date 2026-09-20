@@ -9,6 +9,8 @@ const chatCss=read('src/components/conversations/conversation-workspace.module.c
 const brandRegistry=JSON.parse(read('public/brand/ndos/approved-brand-assets.json'));
 const compatibilityTokens=read('src/design-system/tokens.css');
 const themes=read('src/design-system/themes.css');
+const authShell=read('src/components/auth/public-auth-shell.tsx');
+const authCss=read('src/components/auth/public-auth-shell.module.css');
 
 function assert(condition,message){if(!condition)fail.push(message)}
 
@@ -20,6 +22,9 @@ assert(!/filter\s*:\s*(?:brightness|invert|hue-rotate|sepia|saturate)/i.test(cha
 assert(chatCss.includes('.mobileBrandLogo'),'Governed mobile logo class is missing.');
 assert(chatCss.includes('position:static')&&chatCss.includes('transform:none')&&chatCss.includes('.mobileAppBarPrimary{\n    direction:rtl;\n    flex-direction:row')&&chatCss.includes('.mobileAppBarActions{\n    direction:ltr'),'Mobile header must keep menu and logo together on the right, with utility actions on the far left.');
 assert(chatCss.includes('min-width:88px'),'Mobile full logo must never render below 88px.');
+assert((authShell.match(/<BrandLogo surface="auto"/g)||[]).length>=2,'Public auth branding must follow the active light/dark theme.');
+assert(authCss.includes(':global(html[data-theme="dark"]) .mobileHero{')&&authCss.includes('background:var(--ux-action-primary)'),'Public auth dark mobile hero must use the governed dark brand surface.');
+assert(authCss.includes('.mobileHero{display:block')&&authCss.includes('background:var(--ux-surface-canvas)'),'Public auth light mobile hero must use the governed light surface.');
 assert(Array.isArray(brandRegistry.assets)||Array.isArray(brandRegistry.approved)||Object.keys(brandRegistry).length>0,'Approved brand registry must remain present.');
 
 const legacyIdentityLiterals=['#023C6E','#0CB6E5','#021737','#07305A','#EAF7FC','#F3F8FC','"Tajawal"'];
