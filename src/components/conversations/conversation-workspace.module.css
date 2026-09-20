@@ -3919,3 +3919,201 @@
 }
 .mobileBrandLogoDark{display:none}
 .mobileBrandLogoLight{display:block}
+
+
+.governedDocumentSheet{
+  width:min(100%,var(--ux-size-content-max));
+  max-height:100dvh;
+  overflow:auto
+}
+.governedDocumentContent{
+  display:grid;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-3)
+}
+.governedDocumentHero{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border-strong);
+  border-radius:var(--ux-radius-4);
+  background:var(--namaa-surface-warm)
+}
+.governedDocumentHero>div{
+  min-width:0;
+  display:grid;
+  gap:var(--ux-space-1)
+}
+.governedDocumentHero span{
+  width:fit-content;
+  padding:var(--ux-space-1) var(--ux-space-2);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-full);
+  background:var(--namaa-card);
+  color:var(--namaa-green-900);
+  font-size:var(--ux-type-caption-size);
+  font-weight:900
+}
+.governedDocumentHero strong{
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-section-title-size);
+  line-height:1.45;
+  overflow-wrap:anywhere
+}
+.governedDocumentHero small{
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size)
+}
+.governedDocumentHero>svg{
+  flex:0 0 auto;
+  color:var(--namaa-green-900)
+}
+.governedDocumentSection{
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-card);
+  overflow:hidden
+}
+.governedDocumentSection>summary{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--ux-space-2);
+  min-height:var(--ux-size-12);
+  padding:var(--ux-space-3);
+  color:var(--ux-text-primary);
+  font-weight:900;
+  cursor:pointer;
+  list-style:none
+}
+.governedDocumentSection>summary::-webkit-details-marker{display:none}
+.governedDocumentSection[open]>summary{
+  border-bottom:1px solid var(--namaa-border);
+  background:var(--namaa-surface-warm)
+}
+.governedDocumentSection>div{
+  display:grid;
+  gap:var(--ux-space-2);
+  padding:var(--ux-space-3)
+}
+.governedDocumentSection p{
+  margin:var(--ux-space-0);
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-body-sm-size);
+  line-height:1.7
+}
+.governedDocumentSection b{color:var(--ux-text-primary)}
+.governedDocumentSection a{
+  width:fit-content;
+  color:var(--namaa-green-900);
+  font-size:var(--ux-type-body-sm-size);
+  font-weight:900;
+  text-decoration:none
+}
+.governedDocumentSection article{
+  display:grid;
+  gap:var(--ux-space-1);
+  padding:var(--ux-space-2);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-2);
+  background:var(--namaa-surface-warm)
+}
+.governedAmendmentList{display:grid;gap:var(--ux-space-2)}
+.governedAmendmentCard{
+  display:grid;
+  gap:var(--ux-space-2);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border-strong);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-surface-warm)
+}
+.governedAmendmentCard header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--ux-space-2)
+}
+.governedAmendmentCard header strong{
+  color:var(--namaa-green-900);
+  font-size:var(--ux-type-caption-size)
+}
+.governedAmendmentCard header span,
+.governedAmendmentCard>small{
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size)
+}
+.governedAmendmentForm{
+  display:grid;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-green-700);
+  border-radius:var(--ux-radius-4);
+  background:var(--namaa-card)
+}
+.governedAmendmentForm>strong{
+  color:var(--namaa-green-900);
+  font-size:var(--ux-type-body-size)
+}
+.governedAmendmentForm label{
+  display:grid;
+  gap:var(--ux-space-1);
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-body-sm-size);
+  font-weight:800
+}
+.governedAmendmentForm input,
+.governedAmendmentForm textarea,
+.governedAmendmentForm select{
+  width:100%;
+  min-height:var(--ux-size-10);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-2);
+  background:var(--namaa-surface-warm);
+  color:var(--ux-text-primary);
+  padding:var(--ux-space-2);
+  font:inherit
+}
+.governedAmendmentForm textarea{
+  min-height:calc(var(--ux-size-12) * 2);
+  resize:vertical
+}
+.governedAmendmentForm>p{
+  margin:var(--ux-space-0);
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  line-height:1.7
+}
+.governedAmendmentActions{
+  display:flex;
+  justify-content:flex-end;
+  gap:var(--ux-space-2)
+}
+.governedAmendmentActions button{
+  min-height:var(--ux-size-10);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-full);
+  padding:var(--ux-space-1) var(--ux-space-3);
+  background:var(--namaa-card);
+  color:var(--ux-text-primary);
+  font:inherit;
+  font-size:var(--ux-type-body-sm-size);
+  font-weight:900;
+  cursor:pointer
+}
+.governedAmendmentActions button:last-child{
+  border-color:var(--namaa-green-700);
+  background:var(--namaa-green-900);
+  color:var(--namaa-card)
+}
+.governedAmendmentActions button:disabled{opacity:.55;cursor:not-allowed}
+.governedDocumentFeedback{
+  margin:var(--ux-space-0);
+  padding:var(--ux-space-2);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-2);
+  background:var(--namaa-surface-warm);
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size)
+}
