@@ -78,7 +78,7 @@
     border:0;
     border-radius:var(--ux-radius-0);
     overflow:hidden;
-    box-shadow:none;
+    box-shadow:var(--ux-shadow-none);
     background:var(--ux-surface-canvas)
   }
   .visual{display:none}
@@ -107,7 +107,7 @@
     height:86px;
     left:-38px;
     top:38px;
-    border-radius:100% 0 100% 0;
+    border-radius:var(--ux-radius-full) var(--ux-radius-0) var(--ux-radius-full) var(--ux-radius-0);
     transform:rotate(-20deg)
   }
   .mobileHero::after{
@@ -115,7 +115,7 @@
     height:72px;
     left:34px;
     top:132px;
-    border-radius:0 100% 0 100%;
+    border-radius:var(--ux-radius-0) var(--ux-radius-full) var(--ux-radius-0) var(--ux-radius-full);
     transform:rotate(18deg)
   }
   .mobileHeroTop{
@@ -194,7 +194,7 @@
     border-radius:var(--ux-radius-0);
     background:var(--ux-surface-canvas);
     color:var(--ux-text-primary);
-    box-shadow:none
+    box-shadow:var(--ux-shadow-none)
   }
   .themeButton,.heading{display:none}
   .form{gap:var(--ux-auth-s3)}
