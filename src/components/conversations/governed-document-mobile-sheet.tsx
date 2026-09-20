@@ -3,7 +3,6 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { LucideIcon } from '@/components/ui/lucide-icon';
 import type { GovernedDocumentRef } from '@/lib/conversations/governed-room-details';
-import { embeddedGovernanceContent, splitGovernanceContent } from '@/lib/governance/embedded-governance-content';
 import styles from './conversation-workspace.module.css';
 
 type Amendment={
@@ -44,6 +43,8 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
   const [proposedRule,setProposedRule]=useState('');
   const [rationale,setRationale]=useState('');
   const [priority,setPriority]=useState<'NORMAL'|'NEXT_MEETING'|'URGENT'>('NEXT_MEETING');
+  const [embeddedSections,setEmbeddedSections]=useState<Array<{title:string;lines:string[]}>>([]);
+  const [contentLoading,setContentLoading]=useState(true);
 
   async function load(){
     const response=await fetch('/api/governance/amendments',{cache:'no-store'});
@@ -53,11 +54,14 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
   useEffect(()=>{
     let cancelled=false;
     queueMicrotask(()=>{if(!cancelled) void load()});
+    fetch('/api/governance/document-content?reference='+encodeURIComponent(document.referenceCode),{cache:'no-store'})
+      .then(async response=>response.ok?response.json():null)
+      .then(data=>{if(!cancelled)setEmbeddedSections(Array.isArray(data?.sections)?data.sections:[])})
+      .catch(()=>{if(!cancelled)setEmbeddedSections([])})
+      .finally(()=>{if(!cancelled)setContentLoading(false)});
     return()=>{cancelled=true};
-  },[]);
+  },[document.referenceCode]);
   const related=useMemo(()=>amendments.filter(item=>item.documentRef===document.referenceCode),[amendments,document.referenceCode]);
-  const embedded=useMemo(()=>embeddedGovernanceContent(document.sourceUrl),[document.sourceUrl]);
-  const embeddedSections=useMemo(()=>embedded?splitGovernanceContent(embedded):[],[embedded]);
 
   async function submit(event:FormEvent){
     event.preventDefault(); if(pending)return; setPending(true); setFeedback('');
@@ -93,7 +97,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
           <summary><span>الأبواب والبنود</span><LucideIcon name="chevronDown" size={16}/></summary>
           <div className={styles.governedInternalContent}>{embeddedSections.length
             ?embeddedSections.map((section,index)=><article key={index}><b>الباب {arabicDigits(String(index+1))} — {arabicVisibleText(section.title)}</b>{section.lines.map((line,lineIndex)=><p key={lineIndex}><span>البند {arabicDigits(String(index+1)+'.'+String(lineIndex+1))}</span>{arabicVisibleText(line)}</p>)}</article>)
-            :<p>لم يكتمل استيراد النص الداخلي لهذا المرجع بعد. تبقى النسخة المؤرشفة متاحة عند الحاجة.</p>}</div>
+            :<p>{contentLoading?'جارٍ تحميل النص المعتمد…':'لم يكتمل استيراد النص الداخلي لهذا المرجع بعد. تبقى النسخة المؤرشفة متاحة عند الحاجة.'}</p>}</div>
         </details>
 
         <details className={styles.governedDocumentSection} open>
