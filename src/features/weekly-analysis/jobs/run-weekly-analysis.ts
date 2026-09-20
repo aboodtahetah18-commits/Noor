@@ -5,6 +5,7 @@ import { getDashboardSummary } from '@/features/dashboard/queries/get-dashboard-
 import { buildWeeklyAnalysisIdempotencyKey, getWeeklyPeriodStart } from './period';
 import type { WeeklyAnalysisRunResult, WeeklyAnalysisRunStatus, WeeklyAnalysisSummary } from '../types/weekly-analysis';
 import { getUserTimezone } from '@/features/settings/queries/get-user-timezone';
+import { publishWeeklyEntityReports } from '@/lib/conversations/entity-operational-dashboard';
 
 function rowResult(row: Record<string, unknown>, reused: boolean): WeeklyAnalysisRunResult {
   return {
@@ -66,6 +67,7 @@ export async function runWeeklyAnalysisForCycle(userId: string, cycleId: string,
     const status: WeeklyAnalysisRunStatus = recommendationResult.blockedRules.length > 0 ? 'PARTIAL' : 'SUCCESS';
     const rows = await rawSql`update public.weekly_analysis_runs set status=${status},summary=${JSON.stringify(summary)}::jsonb,finished_at=now(),error_code=null
       where id=${runId}::uuid and user_id=${userId} returning *`;
+    await publishWeeklyEntityReports(userId,periodStart);
     return rowResult(rows[0] as Record<string, unknown>, false);
   } catch (error) {
     const errorCode = error instanceof Error ? error.message.slice(0, 120) : 'WEEKLY_ANALYSIS_FAILED';
