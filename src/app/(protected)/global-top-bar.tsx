@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { useEffect, useSyncExternalStore } from 'react';
 import { LucideIcon } from '@/components/ui/lucide-icon';
 import { ProfileTrigger, type HeaderProfile } from './profile-trigger';
@@ -18,7 +17,6 @@ function sidebarSnapshot(){return window.localStorage.getItem('sidebarState')===
 function sidebarServerSnapshot(){return false;}
 
 export function GlobalTopBar({profile}:{profile:HeaderProfile}){
-  const pathname=usePathname();
   const collapsed=useSyncExternalStore(subscribeSidebar,sidebarSnapshot,sidebarServerSnapshot);
   useEffect(()=>{document.documentElement.dataset.sidebar=collapsed?'collapsed':'expanded';return()=>{delete document.documentElement.dataset.sidebar;};},[collapsed]);
     const toggleSidebar=()=>{
