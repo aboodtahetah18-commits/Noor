@@ -291,16 +291,15 @@ export function GovernorOnboardingIntake({
       <div className={styles.onboardingHeaderActions}><button type="button" className={styles.onboardingCloseButton} onClick={onClose} aria-label="إغلاق صفحة الاستكمال"><LucideIcon name="x" size={20}/></button></div>
     </header>
 
-    <details className={styles.onboardingStageOverview} open>
-      <summary><span>جميع مراحل وأسئلة التأسيس</span><strong>{currentStageIndex+1}/{INTAKE_STAGES.length}</strong></summary>
+    <section className={styles.onboardingStageOverview} aria-label="مراحل التأسيس">
+      <div className={styles.onboardingStageOverviewHeader}><span>مراحل التأسيس</span><strong>{currentStageIndex+1}/{INTAKE_STAGES.length}</strong></div>
       <ol className={styles.onboardingStageList}>
         {INTAKE_STAGES.map((stage,index)=><li key={stage.key} className={index<currentStageIndex?styles.onboardingStageDone:index===currentStageIndex?styles.onboardingStageCurrent:styles.onboardingStageUpcoming}>
-          <span className={styles.onboardingStageNumber}>{index+1}</span>
-          <div><strong>{stage.title}</strong><small>{stage.question}</small></div>
-          {index<currentStageIndex&&<LucideIcon name="circleCheck" size={20}/>}
+          <span className={styles.onboardingStageNumber}>{index<currentStageIndex?<LucideIcon name="circleCheck" size={16}/>:index+1}</span>
+          <strong>{stage.title}</strong>
         </li>)}
       </ol>
-    </details>
+    </section>
 
     {!structuredStep&&intakeStep!=='review'&&<section className={styles.simpleOnboardingStage}>
       <strong>{INTAKE_STAGES[currentStageIndex]?.question}</strong>
@@ -440,8 +439,8 @@ export function GovernorOnboardingIntake({
 
     {mobileEditor&&<div className={styles.mobileRecordEditorOverlay} role="dialog" aria-modal="true" aria-label="تحرير السجل">
       <button type="button" className={styles.mobileRecordEditorScrim} aria-label="إغلاق محرر السجل" onClick={()=>setMobileEditor(null)}/>
-      <aside className={styles.mobileRecordEditorSheet}>
-        <header className={styles.mobileRecordEditorHeader}><div><strong>{mobileEditor.index===null?'إضافة سجل':'تعديل السجل'}</strong><small>احفظ هذا السجل ثم عد للقائمة.</small></div><button type="button" onClick={()=>setMobileEditor(null)} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button></header>
+      <aside className={styles.mobileRecordEditorSheet+' '+(mobileEditor.kind==='dependents'?styles.mobileRecordEditorSheetCompact:'')}>
+        <header className={styles.mobileRecordEditorHeader}><div><strong>{mobileEditor.kind==='dependents'?(mobileEditor.index===null?'إضافة فرد جديد':'تعديل الفرد'):(mobileEditor.index===null?'إضافة سجل':'تعديل السجل')}</strong><small>{mobileEditor.kind==='dependents'?'أدخل البيانات الأساسية ثم احفظ الفرد.':'احفظ هذا السجل ثم عد للقائمة.'}</small></div><button type="button" onClick={()=>setMobileEditor(null)} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button></header>
         <div className={styles.mobileRecordEditorBody}>
           {mobileEditor.kind==='dependents'&&<>
             <label className={styles.mobileFieldFull}><span>الاسم</span><input value={mobileEditor.draft.name} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,name:e.target.value}})}/></label>
