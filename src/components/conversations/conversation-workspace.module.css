@@ -5076,8 +5076,9 @@
     margin-top:var(--ux-space-3)!important
   }
   .onboardingStageList{
-    max-height:48dvh;
-    overflow:auto
+    max-height:none;
+    overflow-x:auto;
+    overflow-y:hidden
   }
   .intakeActions{
     grid-template-columns:repeat(2,minmax(0,1fr))!important
@@ -5188,50 +5189,48 @@
   background:var(--namaa-card);
   overflow:hidden
 }
-.onboardingStageOverview>summary{
+.onboardingStageOverviewHeader{
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:var(--ux-space-2);
-  padding:var(--ux-space-3);
+  padding:var(--ux-space-2) var(--ux-space-3);
   color:var(--ux-text-primary);
-  background:var(--namaa-surface-warm);
-  cursor:pointer
+  background:var(--namaa-surface-warm)
 }
-.onboardingStageOverview>summary span,
-.onboardingStageOverview>summary strong{
+.onboardingStageOverviewHeader span,
+.onboardingStageOverviewHeader strong{
   font-size:var(--ux-type-body-sm-size)
 }
 .onboardingStageList{
-  display:grid;
+  display:flex;
+  align-items:stretch;
   gap:var(--ux-space-1);
   margin:var(--ux-space-0);
   padding:var(--ux-space-2);
+  overflow-x:auto;
+  overscroll-behavior-inline:contain;
+  scroll-snap-type:inline proximity;
   list-style:none
 }
 .onboardingStageList li{
+  flex:0 0 auto;
+  min-width:88px;
   display:grid;
-  grid-template-columns:auto minmax(0,1fr) auto;
-  align-items:start;
-  gap:var(--ux-space-2);
+  place-items:center;
+  align-content:center;
+  gap:var(--ux-space-1);
   padding:var(--ux-space-2);
   border:1px solid var(--namaa-border);
   border-radius:var(--ux-radius-2);
-  background:var(--namaa-card)
-}
-.onboardingStageList li>div{
-  min-width:0;
-  display:grid;
-  gap:var(--ux-space-1)
+  background:var(--namaa-card);
+  text-align:center;
+  scroll-snap-align:start
 }
 .onboardingStageList li strong{
   color:var(--ux-text-primary);
-  font-size:var(--ux-type-body-sm-size)
-}
-.onboardingStageList li small{
-  color:var(--ux-text-secondary);
   font-size:var(--ux-type-caption-size);
-  line-height:1.6
+  line-height:1.45
 }
 .onboardingStageNumber{
   display:grid;
@@ -5314,3 +5313,27 @@
   resize:vertical
 }
 
+
+.mobileRecordEditorSheetCompact{
+  max-width:760px
+}
+
+@media(max-width:767px){
+  .mobileRecordEditorSheetCompact{
+    position:absolute!important;
+    inset-inline:0!important;
+    top:auto!important;
+    bottom:0!important;
+    width:100%!important;
+    height:auto!important;
+    max-height:82dvh!important;
+    border:1px solid var(--namaa-border)!important;
+    border-bottom:0!important;
+    border-radius:var(--ux-radius-4) var(--ux-radius-4) 0 0!important;
+    box-shadow:var(--ux-shadow-lg)!important;
+    grid-template-rows:auto minmax(0,1fr) auto!important
+  }
+  .mobileRecordEditorSheetCompact .mobileRecordEditorBody{
+    overflow:auto!important
+  }
+}
