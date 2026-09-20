@@ -289,6 +289,7 @@
 }
 
 .message{
+  flex:0 0 auto;
   max-width:min(820px,92%);
   border-radius:var(--ux-radius-4);
   padding:var(--ux-space-3);
@@ -2370,15 +2371,19 @@
   }
   .messages{
     flex:1 1 auto;
-    padding:var(--ux-space-2) var(--ux-space-2) var(--ux-space-3);
+    padding:var(--ux-space-2) var(--ux-space-2) calc(var(--ux-space-4) + env(safe-area-inset-bottom));
     min-height:0;
     overflow-y:auto;
     overflow-x:hidden;
     overscroll-behavior-y:contain;
     -webkit-overflow-scrolling:touch;
+    touch-action:pan-y;
     gap:var(--ux-space-2);
     scroll-padding-bottom:calc(72px + env(safe-area-inset-bottom));
     padding-top:var(--ux-space-2)
+  }
+  .messages>p{
+    flex:0 0 auto
   }
   .message{
     max-width:88%;
@@ -2452,6 +2457,9 @@
     align-items:center
   }
   .composer textarea{
+    flex:1 1 auto;
+    align-self:center;
+    box-sizing:border-box;
     min-height:40px;
     max-height:112px;
     height:40px;
@@ -3579,6 +3587,7 @@
   border-end-end-radius:var(--ux-radius-2)
 }
 .conversationTimeDivider{
+  flex:0 0 auto;
   align-self:center;
   width:100%;
   display:flex;
