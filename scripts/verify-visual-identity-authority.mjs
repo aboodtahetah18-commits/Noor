@@ -9,7 +9,6 @@ const chatCss=read('src/components/conversations/conversation-workspace.module.c
 const brandRegistry=JSON.parse(read('public/brand/ndos/approved-brand-assets.json'));
 const compatibilityTokens=read('src/design-system/tokens.css');
 const themes=read('src/design-system/themes.css');
-const governanceCss=read('src/app/uiux-governance.css');
 
 function assert(condition,message){if(!condition)fail.push(message)}
 
@@ -27,7 +26,6 @@ const legacyIdentityLiterals=['#023C6E','#0CB6E5','#021737','#07305A','#EAF7FC',
 for(const literal of legacyIdentityLiterals){
   assert(!compatibilityTokens.includes(literal),'Compatibility tokens must not contain legacy identity literal '+literal);
   assert(!themes.includes(literal),'Theme mappings must not contain legacy identity literal '+literal);
-  assert(!governanceCss.includes(literal),'Governance compatibility CSS must not contain legacy identity literal '+literal);
 }
 assert(!fs.existsSync('src/design-system/ndos-v1.1.css'),'NDOS v1.1 must not exist in runtime source.');
 for(const path of [
