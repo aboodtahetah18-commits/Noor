@@ -4816,3 +4816,23 @@
   font-size:var(--ux-type-caption-size);
   line-height:1.6
 }
+
+
+.weeklyOutlook{
+  display:grid;
+  gap:var(--ux-space-2);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-surface-warm)
+}
+.weeklyOutlook>strong{
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-body-sm-size)
+}
+.weeklyOutlook>p{
+  margin:var(--ux-space-0);
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  line-height:1.7
+}
