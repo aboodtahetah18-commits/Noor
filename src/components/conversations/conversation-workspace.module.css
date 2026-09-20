@@ -4836,3 +4836,173 @@
   font-size:var(--ux-type-caption-size);
   line-height:1.7
 }
+
+
+/* Mobile full-page internal surface contract */
+.fullPageOverlay{
+  position:fixed;
+  inset:0;
+  z-index:150;
+  display:block;
+  background:var(--namaa-card)
+}
+.fullPageSheet{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  max-width:none!important;
+  max-height:100dvh!important;
+  height:100dvh!important;
+  margin:0!important;
+  padding:0!important;
+  transform:none!important;
+  border:0!important;
+  border-radius:0!important;
+  overflow:auto!important;
+  background:var(--namaa-card)!important;
+  box-shadow:none!important
+}
+.fullPageHeader{
+  position:sticky!important;
+  top:0;
+  z-index:20;
+  min-height:var(--ux-size-12);
+  padding:var(--ux-space-3)!important;
+  border-bottom:1px solid var(--namaa-border);
+  background:var(--namaa-card)!important
+}
+.fullPageHeader>button{
+  flex:0 0 auto
+}
+.governedInternalContent article{
+  display:grid;
+  gap:var(--ux-space-2)
+}
+.governedInternalContent article>b{
+  padding:var(--ux-space-2);
+  border-radius:var(--ux-radius-2);
+  background:var(--namaa-surface-warm);
+  color:var(--ux-text-primary)
+}
+.governedInternalContent article>p{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  gap:var(--ux-space-2);
+  align-items:start
+}
+.governedInternalContent article>p>span{
+  white-space:nowrap;
+  color:var(--namaa-green-900);
+  font-size:var(--ux-type-caption-size);
+  font-weight:900
+}
+
+@media(max-width:767px){
+  .onboardingIntake{
+    inset:0!important;
+    inset-inline:0!important;
+    inset-inline-start:0!important;
+    inset-inline-end:0!important;
+    top:0!important;
+    width:100%!important;
+    height:100dvh!important;
+    max-height:100dvh!important;
+    margin:0!important;
+    padding:var(--ux-space-3)!important;
+    transform:none!important;
+    border:0!important;
+    border-radius:0!important;
+    overflow:auto!important;
+    box-shadow:none!important;
+    background:var(--namaa-card)!important;
+    z-index:140
+  }
+  .onboardingIntakeHeader{
+    position:sticky;
+    top:calc(var(--ux-space-3) * -1);
+    z-index:12;
+    margin:calc(var(--ux-space-3) * -1) calc(var(--ux-space-3) * -1) var(--ux-space-3);
+    padding:var(--ux-space-3);
+    border-bottom:1px solid var(--namaa-border);
+    background:var(--namaa-card)
+  }
+  .onboardingHeaderActions{
+    display:flex;
+    align-items:center;
+    gap:var(--ux-space-2)
+  }
+  .onboardingCloseButton{
+    width:var(--ux-size-10);
+    height:var(--ux-size-10);
+    display:grid;
+    place-items:center;
+    flex:0 0 var(--ux-size-10);
+    border:1px solid var(--namaa-border);
+    border-radius:var(--ux-radius-full);
+    background:var(--namaa-card);
+    color:var(--ux-text-primary)
+  }
+  .intakeActions{
+    position:sticky;
+    bottom:calc(var(--ux-space-3) * -1);
+    z-index:12;
+    margin:var(--ux-space-3) calc(var(--ux-space-3) * -1) calc(var(--ux-space-3) * -1);
+    padding:var(--ux-space-3);
+    border-top:1px solid var(--namaa-border);
+    background:var(--namaa-card)
+  }
+  .mobileRecordEditorOverlay{
+    position:fixed;
+    inset:0;
+    z-index:180;
+    background:var(--namaa-card)
+  }
+  .mobileRecordEditorSheet{
+    position:absolute!important;
+    inset:0!important;
+    width:100%!important;
+    height:100dvh!important;
+    max-height:100dvh!important;
+    transform:none!important;
+    border:0!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+    background:var(--namaa-card)!important
+  }
+  .mobileRecordEditorBody{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    align-content:start;
+    gap:var(--ux-space-3);
+    padding:var(--ux-space-3)
+  }
+  .mobileRecordEditorBody label{
+    min-width:0
+  }
+  .mobileFieldWide{
+    grid-column:1 / -1!important
+  }
+  .mobileRecordEditorActions{
+    position:sticky;
+    bottom:0;
+    z-index:12;
+    background:var(--namaa-card);
+    box-shadow:var(--ux-shadow-sm)
+  }
+  .entityDetailTabs{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:var(--ux-space-1)
+  }
+  .entityDetailTabs button{
+    min-width:0;
+    min-height:var(--ux-size-10);
+    white-space:normal;
+    line-height:1.4
+  }
+  .composer textarea{
+    height:40px;
+    min-height:40px;
+    max-height:144px;
+    resize:none;
+    overflow:auto
+  }
+}
