@@ -1,7 +1,7 @@
 'use client';
 
 import { FormEvent, useEffect, useMemo, useState } from 'react';
-import { LucideIcon } from '@/components/ui/lucide-icon';
+import { LucideIcon, type LucideIconName } from '@/components/ui/lucide-icon';
 import type { GovernedDocumentRef } from '@/lib/conversations/governed-room-details';
 import styles from './conversation-workspace.module.css';
 
@@ -19,7 +19,6 @@ const statusLabel:Record<string,string>={
   EFFECTIVE:'نافذ', REJECTED:'مرفوض',
 };
 const priorityLabel={NORMAL:'عادي',NEXT_MEETING:'للاجتماع القادم',URGENT:'عاجل — اجتماع فوري'} as const;
-const kindLabel:Record<string,string>={record:'سجل',charter:'ميثاق',policy:'سياسة',reference:'مرجع',contract:'عقد'};
 
 type DocumentBlock =
   | {kind:'paragraph';text:string}
@@ -50,16 +49,16 @@ function resolveGovernedDisplayType(document:GovernedDocumentRef,content:string)
 function governedDisplayLabel(type:GovernedDisplayType){
   return ({policy:'سياسة',procedure:'إجراء',matrix:'مصفوفة',mechanism:'آلية',reference:'مرجع حاكم'} as const)[type];
 }
-function sectionIcon(title:string,type:GovernedDisplayType){
-  if(/مصفوفة|صلاحيات|مسؤوليات/.test(title)) return 'grid2x2';
+function sectionIcon(title:string,type:GovernedDisplayType):LucideIconName{
+  if(/مصفوفة|صلاحيات|مسؤوليات/.test(title)) return 'layoutGrid';
   if(/خطوات|مسار|اعتماد/.test(title)) return 'listChecks';
-  if(/ضوابط|أحكام/.test(title)) return 'shieldCheck';
+  if(/ضوابط|أحكام/.test(title)) return 'settings';
   if(/هدف|غرض/.test(title)) return 'target';
-  if(/نطاق/.test(title)) return 'network';
-  if(/مرجع|روابط/.test(title)) return 'link';
-  if(type==='procedure') return 'workflow';
-  if(type==='mechanism') return 'gitBranch';
-  return 'fileText';
+  if(/نطاق/.test(title)) return 'repeat2';
+  if(/مرجع|روابط/.test(title)) return 'receiptText';
+  if(type==='procedure') return 'listChecks';
+  if(type==='mechanism') return 'repeat2';
+  return 'receiptText';
 }
 
 function parseGovernedDocument(content:string):DocumentSection[]{
@@ -190,7 +189,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
         </section>
 
         {displayType==='mechanism'&&<section className={styles.governedFlowCard}>
-          <header><LucideIcon name="gitBranch" size={20}/><div><strong>مسار الاعتماد</strong><small>المسار الحاكم حتى الاعتماد والنفاذ.</small></div></header>
+          <header><LucideIcon name="repeat2" size={20}/><div><strong>مسار الاعتماد</strong><small>المسار الحاكم حتى الاعتماد والنفاذ.</small></div></header>
           <ol className={styles.governedFlowSteps}>
             {['المحافظ','أمين السر','مجلس نماء الأعلى','اعتماد أو رفض','تاريخ النفاذ والإصدار'].map((label,index)=><li key={label}><span>{index+1}</span><strong>{label}</strong></li>)}
           </ol>
