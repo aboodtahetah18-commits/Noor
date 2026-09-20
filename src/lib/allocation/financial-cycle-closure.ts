@@ -1,7 +1,6 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { getRawSql } from '@/infrastructure/db/client';
 import { getCurrentFinancialPlanMonitoring } from '@/lib/allocation/financial-plan-monitoring';
-import type { ConversationMessageKind } from '@/lib/conversations/store';
 
 export type ResponsibilityCycleAccountabilityStatus=
   | 'WITHIN_APPROVED'
