@@ -179,9 +179,10 @@ export async function listGovernanceAmendments(userId:string):Promise<Governance
   const map=new Map<string,GovernanceAmendmentRequest>();
   for(const row of rows){
     const data=record(row.structured_data);
-    const requestId=text(data?.request_id);
+    if(!data) continue;
+    const requestId=text(data.request_id);
     if(!requestId) continue;
-    if(data?.governance_amendment_request===true){
+    if(data.governance_amendment_request===true){
       map.set(requestId,{
         requestId,
         documentRef:text(data.document_ref)??'غير مرقم',
@@ -201,7 +202,7 @@ export async function listGovernanceAmendments(userId:string):Promise<Governance
     }
     const item=map.get(requestId);
     if(!item) continue;
-    if(data?.governance_amendment_discussion===true){
+    if(data.governance_amendment_discussion===true){
       const note=text(data.note);
       if(note) item.discussionNotes.push(note);
       continue;
