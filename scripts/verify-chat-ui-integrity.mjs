@@ -62,3 +62,7 @@ if(!css.includes('.entityDetailSheet{\n  width:min(calc(100% - (var(--ux-space-2
 if(!css.includes('.entityDetailTabs{\n  position:sticky;')||!css.includes('grid-template-columns:repeat(3,minmax(0,1fr))')) fail('entity detail tabs must remain three balanced mobile columns');
 if(!css.includes('.entityDetailPanel>section:nth-child(3n+1)')||!css.includes('.entityDetailPanel>section:nth-child(3n+2)')) fail('entity detail section accents missing');
 if(!css.includes('.roomDetailHero{\n  min-width:0;\n  display:grid;')) fail('entity detail hero must use overflow-safe mobile grid');
+if(!workspace.includes('styles.accountSurfaceOverlay')||!workspace.includes('styles.accountSurfaceSheet')) fail('profile and settings must use focused mobile account surfaces');
+if(!css.includes('.accountSurfaceScrim{\n    background:color-mix(in srgb,var(--namaa-chat-canvas) 10%,transparent)')||!css.includes('.accountSurfaceSheet{\n    top:72px;')) fail('mobile account surfaces must avoid the heavy full-screen gray veil');
+if(!css.includes('background:color-mix(in srgb,var(--namaa-surface-warm) 84%,var(--namaa-card))')) fail('mobile user bubble must retain the brighter warm governed surface');
+if(!css.includes(':global(html[data-theme="dark"]) .userMessage{\n    background:color-mix(in srgb,var(--ux-section-soft-teal) 72%,var(--ux-card-bg))')) fail('dark mobile user bubble must remain visibly distinct from the chat canvas');
