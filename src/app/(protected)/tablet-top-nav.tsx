@@ -10,8 +10,7 @@ const items=[['/dashboard','الرئيسية'],['/transactions','الحركة ا
 
 export function TabletTopNav(){
   const pathname=usePathname();
-  if(pathname.startsWith('/onboarding')) return null;
-  return <header className="tablet-top-nav-wrap mustaqbali-tablet-wrap namaa-tablet-wrap">
+    return <header className="tablet-top-nav-wrap mustaqbali-tablet-wrap namaa-tablet-wrap">
     <div className="mustaqbali-tablet-topbar" dir="rtl">
       <Link href="/dashboard" className="mustaqbali-tablet-brand" aria-label="نماء — الرئيسية"><BrandLogo surface="auto" priority /></Link>
       <form action="/transactions" method="get" className="mustaqbali-tablet-search" role="search"><LucideIcon name="search" size={20}/><input name="search" aria-label="ابحث في نماء" placeholder="ابحث في نماء…"/></form>
