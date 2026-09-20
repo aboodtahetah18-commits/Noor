@@ -29,6 +29,11 @@ if(!css.includes('.onboardingCloseButton') || !css.includes('.inlineIntakeButton
 if(!css.includes('.chatFont_small') || !css.includes('.fontSizeChoices')) fail('user chat font control missing');
 if(!css.includes('.brandWatermarkSecondary') || !css.includes('.brandWatermarkTertiary')) fail('approved Namaa watermark pattern missing');
 if(/\.agentMessage\{[^}]*!important|\.userMessage\{[^}]*!important/s.test(css)) fail('message alignment must not depend on !important');
+if(!css.includes('.message{\n  flex:0 0 auto;')) fail('chat messages must never shrink and clip their content');
+if(!css.includes('touch-action:pan-y')) fail('mobile messages must preserve vertical touch scrolling');
+if(!css.includes('box-sizing:border-box;\n    min-height:40px;\n    max-height:112px;\n    height:40px')) fail('empty mobile composer must stay compact at 40px');
+if(!workspace.includes('messagesScrollRef')||!workspace.includes('container.scrollTop=container.scrollHeight')) fail('chat must scroll its own message pane to the latest reply');
+if(!workspace.includes("onBlur={e=>{if(!draft.trim())e.currentTarget.style.height='40px'}}")) fail('empty composer must collapse after focus leaves');
 if(!css.includes('.agentMessage{\n  align-self:flex-end') || !css.includes('margin-left:auto;\n  margin-right:var(--ux-space-0)') || !css.includes('.userMessage{\n  align-self:flex-start') || !css.includes('margin-left:var(--ux-space-0);\n  margin-right:auto')) fail('approved message sides changed: governor must stay right and user must stay left');
 if(workspace.includes('resumeIntakeButton')) fail('structured intake reopen must live inside the active question message, not float over chat');
 if(!workspace.includes('showStructuredAction') || !workspace.includes('متابعة استكمال البيانات')) fail('structured intake in-message action missing');
