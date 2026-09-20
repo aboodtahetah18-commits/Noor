@@ -15,13 +15,12 @@ const kindLabel:Record<AlgorithmRoleRef['kind'],string>={
 };
 
 export function AlgorithmRoleMobileSheet({role,onClose}:{role:AlgorithmRoleRef;onClose:()=>void}){
-  return <div className={styles.mobileOverlay} role="dialog" aria-modal="true" aria-label={'تفاصيل '+role.name}>
-    <button type="button" className={styles.scrim} aria-label="إغلاق" onClick={onClose}/>
-    <aside className={`${styles.mobileSheet} ${styles.algorithmRoleSheet}`}>
-      <div className={styles.sheetHeader}><strong>الوصف الوظيفي الحاكم</strong><button type="button" onClick={onClose} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button></div>
+  return <div className={`${styles.mobileOverlay} ${styles.fullPageOverlay}`} role="dialog" aria-modal="true" aria-label={'تفاصيل '+role.name}>
+    <aside className={`${styles.mobileSheet} ${styles.algorithmRoleSheet} ${styles.fullPageSheet}`}>
+      <div className={`${styles.sheetHeader} ${styles.fullPageHeader}`}><strong>الوصف الوظيفي الحاكم</strong><button type="button" onClick={onClose} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button></div>
       <div className={styles.algorithmRoleContent}>
         <section className={styles.algorithmRoleHero}>
-          <div><span>{role.referenceCode}</span><strong>{role.name}</strong><small>{kindLabel[role.kind]} · يتبع إلى {role.reportsTo}</small></div>
+          <div><strong>{role.name}</strong><small>{kindLabel[role.kind]} · يتبع إلى {role.reportsTo}</small></div>
           <LucideIcon name={role.kind==='advisor'?'sparkles':'circleUserRound'} size={24}/>
         </section>
         <section><small>المهمة الأساسية</small><p>{role.mandate}</p></section>
@@ -29,7 +28,7 @@ export function AlgorithmRoleMobileSheet({role,onClose}:{role:AlgorithmRoleRef;o
         <details><summary>مؤشرات الأداء</summary><ul>{role.kpis.map(item=><li key={item}>{item}</li>)}</ul></details>
         <details><summary>متى يصعّد؟</summary><ul>{role.escalation.map(item=><li key={item}>{item}</li>)}</ul></details>
         <details><summary>ما لا يجوز له فعله</summary><ul>{role.prohibited.map(item=><li key={item}>{item}</li>)}</ul></details>
-        <details open><summary>السياسات والمراجع التي يستند إليها</summary><div className={styles.algorithmRoleRefs}>{role.policyRefs.map(ref=><span key={ref}>{ref}</span>)}</div></details>
+        <details open><summary>السياسات والمراجع التي يستند إليها</summary><p>ترتبط صلاحيات هذا الدور بالمراجع والسياسات الحاكمة داخل ملف الجهة، وتُراجع منها قبل أي توصية أو تصعيد.</p></details>
       </div>
     </aside>
   </div>;
