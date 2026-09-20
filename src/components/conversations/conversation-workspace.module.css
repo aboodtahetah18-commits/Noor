@@ -3405,7 +3405,7 @@
 }
 .userMessage .messageCopy{
   line-height:1.62;
-  margin:0
+  margin:var(--ux-space-0)
 }
 .userMessage .messageMeta{
   margin-top:var(--ux-space-1);
