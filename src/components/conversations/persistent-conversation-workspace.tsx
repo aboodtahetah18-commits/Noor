@@ -956,7 +956,7 @@ export function PersistentConversationWorkspace(){
       const data=await response.json() as {code?:string;row_count?:number};
       if(!response.ok){
         const message=data.code==='STATEMENT_CSV_ONLY'
-          ? 'الرفع الحالي يقبل CSV فقط.'
+          ? 'صيغة ملف كشف الحساب الحالية غير مدعومة. استخدم صيغة الجدول المعتمدة.'
           : data.code==='STATEMENT_DIRECTION_COLUMN_REQUIRED'
             ? 'الكشف يحتاج عمود اتجاه الحركة أو أعمدة خصم/إيداع.'
             : data.code==='STATEMENT_DESCRIPTION_COLUMN_REQUIRED'
