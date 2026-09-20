@@ -2427,7 +2427,9 @@
     align-self:flex-start;
     border-end-start-radius:var(--ux-radius-2);
     border-color:var(--namaa-green-700);
-    box-shadow:var(--ux-shadow-xs);
+    background:color-mix(in srgb,var(--namaa-surface-warm) 84%,var(--namaa-card));
+    color:var(--ux-text-primary);
+    box-shadow:var(--ux-shadow-sm);
     margin-left:var(--ux-space-0);
     margin-right:auto;
     box-sizing:border-box;
@@ -2623,6 +2625,22 @@
   max-height:84dvh;
   border-radius:var(--ux-radius-xl)
   }
+  .accountSurfaceOverlay{
+    padding:var(--ux-space-2)
+  }
+  .accountSurfaceScrim{
+    background:color-mix(in srgb,var(--namaa-chat-canvas) 10%,transparent)
+  }
+  .accountSurfaceSheet{
+    top:72px;
+    bottom:auto;
+    inset-inline:var(--ux-space-2);
+    max-height:calc(100dvh - 88px);
+    border-radius:var(--ux-radius-xl);
+    border:1px solid var(--namaa-border-strong);
+    box-shadow:var(--ux-shadow-lg);
+    background:var(--namaa-card)
+  }
   .attachmentPolicy,.executionNote{
     display:none
   }
@@ -2676,9 +2694,10 @@
     color:var(--ux-text-primary)
   }
   :global(html[data-theme="dark"]) .userMessage{
-    background:var(--ux-section-soft-teal);
+    background:color-mix(in srgb,var(--ux-section-soft-teal) 72%,var(--ux-card-bg));
     border-color:var(--namaa-green-700);
-    color:var(--ux-text-primary)
+    color:var(--ux-text-primary);
+    box-shadow:var(--ux-shadow-sm)
   }
   :global(html[data-theme="dark"]) .structuredCard,
   :global(html[data-theme="dark"]) .onboardingQuestionCard,
@@ -2722,6 +2741,13 @@
   :global(html[data-theme="dark"]) .messageIdentity,
   :global(html[data-theme="dark"]) .messageMeta{
     border-color:var(--ux-border-default)
+  }
+  :global(html[data-theme="dark"]) .accountSurfaceScrim{
+    background:color-mix(in srgb,var(--ux-page-bg) 12%,transparent)
+  }
+  :global(html[data-theme="dark"]) .accountSurfaceSheet{
+    background:var(--ux-card-bg);
+    border-color:var(--ux-border-emphasis)
   }
 
   .specialistRoutingNote{
@@ -3047,7 +3073,7 @@
 .councilSecretary{border-inline-start-width:4px;border-inline-start-color:color-mix(in srgb,var(--namaa-green-700) 55%,var(--namaa-gold-500))}
 
 .userMessageIdentity{display:flex;align-items:baseline;gap:var(--ux-space-2);margin-bottom:var(--ux-space-1)}
-.userMessageIdentity strong{font-size:var(--ux-type-caption-size);color:var(--namaa-green-900)}
+.userMessageIdentity strong{font-size:var(--ux-type-caption-size);color:var(--namaa-green-700)}
 .userMessageIdentity small{font-size:var(--ux-type-caption-size);color:var(--ux-text-secondary)}
 .entityDetailSheet{
   width:min(calc(100% - (var(--ux-space-2) * 2)),720px);
