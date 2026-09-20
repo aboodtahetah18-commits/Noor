@@ -4836,3 +4836,234 @@
   font-size:var(--ux-type-caption-size);
   line-height:1.7
 }
+
+
+/* Mobile full-page internal surfaces — governed by Namaa mobile UX contract */
+@media(max-width:767px){
+  .mobileFullPageSheet,
+  .entityDetailSheet{
+    position:fixed!important;
+    inset:0!important;
+    top:0!important;
+    bottom:0!important;
+    width:100%!important;
+    max-width:none!important;
+    height:100dvh!important;
+    max-height:100dvh!important;
+    margin:0!important;
+    padding:0!important;
+    border:0!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+    overflow:auto!important;
+    overscroll-behavior:contain;
+    background:var(--namaa-card)
+  }
+
+  .mobileFullPageSheet .sheetHeader,
+  .entityDetailSheet .sheetHeader,
+  .onboardingIntakeHeader{
+    position:sticky!important;
+    top:0!important;
+    z-index:20!important;
+    min-height:56px;
+    padding:var(--ux-space-2) var(--ux-space-3)!important;
+    border-bottom:1px solid var(--namaa-border)!important;
+    background:var(--namaa-card)!important;
+    box-shadow:var(--ux-shadow-xs)
+  }
+
+  .mobileFullPageSheet .sheetHeader>button,
+  .entityDetailSheet .sheetHeader>button,
+  .onboardingCloseButton{
+    width:40px!important;
+    height:40px!important;
+    flex:0 0 40px!important;
+    display:grid!important;
+    place-items:center!important;
+    border:1px solid var(--namaa-border)!important;
+    border-radius:var(--ux-radius-full)!important;
+    background:var(--namaa-card)!important;
+    color:var(--namaa-green-900)!important;
+    box-shadow:var(--ux-shadow-xs)
+  }
+
+  .governedDocumentContent,
+  .algorithmRoleContent{
+    padding:var(--ux-space-3)!important;
+    padding-bottom:calc(var(--ux-space-8) + env(safe-area-inset-bottom))!important
+  }
+
+  .entityDetailTabs{
+    top:56px!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:var(--ux-space-1)!important;
+    border-radius:var(--ux-radius-3)!important;
+    margin:var(--ux-space-2) var(--ux-space-3)!important;
+    width:auto!important;
+    box-shadow:var(--ux-shadow-xs)
+  }
+
+  .entityDetailTabs button{
+    min-height:40px!important;
+    padding:var(--ux-space-1) var(--ux-space-2)!important;
+    line-height:1.25!important
+  }
+
+  .entityDetailPanel{
+    padding:0 var(--ux-space-3) calc(var(--ux-space-8) + env(safe-area-inset-bottom))!important
+  }
+
+  .onboardingIntake{
+    position:fixed!important;
+    inset:0!important;
+    top:0!important;
+    transform:none!important;
+    width:100%!important;
+    height:100dvh!important;
+    max-height:100dvh!important;
+    margin:0!important;
+    padding:0!important;
+    border:0!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+    overflow:auto!important;
+    display:block!important;
+    background:var(--namaa-card)!important;
+    z-index:140!important
+  }
+
+  .onboardingIntakeHeader{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:var(--ux-space-3)!important
+  }
+
+  .onboardingIntakeHeader>div:first-child{
+    min-width:0;
+    display:grid;
+    gap:calc(var(--ux-space-1) / 2)
+  }
+
+  .onboardingHeaderActions{
+    flex:0 0 auto!important;
+    display:flex!important;
+    align-items:center!important
+  }
+
+  .onboardingHeaderActions>span{
+    display:none!important
+  }
+
+  .mobileStructuredIntake,
+  .intakeCard,
+  .intakeError{
+    margin-inline:var(--ux-space-3)!important
+  }
+
+  .mobileStructuredIntake,
+  .intakeCard{
+    margin-top:var(--ux-space-3)!important
+  }
+
+  .intakeActions{
+    position:sticky!important;
+    bottom:0!important;
+    z-index:20!important;
+    display:grid!important;
+    gap:var(--ux-space-2)!important;
+    margin-top:var(--ux-space-3)!important;
+    padding:var(--ux-space-3) var(--ux-space-3) calc(var(--ux-space-3) + env(safe-area-inset-bottom))!important;
+    border-top:1px solid var(--namaa-border)!important;
+    background:var(--namaa-card)!important;
+    box-shadow:0 calc(var(--ux-space-2) * -1) var(--ux-space-4) color-mix(in srgb,var(--namaa-green-900) 8%,transparent)
+  }
+
+  .intakeActions>small{
+    display:none!important
+  }
+
+  .mobileRecordEditorOverlay{
+    position:fixed!important;
+    inset:0!important;
+    z-index:170!important;
+    display:block!important;
+    background:var(--namaa-card)!important
+  }
+
+  .mobileRecordEditorScrim{
+    display:none!important
+  }
+
+  .mobileRecordEditorSheet{
+    position:fixed!important;
+    inset:0!important;
+    top:0!important;
+    transform:none!important;
+    width:100%!important;
+    height:100dvh!important;
+    max-height:100dvh!important;
+    border:0!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+    background:var(--namaa-card)!important;
+    overflow:hidden!important;
+    display:grid!important;
+    grid-template-rows:auto minmax(0,1fr) auto!important
+  }
+
+  .mobileRecordEditorHeader{
+    position:relative!important;
+    top:auto!important;
+    min-height:56px;
+    align-items:center!important;
+    padding:var(--ux-space-2) var(--ux-space-3)!important;
+    border-bottom:1px solid var(--namaa-border)!important;
+    box-shadow:var(--ux-shadow-xs)
+  }
+
+  .mobileRecordEditorBody{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    align-content:start!important;
+    gap:var(--ux-space-3)!important;
+    padding:var(--ux-space-3)!important;
+    overflow:auto!important;
+    overscroll-behavior:contain!important
+  }
+
+  .mobileRecordEditorBody label{
+    min-width:0!important
+  }
+
+  .mobileFieldFull{
+    grid-column:1 / -1!important
+  }
+
+  .mobileRecordEditorBody .intakeCheckbox{
+    grid-column:1 / -1!important
+  }
+
+  .mobileRecordEditorActions{
+    position:relative!important;
+    bottom:auto!important;
+    z-index:10!important;
+    padding:var(--ux-space-3) var(--ux-space-3) calc(var(--ux-space-3) + env(safe-area-inset-bottom))!important;
+    background:var(--namaa-card)!important;
+    border-top:1px solid var(--namaa-border)!important;
+    box-shadow:0 calc(var(--ux-space-2) * -1) var(--ux-space-4) color-mix(in srgb,var(--namaa-green-900) 8%,transparent)
+  }
+
+  .composer textarea{
+    min-height:40px!important;
+    height:40px;
+    max-height:96px!important;
+    resize:none!important
+  }
+
+  .governedDocumentHero>div>span,
+  .algorithmRoleHero>div>span{
+    display:none!important
+  }
+}
