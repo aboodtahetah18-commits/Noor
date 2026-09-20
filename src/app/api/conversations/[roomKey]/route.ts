@@ -29,6 +29,7 @@ import { applyDecisionFollowupCommand, parseDecisionFollowupCommand } from '@/li
 import { applyFollowupDeadlineCommand, parseFollowupDeadlineCommand } from '@/lib/governance/institutional-decision-followup-deadlines';
 import { createGovernanceOversightDashboardReply, getGovernanceOversightDashboard, isGovernanceOversightDashboardRequest } from '@/lib/governance/governance-oversight-dashboard';
 import { applyOversightQuickActionCommand, parseOversightQuickActionCommand } from '@/lib/governance/governance-oversight-actions';
+import { applyGovernanceAmendmentConversationCommand, parseGovernanceAmendmentConversationCommand } from '@/lib/governance/governance-amendments';
 
 export async function GET(_request: Request, context: { params: Promise<{ roomKey: string }> }) {
   const user = await getAuthenticatedUser();
@@ -162,6 +163,12 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
       } else {
         reply = await createRoutedReply(user.id, roomKey, text);
       }
+    } else if (roomKey === 'central' && onboarding.complete && parseGovernanceAmendmentConversationCommand('central',text)) {
+      const command=parseGovernanceAmendmentConversationCommand('central',text)!;
+      const amendmentResult=await applyGovernanceAmendmentConversationCommand({userId:user.id,roomKey:'central',command});
+      const currentRoom=await getConversationRoom(user.id,'central');
+      const commandReply=currentRoom.messages.at(-1)??null;
+      return NextResponse.json({message,reply:commandReply,replies:commandReply?[commandReply]:[],governance_amendment:amendmentResult,captured_operation:capturedOperation},{status:201});
     } else if (roomKey === 'central' && onboarding.complete && parseOversightQuickActionCommand(text)) {
       const quickActionReply=await applyOversightQuickActionCommand(user.id,'central',parseOversightQuickActionCommand(text)!);
       if(!quickActionReply) return NextResponse.json({message,code:'GOVERNANCE_QUICK_ACTION_UNAVAILABLE',captured_operation:capturedOperation},{status:409});
@@ -196,6 +203,12 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
       const restructuringReply = await createHilalRestructuringReply(user.id, text);
       const financingReply = restructuringReply ? null : await createHilalFinancingReply(user.id, text);
       reply = restructuringReply ?? financingReply ?? await createRoutedReply(user.id, roomKey, text);
+    } else if (roomKey === 'council' && parseGovernanceAmendmentConversationCommand('council',text)) {
+      const command=parseGovernanceAmendmentConversationCommand('council',text)!;
+      const amendmentResult=await applyGovernanceAmendmentConversationCommand({userId:user.id,roomKey:'council',command});
+      const currentRoom=await getConversationRoom(user.id,'council');
+      const commandReply=currentRoom.messages.at(-1)??null;
+      return NextResponse.json({message,reply:commandReply,replies:commandReply?[commandReply]:[],governance_amendment:amendmentResult,captured_operation:capturedOperation},{status:201});
     } else if (roomKey === 'council') {
       const meetingAgendaCommand=parseMeetingAgendaCommand(text);
       if(meetingAgendaCommand){
@@ -248,6 +261,12 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
       }
       const replies = await createCouncilDeliberationReplies(user.id, text);
       return NextResponse.json({ message, reply: replies.at(-1) ?? null, replies, captured_operation: capturedOperation }, { status: 201 });
+    } else if (roomKey === 'secretary' && parseGovernanceAmendmentConversationCommand('secretary',text)) {
+      const command=parseGovernanceAmendmentConversationCommand('secretary',text)!;
+      const amendmentResult=await applyGovernanceAmendmentConversationCommand({userId:user.id,roomKey:'secretary',command});
+      const currentRoom=await getConversationRoom(user.id,'secretary');
+      const commandReply=currentRoom.messages.at(-1)??null;
+      return NextResponse.json({message,reply:commandReply,replies:commandReply?[commandReply]:[],governance_amendment:amendmentResult,captured_operation:capturedOperation},{status:201});
     } else if (roomKey === 'secretary' && parseOversightQuickActionCommand(text)) {
       const quickActionReply=await applyOversightQuickActionCommand(user.id,'secretary',parseOversightQuickActionCommand(text)!);
       if(!quickActionReply) return NextResponse.json({message,code:'GOVERNANCE_QUICK_ACTION_UNAVAILABLE',captured_operation:capturedOperation},{status:409});
