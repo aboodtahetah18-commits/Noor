@@ -3415,9 +3415,6 @@
   color:var(--namaa-green-700)
 }
 
-.userMessage{
-  padding:var(--ux-space-2) var(--ux-space-3)
-}
 .userMessageIdentity{
   justify-content:space-between;
   margin-bottom:var(--ux-space-1)
