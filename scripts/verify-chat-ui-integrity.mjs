@@ -46,3 +46,7 @@ if(!workspace.includes('userMessageIdentity')) fail('user messages must preserve
 if(!workspace.includes('setActiveEntityReference({roomId:room.id,ref})')) fail('entity source references must be actionable');
 if(!workspace.includes("setGovernanceMode('governance')")) fail('entity records and policies must open the governance center');
 if(!css.includes('.detailList>span,.detailList>button{')||!css.includes('.entityReferenceContent{')) fail('actionable entity reference styles missing');
+if(!css.includes('border:1px solid var(--namaa-border-strong);\n  box-shadow:var(--ux-shadow-xs);\n  overflow:hidden')) fail('message border hierarchy must remain visually strong');
+if(!css.includes('border-top:1px solid var(--namaa-border-strong);\n    background:var(--namaa-card)')) fail('mobile composer top boundary must remain visible');
+if(!css.includes('border:1px solid var(--namaa-border-strong);\n    border-radius:var(--ux-radius-full);\n    background:var(--namaa-card)')) fail('mobile composer input must retain its compact bordered treatment');
+if(!css.includes('min-height:46px')||!css.includes('box-shadow:var(--ux-shadow-xs);\n  font:inherit;')) fail('entity detail rows must retain the approved visual hierarchy');
