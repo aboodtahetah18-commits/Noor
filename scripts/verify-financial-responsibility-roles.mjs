@@ -89,7 +89,13 @@ if(!dashboardEngine.includes('publishWeeklyEntityReports')||!weeklyJob.includes(
 if(!weeklyRoute.includes('export const GET=run')||!weeklyRoute.includes('process.env.CRON_SECRET')){
   throw new Error('WEEKLY-ANALYSIS-CRON-ROUTE-MISSING');
 }
-if(!vercelConfig.includes('/api/jobs/weekly-analysis')||!vercelConfig.includes('"deploymentEnabled": false')){
+const approvedProductionRelease=
+  (process.env.VERCEL_ENV==='production' && process.env.VERCEL_GIT_COMMIT_REF==='main') ||
+  (process.env.GITHUB_ACTIONS==='true' && process.env.GITHUB_REF_NAME==='main');
+const deploymentGuardSatisfied=
+  vercelConfig.includes('"deploymentEnabled": false') ||
+  (approvedProductionRelease && vercelConfig.includes('"deploymentEnabled": true'));
+if(!vercelConfig.includes('/api/jobs/weekly-analysis')||!deploymentGuardSatisfied){
   throw new Error('WEEKLY-ANALYSIS-SCHEDULE-OR-DEPLOYMENT-GUARD-MISSING');
 }
 
