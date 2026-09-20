@@ -22,7 +22,7 @@ if(!css.includes('background:var(--namaa-green-900)')) fail('approved green mobi
 const workspace=readFileSync('src/components/conversations/persistent-conversation-workspace.tsx','utf8');
 if(!workspace.includes('/brand/ndos/namaa-logo-white-transparent.png')) fail('official white Namaa mobile logo missing');
 if(workspace.includes('mobileBrandLockup')) fail('Namaa logo must not be redrawn from text and symbol');
-if(!css.includes('.mobileBrandLogo') || !css.includes('left:50%') || !css.includes('transform:translate(-50%,-50%)')) fail('mobile Namaa logo must stay geometrically centered');
+if(!css.includes('.mobileBrandLogo') || !css.includes('position:static') || !css.includes('transform:none') || !css.includes('.mobileAppBarPrimary{\n    flex-direction:row-reverse')) fail('mobile Namaa logo must stay in the approved left-side header position');
 if(!css.includes('filter:none')) fail('official Namaa logo must not be recolored');
 if(!css.includes('.onboardingIntake') || !css.includes('position:fixed')) fail('onboarding must remain a popup layer');
 if(!css.includes('.onboardingCloseButton') || !css.includes('.inlineIntakeButton')) fail('onboarding close/in-message reopen controls missing');
