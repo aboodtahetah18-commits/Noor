@@ -43,3 +43,6 @@ console.log('CHAT-UI-INTEGRITY-PASS');
 if(!workspace.includes("setDetailTab('role')") || !workspace.includes('السجلات والسياسات')) fail('three-tab governed entity detail surface missing');
 if(!workspace.includes("new Set(['dependents','accounts','obligations','goals'])")) fail('simple onboarding questions must remain directly answerable in chat');
 if(!workspace.includes('userMessageIdentity')) fail('user messages must preserve visible sender identity');
+if(!workspace.includes('setActiveEntityReference({roomId:room.id,ref})')) fail('entity source references must be actionable');
+if(!workspace.includes("setGovernanceMode('governance')")) fail('entity records and policies must open the governance center');
+if(!css.includes('.detailList>span,.detailList>button{')||!css.includes('.entityReferenceContent{')) fail('actionable entity reference styles missing');
