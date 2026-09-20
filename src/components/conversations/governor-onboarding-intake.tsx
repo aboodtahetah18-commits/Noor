@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { LucideIcon } from '@/components/ui/lucide-icon';
 import styles from './conversation-workspace.module.css';
 
@@ -96,7 +96,6 @@ export function GovernorOnboardingIntake({
   const [error,setError]=useState('');
   const [mobileEditor,setMobileEditor]=useState<MobileEditor>(null);
   const [simpleAnswer,setSimpleAnswer]=useState('');
-  useEffect(()=>{ setSimpleAnswer(''); },[step]);
 
   const expectedNet=useMemo(()=>{
     const base=Number(income.base_salary||0);
@@ -197,6 +196,7 @@ export function GovernorOnboardingIntake({
       const replies=Array.isArray(data.replies)?data.replies:[];
       const reply=data.reply??replies.at(-1)??null;
       const nextStep=String(reply?.structured_data?.onboarding_step??'');
+      setSimpleAnswer('');
       onAccepted(data.message,reply,nextStep);
     }catch{
       setError('تعذر حفظ هذه المرحلة الآن. لم يعتمد نماء الإجابة.');
