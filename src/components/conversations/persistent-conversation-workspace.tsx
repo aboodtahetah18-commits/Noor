@@ -1240,8 +1240,14 @@ export function PersistentConversationWorkspace(){
           onClose={()=>setIntakeDismissed(true)}
           onAccepted={(message,reply,nextStep)=>{
             setMessages(current=>[...current,message,...(reply?[reply]:[])]);
+            const completed=nextStep==='complete'||Boolean(reply?.structured_data?.onboarding_complete);
             setOnboardingStep(nextStep);
-            setIntakeDismissed(true);
+            if(completed){
+              setOnboardingComplete(true);
+              setIntakeDismissed(true);
+            }else{
+              setIntakeDismissed(false);
+            }
           }}
         />}
         {onboardingComplete===false&&onboardingStep==='review'&&<div className={styles.onboardingReviewPrompt}><div><strong>راجع بياناتك قبل التأكيد</strong><small>يمكنك تعديل أي معلومة يدويًا، ثم تثبيت الملف بعد التأكد.</small></div><button type="button" className={styles.secondaryButton} onClick={()=>void openOnboardingReview()}><LucideIcon name="listChecks" size={16}/><span>مراجعة البيانات</span></button></div>}
