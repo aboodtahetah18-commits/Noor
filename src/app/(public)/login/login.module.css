@@ -52,7 +52,7 @@
 .brand,.visualCopy,.mobileHeroCopy{position:relative;z-index:2}
 .brand{display:flex;align-items:center;gap:var(--ux-auth-s4)}
 .logoFrame{display:grid;place-items:center;width:78px;height:78px;border-radius:var(--ux-radius-xl);background:var(--ux-alpha-navy-10);border:1px solid var(--ux-border-default)}
-.logo{width:58px;height:auto;object-fit:contain}
+.logo{width:58px;height:auto;object-fit:contain}\n.logoLight{display:none}\n.logoDark{display:block}
 .brandText{display:grid;gap:var(--ux-auth-s1)}
 .brandText strong{font-size:var(--ux-type-page-title-size);line-height:1;font-weight:800}
 .brandText span{font-size:var(--ux-type-body-size);color:var(--ux-text-inverse);opacity:.82}
@@ -93,65 +93,216 @@
 .loadingCard{display:grid;gap:var(--ux-auth-s3)}
 .loadingCard h2{margin:var(--ux-auth-s0);font-size:var(--ux-type-section-title-size)}
 .loadingCard p{margin:var(--ux-auth-s0);color:var(--ux-text-secondary);line-height:1.7}
-@media(max-width:767px){
-  .page{position:fixed;inset:0;width:100%;height:100dvh;min-height:0;overflow:hidden;padding:var(--ux-auth-s0);background:var(--ux-action-primary)}
-  .shell{width:100%;height:100dvh;min-height:0;display:flex;flex-direction:column;border:0;box-shadow:var(--ux-shadow-xs);overflow:hidden;background:var(--ux-surface-default)}
-  .visual{display:block;flex:0 0 36dvh;min-height:250px;max-height:330px;padding:var(--ux-auth-s6) var(--ux-auth-s5) var(--ux-auth-s12);background:var(--ux-action-primary)}
+@media(max-width:1023px){
+  .page{
+    min-height:100dvh;
+    display:block;
+    padding:var(--ux-auth-s0);
+    overflow:auto;
+    background:var(--ux-surface-canvas);
+    color:var(--ux-text-primary)
+  }
+  .shell{
+    width:100%;
+    min-height:100dvh;
+    display:flex;
+    flex-direction:column;
+    border:0;
+    border-radius:var(--ux-radius-0);
+    overflow:hidden;
+    background:var(--ux-surface-canvas);
+    box-shadow:var(--ux-shadow-none)
+  }
+  .visual{
+    position:relative;
+    isolation:isolate;
+    flex:0 0 auto;
+    display:block;
+    min-height:250px;
+    padding:var(--ux-auth-s5);
+    overflow:hidden;
+    background:var(--ux-surface-canvas);
+    color:var(--ux-text-primary)
+  }
   .visual::before,.visual::after{display:none}
-  .brand{position:absolute;top:20px;right:20px;display:flex;align-items:center;gap:var(--ux-auth-s0);z-index:3}
-  .logoFrame{width:auto;height:auto;border:0;background:transparent}
-  .logo{width:116px;height:auto;max-height:58px;object-fit:contain}
+  .brand{
+    position:absolute;
+    top:22px;
+    right:22px;
+    z-index:4;
+    display:flex;
+    align-items:center;
+    gap:var(--ux-auth-s0)
+  }
+  .logoFrame{
+    display:flex;
+    align-items:center;
+    width:auto;
+    height:auto;
+    border:0;
+    border-radius:var(--ux-radius-0);
+    background:transparent
+  }
+  .logo{
+    width:118px;
+    height:auto;
+    max-height:58px;
+    object-fit:contain
+  }
+  .logoLight{display:block}
+  .logoDark{display:none}
   .brandText{display:none}
-  .heroTheme{display:grid;place-items:center;position:absolute;top:18px;left:18px;z-index:4;padding:var(--ux-auth-s1);border-radius:var(--ux-radius-md);background:var(--ux-alpha-navy-10)}
-  .leafDecorOne,.leafDecorTwo{display:block;position:absolute;pointer-events:none;z-index:1;border-radius:var(--ux-radius-6);transform:rotate(-26deg)}
-  .leafDecorOne{width:150px;height:72px;top:-16px;left:-34px;background:color-mix(in srgb,var(--ux-accent-supporting) 28%,transparent)}
-  .leafDecorTwo{width:120px;height:54px;bottom:46px;left:-20px;background:color-mix(in srgb,var(--ux-brand-accent) 42%,transparent);transform:rotate(58deg)}
-  .mobileHeroCopy{display:grid;gap:var(--ux-auth-s2);position:absolute;right:20px;bottom:54px;left:20px;color:var(--ux-text-inverse);text-align:right}
-  .mobileBadge{justify-self:start;padding:var(--ux-auth-s2) var(--ux-auth-s3);border:1px solid var(--ux-border-default);border-radius:var(--ux-radius-6);background:var(--ux-alpha-navy-10);color:var(--ux-text-inverse);font-size:var(--ux-type-caption-size);font-weight:700}
-  .mobileHeroCopy h1{margin:var(--ux-auth-s0);font-size:var(--ux-type-page-title-size);line-height:1.2;font-weight:800;color:var(--ux-text-inverse)}
-  .mobileHeroCopy p{margin:var(--ux-auth-s0);color:var(--ux-text-inverse);opacity:.84;font-size:var(--ux-type-body-sm-size);line-height:1.6}
+  .heroTheme{
+    display:grid;
+    place-items:center;
+    position:absolute;
+    top:18px;
+    left:18px;
+    z-index:5
+  }
+  .leafDecorOne,.leafDecorTwo{
+    display:block;
+    position:absolute;
+    left:0;
+    z-index:1;
+    pointer-events:none;
+    border:1px solid color-mix(in srgb,var(--ux-action-primary) 18%,transparent);
+    background:color-mix(in srgb,var(--ux-accent-supporting) 26%,var(--ux-surface-canvas))
+  }
+  .leafDecorOne{
+    width:190px;
+    height:82px;
+    top:42px;
+    left:-42px;
+    border-radius:var(--ux-radius-full) var(--ux-radius-0) var(--ux-radius-full) var(--ux-radius-0);
+    transform:rotate(-18deg)
+  }
+  .leafDecorTwo{
+    width:158px;
+    height:70px;
+    top:132px;
+    left:28px;
+    border-radius:var(--ux-radius-0) var(--ux-radius-full) var(--ux-radius-0) var(--ux-radius-full);
+    transform:rotate(16deg)
+  }
+  .mobileHeroCopy{
+    display:grid;
+    gap:var(--ux-auth-s2);
+    position:relative;
+    z-index:3;
+    width:calc(100% - 150px);
+    margin-top:92px;
+    margin-inline-start:auto;
+    color:var(--ux-text-primary);
+    text-align:right
+  }
+  .mobileBadge{
+    justify-self:start;
+    padding:var(--ux-auth-s2) var(--ux-auth-s3);
+    border:1px solid var(--ux-border-default);
+    border-radius:var(--ux-radius-6);
+    background:var(--ux-surface-default);
+    color:var(--ux-action-primary);
+    font-size:var(--ux-type-caption-size);
+    font-weight:800
+  }
+  .mobileHeroCopy h1{
+    margin:var(--ux-auth-s0);
+    color:var(--ux-text-primary);
+    font-size:var(--ux-type-page-title-size);
+    line-height:1.2;
+    font-weight:800
+  }
+  .mobileHeroCopy p{
+    margin:var(--ux-auth-s0);
+    color:var(--ux-text-secondary);
+    font-size:var(--ux-type-body-sm-size);
+    line-height:1.6
+  }
   .visualCopy{display:none}
-  .panel{position:relative;z-index:3;flex:1 1 auto;height:auto;min-height:0;justify-content:flex-start;overflow:hidden;margin-top:calc(var(--ux-auth-s6)*-1);padding:var(--ux-auth-s6) var(--ux-auth-s4) var(--ux-auth-s3);border-radius:var(--ux-radius-6) var(--ux-radius-6) var(--ux-radius-6) var(--ux-radius-6);background:var(--ux-surface-default);box-shadow:var(--ux-shadow-md)}
-  .themeButton{display:none}
-  .heading{display:none}
+  .panel{
+    position:relative;
+    z-index:3;
+    flex:1 1 auto;
+    min-height:calc(100dvh - 250px);
+    justify-content:flex-start;
+    margin:var(--ux-auth-s0);
+    padding:var(--ux-auth-s6) var(--ux-auth-s5);
+    border-radius:var(--ux-radius-0);
+    background:var(--ux-surface-canvas);
+    color:var(--ux-text-primary);
+    box-shadow:var(--ux-shadow-none)
+  }
+  .themeButton,.heading{display:none}
   .form{gap:var(--ux-auth-s3)}
-  .field{gap:var(--ux-auth-s2)}
-  .fieldLabel{font-size:var(--ux-type-body-sm-size)}
-  .inputShell{min-height:52px;height:52px;border-radius:var(--ux-radius-md);padding:var(--ux-auth-s0) var(--ux-auth-s3);gap:var(--ux-auth-s2);background:color-mix(in srgb,var(--ux-surface-default) 96%,var(--ux-action-primary) 4%)}
-  .input{height:50px;font-size:var(--ux-type-body-size);direction:ltr;text-align:right}
-  .passwordControls{gap:var(--ux-auth-s0)}
+  .field{gap:var(--ux-auth-s2);color:var(--ux-text-primary)}
+  .fieldLabel{
+    color:var(--ux-text-primary);
+    font-size:var(--ux-type-body-sm-size)
+  }
+  .inputShell{
+    min-height:52px;
+    height:52px;
+    gap:var(--ux-auth-s2);
+    padding:var(--ux-auth-s0) var(--ux-auth-s3);
+    border:1px solid var(--ux-border-default);
+    border-radius:var(--ux-radius-md);
+    background:var(--ux-surface-default)
+  }
+  .input{height:50px;font-size:var(--ux-type-body-size)}
+  .inputIcon{color:var(--ux-text-secondary)}
   .metaRow{gap:var(--ux-auth-s2)}
-  .helper{font-size:var(--ux-type-body-sm-size)}
-  .submit{min-height:52px;height:52px;border-radius:var(--ux-radius-md);font-size:var(--ux-type-body-size);box-shadow:var(--ux-shadow-sm)}
-  .createAccount{font-size:var(--ux-type-body-sm-size);margin-top:var(--ux-auth-s1)}
+  .helper{color:var(--ux-text-secondary);font-size:var(--ux-type-body-sm-size)}
+  .helper a{color:var(--ux-action-primary)}
+  .submit{
+    min-height:52px;
+    height:52px;
+    border-radius:var(--ux-radius-md);
+    background:var(--ux-action-primary);
+    color:var(--ux-text-inverse);
+    font-size:var(--ux-type-body-size);
+    box-shadow:var(--ux-shadow-sm)
+  }
+  .createAccount{
+    margin-top:var(--ux-auth-s2);
+    color:var(--ux-text-secondary);
+    font-size:var(--ux-type-body-sm-size)
+  }
+  .createAccount a{color:var(--ux-action-primary)}
   .footer{display:none}
   .loadingCard{padding-top:var(--ux-auth-s3)}
-  .loadingCard h2{font-size:var(--ux-type-section-title-size)}
-}
-@media(max-width:767px) and (max-height:680px){
-  .visual{flex-basis:31dvh;min-height:205px;padding-bottom:var(--ux-auth-s10)}
-  .logo{width:98px}
-  .mobileHeroCopy{bottom:40px;gap:var(--ux-auth-s1)}
-  .mobileHeroCopy h1{font-size:var(--ux-type-section-title-size)}
-  .mobileHeroCopy p{font-size:var(--ux-type-caption-size)}
-  .mobileBadge{padding:var(--ux-auth-s1) var(--ux-auth-s2);font-size:var(--ux-type-caption-size)}
-  .panel{margin-top:calc(var(--ux-auth-s5)*-1);padding-top:var(--ux-auth-s4);padding-bottom:var(--ux-auth-s2)}
-  .form{gap:var(--ux-auth-s2)}
-  .field{gap:var(--ux-auth-s1)}
-  .inputShell{height:46px;min-height:46px}
-  .input{height:44px;font-size:var(--ux-type-body-sm-size)}
-  .submit{height:46px;min-height:46px}
-  .createAccount{font-size:var(--ux-type-caption-size)}
-}
-@media(min-width:768px) and (max-width:1023px){
-  .page{padding:var(--ux-auth-s6)}
-  .shell{width:min(720px,100%);min-height:calc(100svh - 48px);grid-template-columns:1fr;overflow:hidden}
-  .visual{display:flex;min-height:270px;padding:var(--ux-auth-s8)}
-  .brand{align-self:flex-start}
-  .visualCopy{max-width:520px}
-  .visualCopy h1{font-size:var(--ux-type-number-lg-size)}
-  .panel{min-height:460px;justify-content:center;padding:var(--ux-auth-s12) var(--ux-auth-s10)}
-  .themeButton{display:block;top:24px;left:24px}
-  .heading h2{font-size:var(--ux-type-number-lg-size)}
+
+  :global(html[data-theme="dark"]) .page,
+  :global(html[data-theme="dark"]) .shell,
+  :global(html[data-theme="dark"]) .visual,
+  :global(html[data-theme="dark"]) .panel{
+    background:var(--ux-page-bg);
+    color:var(--ux-text-primary)
+  }
+  :global(html[data-theme="dark"]) .logoLight{display:none}
+  :global(html[data-theme="dark"]) .logoDark{display:block}
+  :global(html[data-theme="dark"]) .leafDecorOne,
+  :global(html[data-theme="dark"]) .leafDecorTwo{
+    background:color-mix(in srgb,var(--ux-section-soft-teal) 76%,var(--ux-page-bg));
+    border-color:var(--ux-border-emphasis)
+  }
+  :global(html[data-theme="dark"]) .mobileBadge{
+    background:var(--ux-section-soft-teal);
+    border-color:var(--ux-border-emphasis);
+    color:var(--ux-text-primary)
+  }
+  :global(html[data-theme="dark"]) .mobileHeroCopy h1,
+  :global(html[data-theme="dark"]) .fieldLabel{
+    color:var(--ux-text-primary)
+  }
+  :global(html[data-theme="dark"]) .mobileHeroCopy p,
+  :global(html[data-theme="dark"]) .helper,
+  :global(html[data-theme="dark"]) .createAccount{
+    color:var(--ux-text-secondary)
+  }
+  :global(html[data-theme="dark"]) .inputShell{
+    background:var(--ux-section-soft-blue);
+    border-color:var(--ux-border-emphasis)
+  }
 }
 @media(min-width:1024px){.heroTheme,.mobileHeroCopy,.leafDecorOne,.leafDecorTwo{display:none}}
