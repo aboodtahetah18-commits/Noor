@@ -52,3 +52,7 @@ if(!css.includes('border:1px solid var(--namaa-border-strong);\n  box-shadow:var
 if(!css.includes('border-top:1px solid var(--namaa-border-strong);\n    background:var(--namaa-card)')) fail('mobile composer top boundary must remain visible');
 if(!css.includes('border:1px solid var(--namaa-border-strong);\n    border-radius:var(--ux-radius-full);\n    background:var(--namaa-card)')) fail('mobile composer input must retain its compact bordered treatment');
 if(!css.includes('min-height:46px')||!css.includes('box-shadow:var(--ux-shadow-xs);\n  font:inherit;')) fail('entity detail rows must retain the approved visual hierarchy');
+if(!css.includes('.entityDetailSheet{\n  width:min(calc(100% - (var(--ux-space-2) * 2)),720px);')||!css.includes('overflow-x:hidden')) fail('mobile entity detail sheet must stay inside the viewport');
+if(!css.includes('.entityDetailTabs{\n  position:sticky;')||!css.includes('grid-template-columns:repeat(3,minmax(0,1fr))')) fail('entity detail tabs must remain three balanced mobile columns');
+if(!css.includes('.entityDetailPanel>section:nth-child(3n+1)')||!css.includes('.entityDetailPanel>section:nth-child(3n+2)')) fail('entity detail section accents missing');
+if(!css.includes('.roomDetailHero{\n  min-width:0;\n  display:grid;')) fail('entity detail hero must use overflow-safe mobile grid');
