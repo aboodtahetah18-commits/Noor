@@ -453,8 +453,9 @@
   margin:var(--ux-space-0) var(--ux-space-3) var(--ux-space-2);
   padding:var(--ux-space-3);
   border:1px solid var(--namaa-border);
-  border-radius:var(--ux-radius-3);
+  border-radius:var(--ux-radius-4);
   background:var(--namaa-card);
+  box-shadow:var(--ux-shadow-xs);
   display:grid;
   grid-template-columns:minmax(0,1fr) minmax(160px,220px) auto;
   align-items:end;
@@ -562,6 +563,7 @@
   border:1px solid var(--namaa-border);
   border-radius:var(--ux-radius-4);
   background:var(--namaa-card);
+  box-shadow:var(--ux-shadow-xs);
   display:grid;
   gap:var(--ux-space-3);
   padding:var(--ux-space-3);
@@ -1269,8 +1271,9 @@
   gap:var(--ux-space-1);
   padding:var(--ux-space-3);
   border:1px solid var(--namaa-border);
-  border-radius:var(--ux-radius-3);
-  background:var(--namaa-surface-warm)
+  border-radius:var(--ux-radius-4);
+  background:var(--namaa-card);
+  box-shadow:var(--ux-shadow-xs)
 }
 
 .roomDetailContent>section>small,
@@ -1395,8 +1398,9 @@
   gap:var(--ux-space-2);
   padding:var(--ux-space-3);
   border:1px solid var(--namaa-border);
-  border-radius:var(--ux-radius-3);
-  background:var(--namaa-surface-warm)
+  border-radius:var(--ux-radius-4);
+  background:var(--namaa-card);
+  box-shadow:var(--ux-shadow-xs)
 }
 
 .intakeCardHeader{
@@ -1504,8 +1508,8 @@
   gap:var(--ux-space-3);
   padding:var(--ux-space-2) var(--ux-space-3);
   border:1px solid var(--namaa-border);
-  border-radius:var(--ux-radius-3);
-  background:var(--namaa-card)
+  border-radius:var(--ux-radius-4);
+  background:var(--namaa-surface-warm)
 }
 
 .incomeReconciliation small{
@@ -1559,9 +1563,10 @@
   gap:var(--ux-space-3);
   padding:var(--ux-space-3);
   border:1px solid var(--namaa-border);
-  border-radius:var(--ux-radius-3);
-  background:var(--namaa-surface-warm);
-  color:var(--namaa-green-900)
+  border-radius:var(--ux-radius-4);
+  background:var(--namaa-card);
+  color:var(--namaa-green-900);
+  box-shadow:var(--ux-shadow-xs)
 }
 
 .governanceIntro>div{
@@ -1582,9 +1587,10 @@
 
 .governanceCard{
   border:1px solid var(--namaa-border);
-  border-radius:var(--ux-radius-3);
+  border-radius:var(--ux-radius-4);
   background:var(--namaa-card);
-  overflow:hidden
+  overflow:hidden;
+  box-shadow:var(--ux-shadow-xs)
 }
 
 .governanceCard summary{
@@ -1663,8 +1669,9 @@
   gap:var(--ux-space-2) var(--ux-space-3);
   padding:var(--ux-space-3);
   border:1px solid var(--namaa-border);
-  border-radius:var(--ux-radius-3);
-  background:var(--namaa-card)
+  border-radius:var(--ux-radius-4);
+  background:var(--namaa-card);
+  box-shadow:var(--ux-shadow-xs)
 }
 
 .meetingCard>div{
