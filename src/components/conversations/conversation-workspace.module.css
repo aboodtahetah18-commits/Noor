@@ -3528,16 +3528,11 @@
   left:50%;
   top:50%;
   transform:translate(-50%,-50%);
-  width:112px;
+  width:104px;
   min-width:88px;
+  max-height:38px;
   height:auto;
   object-fit:contain;
+  filter:none;
   z-index:1
-}
-@media(max-width:767px){
-  .mobileBrandLogo{
-    width:104px;
-    min-width:88px;
-    max-height:38px
-  }
 }
