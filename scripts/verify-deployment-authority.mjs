@@ -60,8 +60,11 @@ if(vercel.outputDirectory!=='.next') errors.push(`Vercel outputDirectory must be
 const isApprovedPreview=
   process.env.VERCEL_ENV==='preview' &&
   process.env.VERCEL_GIT_COMMIT_REF==='deploy/vercel-preview-20260920';
-if(vercel.git?.deploymentEnabled!==false && !isApprovedPreview){
-  errors.push('Vercel Git auto-deployments must stay disabled except for the explicitly approved preview branch.');
+const isApprovedProductionRelease=
+  (process.env.VERCEL_ENV==='production' && process.env.VERCEL_GIT_COMMIT_REF==='main') ||
+  (process.env.GITHUB_ACTIONS==='true' && process.env.GITHUB_REF_NAME==='main');
+if(vercel.git?.deploymentEnabled!==false && !isApprovedPreview && !isApprovedProductionRelease){
+  errors.push('Vercel Git auto-deployments must stay disabled except for an explicitly approved preview or production release.');
 }
 if(!build.includes('npm run build')) errors.push('Vercel build must compile the repository root Next.js application.');
 if(legacyScriptNames.length) errors.push(`Legacy generated UI commands remain in package.json: ${legacyScriptNames.join(', ')}`);
