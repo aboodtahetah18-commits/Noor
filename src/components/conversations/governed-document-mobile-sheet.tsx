@@ -36,7 +36,11 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
     const data=await response.json().catch(()=>({})) as {amendments?:Amendment[]};
     if(response.ok) setAmendments(Array.isArray(data.amendments)?data.amendments:[]);
   }
-  useEffect(()=>{void load()},[]);
+  useEffect(()=>{
+    let cancelled=false;
+    queueMicrotask(()=>{if(!cancelled) void load()});
+    return()=>{cancelled=true};
+  },[]);
   const related=useMemo(()=>amendments.filter(item=>item.documentRef===document.referenceCode),[amendments,document.referenceCode]);
 
   async function submit(event:FormEvent){
