@@ -1,10 +1,18 @@
 import type { ConversationRoomKey } from '@/lib/conversations/store';
 
+export type GovernedDocumentSection = {
+  ref:string;
+  title:string;
+  summary:string;
+};
+
 export type GovernedDocumentRef = {
+  referenceCode:string;
   title:string;
   kind:'record'|'policy'|'charter'|'contract'|'reference';
   version?:string;
   sourceUrl?:string;
+  sections?:GovernedDocumentSection[];
 };
 
 export type GovernedRoomDetail = {
@@ -31,25 +39,25 @@ export const governedRoomDetails:Record<ConversationRoomKey,GovernedRoomDetail>=
     governanceNote:'هو الواجهة البشرية الخوارزمية الأولى للمستخدم الجديد، ويستخدم المعلومات الموثوقة الموجودة بدل إعادة السؤال عنها.',
     sourceRefs:['ROLE-GOV','حوكمة-تأسيس-٢٢'],
     records:[
-      {title:'سجل القرارات التأسيسية والحالة النهائية',kind:'record',version:'v2.0',sourceUrl:'https://drive.google.com/file/d/1ry5QdRp_0dJiMasHl8toFaU_VZRTuLG1/view'},
-      {title:'الرقابة والتدقيق وسجل الأثر — بنك نماء المركزي',kind:'record',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1TQ62P-prHNBxND75KgFa0KllyOl-jPgrCU5LQ6WLr54/edit'},
-      {title:'اللجان والقرارات والاجتماعات — بنك نماء المركزي',kind:'record',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1oupBoVP7fe1JUR-zr46kUfqePhC6MHk-__0UkoROcrE/edit'},
-      {title:'تقرير المراجعة الختامية وإغلاق بنك نماء المركزي',kind:'reference',version:'v2.0',sourceUrl:'https://drive.google.com/file/d/1buvI-zbUmyx2_z0bvm3TafN_LKPpIUWV/view'},
+      {referenceCode:'NMC-REG-01',title:'سجل القرارات التأسيسية والحالة النهائية',kind:'record',version:'v2.0',sourceUrl:'https://drive.google.com/file/d/1ry5QdRp_0dJiMasHl8toFaU_VZRTuLG1/view'},
+      {referenceCode:'NMC-REG-02',title:'الرقابة والتدقيق وسجل الأثر — بنك نماء المركزي',kind:'record',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1TQ62P-prHNBxND75KgFa0KllyOl-jPgrCU5LQ6WLr54/edit'},
+      {referenceCode:'NMC-REG-03',title:'اللجان والقرارات والاجتماعات — بنك نماء المركزي',kind:'record',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1oupBoVP7fe1JUR-zr46kUfqePhC6MHk-__0UkoROcrE/edit'},
+      {referenceCode:'NMC-REF-01',title:'تقرير المراجعة الختامية وإغلاق بنك نماء المركزي',kind:'reference',version:'v2.0',sourceUrl:'https://drive.google.com/file/d/1buvI-zbUmyx2_z0bvm3TafN_LKPpIUWV/view'},
     ],
     policies:[
-      {title:'الفهرس الرئيسي لبنك نماء المركزي',kind:'reference',version:'v2.0',sourceUrl:'https://drive.google.com/file/d/1Tp5TqMm1Heon8K9-mEXWhkr0aurQmW-z/view'},
-      {title:'الميثاق والتعريف المؤسسي — بنك نماء المركزي',kind:'charter',version:'v1.0',sourceUrl:'https://drive.google.com/file/d/10kB1PC7OYChjf6JFWpFBIL51ST-grmQi/view'},
-      {title:'الهيكل التنظيمي والأدوار — بنك نماء المركزي',kind:'policy',version:'v1.0',sourceUrl:'https://drive.google.com/file/d/1XZbSjriEZ5ZZLqrlbcBfQMF5t_z0GVwj/view'},
-      {title:'مصفوفة الصلاحيات والاعتمادات — بنك نماء المركزي',kind:'policy',version:'v2.1',sourceUrl:'https://docs.google.com/document/d/1xWd9s7-V-QFV13RPYJd_tW17dAGjB4Fh3Bh0LBS837o/edit'},
-      {title:'السياسة المالية العليا — بنك نماء المركزي',kind:'policy',version:'v1.0',sourceUrl:'https://drive.google.com/file/d/1abH_UMUKWS7h2-HEVHL1yv0tEZTZUddC/view'},
-      {title:'محرك القرار والخوارزميات — بنك نماء المركزي',kind:'policy',version:'v1.0',sourceUrl:'https://drive.google.com/file/d/1EPSUgX7WMZgdZJ_gnxcrd6LBWf8rVwdo/view'},
-      {title:'الأوزان والتقييم والمخاطر — بنك نماء المركزي',kind:'policy',version:'v1.0',sourceUrl:'https://drive.google.com/file/d/1AEmEiMTZn5wra2tjDYartHyi7XcOg8do/view'},
-      {title:'العلاقة مع البنوك والمحافظ والمستشارين — بنك نماء المركزي',kind:'policy',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1V1396IeCZCdg9pmIXeiTgvmyBJtKSmuwbnB7Y7f7Ueg/edit'},
-      {title:'حالات التشغيل والسيناريوهات — بنك نماء المركزي',kind:'policy',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1wuAboukFuAzffWgtsAsz7H0EZkyK61NBaSbLzOSTyIA/edit'},
-      {title:'عقد البيانات والتكامل المركزي — بنك نماء',kind:'contract',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1DJ64l0-IMxza5ob9peP7RSpzZn7yxwqFsSYl0qreG2c/edit'},
-      {title:'قاعدة التنفيذ البشري والإثبات — بنك نماء المركزي',kind:'policy',version:'v1.0',sourceUrl:'https://docs.google.com/document/d/1tyC2VNP4RbDs1cNbuocBMAdMDsAPZ1BW1jc-Hl9f5lo/edit'},
-      {title:'ميثاق أصحاب المسؤوليات المالية والمستشار الاقتصادي',kind:'charter',version:'v1.0',sourceUrl:'https://docs.google.com/document/d/1fXG8jJuS4_WXllyiSYcVP7unKf2jJ-s_AGRa_2xEYLA/edit'},
-      {title:'تأسيس مركز العمليات والمطابقة — بنك نماء المركزي',kind:'reference',version:'v0.1',sourceUrl:'https://docs.google.com/document/d/1jtP85JWnHPHoCzRxZFOwqDhyFmRNHnCBYP-0R51fKr0/edit'},
+      {referenceCode:'NMC-REF-02',title:'الفهرس الرئيسي لبنك نماء المركزي',kind:'reference',version:'v2.0',sourceUrl:'https://drive.google.com/file/d/1Tp5TqMm1Heon8K9-mEXWhkr0aurQmW-z/view'},
+      {referenceCode:'NMC-CHR-01',title:'الميثاق والتعريف المؤسسي — بنك نماء المركزي',kind:'charter',version:'v1.0',sourceUrl:'https://drive.google.com/file/d/10kB1PC7OYChjf6JFWpFBIL51ST-grmQi/view'},
+      {referenceCode:'NMC-POL-01',title:'الهيكل التنظيمي والأدوار — بنك نماء المركزي',kind:'policy',version:'v1.0',sourceUrl:'https://drive.google.com/file/d/1XZbSjriEZ5ZZLqrlbcBfQMF5t_z0GVwj/view'},
+      {referenceCode:'NMC-POL-02',title:'مصفوفة الصلاحيات والاعتمادات — بنك نماء المركزي',kind:'policy',version:'v2.1',sourceUrl:'https://docs.google.com/document/d/1xWd9s7-V-QFV13RPYJd_tW17dAGjB4Fh3Bh0LBS837o/edit'},
+      {referenceCode:'NMC-POL-03',title:'السياسة المالية العليا — بنك نماء المركزي',kind:'policy',version:'v1.0',sourceUrl:'https://drive.google.com/file/d/1abH_UMUKWS7h2-HEVHL1yv0tEZTZUddC/view'},
+      {referenceCode:'NMC-POL-04',title:'محرك القرار والخوارزميات — بنك نماء المركزي',kind:'policy',version:'v1.0',sourceUrl:'https://drive.google.com/file/d/1EPSUgX7WMZgdZJ_gnxcrd6LBWf8rVwdo/view'},
+      {referenceCode:'NMC-POL-05',title:'الأوزان والتقييم والمخاطر — بنك نماء المركزي',kind:'policy',version:'v1.0',sourceUrl:'https://drive.google.com/file/d/1AEmEiMTZn5wra2tjDYartHyi7XcOg8do/view'},
+      {referenceCode:'NMC-POL-06',title:'العلاقة مع البنوك والمحافظ والمستشارين — بنك نماء المركزي',kind:'policy',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1V1396IeCZCdg9pmIXeiTgvmyBJtKSmuwbnB7Y7f7Ueg/edit'},
+      {referenceCode:'NMC-POL-07',title:'حالات التشغيل والسيناريوهات — بنك نماء المركزي',kind:'policy',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1wuAboukFuAzffWgtsAsz7H0EZkyK61NBaSbLzOSTyIA/edit'},
+      {referenceCode:'NMC-CTR-01',title:'عقد البيانات والتكامل المركزي — بنك نماء',kind:'contract',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1DJ64l0-IMxza5ob9peP7RSpzZn7yxwqFsSYl0qreG2c/edit'},
+      {referenceCode:'NMC-POL-08',title:'قاعدة التنفيذ البشري والإثبات — بنك نماء المركزي',kind:'policy',version:'v1.0',sourceUrl:'https://docs.google.com/document/d/1tyC2VNP4RbDs1cNbuocBMAdMDsAPZ1BW1jc-Hl9f5lo/edit'},
+      {referenceCode:'NMC-CHR-02',title:'ميثاق أصحاب المسؤوليات المالية والمستشار الاقتصادي',kind:'charter',version:'v1.0',sourceUrl:'https://docs.google.com/document/d/1fXG8jJuS4_WXllyiSYcVP7unKf2jJ-s_AGRa_2xEYLA/edit'},
+      {referenceCode:'NMC-REF-03',title:'تأسيس مركز العمليات والمطابقة — بنك نماء المركزي',kind:'reference',version:'v0.1',sourceUrl:'https://docs.google.com/document/d/1jtP85JWnHPHoCzRxZFOwqDhyFmRNHnCBYP-0R51fKr0/edit'},
     ],
   },
   operations:{
@@ -62,12 +70,12 @@ export const governedRoomDetails:Record<ConversationRoomKey,GovernedRoomDetail>=
     governanceNote:'وحدة تشغيلية مستقلة داخل بنك نماء المركزي وليست مستشارًا ولا بنكًا تابعًا. وظيفتها إثبات ومطابقة وتسوية البيانات؛ لا تملك الميزانية ولا البنود. تستدعي أحد أصحاب المسؤوليات المالية الخمسة أو المستشار الاقتصادي عند الحاجة، وتوجّه الناتج للجهة المختصة.',
     sourceRefs:['دور-مركز-المطابقة','عمليات-استقبال-٢٠٩','خوارزمية-توجيه-١٦٤'],
     records:[
-      {title:'الرقابة والتدقيق وسجل الأثر — بنك نماء المركزي',kind:'record',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1TQ62P-prHNBxND75KgFa0KllyOl-jPgrCU5LQ6WLr54/edit'},
+      {referenceCode:'OPS-REG-01',title:'الرقابة والتدقيق وسجل الأثر — بنك نماء المركزي',kind:'record',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1TQ62P-prHNBxND75KgFa0KllyOl-jPgrCU5LQ6WLr54/edit'},
     ],
     policies:[
-      {title:'تأسيس مركز العمليات والمطابقة — بنك نماء المركزي',kind:'reference',version:'v0.1',sourceUrl:'https://docs.google.com/document/d/1jtP85JWnHPHoCzRxZFOwqDhyFmRNHnCBYP-0R51fKr0/edit'},
-      {title:'عقد البيانات والتكامل المركزي — بنك نماء',kind:'contract',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1DJ64l0-IMxza5ob9peP7RSpzZn7yxwqFsSYl0qreG2c/edit'},
-      {title:'العلاقة مع البنوك والمحافظ والمستشارين — بنك نماء المركزي',kind:'policy',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1V1396IeCZCdg9pmIXeiTgvmyBJtKSmuwbnB7Y7f7Ueg/edit'},
+      {referenceCode:'OPS-REF-01',title:'تأسيس مركز العمليات والمطابقة — بنك نماء المركزي',kind:'reference',version:'v0.1',sourceUrl:'https://docs.google.com/document/d/1jtP85JWnHPHoCzRxZFOwqDhyFmRNHnCBYP-0R51fKr0/edit'},
+      {referenceCode:'OPS-CTR-01',title:'عقد البيانات والتكامل المركزي — بنك نماء',kind:'contract',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1DJ64l0-IMxza5ob9peP7RSpzZn7yxwqFsSYl0qreG2c/edit'},
+      {referenceCode:'OPS-POL-01',title:'العلاقة مع البنوك والمحافظ والمستشارين — بنك نماء المركزي',kind:'policy',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1V1396IeCZCdg9pmIXeiTgvmyBJtKSmuwbnB7Y7f7Ueg/edit'},
     ],
   },
   solvency:{
@@ -81,12 +89,12 @@ export const governedRoomDetails:Record<ConversationRoomKey,GovernedRoomDetail>=
     sourceRefs:['ROLE-MAL-MGR','ENTITY-MAL'],
     records:[],
     policies:[
-      {title:'ميثاق وتشغيل بنك ملاءة',kind:'charter',sourceUrl:'https://docs.google.com/document/d/1rtRYHnMxMp7u62InuJm9dqiAORkPkGBk-oFJL3K1rw8/edit'},
-      {title:'سياسة الحماية والسيولة والطوارئ لبنك ملاءة',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1qoFG-CIdd003DvGqqyccpkf1TGJ-29pOItYBtpciSfc/edit'},
-      {title:'دليل الوكلاء ومصفوفة الصلاحيات لبنك ملاءة',kind:'policy',sourceUrl:'https://docs.google.com/document/d/11Z_DtA8vJQqZ02xC4CWu1oGsFBLApZhGWVWjra8-9lA/edit'},
-      {title:'دليل العمليات والآليات والخوارزميات التشغيلية لبنك ملاءة',kind:'reference',sourceUrl:'https://docs.google.com/document/d/1armGZRtKTfoIDcwbJ5t1K9LEjNPnNyES7CdD4vvEOiI/edit'},
-      {title:'سياسة التعلم والتغيير والتدقيق لبنك ملاءة',kind:'policy',sourceUrl:'https://docs.google.com/document/d/10qY_ADXVjbm1_BRrTRlwCSCM2p1SBos3jztpaHOKaXI/edit'},
-      {title:'سياسة رأس مال الحماية والاحتياطي المستثمر لبنك ملاءة',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1_fGVfq_HJnf5lg9FmsNyet59IBOAWFPCrVqtUFNx9IA/edit'},
+      {referenceCode:'MAL-CHR-01',title:'ميثاق وتشغيل بنك ملاءة',kind:'charter',sourceUrl:'https://docs.google.com/document/d/1rtRYHnMxMp7u62InuJm9dqiAORkPkGBk-oFJL3K1rw8/edit'},
+      {referenceCode:'MAL-POL-01',title:'سياسة الحماية والسيولة والطوارئ لبنك ملاءة',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1qoFG-CIdd003DvGqqyccpkf1TGJ-29pOItYBtpciSfc/edit'},
+      {referenceCode:'MAL-POL-02',title:'دليل الوكلاء ومصفوفة الصلاحيات لبنك ملاءة',kind:'policy',sourceUrl:'https://docs.google.com/document/d/11Z_DtA8vJQqZ02xC4CWu1oGsFBLApZhGWVWjra8-9lA/edit'},
+      {referenceCode:'MAL-REF-01',title:'دليل العمليات والآليات والخوارزميات التشغيلية لبنك ملاءة',kind:'reference',sourceUrl:'https://docs.google.com/document/d/1armGZRtKTfoIDcwbJ5t1K9LEjNPnNyES7CdD4vvEOiI/edit'},
+      {referenceCode:'MAL-POL-03',title:'سياسة التعلم والتغيير والتدقيق لبنك ملاءة',kind:'policy',sourceUrl:'https://docs.google.com/document/d/10qY_ADXVjbm1_BRrTRlwCSCM2p1SBos3jztpaHOKaXI/edit'},
+      {referenceCode:'MAL-POL-04',title:'سياسة رأس مال الحماية والاحتياطي المستثمر لبنك ملاءة',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1_fGVfq_HJnf5lg9FmsNyet59IBOAWFPCrVqtUFNx9IA/edit'},
     ],
   },
   assets:{
@@ -100,13 +108,13 @@ export const governedRoomDetails:Record<ConversationRoomKey,GovernedRoomDetail>=
     sourceRefs:['ROLE-AI-MGR'],
     records:[],
     policies:[
-      {title:'ميثاق وتشغيل بنك الأصول الاستثماري',kind:'charter',sourceUrl:'https://docs.google.com/document/d/1Vg-RrBMLCwFYlWBOTsnwv5C9tWOKw-6IuGX7X3hhgnw/edit'},
-      {title:'السياسة المالية والاستثمارية الشاملة لبنك الأصول',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1uDE3kINPLykYKjtxZEpgn-TG1qkgOFjeRuUlioWxGjc/edit'},
-      {title:'دليل الوكلاء ومصفوفة الصلاحيات لبنك الأصول',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1S91uTKPX3fS9MXAM9DohWjf3oFG2pa_3MEfi48AlXd0/edit'},
-      {title:'دليل العمليات والآليات والخوارزميات التشغيلية لبنك الأصول',kind:'reference',sourceUrl:'https://docs.google.com/document/d/1R-MmR_a7kW1EdaIhA98btwfebpyD2w4sRV6RegHCUTo/edit'},
-      {title:'سياسة التعلم والتغيير والتدقيق لبنك الأصول',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1PWd0l_KxshiS26kZ2pRClT1WgJCfWJbJ2U6qs-R3NWo/edit'},
-      {title:'سياسة رأس المال المؤهل والتوزيع الاستراتيجي لبنك الأصول',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1z8D2uiGW5dEi4fiI3hyjUS0p_NFk8u4eJ6duOj_wiK8/edit'},
-      {title:'آليات تحليل الفرص الاستثمارية',kind:'reference',sourceUrl:'https://docs.google.com/document/d/1yUKPCHoFdHkcU_jxGX1-0T0hn8rytDCSEgz8RIHlnak/edit'},
+      {referenceCode:'AST-CHR-01',title:'ميثاق وتشغيل بنك الأصول الاستثماري',kind:'charter',sourceUrl:'https://docs.google.com/document/d/1Vg-RrBMLCwFYlWBOTsnwv5C9tWOKw-6IuGX7X3hhgnw/edit'},
+      {referenceCode:'AST-POL-01',title:'السياسة المالية والاستثمارية الشاملة لبنك الأصول',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1uDE3kINPLykYKjtxZEpgn-TG1qkgOFjeRuUlioWxGjc/edit'},
+      {referenceCode:'AST-POL-02',title:'دليل الوكلاء ومصفوفة الصلاحيات لبنك الأصول',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1S91uTKPX3fS9MXAM9DohWjf3oFG2pa_3MEfi48AlXd0/edit'},
+      {referenceCode:'AST-REF-01',title:'دليل العمليات والآليات والخوارزميات التشغيلية لبنك الأصول',kind:'reference',sourceUrl:'https://docs.google.com/document/d/1R-MmR_a7kW1EdaIhA98btwfebpyD2w4sRV6RegHCUTo/edit'},
+      {referenceCode:'AST-POL-03',title:'سياسة التعلم والتغيير والتدقيق لبنك الأصول',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1PWd0l_KxshiS26kZ2pRClT1WgJCfWJbJ2U6qs-R3NWo/edit'},
+      {referenceCode:'AST-POL-04',title:'سياسة رأس المال المؤهل والتوزيع الاستراتيجي لبنك الأصول',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1z8D2uiGW5dEi4fiI3hyjUS0p_NFk8u4eJ6duOj_wiK8/edit'},
+      {referenceCode:'AST-REF-02',title:'آليات تحليل الفرص الاستثمارية',kind:'reference',sourceUrl:'https://docs.google.com/document/d/1yUKPCHoFdHkcU_jxGX1-0T0hn8rytDCSEgz8RIHlnak/edit'},
     ],
   },
   hilal:{
@@ -120,12 +128,12 @@ export const governedRoomDetails:Record<ConversationRoomKey,GovernedRoomDetail>=
     sourceRefs:['ROLE-HL'],
     records:[],
     policies:[
-      {title:'ميثاق وتشغيل بنك الهلال',kind:'charter',sourceUrl:'https://docs.google.com/document/d/1Z1cnyyVmym1VDGU6ZSFakMIBznUvKPiVr4fuvctkJyo/edit'},
-      {title:'سياسة الميزانية والإنفاق والتدفقات النقدية لبنك الهلال',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1YoWUyS1AgqWAZcnAd-HzD3WvG35_aQfbQL5H8oBTmYA/edit'},
-      {title:'دليل الوكلاء ومصفوفة الصلاحيات لبنك الهلال',kind:'policy',sourceUrl:'https://docs.google.com/document/d/13TXLBG8Axn862QQZ51yzYfwjVhQbPlNUFEaA3DccbN4/edit'},
-      {title:'دليل العمليات والآليات والخوارزميات التشغيلية لبنك الهلال',kind:'reference',sourceUrl:'https://docs.google.com/document/d/182x3t6eGfqFed9j3mNUKsgjJmFPNnOHLUPNzGgcUKEE/edit'},
-      {title:'سياسة التمويل الداخلي والائتمان والسداد لبنك الهلال',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1aNBxa_NH4CjXRcEUkm8Mm8t5Iv3nakGHvZO8SD5inQg/edit'},
-      {title:'سياسة التعلم والتغيير والتدقيق لبنك الهلال',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1N60Gvu8gYueP5cJ2aA0uZbv-9z3z7_9B9ZX2bW3MKZU/edit'},
+      {referenceCode:'HIL-CHR-01',title:'ميثاق وتشغيل بنك الهلال',kind:'charter',sourceUrl:'https://docs.google.com/document/d/1Z1cnyyVmym1VDGU6ZSFakMIBznUvKPiVr4fuvctkJyo/edit'},
+      {referenceCode:'HIL-POL-01',title:'سياسة الميزانية والإنفاق والتدفقات النقدية لبنك الهلال',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1YoWUyS1AgqWAZcnAd-HzD3WvG35_aQfbQL5H8oBTmYA/edit'},
+      {referenceCode:'HIL-POL-02',title:'دليل الوكلاء ومصفوفة الصلاحيات لبنك الهلال',kind:'policy',sourceUrl:'https://docs.google.com/document/d/13TXLBG8Axn862QQZ51yzYfwjVhQbPlNUFEaA3DccbN4/edit'},
+      {referenceCode:'HIL-REF-01',title:'دليل العمليات والآليات والخوارزميات التشغيلية لبنك الهلال',kind:'reference',sourceUrl:'https://docs.google.com/document/d/182x3t6eGfqFed9j3mNUKsgjJmFPNnOHLUPNzGgcUKEE/edit'},
+      {referenceCode:'HIL-POL-03',title:'سياسة التمويل الداخلي والائتمان والسداد لبنك الهلال',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1aNBxa_NH4CjXRcEUkm8Mm8t5Iv3nakGHvZO8SD5inQg/edit'},
+      {referenceCode:'HIL-POL-04',title:'سياسة التعلم والتغيير والتدقيق لبنك الهلال',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1N60Gvu8gYueP5cJ2aA0uZbv-9z3z7_9B9ZX2bW3MKZU/edit'},
     ],
   },
   advisor:{
@@ -139,9 +147,9 @@ export const governedRoomDetails:Record<ConversationRoomKey,GovernedRoomDetail>=
     sourceRefs:['ROLE-EA'],
     records:[],
     policies:[
-      {title:'ميثاق أصحاب المسؤوليات المالية والمستشار الاقتصادي',kind:'charter',version:'v1.0',sourceUrl:'https://docs.google.com/document/d/1fXG8jJuS4_WXllyiSYcVP7unKf2jJ-s_AGRa_2xEYLA/edit'},
-      {title:'سياسة التعلم الخوارزمي والقرار القابل للتدقيق لمنصة نماء',kind:'policy',version:'v1.0',sourceUrl:'https://docs.google.com/document/d/1wOVhGfO9Pp0LrWF_ZRco0oGG53jpSLOyQjRlZnFqgOQ/edit'},
-      {title:'الأوزان والتقييم والمخاطر — بنك نماء المركزي',kind:'policy',version:'v1.0',sourceUrl:'https://drive.google.com/file/d/1AEmEiMTZn5wra2tjDYartHyi7XcOg8do/view'},
+      {referenceCode:'ADV-CHR-01',title:'ميثاق أصحاب المسؤوليات المالية والمستشار الاقتصادي',kind:'charter',version:'v1.0',sourceUrl:'https://docs.google.com/document/d/1fXG8jJuS4_WXllyiSYcVP7unKf2jJ-s_AGRa_2xEYLA/edit'},
+      {referenceCode:'ADV-POL-01',title:'سياسة التعلم الخوارزمي والقرار القابل للتدقيق لمنصة نماء',kind:'policy',version:'v1.0',sourceUrl:'https://docs.google.com/document/d/1wOVhGfO9Pp0LrWF_ZRco0oGG53jpSLOyQjRlZnFqgOQ/edit'},
+      {referenceCode:'ADV-POL-02',title:'الأوزان والتقييم والمخاطر — بنك نماء المركزي',kind:'policy',version:'v1.0',sourceUrl:'https://drive.google.com/file/d/1AEmEiMTZn5wra2tjDYartHyi7XcOg8do/view'},
     ],
   },
   secretary:{
@@ -154,13 +162,13 @@ export const governedRoomDetails:Record<ConversationRoomKey,GovernedRoomDetail>=
     governanceNote:'هو المدخل الحواري لمركز الحوكمة والاجتماعات، مع حفظ النسخ التاريخية والتعديلات الرسمية.',
     sourceRefs:['دور-أمين-السر','حوكمة-عرض-٢١١','حوكمة-مراجعة-٢١٢'],
     records:[
-      {title:'اللجان والقرارات والاجتماعات — بنك نماء المركزي',kind:'record',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1oupBoVP7fe1JUR-zr46kUfqePhC6MHk-__0UkoROcrE/edit'},
-      {title:'الرقابة والتدقيق وسجل الأثر — بنك نماء المركزي',kind:'record',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1TQ62P-prHNBxND75KgFa0KllyOl-jPgrCU5LQ6WLr54/edit'},
+      {referenceCode:'SEC-REG-01',title:'اللجان والقرارات والاجتماعات — بنك نماء المركزي',kind:'record',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1oupBoVP7fe1JUR-zr46kUfqePhC6MHk-__0UkoROcrE/edit'},
+      {referenceCode:'SEC-REG-02',title:'الرقابة والتدقيق وسجل الأثر — بنك نماء المركزي',kind:'record',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1TQ62P-prHNBxND75KgFa0KllyOl-jPgrCU5LQ6WLr54/edit'},
     ],
     policies:[
-      {title:'السياسة المركزية لإدارة القضايا والاجتماعات والقرارات والمتابعة',kind:'policy',version:'v1.0',sourceUrl:'https://docs.google.com/document/d/10GeX1j4W9gHt3BJLjzFkSJ0oftWsJIpPneZx8AcCYu8/edit'},
-      {title:'قاعدة جدولة اللجان والمداولة الحية',kind:'policy',version:'v1.0',sourceUrl:'https://docs.google.com/document/d/1M0709DYbrun3IRY300y6JMFxWPXzXRo_nSeNfpIGA6w/edit'},
-      {title:'مصفوفة الصلاحيات والاعتمادات — بنك نماء المركزي',kind:'policy',version:'v2.1',sourceUrl:'https://docs.google.com/document/d/1xWd9s7-V-QFV13RPYJd_tW17dAGjB4Fh3Bh0LBS837o/edit'},
+      {referenceCode:'SEC-POL-01',title:'السياسة المركزية لإدارة القضايا والاجتماعات والقرارات والمتابعة',kind:'policy',version:'v1.0',sourceUrl:'https://docs.google.com/document/d/10GeX1j4W9gHt3BJLjzFkSJ0oftWsJIpPneZx8AcCYu8/edit'},
+      {referenceCode:'SEC-POL-02',title:'قاعدة جدولة اللجان والمداولة الحية',kind:'policy',version:'v1.0',sourceUrl:'https://docs.google.com/document/d/1M0709DYbrun3IRY300y6JMFxWPXzXRo_nSeNfpIGA6w/edit'},
+      {referenceCode:'SEC-POL-03',title:'مصفوفة الصلاحيات والاعتمادات — بنك نماء المركزي',kind:'policy',version:'v2.1',sourceUrl:'https://docs.google.com/document/d/1xWd9s7-V-QFV13RPYJd_tW17dAGjB4Fh3Bh0LBS837o/edit'},
     ],
   },
   council:{
@@ -174,10 +182,10 @@ export const governedRoomDetails:Record<ConversationRoomKey,GovernedRoomDetail>=
     sourceRefs:['ENTITY-COUNCIL','ROLE-CHAIR'],
     records:[],
     policies:[
-      {title:'السياسة المركزية لإدارة القضايا والاجتماعات والقرارات والمتابعة',kind:'policy',version:'v1.0',sourceUrl:'https://docs.google.com/document/d/10GeX1j4W9gHt3BJLjzFkSJ0oftWsJIpPneZx8AcCYu8/edit'},
-      {title:'قاعدة جدولة اللجان والمداولة الحية',kind:'policy',version:'v1.0',sourceUrl:'https://docs.google.com/document/d/1M0709DYbrun3IRY300y6JMFxWPXzXRo_nSeNfpIGA6w/edit'},
-      {title:'السياسة المالية العليا — بنك نماء المركزي',kind:'policy',version:'v1.0',sourceUrl:'https://drive.google.com/file/d/1abH_UMUKWS7h2-HEVHL1yv0tEZTZUddC/view'},
-      {title:'اللجان والقرارات والاجتماعات — بنك نماء المركزي',kind:'policy',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1oupBoVP7fe1JUR-zr46kUfqePhC6MHk-__0UkoROcrE/edit'},
+      {referenceCode:'COU-POL-01',title:'السياسة المركزية لإدارة القضايا والاجتماعات والقرارات والمتابعة',kind:'policy',version:'v1.0',sourceUrl:'https://docs.google.com/document/d/10GeX1j4W9gHt3BJLjzFkSJ0oftWsJIpPneZx8AcCYu8/edit'},
+      {referenceCode:'COU-POL-02',title:'قاعدة جدولة اللجان والمداولة الحية',kind:'policy',version:'v1.0',sourceUrl:'https://docs.google.com/document/d/1M0709DYbrun3IRY300y6JMFxWPXzXRo_nSeNfpIGA6w/edit'},
+      {referenceCode:'COU-POL-03',title:'السياسة المالية العليا — بنك نماء المركزي',kind:'policy',version:'v1.0',sourceUrl:'https://drive.google.com/file/d/1abH_UMUKWS7h2-HEVHL1yv0tEZTZUddC/view'},
+      {referenceCode:'COU-POL-04',title:'اللجان والقرارات والاجتماعات — بنك نماء المركزي',kind:'policy',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1oupBoVP7fe1JUR-zr46kUfqePhC6MHk-__0UkoROcrE/edit'},
     ],
   },
 };
