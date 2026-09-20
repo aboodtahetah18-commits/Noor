@@ -25,6 +25,7 @@ const steps = [
   ['database provider policy','node',['scripts/verify-database-provider-policy.mjs']],
   ['algorithm governance schema contract','node',['scripts/verify-algorithm-governance-schema-contract.mjs']],
   ['financial responsibility roles contract','node',['scripts/verify-financial-responsibility-roles.mjs']],
+  ['entity operational dashboard contract','node',['scripts/verify-entity-operational-dashboard.mjs']],
   ['financial cycle allocation contract','node',['scripts/verify-financial-cycle-allocation.mjs']],
   ['financial cycle negotiation contract','node',['scripts/verify-financial-cycle-negotiation.mjs']],
   ['allocation ratification contract','node',['scripts/verify-allocation-ratification.mjs']],
