@@ -22,14 +22,14 @@ if(!css.includes('background:var(--namaa-green-900)')) fail('approved green mobi
 const workspace=readFileSync('src/components/conversations/persistent-conversation-workspace.tsx','utf8');
 if(!workspace.includes('/brand/ndos/namaa-logo-white-transparent.png')) fail('official white Namaa mobile logo missing');
 if(workspace.includes('mobileBrandLockup')) fail('Namaa logo must not be redrawn from text and symbol');
-if(!css.includes('.mobileBrandLogo') || !css.includes('position:static') || !css.includes('transform:none') || !css.includes('.mobileAppBarPrimary{\n    flex-direction:row-reverse')) fail('mobile Namaa logo must stay in the approved left-side header position');
+if(!css.includes('.mobileBrandLogo') || !css.includes('position:static') || !css.includes('transform:none') || !css.includes('.mobileAppBarPrimary{\n    direction:rtl;\n    flex-direction:row') || !css.includes('.mobileAppBarActions{\n    direction:ltr')) fail('mobile header must keep menu+logo on the right and utility actions on the far left');
 if(!css.includes('filter:none')) fail('official Namaa logo must not be recolored');
 if(!css.includes('.onboardingIntake') || !css.includes('position:fixed')) fail('onboarding must remain a popup layer');
 if(!css.includes('.onboardingCloseButton') || !css.includes('.inlineIntakeButton')) fail('onboarding close/in-message reopen controls missing');
 if(!css.includes('.chatFont_small') || !css.includes('.fontSizeChoices')) fail('user chat font control missing');
 if(!css.includes('.brandWatermarkSecondary') || !css.includes('.brandWatermarkTertiary')) fail('approved Namaa watermark pattern missing');
 if(/\.agentMessage\{[^}]*!important|\.userMessage\{[^}]*!important/s.test(css)) fail('message alignment must not depend on !important');
-if(!css.includes('.agentMessage{\n  align-self:flex-start') || !css.includes('.userMessage{\n  align-self:flex-end')) fail('approved RTL message sides changed: agent must be right, user must be left');
+if(!css.includes('.agentMessage{\n  align-self:flex-end') || !css.includes('margin-left:auto;\n  margin-right:var(--ux-space-0)') || !css.includes('.userMessage{\n  align-self:flex-start') || !css.includes('margin-left:var(--ux-space-0);\n  margin-right:auto')) fail('approved message sides changed: governor must stay right and user must stay left');
 if(workspace.includes('resumeIntakeButton')) fail('structured intake reopen must live inside the active question message, not float over chat');
 if(!workspace.includes('showStructuredAction') || !workspace.includes('متابعة استكمال البيانات')) fail('structured intake in-message action missing');
 
