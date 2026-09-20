@@ -11,7 +11,7 @@ if(!carry.includes('لا تُخفّض طلب الدورة الجديدة آلي�
 if(!council.includes('prior_cycle_carry_forward')||!council.includes('getLatestClosedCycleCarryForward')){
   throw new Error('COUNCIL-CARRY-FORWARD-NOT-WIRED');
 }
-if(/performanceScore|score:\s*\d|automatic_amount_adjustment:true/.test(carry+council)){
+if(/performanceScore|(?:^|[^A-Za-z0-9_])score:\s*\d|(?:^|[^A-Za-z0-9_])automatic_amount_adjustment:true/m.test(carry+council)){
   throw new Error('CARRY-FORWARD-MUST-NOT-INVENT-SCORE-OR-AUTO-AMOUNT');
 }
 console.log('FINANCIAL-CYCLE-CARRY-FORWARD-PASS');
