@@ -2362,8 +2362,23 @@
   width:fit-content;
   min-height:0
   }
-  .agentMessage{width:88%;max-width:88%}
-  .userMessage{max-width:78%;padding:var(--ux-space-2)}
+  .agentMessage{
+    width:88%;
+    max-width:88%;
+    align-self:flex-start;
+    border-end-start-radius:var(--ux-radius-2);
+    background:color-mix(in srgb,var(--namaa-agent-message) 88%,var(--namaa-surface-warm) 12%);
+    margin-inline-start:var(--ux-space-0);
+    margin-inline-end:auto
+  }
+  .userMessage{
+    max-width:78%;
+    padding:var(--ux-space-2);
+    align-self:flex-end;
+    border-end-end-radius:var(--ux-radius-2);
+    margin-inline-start:auto;
+    margin-inline-end:var(--ux-space-0)
+  }
   .userAttachmentCard{grid-template-columns:30px minmax(0,1fr);padding:var(--ux-space-1) var(--ux-space-2)}
   .userAttachmentCard>span{width:30px;height:30px}
   .facts{
@@ -2702,19 +2717,8 @@
     min-width:148px;
   flex:0 0 auto
   }
-  .agentMessage{
-    align-self:flex-start;
-  border-end-start-radius:var(--ux-radius-2);
-  background:color-mix(in srgb,var(--namaa-agent-message) 88%,var(--namaa-surface-warm) 12%);
-  margin-inline-start:var(--ux-space-0);
-  margin-inline-end:auto
-  }
-  .userMessage{
-    align-self:flex-end;
-  border-end-end-radius:var(--ux-radius-2);
-  margin-inline-start:auto;
-  margin-inline-end:var(--ux-space-0)
-  }
+
+
 }
 
 
