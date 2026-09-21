@@ -23,6 +23,7 @@ const steps = [
   ['conversation message grouping contract','node',['scripts/verify-conversation-message-grouping.mjs']],
   ['dependency policy','node',['scripts/verify-dependency-policy.mjs']],
   ['database provider policy','node',['scripts/verify-database-provider-policy.mjs']],
+  ['database migration readiness contract','node',['scripts/verify-database-migration-readiness-contract.mjs']],
   ['algorithm governance schema contract','node',['scripts/verify-algorithm-governance-schema-contract.mjs']],
   ['financial responsibility roles contract','node',['scripts/verify-financial-responsibility-roles.mjs']],
   ['entity operational dashboard contract','node',['scripts/verify-entity-operational-dashboard.mjs']],

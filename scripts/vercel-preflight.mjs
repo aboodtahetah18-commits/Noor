@@ -87,6 +87,30 @@ if (env === 'production') {
   } else if (!authEmailFrom.includes('@')) errors.push('AUTH_EMAIL_FROM must contain a valid sender email address');
 }
 
+// Hosted builds are read-only with respect to schema. They must fail closed if
+// the configured database has not applied every migration shipped with this commit.
+if (deployedRuntime && databaseUrl && errors.length===0) {
+  try {
+    const [{ Pool }, readiness] = await Promise.all([
+      import('@neondatabase/serverless'),
+      import('./lib/database-migration-readiness.mjs'),
+    ]);
+    const pool=new Pool({connectionString:databaseUrl});
+    const client=await pool.connect();
+    try {
+      const status=await readiness.getMigrationReadiness(client);
+      readiness.printMigrationReadiness(status,{prefix:'VERCEL-DATABASE-MIGRATION'});
+      readiness.assertMigrationReady(status);
+    } finally {
+      client.release();
+      await pool.end();
+    }
+  } catch(error) {
+    const message=error instanceof Error?error.message:'DATABASE_MIGRATION_READINESS_FAILED';
+    errors.push(`Database migration readiness failed: ${message}`);
+  }
+}
+
 if (errors.length) {
   console.error('VERCEL-PREFLIGHT-FAIL');
   for (const item of errors) console.error(`- ${item}`);
