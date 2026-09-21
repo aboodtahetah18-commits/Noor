@@ -98,9 +98,10 @@ async function latestWeeklyReport(userId:string):Promise<WeeklyOperationalReport
     challenges:[
       ...blocked.slice(0,3).map(item=>{
         const rec=item&&typeof item==='object'&&!Array.isArray(item)?item as Record<string,unknown>:{};
-        return String(rec.issue??rec.reasonCode??'قاعدة تحتاج بيانات أو مراجعة');
+        const issue=typeof rec.issue==='string'?rec.issue.trim():'';
+        return issue&&/[\u0600-\u06FF]/.test(issue)?issue:'قاعدة تحتاج بيانات أو مراجعة';
       }),
-      ...reasonCodes.slice(0,3).map(code=>'سبب نشط: '+code),
+      ...(reasonCodes.length?['يوجد سبب تحليلي نشط يحتاج مراجعة.']:[]),
     ].slice(0,5),
     nextPriorities:[],
   };

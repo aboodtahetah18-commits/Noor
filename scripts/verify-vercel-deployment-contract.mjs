@@ -10,8 +10,17 @@ if (config.framework !== 'nextjs') fail.push('Vercel framework must be nextjs');
 const approvedProductionRelease=
   (process.env.VERCEL_ENV==='production' && process.env.VERCEL_GIT_COMMIT_REF==='main') ||
   (process.env.GITHUB_ACTIONS==='true' && process.env.GITHUB_REF_NAME==='main');
-if (config.git?.deploymentEnabled !== false && !approvedProductionRelease) {
-  fail.push('Automatic Vercel Git deployments must remain disabled until explicit production release approval.');
+const deploymentEnabled=config.git?.deploymentEnabled;
+const mainOnlyGitDeployment=
+  deploymentEnabled!==null &&
+  typeof deploymentEnabled==='object' &&
+  deploymentEnabled['*']===false &&
+  deploymentEnabled.main===true &&
+  Object.entries(deploymentEnabled).every(([ref,enabled])=>
+    (ref==='main'&&enabled===true)||(ref==='*'&&enabled===false)
+  );
+if (deploymentEnabled !== false && !mainOnlyGitDeployment && !approvedProductionRelease) {
+  fail.push('Automatic Vercel Git deployments must remain disabled outside an explicit main production release.');
 }
 if (!configText.includes('npm run vercel:build')) fail.push('Vercel build must use vercel:build');
 if (configText.includes('deploy:migrate')) fail.push('Database migration must not run inside Vercel build');

@@ -8,12 +8,12 @@ import styles from './conversation-workspace.module.css';
 const kindLabel:Record<AlgorithmRoleRef['kind'],string>={
   governor:'محافظ نماء',
   central_bank_manager:'مدير بنك نماء المركزي',
-  bank_manager:'مدير بنك خوارزمي',
-  responsibility_owner:'صاحب مسؤولية مالية',
-  advisor:'مستشار خوارزمي',
+  bank_manager:'مدير البنك',
+  responsibility_owner:'مسؤول مالي',
+  advisor:'مستشار اقتصادي',
   operations:'وحدة تشغيلية',
-  secretary:'أمين سر خوارزمي',
-  council:'جهة اعتماد حوكمي',
+  secretary:'أمين السر المركزي',
+  council:'جهة حوكمة واعتماد',
 };
 
 const policyTitle=(ref:string)=>{
@@ -24,10 +24,12 @@ const policyTitle=(ref:string)=>{
   return null;
 };
 
+const arabicNumber=(value:number)=>new Intl.NumberFormat('ar-SA',{useGrouping:false}).format(value);
+
 function RoleItems({items}:{items:string[]}){
   return <div className={styles.algorithmRoleItems}>
     {items.length?items.map((item,index)=><article key={item} className={styles.algorithmRoleItem}>
-      <span>البند {index+1}</span>
+      <span>البند {arabicNumber(index+1)}</span>
       <p>{item}</p>
     </article>):<p className={styles.algorithmRoleEmpty}>لا توجد بنود إضافية ضمن هذا القسم.</p>}
   </div>;
@@ -72,7 +74,7 @@ export function AlgorithmRoleMobileSheet({role,onClose}:{role:AlgorithmRoleRef;o
         <section className={styles.algorithmRoleSection}>
           <header><small>المادة ٦</small><strong>السياسات والمراجع الحاكمة</strong></header>
           <div className={styles.algorithmRoleItems}>
-            {policyTitles.length?policyTitles.map((title,index)=><article key={title} className={styles.algorithmRoleItem}><span>المرجع {index+1}</span><p>{title}</p></article>):<p className={styles.algorithmRoleEmpty}>المراجع محفوظة في سجل الجهة.</p>}
+            {policyTitles.length?policyTitles.map((title,index)=><article key={title} className={styles.algorithmRoleItem}><span>المرجع {arabicNumber(index+1)}</span><p>{title}</p></article>):<p className={styles.algorithmRoleEmpty}>المراجع محفوظة في سجل الجهة.</p>}
           </div>
         </section>
       </div>
