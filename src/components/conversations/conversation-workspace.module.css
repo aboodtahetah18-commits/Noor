@@ -3847,7 +3847,6 @@
 
 /* Mobile full-page internal surfaces — governed by Namaa mobile UX contract */
 @media(max-width:767px){
-  .chatHeader{min-height:86px;padding-inline:var(--ux-space-3)}
   .chatHeaderForeground{min-height:86px;width:100%}
   .chatHeaderWithBuilding .chatHeaderBuilding{opacity:.18}
   .chatHeaderBuilding img{object-position:center 44%}
@@ -4268,8 +4267,8 @@
     overflow-y:auto
   }
   .chatHeader{
-    height:58px;
-    min-height:58px;
+    height:86px;
+    min-height:86px;
     padding:var(--ux-space-0) var(--ux-space-3);
     position:relative;
     top:var(--ux-space-0);
