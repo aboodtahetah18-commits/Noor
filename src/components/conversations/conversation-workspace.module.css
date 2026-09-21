@@ -189,17 +189,63 @@
   min-width:0;
   display:grid;
   grid-template-rows:auto auto minmax(240px,1fr) auto auto auto;
-  background:var(--namaa-chat-canvas)
+  background:var(--namaa-chat-canvas);
+  position:relative;
+  isolation:isolate
 }
 
 .chatHeader{
-  height:66px;
+  min-height:72px;
   padding:var(--ux-space-0) var(--ux-space-4);
   background:var(--namaa-card);
   border-bottom:1px solid var(--namaa-border);
+  position:relative;
+  overflow:hidden
+}
+
+.chatHeaderForeground{
+  min-height:72px;
   display:flex;
   align-items:center;
-  justify-content:space-between
+  justify-content:space-between;
+  gap:var(--ux-space-3);
+  position:relative;
+  z-index:2
+}
+
+.chatHeaderBuilding{
+  display:none
+}
+
+.chatHeaderWithBuilding .chatHeaderBuilding{
+  display:block;
+  position:absolute;
+  inset:0;
+  background-image:linear-gradient(90deg,color-mix(in srgb,var(--namaa-card) 96%,transparent) 0%,color-mix(in srgb,var(--namaa-card) 86%,transparent) 50%,color-mix(in srgb,var(--namaa-card) 55%,transparent) 100%),var(--room-building);
+  background-size:cover;
+  background-position:center 46%;
+  opacity:.62;
+  filter:saturate(.88) contrast(.96);
+  pointer-events:none
+}
+
+.chatBankMark{
+  width:40px;
+  height:40px;
+  flex:0 0 40px;
+  display:grid;
+  place-items:center;
+  border-radius:var(--ux-radius-full);
+  background:color-mix(in srgb,var(--namaa-card) 90%,transparent);
+  border:1px solid color-mix(in srgb,var(--namaa-gold-500) 42%,var(--namaa-border));
+  box-shadow:var(--ux-shadow-xs);
+  backdrop-filter:blur(6px)
+}
+
+.chatBankMark img{
+  width:78%;
+  height:78%;
+  object-fit:contain
 }
 
 .chatIdentity{
@@ -248,8 +294,8 @@
   width:40px;
   height:40px;
   border-radius:var(--ux-radius-3);
-  border:1px solid var(--namaa-border);
-  background:var(--namaa-card);
+  border:1px solid color-mix(in srgb,var(--namaa-green-700) 18%,var(--namaa-border));
+  background:color-mix(in srgb,var(--namaa-card) 82%,var(--namaa-cream));
   color:var(--namaa-green-900);
   display:grid;
   place-items:center;
@@ -285,7 +331,11 @@
   overflow:auto;
   display:flex;
   flex-direction:column;
-  gap:var(--ux-space-4)
+  gap:var(--ux-space-4);
+  background-image:linear-gradient(color-mix(in srgb,var(--namaa-chat-canvas) 94%,transparent),color-mix(in srgb,var(--namaa-chat-canvas) 94%,transparent)),var(--room-building);
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat
 }
 
 .message{
@@ -5451,4 +5501,22 @@
 }
 .governedFlowSection>summary{
   background:color-mix(in srgb,var(--namaa-surface-warm) 84%,var(--namaa-card))
+}
+
+@media(max-width:720px){
+  .chatHeader{min-height:86px;padding-inline:var(--ux-space-3)}
+  .chatHeaderForeground{min-height:86px;width:100%}
+  .chatHeaderWithBuilding .chatHeaderBuilding{
+    background-image:linear-gradient(90deg,color-mix(in srgb,var(--namaa-card) 98%,transparent) 0%,color-mix(in srgb,var(--namaa-card) 88%,transparent) 54%,color-mix(in srgb,var(--namaa-card) 46%,transparent) 100%),var(--room-building);
+    background-position:center 44%;
+    opacity:.72
+  }
+  .chatIdentity{gap:var(--ux-space-2)}
+  .chatBankMark{width:36px;height:36px;flex-basis:36px}
+  .mobileTools button{background:color-mix(in srgb,var(--namaa-cream) 78%,var(--namaa-card));box-shadow:var(--ux-shadow-xs)}
+  .messages{
+    background-image:linear-gradient(color-mix(in srgb,var(--namaa-chat-canvas) 96.5%,transparent),color-mix(in srgb,var(--namaa-chat-canvas) 96.5%,transparent)),var(--room-building);
+    background-size:cover;
+    background-position:center 22%
+  }
 }

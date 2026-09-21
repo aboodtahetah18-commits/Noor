@@ -92,9 +92,20 @@ if(!weeklyRoute.includes('export const GET=run')||!weeklyRoute.includes('process
 const approvedProductionRelease=
   (process.env.VERCEL_ENV==='production' && process.env.VERCEL_GIT_COMMIT_REF==='main') ||
   (process.env.GITHUB_ACTIONS==='true' && process.env.GITHUB_REF_NAME==='main');
+const parsedVercelConfig=JSON.parse(vercelConfig);
+const deploymentEnabled=parsedVercelConfig?.git?.deploymentEnabled;
+const mainOnlyGitDeployment=
+  deploymentEnabled!==null &&
+  typeof deploymentEnabled==='object' &&
+  deploymentEnabled['*']===false &&
+  deploymentEnabled.main===true &&
+  Object.entries(deploymentEnabled).every(([ref,enabled])=>
+    (ref==='main'&&enabled===true)||(ref==='*'&&enabled===false)
+  );
 const deploymentGuardSatisfied=
-  vercelConfig.includes('"deploymentEnabled": false') ||
-  (approvedProductionRelease && vercelConfig.includes('"deploymentEnabled": true'));
+  deploymentEnabled===false ||
+  mainOnlyGitDeployment ||
+  (approvedProductionRelease && deploymentEnabled===true);
 if(!vercelConfig.includes('/api/jobs/weekly-analysis')||!deploymentGuardSatisfied){
   throw new Error('WEEKLY-ANALYSIS-SCHEDULE-OR-DEPLOYMENT-GUARD-MISSING');
 }
