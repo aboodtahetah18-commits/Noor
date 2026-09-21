@@ -5503,7 +5503,7 @@
   background:color-mix(in srgb,var(--namaa-surface-warm) 84%,var(--namaa-card))
 }
 
-@media(max-width:720px){
+@media(max-width:767px){
   .chatHeader{min-height:86px;padding-inline:var(--ux-space-3)}
   .chatHeaderForeground{min-height:86px;width:100%}
   .chatHeaderWithBuilding .chatHeaderBuilding{
