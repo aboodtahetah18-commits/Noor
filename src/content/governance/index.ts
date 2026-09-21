@@ -7,6 +7,7 @@ import { GOVERNANCE_BATCH_06 } from './batch-06';
 import { GOVERNANCE_BATCH_07 } from './batch-07';
 import { GOVERNANCE_BATCH_08 } from './batch-08';
 import { GOVERNANCE_BATCH_09 } from './batch-09';
+import { CURRENT_GOVERNANCE_OVERRIDES } from './current-overrides';
 
 export type LocalGovernanceDocument={
   referenceCode:string;
@@ -17,7 +18,8 @@ export type LocalGovernanceDocument={
   content:string;
 };
 
-export const LOCAL_GOVERNANCE_DOCUMENTS:readonly LocalGovernanceDocument[]=[
+const ALL_GOVERNANCE_DOCUMENTS:readonly LocalGovernanceDocument[]=[
+  ...CURRENT_GOVERNANCE_OVERRIDES,
   ...GOVERNANCE_BATCH_01,
   ...GOVERNANCE_BATCH_02,
   ...GOVERNANCE_BATCH_03,
@@ -28,6 +30,8 @@ export const LOCAL_GOVERNANCE_DOCUMENTS:readonly LocalGovernanceDocument[]=[
   ...GOVERNANCE_BATCH_08,
   ...GOVERNANCE_BATCH_09,
 ];
+
+export const LOCAL_GOVERNANCE_DOCUMENTS:readonly LocalGovernanceDocument[]=ALL_GOVERNANCE_DOCUMENTS.filter((item,index,items)=>items.findIndex(candidate=>candidate.referenceCode===item.referenceCode)===index);
 
 export function getLocalGovernanceDocument(referenceCode:string){
   return LOCAL_GOVERNANCE_DOCUMENTS.find(item=>item.referenceCode===referenceCode)??null;

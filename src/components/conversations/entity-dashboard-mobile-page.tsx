@@ -75,14 +75,14 @@ export function EntityDashboardMobilePage({roomKey,onClose}:{roomKey:string;onCl
           <div className={styles.dashboardPlanList}>{visiblePlans.map(plan=><article key={plan.ownerRef} className={styles.dashboardPlanCard}>
             <div className={styles.dashboardPlanTitle}><div><small>{plan.ownerName}</small><strong>{plan.title}</strong></div><span>{statusLabel[plan.status]}</span></div>
             <dl><div><dt>الوضع الحالي</dt><dd>{plan.current}</dd></div><div><dt>الهدف</dt><dd>{plan.target}</dd></div><div><dt>الخطوة التالية</dt><dd>{plan.nextAction}</dd></div><div><dt>الأفق</dt><dd>{plan.horizon}</dd></div></dl>
-            <div className={styles.dashboardBasis}>{plan.basis.map(ref=><span key={ref}>{ref}</span>)}</div>
+            <div className={styles.dashboardBasis}><span>المراجع الحاكمة محفوظة في ملف الجهة</span></div>
           </article>)}</div>
         </section>
 
         <section className={styles.dashboardSection}>
           <header><strong>آخر تقرير أسبوعي</strong></header>
           {dashboard.weeklyReport?<article className={styles.weeklyReportCard}>
-            <div><strong>أسبوع {dashboard.weeklyReport.periodStart}</strong><span>{dashboard.weeklyReport.status}</span></div>
+            <div><strong>تقرير الأسبوع</strong><span>{dashboard.weeklyReport.status}</span></div>
             <div className={styles.weeklyReportMetrics}><span>توصيات جديدة <b>{dashboard.weeklyReport.recommendationsCreated}</b></span><span>توصيات حُسمت <b>{dashboard.weeklyReport.recommendationsResolved}</b></span><span>تغيرات التزامات <b>{dashboard.weeklyReport.obligationTransitions}</b></span><span>قواعد محجوبة <b>{dashboard.weeklyReport.blockedRules}</b></span></div>
             {dashboard.weeklyReport.challenges.length?<div className={styles.weeklyChallenges}>{dashboard.weeklyReport.challenges.map((item,index)=><p key={index}>{item}</p>)}</div>:<p>لا توجد تحديات مسجلة في آخر تحليل أسبوعي.</p>}
             <div className={styles.weeklyOutlook}>

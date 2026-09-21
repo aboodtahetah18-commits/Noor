@@ -18,22 +18,63 @@ const statusLabel:Record<string,string>={
   COUNCIL_DISCUSSION:'مناقشة مجلس نماء', APPROVED_PENDING_EFFECTIVE:'معتمد وينتظر النفاذ',
   EFFECTIVE:'نافذ', REJECTED:'مرفوض',
 };
-const priorityLabel={NORMAL:'عادي',NEXT_MEETING:'للاجتماع القادم',URGENT:'عاجل — اجتماع فوري'} as const;
+const priorityLabel={NORMAL:'عادي',NEXT_MEETING:'للاجتماع القادم',URGENT:'عاجل، اجتماع فوري'} as const;
 
 type DocumentBlock =
   | {kind:'paragraph';text:string}
   | {kind:'table';headers:string[];rows:string[][]};
 type DocumentSection={title:string;blocks:DocumentBlock[]};
 
+const arabicDigits=(value:string)=>value.replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[Number(d)]??d);
+const visibleTermReplacements:Array<[RegExp,string]>=[
+  [/AUDIT[\s_-]*CLOSURE/gi,'إغلاق التدقيق'],
+  [/REVALIDATION[\s_-]*REQUIRED/gi,'يلزم إعادة التحقق'],
+  [/HARD[\s_-]*GUARD/gi,'قاعدة صارمة'],
+  [/CASH[\s_-]*FLOOR/gi,'الحد الأدنى للسيولة'],
+  [/AUTHORITY[\s_-]*MATRIX/gi,'مصفوفة الصلاحيات'],
+  [/WAITING[\s_-]*DATA/gi,'بانتظار البيانات'],
+  [/SUCCESS/gi,'مكتمل'],
+  [/PARTIAL/gi,'مكتمل جزئيًا'],
+  [/APPROVED/gi,'معتمد'],
+  [/REJECTED/gi,'مرفوض'],
+  [/INPUTS?/gi,'المدخلات'],
+  [/OUTPUTS?/gi,'المخرجات'],
+  [/TRIGGER/gi,'المحفز'],
+  [/ACTION/gi,'الإجراء'],
+  [/ACCEPTANCE/gi,'القبول'],
+];
+function cleanVisibleArabic(value:string){
+  let text=value;
+  for(const [pattern,replacement] of visibleTermReplacements) text=text.replace(pattern,replacement);
+  text=text
+    .replace(/\bS(\d+)\b/gi,(_,n)=>'رقم '+arabicDigits(String(n)))
+    .replace(/\bR(\d+)\s*[-–—]\s*R?(\d+)\b/gi,(_,a,b)=>'المستويات '+arabicDigits(String(a))+' إلى '+arabicDigits(String(b)))
+    .replace(/^#{1,6}\s*/,'')
+    .replace(/^(\d+)\s*[.)-]\s*/,'$1 ')
+    .replace(/^[-*•]+\s*/,'')
+    .replace(/\*\*|__|\*|_|\`/g,'')
+    .replace(/[A-Za-z][A-Za-z0-9_./:-]*/g,'')
+    .replace(/\s+[—–-]\s+/g,'، ')
+    .replace(/\s{2,}/g,' ')
+    .replace(/\s+([،؛:.])/g,'$1')
+    .trim();
+  return arabicDigits(text);
+}
+function documentLineParts(line:string){
+  const expanded=line
+    .replace(/\*\*([^*]+?)\s*:\*\*/g,'\n$1: ')
+    .replace(/\*\*([^*]+?)\*\*\s*:/g,'\n$1: ');
+  return expanded.split(/\n+/).map(cleanVisibleArabic).filter(Boolean);
+}
 function markdownCells(line:string){
-  return line.trim().replace(/^\|/,'').replace(/\|$/,'').split('|').map(cell=>cell.trim());
+  return line.trim().replace(/^\|/,'').replace(/\|$/,'').split('|').map(cell=>cleanVisibleArabic(cell));
 }
 function isMarkdownDivider(line:string){
-  const cells=markdownCells(line);
+  const cells=line.trim().replace(/^\|/,'').replace(/\|$/,'').split('|').map(cell=>cell.trim());
   return cells.length>1&&cells.every(cell=>/^:?-{3,}:?$/.test(cell));
 }
 function cleanDocumentText(line:string){
-  return line.trim().replace(/^#{1,6}\s*/,'').replace(/^\*\*(.+)\*\*$/,'$1').trim();
+  return cleanVisibleArabic(line);
 }
 
 type GovernedDisplayType='policy'|'procedure'|'matrix'|'mechanism'|'reference';
@@ -65,21 +106,18 @@ function parseGovernedDocument(content:string):DocumentSection[]{
   const lines=content.replace(/\r/g,'').split('\n');
   const sections:DocumentSection[]=[];
   let current:DocumentSection={title:'المحتوى المعتمد',blocks:[]};
-  let paragraph:string[]=[];
-  const flushParagraph=()=>{
-    if(!paragraph.length)return;
-    current.blocks.push({kind:'paragraph',text:paragraph.join(' ').trim()});
-    paragraph=[];
+  const pushParagraph=(text:string)=>{
+    const cleaned=cleanDocumentText(text);
+    if(cleaned) current.blocks.push({kind:'paragraph',text:cleaned});
   };
-  const flushSection=()=>{
-    flushParagraph();
-    if(current.blocks.length||sections.length===0&&current.title!=='المحتوى المعتمد')sections.push(current);
+  const pushLineParts=(line:string)=>{
+    for(const part of documentLineParts(line)) current.blocks.push({kind:'paragraph',text:part});
   };
 
   for(let index=0;index<lines.length;index++){
     const raw=lines[index]??'';
     const trimmed=raw.trim();
-    if(!trimmed){flushParagraph();continue;}
+    if(!trimmed) continue;
 
     const headingMatch=trimmed.match(/^#{1,6}\s+(.+)$/);
     const majorLine=!trimmed.startsWith('|')&&(
@@ -88,7 +126,6 @@ function parseGovernedDocument(content:string):DocumentSection[]{
       /^(?:الباب|الفصل|المادة)\s+/.test(trimmed)
     );
     if(headingMatch||majorLine){
-      flushParagraph();
       if(current.blocks.length)sections.push(current);
       current={title:cleanDocumentText(headingMatch?.[1]??trimmed),blocks:[]};
       continue;
@@ -96,7 +133,6 @@ function parseGovernedDocument(content:string):DocumentSection[]{
 
     const next=lines[index+1]?.trim()??'';
     if(trimmed.includes('|')&&next.includes('|')&&isMarkdownDivider(next)){
-      flushParagraph();
       const headers=markdownCells(trimmed);
       const rows:string[][]=[];
       index+=1;
@@ -110,10 +146,11 @@ function parseGovernedDocument(content:string):DocumentSection[]{
       continue;
     }
 
-    paragraph.push(cleanDocumentText(trimmed));
+    if(/\*\*[^*]+:\*\*/.test(trimmed)||/\*\*[^*]+\*\*\s*:/.test(trimmed)) pushLineParts(trimmed);
+    else pushParagraph(trimmed);
   }
-  flushSection();
-  return sections.filter(section=>section.blocks.length||section.title!=='المحتوى المعتمد');
+  if(current.blocks.length)sections.push(current);
+  return sections.filter(section=>section.blocks.length&&Boolean(section.title));
 }
 
 export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document:GovernedDocumentRef;roomKey:string;onClose:()=>void}){
@@ -208,11 +245,13 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
                     <div className={styles.governedContentSectionBody}>
                       {section.blocks.map((block,blockIndex)=>block.kind==='paragraph'
                         ?<p key={blockIndex}>{block.text}</p>
-                        :<div className={styles.governedTableScroll+' '+(isMatrixDocument?styles.governedMatrixScroll:'')} key={blockIndex}>
-                          <table className={styles.governedContentTable+' '+(isMatrixDocument?styles.governedMatrixTable:'')}>
-                            <thead><tr>{block.headers.map((header,headerIndex)=><th key={headerIndex} scope="col">{header}</th>)}</tr></thead>
-                            <tbody>{block.rows.map((row,rowIndex)=><tr key={rowIndex}>{block.headers.map((_,cellIndex)=><td key={cellIndex}>{row[cellIndex]??''}</td>)}</tr>)}</tbody>
-                          </table>
+                        :<div className={styles.governedTableCards} key={blockIndex}>
+                          {block.rows.map((row,rowIndex)=><article className={styles.governedTableCard} key={rowIndex}>
+                            {block.headers.map((header,cellIndex)=><div key={cellIndex}>
+                              <small>{header||'البيان'}</small>
+                              <strong>{row[cellIndex]||'غير محدد'}</strong>
+                            </div>)}
+                          </article>)}
                         </div>)}
                     </div>
                   </details>)}
@@ -229,7 +268,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
               <header><strong>طلب تعديل</strong><span>{statusLabel[item.status]??'قيد المعالجة'}</span></header>
               <small>{priorityLabel[item.priority]}</small>
               {item.clauseRef&&<p><b>البند:</b> {item.clauseRef}</p>}<p><b>المقترح:</b> {item.proposedRule}</p><p><b>السبب:</b> {item.rationale}</p>
-              {item.discussionNotes.length>0&&<div>{item.discussionNotes.map((note,index)=><p key={index}>• {note}</p>)}</div>}
+              {item.discussionNotes.length>0&&<div>{item.discussionNotes.map((note,index)=><p key={index}>{note}</p>)}</div>}
               {item.councilDecisionId&&<p><b>قرار المجلس:</b> تم تسجيل القرار واعتماده في السجل الحوكمي.</p>}{item.nextVersion&&<p><b>الإصدار الجديد:</b> {item.nextVersion}</p>}{item.effectiveAt&&<p><b>تاريخ النفاذ:</b> {item.effectiveAt}</p>}
             </article>)}
           </div>
@@ -237,13 +276,13 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
 
         {!formOpen?<button type="button" className={styles.primaryActionButton} onClick={()=>setFormOpen(true)}><LucideIcon name="pencil" size={20}/><span>طلب تعديل هذا المرجع</span></button>
         :<form className={styles.governedAmendmentForm} onSubmit={submit}>
-          <strong>طلب تعديل — يبدأ بمراجعة المحافظ</strong>
+          <strong>طلب تعديل، يبدأ بمراجعة المحافظ</strong>
           <label><span>رقم البند أو المادة</span><input value={clauseRef} onChange={e=>setClauseRef(e.target.value)} placeholder="مثال: المادة 4.2"/></label>
           <label><span>النص أو الوضع الحالي</span><textarea value={currentRule} onChange={e=>setCurrentRule(e.target.value)} placeholder="اختياري — اكتب النص الحالي الذي تريد مراجعته"/></label>
           <label><span>التعديل المقترح</span><textarea required value={proposedRule} onChange={e=>setProposedRule(e.target.value)} placeholder="اكتب التعديل المقترح بدقة"/></label>
           <label><span>مبرر التعديل</span><textarea required value={rationale} onChange={e=>setRationale(e.target.value)} placeholder="لماذا نحتاج هذا التعديل؟ وما أثره المتوقع؟"/></label>
-          <label><span>الأولوية</span><select value={priority} onChange={e=>setPriority(e.target.value as typeof priority)}><option value="NORMAL">عادي</option><option value="NEXT_MEETING">للاجتماع القادم</option><option value="URGENT">عاجل — اجتماع فوري</option></select></label>
-          <p>المسار: المحافظ → أمين السر → مجلس نماء الأعلى → اعتماد/رفض → تاريخ نفاذ وإصدار جديد.</p>
+          <label><span>الأولوية</span><select value={priority} onChange={e=>setPriority(e.target.value as typeof priority)}><option value="NORMAL">عادي</option><option value="NEXT_MEETING">للاجتماع القادم</option><option value="URGENT">عاجل، اجتماع فوري</option></select></label>
+          <p>المسار: المحافظ، ثم أمين السر، ثم مجلس نماء الأعلى، ثم الاعتماد أو الرفض، ثم تاريخ النفاذ والإصدار الجديد.</p>
           <div className={styles.governedAmendmentActions}><button type="button" onClick={()=>setFormOpen(false)}>إلغاء</button><button type="submit" disabled={pending}>{pending?'جارٍ الإرسال…':'إرسال للمحافظ'}</button></div>
         </form>}
         {feedback&&<p className={styles.governedDocumentFeedback}>{feedback}</p>}

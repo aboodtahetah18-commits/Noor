@@ -30,13 +30,13 @@ export type GovernedRoomDetail = {
 
 export const governedRoomDetails:Record<ConversationRoomKey,GovernedRoomDetail>={
   central:{
-    roleTitle:'محافظ البنك المركزي',
+    roleTitle:'محافظ نماء',
     entityTitle:'بنك نماء المركزي',
-    responsibility:'قيادة التعارف الأول للمستخدم، والقرارات الثقيلة، والوساطة عند تعارض التوصيات، وتطوير الإطار المركزي.',
+    responsibility:'القيادة التنفيذية العليا لنماء، الإشراف على مديري البنوك، ضمان الاتساق المؤسسي، وفض التعارضات الاستراتيجية ضمن الحوكمة.',
     observes:'جلسة التأسيس الأولى، القضايا الاستراتيجية، الخلافات والتغييرات الهيكلية وتقدم التأسيس.',
-    intervention:'يبدأ مع المستخدم الجديد، ويسأل سؤالًا رئيسيًا واحدًا في كل مرة، ويتدخل لاحقًا عند الحاجة لحكم أو وساطة أو ترجيح أو استشارة عليا.',
+    intervention:'يتدخل في التأسيس والقرارات العابرة للبنوك والتعارضات الاستراتيجية وما يتجاوز تفويض مدير بنك نماء المركزي أو مديري البنوك.',
     avoids:'لا يدير المعاملات الروتينية بعد التأسيس، ولا يعتمد الحركة النقدية نيابة عن المستخدم.',
-    governanceNote:'هو الواجهة البشرية الخوارزمية الأولى للمستخدم الجديد، ويستخدم المعلومات الموثوقة الموجودة بدل إعادة السؤال عنها.',
+    governanceNote:'محافظ نماء أعلى دور تنفيذي إشرافي، بينما يقود مدير بنك نماء المركزي التشغيل اليومي للمركزي ويتابع أصحاب المسؤوليات مباشرة.',
     sourceRefs:['ROLE-GOV','حوكمة-تأسيس-٢٢'],
     records:[
       {referenceCode:'NMC-REG-01',title:'سجل القرارات التأسيسية والحالة النهائية',kind:'record',version:'v2.0',sourceUrl:'https://drive.google.com/file/d/1ry5QdRp_0dJiMasHl8toFaU_VZRTuLG1/view'},
@@ -46,16 +46,17 @@ export const governedRoomDetails:Record<ConversationRoomKey,GovernedRoomDetail>=
     ],
     policies:[
       {referenceCode:'NMC-REF-02',title:'الفهرس الرئيسي لبنك نماء المركزي',kind:'reference',version:'v2.0',sourceUrl:'https://drive.google.com/file/d/1Tp5TqMm1Heon8K9-mEXWhkr0aurQmW-z/view'},
-      {referenceCode:'NMC-CHR-01',title:'الميثاق والتعريف المؤسسي — بنك نماء المركزي',kind:'charter',version:'v1.0',sourceUrl:'https://drive.google.com/file/d/10kB1PC7OYChjf6JFWpFBIL51ST-grmQi/view'},
-      {referenceCode:'NMC-POL-01',title:'الهيكل التنظيمي والأدوار — بنك نماء المركزي',kind:'policy',version:'v1.0',sourceUrl:'https://drive.google.com/file/d/1XZbSjriEZ5ZZLqrlbcBfQMF5t_z0GVwj/view'},
-      {referenceCode:'NMC-POL-02',title:'مصفوفة الصلاحيات والاعتمادات — بنك نماء المركزي',kind:'policy',version:'v2.1',sourceUrl:'https://docs.google.com/document/d/1xWd9s7-V-QFV13RPYJd_tW17dAGjB4Fh3Bh0LBS837o/edit'},
+      {referenceCode:'NMC-CONST-01',title:'دستور منصة نماء والمعمار المؤسسي والتشغيلي الأعلى',kind:'charter',version:'v1.0',sourceUrl:'https://docs.google.com/document/d/1Vy12Q4MS-oB5Ma-8L5ynyG3WKHdTtB71d0lbiajm9Z0/edit?usp=drivesdk'},
+      {referenceCode:'NMC-POL-02',title:'مصفوفة الصلاحيات والاعتمادات — بنك نماء المركزي',kind:'policy',version:'v2.1',sourceUrl:'https://docs.google.com/document/d/1wO7h__Ny-816agBXJ9m2HNsZLjZN_ggHL6pAf3tBguE/edit?usp=drivesdk'},
       {referenceCode:'NMC-POL-03',title:'السياسة المالية العليا — بنك نماء المركزي',kind:'policy',version:'v1.0',sourceUrl:'https://drive.google.com/file/d/1abH_UMUKWS7h2-HEVHL1yv0tEZTZUddC/view'},
       {referenceCode:'NMC-POL-04',title:'محرك القرار والخوارزميات — بنك نماء المركزي',kind:'policy',version:'v1.0',sourceUrl:'https://drive.google.com/file/d/1EPSUgX7WMZgdZJ_gnxcrd6LBWf8rVwdo/view'},
       {referenceCode:'NMC-POL-05',title:'الأوزان والتقييم والمخاطر — بنك نماء المركزي',kind:'policy',version:'v1.0',sourceUrl:'https://drive.google.com/file/d/1AEmEiMTZn5wra2tjDYartHyi7XcOg8do/view'},
-      {referenceCode:'NMC-POL-06',title:'العلاقة مع البنوك والمحافظ والمستشارين — بنك نماء المركزي',kind:'policy',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1V1396IeCZCdg9pmIXeiTgvmyBJtKSmuwbnB7Y7f7Ueg/edit'},
+      {referenceCode:'NMC-POL-06',title:'العلاقة مع البنوك ومحافظ نماء وأصحاب المسؤوليات والمستشار الاقتصادي — بنك نماء المركزي',kind:'policy',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1V1396IeCZCdg9pmIXeiTgvmyBJtKSmuwbnB7Y7f7Ueg/edit'},
       {referenceCode:'NMC-POL-07',title:'حالات التشغيل والسيناريوهات — بنك نماء المركزي',kind:'policy',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1wuAboukFuAzffWgtsAsz7H0EZkyK61NBaSbLzOSTyIA/edit'},
       {referenceCode:'NMC-CTR-01',title:'عقد البيانات والتكامل المركزي — بنك نماء',kind:'contract',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1DJ64l0-IMxza5ob9peP7RSpzZn7yxwqFsSYl0qreG2c/edit'},
       {referenceCode:'NMC-POL-08',title:'قاعدة التنفيذ البشري والإثبات — بنك نماء المركزي',kind:'policy',version:'v1.0',sourceUrl:'https://docs.google.com/document/d/1tyC2VNP4RbDs1cNbuocBMAdMDsAPZ1BW1jc-Hl9f5lo/edit'},
+      {referenceCode:'NMC-POL-09',title:'سياسة التعلم الخوارزمي والقرار القابل للتدقيق لمنصة نماء',kind:'policy',version:'v1.0',sourceUrl:'https://docs.google.com/document/d/1wOVhGfO9Pp0LrWF_ZRco0oGG53jpSLOyQjRlZnFqgOQ/edit?usp=drivesdk'},
+      {referenceCode:'NMC-POL-10',title:'السياسة المركزية لإدارة القضايا والاجتماعات والقرارات والمتابعة',kind:'policy',version:'v1.0',sourceUrl:'https://docs.google.com/document/d/10GeX1j4W9gHt3BJLjzFkSJ0oftWsJIpPneZx8AcCYu8/edit?usp=drivesdk'},
       {referenceCode:'NMC-CHR-02',title:'ميثاق أصحاب المسؤوليات المالية والمستشار الاقتصادي',kind:'charter',version:'v1.0',sourceUrl:'https://docs.google.com/document/d/1fXG8jJuS4_WXllyiSYcVP7unKf2jJ-s_AGRa_2xEYLA/edit'},
       {referenceCode:'NMC-REF-03',title:'تأسيس مركز العمليات والمطابقة — بنك نماء المركزي',kind:'reference',version:'v0.1',sourceUrl:'https://docs.google.com/document/d/1jtP85JWnHPHoCzRxZFOwqDhyFmRNHnCBYP-0R51fKr0/edit'},
     ],
@@ -75,7 +76,7 @@ export const governedRoomDetails:Record<ConversationRoomKey,GovernedRoomDetail>=
     policies:[
       {referenceCode:'OPS-REF-01',title:'تأسيس مركز العمليات والمطابقة — بنك نماء المركزي',kind:'reference',version:'v0.1',sourceUrl:'https://docs.google.com/document/d/1jtP85JWnHPHoCzRxZFOwqDhyFmRNHnCBYP-0R51fKr0/edit'},
       {referenceCode:'OPS-CTR-01',title:'عقد البيانات والتكامل المركزي — بنك نماء',kind:'contract',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1DJ64l0-IMxza5ob9peP7RSpzZn7yxwqFsSYl0qreG2c/edit'},
-      {referenceCode:'OPS-POL-01',title:'العلاقة مع البنوك والمحافظ والمستشارين — بنك نماء المركزي',kind:'policy',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1V1396IeCZCdg9pmIXeiTgvmyBJtKSmuwbnB7Y7f7Ueg/edit'},
+      {referenceCode:'OPS-POL-01',title:'العلاقة مع البنوك ومحافظ نماء وأصحاب المسؤوليات والمستشار الاقتصادي — بنك نماء المركزي',kind:'policy',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1V1396IeCZCdg9pmIXeiTgvmyBJtKSmuwbnB7Y7f7Ueg/edit'},
     ],
   },
   solvency:{

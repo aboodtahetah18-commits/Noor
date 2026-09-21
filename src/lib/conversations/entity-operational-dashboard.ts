@@ -56,14 +56,14 @@ function money(value:string|null|undefined){
   if(value===null||value===undefined) return 'غير متاح';
   const n=Number(value);
   if(!Number.isFinite(n)) return value;
-  return new Intl.NumberFormat('en-US',{maximumFractionDigits:2}).format(n)+' ر.س';
+  return new Intl.NumberFormat('ar-SA',{maximumFractionDigits:2}).format(n)+' ر.س';
 }
 
 function percent(value:string|null|undefined){
   if(value===null||value===undefined) return 'غير متاح';
   const n=Number(value);
   if(!Number.isFinite(n)) return value;
-  return new Intl.NumberFormat('en-US',{maximumFractionDigits:1}).format(n)+'%';
+  return new Intl.NumberFormat('ar-SA',{maximumFractionDigits:1}).format(n)+'٪';
 }
 
 function num(value:string|null|undefined){
@@ -90,7 +90,7 @@ async function latestWeeklyReport(userId:string):Promise<WeeklyOperationalReport
   const reasonCodes=Array.isArray(summary.activeReasonCodes)?summary.activeReasonCodes.map(String):[];
   return {
     periodStart:String(row.period_start),
-    status:String(row.status),
+    status:String(row.status)==='SUCCESS'?'مكتمل':String(row.status)==='PARTIAL'?'مكتمل جزئيًا':'قيد المتابعة',
     recommendationsCreated:Number(summary.recommendationsCreated??0),
     recommendationsResolved:Number(summary.recommendationsResolved??0),
     obligationTransitions:Number(summary.obligationTransitions??0),
@@ -98,9 +98,10 @@ async function latestWeeklyReport(userId:string):Promise<WeeklyOperationalReport
     challenges:[
       ...blocked.slice(0,3).map(item=>{
         const rec=item&&typeof item==='object'&&!Array.isArray(item)?item as Record<string,unknown>:{};
-        return String(rec.issue??rec.reasonCode??'قاعدة تحتاج بيانات أو مراجعة');
+        const issue=typeof rec.issue==='string'?rec.issue.trim():'';
+        return issue&&/[\u0600-\u06FF]/.test(issue)?issue:'قاعدة تحتاج بيانات أو مراجعة';
       }),
-      ...reasonCodes.slice(0,3).map(code=>'سبب نشط: '+code),
+      ...(reasonCodes.length?['يوجد سبب تحليلي نشط يحتاج مراجعة.']:[]),
     ].slice(0,5),
     nextPriorities:[],
   };
@@ -217,7 +218,18 @@ function rolePlan(role:AlgorithmRoleRef,dashboard:Awaited<ReturnType<typeof getD
 }
 
 function metricsForRoom(roomKey:ConversationRoomKey,dashboard:Awaited<ReturnType<typeof getDashboardSummary>>):OperationalMetric[]{
-  if(!dashboard) return [{key:'foundation',label:'حالة البيانات',value:'بانتظار اكتمال التأسيس',hint:'تظهر المؤشرات الرقمية بعد اكتمال البيانات وبدء الدورة.',status:'WAITING_DATA'}];
+  if(!dashboard){
+    const shared:OperationalMetric[]=[
+      {key:'foundation',label:'اكتمال التأسيس',value:'بانتظار الاستكمال',hint:'تُفعّل القراءة الرقمية بعد اكتمال بيانات التأسيس الأساسية.',status:'WAITING_DATA'},
+      {key:'income',label:'الدخل والسيولة',value:'بانتظار بيانات موثقة',hint:'لا تُحتسب السيولة من دخل لم يصل بعد.',status:'WAITING_DATA'},
+      {key:'obligations',label:'الالتزامات',value:'بانتظار الحصر',hint:'يجب تسجيل الاستحقاقات قبل أي توزيع مرن أو توصية استثمارية.',status:'WAITING_DATA'},
+      {key:'goals',label:'الأهداف',value:'بانتظار التعريف',hint:'تظهر خطة الهدف بعد تحديد المبلغ والموعد والأولوية.',status:'WAITING_DATA'},
+    ];
+    if(roomKey==='solvency') shared.push({key:'protection',label:'الحماية والاحتياط',value:'بانتظار بيانات الحماية',hint:'يُحدد الاحتياط بعد معرفة الالتزامات واستقرار الدخل والسيولة.',status:'WAITING_DATA'});
+    if(roomKey==='assets') shared.push({key:'investment',label:'الاستثمار',value:'بانتظار تحديد الفائض المؤهل',hint:'لا يُقترح استثمار من أموال الالتزامات أو الحماية أو الأهداف القريبة.',status:'WAITING_DATA'});
+    if(roomKey==='hilal') shared.push({key:'budget',label:'الميزانية التشغيلية',value:'بانتظار بداية الدورة',hint:'تظهر المتابعة بعد تثبيت الدخل والبنود والالتزامات.',status:'WAITING_DATA'});
+    return shared;
+  }
 
   if(roomKey==='solvency') return [
     {key:'liquidity',label:'السيولة',value:money(dashboard.liquidity.total),hint:null,status:'GOOD'},
