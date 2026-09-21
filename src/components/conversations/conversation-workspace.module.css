@@ -5259,7 +5259,7 @@
   line-height:1.7
 }
 .governedClauseRow>p{
-  padding-inline-start:calc(48px + var(--ux-space-2))
+  padding-inline-start:var(--ux-space-8)
 }
 .governedTableScroll{
   width:100%;
