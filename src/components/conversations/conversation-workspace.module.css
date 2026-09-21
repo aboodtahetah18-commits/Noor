@@ -238,7 +238,7 @@
   background:color-mix(in srgb,var(--namaa-card) 90%,transparent);
   border:1px solid color-mix(in srgb,var(--namaa-gold-500) 42%,var(--namaa-border));
   box-shadow:var(--ux-shadow-xs);
-  backdrop-filter:blur(6px)
+  box-shadow:var(--ux-shadow-xs)
 }
 
 .chatBankMark img{
