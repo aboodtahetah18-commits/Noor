@@ -1,7 +1,7 @@
 import type { ConversationRoomKey } from '@/lib/conversations/store';
 import { FINANCIAL_RESPONSIBILITY_ROLES, ECONOMIC_ADVISOR } from '@/lib/advisors/approved-advisors';
 
-export type AlgorithmRoleKind='governor'|'bank_manager'|'responsibility_owner'|'advisor'|'operations'|'secretary'|'council';
+export type AlgorithmRoleKind='governor'|'central_bank_manager'|'bank_manager'|'responsibility_owner'|'advisor'|'operations'|'secretary'|'council';
 export type AlgorithmRoleRef={
   referenceCode:string;
   key:string;
@@ -23,7 +23,6 @@ function ownerRole(args:{
   referenceCode:string;
   key:string;
   homeRoom:ConversationRoomKey;
-  reportsTo:string;
   policyRefs:string[];
 }):AlgorithmRoleRef{
   const role=ownerByKey.get(args.key);
@@ -34,7 +33,7 @@ function ownerRole(args:{
     name:role.name,
     kind:'responsibility_owner',
     homeRoom:args.homeRoom,
-    reportsTo:args.reportsTo,
+    reportsTo:'مدير بنك نماء المركزي',
     mandate:role.mandate,
     accountableFor:[...role.accountableFor],
     kpis:[...role.kpis],
@@ -46,17 +45,31 @@ function ownerRole(args:{
 
 export const ALGORITHM_ROLE_REGISTRY:readonly AlgorithmRoleRef[]=[
   {
-    referenceCode:'ROLE-NMC-GOV-01',
+    referenceCode:'ROLE-NAM-GOV-01',
     key:'central-governor',
-    name:'محافظ بنك نماء المركزي',
+    name:'محافظ نماء',
     kind:'governor',
     homeRoom:'central',
     reportsTo:'مجلس نماء الأعلى',
-    mandate:'قيادة التأسيس، ترجيح التعارضات، إدارة القرارات الاستراتيجية، ورئاسة مجلس نماء الأعلى.',
-    accountableFor:['جودة التأسيس','سلامة القرارات الثقيلة','حسم التعارضات','جودة التصعيد للمجلس'],
-    kpis:['اكتمال ملف التأسيس','وضوح مبررات القرار','نسبة القرارات القابلة للتدقيق','زمن حسم التعارضات'],
+    mandate:'القيادة التنفيذية العليا لنماء، الإشراف على مديري البنوك، ضمان الاتساق المؤسسي، وترجيح التعارضات الاستراتيجية ضمن الحوكمة.',
+    accountableFor:['الاتساق المؤسسي','سلامة القرارات الثقيلة','حسم التعارضات العابرة للبنوك','جودة التصعيد للمجلس'],
+    kpis:['وضوح مبررات القرار','نسبة القرارات القابلة للتدقيق','زمن حسم التعارضات','جودة التكامل بين البنوك'],
     escalation:['تغيير سياسة حاكمة','تعارض بين بنوك','قرار يتجاوز تفويض جهة واحدة'],
-    prohibited:['لا ينفذ حركة مالية خارجية','لا يتجاوز القواعد الصارمة','لا يعتمد تعديل سياسة خارج مسار المجلس'],
+    prohibited:['لا يدير التفاصيل اليومية بدل مديري البنوك','لا ينفذ حركة مالية خارجية','لا يتجاوز القواعد الصارمة','لا يعتمد تعديل سياسة خارج مسار المجلس'],
+    policyRefs:['NMC-POL-01','NMC-POL-02','NMC-POL-03','NMC-POL-08'],
+  },
+  {
+    referenceCode:'ROLE-NMC-MGR-01',
+    key:'central-bank-manager',
+    name:'مدير بنك نماء المركزي',
+    kind:'central_bank_manager',
+    homeRoom:'central',
+    reportsTo:'محافظ نماء',
+    mandate:'قيادة التشغيل اليومي لبنك نماء المركزي، متابعة أصحاب المسؤوليات والمستشار الاقتصادي، ضمان اكتمال التحليل والتنسيق بين البنوك، ورفع التعارضات التي تتجاوز التفويض.',
+    accountableFor:['جودة التشغيل المركزي','اكتمال التحليلات','تنسيق أصحاب المسؤوليات','جودة التصعيد للمحافظ'],
+    kpis:['زمن إغلاق التعارضات التشغيلية','اكتمال البيانات قبل القرار','جودة توزيع القضايا على المسؤولين','نسبة التصعيدات الصحيحة'],
+    escalation:['تعارض عابر للبنوك','اعتراض مخاطر ملزم','تغيير سياسة أو صلاحية','قرار يتجاوز التفويض التشغيلي'],
+    prohibited:['لا يحل محل المسؤول المختص في الرأي الفني','لا يلغي اعتراضًا ملزمًا بلا مسار حوكمي','لا ينفذ أموال المستخدم','لا يغير سياسة أو قاعدة صارمة منفردًا'],
     policyRefs:['NMC-POL-01','NMC-POL-02','NMC-POL-03','NMC-POL-08'],
   },
   {
@@ -65,7 +78,7 @@ export const ALGORITHM_ROLE_REGISTRY:readonly AlgorithmRoleRef[]=[
     name:'مركز العمليات والمطابقة',
     kind:'operations',
     homeRoom:'operations',
-    reportsTo:'بنك نماء المركزي',
+    reportsTo:'مدير بنك نماء المركزي',
     mandate:'استقبال الرسائل والكشوف والإيصالات ومطابقة الحركات ومنع التكرار وربط الإثباتات بالعملية الصحيحة.',
     accountableFor:['جودة المطابقة','منع التكرار','سلامة ربط الحساب أو البطاقة','حالة التسوية'],
     kpis:['دقة المطابقة','زمن التسوية','نسبة التعارضات المحسومة','نسبة الحركات غير المصنفة'],
@@ -79,7 +92,7 @@ export const ALGORITHM_ROLE_REGISTRY:readonly AlgorithmRoleRef[]=[
     name:'مدير بنك ملاءة',
     kind:'bank_manager',
     homeRoom:'solvency',
-    reportsTo:'محافظ بنك نماء المركزي',
+    reportsTo:'محافظ نماء',
     mandate:'إدارة نطاق الحماية والسيولة والطوارئ ورفع التوصيات المؤسسية ضمن سياسة بنك ملاءة.',
     accountableFor:['كفاية الحماية','سلامة قرارات الملاءة','جودة التصعيدات'],
     kpis:['استقرار أشهر التغطية','جودة توصيات الطوارئ','انخفاض القرارات المخالفة للسيولة'],
@@ -89,7 +102,7 @@ export const ALGORITHM_ROLE_REGISTRY:readonly AlgorithmRoleRef[]=[
   },
   ownerRole({
     referenceCode:'ROLE-MAL-LIQ-01',key:'liquidity-protection-owner',homeRoom:'solvency',
-    reportsTo:'مدير بنك ملاءة',policyRefs:['MAL-POL-01','MAL-POL-04','NMC-POL-03'],
+    policyRefs:['MAL-POL-01','MAL-POL-04','NMC-POL-03'],
   }),
   {
     referenceCode:'ROLE-AST-MGR-01',
@@ -97,7 +110,7 @@ export const ALGORITHM_ROLE_REGISTRY:readonly AlgorithmRoleRef[]=[
     name:'مدير بنك الأصول الاستثماري',
     kind:'bank_manager',
     homeRoom:'assets',
-    reportsTo:'محافظ بنك نماء المركزي',
+    reportsTo:'محافظ نماء',
     mandate:'إدارة الأصول والأهداف والاستثمار ومراجعة الخطط والفرص والانحرافات ضمن سياسة بنك الأصول.',
     accountableFor:['سلامة خطة الأصول','تقدم الأهداف','جودة الفرص الاستثمارية'],
     kpis:['تقدم الأهداف','العائد المعدل بالمخاطر','سلامة السيولة المؤهلة للاستثمار'],
@@ -107,11 +120,11 @@ export const ALGORITHM_ROLE_REGISTRY:readonly AlgorithmRoleRef[]=[
   },
   ownerRole({
     referenceCode:'ROLE-AST-GOAL-01',key:'goals-owner',homeRoom:'assets',
-    reportsTo:'مدير بنك الأصول الاستثماري',policyRefs:['AST-POL-01','AST-POL-04','NMC-POL-03'],
+    policyRefs:['AST-POL-01','AST-POL-04','NMC-POL-03'],
   }),
   ownerRole({
     referenceCode:'ROLE-AST-INV-01',key:'investment-owner',homeRoom:'assets',
-    reportsTo:'مدير بنك الأصول الاستثماري',policyRefs:['AST-POL-01','AST-POL-04','AST-REF-02','NMC-POL-05'],
+    policyRefs:['AST-POL-01','AST-POL-04','AST-REF-02','NMC-POL-05'],
   }),
   {
     referenceCode:'ROLE-HIL-MGR-01',
@@ -119,7 +132,7 @@ export const ALGORITHM_ROLE_REGISTRY:readonly AlgorithmRoleRef[]=[
     name:'مدير بنك الهلال',
     kind:'bank_manager',
     homeRoom:'hilal',
-    reportsTo:'محافظ بنك نماء المركزي',
+    reportsTo:'محافظ نماء',
     mandate:'إدارة التمويل والانضباط والميزانية التشغيلية ضمن نطاق بنك الهلال ورفع التوصيات دون تنفيذ خارجي.',
     accountableFor:['سلامة قرارات التمويل','القدرة على السداد','انضباط التدفقات'],
     kpis:['نسبة التغطية','جودة إعادة الجدولة','انخفاض حالات الضغط غير الآمن'],
@@ -129,11 +142,11 @@ export const ALGORITHM_ROLE_REGISTRY:readonly AlgorithmRoleRef[]=[
   },
   ownerRole({
     referenceCode:'ROLE-HIL-BUD-01',key:'budget-spending-owner',homeRoom:'hilal',
-    reportsTo:'مدير بنك الهلال',policyRefs:['HIL-POL-01','NMC-POL-03'],
+    policyRefs:['HIL-POL-01','NMC-POL-03'],
   }),
   ownerRole({
     referenceCode:'ROLE-HIL-OBL-01',key:'obligations-owner',homeRoom:'hilal',
-    reportsTo:'مدير بنك الهلال',policyRefs:['HIL-POL-03','NMC-POL-03'],
+    policyRefs:['HIL-POL-03','NMC-POL-03'],
   }),
   {
     referenceCode:'ROLE-ADV-ECO-01',
@@ -141,7 +154,7 @@ export const ALGORITHM_ROLE_REGISTRY:readonly AlgorithmRoleRef[]=[
     name:ECONOMIC_ADVISOR.name,
     kind:'advisor',
     homeRoom:'advisor',
-    reportsTo:'مجلس نماء الأعلى عند التصعيد',
+    reportsTo:'مدير بنك نماء المركزي',
     mandate:ECONOMIC_ADVISOR.mandate,
     accountableFor:['جودة التحليل الاقتصادي','اختبار السيناريوهات','تصحيح الافتراضات العابرة للجهات'],
     kpis:[...ECONOMIC_ADVISOR.kpis],

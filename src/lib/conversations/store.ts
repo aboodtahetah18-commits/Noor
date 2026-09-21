@@ -7,7 +7,10 @@ export type ConversationRoomKey = 'central' | 'operations' | 'solvency' | 'asset
 export type ConversationMessageKind = 'message' | 'risk' | 'decision' | 'recommendation' | 'followup' | 'request';
 
 export const governedRooms: Record<ConversationRoomKey, { title: string; subtitle: string; kind: string; participants: Array<{ key: string; name: string; type: 'agent' | 'system'; role: string }> }> = {
-  central: { title: 'بنك نماء المركزي', subtitle: 'الحوكمة والاستقرار', kind: 'governor', participants: [{ key: 'central-governor', name: 'محافظ بنك نماء المركزي', type: 'agent', role: 'محافظ خوارزمي' }] },
+  central: { title: 'بنك نماء المركزي', subtitle: 'الحوكمة والاستقرار', kind: 'central', participants: [
+    { key: 'central-governor', name: 'محافظ نماء', type: 'agent', role: 'المحافظ' },
+    { key: 'central-bank-manager', name: 'مدير بنك نماء المركزي', type: 'agent', role: 'مدير البنك المركزي' },
+  ] },
   operations: { title: 'مركز العمليات والمطابقة', subtitle: 'رسائل العمليات وكشوف الحسابات والمطابقة والتسوية', kind: 'operations', participants: [{ key: 'operations-center', name: 'مركز العمليات والمطابقة', type: 'system', role: 'وحدة تشغيلية مركزية' }] },
   solvency: { title: 'بنك ملاءة', subtitle: 'الحماية والاحتياطي', kind: 'bank', participants: [
     { key: 'solvency-manager', name: 'مدير بنك ملاءة', type: 'agent', role: 'مدير خوارزمي' },
@@ -27,7 +30,7 @@ export const governedRooms: Record<ConversationRoomKey, { title: string; subtitl
   secretary: { title: 'أمين السر المركزي', subtitle: 'المحاضر والسياسات والاجتماعات والمتابعة', kind: 'secretary', participants: [{ key: 'central-secretary', name: 'أمين السر المركزي', type: 'agent', role: 'أمين سر خوارزمي' }] },
   council: { title: 'مجلس نماء الأعلى', subtitle: 'القرارات واللجان', kind: 'council', participants: [
     { key: 'central-secretary', name: 'أمين السر المركزي', type: 'agent', role: 'تنسيق الاجتماع والمحضر الحي' },
-    { key: 'central-governor', name: 'محافظ بنك نماء المركزي', type: 'agent', role: 'رئيس المجلس' },
+    { key: 'central-governor', name: 'محافظ نماء', type: 'agent', role: 'رئيس المجلس' },
     { key: 'budget-spending-owner', name: 'مسؤول الميزانية والإنفاق', type: 'agent', role: 'صاحب مسؤولية الميزانية والبنود' },
     { key: 'obligations-owner', name: 'مسؤول الالتزامات', type: 'agent', role: 'صاحب مسؤولية الاستحقاقات والديون' },
     { key: 'goals-owner', name: 'مسؤول الأهداف', type: 'agent', role: 'صاحب مسؤولية الأهداف' },
@@ -42,8 +45,8 @@ export const governedRooms: Record<ConversationRoomKey, { title: string; subtitl
 
 const onboardingMessage = {
   senderKey: 'central-governor',
-  senderName: 'محافظ بنك نماء المركزي',
-  body: 'مرحبًا بك في نماء. أنا محافظ بنك نماء المركزي، وسأقود معك تأسيس ملفك خطوة بخطوة. سأطرح سؤالًا رئيسيًا واحدًا في كل مرة، وأحفظ المعلومة الصحيحة حتى لا أكررها عليك. نبدأ من وضعك الأسري: هل أنت أعزب، متزوج، مطلق أو أرمل؟',
+  senderName: 'محافظ نماء',
+  body: 'مرحبًا بك في نماء. أنا محافظ نماء، وسأقود معك تأسيس ملفك خطوة بخطوة. سأطرح سؤالًا رئيسيًا واحدًا في كل مرة، وأحفظ المعلومة الصحيحة حتى لا أكررها عليك. نبدأ من وضعك الأسري: هل أنت أعزب، متزوج، مطلق أو أرمل؟',
   structuredData: {
     onboarding: true,
     stage: 'financial-baseline',
