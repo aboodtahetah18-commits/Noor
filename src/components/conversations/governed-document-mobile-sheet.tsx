@@ -69,11 +69,11 @@ function parseClauseLine(value:string){
     .replace(/^#{1,6}\s*/,'')
     .replace(/\*\*|__|\*|_|\`/g,'')
     .trim();
-  const match=normalized.match(/^(\d+(?:\.\d+)+)\s+([^–—-:]+?)(?:\s*[–—-]\s*|\s*:\s*)(.+)$/);
+  const match=normalized.match(/^(\d+(?:\.\d+)+)\s+([^:–—\\-]+?)(?:\s*[–—-]\s*|\s*:\s*)(.+)$/);
   if(!match)return null;
   const number=match[1];
-  const title=cleanVisibleArabic(match[2]);
-  const text=cleanVisibleArabic(match[3]);
+  const title=cleanVisibleArabic(match[2]??'');
+  const text=cleanVisibleArabic(match[3]??'');
   if(!number||!title)return null;
   return {kind:'clause' as const,number,title,text};
 }
