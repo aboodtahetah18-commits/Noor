@@ -25,15 +25,43 @@ type DocumentBlock =
   | {kind:'table';headers:string[];rows:string[][]};
 type DocumentSection={title:string;blocks:DocumentBlock[]};
 
+const arabicDigits=(value:string)=>value.replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[Number(d)]??d);
+const visibleTermReplacements:Array<[RegExp,string]>=[
+  [/AUDIT[\\s_-]*CLOSURE/gi,'إغلاق التدقيق'],
+  [/REVALIDATION_REQUIRED/gi,'يلزم إعادة التحقق'],
+  [/HARD[\\s_-]*GUARD/gi,'قاعدة صارمة'],
+  [/CASH_FLOOR/gi,'الحد الأدنى للسيولة'],
+  [/AUTHORITY_MATRIX/gi,'مصفوفة الصلاحيات'],
+  [/WAITING_DATA/gi,'بانتظار البيانات'],
+  [/SUCCESS/gi,'مكتمل'],
+  [/PARTIAL/gi,'مكتمل جزئيًا'],
+  [/APPROVED/gi,'معتمد'],
+  [/REJECTED/gi,'مرفوض'],
+];
+function cleanVisibleArabic(value:string){
+  let text=value;
+  for(const [pattern,replacement] of visibleTermReplacements) text=text.replace(pattern,replacement);
+  text=text
+    .replace(/\\bS(\\d+)\\b/gi,(_,n)=>'السيناريو '+arabicDigits(String(n)))
+    .replace(/\\bR(\\d+)\\s*[-–—]\\s*R?(\\d+)\\b/gi,(_,a,b)=>'المستويات '+arabicDigits(String(a))+' إلى '+arabicDigits(String(b)))
+    .replace(/^#{1,6}\\s*/,'')
+    .replace(/^[-*•]+\\s*/,'')
+    .replace(/\\*\\*|__|\\*|_|\\`/g,'')
+    .replace(/[A-Za-z][A-Za-z0-9_./:-]*/g,'')
+    .replace(/\\s{2,}/g,' ')
+    .replace(/\\s+([،؛:.])/g,'$1')
+    .trim();
+  return arabicDigits(text);
+}
 function markdownCells(line:string){
-  return line.trim().replace(/^\|/,'').replace(/\|$/,'').split('|').map(cell=>cell.trim());
+  return line.trim().replace(/^\|/,'').replace(/\|$/,'').split('|').map(cell=>cleanVisibleArabic(cell));
 }
 function isMarkdownDivider(line:string){
-  const cells=markdownCells(line);
+  const cells=line.trim().replace(/^\|/,'').replace(/\|$/,'').split('|').map(cell=>cell.trim());
   return cells.length>1&&cells.every(cell=>/^:?-{3,}:?$/.test(cell));
 }
 function cleanDocumentText(line:string){
-  return line.trim().replace(/^#{1,6}\s*/,'').replace(/^\*\*(.+)\*\*$/,'$1').trim();
+  return cleanVisibleArabic(line);
 }
 
 type GovernedDisplayType='policy'|'procedure'|'matrix'|'mechanism'|'reference';
@@ -208,11 +236,13 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
                     <div className={styles.governedContentSectionBody}>
                       {section.blocks.map((block,blockIndex)=>block.kind==='paragraph'
                         ?<p key={blockIndex}>{block.text}</p>
-                        :<div className={styles.governedTableScroll+' '+(isMatrixDocument?styles.governedMatrixScroll:'')} key={blockIndex}>
-                          <table className={styles.governedContentTable+' '+(isMatrixDocument?styles.governedMatrixTable:'')}>
-                            <thead><tr>{block.headers.map((header,headerIndex)=><th key={headerIndex} scope="col">{header}</th>)}</tr></thead>
-                            <tbody>{block.rows.map((row,rowIndex)=><tr key={rowIndex}>{block.headers.map((_,cellIndex)=><td key={cellIndex}>{row[cellIndex]??''}</td>)}</tr>)}</tbody>
-                          </table>
+                        :<div className={styles.governedTableCards} key={blockIndex}>
+                          {block.rows.map((row,rowIndex)=><article className={styles.governedTableCard} key={rowIndex}>
+                            {block.headers.map((header,cellIndex)=><div key={cellIndex}>
+                              <small>{header||'البيان'}</small>
+                              <strong>{row[cellIndex]||'غير محدد'}</strong>
+                            </div>)}
+                          </article>)}
                         </div>)}
                     </div>
                   </details>)}

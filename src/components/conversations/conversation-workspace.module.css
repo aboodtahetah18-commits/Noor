@@ -221,7 +221,7 @@
   display:block;
   position:absolute;
   inset:0;
-  opacity:.16;
+  opacity:.28;
   pointer-events:none;
   overflow:hidden
 }
@@ -229,24 +229,6 @@
 .chatHeaderBuilding img{
   object-fit:cover;
   object-position:center 46%
-}
-
-.chatBankMark{
-  width:40px;
-  height:40px;
-  flex:0 0 40px;
-  display:grid;
-  place-items:center;
-  border-radius:var(--ux-radius-full);
-  background:color-mix(in srgb,var(--namaa-card) 90%,transparent);
-  border:1px solid color-mix(in srgb,var(--namaa-gold-500) 42%,var(--namaa-border));
-  box-shadow:var(--ux-shadow-xs)
-}
-
-.chatBankMark img{
-  width:78%;
-  height:78%;
-  object-fit:contain
 }
 
 .chatIdentity{
@@ -340,7 +322,7 @@
 .messagesBuildingBackdrop{
   position:absolute;
   inset:0;
-  opacity:.035;
+  opacity:.06;
   pointer-events:none;
   overflow:hidden
 }
@@ -1241,32 +1223,6 @@
   transform:scale(1.18) translateY(2%)
 }
 
-.bankBadge{
-  position:absolute;
-  inset-inline-end:auto;
-  bottom:7%;
-  width:32%;
-  height:24%;
-  border-radius:var(--ux-radius-1);
-  background:color-mix(in srgb,var(--namaa-card) 84%,transparent);
-  border:0;
-  overflow:hidden;
-  display:grid;
-  place-items:center;
-  inset-inline-start:34%;
-  box-shadow:var(--ux-shadow-xs)
-}
-
-.bankBadge>img{
-  width:92%;
-  height:92%;
-  object-fit:contain
-}
-
-.persona_sm .bankBadge{
-  display:none
-}
-
 .onboardingMessageContent{
   display:grid;
   gap:var(--ux-space-2)
@@ -1501,7 +1457,7 @@
   width:32px;
   height:32px;
   border:1px solid var(--namaa-border);
-  border-radius:var(--ux-radius-full);
+  border-radius:var(--ux-radius-3);
   background:var(--namaa-card);
   color:var(--ux-text-secondary);
   display:grid;
@@ -3404,42 +3360,52 @@
   flex:0 0 auto;
   color:var(--namaa-green-900)
 }
-.algorithmRoleContent>section,
-.algorithmRoleContent>details{
+.algorithmRoleContent>section{
   display:grid;
-  gap:var(--ux-space-2);
+  gap:var(--ux-space-3);
   padding:var(--ux-space-3);
   border:1px solid var(--namaa-border);
   border-radius:var(--ux-radius-3);
   background:var(--namaa-card)
 }
-.algorithmRoleContent>section>small{
+.algorithmRoleSection>header{
+  display:grid;
+  gap:calc(var(--ux-space-1) / 2);
+  padding-bottom:var(--ux-space-2);
+  border-bottom:1px solid var(--namaa-border)
+}
+.algorithmRoleSection>header small{
   color:var(--namaa-green-900);
   font-size:var(--ux-type-caption-size);
   font-weight:900
 }
-.algorithmRoleContent>section>p{
-  margin:var(--ux-space-0);
-  color:var(--ux-text-secondary);
-  font-size:var(--ux-type-body-sm-size);
-  line-height:1.7
-}
-.algorithmRoleContent details>summary{
-  cursor:pointer;
+.algorithmRoleSection>header strong{
   color:var(--ux-text-primary);
-  font-size:var(--ux-type-body-sm-size);
-  font-weight:900
+  font-size:var(--ux-type-body-sm-size)
 }
-.algorithmRoleContent ul{
-  margin:var(--ux-space-1) var(--ux-space-0) var(--ux-space-0);
-  padding-inline-start:var(--ux-space-5);
+.algorithmRoleItems{
   display:grid;
   gap:var(--ux-space-2)
 }
-.algorithmRoleContent li{
-  color:var(--ux-text-secondary);
+.algorithmRoleItem{
+  display:grid;
+  gap:var(--ux-space-1);
+  padding:var(--ux-space-2) var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-2);
+  background:var(--namaa-surface-warm)
+}
+.algorithmRoleItem>span{
+  color:var(--namaa-green-900);
   font-size:var(--ux-type-caption-size);
-  line-height:1.7
+  font-weight:900
+}
+.algorithmRoleItem>p,
+.algorithmRoleEmpty{
+  margin:var(--ux-space-0);
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-body-sm-size);
+  line-height:1.75
 }
 .algorithmRoleRefs{
   display:flex;
@@ -3591,7 +3557,7 @@
 }
 .dashboardMetricsGrid{
   display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
+  grid-template-columns:minmax(0,1fr);
   gap:var(--ux-space-2)
 }
 .dashboardMetricsGrid article{
@@ -3654,13 +3620,12 @@
   font-size:var(--ux-type-caption-size)
 }
 .dashboardRoleTabs{
-  display:flex;
-  gap:var(--ux-space-1);
-  overflow-x:auto;
-  padding-bottom:var(--ux-space-1)
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:var(--ux-space-2)
 }
 .dashboardRoleTabs button{
-  flex:0 0 auto;
+  width:100%;
   min-height:var(--ux-size-9);
   border:1px solid var(--namaa-border);
   border-radius:var(--ux-radius-full);
@@ -3719,7 +3684,7 @@
 .dashboardPlanCard dl{
   margin:var(--ux-space-0);
   display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
+  grid-template-columns:minmax(0,1fr);
   gap:var(--ux-space-2)
 }
 .dashboardPlanCard dl>div{
@@ -3780,7 +3745,7 @@
 }
 .weeklyReportMetrics{
   display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
+  grid-template-columns:minmax(0,1fr);
   gap:var(--ux-space-2)
 }
 .weeklyReportMetrics span{
@@ -3848,12 +3813,12 @@
 /* Mobile full-page internal surfaces — governed by Namaa mobile UX contract */
 @media(max-width:767px){
   .chatHeaderForeground{min-height:86px;width:100%}
-  .chatHeaderWithBuilding .chatHeaderBuilding{opacity:.18}
+  .chatHeaderWithBuilding .chatHeaderBuilding{opacity:.32}
   .chatHeaderBuilding img{object-position:center 44%}
   .chatIdentity{gap:var(--ux-space-2)}
   .chatBankMark{width:36px;height:36px;flex-basis:36px}
   .mobileTools button{background:color-mix(in srgb,var(--namaa-cream) 78%,var(--namaa-card));box-shadow:var(--ux-shadow-xs)}
-  .messagesBuildingBackdrop{opacity:.028}
+  .messagesBuildingBackdrop{opacity:.05}
 
   .workspaceHeader{
     display:none
@@ -5528,3 +5493,37 @@
   background:color-mix(in srgb,var(--namaa-surface-warm) 84%,var(--namaa-card))
 }
 
+
+.governedTableCards{
+  display:grid;
+  gap:var(--ux-space-2)
+}
+.governedTableCard{
+  display:grid;
+  gap:var(--ux-space-2);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-card)
+}
+.governedTableCard>div{
+  display:grid;
+  gap:calc(var(--ux-space-1) / 2);
+  padding-bottom:var(--ux-space-2);
+  border-bottom:1px solid var(--namaa-border)
+}
+.governedTableCard>div:last-child{
+  padding-bottom:var(--ux-space-0);
+  border-bottom:0
+}
+.governedTableCard small{
+  color:var(--namaa-green-900);
+  font-size:var(--ux-type-caption-size);
+  font-weight:900
+}
+.governedTableCard strong{
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-body-sm-size);
+  line-height:1.7;
+  overflow-wrap:anywhere
+}

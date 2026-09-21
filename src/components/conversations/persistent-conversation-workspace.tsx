@@ -176,14 +176,13 @@ function messageKindIcon(kind:MessageKind):LucideIconName{
   return 'info';
 }
 function roomTitle(value:unknown){if(typeof value!=='string')return null;return rooms.find(room=>room.id===value)?.title??null}
-function chatRoleTitle(room:Room){return room.id==='central'?'محافظ البنك المركزي':room.lead}
+function chatRoleTitle(room:Room){return room.id==='central'?'محافظ نماء':room.lead}
 function chatEntityTitle(room:Room){return room.id==='central'?'بنك نماء المركزي':room.title}
 function missingLabel(value:string){if(value==='monthly_net_income')return 'الدخل الشهري الصافي';if(value==='recurring_core_obligations')return 'الالتزامات الأساسية';if(value==='financing_purpose')return 'غرض التمويل';if(value==='requested_amount')return 'مبلغ التمويل';if(value==='expected_installment')return 'القسط الشهري المتوقع';return value}
 
 function RoomPortrait({room,size='md'}:{room:Room;size?:'sm'|'md'|'lg'}) {
   return <span className={`${styles.personaAvatar} ${styles[`persona_${size}`]} ${room.id==='central'?styles.centralPersona:''}`} aria-hidden="true">
     <Image src={room.avatar} alt="" fill sizes="(max-width: 767px) 40px, 48px" />
-    <span className={styles.bankBadge}><Image src={room.bankLogo} alt="" fill sizes="24px" /></span>
   </span>;
 }
 
@@ -1193,7 +1192,7 @@ export function PersistentConversationWorkspace(){
     </header>
     <header className={styles.workspaceHeader}><div className={styles.headingCopy}><span className={styles.eyebrow}>محادثات نماء</span><h1>مركز الحوار والقرار</h1><p>المحادثات محفوظة في حسابك، وتصل رسالتك إلى الجهة والمتخصصين المرتبطين بالموضوع.</p></div><div className={styles.headerActions}><button type="button" className={styles.secondaryButton} onClick={()=>setDesktopContextVisible(v=>!v)}><LucideIcon name="info" size={16}/><span>{desktopContextVisible?'إخفاء السياق':'إظهار السياق'}</span></button></div></header>
     <div className={`${styles.workspace} ${styles.withoutRooms} ${desktopContextVisible?'':styles.withoutContext}`}>
-      <main className={styles.chatPane}><header className={`${styles.chatHeader} ${activeRoom.building?styles.chatHeaderWithBuilding:''}`}>{activeRoom.building&&<span className={styles.chatHeaderBuilding} aria-hidden="true"><Image src={activeRoom.building} alt="" fill sizes="100vw" priority={activeRoom.id==='central'}/></span>}<div className={styles.chatHeaderForeground}><div className={styles.chatIdentity}><RoomPortrait room={activeRoom} size="md"/>{activeRoom.building&&<span className={styles.chatBankMark} aria-label={activeRoom.title}><Image src={activeRoom.bankLogo} alt="" width={44} height={44}/></span>}<div><div className={styles.entityTitle}><strong>{chatRoleTitle(activeRoom)}</strong></div><small>{chatEntityTitle(activeRoom)}</small></div></div><div className={styles.mobileTools}><button type="button" aria-label="لوحة الجهة" onClick={()=>setEntityDashboardRoom(activeRoomId)}><LucideIcon name="chart" size={20}/></button><button type="button" aria-label="معلومات الجهة" onClick={()=>{setDetailRoomId(activeRoomId);setDetailTab('role')}}><LucideIcon name="info" size={20}/></button></div></div></header>
+      <main className={styles.chatPane}><header className={`${styles.chatHeader} ${activeRoom.building?styles.chatHeaderWithBuilding:''}`}>{activeRoom.building&&<span className={styles.chatHeaderBuilding} aria-hidden="true"><Image src={activeRoom.building} alt="" fill sizes="100vw" priority={activeRoom.id==='central'}/></span>}<div className={styles.chatHeaderForeground}><div className={styles.chatIdentity}><RoomPortrait room={activeRoom} size="md"/><div><div className={styles.entityTitle}><strong>{chatRoleTitle(activeRoom)}</strong></div><small>{chatEntityTitle(activeRoom)}</small></div></div><div className={styles.mobileTools}><button type="button" aria-label="لوحة الجهة" onClick={()=>setEntityDashboardRoom(activeRoomId)}><LucideIcon name="chart" size={20}/></button><button type="button" aria-label="معلومات الجهة" onClick={()=>{setDetailRoomId(activeRoomId);setDetailTab('role')}}><LucideIcon name="info" size={20}/></button></div></div></header>
         <div className={`${styles.routingNote} ${styles.specialistRoutingNote}`}><LucideIcon name="sparkles" size={16}/><span>{activeRoom.specialists}</span></div>
         <div ref={messagesScrollRef} className={styles.messages} aria-live="polite">{activeRoom.building&&<span className={styles.messagesBuildingBackdrop} aria-hidden="true"><Image src={activeRoom.building} alt="" fill sizes="100vw"/></span>}{loading&&<p>جارٍ تحميل سجل المحادثة…</p>}{!loading&&!messages.length&&<article className={`${styles.message} ${styles.agentMessage}`}><p>{onboardingComplete===false?'أنا محافظ نماء. سأبدأ معك بسؤال واحد في كل مرة حتى أبني ملفك من معلوماتك أنت، دون افتراضات.':'هذه بداية محادثتك مع '+activeRoom.title+'. اكتب سؤالك أو القرار الذي تريد دراسته.'}</p></article>}{messages.map((message,messageIndex)=>{
   const previous=messages[messageIndex-1];
