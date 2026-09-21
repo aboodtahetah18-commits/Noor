@@ -3360,6 +3360,21 @@
   flex:0 0 auto;
   color:var(--namaa-green-900)
 }
+.algorithmRolePortrait{
+  position:relative;
+  width:72px;
+  height:72px;
+  flex:0 0 72px;
+  overflow:hidden;
+  border:1px solid var(--namaa-border-strong);
+  border-radius:var(--ux-radius-full);
+  background:var(--namaa-surface-warm);
+  box-shadow:var(--ux-shadow-xs)
+}
+.algorithmRolePortrait img{
+  object-fit:cover;
+  object-position:center 22%
+}
 .algorithmRoleContent>section{
   display:grid;
   gap:var(--ux-space-3);
@@ -3389,16 +3404,22 @@
 }
 .algorithmRoleItem{
   display:grid;
-  gap:var(--ux-space-1);
+  grid-template-columns:minmax(52px,auto) minmax(0,1fr);
+  align-items:start;
+  gap:var(--ux-space-2);
   padding:var(--ux-space-2) var(--ux-space-3);
   border:1px solid var(--namaa-border);
   border-radius:var(--ux-radius-2);
   background:var(--namaa-surface-warm)
 }
 .algorithmRoleItem>span{
+  direction:ltr;
+  text-align:start;
+  font-variant-numeric:tabular-nums;
   color:var(--namaa-green-900);
   font-size:var(--ux-type-caption-size);
-  font-weight:900
+  font-weight:900;
+  white-space:nowrap
 }
 .algorithmRoleItem>p,
 .algorithmRoleEmpty{
@@ -5208,6 +5229,37 @@
   color:var(--ux-text-secondary);
   font-size:var(--ux-type-body-sm-size);
   line-height:1.85
+}
+.governedClauseRow{
+  display:grid;
+  gap:var(--ux-space-2);
+  padding:var(--ux-space-2) var(--ux-space-0);
+  border-bottom:1px solid var(--namaa-border)
+}
+.governedClauseRow:last-child{
+  border-bottom:0
+}
+.governedClauseHeading{
+  display:grid;
+  grid-template-columns:minmax(48px,auto) minmax(0,1fr);
+  align-items:start;
+  gap:var(--ux-space-2)
+}
+.governedClauseHeading>span{
+  direction:ltr;
+  text-align:start;
+  font-variant-numeric:tabular-nums;
+  color:var(--namaa-green-900);
+  font-weight:900;
+  white-space:nowrap
+}
+.governedClauseHeading>strong{
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-body-sm-size);
+  line-height:1.7
+}
+.governedClauseRow>p{
+  padding-inline-start:var(--ux-space-8)
 }
 .governedTableScroll{
   width:100%;

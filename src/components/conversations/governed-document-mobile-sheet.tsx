@@ -22,10 +22,13 @@ const priorityLabel={NORMAL:'عادي',NEXT_MEETING:'للاجتماع القاد
 
 type DocumentBlock =
   | {kind:'paragraph';text:string}
+  | {kind:'clause';number:string;title:string;text:string}
   | {kind:'table';headers:string[];rows:string[][]};
 type DocumentSection={title:string;blocks:DocumentBlock[]};
 
-const arabicDigits=(value:string)=>value.replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[Number(d)]??d);
+const westernDigits=(value:string)=>value
+  .replace(/[٠-٩]/g,d=>String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)))
+  .replace(/[۰-۹]/g,d=>String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d)));
 const visibleTermReplacements:Array<[RegExp,string]>=[
   [/AUDIT[\s_-]*CLOSURE/gi,'إغلاق التدقيق'],
   [/REVALIDATION[\s_-]*REQUIRED/gi,'يلزم إعادة التحقق'],
@@ -47,8 +50,8 @@ function cleanVisibleArabic(value:string){
   let text=value;
   for(const [pattern,replacement] of visibleTermReplacements) text=text.replace(pattern,replacement);
   text=text
-    .replace(/\bS(\d+)\b/gi,(_,n)=>'رقم '+arabicDigits(String(n)))
-    .replace(/\bR(\d+)\s*[-–—]\s*R?(\d+)\b/gi,(_,a,b)=>'المستويات '+arabicDigits(String(a))+' إلى '+arabicDigits(String(b)))
+    .replace(/\bS(\d+)\b/gi,(_,n)=>'رقم '+westernDigits(String(n)))
+    .replace(/\bR(\d+)\s*[-–—]\s*R?(\d+)\b/gi,(_,a,b)=>'المستويات '+westernDigits(String(a))+' إلى '+westernDigits(String(b)))
     .replace(/^#{1,6}\s*/,'')
     .replace(/^(\d+)\s*[.)-]\s*/,'$1 ')
     .replace(/^[-*•]+\s*/,'')
@@ -58,7 +61,21 @@ function cleanVisibleArabic(value:string){
     .replace(/\s{2,}/g,' ')
     .replace(/\s+([،؛:.])/g,'$1')
     .trim();
-  return arabicDigits(text);
+  return westernDigits(text);
+}
+
+function parseClauseLine(value:string){
+  const normalized=westernDigits(value)
+    .replace(/^#{1,6}\s*/,'')
+    .replace(/\*\*|__|\*|_|\`/g,'')
+    .trim();
+  const match=normalized.match(/^(\d+(?:\.\d+)+)\s+([^:–—\\-]+?)(?:\s*[–—-]\s*|\s*:\s*)(.+)$/);
+  if(!match)return null;
+  const number=match[1];
+  const title=cleanVisibleArabic(match[2]??'');
+  const text=cleanVisibleArabic(match[3]??'');
+  if(!number||!title)return null;
+  return {kind:'clause' as const,number,title,text};
 }
 function documentLineParts(line:string){
   const expanded=line
@@ -107,6 +124,11 @@ function parseGovernedDocument(content:string):DocumentSection[]{
   const sections:DocumentSection[]=[];
   let current:DocumentSection={title:'المحتوى المعتمد',blocks:[]};
   const pushParagraph=(text:string)=>{
+    const clause=parseClauseLine(text);
+    if(clause){
+      current.blocks.push(clause);
+      return;
+    }
     const cleaned=cleanDocumentText(text);
     if(cleaned) current.blocks.push({kind:'paragraph',text:cleaned});
   };
@@ -118,16 +140,17 @@ function parseGovernedDocument(content:string):DocumentSection[]{
     const raw=lines[index]??'';
     const trimmed=raw.trim();
     if(!trimmed) continue;
+    const normalizedTrimmed=westernDigits(trimmed);
 
-    const headingMatch=trimmed.match(/^#{1,6}\s+(.+)$/);
-    const majorLine=!trimmed.startsWith('|')&&(
-      /^\d+\s*[.)-]\s+/.test(trimmed)||
-      /^\d+\s*\|\s*[^|]+/.test(trimmed)||
-      /^(?:الباب|الفصل|المادة)\s+/.test(trimmed)
+    const headingMatch=normalizedTrimmed.match(/^#{1,6}\s+(.+)$/);
+    const majorLine=!normalizedTrimmed.startsWith('|')&&(
+      /^\d+\s*[.)-]\s+/.test(normalizedTrimmed)||
+      /^\d+\s*\|\s*[^|]+/.test(normalizedTrimmed)||
+      /^(?:الباب|الفصل|المادة)\s+/.test(normalizedTrimmed)
     );
     if(headingMatch||majorLine){
       if(current.blocks.length)sections.push(current);
-      current={title:cleanDocumentText(headingMatch?.[1]??trimmed),blocks:[]};
+      current={title:cleanDocumentText(headingMatch?.[1]??normalizedTrimmed),blocks:[]};
       continue;
     }
 
@@ -245,7 +268,12 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
                     <div className={styles.governedContentSectionBody}>
                       {section.blocks.map((block,blockIndex)=>block.kind==='paragraph'
                         ?<p key={blockIndex}>{block.text}</p>
-                        :<div className={styles.governedTableCards} key={blockIndex}>
+                        :block.kind==='clause'
+                          ?<article className={styles.governedClauseRow} key={blockIndex}>
+                            <div className={styles.governedClauseHeading}><span>{block.number}</span><strong>{block.title}</strong></div>
+                            {block.text&&<p>{block.text}</p>}
+                          </article>
+                          :<div className={styles.governedTableCards} key={blockIndex}>
                           {block.rows.map((row,rowIndex)=><article className={styles.governedTableCard} key={rowIndex}>
                             {block.headers.map((header,cellIndex)=><div key={cellIndex}>
                               <small>{header||'البيان'}</small>
