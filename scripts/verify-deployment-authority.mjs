@@ -63,8 +63,17 @@ const isApprovedPreview=
 const isApprovedProductionRelease=
   (process.env.VERCEL_ENV==='production' && process.env.VERCEL_GIT_COMMIT_REF==='main') ||
   (process.env.GITHUB_ACTIONS==='true' && process.env.GITHUB_REF_NAME==='main');
-if(vercel.git?.deploymentEnabled!==false && !isApprovedPreview && !isApprovedProductionRelease){
-  errors.push('Vercel Git auto-deployments must stay disabled except for an explicitly approved preview or production release.');
+const gitDeploymentConfig=vercel.git?.deploymentEnabled;
+const isMainOnlyGitDeployment=
+  gitDeploymentConfig!==null &&
+  typeof gitDeploymentConfig==='object' &&
+  gitDeploymentConfig['*']===false &&
+  gitDeploymentConfig.main===true &&
+  Object.entries(gitDeploymentConfig).every(([branch,enabled])=>
+    (branch==='main'&&enabled===true)||(branch==='*'&&enabled===false)
+  );
+if(gitDeploymentConfig!==false && !isMainOnlyGitDeployment && !isApprovedPreview && !isApprovedProductionRelease){
+  errors.push('Vercel Git auto-deployments must stay disabled, or be enabled for main only with all other branches disabled.');
 }
 if(!build.includes('npm run build')) errors.push('Vercel build must compile the repository root Next.js application.');
 if(legacyScriptNames.length) errors.push(`Legacy generated UI commands remain in package.json: ${legacyScriptNames.join(', ')}`);
