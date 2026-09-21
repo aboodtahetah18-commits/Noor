@@ -225,7 +225,6 @@
   background-size:cover;
   background-position:center 46%;
   opacity:.62;
-  filter:saturate(.88) contrast(.96);
   pointer-events:none
 }
 
