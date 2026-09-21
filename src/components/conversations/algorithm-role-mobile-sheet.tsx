@@ -6,7 +6,8 @@ import { governedRoomDetails } from '@/lib/conversations/governed-room-details';
 import styles from './conversation-workspace.module.css';
 
 const kindLabel:Record<AlgorithmRoleRef['kind'],string>={
-  governor:'محافظ خوارزمي',
+  governor:'محافظ نماء',
+  central_bank_manager:'مدير بنك نماء المركزي',
   bank_manager:'مدير بنك خوارزمي',
   responsibility_owner:'صاحب مسؤولية مالية',
   advisor:'مستشار خوارزمي',
