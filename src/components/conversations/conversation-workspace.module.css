@@ -5927,7 +5927,7 @@
   transform:scale(1.08)
 }
 
-@media(max-width:720px){
+@media(max-width:767px){
   .chatHeaderWithBuilding .chatHeaderBuilding,
   .centralChatHeader.chatHeaderWithBuilding .chatHeaderBuilding{
     display:block;
