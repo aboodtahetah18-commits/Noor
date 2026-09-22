@@ -141,7 +141,7 @@ export function AlgorithmRoleMobileSheet({role,onClose}:{role:AlgorithmRoleRef;o
         <section className={styles.algorithmRoleHero}>
           <div><strong>{editText(role.name)}</strong><small>{kindLabel[role.kind]}، ويتبع إلى {editText(role.reportsTo)}</small></div>
           {roleAvatar[role.key]
-            ?<span className={styles.algorithmRolePortrait}><Image className={styles.algorithmRolePortraitImage} src={roleAvatar[role.key]!} alt={role.name} width={144} height={144} quality={100}/></span>
+            ?<span className={styles.algorithmRolePortrait}><Image className={styles.algorithmRolePortraitImage} src={roleAvatar[role.key]!} alt={role.name} width={144} height={144} unoptimized/></span>
             :<LucideIcon name={role.kind==='advisor'?'sparkles':'circleUserRound'} size={24}/>}
         </section>
 
