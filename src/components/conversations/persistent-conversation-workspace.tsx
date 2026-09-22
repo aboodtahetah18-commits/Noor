@@ -178,7 +178,7 @@ function messageKindIcon(kind:MessageKind):LucideIconName{
 function roomTitle(value:unknown){if(typeof value!=='string')return null;return rooms.find(room=>room.id===value)?.title??null}
 function chatRoleTitle(room:Room){return room.id==='central'?'محافظ بنك نماء المركزي':room.lead}
 function compactChatRoleTitle(room:Room){
-  if(room.id==='central')return 'المحافظ';
+  if(room.id==='central')return 'محافظ بنك نماء المركزي';
   if(room.id==='operations')return 'مركز العمليات';
   if(room.id==='solvency')return 'مدير ملاءة';
   if(room.id==='assets')return 'مدير الأصول';
@@ -1218,7 +1218,7 @@ export function PersistentConversationWorkspace(){
     {showTimeDivider&&<div className={styles.conversationTimeDivider} role="separator"><span>{formatConversationTimeDivider(message.created_at)}</span></div>}
     <article className={`${styles.message} ${message.sender_type==='user'?styles.userMessage:styles.agentMessage} ${groupedWithPrevious?styles.groupContinuation:styles.groupStart} ${groupedWithNext?styles.groupHasNext:styles.groupEnd} ${activeRoom.id==='council'&&message.sender_type!=='user'?councilSpeakerClass(message.sender_key):''}`} data-group-position={groupPosition}>
     {!groupedWithPrevious&&message.sender_type!=='user'&&<div className={styles.messageIdentity}>{activeRoom.id==='council'?<span className={styles.councilInitial} aria-hidden="true">{speakerInitial(message.sender_name)}</span>:<RoomPortrait room={activeRoom} size="sm"/>}<span><strong>{activeRoom.id==='central'?'محافظ بنك نماء المركزي':message.sender_name}</strong><small>{message.structured_data?.speaker_role?String(message.structured_data.speaker_role):message.sender_type==='system'?'رسالة نظام':'شخصية خوارزمية'}</small></span></div>}
-    {!groupedWithPrevious&&message.sender_type==='user'&&<div className={styles.userMessageIdentity}><strong>{meetingUserDisplayName(profile?.name||message.sender_name)}</strong><small>{activeRoom.id==='council'?'صاحب المحفظة':'أنت'}</small></div>}
+    {!groupedWithPrevious&&message.sender_type==='user'&&<div className={styles.userMessageIdentity}>{profile?.image&&<span className={styles.userMessageAvatar} aria-hidden="true" style={{backgroundImage:`url("${profile.image.replace(/"/g,'')}")`}}/>}<span className={styles.userMessageIdentityCopy}><strong>{meetingUserDisplayName(profile?.name||message.sender_name)}</strong><small>{activeRoom.id==='council'?'صاحب المحفظة':'أنت'}</small></span></div>}
     {message.structured_data?.onboarding===true?<OnboardingMessageContent message={message} showStructuredAction={onboardingComplete===false&&message.sender_type!=='user'&&String(message.structured_data?.onboarding_step??'')===String(onboardingStep??'')&&STRUCTURED_INTAKE_STEPS.has(String(onboardingStep??''))} onOpenStructuredIntake={()=>setIntakeDismissed(false)}/>:<p className={styles.messageCopy}>{message.body}</p>}
     {message.sender_type==='user'&&<UserMessageExtras message={message} attachments={attachments}/>}
     {message.message_kind!=='message'&&message.structured_data?.onboarding!==true&&<section className={`${styles.structuredCard} ${styles[`kind_${message.message_kind}`]}`}>
