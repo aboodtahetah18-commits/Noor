@@ -58,7 +58,9 @@
     "vercel:preflight": "node scripts/vercel-preflight.mjs",
     "verify:vercel": "node scripts/verify-vercel-deployment-contract.mjs",
     "test:uat": "node scripts/ensure-env-example.mjs && vitest run tests/acceptance",
-    "verify:final-onboarding-ui": "node scripts/verify-final-onboarding-ui-contract.mjs"
+    "verify:final-onboarding-ui": "node scripts/verify-final-onboarding-ui-contract.mjs",
+    "verify:personas": "node scripts/verify-persona-identity-contract.mjs",
+    "verify:governed-documents": "node scripts/verify-governed-document-contract.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "1.0.1",
