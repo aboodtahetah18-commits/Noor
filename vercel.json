@@ -17,8 +17,5 @@
       "path": "/api/jobs/weekly-analysis",
       "schedule": "0 18 * * 6"
     }
-  ],
-  "git": {
-    "deploymentEnabled": false
-  }
+  ]
 }
