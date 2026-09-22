@@ -902,8 +902,10 @@
 .scrim{
   position:absolute;
   inset:0;
+  z-index:1;
   border:0;
-  background:color-mix(in srgb,var(--namaa-text) 28%,transparent)
+  background:color-mix(in srgb,var(--namaa-text) 28%,transparent);
+  cursor:pointer
 }
 
 .mobileSheet{
@@ -2315,7 +2317,30 @@
 .councilAdvisor{border-inline-start-width:4px;border-inline-start-color:var(--namaa-border-strong)}
 .councilSecretary{border-inline-start-width:4px;border-inline-start-color:color-mix(in srgb,var(--namaa-green-700) 55%,var(--namaa-gold-500))}
 
-.userMessageIdentity{display:flex;align-items:baseline;gap:var(--ux-space-2);margin-bottom:var(--ux-space-1)}
+.userMessageIdentity{
+  display:flex;
+  align-items:center;
+  gap:var(--ux-space-2);
+  margin-bottom:var(--ux-space-1)
+}
+.userMessageAvatar{
+  width:30px;
+  height:30px;
+  flex:0 0 30px;
+  border-radius:var(--ux-radius-full);
+  border:1px solid var(--namaa-border-strong);
+  background-color:var(--namaa-surface-warm);
+  background-position:center 18%;
+  background-size:cover;
+  background-repeat:no-repeat;
+  box-shadow:var(--ux-shadow-xs)
+}
+.userMessageIdentityCopy{
+  min-width:0;
+  display:flex;
+  align-items:baseline;
+  gap:var(--ux-space-2)
+}
 .userMessageIdentity strong{font-size:var(--ux-type-caption-size);color:var(--namaa-green-700)}
 .userMessageIdentity small{font-size:var(--ux-type-caption-size);color:var(--ux-text-secondary)}
 .entityDetailSheet{
@@ -4340,29 +4365,40 @@
   }
   .compactMenuButton,
   .mobileTools button{
-    width:34px;
-    height:34px;
-    flex:0 0 34px;
-    border:1px solid color-mix(in srgb,var(--namaa-card) 72%,transparent);
+    width:36px;
+    height:36px;
+    flex:0 0 36px;
+    border:1px solid color-mix(in srgb,var(--namaa-gold-500) 64%,var(--namaa-card));
     border-radius:var(--ux-radius-full);
-    background:color-mix(in srgb,var(--namaa-green-900) 72%,transparent);
+    background:color-mix(in srgb,var(--namaa-card) 18%,transparent);
     color:var(--ux-text-inverse);
     display:grid;
     place-items:center;
     padding:var(--ux-space-0);
-    box-shadow:var(--ux-shadow-xs)
+    box-shadow:var(--ux-shadow-sm);
+    backdrop-filter:blur(8px)
+  }
+  .compactMenuButton:focus-visible,
+  .mobileTools button:focus-visible{
+    outline:0;
+    box-shadow:var(--ux-shadow-focus)
   }
   .chatHeaderForeground .persona_md{
-    width:42px;
-    height:42px;
-    flex-basis:42px;
-    border-color:color-mix(in srgb,var(--namaa-gold-500) 68%,var(--namaa-card));
-    box-shadow:var(--ux-shadow-xs)
+    width:40px;
+    height:40px;
+    flex-basis:40px;
+    border:2px solid color-mix(in srgb,var(--namaa-gold-500) 72%,var(--namaa-card));
+    box-shadow:var(--ux-shadow-sm)
   }
   .chatHeaderForeground .persona_md img{
     object-fit:cover;
-    object-position:center 18%;
-    transform:scale(1.18)
+    object-position:center 16%;
+    transform:scale(1.28)
+  }
+  .messageIdentity .persona_sm img{
+    object-fit:cover;
+    object-position:center 16%;
+    transform:scale(1.2)
   }
   .compactRoleTitle{
     flex:1 1 auto;
@@ -4396,6 +4432,7 @@
   inset-inline-start:var(--ux-space-0);
   width:min(80vw,312px);
   overflow:auto;
+  z-index:2;
   background:var(--namaa-card);
   border-inline-end:1px solid var(--namaa-border);
   box-shadow:var(--ux-shadow-lg);
