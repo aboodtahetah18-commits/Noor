@@ -1,4 +1,5 @@
 import type { ConversationRoomKey } from '@/lib/conversations/store';
+import { CENTRAL_ACTIVE_POLICIES } from '@/content/governance/central-active-policies';
 
 export type GovernedDocumentSection = {
   ref:string;
@@ -47,14 +48,7 @@ export const governedRoomDetails:Record<ConversationRoomKey,GovernedRoomDetail>=
     policies:[
       {referenceCode:'NMC-REF-02',title:'الفهرس الرئيسي لبنك نماء المركزي',kind:'reference',version:'v2.0',sourceUrl:'https://drive.google.com/file/d/1Tp5TqMm1Heon8K9-mEXWhkr0aurQmW-z/view'},
       {referenceCode:'NMC-CONST-01',title:'دستور منصة نماء والمعمار المؤسسي والتشغيلي الأعلى',kind:'charter',version:'v1.0',sourceUrl:'https://docs.google.com/document/d/1Vy12Q4MS-oB5Ma-8L5ynyG3WKHdTtB71d0lbiajm9Z0/edit?usp=drivesdk'},
-      {referenceCode:'NMC-POL-01',title:'سياسة الحوكمة والتشغيل المركزي لبنك نماء المركزي',kind:'policy',version:'v1.0'},
-      {referenceCode:'NMC-POL-02',title:'سياسة الصلاحيات والتفويض والتصعيد لبنك نماء المركزي',kind:'policy',version:'v1.0'},
-      {referenceCode:'NMC-POL-03',title:'سياسة القرار المالي المركزي وإدارة التعارضات',kind:'policy',version:'v1.0'},
-      {referenceCode:'NMC-POL-04',title:'سياسة المخاطر المركزية والتحليل الاستباقي',kind:'policy',version:'v1.0'},
-      {referenceCode:'NMC-POL-05',title:'سياسة البيانات وجودتها ودرجة الثقة',kind:'policy',version:'v1.0'},
-      {referenceCode:'NMC-POL-06',title:'سياسة التعلم الخوارزمي والذاكرة المالية',kind:'policy',version:'v1.0'},
-      {referenceCode:'NMC-POL-07',title:'سياسة التنفيذ البشري والإثبات والمتابعة',kind:'policy',version:'v1.0'},
-      {referenceCode:'NMC-POL-08',title:'سياسة إدارة السياسات واللوائح والتغيير المؤسسي',kind:'policy',version:'v1.0'},
+      ...CENTRAL_ACTIVE_POLICIES.map(policy=>({referenceCode:policy.referenceCode,title:policy.title,kind:'policy' as const,version:policy.version??undefined})),
       {referenceCode:'NMC-CTR-01',title:'عقد البيانات والتكامل المركزي — بنك نماء',kind:'contract',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1DJ64l0-IMxza5ob9peP7RSpzZn7yxwqFsSYl0qreG2c/edit'},
       {referenceCode:'NMC-CHR-02',title:'ميثاق أصحاب المسؤوليات المالية والمستشار الاقتصادي',kind:'charter',version:'v1.0',sourceUrl:'https://docs.google.com/document/d/1fXG8jJuS4_WXllyiSYcVP7unKf2jJ-s_AGRa_2xEYLA/edit'},
       {referenceCode:'NMC-REF-03',title:'تأسيس مركز العمليات والمطابقة — بنك نماء المركزي',kind:'reference',version:'v0.1',sourceUrl:'https://docs.google.com/document/d/1jtP85JWnHPHoCzRxZFOwqDhyFmRNHnCBYP-0R51fKr0/edit'},
@@ -75,7 +69,9 @@ export const governedRoomDetails:Record<ConversationRoomKey,GovernedRoomDetail>=
     policies:[
       {referenceCode:'OPS-REF-01',title:'تأسيس مركز العمليات والمطابقة — بنك نماء المركزي',kind:'reference',version:'v0.1',sourceUrl:'https://docs.google.com/document/d/1jtP85JWnHPHoCzRxZFOwqDhyFmRNHnCBYP-0R51fKr0/edit'},
       {referenceCode:'OPS-CTR-01',title:'عقد البيانات والتكامل المركزي — بنك نماء',kind:'contract',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1DJ64l0-IMxza5ob9peP7RSpzZn7yxwqFsSYl0qreG2c/edit'},
-      {referenceCode:'OPS-POL-01',title:'العلاقة مع البنوك ومحافظ نماء وأصحاب المسؤوليات والمستشار الاقتصادي — بنك نماء المركزي',kind:'policy',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1V1396IeCZCdg9pmIXeiTgvmyBJtKSmuwbnB7Y7f7Ueg/edit'},
+      {referenceCode:'NMC-POL-01',title:'سياسة الحوكمة والتشغيل المركزي لبنك نماء المركزي',kind:'policy',version:'v1.0'},
+      {referenceCode:'NMC-POL-05',title:'سياسة البيانات وجودتها ودرجة الثقة',kind:'policy',version:'v1.0'},
+      {referenceCode:'NMC-POL-07',title:'سياسة التنفيذ البشري والإثبات والمتابعة',kind:'policy',version:'v1.0'},
     ],
   },
   solvency:{
@@ -148,8 +144,8 @@ export const governedRoomDetails:Record<ConversationRoomKey,GovernedRoomDetail>=
     records:[],
     policies:[
       {referenceCode:'ADV-CHR-01',title:'ميثاق أصحاب المسؤوليات المالية والمستشار الاقتصادي',kind:'charter',version:'v1.0',sourceUrl:'https://docs.google.com/document/d/1fXG8jJuS4_WXllyiSYcVP7unKf2jJ-s_AGRa_2xEYLA/edit'},
-      {referenceCode:'ADV-POL-01',title:'سياسة التعلم الخوارزمي والقرار القابل للتدقيق لمنصة نماء',kind:'policy',version:'v1.0',sourceUrl:'https://docs.google.com/document/d/1wOVhGfO9Pp0LrWF_ZRco0oGG53jpSLOyQjRlZnFqgOQ/edit'},
-      {referenceCode:'ADV-POL-02',title:'الأوزان والتقييم والمخاطر — بنك نماء المركزي',kind:'policy',version:'v1.0',sourceUrl:'https://drive.google.com/file/d/1AEmEiMTZn5wra2tjDYartHyi7XcOg8do/view'},
+      {referenceCode:'NMC-POL-06',title:'سياسة التعلم الخوارزمي والذاكرة المالية',kind:'policy',version:'v1.0'},
+      {referenceCode:'NMC-POL-04',title:'سياسة المخاطر المركزية والتحليل الاستباقي',kind:'policy',version:'v1.0'},
     ],
   },
   secretary:{
@@ -166,9 +162,8 @@ export const governedRoomDetails:Record<ConversationRoomKey,GovernedRoomDetail>=
       {referenceCode:'SEC-REG-02',title:'الرقابة والتدقيق وسجل الأثر — بنك نماء المركزي',kind:'record',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1TQ62P-prHNBxND75KgFa0KllyOl-jPgrCU5LQ6WLr54/edit'},
     ],
     policies:[
-      {referenceCode:'SEC-POL-01',title:'السياسة المركزية لإدارة القضايا والاجتماعات والقرارات والمتابعة',kind:'policy',version:'v1.0',sourceUrl:'https://docs.google.com/document/d/10GeX1j4W9gHt3BJLjzFkSJ0oftWsJIpPneZx8AcCYu8/edit'},
-      {referenceCode:'SEC-POL-02',title:'قاعدة جدولة اللجان والمداولة الحية',kind:'policy',version:'v1.0',sourceUrl:'https://docs.google.com/document/d/1M0709DYbrun3IRY300y6JMFxWPXzXRo_nSeNfpIGA6w/edit'},
-      {referenceCode:'SEC-POL-03',title:'مصفوفة الصلاحيات والاعتمادات — بنك نماء المركزي',kind:'policy',version:'v2.1',sourceUrl:'https://docs.google.com/document/d/1xWd9s7-V-QFV13RPYJd_tW17dAGjB4Fh3Bh0LBS837o/edit'},
+      {referenceCode:'NMC-POL-08',title:'سياسة إدارة السياسات واللوائح والتغيير المؤسسي',kind:'policy',version:'v1.0'},
+      {referenceCode:'NMC-POL-02',title:'سياسة الصلاحيات والتفويض والتصعيد لبنك نماء المركزي',kind:'policy',version:'v1.0'},
     ],
   },
   council:{
@@ -182,10 +177,9 @@ export const governedRoomDetails:Record<ConversationRoomKey,GovernedRoomDetail>=
     sourceRefs:['ENTITY-COUNCIL','ROLE-CHAIR'],
     records:[],
     policies:[
-      {referenceCode:'COU-POL-01',title:'السياسة المركزية لإدارة القضايا والاجتماعات والقرارات والمتابعة',kind:'policy',version:'v1.0',sourceUrl:'https://docs.google.com/document/d/10GeX1j4W9gHt3BJLjzFkSJ0oftWsJIpPneZx8AcCYu8/edit'},
-      {referenceCode:'COU-POL-02',title:'قاعدة جدولة اللجان والمداولة الحية',kind:'policy',version:'v1.0',sourceUrl:'https://docs.google.com/document/d/1M0709DYbrun3IRY300y6JMFxWPXzXRo_nSeNfpIGA6w/edit'},
-      {referenceCode:'COU-POL-03',title:'السياسة المالية العليا — بنك نماء المركزي',kind:'policy',version:'v1.0',sourceUrl:'https://drive.google.com/file/d/1abH_UMUKWS7h2-HEVHL1yv0tEZTZUddC/view'},
-      {referenceCode:'COU-POL-04',title:'اللجان والقرارات والاجتماعات — بنك نماء المركزي',kind:'policy',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1oupBoVP7fe1JUR-zr46kUfqePhC6MHk-__0UkoROcrE/edit'},
+      {referenceCode:'NMC-POL-08',title:'سياسة إدارة السياسات واللوائح والتغيير المؤسسي',kind:'policy',version:'v1.0'},
+      {referenceCode:'NMC-POL-02',title:'سياسة الصلاحيات والتفويض والتصعيد لبنك نماء المركزي',kind:'policy',version:'v1.0'},
+      {referenceCode:'NMC-POL-03',title:'سياسة القرار المالي المركزي وإدارة التعارضات',kind:'policy',version:'v1.0'},
     ],
   },
 };
