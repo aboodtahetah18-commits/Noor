@@ -7603,7 +7603,7 @@
     width:1px!important;
     height:1px!important;
     padding:0!important;
-    margin:-1px!important;
+    margin:calc(var(--ux-space-1) * -1)!important;
     overflow:hidden!important;
     clip:rect(0,0,0,0)!important;
     white-space:nowrap!important;
