@@ -49,7 +49,23 @@ if(!workspace.includes('showStructuredAction') || !workspace.includes('متاب�
 console.log('CHAT-UI-INTEGRITY-PASS');
 
 for(const required of ["setDetailTab('role')","setDetailTab('team')","setDetailTab('files')","setDetailTab('policies')","setDetailTab('authority')","setDetailTab('procedures')","setDetailTab('records')",'السياسات واللوائح','مصفوفة الصلاحيات','الإجراءات والآليات']){ if(!workspace.includes(required)) fail('governed entity detail section missing: '+required); }
-if(!workspace.includes('/brand/ndos/personas/namaa-algorithmic-personas.jpg')||!workspace.includes('rolePortraitByKey')) fail('approved algorithmic personas and role portrait mapping must remain visible in entity profile');
+for(const persona of [
+  '/brand/governor.webp',
+  '/brand/central-bank-manager.webp',
+  '/brand/malaa-manager.webp',
+  '/brand/assets-manager.webp',
+  '/brand/hilal-manager.webp',
+  '/brand/personas/budget-spending-owner.webp',
+  '/brand/personas/obligations-owner.webp',
+  '/brand/personas/goals-owner.webp',
+  '/brand/personas/investment-owner.webp',
+  '/brand/personas/liquidity-protection-owner.webp',
+  '/brand/economic-advisor.webp',
+  '/brand/personas/central-secretary.webp',
+]){
+  if(!workspace.includes(persona)) fail('approved individual persona mapping missing: '+persona);
+}
+if(!workspace.includes('rolePortraitByKey')) fail('approved role portrait mapping must remain visible in entity profile');
 if(!workspace.includes("new Set(['dependents','accounts','obligations','goals'])")) fail('simple onboarding questions must remain directly answerable in chat');
 if(!workspace.includes('userMessageIdentity')) fail('user messages must preserve visible sender identity');
 if(!workspace.includes('EntityReferenceList')||!workspace.includes('setActiveGovernedDocument(value)')||!workspace.includes('classifyGovernedReference')) fail('entity source references must be categorized and actionable through the governed local document viewer');
