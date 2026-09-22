@@ -2,7 +2,7 @@ name: Verify Build
 
 on:
   push:
-    branches: [main]
+    branches: [main, "fix/mobile-governance-layout-regressions"]
   pull_request:
     branches: [main]
   workflow_dispatch:
