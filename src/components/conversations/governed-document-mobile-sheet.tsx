@@ -23,6 +23,7 @@ const priorityLabel={NORMAL:'عادي',NEXT_MEETING:'للاجتماع القاد
 type DocumentBlock =
   | {kind:'paragraph';text:string}
   | {kind:'clause';number:string;title:string;text:string}
+  | {kind:'flow';steps:string[]}
   | {kind:'table';headers:string[];rows:string[][]};
 type DocumentSection={title:string;blocks:DocumentBlock[]};
 
@@ -45,6 +46,41 @@ const visibleTermReplacements:Array<[RegExp,string]>=[
   [/TRIGGER/gi,'المحفز'],
   [/ACTION/gi,'الإجراء'],
   [/ACCEPTANCE/gi,'القبول'],
+  [/SOURCE_ID/gi,'معرف المصدر'],
+  [/PURPOSE_ID/gi,'معرف الغرض'],
+  [/OWNER_ENTITY/gi,'الجهة المالكة'],
+  [/PROTECTION_CLASS/gi,'فئة الحماية'],
+  [/FROM_POOL/gi,'مصدر الأموال'],
+  [/TO_POOL/gi,'وجهة الأموال'],
+  [/REASON_CODE/gi,'سبب الحركة'],
+  [/PRINCIPAL/gi,'أصل التمويل'],
+  [/SOURCE_POOL/gi,'مصدر التمويل'],
+  [/REPAYMENT_PLAN/gi,'خطة السداد'],
+  [/REBUILD_REQUIREMENT/gi,'متطلب إعادة البناء'],
+  [/CASE_ID/gi,'معرف القضية'],
+  [/DECISION_TRACE_ID/gi,'معرف تتبع القرار'],
+  [/POLICY_VERSION/gi,'نسخة السياسة'],
+  [/ALGORITHM_VERSION/gi,'نسخة الخوارزمية'],
+  [/MODEL_VERSION/gi,'نسخة النموذج'],
+  [/PARAMETER_VERSION/gi,'نسخة المعلمات'],
+  [/DATA_SCHEMA_VERSION/gi,'نسخة مخطط البيانات'],
+  [/LEARNING_PROFILE_VERSION/gi,'نسخة ملف التعلم'],
+  [/WAITING_USER_EXECUTION/gi,'بانتظار تنفيذ المستخدم'],
+  [/VERIFIED_EXECUTION/gi,'تنفيذ متحقق منه'],
+  [/VERIFICATION_PENDING/gi,'بانتظار التحقق'],
+  [/EVIDENCE_PENDING/gi,'بانتظار الإثبات'],
+  [/UNDER_REVIEW/gi,'قيد المراجعة'],
+  [/APPROVAL_REQUIRED/gi,'يتطلب اعتمادًا'],
+  [/RECOMMENDED/gi,'موصى به'],
+  [/RECONCILED/gi,'تمت المطابقة'],
+  [/FOLLOWUP/gi,'متابعة'],
+  [/CLOSED/gi,'مغلق'],
+  [/DRAFT/gi,'مسودة'],
+  [/NEEDS_DATA/gi,'يحتاج بيانات'],
+  [/FAILED/gi,'فشل'],
+  [/OVERDUE/gi,'متأخر'],
+  [/CANCELLED/gi,'ملغى'],
+  [/EXPIRED/gi,'منتهي'],
 ];
 function cleanVisibleArabic(value:string){
   let text=value;
@@ -57,7 +93,9 @@ function cleanVisibleArabic(value:string){
     .replace(/^[-*•]+\s*/,'')
     .replace(/\*\*|__|\*|_|\`/g,'')
     .replace(/[A-Za-z][A-Za-z0-9_./:-]*/g,'')
+    .replace(/[\\/]{2,}/g,' ')
     .replace(/\s+[—–-]\s+/g,'، ')
+    .replace(/(^|\s)[+=>\/]+(?=\s|$)/g,' ')
     .replace(/\s{2,}/g,' ')
     .replace(/\s+([،؛:.])/g,'$1')
     .trim();
@@ -121,8 +159,8 @@ function sectionIcon(title:string,type:GovernedDisplayType):LucideIconName{
 
 function normalizeHeadingText(value:string){
   return cleanVisibleArabic(value)
-    .replace(/^[أابجدهـويزحطكلمنسعفصقرشتثخذضظغ]+\s*[.)-]?\s*/u,'')
-    .replace(/^\d+\s*[.)-]?\s*/,'')
+    .replace(/^\d+\s*[.)-]\s*/,'')
+    .replace(/^[أبجدهـويزحطكلمنسعفصقرشتثخذضظغ]\s*[.)-]\s*/u,'')
     .trim();
 }
 
@@ -130,23 +168,37 @@ function parseGovernedDocument(content:string):DocumentSection[]{
   const lines=content.replace(/\r/g,'').split('\n');
   const sections:DocumentSection[]=[];
   let current:DocumentSection={title:'المحتوى المعتمد',blocks:[]};
-  let sectionCounter=0;
+  let currentSectionNumber='1';
+  let lastSectionNumber=0;
   let clauseCounter=0;
 
   const flush=()=>{
     if(current.blocks.length) sections.push(current);
   };
-  const beginSection=(title:string)=>{
+  const beginSection=(number:string|undefined,title:string)=>{
     flush();
-    sectionCounter+=1;
+    const parsedNumber=number?Number(number):NaN;
+    if(Number.isFinite(parsedNumber)) lastSectionNumber=Math.max(lastSectionNumber,parsedNumber);
+    else lastSectionNumber+=1;
+    currentSectionNumber=number&&number.trim()?westernDigits(number):String(lastSectionNumber||1);
     clauseCounter=0;
-    current={title:String(sectionCounter)+' '+(normalizeHeadingText(title)||'قسم'),blocks:[]};
+    current={title:currentSectionNumber+' '+(normalizeHeadingText(title)||'قسم'),blocks:[]};
   };
   const pushClause=(text:string,title?:string)=>{
     clauseCounter+=1;
     const cleaned=cleanDocumentText(text);
-    const cleanedTitle=title?cleanDocumentText(title):'البند';
-    if(cleaned||cleanedTitle) current.blocks.push({kind:'clause',number:String(sectionCounter||1)+'.'+String(clauseCounter),title:cleanedTitle||'البند',text:cleaned});
+    const cleanedTitle=title?cleanDocumentText(title):'';
+    if(cleaned||cleanedTitle) current.blocks.push({
+      kind:'clause',
+      number:currentSectionNumber+'.'+String(clauseCounter),
+      title:cleanedTitle||cleaned||'البند',
+      text:cleanedTitle?cleaned:''
+    });
+  };
+  const pushFlow=(value:string)=>{
+    const steps=value.split(/\s*[→←]\s*/).map(cleanDocumentText).filter(Boolean);
+    if(steps.length>1) current.blocks.push({kind:'flow',steps});
+    else if(steps[0]) current.blocks.push({kind:'paragraph',text:steps[0]});
   };
   const pushParagraph=(text:string)=>{
     const cleaned=cleanDocumentText(text);
@@ -156,24 +208,37 @@ function parseGovernedDocument(content:string):DocumentSection[]{
   for(let index=0;index<lines.length;index++){
     const raw=lines[index]??'';
     const trimmed=raw.trim();
-    if(!trimmed) continue;
+    if(!trimmed||/^<!--/.test(trimmed)||/^---+$/.test(trimmed)) continue;
     const normalized=westernDigits(trimmed);
+
+    if(/^(?:الإصدار|الحالة|النطاق)\s*:/.test(normalized)) continue;
+    if(!sections.length&&!current.blocks.length&&lastSectionNumber===0&&!/^\d+[.)]\s+/.test(normalized)&&!/^#{1,6}\s+/.test(normalized)){
+      const nextNonEmpty=lines.slice(index+1).find(line=>line.trim());
+      if(nextNonEmpty&&/^(?:الإصدار|الحالة|النطاق)\s*:/.test(westernDigits(nextNonEmpty.trim()))) continue;
+    }
 
     const markdownHeading=normalized.match(/^(#{1,6})\s+(.+)$/);
     if(markdownHeading){
-      const level=(markdownHeading[1]??'').length;
-      const heading=markdownHeading[2]??'';
-      if(level<=2){
-        beginSection(heading);
+      const heading=(markdownHeading[2]??'').trim();
+      const numbered=heading.match(/^(\d+)\s*[.)-]?\s+(.+)$/);
+      if((markdownHeading[1]??'').length<=2){
+        beginSection(numbered?.[1],numbered?.[2]??heading);
       }else{
-        pushClause('',normalizeHeadingText(heading));
+        const cleaned=normalizeHeadingText(heading);
+        if(cleaned) pushClause('',cleaned);
       }
       continue;
     }
 
-    const explicitSection=normalized.match(/^(?:الباب|الفصل|المادة)\s+(.+)$/);
+    const major=normalized.match(/^(\d+)\.\s+(.+)$/);
+    if(major){
+      beginSection(major[1],major[2]??'قسم');
+      continue;
+    }
+
+    const explicitSection=normalized.match(/^(?:الباب|الفصل|المادة)\s+(\d+)?\s*[.:)-]?\s*(.+)$/);
     if(explicitSection){
-      beginSection(explicitSection[1]??normalized);
+      beginSection(explicitSection[1],explicitSection[2]??normalized);
       continue;
     }
 
@@ -192,18 +257,38 @@ function parseGovernedDocument(content:string):DocumentSection[]{
       continue;
     }
 
-    const explicitClause=normalized.match(/^(\d+(?:\.\d+)+|\d+|[أابجدهـويزحطكلمنسعفصقرشتثخذضظغ])\s*[.)-]?\s+(.+)$/u);
-    if(explicitClause){
-      const body=explicitClause[2]??'';
-      const withSeparator=body.match(/^([^:–—-]+?)\s*(?::|[–—-])\s*(.+)$/);
-      if(withSeparator) pushClause(withSeparator[2]??'',withSeparator[1]??'البند');
-      else pushClause(body,'البند');
+    if((normalized.match(/→/g)||[]).length>=1){
+      pushFlow(normalized);
+      continue;
+    }
+
+    const bullet=normalized.match(/^[-*•]\s+(.+)$/);
+    if(bullet){
+      const body=bullet[1]??'';
+      const split=body.match(/^([^:؛]{2,48})[:؛]\s*(.+)$/);
+      if(split) pushClause(split[2]??'',split[1]??'');
+      else pushClause('',body);
+      continue;
+    }
+
+    const enumerated=normalized.match(/^(\d+\)|[أبجدهـويزحطكلمنسعفصقرشتثخذضظغ][.)])\s*(.+)$/u);
+    if(enumerated){
+      const body=enumerated[2]??'';
+      const split=body.match(/^([^:؛]{2,48})[:؛]\s*(.+)$/);
+      if(split) pushClause(split[2]??'',split[1]??'');
+      else pushClause('',body);
       continue;
     }
 
     const clause=parseClauseLine(normalized);
     if(clause){
       pushClause(clause.text,clause.title);
+      continue;
+    }
+
+    if(/^(?:المسار الملزم|المدخلات الأساسية|المخرجات|المتطلبات|القبول|الإجراء|الهدف)\s*:/.test(normalized)){
+      const split=normalized.split(/:(.+)/);
+      pushClause(split[1]??'',split[0]??'');
       continue;
     }
 
@@ -286,10 +371,10 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
         </section>
 
         <section className={styles.governedMetaStrip} aria-label="ملخص الوثيقة">
-          <div><small>النوع</small><strong>{displayLabel}</strong></div>
-          <div><small>الإصدار</small><strong>{document.version?document.version.replace(/^v/i,''):'المعتمد'}</strong></div>
-          <div><small>الحالة</small><strong>سارية</strong></div>
-          <div><small>المصدر</small><strong>نماء</strong></div>
+          <div className={styles.governedMetaType}><small>النوع</small><strong>{displayLabel}</strong></div>
+          <div className={styles.governedMetaVersion}><small>الإصدار</small><strong>{document.version?document.version.replace(/^v/i,''):'المعتمد'}</strong></div>
+          <div className={styles.governedMetaStatus}><small>الحالة</small><strong>سارية</strong></div>
+          <div className={styles.governedMetaSource}><small>المصدر</small><strong>نماء</strong></div>
         </section>
 
         {displayType==='mechanism'&&<section className={styles.governedFlowCard}>
@@ -317,14 +402,16 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
                             <div className={styles.governedClauseHeading}><span>{block.number}</span><strong>{block.title}</strong></div>
                             {block.text&&<p>{block.text}</p>}
                           </article>
-                          :<div className={styles.governedTableCards} key={blockIndex}>
-                          {block.rows.map((row,rowIndex)=><article className={styles.governedTableCard} key={rowIndex}>
-                            {block.headers.map((header,cellIndex)=><div key={cellIndex}>
-                              <small>{header||'البيان'}</small>
-                              <strong>{row[cellIndex]||'غير محدد'}</strong>
-                            </div>)}
-                          </article>)}
-                        </div>)}
+                          :block.kind==='flow'
+                            ?<ol className={styles.governedInlineFlow} key={blockIndex}>{block.steps.map((step,stepIndex)=><li key={stepIndex}><span>{stepIndex+1}</span><strong>{step}</strong></li>)}</ol>
+                            :<div className={styles.governedTableCards} key={blockIndex}>
+                            {block.rows.map((row,rowIndex)=><article className={styles.governedTableCard} key={rowIndex}>
+                              {block.headers.map((header,cellIndex)=><div key={cellIndex}>
+                                <small>{header||'البيان'}</small>
+                                <strong>{row[cellIndex]||'غير محدد'}</strong>
+                              </div>)}
+                            </article>)}
+                          </div>)}
                     </div>
                   </details>)}
                 </div>
