@@ -243,7 +243,7 @@
   content:"";
   position:absolute;
   inset:0;
-  background:linear-gradient(to left,color-mix(in srgb,var(--namaa-card) 88%,transparent),color-mix(in srgb,var(--namaa-card) 64%,transparent));
+  background:color-mix(in srgb,var(--namaa-card) 72%,transparent);
   pointer-events:none;
   z-index:1
 }
