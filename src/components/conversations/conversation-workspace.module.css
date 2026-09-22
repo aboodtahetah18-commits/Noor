@@ -7667,3 +7667,102 @@
 :global(html[data-theme="dark"]) .mobileSideSheet .roomItemShell .roomDetailButton{
   color:var(--namaa-green-900)!important
 }
+
+
+/* Final release — sidebar dark identity + role edit actions */
+.algorithmRoleEditActions{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important
+}
+.algorithmRoleEditActions>button{
+  min-width:0!important
+}
+
+/* Sidebar identity cards remain readable in dark mode. */
+:global(html[data-theme="dark"]) .mobileSideSheet .roomItemShell{
+  background:var(--namaa-card)!important;
+  border:1px solid var(--namaa-border-strong)!important;
+  box-shadow:var(--ux-shadow-xs)!important
+}
+:global(html[data-theme="dark"]) .mobileSideSheet .roomItemShell.activeRoom{
+  background:var(--namaa-cream)!important;
+  border-color:var(--namaa-gold-500)!important
+}
+:global(html[data-theme="dark"]) .mobileSideSheet .roomItem{
+  color:var(--ux-text-primary)!important
+}
+:global(html[data-theme="dark"]) .mobileSideSheet .roomCopy{
+  min-width:0!important
+}
+:global(html[data-theme="dark"]) .mobileSideSheet .roomCopy strong{
+  display:block!important;
+  color:var(--namaa-green-900)!important;
+  font-weight:900!important;
+  opacity:1!important;
+  visibility:visible!important;
+  -webkit-text-fill-color:var(--namaa-green-900)!important
+}
+:global(html[data-theme="dark"]) .mobileSideSheet .roomCopy small,
+:global(html[data-theme="dark"]) .mobileSideSheet .roomCopy em{
+  display:block!important;
+  color:var(--ux-text-secondary)!important;
+  opacity:1!important;
+  visibility:visible!important;
+  -webkit-text-fill-color:var(--ux-text-secondary)!important;
+  white-space:normal!important;
+  overflow-wrap:anywhere!important
+}
+:global(html[data-theme="dark"]) .mobileSideSheet .roomDetailButton{
+  color:var(--namaa-green-900)!important;
+  background:transparent!important
+}
+:global(html[data-theme="dark"]) .mobileSideSheet .personaAvatar{
+  background:var(--namaa-card)!important;
+  border-color:var(--namaa-border-strong)!important
+}
+
+/* Governed document cleanup: remove browser markers and harden overflow. */
+.governedDocumentSection>summary,
+.governedContentSection>summary{
+  list-style:none!important;
+  cursor:pointer
+}
+.governedDocumentSection>summary::-webkit-details-marker,
+.governedContentSection>summary::-webkit-details-marker{
+  display:none!important
+}
+.governedDocumentSection>summary::marker,
+.governedContentSection>summary::marker{
+  content:""!important
+}
+.governedDocumentSection>summary>span,
+.governedContentSection>summary>span{
+  width:100%!important;
+  min-width:0!important
+}
+.governedDocumentSection>summary strong,
+.governedContentSection>summary strong{
+  min-width:0!important;
+  max-width:100%!important;
+  overflow-wrap:anywhere!important;
+  word-break:break-word!important
+}
+.governedContentSectionBody,
+.governedClauseRow,
+.governedContentTable{
+  max-width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important
+}
+.governedClauseRow p,
+.governedContentSectionBody>p,
+.governedContentTable th,
+.governedContentTable td{
+  overflow-wrap:anywhere!important;
+  word-break:break-word!important
+}
+.governedTableScroll{
+  width:100%!important;
+  max-width:100%!important;
+  overflow-x:auto!important;
+  overscroll-behavior-inline:contain
+}
