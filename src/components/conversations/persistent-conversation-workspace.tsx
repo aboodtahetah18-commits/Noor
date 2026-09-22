@@ -1281,6 +1281,7 @@ export function PersistentConversationWorkspace(){
         {onboardingComplete===false&&!intakeDismissed&&<GovernorOnboardingIntake
           step={onboardingStep??''}
           onClose={()=>setIntakeDismissed(true)}
+          onReviewPreviousData={()=>void openOnboardingReview()}
           onAccepted={(message,reply,nextStep)=>{
             setMessages(current=>[...current,message,...(reply?[reply]:[])]);
             const completed=nextStep==='complete'||Boolean(reply?.structured_data?.onboarding_complete);
