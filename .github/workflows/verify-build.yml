@@ -2,7 +2,7 @@ name: Verify Build
 
 on:
   push:
-    branches: [main]
+    branches: [main, "fix/visible-bank-hero-and-role-portrait"]
   pull_request:
     branches: [main]
   workflow_dispatch:
