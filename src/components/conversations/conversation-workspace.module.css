@@ -3401,8 +3401,13 @@
 
 .algorithmRoleSheet{
   width:100%;
+  max-width:100%;
+  height:100dvh;
   max-height:100dvh;
-  overflow:auto
+  overflow-x:hidden;
+  overflow-y:auto;
+  overscroll-behavior-x:none;
+  box-sizing:border-box
 }
 .algorithmRoleContent{
   display:grid;
@@ -3465,7 +3470,8 @@
 .algorithmRolePortrait img{
   object-fit:cover;
   object-position:center 16%;
-  transform:scale(1.08)
+  transform:none;
+  image-rendering:auto
 }
 .algorithmRoleContent>section{
   display:grid;
@@ -7568,10 +7574,34 @@
 
 /* Final release — role edit action layout */
 .algorithmRoleEditActions{
-  grid-template-columns:repeat(2,minmax(0,1fr))!important
+  width:100%!important;
+  max-width:100%!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:var(--ux-space-3)!important
 }
 .algorithmRoleEditActions>button{
+  min-width:0!important;
+  min-height:76px!important;
+  padding:var(--ux-space-3)!important;
+  justify-content:center!important;
+  overflow:hidden!important
+}
+.algorithmRoleEditActions>button>svg{
+  width:24px!important;
+  height:24px!important;
+  min-width:24px!important;
+  flex:0 0 24px!important
+}
+.algorithmRoleEditActions>button>span{
   min-width:0!important
+}
+.algorithmRoleEditActions>button strong{
+  display:block!important;
+  max-width:100%!important;
+  font-size:var(--ux-type-body-sm-size)!important;
+  line-height:1.35!important;
+  text-align:center!important;
+  overflow-wrap:anywhere!important
 }
 
 /* Block 3 — governed document cleanup */
@@ -7618,4 +7648,54 @@
   max-width:100%!important;
   overflow-x:auto!important;
   overscroll-behavior-inline:contain
+}
+
+
+/* Mobile stability authority — fixed viewport, no horizontal drift */
+.mobileOverlay,
+.mobileSheet,
+.mobileFullPageSheet,
+.algorithmRoleSheet,
+.governedDocumentSheet,
+.entityDetailSheet{
+  max-width:100vw!important;
+  overflow-x:hidden!important;
+  overscroll-behavior-x:none!important
+}
+.algorithmRoleContent,
+.governedDocumentContent,
+.roomDetailContent,
+.entityDetailPanel,
+.entityDetailPanel>section{
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+  overflow-x:hidden!important
+}
+.algorithmRoleItem,
+.algorithmRoleSection,
+.algorithmRoleHero,
+.governedQuickActions,
+.governedQuickActions>button{
+  min-width:0!important;
+  max-width:100%!important;
+  box-sizing:border-box!important
+}
+.governedQuickActions>button{
+  min-height:72px!important;
+  justify-content:center!important;
+  overflow:hidden!important
+}
+.governedQuickActions>button>svg{
+  width:24px!important;
+  height:24px!important;
+  min-width:24px!important;
+  flex:0 0 24px!important
+}
+.governedQuickActions>button strong{
+  display:block!important;
+  max-width:100%!important;
+  text-align:center!important;
+  overflow-wrap:anywhere!important
 }
