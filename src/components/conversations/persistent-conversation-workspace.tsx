@@ -194,7 +194,6 @@ function missingLabel(value:string){if(value==='monthly_net_income')return 'ال
 function RoomPortrait({room,size='md'}:{room:Room;size?:'sm'|'md'|'lg'}) {
   return <span className={`${styles.personaAvatar} ${styles[`persona_${size}`]} ${room.id==='central'?styles.centralPersona:''}`} aria-hidden="true">
     <Image src={room.avatar} alt="" fill sizes={size==='lg'?'88px':size==='md'?'48px':'38px'} />
-    {room.id==='central'&&size==='lg'&&<span className={styles.personaBankBadge}><Image src={room.bankLogo} alt="" fill sizes="28px"/></span>}
   </span>;
 }
 
@@ -1311,12 +1310,14 @@ const policyRefs=allRefs.filter(item=>classifyGovernedReference(item)==='policie
 const authorityRefs=allRefs.filter(item=>classifyGovernedReference(item)==='authority');
 const procedureRefs=allRefs.filter(item=>classifyGovernedReference(item)==='procedures');
 const recordRefs=allRefs.filter(item=>classifyGovernedReference(item)==='records');
-const team=algorithmRolesForRoom(room.id);
+const team=[...algorithmRolesForRoom(room.id)].sort((a,b)=>{
+  const rank=(role:typeof a)=>role.kind==='central_bank_manager'||role.kind==='bank_manager'?0:role.kind==='governor'?1:2;
+  return rank(a)-rank(b);
+});
 return <div className={styles.roomDetailContent}>
 <section className={styles.roomDetailHero}>
 <span className={styles.roomDetailHeroShade} aria-hidden="true"/>
 <div className={styles.roomDetailHeroIdentity}>
-<span className={styles.roomDetailBankMark} aria-hidden="true"><Image src={room.bankLogo} alt="" fill sizes="42px"/></span>
 <RoomPortrait room={room} size="lg"/>
 <div><strong>{detail.roleTitle}</strong><small>{detail.entityTitle}</small><em>{room.subtitle}</em></div>
 </div></section>
@@ -1330,7 +1331,7 @@ return <div className={styles.roomDetailContent}>
 <button type="button" className={detailTab==='records'?styles.activeEntityDetailTab:''} onClick={()=>setDetailTab('records')}>السجلات</button>
 </nav>
 {detailTab==='role'&&<div className={styles.entityDetailPanel}><section><small>المسؤولية الأساسية</small><p>{detail.responsibility}</p></section><section><small>ما الذي يراقبه؟</small><p>{detail.observes}</p></section><section><small>متى يتدخل؟</small><p>{detail.intervention}</p></section><section><small>متى لا يتدخل؟</small><p>{detail.avoids}</p></section><section><small>حدود الحوكمة والصلاحيات</small><p>{detail.governanceNote}</p></section></div>}
-{detailTab==='team'&&<div className={styles.entityDetailPanel}><section><div className={styles.entitySectionHeading}><span><small>الفريق والأدوار الفعلية</small><strong>الشخصيات المعتمدة لهذه الجهة</strong></span><LucideIcon name="circleUserRound" size={20}/></div><div className={styles.entityPersonaReference}><span className={styles.entityPersonaReferenceThumb}><Image src="/brand/ndos/personas/namaa-algorithmic-personas.jpg" alt="" fill sizes="72px"/></span><span><strong>مرجع شخصيات نماء المعتمد</strong><small>مرجع الهوية فقط؛ بطاقات الشخصيات أدناه هي العرض التشغيلي.</small></span></div><div className={styles.entityTeamGrid}>{team.map(role=>{const portrait=rolePortraitByKey[role.key]??room.avatar;return <button type="button" key={role.referenceCode} onClick={()=>{setActiveAlgorithmRole({roomId:room.id,role});setDetailRoomId(null)}}><span className={styles.entityTeamPortrait}><Image src={portrait} alt="" fill sizes="72px"/></span><span><strong>{role.name}</strong><small>{role.kind==='responsibility_owner'?'صاحب مسؤولية مالية':role.kind==='advisor'?'مستشار اقتصادي':role.kind==='bank_manager'||role.kind==='central_bank_manager'?'إدارة البنك':'دور حوكمي'}</small></span><LucideIcon name="chevronLeft" size={16}/></button>})}</div></section><section><small>قاعدة الأدوار</small><p>كل شخصية تعمل داخل تفويضها المعتمد وهوية بنكها. المدير يقود نطاق البنك، وصاحب المسؤولية يحاسب على مجاله، والمستشار يقدم رأيًا دون سلطة تنفيذ أو اعتماد. التنفيذ المالي الخارجي يبقى بيد المستخدم.</p></section></div>}
+{detailTab==='team'&&<div className={styles.entityDetailPanel}><section><div className={styles.entitySectionHeading}><span><small>الفريق والأدوار الفعلية</small><strong>الشخصيات المعتمدة لهذه الجهة</strong></span><LucideIcon name="circleUserRound" size={20}/></div><div className={styles.entityTeamGrid}>{team.map(role=>{const portrait=rolePortraitByKey[role.key]??room.avatar;return <button type="button" key={role.referenceCode} onClick={()=>{setActiveAlgorithmRole({roomId:room.id,role});setDetailRoomId(null)}}><span className={styles.entityTeamPortrait+' '+(role.key==='central-bank-manager'?styles.centralManagerPortrait:'')}><Image src={portrait} alt="" fill sizes="112px"/></span><span><strong>{role.name}</strong><small>{role.kind==='responsibility_owner'?'صاحب مسؤولية مالية':role.kind==='advisor'?'مستشار اقتصادي':role.kind==='bank_manager'||role.kind==='central_bank_manager'?'إدارة البنك':'دور حوكمي'}</small></span><LucideIcon name="chevronLeft" size={16}/></button>})}</div></section><section><small>قاعدة الأدوار</small><p>كل شخصية تعمل داخل تفويضها المعتمد وهوية بنكها. المدير يقود نطاق البنك، وصاحب المسؤولية يحاسب على مجاله، والمستشار يقدم رأيًا دون سلطة تنفيذ أو اعتماد. التنفيذ المالي الخارجي يبقى بيد المستخدم.</p></section></div>}
 {detailTab==='files'&&<div className={styles.entityDetailPanel}><section><small>الملفات المرتبطة بهذه الجهة</small>{roomFiles.length?<div className={styles.detailFiles}>{roomFiles.map(file=><span key={file.id}><LucideIcon name="receiptText" size={16}/><b>{file.file_name}</b><em>{attachmentStatusLabel(file.verification_status)}</em></span>)}</div>:<p>لا توجد ملفات مشتركة مسجلة في هذه المحادثة حاليًا.</p>}</section><section><small>المراجع الحاكمة</small><p>المراجع المعتمدة محفوظة داخل نماء، وتظهر في الأقسام المخصصة لها دون إظهار الرموز التقنية للمستخدم.</p></section></div>}
 {detailTab==='policies'&&<div className={styles.entityDetailPanel}><section><small>السياسات واللوائح والمواثيق</small><EntityReferenceList items={policyRefs} roomId={room.id} onOpen={value=>{setActiveGovernedDocument(value);setDetailRoomId(null)}} icon="landmark"/></section></div>}
 {detailTab==='authority'&&<div className={styles.entityDetailPanel}><section><small>مصفوفة الصلاحيات والتفويض</small><EntityReferenceList items={authorityRefs} roomId={room.id} onOpen={value=>{setActiveGovernedDocument(value);setDetailRoomId(null)}} icon="lockKeyhole"/></section></div>}
