@@ -7399,7 +7399,7 @@
   color:var(--ux-text-secondary)!important
 }
 
-@media(max-width:767px){
+@media screen and (max-width:767px){
   .roomDetailHero{
     border-radius:var(--ux-radius-4)!important
   }
