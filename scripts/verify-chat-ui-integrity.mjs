@@ -20,6 +20,7 @@ for(const name of critical){
 }
 if(!css.includes('.mobileAppBar{')||!css.includes('background:var(--namaa-card)')||!css.includes(':global(html[data-theme="dark"]) .mobileAppBar{')||!css.includes('background:var(--namaa-green-900)')) fail('mobile app bar must stay light in light theme and governed dark in dark theme');
 const workspace=readFileSync('src/components/conversations/persistent-conversation-workspace.tsx','utf8');
+const personaAssets=readFileSync('src/components/conversations/persona-assets.ts','utf8');
 if(!workspace.includes('/brand/ndos/namaa-logo-color-transparent.png')||!workspace.includes('/brand/ndos/namaa-logo-white-transparent.png')) fail('official light and dark Namaa mobile logos missing');
 if(workspace.includes('mobileBrandLockup')) fail('Namaa logo must not be redrawn from text and symbol');
 if(!css.includes('.mobileBrandLogo') || !css.includes('position:static') || !css.includes('transform:none') || !css.includes('.mobileAppBarPrimary{\n    direction:rtl;\n    flex-direction:row') || !css.includes('.mobileAppBarActions{\n    direction:ltr')) fail('mobile header must keep menu+logo on the right and utility actions on the far left');
@@ -50,20 +51,20 @@ console.log('CHAT-UI-INTEGRITY-PASS');
 
 for(const required of ["setDetailTab('role')","setDetailTab('team')","setDetailTab('files')","setDetailTab('policies')","setDetailTab('authority')","setDetailTab('procedures')","setDetailTab('records')",'السياسات واللوائح','مصفوفة الصلاحيات','الإجراءات والآليات']){ if(!workspace.includes(required)) fail('governed entity detail section missing: '+required); }
 for(const persona of [
-  '/brand/governor.webp',
-  '/brand/central-bank-manager.webp',
-  '/brand/malaa-manager.webp',
-  '/brand/assets-manager.webp',
-  '/brand/hilal-manager.webp',
+  '/brand/personas/central-governor.webp',
+  '/brand/personas/central-bank-manager.webp',
+  '/brand/personas/hilal-manager.webp',
+  '/brand/personas/solvency-manager.webp',
+  '/brand/personas/assets-manager.webp',
   '/brand/personas/budget-spending-owner.webp',
   '/brand/personas/obligations-owner.webp',
   '/brand/personas/goals-owner.webp',
   '/brand/personas/investment-owner.webp',
   '/brand/personas/liquidity-protection-owner.webp',
-  '/brand/economic-advisor.webp',
+  '/brand/personas/economic-advisor.webp',
   '/brand/personas/central-secretary.webp',
 ]){
-  if(!workspace.includes(persona)) fail('approved individual persona mapping missing: '+persona);
+  if(!personaAssets.includes(persona)) fail('approved individual persona mapping missing: '+persona);
 }
 if(!workspace.includes('rolePortraitByKey')) fail('approved role portrait mapping must remain visible in entity profile');
 if(!workspace.includes("new Set(['dependents','accounts','obligations','goals'])")) fail('simple onboarding questions must remain directly answerable in chat');
@@ -78,7 +79,9 @@ if(!css.includes('min-height:46px')||!css.includes('box-shadow:var(--ux-shadow-x
 if(!css.includes('.entityDetailSheet{\n  width:min(calc(100% - (var(--ux-space-2) * 2)),720px);')||!css.includes('overflow-x:hidden')) fail('mobile entity detail sheet must stay inside the viewport');
 if(!css.includes('.entityDetailTabs{\n  position:sticky;')||!css.includes('overflow-x:auto')||!css.includes('min-width:max-content')) fail('entity detail tabs must remain a horizontally scrollable governed mobile strip');
 if(!css.includes('.entityDetailPanel>section:nth-child(3n+1)')||!css.includes('.entityDetailPanel>section:nth-child(3n+2)')) fail('entity detail section accents missing');
-if(!css.includes('.roomDetailHeroBackdrop')||!css.includes('.roomDetailHeroIdentity')||!css.includes('.roomDetailBankMark')) fail('entity detail hero must preserve bank building, bank mark and role identity');
+if(!css.includes('.roomDetailHeroIdentity')) fail('entity detail hero identity missing');
+if(workspace.includes('styles.roomDetailBankMark')||workspace.includes('styles.personaBankBadge')) fail('entity detail person imagery must not include bank-logo overlays');
+if(!css.includes('overflow-x:hidden')||!css.includes('.entityReferenceCopy strong')) fail('entity profile cards must contain long governed titles without horizontal overflow');
 if(!workspace.includes('styles.accountSurfaceOverlay')||!workspace.includes('styles.accountSurfaceSheet')) fail('profile and settings must use focused mobile account surfaces');
 if(!css.includes('.accountSurfaceScrim{\n    background:color-mix(in srgb,var(--namaa-chat-canvas) 10%,transparent)')||!css.includes('.accountSurfaceSheet{\n    top:72px;')) fail('mobile account surfaces must avoid the heavy full-screen gray veil');
 if(!css.includes('background:color-mix(in srgb,var(--namaa-surface-warm) 84%,var(--namaa-card))')) fail('mobile user bubble must retain the brighter warm governed surface');
