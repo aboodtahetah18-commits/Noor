@@ -6,8 +6,8 @@ const css=fs.readFileSync('src/components/conversations/conversation-workspace.m
 const api=fs.readFileSync('src/app/api/governance/amendments/route.ts','utf8');
 const lib=fs.readFileSync('src/lib/governance/governance-amendments.ts','utf8');
 const failures=[];
-for(const token of ['تعديل مطبعي','طلب تعديل حوكمي','تحميل نسخة PDF للاطلاع','سجل التحديثات والقرارات','governedLeafPattern']) if(!ui.includes(token)) failures.push('missing governed UI token: '+token);
-for(const token of ['تعديل إصلاحي/مطبعي','طلب تعديل حوكمي','documentRef=role.referenceCode']) if(!role.includes(token)) failures.push('missing governed role-edit token: '+token);
+for(const token of ['تعديل إصلاحي / إملائي','طلب تعديل حوكمي','تحميل نسخة PDF للاطلاع','سجل التحديثات والقرارات','governedLeafPattern']) if(!ui.includes(token)) failures.push('missing governed UI token: '+token);
+for(const token of ['تعديل إصلاحي / إملائي','طلب تعديل حوكمي','documentRef=role.referenceCode']) if(!role.includes(token)) failures.push('missing governed role-edit token: '+token);
 if(ui.includes('name="chevronDown"')) failures.push('decorative chevrons are not allowed inside governed document content');
 if(!css.includes('.governedDocumentSection>summary::-webkit-details-marker')) failures.push('native details markers are not hidden');
 if(!css.includes('overflow-wrap:anywhere')) failures.push('governed document overflow protection missing');
