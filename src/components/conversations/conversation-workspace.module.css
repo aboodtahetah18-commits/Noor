@@ -6878,7 +6878,7 @@
   color:var(--ux-text-secondary)
 }
 .governedPdfButton{
-  border:1px solid color-mix(in srgb,var(--ux-info-600, #2d6e9f) 45%,var(--namaa-border));
+  border:1px solid color-mix(in srgb,var(--namaa-green-700) 42%,var(--namaa-border));
   background:color-mix(in srgb,var(--ux-section-soft-blue) 58%,var(--namaa-card));
   color:var(--ux-text-primary)
 }
