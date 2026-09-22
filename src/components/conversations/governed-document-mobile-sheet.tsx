@@ -276,8 +276,8 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
   const relatedCorrections=useMemo(()=>corrections.filter(item=>item.documentRef===document.referenceCode),[corrections,document.referenceCode]);
   const history=useMemo(()=>{
     const typoItems=relatedCorrections.map(item=>({
-      id:item.correctionId,at:item.correctedAt,type:'تعديل مطبعي',status:'تم',
-      summary:item.clauseRef?`تصحيح مطبعي في ${item.clauseRef}: ${item.rationale}`:item.rationale,
+      id:item.correctionId,at:item.correctedAt,type:'تعديل إصلاحي / إملائي',status:'تم',
+      summary:item.clauseRef?`تصحيح إصلاحي / إملائي في ${item.clauseRef}: ${item.rationale}`:item.rationale,
       tone:'typo' as const,
     }));
     const governanceItems=related.flatMap(item=>{
@@ -413,7 +413,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
 
         <section className={styles.governedQuickActions} aria-label="إجراءات المرجع">
           <button type="button" className={styles.governedTypoButton} onClick={()=>{setEditMode('typo');setFormOpen(true);setFeedback('')}}>
-            <LucideIcon name="pencil" size={20}/><span><strong>تعديل مطبعي</strong><small>تصحيح اللغة والصياغة دون تغيير الحكم.</small></span>
+            <LucideIcon name="pencil" size={20}/><span><strong>تعديل إصلاحي / إملائي</strong><small>تصحيح اللغة والصياغة دون تغيير الحكم.</small></span>
           </button>
           <button type="button" className={styles.governedGovernanceButton} onClick={()=>{setEditMode('governance');setFormOpen(true);setFeedback('')}}>
             <LucideIcon name="landmark" size={20}/><span><strong>طلب تعديل حوكمي</strong><small>تعديل يؤثر في المضمون ويمر بالاعتماد.</small></span>
@@ -426,7 +426,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
         {formOpen&&<form className={styles.governedAmendmentForm+' '+(editMode==='typo'?styles.governedTypoForm:styles.governedGovernanceForm)} onSubmit={submit}>
           <header className={styles.governedEditFormHeader}>
             <span className={styles.governedEditFormIcon}><LucideIcon name={editMode==='typo'?'pencil':'landmark'} size={20}/></span>
-            <div><strong>{editMode==='typo'?'تصحيح مطبعي':'طلب تعديل حوكمي'}</strong><small>{editMode==='typo'?'يصحح الخطأ دون تغيير المعنى أو الحكم، ولا يذهب للمجلس.':'يغيّر المضمون أو الضابط، ويبدأ بمراجعة المحافظ ثم المسار الحوكمي.'}</small></div>
+            <div><strong>{editMode==='typo'?'تصحيح إصلاحي / إملائي':'طلب تعديل حوكمي'}</strong><small>{editMode==='typo'?'يصحح الخطأ دون تغيير المعنى أو الحكم، ولا يذهب للمجلس.':'يغيّر المضمون أو الضابط، ويبدأ بمراجعة المحافظ ثم المسار الحوكمي.'}</small></div>
           </header>
           <label><span>رقم البند أو المادة</span><input value={clauseRef} onChange={e=>setClauseRef(e.target.value)} placeholder="مثال: 1.2"/></label>
           <label><span>{editMode==='typo'?'النص الحالي كما يظهر':'النص أو الوضع الحالي'}</span><textarea required={editMode==='typo'} value={currentRule} onChange={e=>setCurrentRule(e.target.value)} placeholder={editMode==='typo'?'انسخ النص الذي يحتوي الخطأ حرفيًا':'اختياري — اكتب النص الحالي الذي تريد مراجعته'}/></label>
