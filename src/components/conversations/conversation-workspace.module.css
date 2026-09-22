@@ -231,28 +231,16 @@
   object-position:center 46%
 }
 .centralChatHeader{
-  min-height:var(--ux-space-24)
+  min-height:calc(var(--ux-space-24) + var(--ux-space-6))
 }
 .centralChatHeader .chatHeaderForeground{
-  min-height:var(--ux-space-24)
+  min-height:calc(var(--ux-space-24) + var(--ux-space-6))
 }
 .centralChatHeader .chatHeaderBuilding{
-  opacity:.14
+  opacity:.18
 }
-.chatBuildingThumb{
-  position:relative;
-  width:var(--ux-space-20);
-  height:var(--ux-space-16);
-  flex:0 0 var(--ux-space-20);
-  overflow:hidden;
-  border:1px solid var(--namaa-border-strong);
-  border-radius:var(--ux-radius-3);
-  background:var(--namaa-card);
-  box-shadow:var(--ux-shadow-xs)
-}
-.chatBuildingThumb img{
-  object-fit:cover;
-  object-position:center 44%
+.centralChatHeader .chatHeaderBuilding img{
+  object-position:center 42%
 }
 
 .chatIdentity{
@@ -987,9 +975,9 @@
 }
 
 .persona_lg{
-  width:var(--ux-space-20);
-  height:var(--ux-space-20);
-  flex-basis:var(--ux-space-20)
+  width:var(--ux-space-24);
+  height:var(--ux-space-24);
+  flex-basis:var(--ux-space-24)
 }
 
 .roomCopy em{
@@ -1248,8 +1236,9 @@
 }
 .personaBankBadge{
   position:absolute;
-  inset-inline-end:var(--ux-space-1);
+  left:50%;
   bottom:var(--ux-space-1);
+  transform:translateX(-50%);
   width:var(--ux-size-8);
   height:var(--ux-size-8);
   border:1px solid var(--namaa-border-strong);
@@ -3375,16 +3364,6 @@
   display:grid;
   gap:var(--ux-space-1)
 }
-.algorithmRoleHero span{
-  width:fit-content;
-  padding:var(--ux-space-1) var(--ux-space-2);
-  border:1px solid var(--namaa-border);
-  border-radius:var(--ux-radius-full);
-  background:var(--namaa-card);
-  color:var(--namaa-green-900);
-  font-size:var(--ux-type-caption-size);
-  font-weight:900
-}
 .algorithmRoleHero strong{
   color:var(--ux-text-primary);
   font-size:var(--ux-type-section-title-size);
@@ -3413,7 +3392,7 @@
 }
 .algorithmRolePortrait img{
   object-fit:cover;
-  object-position:center 22%
+  object-position:center 18%
 }
 .algorithmRoleContent>section{
   display:grid;
@@ -5273,17 +5252,19 @@
 .governedClauseRow{
   display:grid;
   gap:var(--ux-space-2);
-  padding:var(--ux-space-2) var(--ux-space-0);
-  border-bottom:1px solid var(--namaa-border)
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-surface-warm)
 }
 .governedClauseRow:last-child{
-  border-bottom:0
+  border-bottom:1px solid var(--namaa-border)
 }
 .governedClauseHeading{
-  display:grid;
-  grid-template-columns:minmax(48px,auto) minmax(0,1fr);
-  align-items:start;
-  gap:var(--ux-space-2)
+  display:flex;
+  align-items:flex-start;
+  gap:var(--ux-space-3);
+  direction:rtl
 }
 .governedClauseHeading>span{
   direction:ltr;
@@ -5299,7 +5280,35 @@
   line-height:1.7
 }
 .governedClauseRow>p{
-  padding-inline-start:var(--ux-space-8)
+  padding-inline-start:var(--ux-space-0)
+}
+.governedInlineFlow{
+  display:grid;
+  gap:var(--ux-space-2);
+  margin:var(--ux-space-0);
+  padding:var(--ux-space-0);
+  list-style:none
+}
+.governedInlineFlow li{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  align-items:start;
+  gap:var(--ux-space-2);
+  padding:var(--ux-space-2) var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-2);
+  background:var(--namaa-card)
+}
+.governedInlineFlow li span{
+  min-width:var(--ux-size-8);
+  color:var(--namaa-green-900);
+  font-weight:900;
+  font-variant-numeric:tabular-nums
+}
+.governedInlineFlow li strong{
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-body-sm-size);
+  line-height:1.7
 }
 .governedTableScroll{
   width:100%;
@@ -5484,7 +5493,21 @@
   display:grid;
   gap:var(--ux-space-1);
   padding:var(--ux-space-2);
-  text-align:center
+  text-align:center;
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-2)
+}
+.governedMetaType{
+  background:color-mix(in srgb,var(--namaa-green-900) 8%,var(--namaa-card))
+}
+.governedMetaVersion{
+  background:color-mix(in srgb,var(--namaa-gold-500) 12%,var(--namaa-card))
+}
+.governedMetaStatus{
+  background:color-mix(in srgb,var(--namaa-green-700) 10%,var(--namaa-card))
+}
+.governedMetaSource{
+  background:var(--namaa-surface-warm)
 }
 .governedMetaStrip small{
   color:var(--ux-text-secondary);
