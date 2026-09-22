@@ -13,6 +13,12 @@ type Amendment={
   councilDecisionId:string|null; effectiveAt:string|null; nextVersion:string|null; discussionNotes:string[];
 };
 
+type TypoCorrection={
+  correctionId:string; documentRef:string; documentTitle:string; roomKey:string;
+  clauseRef:string|null; currentRule:string; correctedRule:string; rationale:string;
+  correctedAt:string; status:'APPLIED';
+};
+
 const statusLabel:Record<string,string>={
   GOVERNOR_REVIEW:'مراجعة المحافظ', SECRETARY_INTAKE:'لدى أمين السر',
   COUNCIL_DISCUSSION:'مناقشة مجلس نماء', APPROVED_PENDING_EFFECTIVE:'معتمد وينتظر النفاذ',
@@ -231,9 +237,11 @@ function parseGovernedDocument(content:string):DocumentSection[]{
 
 export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document:GovernedDocumentRef;roomKey:string;onClose:()=>void}){
   const [amendments,setAmendments]=useState<Amendment[]>([]);
+  const [corrections,setCorrections]=useState<TypoCorrection[]>([]);
   const [documentContent,setDocumentContent]=useState('');
   const [documentLoading,setDocumentLoading]=useState(true);
   const [formOpen,setFormOpen]=useState(false);
+  const [editMode,setEditMode]=useState<'typo'|'governance'>('governance');
   const [pending,setPending]=useState(false);
   const [feedback,setFeedback]=useState('');
   const [clauseRef,setClauseRef]=useState('');
@@ -244,8 +252,11 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
 
   async function load(){
     const response=await fetch('/api/governance/amendments',{cache:'no-store'});
-    const data=await response.json().catch(()=>({})) as {amendments?:Amendment[]};
-    if(response.ok) setAmendments(Array.isArray(data.amendments)?data.amendments:[]);
+    const data=await response.json().catch(()=>({})) as {amendments?:Amendment[];corrections?:TypoCorrection[]};
+    if(response.ok){
+      setAmendments(Array.isArray(data.amendments)?data.amendments:[]);
+      setCorrections(Array.isArray(data.corrections)?data.corrections:[]);
+    }
   }
   useEffect(()=>{
     let cancelled=false;
@@ -272,31 +283,48 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
 
   function downloadLocalCopy(){
     if(!documentContent)return;
-    const blob=new Blob([documentContent],{type:'text/markdown;charset=utf-8'});
-    const url=URL.createObjectURL(blob);
-    const anchor=globalThis.document.createElement('a');
-    anchor.href=url;
-    anchor.download=(document.title||'مرجع نماء')+'.md';
-    globalThis.document.body.appendChild(anchor);
-    anchor.click();
-    anchor.remove();
-    URL.revokeObjectURL(url);
+    const popup=globalThis.open('','_blank','noopener,noreferrer');
+    if(!popup){
+      setFeedback('تعذر فتح نسخة الاطلاع. اسمح بالنوافذ المنبثقة ثم أعد المحاولة.');
+      return;
+    }
+    const safeTitle=(document.title||'مرجع نماء').replace(/[<>&]/g,'');
+    const safeContent=documentContent
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/\n/g,'<br/>');
+    popup.document.write(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"/><title>${safeTitle}</title><style>
+      body{font-family:Arial,sans-serif;direction:rtl;margin:40px;color:#10251f;line-height:1.9}
+      h1{color:#0f6f59;font-size:24px;margin-bottom:12px} .meta{color:#667a73;margin-bottom:24px}
+      .content{white-space:normal;font-size:15px} @media print{body{margin:18mm}}
+    </style></head><body><h1>${safeTitle}</h1><div class="meta">نسخة للاطلاع — نماء</div><div class="content">${safeContent}</div><script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></body></html>`);
+    popup.document.close();
   }
 
 
   async function submit(event:FormEvent){
     event.preventDefault(); if(pending)return; setPending(true); setFeedback('');
     try{
+      const payload=editMode==='typo'
+        ?{operation:'TYPO_CORRECTION' as const,documentRef:document.referenceCode,documentTitle:document.title,roomKey,
+          clauseRef:clauseRef.trim()||null,currentRule:currentRule.trim(),correctedRule:proposedRule.trim(),rationale:rationale.trim()}
+        :{operation:'CREATE' as const,documentRef:document.referenceCode,documentTitle:document.title,roomKey,
+          clauseRef:clauseRef.trim()||null,currentRule:currentRule.trim()||null,proposedRule:proposedRule.trim(),rationale:rationale.trim(),priority};
       const response=await fetch('/api/governance/amendments',{
-        method:'POST',headers:{'content-type':'application/json'},
-        body:JSON.stringify({operation:'CREATE',documentRef:document.referenceCode,documentTitle:document.title,roomKey,
-          clauseRef:clauseRef.trim()||null,currentRule:currentRule.trim()||null,proposedRule:proposedRule.trim(),rationale:rationale.trim(),priority}),
+        method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload),
       });
-      const data=await response.json().catch(()=>({})) as {requestId?:string;error?:string};
+      const data=await response.json().catch(()=>({})) as {requestId?:string;correctionId?:string;error?:string};
       if(!response.ok) throw new Error(data.error||'REQUEST_FAILED');
-      setFeedback('تم فتح طلب التعديل لدى المحافظ للمناقشة الأولية.');
-      setFormOpen(false); setClauseRef(''); setCurrentRule(''); setProposedRule(''); setRationale(''); await load();
-    }catch{ setFeedback('تعذر فتح طلب التعديل الآن.'); } finally{ setPending(false); }
+      setFeedback(editMode==='typo'
+        ?'تم تطبيق التصحيح المطبعي دون فتح مسار حوكمي أو إحالة إلى مجلس نماء الأعلى.'
+        :'تم فتح طلب التعديل الحوكمي لدى المحافظ للمناقشة الأولية.');
+      setFormOpen(false); setClauseRef(''); setCurrentRule(''); setProposedRule(''); setRationale('');
+      await load();
+      if(editMode==='typo'){
+        const responseDocument=await fetch('/api/governance/documents/'+encodeURIComponent(document.referenceCode),{cache:'no-store'});
+        const next=await responseDocument.json().catch(()=>({})) as {document?:{content?:string}};
+        if(responseDocument.ok)setDocumentContent(String(next.document?.content??''));
+      }
+    }catch{ setFeedback(editMode==='typo'?'تعذر تطبيق التصحيح المطبعي الآن.':'تعذر فتح طلب التعديل الحوكمي الآن.'); } finally{ setPending(false); }
   }
 
   return <div className={styles.mobileOverlay} role="dialog" aria-modal="true" aria-label={'تفاصيل '+document.title}>
