@@ -285,6 +285,8 @@ export function GovernorOnboardingIntake({
   }
 
   const currentStageIndex=Math.max(0,INTAKE_STAGES.findIndex(stage=>stage.key===intakeStep));
+  const stageWindowStart=Math.floor(currentStageIndex/4)*4;
+  const visibleStages=INTAKE_STAGES.slice(stageWindowStart,stageWindowStart+4);
   const title=INTAKE_STAGES[currentStageIndex]?.title??'استكمال بيانات التأسيس';
 
   return <section className={styles.onboardingIntake} aria-label={title}>
@@ -296,10 +298,10 @@ export function GovernorOnboardingIntake({
     <section className={styles.onboardingStageOverview} aria-label="مراحل التأسيس">
       <div className={styles.onboardingStageOverviewHeader}><span>مراحل التأسيس</span><strong>{currentStageIndex+1}/{INTAKE_STAGES.length}</strong></div>
       <ol className={styles.onboardingStageList}>
-        {INTAKE_STAGES.map((stage,index)=><li key={stage.key} className={index<currentStageIndex?styles.onboardingStageDone:index===currentStageIndex?styles.onboardingStageCurrent:styles.onboardingStageUpcoming}>
+        {visibleStages.map((stage,windowIndex)=>{const index=stageWindowStart+windowIndex;return <li key={stage.key} className={index<currentStageIndex?styles.onboardingStageDone:index===currentStageIndex?styles.onboardingStageCurrent:styles.onboardingStageUpcoming}>
           <span className={styles.onboardingStageNumber}>{index<currentStageIndex?<LucideIcon name="circleCheck" size={16}/>:index+1}</span>
           <strong>{stage.title}</strong>
-        </li>)}
+        </li>})}
       </ol>
     </section>
 
