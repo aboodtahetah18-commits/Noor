@@ -107,6 +107,15 @@ function resolveGovernedDisplayType(document:GovernedDocumentRef,content:string)
 function governedDisplayLabel(type:GovernedDisplayType){
   return ({policy:'سياسة',procedure:'إجراء',matrix:'مصفوفة',mechanism:'آلية',reference:'مرجع حاكم'} as const)[type];
 }
+function governedDisplayDescription(type:GovernedDisplayType){
+  return ({
+    policy:'تحدد القواعد والضوابط الحاكمة وما يجب الالتزام به عند اتخاذ القرار.',
+    procedure:'يوضح تسلسل العمل والمسؤوليات ونقاط التحقق من البداية حتى الإغلاق.',
+    matrix:'توضح الصلاحيات والمسؤوليات وحدود الاعتماد بين الأدوار والجهات.',
+    mechanism:'توضح كيف تعمل الآلية، ومتى تبدأ، ومن يعتمدها، وما مخرجاتها.',
+    reference:'مرجع حاكم معتمد يوضح القواعد المنظمة لهذا النطاق داخل نماء.',
+  } as const)[type];
+}
 function sectionIcon(title:string,type:GovernedDisplayType):LucideIconName{
   if(/مصفوفة|صلاحيات|مسؤوليات/.test(title)) return 'layoutGrid';
   if(/خطوات|مسار|اعتماد/.test(title)) return 'listChecks';
@@ -121,8 +130,8 @@ function sectionIcon(title:string,type:GovernedDisplayType):LucideIconName{
 
 function normalizeHeadingText(value:string){
   return cleanVisibleArabic(value)
-    .replace(/^[أابجدهـويزحطكلمنسعفصقرشتثخذضظغ]+\s*[.)-]?\s*/u,'')
-    .replace(/^\d+\s*[.)-]?\s*/,'')
+    .replace(/^\d+(?:\.\d+)*\s*[.)-]?\s*/,'')
+    .replace(/^[أ-ي]\s*[.)-]\s*/u,'')
     .trim();
 }
 
@@ -259,6 +268,20 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
   const displayLabel=governedDisplayLabel(displayType);
   const isFlowDocument=displayType==='procedure'||displayType==='mechanism';
   const isMatrixDocument=displayType==='matrix';
+  const displayDescription=governedDisplayDescription(displayType);
+
+  function downloadLocalCopy(){
+    if(!documentContent)return;
+    const blob=new Blob([documentContent],{type:'text/markdown;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const anchor=globalThis.document.createElement('a');
+    anchor.href=url;
+    anchor.download=(document.title||'مرجع نماء')+'.md';
+    globalThis.document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
+  }
 
 
   async function submit(event:FormEvent){
@@ -281,15 +304,17 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
       <div className={styles.sheetHeader}><strong>تفاصيل المرجع الحاكم</strong><button type="button" onClick={onClose} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button></div>
       <div className={styles.governedDocumentContent}>
         <section className={styles.governedDocumentHero}>
-          <div><strong>{document.title}</strong><small>نوع الوثيقة: {displayLabel}</small></div>
-          <LucideIcon name={document.kind==='record'?'listChecks':'landmark'} size={24}/>
-        </section>
-
-        <section className={styles.governedMetaStrip} aria-label="ملخص الوثيقة">
-          <div><small>النوع</small><strong>{displayLabel}</strong></div>
-          <div><small>الإصدار</small><strong>{document.version?document.version.replace(/^v/i,''):'المعتمد'}</strong></div>
-          <div><small>الحالة</small><strong>سارية</strong></div>
-          <div><small>المصدر</small><strong>نماء</strong></div>
+          <div className={styles.governedHeroCopy}>
+            <span className={styles.governedHeroEyebrow}><LucideIcon name="receiptText" size={16}/>{displayLabel}</span>
+            <strong>{document.title}</strong>
+            <p>{displayDescription}</p>
+          </div>
+          <span className={styles.governedHeroIcon} aria-hidden="true"><LucideIcon name={document.kind==='record'?'listChecks':'landmark'} size={32}/></span>
+          <section className={styles.governedMetaStrip} aria-label="ملخص الوثيقة">
+            <div><small>الحالة</small><strong className={styles.governedStatusActive}>سارية</strong></div>
+            <div><small>الإصدار</small><strong>{document.version?document.version.replace(/^v/i,''):'المعتمد'}</strong></div>
+            <div><small>المصدر</small><strong>نماء</strong></div>
+          </section>
         </section>
 
         {displayType==='mechanism'&&<section className={styles.governedFlowCard}>
@@ -301,7 +326,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
         </section>}
 
         <details className={styles.governedDocumentSection} open>
-          <summary><span>المحتوى الكامل</span><LucideIcon name="chevronDown" size={16}/></summary>
+          <summary><span><LucideIcon name="receiptText" size={16}/><strong>المحتوى المعتمد</strong></span><LucideIcon name="chevronDown" size={16}/></summary>
           <div className={styles.governedLocalDocument}>
             {documentLoading
               ?<p>جارٍ تحميل المرجع المعتمد داخل نماء…</p>
@@ -317,13 +342,11 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
                             <div className={styles.governedClauseHeading}><span>{block.number}</span><strong>{block.title}</strong></div>
                             {block.text&&<p>{block.text}</p>}
                           </article>
-                          :<div className={styles.governedTableCards} key={blockIndex}>
-                          {block.rows.map((row,rowIndex)=><article className={styles.governedTableCard} key={rowIndex}>
-                            {block.headers.map((header,cellIndex)=><div key={cellIndex}>
-                              <small>{header||'البيان'}</small>
-                              <strong>{row[cellIndex]||'غير محدد'}</strong>
-                            </div>)}
-                          </article>)}
+                          :<div className={styles.governedTableScroll} key={blockIndex}>
+                          <table className={styles.governedContentTable}>
+                            <thead><tr>{block.headers.map((header,headerIndex)=><th scope="col" key={headerIndex}>{header||'البيان'}</th>)}</tr></thead>
+                            <tbody>{block.rows.map((row,rowIndex)=><tr key={rowIndex}>{block.headers.map((_,cellIndex)=><td key={cellIndex}>{row[cellIndex]||'غير محدد'}</td>)}</tr>)}</tbody>
+                          </table>
                         </div>)}
                     </div>
                   </details>)}
@@ -333,7 +356,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
         </details>
 
         <details className={styles.governedDocumentSection} open>
-          <summary><span>طلبات التعديل والمناقشة</span><LucideIcon name="chevronDown" size={16}/></summary>
+          <summary><span><LucideIcon name="messageSquareText" size={16}/><strong>طلبات التعديل والمناقشة</strong></span><LucideIcon name="chevronDown" size={16}/></summary>
           <div className={styles.governedAmendmentList}>
             {!related.length&&<p>لا توجد طلبات تعديل مرتبطة بهذا المرجع حتى الآن.</p>}
             {related.map(item=><article key={item.requestId} className={styles.governedAmendmentCard}>
@@ -346,7 +369,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
           </div>
         </details>
 
-        {!formOpen?<button type="button" className={styles.primaryActionButton} onClick={()=>setFormOpen(true)}><LucideIcon name="pencil" size={20}/><span>طلب تعديل هذا المرجع</span></button>
+        {!formOpen?<div className={styles.governedActionRail}><button type="button" className={styles.governedDownloadButton} onClick={downloadLocalCopy} disabled={!documentContent}><LucideIcon name="receiptText" size={20}/><span>تحميل النسخة</span></button><button type="button" className={styles.primaryActionButton} onClick={()=>setFormOpen(true)}><LucideIcon name="pencil" size={20}/><span>طلب تعديل هذا المرجع</span></button></div>
         :<form className={styles.governedAmendmentForm} onSubmit={submit}>
           <strong>طلب تعديل، يبدأ بمراجعة المحافظ</strong>
           <label><span>رقم البند أو المادة</span><input value={clauseRef} onChange={e=>setClauseRef(e.target.value)} placeholder="مثال: المادة 4.2"/></label>
