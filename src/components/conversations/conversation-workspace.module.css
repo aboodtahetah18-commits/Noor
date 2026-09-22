@@ -5537,6 +5537,52 @@
   .governedHistorySection{
     padding:var(--ux-space-3)!important
   }
+
+
+  /* Block 4 mobile onboarding refinements */
+  .onboardingIntakeHeader{
+      min-height:58px!important;
+      padding:var(--ux-space-2) var(--ux-space-3)!important;
+      gap:var(--ux-space-2)!important
+    }
+    .onboardingIntakeHeader>div:first-child>strong{
+      font-size:var(--ux-type-body-size)!important
+    }
+    .onboardingReviewPreviousButton{
+      width:40px!important;
+      height:40px!important;
+      min-width:40px!important;
+      padding:0!important;
+      justify-content:center!important
+    }
+    .onboardingReviewPreviousButton span{
+      position:absolute!important;
+      width:1px!important;
+      height:1px!important;
+      padding:0!important;
+      margin:calc(var(--ux-space-1) * -1)!important;
+      overflow:hidden!important;
+      clip:rect(0,0,0,0)!important;
+      white-space:nowrap!important;
+      border:0!important
+    }
+    .onboardingStageOverview{
+      padding:var(--ux-space-2)!important
+    }
+    .onboardingStageList{
+      grid-template-columns:repeat(2,minmax(0,1fr))!important;
+      gap:var(--ux-space-1)!important
+    }
+    .onboardingStageList>li{
+      min-height:42px!important;
+      grid-template-columns:26px minmax(0,1fr)!important;
+      padding:var(--ux-space-1) var(--ux-space-2)!important
+    }
+    .onboardingStageNumber{
+      width:26px!important;
+      height:26px!important;
+      min-width:26px!important
+    }
 }
 
 
@@ -7582,48 +7628,4 @@
   font-weight:900!important
 }
 
-@media(max-width:767px){
-  .onboardingIntakeHeader{
-    min-height:58px!important;
-    padding:var(--ux-space-2) var(--ux-space-3)!important;
-    gap:var(--ux-space-2)!important
-  }
-  .onboardingIntakeHeader>div:first-child>strong{
-    font-size:var(--ux-type-body-size)!important
-  }
-  .onboardingReviewPreviousButton{
-    width:40px!important;
-    height:40px!important;
-    min-width:40px!important;
-    padding:0!important;
-    justify-content:center!important
-  }
-  .onboardingReviewPreviousButton span{
-    position:absolute!important;
-    width:1px!important;
-    height:1px!important;
-    padding:0!important;
-    margin:calc(var(--ux-space-1) * -1)!important;
-    overflow:hidden!important;
-    clip:rect(0,0,0,0)!important;
-    white-space:nowrap!important;
-    border:0!important
-  }
-  .onboardingStageOverview{
-    padding:var(--ux-space-2)!important
-  }
-  .onboardingStageList{
-    grid-template-columns:repeat(2,minmax(0,1fr))!important;
-    gap:var(--ux-space-1)!important
-  }
-  .onboardingStageList>li{
-    min-height:42px!important;
-    grid-template-columns:26px minmax(0,1fr)!important;
-    padding:var(--ux-space-1) var(--ux-space-2)!important
-  }
-  .onboardingStageNumber{
-    width:26px!important;
-    height:26px!important;
-    min-width:26px!important
-  }
-}
+
