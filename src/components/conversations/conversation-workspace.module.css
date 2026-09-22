@@ -5478,6 +5478,73 @@
     height:100%!important
   }
 
+
+
+  /* Consolidated approved mobile refinements */
+  .chatHeader{
+    min-height:88px!important;
+    padding:var(--ux-space-0) var(--ux-space-3)!important
+  }
+  .chatHeaderForeground{
+    min-height:88px!important;
+    align-items:center!important
+  }
+  .centralChatHeader,
+  .centralChatHeader .chatHeaderForeground{
+    min-height:96px!important
+  }
+  .chatHeaderBankMark{
+    display:none
+  }
+  .roomDetailHeroIdentity{
+    grid-template-columns:52px 82px minmax(0,1fr)!important;
+    min-height:136px!important;
+    gap:var(--ux-space-2)!important;
+    padding:var(--ux-space-4)!important
+  }
+  .roomDetailHero .personaAvatar{
+    width:82px!important;
+    height:82px!important;
+    flex-basis:82px!important
+  }
+  .roomDetailBankMark{
+    width:52px!important;
+    height:52px!important
+  }
+  .entityTeamGrid{
+    grid-template-columns:1fr!important
+  }
+  .entityTeamGrid>button{
+    min-height:96px!important
+  }
+  .entityDetailTabs{
+    display:flex!important;
+    grid-template-columns:none!important;
+    margin:var(--ux-space-3)!important;
+    padding:var(--ux-space-1)!important
+  }
+  .onboardingStageOverview{
+    margin-inline:var(--ux-space-3)!important
+  }
+  .onboardingStageList>li{
+    flex-basis:132px!important;
+    min-height:90px!important
+  }
+
+  .governedQuickActions{
+    grid-template-columns:1fr!important
+  }
+  .governedQuickActions>button{
+    min-height:64px!important
+  }
+  .governedLeafPattern{
+    left:8px!important;
+    width:150px!important;
+    opacity:.11!important
+  }
+  .governedHistorySection{
+    padding:var(--ux-space-3)!important
+  }
 }
 
 
@@ -6694,57 +6761,7 @@
   color:var(--ux-text-secondary)!important
 }
 
-@media(max-width:767px){
-  .chatHeader{
-    min-height:88px!important;
-    padding:var(--ux-space-0) var(--ux-space-3)!important
-  }
-  .chatHeaderForeground{
-    min-height:88px!important;
-    align-items:center!important
-  }
-  .centralChatHeader,
-  .centralChatHeader .chatHeaderForeground{
-    min-height:96px!important
-  }
-  .chatHeaderBankMark{
-    display:none
-  }
-  .roomDetailHeroIdentity{
-    grid-template-columns:52px 82px minmax(0,1fr)!important;
-    min-height:136px!important;
-    gap:var(--ux-space-2)!important;
-    padding:var(--ux-space-4)!important
-  }
-  .roomDetailHero .personaAvatar{
-    width:82px!important;
-    height:82px!important;
-    flex-basis:82px!important
-  }
-  .roomDetailBankMark{
-    width:52px!important;
-    height:52px!important
-  }
-  .entityTeamGrid{
-    grid-template-columns:1fr!important
-  }
-  .entityTeamGrid>button{
-    min-height:96px!important
-  }
-  .entityDetailTabs{
-    display:flex!important;
-    grid-template-columns:none!important;
-    margin:var(--ux-space-3)!important;
-    padding:var(--ux-space-1)!important
-  }
-  .onboardingStageOverview{
-    margin-inline:var(--ux-space-3)!important
-  }
-  .onboardingStageList>li{
-    flex-basis:132px!important;
-    min-height:90px!important
-  }
-}
+
 
 
 /* Final governed reference design — approved 2026-09-22 */
@@ -7135,19 +7152,4 @@
   color:var(--ux-text-primary)!important
 }
 
-@media(max-width:767px){
-  .governedQuickActions{
-    grid-template-columns:1fr!important
-  }
-  .governedQuickActions>button{
-    min-height:64px!important
-  }
-  .governedLeafPattern{
-    left:8px!important;
-    width:150px!important;
-    opacity:.11!important
-  }
-  .governedHistorySection{
-    padding:var(--ux-space-3)!important
-  }
-}
+
