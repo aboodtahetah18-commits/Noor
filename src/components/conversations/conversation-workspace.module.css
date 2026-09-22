@@ -203,7 +203,7 @@
   overflow:hidden
 }
 
-.chatHeaderForeground{
+.desktopChatHeaderForeground{
   min-height:72px;
   display:flex;
   align-items:center;
@@ -211,6 +211,18 @@
   gap:var(--ux-space-3);
   position:relative;
   z-index:2
+}
+.chatHeaderForeground{
+  display:none
+}
+.chatHeaderShade{
+  display:none
+}
+.compactMenuButton{
+  display:none
+}
+.compactRoleTitle{
+  min-width:0
 }
 
 .chatHeaderBuilding{
@@ -233,7 +245,7 @@
 .centralChatHeader{
   min-height:var(--ux-space-24)
 }
-.centralChatHeader .chatHeaderForeground{
+.centralChatHeader .desktopChatHeaderForeground{
   min-height:var(--ux-space-24)
 }
 .centralChatHeader .chatHeaderBuilding{
@@ -3873,9 +3885,27 @@
 
 /* Mobile full-page internal surfaces — governed by Namaa mobile UX contract */
 @media(max-width:767px){
-  .chatHeaderForeground{min-height:86px;width:100%}
-  .chatHeaderWithBuilding .chatHeaderBuilding{opacity:.32}
-  .chatHeaderBuilding img{object-position:center 44%}
+  .desktopChatHeaderForeground{display:none}
+  .chatHeaderForeground{
+    min-height:60px;
+    width:100%;
+    display:flex;
+    align-items:center;
+    gap:var(--ux-space-2);
+    position:relative;
+    z-index:3;
+    direction:rtl
+  }
+  .chatHeaderWithBuilding .chatHeaderBuilding{opacity:1}
+  .chatHeaderBuilding img{object-position:center 42%}
+  .chatHeaderShade{
+    display:block;
+    position:absolute;
+    inset:var(--ux-space-0);
+    z-index:2;
+    pointer-events:none;
+    background:color-mix(in srgb,var(--namaa-green-900) 58%,transparent)
+  }
   .chatIdentity{gap:var(--ux-space-2)}
   .chatBankMark{width:36px;height:36px;flex-basis:36px}
   .mobileTools button{background:color-mix(in srgb,var(--namaa-cream) 78%,var(--namaa-card));box-shadow:var(--ux-shadow-xs)}
@@ -4071,9 +4101,9 @@
   z-index:120
   }
   .mobileAppBar{
+    display:none;
     min-height:56px;
     padding:var(--ux-space-1) var(--ux-space-3);
-    display:flex;
     align-items:center;
     justify-content:space-between;
     gap:var(--ux-space-3);
@@ -4134,13 +4164,13 @@
   }
   .workspace,.workspace.withoutRooms,.workspace.withoutContext,.workspace.withoutRooms.withoutContext{
     display:block;
-    min-height:calc(100dvh - 56px);
-    height:calc(100dvh - 56px);
+    min-height:100dvh;
+    height:100dvh;
     overflow:hidden
   }
   .mobileConversationList{
     display:none;
-  height:calc(100dvh - 56px);
+  height:100dvh;
   background:var(--namaa-card);
   overflow:auto
   }
@@ -4160,8 +4190,8 @@
     display:flex;
     flex-direction:column;
     min-height:0;
-    height:calc(100dvh - 56px);
-    max-height:calc(100dvh - 56px);
+    height:100dvh;
+    max-height:100dvh;
     background:var(--namaa-chat-canvas);
     overflow:hidden;
     position:relative;
@@ -4293,14 +4323,65 @@
     overflow-y:auto
   }
   .chatHeader{
-    height:86px;
-    min-height:86px;
-    padding:var(--ux-space-0) var(--ux-space-3);
+    height:60px;
+    min-height:60px;
+    padding:var(--ux-space-0) var(--ux-space-2);
     position:relative;
     top:var(--ux-space-0);
     z-index:6;
-    background:var(--namaa-card);
-    border-bottom:1px solid var(--namaa-border)
+    background:var(--namaa-green-900);
+    border-bottom:1px solid var(--namaa-border);
+    border-radius:var(--ux-radius-0) var(--ux-radius-0) var(--ux-radius-3) var(--ux-radius-3)
+  }
+  .centralChatHeader,
+  .centralChatHeader .chatHeaderForeground{
+    min-height:60px;
+    height:60px
+  }
+  .compactMenuButton,
+  .mobileTools button{
+    width:34px;
+    height:34px;
+    flex:0 0 34px;
+    border:1px solid color-mix(in srgb,var(--namaa-card) 72%,transparent);
+    border-radius:var(--ux-radius-full);
+    background:color-mix(in srgb,var(--namaa-green-900) 72%,transparent);
+    color:var(--ux-text-inverse);
+    display:grid;
+    place-items:center;
+    padding:var(--ux-space-0);
+    box-shadow:var(--ux-shadow-xs)
+  }
+  .chatHeaderForeground .persona_md{
+    width:42px;
+    height:42px;
+    flex-basis:42px;
+    border-color:color-mix(in srgb,var(--namaa-gold-500) 68%,var(--namaa-card));
+    box-shadow:var(--ux-shadow-xs)
+  }
+  .chatHeaderForeground .persona_md img{
+    object-fit:cover;
+    object-position:center 18%;
+    transform:scale(1.18)
+  }
+  .compactRoleTitle{
+    flex:1 1 auto;
+    min-width:0
+  }
+  .compactRoleTitle strong{
+    display:block;
+    color:var(--ux-text-inverse);
+    font-size:var(--ux-type-body-sm-size);
+    font-weight:900;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap
+  }
+  .mobileTools{
+    display:flex;
+    flex:0 0 auto;
+    gap:var(--ux-space-1);
+    direction:rtl
   }
   .routingNote{
     margin:var(--ux-space-2) var(--ux-space-2) var(--ux-space-0);
@@ -4313,12 +4394,47 @@
   position:absolute;
   inset-block:var(--ux-space-0);
   inset-inline-start:var(--ux-space-0);
-  width:min(86vw,340px);
+  width:min(80vw,312px);
   overflow:auto;
   background:var(--namaa-card);
   border-inline-end:1px solid var(--namaa-border);
   box-shadow:var(--ux-shadow-lg);
   padding:var(--ux-space-3)
+  }
+  .sideBrandRow{
+    display:flex;
+    align-items:center;
+    gap:var(--ux-space-2);
+    min-height:52px;
+    padding:var(--ux-space-1) var(--ux-space-1) var(--ux-space-3);
+    border-bottom:1px solid var(--namaa-border);
+    margin-bottom:var(--ux-space-3);
+    direction:rtl
+  }
+  .sideBrandLogoWrap{
+    flex:1 1 auto;
+    min-width:0;
+    display:flex;
+    align-items:center
+  }
+  .sideBrandLogo{
+    width:88px;
+    height:auto;
+    object-fit:contain
+  }
+  .sideThemeToggle,
+  .sideUserButton{
+    width:36px!important;
+    height:36px!important;
+    flex:0 0 36px!important;
+    border:1px solid var(--namaa-border-strong)!important;
+    border-radius:var(--ux-radius-full)!important;
+    background:transparent!important;
+    color:var(--namaa-green-900)!important;
+    display:grid!important;
+    place-items:center!important;
+    padding:var(--ux-space-0)!important;
+    overflow:hidden
   }
   .mobileSideSheet .roomList{
     display:grid;
