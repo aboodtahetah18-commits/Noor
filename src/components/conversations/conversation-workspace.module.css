@@ -7463,3 +7463,43 @@
   background-position:center!important;
   background-repeat:no-repeat!important
 }
+
+
+/* Block 2 — dark side drawer identity readability */
+:global(html[data-theme="dark"]) .mobileSideSheet .roomItemShell{
+  background:var(--namaa-card)!important;
+  border:1px solid var(--namaa-border-strong)!important;
+  box-shadow:var(--ux-shadow-xs)!important
+}
+:global(html[data-theme="dark"]) .mobileSideSheet .roomItemShell.activeRoom{
+  background:var(--namaa-cream)!important;
+  border-color:var(--namaa-gold-500)!important
+}
+:global(html[data-theme="dark"]) .mobileSideSheet .roomItem{
+  color:var(--ux-text-primary)!important
+}
+:global(html[data-theme="dark"]) .mobileSideSheet .roomCopy{
+  min-width:0!important
+}
+:global(html[data-theme="dark"]) .mobileSideSheet .roomCopy strong{
+  display:block!important;
+  color:var(--namaa-green-900)!important;
+  font-weight:900!important;
+  opacity:1!important
+}
+:global(html[data-theme="dark"]) .mobileSideSheet .roomCopy small,
+:global(html[data-theme="dark"]) .mobileSideSheet .roomCopy em{
+  display:block!important;
+  color:var(--ux-text-secondary)!important;
+  opacity:1!important;
+  white-space:normal!important;
+  overflow-wrap:anywhere!important
+}
+:global(html[data-theme="dark"]) .mobileSideSheet .roomDetailButton{
+  color:var(--namaa-green-900)!important;
+  background:transparent!important
+}
+:global(html[data-theme="dark"]) .mobileSideSheet .personaAvatar{
+  background:var(--namaa-card)!important;
+  border-color:var(--namaa-border-strong)!important
+}
