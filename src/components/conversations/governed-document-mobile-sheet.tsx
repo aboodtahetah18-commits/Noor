@@ -442,7 +442,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
 
         <section className={styles.governedHistorySection}>
           <header className={styles.governedHistoryHeader}>
-            <span className={styles.governedHistoryIcon}><LucideIcon name="history" size={22}/></span>
+            <span className={styles.governedHistoryIcon}><LucideIcon name="calendarDays" size={22}/></span>
             <div><strong>سجل التحديثات والقرارات</strong><small>التسلسل الزمني للتصحيحات، طلبات التعديل، الاعتمادات وقرارات مجلس نماء الأعلى.</small></div>
           </header>
           <div className={styles.governedHistoryList}>
