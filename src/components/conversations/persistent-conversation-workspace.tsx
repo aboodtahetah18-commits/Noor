@@ -199,7 +199,7 @@ function RoomPortrait({room,size='md'}:{room:Room;size?:'sm'|'md'|'lg'}) {
 
 const rolePortraitByKey:Partial<Record<string,string>>={
   'central-governor':'/brand/governor.webp',
-  'central-bank-manager':'/brand/central-bank-manager.webp',
+  'central-bank-manager':'/brand/ndos/personas/namaa-algorithmic-personas.jpg',
   'solvency-manager':'/brand/malaa-manager.webp',
   'assets-manager':'/brand/assets-manager.webp',
   'hilal-manager':'/brand/hilal-manager.webp',
