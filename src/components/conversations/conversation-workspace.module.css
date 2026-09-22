@@ -7398,3 +7398,68 @@
 :global(html[data-theme="dark"]) .entityReferenceCopy small{
   color:var(--ux-text-secondary)!important
 }
+
+@media(max-width:767px){
+  .roomDetailHero{
+    border-radius:var(--ux-radius-4)!important
+  }
+  .roomDetailHeroIdentity{
+    min-height:164px!important;
+    grid-template-columns:100px minmax(0,1fr)!important;
+    gap:var(--ux-space-4)!important;
+    padding:var(--ux-space-4)!important
+  }
+  .roomDetailHero .personaAvatar{
+    width:100px!important;
+    height:124px!important;
+    flex-basis:100px!important
+  }
+  .entityTeamGrid>button{
+    min-height:132px!important;
+    grid-template-columns:100px minmax(0,1fr) 20px!important;
+    gap:var(--ux-space-3)!important;
+    padding:var(--ux-space-3)!important
+  }
+  .entityTeamPortrait{
+    width:100px!important;
+    height:110px!important;
+    min-width:100px!important
+  }
+  .entityReferenceList>button{
+    min-height:112px!important;
+    grid-template-columns:52px minmax(0,1fr) 18px!important;
+    gap:var(--ux-space-3)!important;
+    padding:var(--ux-space-3)!important
+  }
+  .entityReferenceIcon{
+    width:52px!important;
+    height:52px!important
+  }
+}
+
+
+/* Persona sprite fallbacks for roles without dedicated approved files */
+.personaSpritePortrait{
+  background-image:url('/brand/ndos/personas/namaa-algorithmic-personas.jpg')!important;
+  background-repeat:no-repeat!important;
+  background-size:600% 200%!important;
+  background-color:var(--namaa-surface-warm)!important
+}
+.personaSprite_budget-spending-owner{background-position:100% 0!important}
+.personaSprite_obligations-owner{background-position:0 100%!important}
+.personaSprite_goals-owner{background-position:20% 100%!important}
+.personaSprite_investment-owner{background-position:40% 100%!important}
+.personaSprite_liquidity-protection-owner{background-position:60% 100%!important}
+.personaSprite_central-secretary{background-position:100% 100%!important}
+.personaSprite_operations-center{
+  background-image:url('/brand/bank-central.webp')!important;
+  background-size:contain!important;
+  background-position:center!important;
+  background-repeat:no-repeat!important
+}
+.personaSprite_namaa-council{
+  background-image:url('/brand/bank-central.webp')!important;
+  background-size:contain!important;
+  background-position:center!important;
+  background-repeat:no-repeat!important
+}
