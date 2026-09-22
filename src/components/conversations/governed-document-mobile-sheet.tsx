@@ -326,7 +326,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
         </section>}
 
         <details className={styles.governedDocumentSection} open>
-          <summary><span><LucideIcon name="receiptText" size={16}/><strong>المحتوى المعتمد</strong></span><LucideIcon name="chevronDown" size={16}/></summary>
+          <summary><span><LucideIcon name="receiptText" size={16}/><strong>تفاصيل المرجع</strong></span><LucideIcon name="chevronDown" size={16}/></summary>
           <div className={styles.governedLocalDocument}>
             {documentLoading
               ?<p>جارٍ تحميل المرجع المعتمد داخل نماء…</p>
