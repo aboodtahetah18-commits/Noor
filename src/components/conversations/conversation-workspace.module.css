@@ -902,8 +902,10 @@
 .scrim{
   position:absolute;
   inset:0;
+  z-index:1;
   border:0;
-  background:color-mix(in srgb,var(--namaa-text) 28%,transparent)
+  background:color-mix(in srgb,var(--namaa-text) 28%,transparent);
+  cursor:pointer
 }
 
 .mobileSheet{
@@ -2315,7 +2317,30 @@
 .councilAdvisor{border-inline-start-width:4px;border-inline-start-color:var(--namaa-border-strong)}
 .councilSecretary{border-inline-start-width:4px;border-inline-start-color:color-mix(in srgb,var(--namaa-green-700) 55%,var(--namaa-gold-500))}
 
-.userMessageIdentity{display:flex;align-items:baseline;gap:var(--ux-space-2);margin-bottom:var(--ux-space-1)}
+.userMessageIdentity{
+  display:flex;
+  align-items:center;
+  gap:var(--ux-space-2);
+  margin-bottom:var(--ux-space-1)
+}
+.userMessageAvatar{
+  width:30px;
+  height:30px;
+  flex:0 0 30px;
+  border-radius:var(--ux-radius-full);
+  border:1px solid var(--namaa-border-strong);
+  background-color:var(--namaa-surface-warm);
+  background-position:center 18%;
+  background-size:cover;
+  background-repeat:no-repeat;
+  box-shadow:var(--ux-shadow-xs)
+}
+.userMessageIdentityCopy{
+  min-width:0;
+  display:flex;
+  align-items:baseline;
+  gap:var(--ux-space-2)
+}
 .userMessageIdentity strong{font-size:var(--ux-type-caption-size);color:var(--namaa-green-700)}
 .userMessageIdentity small{font-size:var(--ux-type-caption-size);color:var(--ux-text-secondary)}
 .entityDetailSheet{
@@ -3167,34 +3192,41 @@
 .governedDocumentSheet{
   width:100%;
   max-height:100dvh;
-  overflow:auto
+  overflow:auto;
+  background:var(--namaa-surface-warm)
 }
 .governedDocumentContent{
   display:grid;
   gap:var(--ux-space-3);
-  padding:var(--ux-space-3)
-}
-.governedDocumentHero{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:var(--ux-space-3);
   padding:var(--ux-space-3);
-  border:1px solid var(--namaa-border-strong);
-  border-radius:var(--ux-radius-4);
   background:var(--namaa-surface-warm)
 }
-.governedDocumentHero>div{
+.governedDocumentHero{
+  position:relative;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-4);
+  border:1px solid var(--namaa-border-strong);
+  border-radius:var(--ux-radius-4);
+  background:color-mix(in srgb,var(--namaa-green-700) 10%,var(--namaa-surface-warm));
+  box-shadow:var(--ux-shadow-xs);
+  overflow:hidden
+}
+.governedHeroCopy{
   min-width:0;
   display:grid;
-  gap:var(--ux-space-1)
+  gap:var(--ux-space-2)
 }
-.governedDocumentHero span{
+.governedHeroEyebrow{
   width:fit-content;
+  display:inline-flex;
+  align-items:center;
+  gap:var(--ux-space-1);
   padding:var(--ux-space-1) var(--ux-space-2);
-  border:1px solid var(--namaa-border);
+  border:1px solid color-mix(in srgb,var(--namaa-green-700) 32%,var(--namaa-border));
   border-radius:var(--ux-radius-full);
-  background:var(--namaa-card);
+  background:color-mix(in srgb,var(--namaa-green-700) 8%,var(--namaa-card));
   color:var(--namaa-green-900);
   font-size:var(--ux-type-caption-size);
   font-weight:900
@@ -3205,18 +3237,28 @@
   line-height:1.45;
   overflow-wrap:anywhere
 }
-.governedDocumentHero small{
+.governedHeroCopy p{
+  margin:var(--ux-space-0);
   color:var(--ux-text-secondary);
-  font-size:var(--ux-type-caption-size)
+  font-size:var(--ux-type-body-sm-size);
+  line-height:1.7
 }
-.governedDocumentHero>svg{
-  flex:0 0 auto;
-  color:var(--namaa-green-900)
+.governedHeroIcon{
+  width:52px;
+  height:52px;
+  display:grid;
+  place-items:center;
+  border:1px solid color-mix(in srgb,var(--namaa-gold-500) 55%,var(--namaa-border));
+  border-radius:var(--ux-radius-full);
+  background:color-mix(in srgb,var(--namaa-gold-500) 16%,var(--namaa-card));
+  color:var(--namaa-green-900);
+  box-shadow:var(--ux-shadow-xs)
 }
 .governedDocumentSection{
   border:1px solid var(--namaa-border);
   border-radius:var(--ux-radius-3);
-  background:var(--namaa-card);
+  background:color-mix(in srgb,var(--namaa-card) 62%,var(--namaa-surface-warm));
+  box-shadow:var(--ux-shadow-xs);
   overflow:hidden
 }
 .governedDocumentSection>summary{
@@ -3234,7 +3276,7 @@
 .governedDocumentSection>summary::-webkit-details-marker{display:none}
 .governedDocumentSection[open]>summary{
   border-bottom:1px solid var(--namaa-border);
-  background:var(--namaa-surface-warm)
+  background:color-mix(in srgb,var(--namaa-green-700) 7%,var(--namaa-surface-warm))
 }
 .governedDocumentSection>div{
   display:grid;
@@ -3270,7 +3312,7 @@
   padding:var(--ux-space-3);
   border:1px solid var(--namaa-border-strong);
   border-radius:var(--ux-radius-3);
-  background:var(--namaa-surface-warm)
+  background:color-mix(in srgb,var(--namaa-gold-500) 8%,var(--namaa-surface-warm))
 }
 .governedAmendmentCard header{
   display:flex;
@@ -4340,29 +4382,39 @@
   }
   .compactMenuButton,
   .mobileTools button{
-    width:34px;
-    height:34px;
-    flex:0 0 34px;
-    border:1px solid color-mix(in srgb,var(--namaa-card) 72%,transparent);
+    width:36px;
+    height:36px;
+    flex:0 0 36px;
+    border:1px solid color-mix(in srgb,var(--namaa-gold-500) 64%,var(--namaa-card));
     border-radius:var(--ux-radius-full);
-    background:color-mix(in srgb,var(--namaa-green-900) 72%,transparent);
+    background:color-mix(in srgb,var(--namaa-card) 18%,transparent);
     color:var(--ux-text-inverse);
     display:grid;
     place-items:center;
     padding:var(--ux-space-0);
-    box-shadow:var(--ux-shadow-xs)
+    box-shadow:var(--ux-shadow-sm)
+  }
+  .compactMenuButton:focus-visible,
+  .mobileTools button:focus-visible{
+    outline:0;
+    box-shadow:var(--ux-shadow-focus)
   }
   .chatHeaderForeground .persona_md{
-    width:42px;
-    height:42px;
-    flex-basis:42px;
-    border-color:color-mix(in srgb,var(--namaa-gold-500) 68%,var(--namaa-card));
-    box-shadow:var(--ux-shadow-xs)
+    width:40px;
+    height:40px;
+    flex-basis:40px;
+    border:2px solid color-mix(in srgb,var(--namaa-gold-500) 72%,var(--namaa-card));
+    box-shadow:var(--ux-shadow-sm)
   }
   .chatHeaderForeground .persona_md img{
     object-fit:cover;
-    object-position:center 18%;
-    transform:scale(1.18)
+    object-position:center 16%;
+    transform:scale(1.28)
+  }
+  .messageIdentity .persona_sm img{
+    object-fit:cover;
+    object-position:center 16%;
+    transform:scale(1.2)
   }
   .compactRoleTitle{
     flex:1 1 auto;
@@ -4396,6 +4448,7 @@
   inset-inline-start:var(--ux-space-0);
   width:min(80vw,312px);
   overflow:auto;
+  z-index:2;
   background:var(--namaa-card);
   border-inline-end:1px solid var(--namaa-border);
   box-shadow:var(--ux-shadow-lg);
@@ -5359,7 +5412,7 @@
 .governedContentSection{
   border:1px solid var(--namaa-border);
   border-radius:var(--ux-radius-3);
-  background:var(--namaa-card);
+  background:color-mix(in srgb,var(--namaa-card) 74%,var(--namaa-surface-warm));
   overflow:hidden
 }
 .governedContentSection>summary{
@@ -5370,7 +5423,7 @@
   padding:var(--ux-space-3);
   cursor:pointer;
   color:var(--ux-text-primary);
-  background:var(--namaa-surface-warm)
+  background:color-mix(in srgb,var(--namaa-gold-500) 7%,var(--namaa-surface-warm))
 }
 .governedContentSection>summary strong{
   font-size:var(--ux-type-body-sm-size)
@@ -5389,11 +5442,13 @@
 .governedClauseRow{
   display:grid;
   gap:var(--ux-space-2);
-  padding:var(--ux-space-2) var(--ux-space-0);
-  border-bottom:1px solid var(--namaa-border)
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-2);
+  background:color-mix(in srgb,var(--namaa-card) 72%,var(--namaa-surface-warm))
 }
 .governedClauseRow:last-child{
-  border-bottom:0
+  border-bottom:1px solid var(--namaa-border)
 }
 .governedClauseHeading{
   display:grid;
@@ -5425,9 +5480,9 @@
 }
 .governedContentTable{
   width:100%;
-  min-width:42rem;
+  min-width:38rem;
   border-collapse:collapse;
-  background:var(--namaa-card)
+  background:color-mix(in srgb,var(--namaa-card) 84%,var(--namaa-surface-warm))
 }
 .governedContentTable th,
 .governedContentTable td{
@@ -5441,7 +5496,7 @@
 }
 .governedContentTable th{
   color:var(--ux-text-primary);
-  background:var(--namaa-surface-warm);
+  background:color-mix(in srgb,var(--namaa-green-700) 9%,var(--namaa-surface-warm));
   font-weight:900
 }
 .governedContentTable td{
@@ -5587,13 +5642,14 @@
 
 
 .governedMetaStrip{
+  grid-column:1/-1;
   display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
+  grid-template-columns:repeat(3,minmax(0,1fr));
   gap:var(--ux-space-1);
   padding:var(--ux-space-2);
-  border:1px solid var(--namaa-border);
+  border:1px solid color-mix(in srgb,var(--namaa-green-700) 18%,var(--namaa-border));
   border-radius:var(--ux-radius-3);
-  background:var(--namaa-card)
+  background:color-mix(in srgb,var(--namaa-card) 68%,var(--namaa-surface-warm))
 }
 .governedMetaStrip>div{
   min-width:0;
@@ -5610,6 +5666,20 @@
   color:var(--ux-text-primary);
   font-size:var(--ux-type-body-sm-size);
   overflow-wrap:anywhere
+}
+.governedStatusActive{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:var(--ux-space-1);
+  color:var(--namaa-green-900)!important
+}
+.governedStatusActive::after{
+  content:'';
+  width:8px;
+  height:8px;
+  border-radius:var(--ux-radius-full);
+  background:var(--namaa-green-700)
 }
 .governedFlowCard{
   display:grid;
@@ -5734,4 +5804,38 @@
   font-size:var(--ux-type-body-sm-size);
   line-height:1.7;
   overflow-wrap:anywhere
+}
+
+.governedActionRail{
+  position:sticky;
+  bottom:var(--ux-space-0);
+  z-index:3;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);
+  gap:var(--ux-space-2);
+  padding:var(--ux-space-2) var(--ux-space-0) calc(var(--ux-space-2) + env(safe-area-inset-bottom));
+  background:var(--namaa-surface-warm)
+}
+.governedActionRail .primaryActionButton{
+  width:100%;
+  min-height:var(--ux-size-12)
+}
+.governedDownloadButton{
+  min-height:var(--ux-size-12);
+  border:1px solid var(--namaa-green-700);
+  border-radius:var(--ux-radius-3);
+  background:color-mix(in srgb,var(--namaa-card) 66%,var(--namaa-surface-warm));
+  color:var(--namaa-green-900);
+  font:inherit;
+  font-size:var(--ux-type-button-size);
+  font-weight:900;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:var(--ux-space-2);
+  cursor:pointer
+}
+.governedDownloadButton:disabled{
+  opacity:.5;
+  cursor:not-allowed
 }
