@@ -7239,7 +7239,7 @@
 .entityTeamPortrait img{
   object-fit:cover!important;
   object-position:center 8%!important;
-  transform:scale(1.14)
+  transform:none
 }
 .entityTeamGrid>button>span:nth-child(2){
   min-width:0!important;
