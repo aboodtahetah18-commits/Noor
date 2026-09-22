@@ -18,6 +18,15 @@ export type LocalGovernanceDocument={
   content:string;
 };
 
+const ARCHIVED_GOVERNANCE_REFERENCE_CODES=new Set([
+  'NMC-POL-09',
+  'NMC-POL-10',
+  'ADV-POL-01',
+  'SEC-POL-01',
+  'COU-POL-01',
+  'COU-POL-03',
+]);
+
 const ALL_GOVERNANCE_DOCUMENTS:readonly LocalGovernanceDocument[]=[
   ...CURRENT_GOVERNANCE_OVERRIDES,
   ...GOVERNANCE_BATCH_01,
@@ -31,7 +40,7 @@ const ALL_GOVERNANCE_DOCUMENTS:readonly LocalGovernanceDocument[]=[
   ...GOVERNANCE_BATCH_09,
 ];
 
-export const LOCAL_GOVERNANCE_DOCUMENTS:readonly LocalGovernanceDocument[]=ALL_GOVERNANCE_DOCUMENTS.filter((item,index,items)=>items.findIndex(candidate=>candidate.referenceCode===item.referenceCode)===index);
+export const LOCAL_GOVERNANCE_DOCUMENTS:readonly LocalGovernanceDocument[]=ALL_GOVERNANCE_DOCUMENTS.filter((item,index,items)=>!ARCHIVED_GOVERNANCE_REFERENCE_CODES.has(item.referenceCode)&&items.findIndex(candidate=>candidate.referenceCode===item.referenceCode)===index);
 
 export function getLocalGovernanceDocument(referenceCode:string){
   return LOCAL_GOVERNANCE_DOCUMENTS.find(item=>item.referenceCode===referenceCode)??null;
