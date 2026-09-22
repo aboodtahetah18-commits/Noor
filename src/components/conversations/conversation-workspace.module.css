@@ -6696,7 +6696,7 @@
   color:var(--ux-text-secondary)!important
 }
 
-@media (max-width:760px){
+@media(max-width:767px){
   .chatHeader{
     min-height:88px!important;
     padding:0 var(--ux-space-3)!important
@@ -7139,7 +7139,7 @@
   color:var(--ux-text-primary)!important
 }
 
-@media (max-width:760px){
+@media(max-width:767px){
   .governedQuickActions{
     grid-template-columns:1fr!important
   }
