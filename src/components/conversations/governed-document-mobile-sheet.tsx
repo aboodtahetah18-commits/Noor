@@ -413,13 +413,13 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
 
         <section className={styles.governedQuickActions} aria-label="إجراءات المرجع">
           <button type="button" className={styles.governedTypoButton} onClick={()=>{setEditMode('typo');setFormOpen(true);setFeedback('')}}>
-            <LucideIcon name="pencil" size={20}/><span><strong>تعديل إصلاحي / إملائي</strong><small>تصحيح اللغة والصياغة دون تغيير الحكم.</small></span>
+            <LucideIcon name="pencil" size={24}/><span><strong>تعديل إصلاحي / إملائي</strong></span>
           </button>
           <button type="button" className={styles.governedGovernanceButton} onClick={()=>{setEditMode('governance');setFormOpen(true);setFeedback('')}}>
-            <LucideIcon name="landmark" size={20}/><span><strong>طلب تعديل حوكمي</strong><small>تعديل يؤثر في المضمون ويمر بالاعتماد.</small></span>
+            <LucideIcon name="landmark" size={24}/><span><strong>طلب تعديل حوكمي</strong></span>
           </button>
           <button type="button" className={styles.governedPdfButton} onClick={downloadLocalCopy} disabled={!documentContent}>
-            <LucideIcon name="receiptText" size={20}/><span><strong>تحميل نسخة PDF للاطلاع</strong><small>نسخة مهيأة للطباعة والحفظ بصيغة PDF.</small></span>
+            <LucideIcon name="receiptText" size={24}/><span><strong>تحميل نسخة PDF للاطلاع</strong></span>
           </button>
         </section>
 
