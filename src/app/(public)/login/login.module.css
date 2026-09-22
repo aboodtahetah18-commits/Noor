@@ -95,16 +95,21 @@
 .loadingCard p{margin:var(--ux-auth-s0);color:var(--ux-text-secondary);line-height:1.7}
 @media(max-width:1023px){
   .page{
+    width:100%;
+    height:100dvh;
     min-height:100dvh;
     display:block;
     padding:var(--ux-auth-s0);
-    overflow:auto;
+    overflow:hidden;
+    overscroll-behavior:none;
     background:var(--ux-surface-canvas);
     color:var(--ux-text-primary)
   }
   .shell{
     width:100%;
+    height:100dvh;
     min-height:100dvh;
+    max-height:100dvh;
     display:flex;
     flex-direction:column;
     border:0;

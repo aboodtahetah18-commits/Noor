@@ -13,6 +13,7 @@ const steps = [
   ['persona identity contract','node',['scripts/verify-persona-identity-contract.mjs']],
   ['strict visual identity authority','node',['scripts/verify-visual-identity-authority.mjs']],
   ['final UI authority contract','node',['scripts/verify-final-ui-authority.mjs']],
+  ['mobile stability contract','node',['scripts/verify-mobile-stability-contract.mjs']],
   ['interaction capabilities contract','node',['scripts/verify-interaction-capabilities-contract.mjs']],
   ['auth lifecycle contract','node',['scripts/verify-auth-lifecycle-contract.mjs']],
   ['Lucide icon contract','node',['scripts/verify-lucide-icon-contract.mjs']],
