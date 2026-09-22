@@ -342,13 +342,11 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
                             <div className={styles.governedClauseHeading}><span>{block.number}</span><strong>{block.title}</strong></div>
                             {block.text&&<p>{block.text}</p>}
                           </article>
-                          :<div className={styles.governedTableCards} key={blockIndex}>
-                          {block.rows.map((row,rowIndex)=><article className={styles.governedTableCard} key={rowIndex}>
-                            {block.headers.map((header,cellIndex)=><div key={cellIndex}>
-                              <small>{header||'البيان'}</small>
-                              <strong>{row[cellIndex]||'غير محدد'}</strong>
-                            </div>)}
-                          </article>)}
+                          :<div className={styles.governedTableScroll} key={blockIndex}>
+                          <table className={styles.governedContentTable}>
+                            <thead><tr>{block.headers.map((header,headerIndex)=><th scope="col" key={headerIndex}>{header||'البيان'}</th>)}</tr></thead>
+                            <tbody>{block.rows.map((row,rowIndex)=><tr key={rowIndex}>{block.headers.map((_,cellIndex)=><td key={cellIndex}>{row[cellIndex]||'غير محدد'}</td>)}</tr>)}</tbody>
+                          </table>
                         </div>)}
                     </div>
                   </details>)}
