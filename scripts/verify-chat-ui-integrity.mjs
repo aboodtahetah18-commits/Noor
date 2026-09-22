@@ -48,10 +48,11 @@ if(!workspace.includes('showStructuredAction') || !workspace.includes('متاب�
 
 console.log('CHAT-UI-INTEGRITY-PASS');
 
-if(!workspace.includes("setDetailTab('role')") || !workspace.includes('السجلات والسياسات')) fail('three-tab governed entity detail surface missing');
+for(const required of ["setDetailTab('role')","setDetailTab('team')","setDetailTab('files')","setDetailTab('policies')","setDetailTab('authority')","setDetailTab('procedures')","setDetailTab('records')",'السياسات واللوائح','مصفوفة الصلاحيات','الإجراءات والآليات']){ if(!workspace.includes(required)) fail('governed entity detail section missing: '+required); }
+if(!workspace.includes('/brand/ndos/personas/namaa-algorithmic-personas.jpg')||!workspace.includes('rolePortraitByKey')) fail('approved algorithmic personas and role portrait mapping must remain visible in entity profile');
 if(!workspace.includes("new Set(['dependents','accounts','obligations','goals'])")) fail('simple onboarding questions must remain directly answerable in chat');
 if(!workspace.includes('userMessageIdentity')) fail('user messages must preserve visible sender identity');
-if(!workspace.includes('setActiveGovernedDocument({roomId:room.id,document:item})')) fail('entity source references must be actionable through the governed local document viewer');
+if(!workspace.includes('EntityReferenceList')||!workspace.includes('setActiveGovernedDocument(value)')||!workspace.includes('classifyGovernedReference')) fail('entity source references must be categorized and actionable through the governed local document viewer');
 if(!workspace.includes("setGovernanceMode('governance')")) fail('entity records and policies must open the governance center');
 if(!css.includes('.detailList>span,.detailList>button{')||!css.includes('.entityReferenceContent{')) fail('actionable entity reference styles missing');
 if(!css.includes('border:1px solid var(--namaa-border-strong);\n  box-shadow:var(--ux-shadow-xs);\n  overflow:hidden')) fail('message border hierarchy must remain visually strong');
@@ -59,9 +60,9 @@ if(!css.includes('border-top:1px solid var(--namaa-border-strong);\n    backgrou
 if(!css.includes('border:1px solid var(--namaa-border-strong);\n    border-radius:var(--ux-radius-full);\n    background:var(--namaa-card)')) fail('mobile composer input must retain its compact bordered treatment');
 if(!css.includes('min-height:46px')||!css.includes('box-shadow:var(--ux-shadow-xs);\n  font:inherit;')) fail('entity detail rows must retain the approved visual hierarchy');
 if(!css.includes('.entityDetailSheet{\n  width:min(calc(100% - (var(--ux-space-2) * 2)),720px);')||!css.includes('overflow-x:hidden')) fail('mobile entity detail sheet must stay inside the viewport');
-if(!css.includes('.entityDetailTabs{\n  position:sticky;')||!css.includes('grid-template-columns:repeat(3,minmax(0,1fr))')) fail('entity detail tabs must remain three balanced mobile columns');
+if(!css.includes('.entityDetailTabs{\n  position:sticky;')||!css.includes('overflow-x:auto')||!css.includes('min-width:max-content')) fail('entity detail tabs must remain a horizontally scrollable governed mobile strip');
 if(!css.includes('.entityDetailPanel>section:nth-child(3n+1)')||!css.includes('.entityDetailPanel>section:nth-child(3n+2)')) fail('entity detail section accents missing');
-if(!css.includes('.roomDetailHero{\n  min-width:0;\n  display:grid;')) fail('entity detail hero must use overflow-safe mobile grid');
+if(!css.includes('.roomDetailHeroBackdrop')||!css.includes('.roomDetailHeroIdentity')||!css.includes('.roomDetailBankMark')) fail('entity detail hero must preserve bank building, bank mark and role identity');
 if(!workspace.includes('styles.accountSurfaceOverlay')||!workspace.includes('styles.accountSurfaceSheet')) fail('profile and settings must use focused mobile account surfaces');
 if(!css.includes('.accountSurfaceScrim{\n    background:color-mix(in srgb,var(--namaa-chat-canvas) 10%,transparent)')||!css.includes('.accountSurfaceSheet{\n    top:72px;')) fail('mobile account surfaces must avoid the heavy full-screen gray veil');
 if(!css.includes('background:color-mix(in srgb,var(--namaa-surface-warm) 84%,var(--namaa-card))')) fail('mobile user bubble must retain the brighter warm governed surface');
