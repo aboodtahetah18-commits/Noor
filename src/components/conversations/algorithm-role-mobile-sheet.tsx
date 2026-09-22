@@ -151,12 +151,12 @@ export function AlgorithmRoleMobileSheet({role,onClose}:{role:AlgorithmRoleRef;o
         </section>
 
         <section className={styles.governedQuickActions+' '+styles.algorithmRoleEditActions} aria-label="تعديل الوصف الوظيفي">
-          <button type="button" className={styles.governedTypoButton} onClick={()=>{setEditMode('typo');setFeedback('')}}><LucideIcon name="pencil" size={20}/><span><strong>تعديل إصلاحي/مطبعي</strong><small>تصحيح نصي لا يغيّر الحكم أو الصلاحية.</small></span></button>
+          <button type="button" className={styles.governedTypoButton} onClick={()=>{setEditMode('typo');setFeedback('')}}><LucideIcon name="pencil" size={20}/><span><strong>تعديل إصلاحي / إملائي</strong><small>تصحيح إملائي أو صياغي لا يغيّر الحكم أو الصلاحية.</small></span></button>
           <button type="button" className={styles.governedGovernanceButton} onClick={()=>{setEditMode('governance');setFeedback('')}}><LucideIcon name="landmark" size={20}/><span><strong>طلب تعديل حوكمي</strong><small>أي تغيير في المسؤوليات أو الصلاحيات يمر بالاعتماد.</small></span></button>
         </section>
 
         {editMode&&<form className={styles.governedAmendmentForm} onSubmit={submitEdit}>
-          <header className={styles.governedEditFormHeader}><span className={styles.governedEditFormIcon}><LucideIcon name={editMode==='typo'?'pencil':'landmark'} size={20}/></span><div><strong>{editMode==='typo'?'تعديل إصلاحي/مطبعي':'طلب تعديل حوكمي'}</strong><small>{editMode==='typo'?'لتصحيح الخطأ أو الصياغة دون تغيير المسؤولية أو الصلاحية.':'لتغيير المضمون أو التفويض أو المسؤوليات عبر مسار الاعتماد.'}</small></div></header>
+          <header className={styles.governedEditFormHeader}><span className={styles.governedEditFormIcon}><LucideIcon name={editMode==='typo'?'pencil':'landmark'} size={20}/></span><div><strong>{editMode==='typo'?'تعديل إصلاحي / إملائي':'طلب تعديل حوكمي'}</strong><small>{editMode==='typo'?'لتصحيح خطأ إملائي أو صياغي دون تغيير المسؤولية أو الصلاحية.':'لتغيير المضمون أو التفويض أو المسؤوليات عبر مسار الاعتماد.'}</small></div></header>
           <label><span>رقم المادة أو البند</span><input value={clauseRef} onChange={event=>setClauseRef(event.target.value)} placeholder="مثال: 2.3"/></label>
           <label><span>النص الحالي</span><textarea required value={currentRule} onChange={event=>setCurrentRule(event.target.value)} placeholder="انسخ النص الحالي كما يظهر"/></label>
           <label><span>{editMode==='typo'?'النص المصحح':'التعديل المقترح'}</span><textarea required value={proposedRule} onChange={event=>setProposedRule(event.target.value)} placeholder="اكتب النص المقترح"/></label>
