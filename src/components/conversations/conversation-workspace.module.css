@@ -4380,9 +4380,9 @@
     overflow-y:auto
   }
   .chatHeader{
-    height:60px;
-    min-height:60px;
-    padding:var(--ux-space-0) var(--ux-space-2);
+    height:88px;
+    min-height:88px;
+    padding:var(--ux-space-0) var(--ux-space-3);
     position:relative;
     top:var(--ux-space-0);
     z-index:6;
@@ -4392,8 +4392,8 @@
   }
   .centralChatHeader,
   .centralChatHeader .chatHeaderForeground{
-    min-height:60px;
-    height:60px
+    min-height:96px;
+    height:96px
   }
   .compactMenuButton,
   .mobileTools button{
@@ -5478,6 +5478,65 @@
     height:100%!important
   }
 
+
+
+  /* Consolidated approved mobile refinements */
+  .chatHeaderForeground{
+    min-height:88px!important;
+    align-items:center!important
+  }
+  .chatHeaderBankMark{
+    display:none
+  }
+  .roomDetailHeroIdentity{
+    grid-template-columns:52px 82px minmax(0,1fr)!important;
+    min-height:136px!important;
+    gap:var(--ux-space-2)!important;
+    padding:var(--ux-space-4)!important
+  }
+  .roomDetailHero .personaAvatar{
+    width:82px!important;
+    height:82px!important;
+    flex-basis:82px!important
+  }
+  .roomDetailBankMark{
+    width:52px!important;
+    height:52px!important
+  }
+  .entityTeamGrid{
+    grid-template-columns:1fr!important
+  }
+  .entityTeamGrid>button{
+    min-height:96px!important
+  }
+  .entityDetailTabs{
+    display:flex!important;
+    grid-template-columns:none!important;
+    margin:var(--ux-space-3)!important;
+    padding:var(--ux-space-1)!important
+  }
+  .onboardingStageOverview{
+    margin-inline:var(--ux-space-3)!important
+  }
+  .onboardingStageList>li{
+    flex-basis:132px!important;
+    min-height:90px!important
+  }
+
+  .governedQuickActions{
+    grid-template-columns:1fr!important
+  }
+  .governedQuickActions>button{
+    min-height:64px!important
+  }
+  .governedLeafPattern{
+    left:8px!important;
+    width:150px!important;
+    opacity:.11!important
+  }
+  .governedHistorySection{
+    padding:var(--ux-space-3)!important
+  }
 }
 
 
@@ -6280,4 +6339,850 @@
 
 .governedContentTable th{
   background:color-mix(in srgb,var(--namaa-green-900) 10%,var(--namaa-surface-warm))
+}
+
+
+/* 2026-09-22 chat/profile/onboarding refinement */
+
+/* Chat identity header: no photographic background. */
+.chatHeader,
+.chatHeaderWithBuilding,
+.centralChatHeader{
+  background:var(--namaa-green-900)!important;
+  border-bottom-color:color-mix(in srgb,var(--namaa-green-700) 54%,var(--namaa-border))!important;
+  color:var(--ux-text-inverse)!important;
+  box-shadow:var(--ux-shadow-sm)
+}
+.chatHeaderBuilding,
+.chatBuildingThumb{
+  display:none!important
+}
+.chatHeaderShade{
+  display:block!important;
+  position:absolute;
+  inset:0;
+  background:color-mix(in srgb,var(--namaa-green-700) 12%,transparent)!important;
+  pointer-events:none
+}
+.chatHeader .entityTitle strong,
+.chatHeader .compactRoleTitle strong,
+.chatHeader .chatIdentity small{
+  color:var(--ux-text-inverse)!important
+}
+.chatHeader .chatIdentity small{
+  opacity:.84
+}
+.chatHeaderBankMark{
+  position:relative;
+  width:56px;
+  height:56px;
+  flex:0 0 56px;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  border:1px solid color-mix(in srgb,var(--ux-text-inverse) 44%,transparent);
+  border-radius:var(--ux-radius-full);
+  background:color-mix(in srgb,var(--namaa-card) 94%,transparent);
+  box-shadow:var(--ux-shadow-xs)
+}
+.chatHeaderBankMark img{
+  object-fit:contain;
+  padding:var(--ux-space-2)
+}
+.chatHeader .mobileTools button,
+.chatHeader .compactMenuButton{
+  color:var(--ux-text-inverse)!important;
+  border-color:color-mix(in srgb,var(--ux-text-inverse) 38%,transparent)!important;
+  background:color-mix(in srgb,var(--namaa-green-900) 62%,transparent)!important
+}
+
+/* Entity profile hero: identity-led instead of photographic. */
+.roomDetailHero{
+  position:relative;
+  overflow:hidden;
+  display:block!important;
+  padding:0!important;
+  background:var(--namaa-green-900)!important;
+  border-color:color-mix(in srgb,var(--namaa-green-700) 62%,var(--namaa-border))!important;
+  box-shadow:var(--ux-shadow-sm)!important
+}
+.roomDetailHeroBackdrop{
+  display:none!important
+}
+.roomDetailHeroShade{
+  background:color-mix(in srgb,var(--namaa-green-700) 10%,transparent)!important
+}
+.roomDetailHeroIdentity{
+  min-height:148px!important;
+  padding:var(--ux-space-5)!important
+}
+.roomDetailHeroIdentity strong{
+  color:var(--ux-text-inverse)!important;
+  font-weight:900
+}
+.roomDetailHeroIdentity small,
+.roomDetailHeroIdentity em{
+  color:color-mix(in srgb,var(--ux-text-inverse) 84%,transparent)!important
+}
+.roomDetailBankMark{
+  width:56px!important;
+  height:56px!important;
+  background:color-mix(in srgb,var(--namaa-card) 95%,transparent)!important
+}
+.roomDetailHero .personaAvatar{
+  width:92px!important;
+  height:92px!important;
+  flex-basis:92px!important;
+  background:var(--namaa-card)!important;
+  border:2px solid color-mix(in srgb,var(--ux-text-inverse) 68%,transparent)!important
+}
+
+/* Profile navigation and section framing. */
+.entityDetailTabs{
+  border:1px solid var(--namaa-border)!important;
+  border-radius:var(--ux-radius-4)!important;
+  box-shadow:var(--ux-shadow-xs)!important
+}
+.entityDetailTabs button{
+  color:var(--ux-text-secondary)!important;
+  font-weight:900!important
+}
+.entityDetailTabs .activeEntityDetailTab{
+  color:var(--ux-text-inverse)!important;
+  background:var(--namaa-green-900)!important;
+  border-radius:var(--ux-radius-3)!important
+}
+.entityDetailPanel{
+  display:grid;
+  gap:var(--ux-space-3)
+}
+.entityDetailPanel>section{
+  gap:var(--ux-space-3)!important;
+  padding:var(--ux-space-4)!important;
+  border:1px solid var(--namaa-border-strong)!important;
+  border-radius:var(--ux-radius-4)!important;
+  background:color-mix(in srgb,var(--namaa-card) 92%,var(--namaa-surface-warm))!important;
+  box-shadow:var(--ux-shadow-xs)!important
+}
+.entitySectionHeading{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--ux-space-3);
+  padding-bottom:var(--ux-space-3);
+  border-bottom:1px solid var(--namaa-border)
+}
+.entitySectionHeading>span{
+  display:grid;
+  gap:var(--ux-space-1)
+}
+.entitySectionHeading small{
+  color:var(--namaa-green-900);
+  font-weight:900
+}
+.entitySectionHeading strong{
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-body-sm-size)
+}
+.entitySectionHeading>svg{
+  color:var(--namaa-green-900)
+}
+
+/* Team: individual governed cards, no low-resolution composite board. */
+.entityPersonaBoard{
+  display:none!important
+}
+.entityTeamGrid{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:var(--ux-space-3)!important
+}
+.entityTeamGrid>button{
+  min-height:92px;
+  grid-template-columns:72px minmax(0,1fr) auto!important;
+  gap:var(--ux-space-3)!important;
+  padding:var(--ux-space-3)!important;
+  border:1px solid var(--namaa-border-strong)!important;
+  border-radius:var(--ux-radius-4)!important;
+  background:var(--namaa-card)!important;
+  box-shadow:var(--ux-shadow-xs)!important
+}
+.entityTeamPortrait{
+  width:72px!important;
+  height:72px!important;
+  border:2px solid color-mix(in srgb,var(--namaa-green-700) 34%,var(--namaa-border))!important;
+  background:color-mix(in srgb,var(--namaa-surface-warm) 82%,var(--namaa-card))!important
+}
+.entityTeamPortrait img{
+  object-fit:cover!important;
+  object-position:center 16%!important
+}
+.entityTeamGrid strong{
+  color:var(--ux-text-primary)!important;
+  font-size:var(--ux-type-body-sm-size)!important;
+  line-height:1.45!important
+}
+.entityTeamGrid small{
+  color:var(--ux-text-secondary)!important;
+  line-height:1.45
+}
+.entityTeamGrid>button>svg{
+  color:var(--namaa-green-900)
+}
+
+/* Governance references: stronger hierarchy and readable metadata. */
+.entityReferenceList{
+  gap:var(--ux-space-3)!important
+}
+.entityReferenceList>button{
+  min-height:76px!important;
+  grid-template-columns:48px minmax(0,1fr) auto!important;
+  padding:var(--ux-space-3)!important;
+  border-radius:var(--ux-radius-4)!important;
+  background:color-mix(in srgb,var(--namaa-card) 92%,var(--namaa-surface-warm))!important;
+  box-shadow:var(--ux-shadow-xs)!important
+}
+.entityReferenceIcon{
+  width:48px!important;
+  height:48px!important;
+  border-radius:var(--ux-radius-3)!important;
+  background:color-mix(in srgb,var(--namaa-green-700) 13%,var(--namaa-surface-warm))!important
+}
+.entityReferenceCopy strong{
+  color:var(--ux-text-primary)!important;
+  font-weight:900!important
+}
+.entityReferenceCopy small{
+  color:var(--ux-text-secondary)!important
+}
+
+/* Governed documents: reduce duplication and make clauses visually scannable. */
+.governedDocumentContent{
+  gap:var(--ux-space-4)!important
+}
+.governedDocumentSection{
+  border-radius:var(--ux-radius-4)!important;
+  border-color:var(--namaa-border-strong)!important;
+  background:color-mix(in srgb,var(--namaa-card) 76%,var(--namaa-surface-warm))!important;
+  box-shadow:var(--ux-shadow-sm)!important
+}
+.governedDocumentSection>summary{
+  min-height:56px!important;
+  padding:var(--ux-space-3) var(--ux-space-4)!important;
+  color:var(--ux-text-primary)!important
+}
+.governedDocumentSection[open]>summary{
+  background:color-mix(in srgb,var(--namaa-green-700) 10%,var(--namaa-surface-warm))!important;
+  border-bottom-color:var(--namaa-border-strong)!important
+}
+.governedContentSection{
+  border:1px solid var(--namaa-border)!important;
+  border-radius:var(--ux-radius-4)!important;
+  background:var(--namaa-card)!important;
+  box-shadow:var(--ux-shadow-xs)!important
+}
+.governedContentSection>summary{
+  min-height:52px!important;
+  padding:var(--ux-space-3)!important;
+  color:var(--ux-text-primary)!important;
+  font-weight:900!important
+}
+.governedClauseRow{
+  border:1px solid var(--namaa-border)!important;
+  border-inline-start:4px solid var(--namaa-green-700)!important;
+  border-radius:var(--ux-radius-3)!important;
+  background:color-mix(in srgb,var(--namaa-card) 88%,var(--namaa-cream))!important;
+  padding:var(--ux-space-3)!important;
+  box-shadow:var(--ux-shadow-none)!important
+}
+.governedClauseRow strong{
+  color:var(--namaa-green-900)!important
+}
+
+/* Onboarding: stronger titles, distinct stages, number -> check transition. */
+.onboardingIntake{
+  background:color-mix(in srgb,var(--namaa-card) 96%,var(--namaa-surface-warm))!important
+}
+.onboardingIntakeHeader{
+  padding:var(--ux-space-4)!important;
+  border-bottom:1px solid var(--namaa-border)!important;
+  background:color-mix(in srgb,var(--namaa-card) 90%,var(--namaa-surface-warm))!important
+}
+.onboardingIntakeHeader strong{
+  color:var(--namaa-green-900)!important;
+  font-size:var(--ux-type-section-title-size)!important;
+  font-weight:900!important
+}
+.onboardingIntakeHeader small{
+  color:var(--ux-text-secondary)!important
+}
+.onboardingStageOverview{
+  margin:var(--ux-space-3)!important;
+  padding:var(--ux-space-3)!important;
+  border:1px solid var(--namaa-border-strong)!important;
+  border-radius:var(--ux-radius-4)!important;
+  background:color-mix(in srgb,var(--namaa-card) 88%,var(--namaa-surface-warm))!important;
+  box-shadow:var(--ux-shadow-xs)!important
+}
+.onboardingStageOverviewHeader{
+  padding-bottom:var(--ux-space-3)!important;
+  border-bottom:1px solid var(--namaa-border)!important
+}
+.onboardingStageOverviewHeader span{
+  color:var(--namaa-green-900)!important;
+  font-weight:900!important
+}
+.onboardingStageList{
+  display:flex!important;
+  gap:var(--ux-space-2)!important;
+  padding:var(--ux-space-3) var(--ux-space-0) var(--ux-space-0)!important;
+  overflow-x:auto!important;
+  scroll-snap-type:x proximity
+}
+.onboardingStageList>li{
+  flex:0 0 142px!important;
+  min-height:94px!important;
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  justify-items:center!important;
+  align-content:center!important;
+  gap:var(--ux-space-2)!important;
+  padding:var(--ux-space-3)!important;
+  border:1px solid var(--namaa-border)!important;
+  border-radius:var(--ux-radius-4)!important;
+  background:var(--namaa-card)!important;
+  text-align:center!important;
+  scroll-snap-align:start
+}
+.onboardingStageNumber{
+  width:36px!important;
+  min-width:36px!important;
+  height:36px!important;
+  border-radius:var(--ux-radius-full)!important;
+  background:var(--namaa-card)!important;
+  border:2px solid var(--namaa-border-strong)!important;
+  color:var(--ux-text-secondary)!important;
+  font-size:var(--ux-type-body-sm-size)!important
+}
+.onboardingStageDone{
+  opacity:1!important;
+  background:color-mix(in srgb,var(--namaa-green-700) 8%,var(--namaa-card))!important
+}
+.onboardingStageDone .onboardingStageNumber{
+  background:var(--namaa-green-900)!important;
+  border-color:var(--namaa-green-900)!important;
+  color:var(--ux-text-inverse)!important
+}
+.onboardingStageCurrent{
+  opacity:1!important;
+  border:2px solid var(--namaa-green-700)!important;
+  background:color-mix(in srgb,var(--namaa-green-700) 8%,var(--namaa-card))!important;
+  box-shadow:var(--ux-shadow-sm)!important
+}
+.onboardingStageCurrent .onboardingStageNumber{
+  border-color:var(--namaa-green-700)!important;
+  color:var(--namaa-green-900)!important;
+  background:color-mix(in srgb,var(--namaa-green-700) 10%,var(--namaa-card))!important
+}
+.onboardingStageUpcoming{
+  opacity:.82!important
+}
+.onboardingStageList>li>strong{
+  color:var(--ux-text-primary)!important;
+  line-height:1.35!important
+}
+.simpleOnboardingStage,
+.intakeCard,
+.mobileStructuredIntake{
+  border:1px solid var(--namaa-border-strong)!important;
+  border-radius:var(--ux-radius-4)!important;
+  background:var(--namaa-card)!important;
+  box-shadow:var(--ux-shadow-xs)!important
+}
+.simpleOnboardingStage>strong{
+  color:var(--namaa-green-900)!important;
+  font-weight:900!important
+}
+.intakeAddButton{
+  min-height:52px!important;
+  border:1px dashed var(--namaa-green-700)!important;
+  border-radius:var(--ux-radius-4)!important;
+  background:color-mix(in srgb,var(--namaa-green-700) 6%,var(--namaa-card))!important;
+  color:var(--namaa-green-900)!important;
+  font-weight:900!important
+}
+.intakeNoneButton{
+  min-height:48px!important;
+  border-radius:var(--ux-radius-4)!important;
+  color:var(--ux-text-secondary)!important;
+  background:var(--namaa-card)!important
+}
+
+/* Approved white brand mark in dark side drawer. */
+.sideBrandLogoDark{display:none}
+.sideBrandLogoLight{display:block}
+:global(html[data-theme="dark"]) .sideBrandLogoLight{display:none!important}
+:global(html[data-theme="dark"]) .sideBrandLogoDark{display:block!important}
+:global(html[data-theme="dark"]) .mobileSideSheet{
+  background:var(--namaa-green-900)!important
+}
+:global(html[data-theme="dark"]) .mobileSideSheet .sideSection>small,
+:global(html[data-theme="dark"]) .mobileSideSheet .sideUtilityList button{
+  color:var(--ux-text-inverse)!important
+}
+:global(html[data-theme="dark"]) .mobileSideSheet .sideThemeToggle,
+:global(html[data-theme="dark"]) .mobileSideSheet .sideUserButton{
+  color:var(--ux-text-inverse)!important;
+  border-color:color-mix(in srgb,var(--ux-text-inverse) 34%,transparent)!important
+}
+:global(html[data-theme="dark"]) .entityTeamGrid>button,
+:global(html[data-theme="dark"]) .entityReferenceList>button,
+:global(html[data-theme="dark"]) .governedContentSection,
+:global(html[data-theme="dark"]) .simpleOnboardingStage,
+:global(html[data-theme="dark"]) .intakeCard{
+  background:var(--ux-card-bg)!important;
+  border-color:var(--ux-border-emphasis)!important
+}
+:global(html[data-theme="dark"]) .entityTeamGrid strong,
+:global(html[data-theme="dark"]) .entityReferenceCopy strong,
+:global(html[data-theme="dark"]) .governedContentSection>summary,
+:global(html[data-theme="dark"]) .onboardingStageList>li>strong{
+  color:var(--ux-text-primary)!important
+}
+:global(html[data-theme="dark"]) .entityTeamGrid small,
+:global(html[data-theme="dark"]) .entityReferenceCopy small{
+  color:var(--ux-text-secondary)!important
+}
+
+
+
+
+/* Final governed reference design — approved 2026-09-22 */
+
+.governedDocumentHero{
+  position:relative!important;
+  overflow:hidden!important;
+  background:var(--namaa-green-900)!important;
+  border-color:color-mix(in srgb,var(--namaa-green-700) 68%,var(--namaa-border))!important;
+  box-shadow:var(--ux-shadow-sm)!important
+}
+.governedDocumentHero>*:not(.governedLeafPattern){
+  position:relative;
+  z-index:2
+}
+.governedLeafPattern{
+  position:absolute;
+  z-index:1;
+  inset-block-start:-18px;
+  inset-inline:auto;
+  left:18px;
+  width:180px;
+  height:132px;
+  opacity:.13;
+  pointer-events:none;
+  transform:none!important
+}
+.governedLeafPattern i{
+  position:absolute;
+  display:block;
+  width:92px;
+  height:46px;
+  border:2px solid var(--ux-text-inverse);
+  border-radius:var(--ux-radius-full);
+  transform-origin:left center;
+}
+.governedLeafPattern i:nth-child(1){
+  left:4px;
+  top:62px;
+  transform:rotate(-26deg)
+}
+.governedLeafPattern i:nth-child(2){
+  left:44px;
+  top:30px;
+  width:82px;
+  height:40px;
+  transform:rotate(-12deg)
+}
+.governedLeafPattern i:nth-child(3){
+  left:78px;
+  top:70px;
+  width:76px;
+  height:36px;
+  transform:rotate(10deg)
+}
+
+/* Keep decorative foliage physically left-to-right even in RTL. */
+.chatHeader::after{
+  content:"";
+  position:absolute;
+  left:18px;
+  right:auto;
+  top:-22px;
+  width:190px;
+  height:130px;
+  opacity:.08;
+  pointer-events:none;
+  z-index:0;
+  background:transparent;
+  border:1px solid color-mix(in srgb,var(--ux-text-inverse) 40%,transparent);
+  border-radius:var(--ux-radius-full);
+  transform:rotate(-10deg);
+  transform-origin:left center
+}
+.chatHeader .desktopChatHeaderForeground,
+.chatHeader .chatHeaderForeground{
+  position:relative;
+  z-index:2
+}
+
+.governedQuickActions{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:var(--ux-space-2)
+}
+.governedQuickActions>button{
+  min-width:0;
+  min-height:74px;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-3);
+  border-radius:var(--ux-radius-4);
+  font:inherit;
+  text-align:right;
+  cursor:pointer;
+  box-shadow:var(--ux-shadow-xs)
+}
+.governedQuickActions>button>span{
+  min-width:0;
+  display:grid;
+  gap:var(--ux-space-1)
+}
+.governedQuickActions strong{
+  font-size:var(--ux-type-body-sm-size);
+  line-height:1.35
+}
+.governedQuickActions small{
+  font-size:var(--ux-type-caption-size);
+  line-height:1.45
+}
+.governedTypoButton{
+  border:1px solid var(--namaa-green-900);
+  background:var(--namaa-green-900);
+  color:var(--ux-text-inverse)
+}
+.governedTypoButton small{
+  color:color-mix(in srgb,var(--ux-text-inverse) 78%,transparent)
+}
+.governedGovernanceButton{
+  border:1px solid color-mix(in srgb,var(--namaa-green-700) 70%,var(--namaa-border));
+  background:color-mix(in srgb,var(--namaa-green-700) 9%,var(--namaa-card));
+  color:var(--namaa-green-900)
+}
+.governedGovernanceButton small{
+  color:var(--ux-text-secondary)
+}
+.governedPdfButton{
+  border:1px solid color-mix(in srgb,var(--namaa-green-700) 42%,var(--namaa-border));
+  background:color-mix(in srgb,var(--ux-section-soft-blue) 58%,var(--namaa-card));
+  color:var(--ux-text-primary)
+}
+.governedPdfButton small{
+  color:var(--ux-text-secondary)
+}
+.governedPdfButton:disabled{
+  opacity:.55;
+  cursor:not-allowed
+}
+
+.governedEditFormHeader{
+  display:flex;
+  align-items:flex-start;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-3);
+  margin-bottom:var(--ux-space-1);
+  border-radius:var(--ux-radius-3);
+  border:1px solid var(--namaa-border);
+  background:var(--namaa-surface-warm)
+}
+.governedEditFormIcon{
+  width:44px;
+  height:44px;
+  flex:0 0 44px;
+  display:grid;
+  place-items:center;
+  border-radius:var(--ux-radius-3);
+  background:color-mix(in srgb,var(--namaa-green-700) 12%,var(--namaa-card));
+  color:var(--namaa-green-900)
+}
+.governedEditFormHeader>div{
+  min-width:0;
+  display:grid;
+  gap:var(--ux-space-1)
+}
+.governedEditFormHeader strong{
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-body-sm-size)
+}
+.governedEditFormHeader small{
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  line-height:1.5
+}
+.governedTypoForm{
+  border-inline-start:4px solid var(--namaa-green-700)!important
+}
+.governedGovernanceForm{
+  border-inline-start:4px solid var(--namaa-gold-500)!important
+}
+
+/* Document sections: compact, colorful, and clean — no decorative scratches or excess arrows. */
+.governedDocumentSection,
+.governedContentSection{
+  border-radius:var(--ux-radius-4)!important;
+  overflow:hidden!important
+}
+.governedDocumentSection>summary,
+.governedContentSection>summary{
+  min-height:54px!important;
+  padding:var(--ux-space-3) var(--ux-space-4)!important
+}
+.governedContentSection:nth-child(4n+1)>summary{
+  background:color-mix(in srgb,var(--namaa-green-700) 9%,var(--namaa-card))!important
+}
+.governedContentSection:nth-child(4n+2)>summary{
+  background:color-mix(in srgb,var(--ux-section-soft-blue) 68%,var(--namaa-card))!important
+}
+.governedContentSection:nth-child(4n+3)>summary{
+  background:color-mix(in srgb,var(--namaa-gold-500) 9%,var(--namaa-card))!important
+}
+.governedContentSection:nth-child(4n)>summary{
+  background:color-mix(in srgb,var(--namaa-green-700) 5%,var(--namaa-cream))!important
+}
+.governedContentSection>summary>span{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:var(--ux-space-2)
+}
+.governedContentSection>summary strong{
+  color:var(--ux-text-primary)!important;
+  font-weight:900!important;
+  overflow-wrap:anywhere
+}
+.governedContentSection>summary>svg{
+  flex:0 0 auto;
+  color:var(--namaa-green-900)
+}
+.governedClauseRow{
+  border-inline-start:0!important;
+  background:var(--namaa-card)!important;
+  box-shadow:var(--ux-shadow-xs)!important
+}
+.governedClauseHeading{
+  display:flex!important;
+  align-items:flex-start!important;
+  gap:var(--ux-space-2)!important
+}
+.governedClauseHeading>span{
+  flex:0 0 auto;
+  min-width:44px;
+  min-height:28px;
+  display:grid;
+  place-items:center;
+  padding-inline:var(--ux-space-2);
+  border-radius:var(--ux-radius-full);
+  background:color-mix(in srgb,var(--namaa-green-700) 12%,var(--namaa-card));
+  color:var(--namaa-green-900);
+  font-weight:900
+}
+.governedClauseHeading>strong{
+  min-width:0;
+  color:var(--ux-text-primary)!important;
+  line-height:1.5;
+  overflow-wrap:anywhere
+}
+
+.governedHistorySection{
+  display:grid;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-4);
+  border:1px solid var(--namaa-border-strong);
+  border-radius:var(--ux-radius-4);
+  background:color-mix(in srgb,var(--namaa-card) 94%,var(--namaa-surface-warm));
+  box-shadow:var(--ux-shadow-sm)
+}
+.governedHistoryHeader{
+  display:flex;
+  align-items:flex-start;
+  gap:var(--ux-space-3);
+  padding-bottom:var(--ux-space-3);
+  border-bottom:1px solid var(--namaa-border)
+}
+.governedHistoryIcon{
+  width:44px;
+  height:44px;
+  flex:0 0 44px;
+  display:grid;
+  place-items:center;
+  border-radius:var(--ux-radius-full);
+  background:color-mix(in srgb,var(--namaa-green-700) 12%,var(--namaa-card));
+  color:var(--namaa-green-900)
+}
+.governedHistoryHeader>div{
+  min-width:0;
+  display:grid;
+  gap:var(--ux-space-1)
+}
+.governedHistoryHeader strong{
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-body-size);
+  font-weight:900
+}
+.governedHistoryHeader small{
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  line-height:1.5
+}
+.governedHistoryList{
+  position:relative;
+  display:grid;
+  gap:var(--ux-space-2);
+  padding-inline-start:var(--ux-space-5)
+}
+.governedHistoryList::before{
+  content:"";
+  position:absolute;
+  inset-block:8px;
+  inset-inline-start:8px;
+  width:2px;
+  background:color-mix(in srgb,var(--namaa-green-700) 34%,var(--namaa-border))
+}
+.governedHistoryItem{
+  position:relative;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:var(--ux-space-1) var(--ux-space-3);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-card)
+}
+.governedHistoryDot{
+  position:absolute;
+  inset-inline-start:calc(var(--ux-space-5) * -1 - 1px);
+  inset-block-start:18px;
+  width:14px;
+  height:14px;
+  border:3px solid var(--namaa-card);
+  border-radius:var(--ux-radius-full);
+  background:var(--namaa-green-700);
+  box-shadow:var(--ux-shadow-xs)
+}
+.governedHistoryMeta{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:var(--ux-space-2);
+  flex-wrap:wrap
+}
+.governedHistoryMeta span,
+.governedHistoryMeta b{
+  width:max-content;
+  padding:var(--ux-space-1) var(--ux-space-2);
+  border-radius:var(--ux-radius-full);
+  font-size:var(--ux-type-caption-size);
+  line-height:1.5
+}
+.governedHistoryMeta span{
+  color:var(--namaa-green-900);
+  background:color-mix(in srgb,var(--namaa-green-700) 10%,var(--namaa-card))
+}
+.governedHistoryMeta b{
+  color:var(--ux-text-secondary);
+  background:var(--namaa-surface-warm)
+}
+.governedHistoryItem>strong{
+  grid-column:1/-1;
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-body-sm-size);
+  line-height:1.55
+}
+.governedHistoryItem>time{
+  grid-column:1/-1;
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  direction:ltr;
+  text-align:right
+}
+.governedHistory_governance .governedHistoryDot{
+  background:var(--namaa-gold-500);
+  box-shadow:var(--ux-shadow-xs)
+}
+.governedHistory_decision .governedHistoryDot,
+.governedHistory_effective .governedHistoryDot{
+  background:var(--namaa-green-900);
+  box-shadow:var(--ux-shadow-xs)
+}
+.governedHistoryEmpty{
+  margin:var(--ux-space-0);
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-body-sm-size);
+  line-height:1.6
+}
+
+:global(html[data-theme="dark"]) .governedGovernanceButton,
+:global(html[data-theme="dark"]) .governedPdfButton,
+:global(html[data-theme="dark"]) .governedHistorySection,
+:global(html[data-theme="dark"]) .governedHistoryItem{
+  background:var(--ux-card-bg)!important;
+  border-color:var(--ux-border-emphasis)!important
+}
+:global(html[data-theme="dark"]) .governedQuickActions strong,
+:global(html[data-theme="dark"]) .governedHistoryHeader strong,
+:global(html[data-theme="dark"]) .governedHistoryItem>strong{
+  color:var(--ux-text-primary)!important
+}
+
+
+
+
+/* Approved persona reference strip */
+.entityPersonaReference{
+  display:flex;
+  align-items:center;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-surface-warm);
+  box-shadow:var(--ux-shadow-xs)
+}
+.entityPersonaReferenceThumb{
+  position:relative;
+  width:72px;
+  height:48px;
+  flex:0 0 72px;
+  overflow:hidden;
+  border:1px solid var(--namaa-border-strong);
+  border-radius:var(--ux-radius-2);
+  background:var(--namaa-card)
+}
+.entityPersonaReferenceThumb img{
+  object-fit:cover;
+  object-position:center 72%
+}
+.entityPersonaReference>span:last-child{
+  min-width:0;
+  display:grid;
+  gap:var(--ux-space-1)
+}
+.entityPersonaReference strong{
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-caption-size)
+}
+.entityPersonaReference small{
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  line-height:1.45
 }

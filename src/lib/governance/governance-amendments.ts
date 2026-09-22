@@ -31,6 +31,19 @@ export type GovernanceAmendmentRequest={
   discussionNotes:string[];
 };
 
+export type GovernanceTypoCorrection={
+  correctionId:string;
+  documentRef:string;
+  documentTitle:string;
+  roomKey:string;
+  clauseRef:string|null;
+  currentRule:string;
+  correctedRule:string;
+  rationale:string;
+  correctedAt:string;
+  status:'APPLIED';
+};
+
 function record(value:unknown):Record<string,unknown>|null{
   return value&&typeof value==='object'&&!Array.isArray(value)?value as Record<string,unknown>:null;
 }
@@ -61,6 +74,81 @@ async function appendEvent(args:{
     )
   `;
   await sql`update public.conversation_threads set updated_at=now() where id=${id}::uuid`;
+}
+
+export async function createGovernanceTypoCorrection(args:{
+  userId:string;documentRef:string;documentTitle:string;roomKey:string;clauseRef?:string|null;
+  currentRule:string;correctedRule:string;rationale:string;
+}){
+  const now=new Date().toISOString();
+  const correctionId='TYP-'+createHash('sha256')
+    .update(JSON.stringify({userId:args.userId,documentRef:args.documentRef,now,currentRule:args.currentRule,correctedRule:args.correctedRule}))
+    .digest('hex').slice(0,16).toUpperCase();
+  await appendEvent({
+    userId:args.userId,
+    roomKey:'central',
+    senderKey:'central-governor',
+    senderName:'محافظ بنك نماء المركزي',
+    kind:'followup',
+    body:`تم تسجيل تصحيح مطبعي على «${args.documentTitle}» دون تغيير في الحكم أو المضمون الحوكمي.`,
+    structured:{
+      governance_typo_correction:true,
+      correction_id:correctionId,
+      document_ref:args.documentRef,
+      document_title:args.documentTitle,
+      source_room:args.roomKey,
+      clause_ref:args.clauseRef??null,
+      current_rule:args.currentRule,
+      corrected_rule:args.correctedRule,
+      rationale:args.rationale,
+      corrected_at:now,
+      status:'APPLIED',
+      council_required:false,
+      governance_change:false,
+      external_execution:false,
+      execution_boundary:'تصحيح لغوي أو مطبعي فقط؛ إذا تغيّر المعنى أو الحكم فيجب فتح طلب تعديل حوكمي مستقل',
+    },
+  });
+  return {correctionId,status:'APPLIED' as const};
+}
+
+export async function listGovernanceTypoCorrections(userId:string):Promise<GovernanceTypoCorrection[]>{
+  const sql=getRawSql();
+  const rows=await sql`
+    select structured_data,created_at
+    from public.conversation_messages
+    where user_id=${userId}::uuid
+      and structured_data->>'governance_typo_correction'='true'
+    order by created_at desc
+  `;
+  return rows.map(row=>{
+    const data=record(row.structured_data)??{};
+    return {
+      correctionId:text(data.correction_id)??'TYP-UNKNOWN',
+      documentRef:text(data.document_ref)??'غير مرقم',
+      documentTitle:text(data.document_title)??'وثيقة حوكمة',
+      roomKey:text(data.source_room)??'central',
+      clauseRef:text(data.clause_ref),
+      currentRule:text(data.current_rule)??'',
+      correctedRule:text(data.corrected_rule)??'',
+      rationale:text(data.rationale)??'',
+      correctedAt:text(data.corrected_at)??String(row.created_at),
+      status:'APPLIED' as const,
+    };
+  });
+}
+
+export async function applyGovernanceTypoCorrections(userId:string,documentRef:string,content:string){
+  const corrections=(await listGovernanceTypoCorrections(userId))
+    .filter(item=>item.documentRef===documentRef)
+    .sort((a,b)=>a.correctedAt.localeCompare(b.correctedAt));
+  let next=content;
+  for(const correction of corrections){
+    if(correction.currentRule&&correction.correctedRule&&next.includes(correction.currentRule)){
+      next=next.replace(correction.currentRule,correction.correctedRule);
+    }
+  }
+  return next;
 }
 
 export async function createGovernanceAmendmentRequest(args:{
