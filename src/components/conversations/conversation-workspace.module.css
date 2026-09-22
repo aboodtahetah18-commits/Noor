@@ -7463,3 +7463,57 @@
   background-position:center!important;
   background-repeat:no-repeat!important
 }
+
+
+/* Block 3 — governed document cleanup */
+.governedDocumentSection>summary,
+.governedContentSection>summary{
+  list-style:none!important;
+  cursor:pointer
+}
+.governedDocumentSection>summary::-webkit-details-marker,
+.governedContentSection>summary::-webkit-details-marker{
+  display:none!important
+}
+.governedDocumentSection>summary::marker,
+.governedContentSection>summary::marker{
+  content:""!important
+}
+.governedDocumentSection>summary>span,
+.governedContentSection>summary>span{
+  width:100%!important;
+  min-width:0!important
+}
+.governedDocumentSection>summary strong,
+.governedContentSection>summary strong{
+  min-width:0!important;
+  max-width:100%!important;
+  overflow-wrap:anywhere!important;
+  word-break:break-word!important
+}
+.governedContentSectionBody,
+.governedClauseRow,
+.governedContentTable{
+  max-width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important
+}
+.governedClauseRow p,
+.governedContentSectionBody>p,
+.governedContentTable th,
+.governedContentTable td{
+  overflow-wrap:anywhere!important;
+  word-break:break-word!important
+}
+.governedTableScroll{
+  width:100%!important;
+  max-width:100%!important;
+  overflow-x:auto!important;
+  overscroll-behavior-inline:contain
+}
+.governedQuickActions>button span,
+.governedEditFormHeader>div,
+.governedHistoryHeader>div,
+.governedHistoryItem{
+  min-width:0!important
+}

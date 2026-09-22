@@ -382,14 +382,14 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
         </section>}
 
         <details className={styles.governedDocumentSection} open>
-          <summary><span><LucideIcon name="receiptText" size={16}/><strong>تفاصيل المرجع</strong></span><LucideIcon name="chevronDown" size={16}/></summary>
+          <summary><span><LucideIcon name="receiptText" size={16}/><strong>تفاصيل المرجع</strong></span></summary>
           <div className={styles.governedLocalDocument}>
             {documentLoading
               ?<p>جارٍ تحميل المرجع المعتمد داخل نماء…</p>
               :documentContent
                 ?<div className={styles.governedStructuredDocument}>
                   {documentSections.map((section,sectionIndex)=><details className={styles.governedContentSection+' '+(isMatrixDocument?styles.governedMatrixSection:'')+' '+(isFlowDocument?styles.governedFlowSection:'')} key={sectionIndex} open={sectionIndex===0||isMatrixDocument}>
-                    <summary><span><LucideIcon name={sectionIcon(section.title,displayType)} size={16}/><strong>{section.title}</strong></span><LucideIcon name="chevronDown" size={16}/></summary>
+                    <summary><span><LucideIcon name={sectionIcon(section.title,displayType)} size={16}/><strong>{section.title}</strong></span></summary>
                     <div className={styles.governedContentSectionBody}>
                       {section.blocks.map((block,blockIndex)=>block.kind==='paragraph'
                         ?<p key={blockIndex}>{block.text}</p>
