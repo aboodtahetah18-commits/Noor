@@ -24,7 +24,6 @@ const statusLabel:Record<string,string>={
   COUNCIL_DISCUSSION:'مناقشة مجلس نماء', APPROVED_PENDING_EFFECTIVE:'معتمد وينتظر النفاذ',
   EFFECTIVE:'نافذ', REJECTED:'مرفوض',
 };
-const priorityLabel={NORMAL:'عادي',NEXT_MEETING:'للاجتماع القادم',URGENT:'عاجل، اجتماع فوري'} as const;
 
 type DocumentBlock =
   | {kind:'paragraph';text:string}
