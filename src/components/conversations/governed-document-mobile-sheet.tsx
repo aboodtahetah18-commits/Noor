@@ -282,11 +282,11 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
       tone:'typo' as const,
     }));
     const governanceItems=related.flatMap(item=>{
-      const items=[{
+      const items:Array<{id:string;at:string;type:string;status:string;summary:string;tone:'governance'|'decision'|'effective'}>=[{
         id:item.requestId+'-request',at:item.requestedAt,type:'طلب تعديل حوكمي',
         status:statusLabel[item.status]??'قيد المعالجة',
         summary:item.clauseRef?`طلب تعديل ${item.clauseRef}: ${item.rationale}`:item.rationale,
-        tone:'governance' as const,
+        tone:'governance',
       }];
       if(item.councilDecisionAt) items.push({
         id:item.requestId+'-decision',at:item.councilDecisionAt,type:'قرار مجلس نماء الأعلى',
@@ -414,13 +414,13 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
 
         <section className={styles.governedQuickActions} aria-label="إجراءات المرجع">
           <button type="button" className={styles.governedTypoButton} onClick={()=>{setEditMode('typo');setFormOpen(true);setFeedback('')}}>
-            <LucideIcon name="pencil" size={22}/><span><strong>تعديل مطبعي</strong><small>تصحيح اللغة والصياغة دون تغيير الحكم.</small></span>
+            <LucideIcon name="pencil" size={20}/><span><strong>تعديل مطبعي</strong><small>تصحيح اللغة والصياغة دون تغيير الحكم.</small></span>
           </button>
           <button type="button" className={styles.governedGovernanceButton} onClick={()=>{setEditMode('governance');setFormOpen(true);setFeedback('')}}>
-            <LucideIcon name="landmark" size={22}/><span><strong>طلب تعديل حوكمي</strong><small>تعديل يؤثر في المضمون ويمر بالاعتماد.</small></span>
+            <LucideIcon name="landmark" size={20}/><span><strong>طلب تعديل حوكمي</strong><small>تعديل يؤثر في المضمون ويمر بالاعتماد.</small></span>
           </button>
           <button type="button" className={styles.governedPdfButton} onClick={downloadLocalCopy} disabled={!documentContent}>
-            <LucideIcon name="receiptText" size={22}/><span><strong>تحميل نسخة PDF للاطلاع</strong><small>نسخة مهيأة للطباعة والحفظ بصيغة PDF.</small></span>
+            <LucideIcon name="receiptText" size={20}/><span><strong>تحميل نسخة PDF للاطلاع</strong><small>نسخة مهيأة للطباعة والحفظ بصيغة PDF.</small></span>
           </button>
         </section>
 
@@ -442,7 +442,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
 
         <section className={styles.governedHistorySection}>
           <header className={styles.governedHistoryHeader}>
-            <span className={styles.governedHistoryIcon}><LucideIcon name="calendarDays" size={22}/></span>
+            <span className={styles.governedHistoryIcon}><LucideIcon name="calendarDays" size={20}/></span>
             <div><strong>سجل التحديثات والقرارات</strong><small>التسلسل الزمني للتصحيحات، طلبات التعديل، الاعتمادات وقرارات مجلس نماء الأعلى.</small></div>
           </header>
           <div className={styles.governedHistoryList}>
