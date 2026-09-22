@@ -35,4 +35,16 @@ describe("اتساق الهيكل المؤسسي للأدوار", () => {
       expect(algorithmRoleByKey(key)?.authorities.length).toBeGreaterThan(0);
     }
   });
+
+  it("يحفظ ملف المحافظ التنفيذي الكامل لا الملخص القديم", () => {
+    const governor=algorithmRoleByKey("central-governor");
+    expect(governor?.decisions?.length).toBeGreaterThan(0);
+    expect(governor?.inputs?.length).toBeGreaterThan(0);
+    expect(governor?.outputs?.length).toBeGreaterThan(0);
+    expect(governor?.relations?.length).toBeGreaterThan(0);
+    expect(governor?.notifications?.length).toBeGreaterThan(0);
+    expect(governor?.audit?.length).toBeGreaterThan(0);
+    expect(governor?.interfaces?.length).toBeGreaterThan(0);
+    expect(governor?.exceptions?.length).toBeGreaterThan(0);
+  });
 });

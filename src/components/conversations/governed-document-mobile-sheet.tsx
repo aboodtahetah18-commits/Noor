@@ -119,48 +119,71 @@ function sectionIcon(title:string,type:GovernedDisplayType):LucideIconName{
   return 'receiptText';
 }
 
+function normalizeHeadingText(value:string){
+  return cleanVisibleArabic(value)
+    .replace(/^[أابجدهـويزحطكلمنسعفصقرشتثخذضظغ]+\s*[.)-]?\s*/u,'')
+    .replace(/^\d+\s*[.)-]?\s*/,'')
+    .trim();
+}
+
 function parseGovernedDocument(content:string):DocumentSection[]{
   const lines=content.replace(/\r/g,'').split('\n');
   const sections:DocumentSection[]=[];
   let current:DocumentSection={title:'المحتوى المعتمد',blocks:[]};
+  let sectionCounter=0;
+  let clauseCounter=0;
+
+  const flush=()=>{
+    if(current.blocks.length) sections.push(current);
+  };
+  const beginSection=(title:string)=>{
+    flush();
+    sectionCounter+=1;
+    clauseCounter=0;
+    current={title:String(sectionCounter)+' '+(normalizeHeadingText(title)||'قسم'),blocks:[]};
+  };
+  const pushClause=(text:string,title?:string)=>{
+    clauseCounter+=1;
+    const cleaned=cleanDocumentText(text);
+    const cleanedTitle=title?cleanDocumentText(title):'البند';
+    if(cleaned||cleanedTitle) current.blocks.push({kind:'clause',number:String(sectionCounter||1)+'.'+String(clauseCounter),title:cleanedTitle||'البند',text:cleaned});
+  };
   const pushParagraph=(text:string)=>{
-    const clause=parseClauseLine(text);
-    if(clause){
-      current.blocks.push(clause);
-      return;
-    }
     const cleaned=cleanDocumentText(text);
     if(cleaned) current.blocks.push({kind:'paragraph',text:cleaned});
-  };
-  const pushLineParts=(line:string)=>{
-    for(const part of documentLineParts(line)) current.blocks.push({kind:'paragraph',text:part});
   };
 
   for(let index=0;index<lines.length;index++){
     const raw=lines[index]??'';
     const trimmed=raw.trim();
     if(!trimmed) continue;
-    const normalizedTrimmed=westernDigits(trimmed);
+    const normalized=westernDigits(trimmed);
 
-    const headingMatch=normalizedTrimmed.match(/^#{1,6}\s+(.+)$/);
-    const majorLine=!normalizedTrimmed.startsWith('|')&&(
-      /^\d+\s*[.)-]\s+/.test(normalizedTrimmed)||
-      /^\d+\s*\|\s*[^|]+/.test(normalizedTrimmed)||
-      /^(?:الباب|الفصل|المادة)\s+/.test(normalizedTrimmed)
-    );
-    if(headingMatch||majorLine){
-      if(current.blocks.length)sections.push(current);
-      current={title:cleanDocumentText(headingMatch?.[1]??normalizedTrimmed),blocks:[]};
+    const markdownHeading=normalized.match(/^(#{1,6})\s+(.+)$/);
+    if(markdownHeading){
+      const level=(markdownHeading[1]??'').length;
+      const heading=markdownHeading[2]??'';
+      if(level<=2){
+        beginSection(heading);
+      }else{
+        pushClause('',normalizeHeadingText(heading));
+      }
       continue;
     }
 
-    const next=lines[index+1]?.trim()??'';
-    if(trimmed.includes('|')&&next.includes('|')&&isMarkdownDivider(next)){
-      const headers=markdownCells(trimmed);
+    const explicitSection=normalized.match(/^(?:الباب|الفصل|المادة)\s+(.+)$/);
+    if(explicitSection){
+      beginSection(explicitSection[1]??normalized);
+      continue;
+    }
+
+    const next=westernDigits(lines[index+1]?.trim()??'');
+    if(normalized.includes('|')&&next.includes('|')&&isMarkdownDivider(next)){
+      const headers=markdownCells(normalized);
       const rows:string[][]=[];
       index+=1;
       while(index+1<lines.length){
-        const candidate=lines[index+1]?.trim()??'';
+        const candidate=westernDigits(lines[index+1]?.trim()??'');
         if(!candidate||!candidate.includes('|'))break;
         rows.push(markdownCells(candidate));
         index+=1;
@@ -169,10 +192,31 @@ function parseGovernedDocument(content:string):DocumentSection[]{
       continue;
     }
 
-    if(/\*\*[^*]+:\*\*/.test(trimmed)||/\*\*[^*]+\*\*\s*:/.test(trimmed)) pushLineParts(trimmed);
-    else pushParagraph(trimmed);
+    const explicitClause=normalized.match(/^(\d+(?:\.\d+)+|\d+|[أابجدهـويزحطكلمنسعفصقرشتثخذضظغ])\s*[.)-]?\s+(.+)$/u);
+    if(explicitClause){
+      const body=explicitClause[2]??'';
+      const withSeparator=body.match(/^([^:–—-]+?)\s*(?::|[–—-])\s*(.+)$/);
+      if(withSeparator) pushClause(withSeparator[2]??'',withSeparator[1]??'البند');
+      else pushClause(body,'البند');
+      continue;
+    }
+
+    const clause=parseClauseLine(normalized);
+    if(clause){
+      pushClause(clause.text,clause.title);
+      continue;
+    }
+
+    if(/\*\*[^*]+:\*\*/.test(normalized)||/\*\*[^*]+\*\*\s*:/.test(normalized)){
+      for(const part of documentLineParts(normalized)) pushParagraph(part);
+      continue;
+    }
+
+    pushParagraph(normalized);
   }
-  if(current.blocks.length)sections.push(current);
+
+  flush();
+  if(!sections.length&&current.blocks.length) sections.push(current);
   return sections.filter(section=>section.blocks.length&&Boolean(section.title));
 }
 

@@ -230,6 +230,30 @@
   object-fit:cover;
   object-position:center 46%
 }
+.centralChatHeader{
+  min-height:var(--ux-space-24)
+}
+.centralChatHeader .chatHeaderForeground{
+  min-height:var(--ux-space-24)
+}
+.centralChatHeader .chatHeaderBuilding{
+  opacity:.14
+}
+.chatBuildingThumb{
+  position:relative;
+  width:var(--ux-space-20);
+  height:var(--ux-space-16);
+  flex:0 0 var(--ux-space-20);
+  overflow:hidden;
+  border:1px solid var(--namaa-border-strong);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-card);
+  box-shadow:var(--ux-shadow-xs)
+}
+.chatBuildingThumb img{
+  object-fit:cover;
+  object-position:center 44%
+}
 
 .chatIdentity{
   display:flex;
@@ -963,9 +987,9 @@
 }
 
 .persona_lg{
-  width:58px;
-  height:58px;
-  flex-basis:58px
+  width:var(--ux-space-20);
+  height:var(--ux-space-20);
+  flex-basis:var(--ux-space-20)
 }
 
 .roomCopy em{
@@ -1219,8 +1243,24 @@
 }
 
 .centralPersona>img{
-  object-position:center 19%;
-  transform:scale(1.18) translateY(2%)
+  object-position:center 16%;
+  transform:scale(1.1)
+}
+.personaBankBadge{
+  position:absolute;
+  inset-inline-end:var(--ux-space-1);
+  bottom:var(--ux-space-1);
+  width:var(--ux-size-8);
+  height:var(--ux-size-8);
+  border:1px solid var(--namaa-border-strong);
+  border-radius:var(--ux-radius-full);
+  background:var(--namaa-card);
+  overflow:hidden;
+  box-shadow:var(--ux-shadow-xs)
+}
+.personaBankBadge img{
+  object-fit:contain;
+  padding:var(--ux-space-1)
 }
 
 .onboardingMessageContent{
@@ -3362,9 +3402,9 @@
 }
 .algorithmRolePortrait{
   position:relative;
-  width:72px;
-  height:72px;
-  flex:0 0 72px;
+  width:var(--ux-space-24);
+  height:var(--ux-space-24);
+  flex:0 0 var(--ux-space-24);
   overflow:hidden;
   border:1px solid var(--namaa-border-strong);
   border-radius:var(--ux-radius-full);
