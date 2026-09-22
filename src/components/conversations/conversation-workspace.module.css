@@ -6747,3 +6747,411 @@
     min-height:90px!important
   }
 }
+
+
+/* Final governed reference design — approved 2026-09-22 */
+
+.governedDocumentHero{
+  position:relative!important;
+  overflow:hidden!important;
+  background:
+    linear-gradient(135deg,var(--namaa-green-900),color-mix(in srgb,var(--namaa-green-700) 76%,var(--namaa-green-900)))!important;
+  border-color:color-mix(in srgb,var(--namaa-green-700) 68%,var(--namaa-border))!important;
+  box-shadow:var(--ux-shadow-sm)!important
+}
+.governedDocumentHero>*:not(.governedLeafPattern){
+  position:relative;
+  z-index:2
+}
+.governedLeafPattern{
+  position:absolute;
+  z-index:1;
+  inset-block-start:-18px;
+  inset-inline:auto;
+  left:18px;
+  width:180px;
+  height:132px;
+  opacity:.13;
+  pointer-events:none;
+  transform:none!important
+}
+.governedLeafPattern i{
+  position:absolute;
+  display:block;
+  width:92px;
+  height:46px;
+  border:2px solid var(--ux-text-inverse);
+  border-radius:100% 0 100% 0;
+  transform-origin:left center;
+}
+.governedLeafPattern i:nth-child(1){
+  left:4px;
+  top:62px;
+  transform:rotate(-26deg)
+}
+.governedLeafPattern i:nth-child(2){
+  left:44px;
+  top:30px;
+  width:82px;
+  height:40px;
+  transform:rotate(-12deg)
+}
+.governedLeafPattern i:nth-child(3){
+  left:78px;
+  top:70px;
+  width:76px;
+  height:36px;
+  transform:rotate(10deg)
+}
+
+/* Keep decorative foliage physically left-to-right even in RTL. */
+.chatHeader::after{
+  content:"";
+  position:absolute;
+  left:18px;
+  right:auto;
+  top:-22px;
+  width:190px;
+  height:130px;
+  opacity:.08;
+  pointer-events:none;
+  z-index:0;
+  background:
+    radial-gradient(ellipse at 24% 72%,transparent 36%,var(--ux-text-inverse) 37% 39%,transparent 40%),
+    radial-gradient(ellipse at 54% 46%,transparent 36%,var(--ux-text-inverse) 37% 39%,transparent 40%),
+    radial-gradient(ellipse at 82% 70%,transparent 36%,var(--ux-text-inverse) 37% 39%,transparent 40%);
+  transform:rotate(-10deg);
+  transform-origin:left center
+}
+.chatHeader .desktopChatHeaderForeground,
+.chatHeader .chatHeaderForeground{
+  position:relative;
+  z-index:2
+}
+
+.governedQuickActions{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:var(--ux-space-2)
+}
+.governedQuickActions>button{
+  min-width:0;
+  min-height:74px;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-3);
+  border-radius:var(--ux-radius-4);
+  font:inherit;
+  text-align:right;
+  cursor:pointer;
+  box-shadow:var(--ux-shadow-xs)
+}
+.governedQuickActions>button>span{
+  min-width:0;
+  display:grid;
+  gap:var(--ux-space-1)
+}
+.governedQuickActions strong{
+  font-size:var(--ux-type-body-sm-size);
+  line-height:1.35
+}
+.governedQuickActions small{
+  font-size:var(--ux-type-caption-size);
+  line-height:1.45
+}
+.governedTypoButton{
+  border:1px solid var(--namaa-green-900);
+  background:var(--namaa-green-900);
+  color:var(--ux-text-inverse)
+}
+.governedTypoButton small{
+  color:color-mix(in srgb,var(--ux-text-inverse) 78%,transparent)
+}
+.governedGovernanceButton{
+  border:1px solid color-mix(in srgb,var(--namaa-green-700) 70%,var(--namaa-border));
+  background:color-mix(in srgb,var(--namaa-green-700) 9%,var(--namaa-card));
+  color:var(--namaa-green-900)
+}
+.governedGovernanceButton small{
+  color:var(--ux-text-secondary)
+}
+.governedPdfButton{
+  border:1px solid color-mix(in srgb,var(--ux-info-600, #2d6e9f) 45%,var(--namaa-border));
+  background:color-mix(in srgb,var(--ux-section-soft-blue) 58%,var(--namaa-card));
+  color:var(--ux-text-primary)
+}
+.governedPdfButton small{
+  color:var(--ux-text-secondary)
+}
+.governedPdfButton:disabled{
+  opacity:.55;
+  cursor:not-allowed
+}
+
+.governedEditFormHeader{
+  display:flex;
+  align-items:flex-start;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-3);
+  margin-bottom:var(--ux-space-1);
+  border-radius:var(--ux-radius-3);
+  border:1px solid var(--namaa-border);
+  background:var(--namaa-surface-warm)
+}
+.governedEditFormIcon{
+  width:44px;
+  height:44px;
+  flex:0 0 44px;
+  display:grid;
+  place-items:center;
+  border-radius:var(--ux-radius-3);
+  background:color-mix(in srgb,var(--namaa-green-700) 12%,var(--namaa-card));
+  color:var(--namaa-green-900)
+}
+.governedEditFormHeader>div{
+  min-width:0;
+  display:grid;
+  gap:var(--ux-space-1)
+}
+.governedEditFormHeader strong{
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-body-sm-size)
+}
+.governedEditFormHeader small{
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  line-height:1.5
+}
+.governedTypoForm{
+  border-inline-start:4px solid var(--namaa-green-700)!important
+}
+.governedGovernanceForm{
+  border-inline-start:4px solid var(--namaa-gold-500)!important
+}
+
+/* Document sections: compact, colorful, and clean — no decorative scratches or excess arrows. */
+.governedDocumentSection,
+.governedContentSection{
+  border-radius:var(--ux-radius-4)!important;
+  overflow:hidden!important
+}
+.governedDocumentSection>summary,
+.governedContentSection>summary{
+  min-height:54px!important;
+  padding:var(--ux-space-3) var(--ux-space-4)!important
+}
+.governedContentSection:nth-child(4n+1)>summary{
+  background:color-mix(in srgb,var(--namaa-green-700) 9%,var(--namaa-card))!important
+}
+.governedContentSection:nth-child(4n+2)>summary{
+  background:color-mix(in srgb,var(--ux-section-soft-blue) 68%,var(--namaa-card))!important
+}
+.governedContentSection:nth-child(4n+3)>summary{
+  background:color-mix(in srgb,var(--namaa-gold-500) 9%,var(--namaa-card))!important
+}
+.governedContentSection:nth-child(4n)>summary{
+  background:color-mix(in srgb,var(--namaa-green-700) 5%,var(--namaa-cream))!important
+}
+.governedContentSection>summary>span{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:var(--ux-space-2)
+}
+.governedContentSection>summary strong{
+  color:var(--ux-text-primary)!important;
+  font-weight:900!important;
+  overflow-wrap:anywhere
+}
+.governedContentSection>summary>svg{
+  flex:0 0 auto;
+  color:var(--namaa-green-900)
+}
+.governedClauseRow{
+  border-inline-start:0!important;
+  background:var(--namaa-card)!important;
+  box-shadow:var(--ux-shadow-xs)!important
+}
+.governedClauseHeading{
+  display:flex!important;
+  align-items:flex-start!important;
+  gap:var(--ux-space-2)!important
+}
+.governedClauseHeading>span{
+  flex:0 0 auto;
+  min-width:44px;
+  min-height:28px;
+  display:grid;
+  place-items:center;
+  padding-inline:var(--ux-space-2);
+  border-radius:var(--ux-radius-full);
+  background:color-mix(in srgb,var(--namaa-green-700) 12%,var(--namaa-card));
+  color:var(--namaa-green-900);
+  font-weight:900
+}
+.governedClauseHeading>strong{
+  min-width:0;
+  color:var(--ux-text-primary)!important;
+  line-height:1.5;
+  overflow-wrap:anywhere
+}
+
+.governedHistorySection{
+  display:grid;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-4);
+  border:1px solid var(--namaa-border-strong);
+  border-radius:var(--ux-radius-4);
+  background:linear-gradient(180deg,color-mix(in srgb,var(--namaa-card) 94%,var(--namaa-surface-warm)),var(--namaa-card));
+  box-shadow:var(--ux-shadow-sm)
+}
+.governedHistoryHeader{
+  display:flex;
+  align-items:flex-start;
+  gap:var(--ux-space-3);
+  padding-bottom:var(--ux-space-3);
+  border-bottom:1px solid var(--namaa-border)
+}
+.governedHistoryIcon{
+  width:44px;
+  height:44px;
+  flex:0 0 44px;
+  display:grid;
+  place-items:center;
+  border-radius:var(--ux-radius-full);
+  background:color-mix(in srgb,var(--namaa-green-700) 12%,var(--namaa-card));
+  color:var(--namaa-green-900)
+}
+.governedHistoryHeader>div{
+  min-width:0;
+  display:grid;
+  gap:var(--ux-space-1)
+}
+.governedHistoryHeader strong{
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-body-size);
+  font-weight:900
+}
+.governedHistoryHeader small{
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  line-height:1.5
+}
+.governedHistoryList{
+  position:relative;
+  display:grid;
+  gap:var(--ux-space-2);
+  padding-inline-start:var(--ux-space-5)
+}
+.governedHistoryList::before{
+  content:"";
+  position:absolute;
+  inset-block:8px;
+  inset-inline-start:8px;
+  width:2px;
+  background:color-mix(in srgb,var(--namaa-green-700) 34%,var(--namaa-border))
+}
+.governedHistoryItem{
+  position:relative;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:var(--ux-space-1) var(--ux-space-3);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-card)
+}
+.governedHistoryDot{
+  position:absolute;
+  inset-inline-start:calc(var(--ux-space-5) * -1 - 1px);
+  inset-block-start:18px;
+  width:14px;
+  height:14px;
+  border:3px solid var(--namaa-card);
+  border-radius:var(--ux-radius-full);
+  background:var(--namaa-green-700);
+  box-shadow:0 0 0 1px var(--namaa-green-700)
+}
+.governedHistoryMeta{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:var(--ux-space-2);
+  flex-wrap:wrap
+}
+.governedHistoryMeta span,
+.governedHistoryMeta b{
+  width:max-content;
+  padding:2px var(--ux-space-2);
+  border-radius:var(--ux-radius-full);
+  font-size:var(--ux-type-caption-size);
+  line-height:1.5
+}
+.governedHistoryMeta span{
+  color:var(--namaa-green-900);
+  background:color-mix(in srgb,var(--namaa-green-700) 10%,var(--namaa-card))
+}
+.governedHistoryMeta b{
+  color:var(--ux-text-secondary);
+  background:var(--namaa-surface-warm)
+}
+.governedHistoryItem>strong{
+  grid-column:1/-1;
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-body-sm-size);
+  line-height:1.55
+}
+.governedHistoryItem>time{
+  grid-column:1/-1;
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  direction:ltr;
+  text-align:right
+}
+.governedHistory_governance .governedHistoryDot{
+  background:var(--namaa-gold-500);
+  box-shadow:0 0 0 1px var(--namaa-gold-500)
+}
+.governedHistory_decision .governedHistoryDot,
+.governedHistory_effective .governedHistoryDot{
+  background:var(--namaa-green-900);
+  box-shadow:0 0 0 1px var(--namaa-green-900)
+}
+.governedHistoryEmpty{
+  margin:0;
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-body-sm-size);
+  line-height:1.6
+}
+
+:global(html[data-theme="dark"]) .governedGovernanceButton,
+:global(html[data-theme="dark"]) .governedPdfButton,
+:global(html[data-theme="dark"]) .governedHistorySection,
+:global(html[data-theme="dark"]) .governedHistoryItem{
+  background:var(--ux-card-bg)!important;
+  border-color:var(--ux-border-emphasis)!important
+}
+:global(html[data-theme="dark"]) .governedQuickActions strong,
+:global(html[data-theme="dark"]) .governedHistoryHeader strong,
+:global(html[data-theme="dark"]) .governedHistoryItem>strong{
+  color:var(--ux-text-primary)!important
+}
+
+@media (max-width:760px){
+  .governedQuickActions{
+    grid-template-columns:1fr!important
+  }
+  .governedQuickActions>button{
+    min-height:64px!important
+  }
+  .governedLeafPattern{
+    left:8px!important;
+    width:150px!important;
+    opacity:.11!important
+  }
+  .governedHistorySection{
+    padding:var(--ux-space-3)!important
+  }
+}
