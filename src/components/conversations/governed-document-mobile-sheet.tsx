@@ -23,12 +23,73 @@ const priorityLabel={NORMAL:'عادي',NEXT_MEETING:'للاجتماع القاد
 type DocumentBlock =
   | {kind:'paragraph';text:string}
   | {kind:'clause';number:string;title:string;text:string}
+  | {kind:'flow';steps:string[]}
   | {kind:'table';headers:string[];rows:string[][]};
 type DocumentSection={title:string;blocks:DocumentBlock[]};
 
 const westernDigits=(value:string)=>value
   .replace(/[٠-٩]/g,d=>String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)))
   .replace(/[۰-۹]/g,d=>String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d)));
+const technicalTermReplacements:Array<[RegExp,string]>=[
+  [/\baudit_event_id\b/gi,'معرف حدث التدقيق'],
+  [/\bevent_type\b/gi,'نوع الحدث'],
+  [/\btimestamp\b/gi,'وقت الحدث'],
+  [/\buser_id\b/gi,'معرف المستخدم الداخلي'],
+  [/\bactor_type\b/gi,'نوع الجهة المنفذة'],
+  [/\bactor_id\b/gi,'معرف الجهة المنفذة'],
+  [/\bdecision_id\b/gi,'معرف القرار'],
+  [/\bcase_id\b/gi,'معرف القضية'],
+  [/\bcycle_id\b/gi,'معرف الدورة'],
+  [/\bsource_entity\b/gi,'الجهة المصدر'],
+  [/\binput_snapshot_ref\b/gi,'مرجع لقطة المدخلات'],
+  [/\bdata_confidence\b/gi,'درجة الثقة في البيانات'],
+  [/\bpolicy_version\b/gi,'إصدار السياسة'],
+  [/\bweights_version\b/gi,'إصدار الأوزان'],
+  [/\balgorithm_version\b/gi,'إصدار الخوارزمية'],
+  [/\brisk_state\b/gi,'حالة المخاطر'],
+  [/\brisk_level\b/gi,'مستوى المخاطر'],
+  [/\baction_before\b/gi,'الإجراء قبل الحدث'],
+  [/\baction_after\b/gi,'الإجراء بعد الحدث'],
+  [/\breason_codes\b/gi,'رموز الأسباب'],
+  [/\bhard_rule_results\b/gi,'نتائج القواعد الصارمة'],
+  [/\bsimulation_ref\b/gi,'مرجع المحاكاة'],
+  [/\bapproval_state\b/gi,'حالة الاعتماد'],
+  [/\bexecution_state\b/gi,'حالة التنفيذ'],
+  [/\bevidence_ref\b/gi,'مرجع الإثبات'],
+  [/\bparent_event_id\b/gi,'معرف الحدث الأصلي'],
+  [/\bintegrity_hash\b/gi,'بصمة سلامة السجل'],
+  [/\bUSER\b/g,'المستخدم'],
+  [/\bCENTRAL_ENGINE\b/g,'المحرك المركزي'],
+  [/\bBANK\b/g,'البنك'],
+  [/\bADVISOR\b/g,'المستشار'],
+  [/\bCOMMITTEE\b/g,'اللجنة'],
+  [/\bSYSTEM\b/g,'النظام'],
+];
+const technicalFlowLabels:Record<string,string>={
+  'EVENT / USER REQUEST':'حدث مالي أو طلب من المستخدم',
+  'CLASSIFY DECISION':'تصنيف القرار',
+  'COLLECT REQUIRED DATA':'جمع البيانات المطلوبة',
+  'CHECK DATA COMPLETENESS + CONFIDENCE':'فحص اكتمال البيانات ودرجة الثقة',
+  'HARD-GATE CHECK':'فحص القواعد والبوابات الصارمة',
+  'RECALCULATE SCORE + RISK':'إعادة حساب الدرجة والمخاطر',
+  'GENERATE LEGAL OPTIONS':'إنشاء البدائل المسموحة',
+  'SIMULATE EACH OPTION':'محاكاة كل بديل',
+  'RANK OPTIONS':'ترتيب البدائل',
+  'EXPLAIN RECOMMENDATION + ALTERNATIVES':'شرح التوصية والبدائل',
+  'USER DECISION / CONFIRMATION':'قرار المستخدم أو تأكيده',
+  'FOLLOW-UP TASKS':'إنشاء مهام المتابعة',
+  'EXECUTION CONFIRMATION':'تأكيد التنفيذ',
+  'POST-EXECUTION REVIEW':'مراجعة ما بعد التنفيذ',
+  'LEARN PREFERENCES + UPDATE STATE':'تحديث التفضيلات والحالة دون تغيير القواعد الصارمة',
+};
+function translateTechnicalFlow(value:string){
+  const normalized=value.trim().replace(/^[-*•]+\s*/,'');
+  if(!normalized||/^[↓↑+\/|\-–—]+$/.test(normalized)) return '';
+  if(technicalFlowLabels[normalized]) return technicalFlowLabels[normalized];
+  let text=normalized;
+  for(const [pattern,replacement] of technicalTermReplacements) text=text.replace(pattern,replacement);
+  return text;
+}
 const visibleTermReplacements:Array<[RegExp,string]>=[
   [/AUDIT[\s_-]*CLOSURE/gi,'إغلاق التدقيق'],
   [/REVALIDATION[\s_-]*REQUIRED/gi,'يلزم إعادة التحقق'],
@@ -48,6 +109,7 @@ const visibleTermReplacements:Array<[RegExp,string]>=[
 ];
 function cleanVisibleArabic(value:string){
   let text=value;
+  for(const [pattern,replacement] of technicalTermReplacements) text=text.replace(pattern,replacement);
   for(const [pattern,replacement] of visibleTermReplacements) text=text.replace(pattern,replacement);
   text=text
     .replace(/\bS(\d+)\b/gi,(_,n)=>'رقم '+westernDigits(String(n)))
@@ -121,9 +183,16 @@ function sectionIcon(title:string,type:GovernedDisplayType):LucideIconName{
 
 function normalizeHeadingText(value:string){
   return cleanVisibleArabic(value)
-    .replace(/^[أابجدهـويزحطكلمنسعفصقرشتثخذضظغ]+\s*[.)-]?\s*/u,'')
-    .replace(/^\d+\s*[.)-]?\s*/,'')
+    .replace(/^\s*[أ-ي]\s*[.)-]\s*/u,'')
+    .replace(/^\s*\d+(?:\.\d+)*\s*[.)|-]?\s*/,'')
     .trim();
+}
+function extractDocumentMetadata(content:string){
+  const normalized=westernDigits(content).replace(/\*\*/g,'');
+  const version=normalized.match(/الإصدار\s*[:：]\s*([^\n\r]+)/)?.[1]?.trim()||'';
+  const status=normalized.match(/الحالة\s*[:：]\s*([^\n\r]+)/)?.[1]?.trim()||'';
+  const scope=normalized.match(/النطاق\s*[:：]\s*([^\n\r]+)/)?.[1]?.trim()||'';
+  return {version,status,scope};
 }
 
 function parseGovernedDocument(content:string):DocumentSection[]{
@@ -132,25 +201,28 @@ function parseGovernedDocument(content:string):DocumentSection[]{
   let current:DocumentSection={title:'المحتوى المعتمد',blocks:[]};
   let sectionCounter=0;
   let clauseCounter=0;
+  let skipMetadataValue=false;
 
-  const flush=()=>{
-    if(current.blocks.length) sections.push(current);
-  };
+  const flush=()=>{ if(current.blocks.length) sections.push(current); };
   const beginSection=(title:string)=>{
     flush();
     sectionCounter+=1;
     clauseCounter=0;
     current={title:String(sectionCounter)+' '+(normalizeHeadingText(title)||'قسم'),blocks:[]};
   };
-  const pushClause=(text:string,title?:string)=>{
+  const pushClause=(text:string,title='')=>{
     clauseCounter+=1;
     const cleaned=cleanDocumentText(text);
-    const cleanedTitle=title?cleanDocumentText(title):'البند';
-    if(cleaned||cleanedTitle) current.blocks.push({kind:'clause',number:String(sectionCounter||1)+'.'+String(clauseCounter),title:cleanedTitle||'البند',text:cleaned});
+    const cleanedTitle=title?cleanDocumentText(title):'';
+    if(cleaned||cleanedTitle) current.blocks.push({kind:'clause',number:String(sectionCounter||1)+'.'+String(clauseCounter),title:cleanedTitle,text:cleaned});
   };
   const pushParagraph=(text:string)=>{
     const cleaned=cleanDocumentText(text);
     if(cleaned) current.blocks.push({kind:'paragraph',text:cleaned});
+  };
+  const pushFlow=(steps:string[])=>{
+    const cleaned=steps.map(translateTechnicalFlow).map(cleanDocumentText).filter(Boolean);
+    if(cleaned.length) current.blocks.push({kind:'flow',steps:cleaned});
   };
 
   for(let index=0;index<lines.length;index++){
@@ -159,23 +231,35 @@ function parseGovernedDocument(content:string):DocumentSection[]{
     if(!trimmed) continue;
     const normalized=westernDigits(trimmed);
 
+    if(skipMetadataValue){ skipMetadataValue=false; continue; }
+    if(normalized.startsWith(String.fromCharCode(96,96,96))){
+      const codeLines:string[]=[];
+      index+=1;
+      while(index<lines.length&&!String(lines[index]??'').trim().startsWith(String.fromCharCode(96,96,96))){
+        codeLines.push(lines[index]??'');
+        index+=1;
+      }
+      pushFlow(codeLines.flatMap(line=>line.includes('→')?line.split('→'):[line]));
+      continue;
+    }
+
+    const inlineMeta=normalized.replace(/\*\*/g,'').match(/^(الإصدار|الحالة|النطاق)\s*[:：]/);
+    if(inlineMeta) continue;
+
     const markdownHeading=normalized.match(/^(#{1,6})\s+(.+)$/);
     if(markdownHeading){
       const level=(markdownHeading[1]??'').length;
-      const heading=markdownHeading[2]??'';
-      if(level<=2){
-        beginSection(heading);
-      }else{
-        pushClause('',normalizeHeadingText(heading));
-      }
+      const headingRaw=markdownHeading[2]??'';
+      const heading=normalizeHeadingText(headingRaw);
+      if(/^(الإصدار|الحالة|النطاق)$/.test(heading)){ skipMetadataValue=true; continue; }
+      if(level===1&&sections.length===0&&current.blocks.length===0&&/(بنك|نماء|سياسة|مصفوفة|دستور|الرقابة|محرك|مرجع)/.test(heading)) continue;
+      if(level<=2) beginSection(headingRaw);
+      else pushClause('',heading);
       continue;
     }
 
     const explicitSection=normalized.match(/^(?:الباب|الفصل|المادة)\s+(.+)$/);
-    if(explicitSection){
-      beginSection(explicitSection[1]??normalized);
-      continue;
-    }
+    if(explicitSection){ beginSection(explicitSection[1]??normalized); continue; }
 
     const next=westernDigits(lines[index+1]?.trim()??'');
     if(normalized.includes('|')&&next.includes('|')&&isMarkdownDivider(next)){
@@ -184,7 +268,7 @@ function parseGovernedDocument(content:string):DocumentSection[]{
       index+=1;
       while(index+1<lines.length){
         const candidate=westernDigits(lines[index+1]?.trim()??'');
-        if(!candidate||!candidate.includes('|'))break;
+        if(!candidate||!candidate.includes('|')) break;
         rows.push(markdownCells(candidate));
         index+=1;
       }
@@ -192,20 +276,21 @@ function parseGovernedDocument(content:string):DocumentSection[]{
       continue;
     }
 
-    const explicitClause=normalized.match(/^(\d+(?:\.\d+)+|\d+|[أابجدهـويزحطكلمنسعفصقرشتثخذضظغ])\s*[.)-]?\s+(.+)$/u);
+    if(/^[-*•]+\s+/.test(normalized)){ pushClause(normalized.replace(/^[-*•]+\s+/,''),''); continue; }
+
+    const explicitClause=normalized.match(/^(\d+(?:\.\d+)+|\d+|[أ-ي])\s*[.)-]?\s+(.+)$/u);
     if(explicitClause){
       const body=explicitClause[2]??'';
       const withSeparator=body.match(/^([^:–—-]+?)\s*(?::|[–—-])\s*(.+)$/);
-      if(withSeparator) pushClause(withSeparator[2]??'',withSeparator[1]??'البند');
-      else pushClause(body,'البند');
+      if(withSeparator) pushClause(withSeparator[2]??'',withSeparator[1]??'');
+      else pushClause(body,'');
       continue;
     }
 
     const clause=parseClauseLine(normalized);
-    if(clause){
-      pushClause(clause.text,clause.title);
-      continue;
-    }
+    if(clause){ pushClause(clause.text,clause.title); continue; }
+
+    if(normalized.includes('→')){ pushFlow(normalized.split('→')); continue; }
 
     if(/\*\*[^*]+:\*\*/.test(normalized)||/\*\*[^*]+\*\*\s*:/.test(normalized)){
       for(const part of documentLineParts(normalized)) pushParagraph(part);
@@ -219,7 +304,6 @@ function parseGovernedDocument(content:string):DocumentSection[]{
   if(!sections.length&&current.blocks.length) sections.push(current);
   return sections.filter(section=>section.blocks.length&&Boolean(section.title));
 }
-
 export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document:GovernedDocumentRef;roomKey:string;onClose:()=>void}){
   const [amendments,setAmendments]=useState<Amendment[]>([]);
   const [documentContent,setDocumentContent]=useState('');
@@ -257,6 +341,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
   const documentSections=useMemo(()=>parseGovernedDocument(documentContent),[documentContent]);
   const displayType=useMemo(()=>resolveGovernedDisplayType(document,documentContent),[document,documentContent]);
   const displayLabel=governedDisplayLabel(displayType);
+  const documentMetadata=useMemo(()=>extractDocumentMetadata(documentContent),[documentContent]);
   const isFlowDocument=displayType==='procedure'||displayType==='mechanism';
   const isMatrixDocument=displayType==='matrix';
 
@@ -286,10 +371,10 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
         </section>
 
         <section className={styles.governedMetaStrip} aria-label="ملخص الوثيقة">
-          <div><small>النوع</small><strong>{displayLabel}</strong></div>
-          <div><small>الإصدار</small><strong>{document.version?document.version.replace(/^v/i,''):'المعتمد'}</strong></div>
-          <div><small>الحالة</small><strong>سارية</strong></div>
-          <div><small>المصدر</small><strong>نماء</strong></div>
+          <div className={styles.governedMetaType}><small>النوع</small><strong>{displayLabel}</strong></div>
+          <div className={styles.governedMetaVersion}><small>الإصدار</small><strong>{documentMetadata.version||document.version?.replace(/^v/i,'')||'المعتمد'}</strong></div>
+          <div className={styles.governedMetaStatus}><small>الحالة</small><strong>{documentMetadata.status||'سارية'}</strong></div>
+          <div className={styles.governedMetaSource}><small>المصدر</small><strong>نماء</strong></div>
         </section>
 
         {displayType==='mechanism'&&<section className={styles.governedFlowCard}>
@@ -314,17 +399,19 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
                         ?<p key={blockIndex}>{block.text}</p>
                         :block.kind==='clause'
                           ?<article className={styles.governedClauseRow} key={blockIndex}>
-                            <div className={styles.governedClauseHeading}><span>{block.number}</span><strong>{block.title}</strong></div>
+                            <div className={styles.governedClauseHeading}><span>{block.number}</span>{block.title&&<strong>{block.title}</strong>}</div>
                             {block.text&&<p>{block.text}</p>}
                           </article>
-                          :<div className={styles.governedTableCards} key={blockIndex}>
-                          {block.rows.map((row,rowIndex)=><article className={styles.governedTableCard} key={rowIndex}>
-                            {block.headers.map((header,cellIndex)=><div key={cellIndex}>
-                              <small>{header||'البيان'}</small>
-                              <strong>{row[cellIndex]||'غير محدد'}</strong>
-                            </div>)}
-                          </article>)}
-                        </div>)}
+                          :block.kind==='flow'
+                            ?<ol className={styles.governedInlineFlow} key={blockIndex}>{block.steps.map((step,stepIndex)=><li key={stepIndex}><span>{stepIndex+1}</span><strong>{step}</strong></li>)}</ol>
+                            :<div className={styles.governedTableCards} key={blockIndex}>
+                            {block.rows.map((row,rowIndex)=><article className={styles.governedTableCard} key={rowIndex}>
+                              {block.headers.map((header,cellIndex)=><div key={cellIndex}>
+                                <small>{header||'البيان'}</small>
+                                <strong>{row[cellIndex]||'غير محدد'}</strong>
+                              </div>)}
+                            </article>)}
+                          </div>)}
                     </div>
                   </details>)}
                 </div>
