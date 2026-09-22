@@ -198,6 +198,33 @@ function RoomPortrait({room,size='md'}:{room:Room;size?:'sm'|'md'|'lg'}) {
   </span>;
 }
 
+const rolePortraitByKey:Partial<Record<string,string>>={
+  'central-governor':'/brand/governor.webp',
+  'central-bank-manager':'/brand/central-bank-manager.webp',
+  'solvency-manager':'/brand/malaa-manager.webp',
+  'assets-manager':'/brand/assets-manager.webp',
+  'hilal-manager':'/brand/hilal-manager.webp',
+  'economic-advisor':'/brand/economic-advisor.webp',
+};
+
+function classifyGovernedReference(item:GovernedDocumentRef){
+  const title=item.title.replace(/\s+/g,' ').trim();
+  if(/مصفوفة\s*الصلاحيات|دليل\s*الوكلاء|الصلاحيات/.test(title)) return 'authority' as const;
+  if(/الإجراءات|إجراءات|الآليات|آليات|العمليات|الخوارزميات|تشغيلية|التشغيلية/.test(title)) return 'procedures' as const;
+  if(item.kind==='record') return 'records' as const;
+  return 'policies' as const;
+}
+
+function EntityReferenceList({items,roomId,onOpen,icon}:{items:GovernedDocumentRef[];roomId:RoomKey;onOpen:(value:{roomId:RoomKey;document:GovernedDocumentRef})=>void;icon:LucideIconName}){
+  if(!items.length)return <p className={styles.entityEmptyState}>لا توجد مراجع مستقلة ضمن هذا القسم لهذه الجهة حتى الآن.</p>;
+  return <div className={styles.entityReferenceList}>
+    {items.map(item=><button type="button" key={item.referenceCode} onClick={()=>onOpen({roomId,document:item})}>
+      <span className={styles.entityReferenceIcon}><LucideIcon name={icon} size={17}/></span>
+      <span className={styles.entityReferenceCopy}><strong>{item.title}</strong><small>{item.version?'الإصدار '+item.version:'مرجع نافذ داخل نماء'}</small></span>
+      <LucideIcon name="chevronLeft" size={17}/>
+    </button>)}
+  </div>;
+}
 const onboardingStepNumber:Record<string,number>={
   marital_status:1,dependents:2,home_city:3,housing:4,employment:5,work_city:6,
   commute:7,income:8,accounts:9,obligations:10,goals:11,statements:12,review:13,
@@ -845,7 +872,7 @@ export function PersistentConversationWorkspace(){
   const [reviewSaving,setReviewSaving]=useState(false);
   const [attachments,setAttachments]=useState<ConversationAttachment[]>([]);
   const [detailRoomId,setDetailRoomId]=useState<RoomKey|null>(null);
-  const [detailTab,setDetailTab]=useState<'role'|'team'|'files'|'records'>('role');
+  const [detailTab,setDetailTab]=useState<'role'|'team'|'files'|'policies'|'authority'|'procedures'|'records'>('role');
   const [activeGovernedDocument,setActiveGovernedDocument]=useState<{roomId:RoomKey;document:GovernedDocumentRef}|null>(null);
   const [activeAlgorithmRole,setActiveAlgorithmRole]=useState<{roomId:RoomKey;role:AlgorithmRoleRef}|null>(null);
   const [entityDashboardRoom,setEntityDashboardRoom]=useState<RoomKey|null>(null);
@@ -1275,7 +1302,42 @@ export function PersistentConversationWorkspace(){
     </div>
     {roomsOpen&&<div className={styles.mobileOverlay} role="dialog" aria-modal="true" aria-label="القائمة الجانبية"><button type="button" className={styles.scrim} aria-label="إغلاق القائمة الجانبية" onClick={()=>setRoomsOpen(false)}/><aside className={styles.mobileSideSheet}><div className={styles.sideBrandRow}><span className={styles.sideBrandLogoWrap} aria-label="نماء"><Image className={styles.sideBrandLogo} src="/brand/ndos/namaa-logo-color-transparent.png" alt="" width={96} height={38}/></span><ThemeToggle className={styles.sideThemeToggle}/><button type="button" className={styles.sideUserButton} aria-label="ملف المستخدم" onClick={()=>{setRoomsOpen(false);setUserMenuOpen(true)}}>{profile?.image?<span className={styles.userImage} style={{backgroundImage:`url("${profile.image.replace(/"/g,'')}")`}} aria-hidden="true"/>:<LucideIcon name="circleUserRound" size={20}/>}</button></div><div className={styles.sideSection}><small>الجهات والمحادثات</small>{roomButtons}</div><div className={styles.sideUtilityList}>{onboardingComplete!==false&&<button type="button" onClick={()=>void openAccountsSettings()}><LucideIcon name="walletCards" size={20}/><span>الحسابات</span></button>}{onboardingComplete!==false&&<button type="button" onClick={()=>{setRoomsOpen(false);setExtendedProfileOpen(true)}}><LucideIcon name="listChecks" size={20}/><span>الملف المالي التفصيلي</span></button>}{onboardingComplete!==false&&<button type="button" onClick={()=>{setRoomsOpen(false);setGovernanceMode('meetings')}}><LucideIcon name="calendarDays" size={20}/><span>الاجتماعات</span></button>}{onboardingComplete!==false&&<button type="button" onClick={()=>{setRoomsOpen(false);setGovernanceMode('governance')}}><LucideIcon name="landmark" size={20}/><span>الحوكمة والسياسات</span></button>}{onboardingComplete!==false&&<button type="button" onClick={()=>{setRoomsOpen(false);setGovernanceMode('documents')}}><LucideIcon name="receiptText" size={20}/><span>الوثائق</span></button>}<button type="button" onClick={()=>{setRoomsOpen(false);setSettingsSection('general');setSettingsOpen(true)}}><LucideIcon name="settings" size={20}/><span>الإعدادات</span></button><button type="button" onClick={()=>{setRoomsOpen(false);setContextOpen(true)}}><LucideIcon name="info" size={20}/><span>المساعدة والسياق</span></button></div></aside></div>}
     {entityDashboardRoom&&<EntityDashboardMobilePage roomKey={entityDashboardRoom} onClose={()=>setEntityDashboardRoom(null)}/>}
-    {detailRoomId&&<div className={styles.mobileOverlay} role="dialog" aria-modal="true" aria-label="تفاصيل الجهة"><button type="button" className={styles.scrim} aria-label="إغلاق" onClick={()=>setDetailRoomId(null)}/><aside className={`${styles.mobileSheet} ${styles.entityDetailSheet}`}><div className={styles.sheetHeader}><strong>ملف الجهة</strong><button type="button" onClick={()=>setDetailRoomId(null)} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button></div>{(()=>{const room=rooms.find(item=>item.id===detailRoomId)??rooms[0];const detail=governedRoomDetails[room.id];const roomFiles=room.id===activeRoomId?attachments:[];return <div className={styles.roomDetailContent}><div className={styles.roomDetailHero}><RoomPortrait room={room} size="lg"/><div><strong>{detail.roleTitle}</strong><small>{detail.entityTitle}</small></div></div><nav className={styles.entityDetailTabs} aria-label="أقسام ملف الجهة"><button type="button" className={detailTab==='role'?styles.activeEntityDetailTab:''} onClick={()=>setDetailTab('role')}>الاختصاص</button><button type="button" className={detailTab==='team'?styles.activeEntityDetailTab:''} onClick={()=>setDetailTab('team')}>الفريق والأدوار</button><button type="button" className={detailTab==='files'?styles.activeEntityDetailTab:''} onClick={()=>setDetailTab('files')}>الملفات</button><button type="button" className={detailTab==='records'?styles.activeEntityDetailTab:''} onClick={()=>setDetailTab('records')}>السجلات والسياسات</button></nav>{detailTab==='role'&&<div className={styles.entityDetailPanel}><section><small>المسؤولية الأساسية</small><p>{detail.responsibility}</p></section><section><small>ما الذي يراقبه؟</small><p>{detail.observes}</p></section><section><small>متى يتدخل؟</small><p>{detail.intervention}</p></section><section><small>متى لا يتدخل؟</small><p>{detail.avoids}</p></section><section><small>حدود الحوكمة والصلاحيات</small><p>{detail.governanceNote}</p></section></div>}{detailTab==='team'&&<div className={styles.entityDetailPanel}><section><small>الفريق الخوارزمي لهذه الجهة</small><div className={styles.detailList}>{algorithmRolesForRoom(room.id).map(role=><button type="button" key={role.referenceCode} onClick={()=>{setActiveAlgorithmRole({roomId:room.id,role});setDetailRoomId(null)}}><LucideIcon name={role.kind==='advisor'?'sparkles':'circleUserRound'} size={16}/><span>{role.name}</span><LucideIcon name="chevronLeft" size={16}/></button>)}</div></section><section><small>قاعدة الأدوار</small><p>المدير مسؤول عن نطاق البنك، وصاحب المسؤولية يحاسب على مجال مالي محدد، والمستشار يقدم رأيًا دون سلطة تنفيذ أو اعتماد. جميع الأدوار مقيدة بالسياسات والصلاحيات ولا تنفذ أموال المستخدم.</p></section></div>}{detailTab==='files'&&<div className={styles.entityDetailPanel}><section><small>الملفات المرتبطة بهذه الجهة</small>{roomFiles.length?<div className={styles.detailFiles}>{roomFiles.map(file=><span key={file.id}><LucideIcon name="receiptText" size={16}/><b>{file.file_name}</b><em>{attachmentStatusLabel(file.verification_status)}</em></span>)}</div>:<p>لا توجد ملفات مشتركة مسجلة في هذه المحادثة حاليًا.</p>}</section><section><small>المراجع الحاكمة</small><p>المراجع المعتمدة محفوظة داخل نماء وتظهر بأسمائها ضمن السجلات والسياسات دون إظهار الرموز التقنية.</p></section></div>}{detailTab==='records'&&<div className={styles.entityDetailPanel}><section><small>السجلات المهمة</small>{detail.records.length?<div className={styles.detailList}>{detail.records.map(item=><button type="button" key={item.referenceCode} onClick={()=>{setActiveGovernedDocument({roomId:room.id,document:item});setDetailRoomId(null)}}><LucideIcon name="listChecks" size={16}/><span>{item.title}</span><LucideIcon name="chevronLeft" size={16}/></button>)}</div>:<p>لا توجد سجلات مرجعية مستقلة في الحزمة النافذة لهذه الجهة.</p>}</section><section><small>السياسات المتعلقة بهذه الجهة</small>{detail.policies.length?<div className={styles.detailList}>{detail.policies.map(item=><button type="button" key={item.referenceCode} onClick={()=>{setActiveGovernedDocument({roomId:room.id,document:item});setDetailRoomId(null)}}><LucideIcon name="landmark" size={16}/><span>{item.title}</span><LucideIcon name="chevronLeft" size={16}/></button>)}</div>:<p>لا توجد سياسات مرجعية مستقلة في الحزمة النافذة لهذه الجهة.</p>}</section></div>}</div>})()}</aside></div>}
+    {detailRoomId&&<div className={styles.mobileOverlay} role="dialog" aria-modal="true" aria-label="تفاصيل الجهة"><button type="button" className={styles.scrim} aria-label="إغلاق" onClick={()=>setDetailRoomId(null)}/><aside className={[styles.mobileSheet,styles.entityDetailSheet].join(' ')}><div className={styles.sheetHeader}><strong>ملف الجهة</strong><button type="button" onClick={()=>setDetailRoomId(null)} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button></div>{(()=>{
+const room=rooms.find(item=>item.id===detailRoomId)??rooms[0];
+const detail=governedRoomDetails[room.id];
+const roomFiles=room.id===activeRoomId?attachments:[];
+const allRefs=[...detail.records,...detail.policies];
+const policyRefs=allRefs.filter(item=>classifyGovernedReference(item)==='policies');
+const authorityRefs=allRefs.filter(item=>classifyGovernedReference(item)==='authority');
+const procedureRefs=allRefs.filter(item=>classifyGovernedReference(item)==='procedures');
+const recordRefs=allRefs.filter(item=>classifyGovernedReference(item)==='records');
+const team=algorithmRolesForRoom(room.id);
+return <div className={styles.roomDetailContent}>
+<section className={styles.roomDetailHero}>
+{room.building&&<span className={styles.roomDetailHeroBackdrop} aria-hidden="true"><Image src={room.building} alt="" fill sizes="720px"/></span>}
+<span className={styles.roomDetailHeroShade} aria-hidden="true"/>
+<div className={styles.roomDetailHeroIdentity}>
+<span className={styles.roomDetailBankMark} aria-hidden="true"><Image src={room.bankLogo} alt="" fill sizes="42px"/></span>
+<RoomPortrait room={room} size="lg"/>
+<div><strong>{detail.roleTitle}</strong><small>{detail.entityTitle}</small><em>{room.subtitle}</em></div>
+</div></section>
+<nav className={styles.entityDetailTabs} aria-label="أقسام ملف الجهة">
+<button type="button" className={detailTab==='role'?styles.activeEntityDetailTab:''} onClick={()=>setDetailTab('role')}>الاختصاص</button>
+<button type="button" className={detailTab==='team'?styles.activeEntityDetailTab:''} onClick={()=>setDetailTab('team')}>الفريق</button>
+<button type="button" className={detailTab==='files'?styles.activeEntityDetailTab:''} onClick={()=>setDetailTab('files')}>الملفات</button>
+<button type="button" className={detailTab==='policies'?styles.activeEntityDetailTab:''} onClick={()=>setDetailTab('policies')}>السياسات واللوائح</button>
+<button type="button" className={detailTab==='authority'?styles.activeEntityDetailTab:''} onClick={()=>setDetailTab('authority')}>مصفوفة الصلاحيات</button>
+<button type="button" className={detailTab==='procedures'?styles.activeEntityDetailTab:''} onClick={()=>setDetailTab('procedures')}>الإجراءات والآليات</button>
+<button type="button" className={detailTab==='records'?styles.activeEntityDetailTab:''} onClick={()=>setDetailTab('records')}>السجلات</button>
+</nav>
+{detailTab==='role'&&<div className={styles.entityDetailPanel}><section><small>المسؤولية الأساسية</small><p>{detail.responsibility}</p></section><section><small>ما الذي يراقبه؟</small><p>{detail.observes}</p></section><section><small>متى يتدخل؟</small><p>{detail.intervention}</p></section><section><small>متى لا يتدخل؟</small><p>{detail.avoids}</p></section><section><small>حدود الحوكمة والصلاحيات</small><p>{detail.governanceNote}</p></section></div>}
+{detailTab==='team'&&<div className={styles.entityDetailPanel}><section><small>الفريق والأدوار الفعلية</small><div className={styles.entityTeamGrid}>{team.map(role=>{const portrait=rolePortraitByKey[role.key]??room.bankLogo;return <button type="button" key={role.referenceCode} onClick={()=>{setActiveAlgorithmRole({roomId:room.id,role});setDetailRoomId(null)}}><span className={styles.entityTeamPortrait}><Image src={portrait} alt="" fill sizes="52px"/></span><span><strong>{role.name}</strong><small>{role.kind==='responsibility_owner'?'صاحب مسؤولية مالية':role.kind==='advisor'?'مستشار اقتصادي':role.kind==='bank_manager'||role.kind==='central_bank_manager'?'إدارة البنك':'دور حوكمي'}</small></span><LucideIcon name="chevronLeft" size={17}/></button>})}</div></section><section><small>قاعدة الأدوار</small><p>كل شخصية تعمل داخل تفويضها المعتمد وهوية بنكها. المدير يقود نطاق البنك، وصاحب المسؤولية يحاسب على مجاله، والمستشار يقدم رأيًا دون سلطة تنفيذ أو اعتماد. التنفيذ المالي الخارجي يبقى بيد المستخدم.</p></section></div>}
+{detailTab==='files'&&<div className={styles.entityDetailPanel}><section><small>الملفات المرتبطة بهذه الجهة</small>{roomFiles.length?<div className={styles.detailFiles}>{roomFiles.map(file=><span key={file.id}><LucideIcon name="receiptText" size={16}/><b>{file.file_name}</b><em>{attachmentStatusLabel(file.verification_status)}</em></span>)}</div>:<p>لا توجد ملفات مشتركة مسجلة في هذه المحادثة حاليًا.</p>}</section><section><small>المراجع الحاكمة</small><p>المراجع المعتمدة محفوظة داخل نماء، وتظهر في الأقسام المخصصة لها دون إظهار الرموز التقنية للمستخدم.</p></section></div>}
+{detailTab==='policies'&&<div className={styles.entityDetailPanel}><section><small>السياسات واللوائح والمواثيق</small><EntityReferenceList items={policyRefs} roomId={room.id} onOpen={value=>{setActiveGovernedDocument(value);setDetailRoomId(null)}} icon="landmark"/></section></div>}
+{detailTab==='authority'&&<div className={styles.entityDetailPanel}><section><small>مصفوفة الصلاحيات والتفويض</small><EntityReferenceList items={authorityRefs} roomId={room.id} onOpen={value=>{setActiveGovernedDocument(value);setDetailRoomId(null)}} icon="lockKeyhole"/></section></div>}
+{detailTab==='procedures'&&<div className={styles.entityDetailPanel}><section><small>الإجراءات والآليات والخوارزميات التشغيلية</small><EntityReferenceList items={procedureRefs} roomId={room.id} onOpen={value=>{setActiveGovernedDocument(value);setDetailRoomId(null)}} icon="listChecks"/></section></div>}
+{detailTab==='records'&&<div className={styles.entityDetailPanel}><section><small>السجلات والتقارير المرجعية</small><EntityReferenceList items={recordRefs} roomId={room.id} onOpen={value=>{setActiveGovernedDocument(value);setDetailRoomId(null)}} icon="receiptText"/></section></div>}
+</div>})()}</aside></div>}
     {activeGovernedDocument&&<GovernedDocumentMobileSheet
       document={activeGovernedDocument.document}
       roomKey={activeGovernedDocument.roomId}
