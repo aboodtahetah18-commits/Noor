@@ -3904,7 +3904,7 @@
     inset:var(--ux-space-0);
     z-index:2;
     pointer-events:none;
-    background:linear-gradient(90deg,color-mix(in srgb,var(--namaa-green-900) 78%,transparent),color-mix(in srgb,var(--namaa-green-900) 42%,transparent))
+    background:color-mix(in srgb,var(--namaa-green-900) 58%,transparent)
   }
   .chatIdentity{gap:var(--ux-space-2)}
   .chatBankMark{width:36px;height:36px;flex-basis:36px}
