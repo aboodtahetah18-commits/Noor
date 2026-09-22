@@ -5,10 +5,10 @@ If any older phase note, repair note, legacy CSS rule, or implementation pattern
 
 ## 1. Product authority
 
-- Visual identity authority: `docs/ui-ux/CURRENT_SOURCE_OF_TRUTH.md`, which points to the approved Google Drive package `00_نماء_الهوية_البصرية_المرجع_المعتمد_v1.0_2026-09-15`.
+- Visual identity authority: `docs/ui-ux/CURRENT_SOURCE_OF_TRUTH.md`, updated to the approved project package `نماء — الهوية البصرية المعتمدة v1.0 — 2026-09-22`. This is the highest visual authority.
 - Arabic / RTL is the primary product direction.
 - Font: Noto Sans Arabic only unless a newer approved brand source of truth changes it.
-- Brand assets must come from the approved Namaa identity package or approved repository copies of those assets. Do not introduce alternative logos, fonts, color palettes, decoration systems, or visual themes.
+- Brand assets must come from the approved Namaa identity package or approved repository copies of those assets. Do not introduce alternative logos, fonts, color palettes, decoration systems, or visual themes. Never redraw, regenerate, approximate, trace, or reinterpret the Namaa logo; use the approved `namaa-logo-color-transparent.png` / `namaa-logo-white-transparent.png` source assets. If a mockup has an incorrect generated logo, preserve the layout but replace the logo with the official asset.
 - Business logic, financial rules, database behavior, security boundaries, and state machines must not be rewritten as part of UI migration unless the task explicitly requires it.
 
 ## 2. Architecture rule
@@ -144,7 +144,7 @@ Effective immediately:
 ## 12. Definition of done
 
 A UI change is complete only when:
-- it follows the approved Namaa visual identity source dated 2026-09-15 or a newer approved replacement;
+- it follows the approved Namaa visual identity source dated 2026-09-22 or a newer approved replacement;
 - no unauthorized brand/font/style is introduced;
 - mobile and desktop both satisfy their layout contracts;
 - required states are covered;
