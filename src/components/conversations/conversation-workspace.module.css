@@ -1260,23 +1260,6 @@
   object-position:center 16%;
   transform:scale(1.1)
 }
-.personaBankBadge{
-  position:absolute;
-  inset-inline-end:var(--ux-space-1);
-  bottom:var(--ux-space-1);
-  width:var(--ux-size-8);
-  height:var(--ux-size-8);
-  border:1px solid var(--namaa-border-strong);
-  border-radius:var(--ux-radius-full);
-  background:var(--namaa-card);
-  overflow:hidden;
-  box-shadow:var(--ux-shadow-xs)
-}
-.personaBankBadge img{
-  object-fit:contain;
-  padding:var(--ux-space-1)
-}
-
 .onboardingMessageContent{
   display:grid;
   gap:var(--ux-space-2)
@@ -5499,10 +5482,6 @@
     height:82px!important;
     flex-basis:82px!important
   }
-  .roomDetailBankMark{
-    width:52px!important;
-    height:52px!important
-  }
   .entityTeamGrid{
     grid-template-columns:1fr!important
   }
@@ -6153,23 +6132,6 @@
   border-color:color-mix(in srgb,var(--ux-text-inverse) 55%,transparent)
 }
 
-.roomDetailBankMark{
-  position:relative;
-  width:var(--ux-space-12);
-  height:var(--ux-space-12);
-  display:block;
-  flex:0 0 var(--ux-space-12);
-  border-radius:var(--ux-radius-full);
-  background:color-mix(in srgb,var(--namaa-card) 92%,transparent);
-  border:1px solid color-mix(in srgb,var(--ux-text-inverse) 50%,transparent);
-  overflow:hidden
-}
-
-.roomDetailBankMark img{
-  object-fit:contain;
-  padding:var(--ux-space-1)
-}
-
 .entityDetailTabs{
   top:45px;
   display:flex;
@@ -6274,21 +6236,6 @@
   color:var(--ux-text-secondary);
   font-size:var(--ux-type-body-sm-size);
   line-height:1.7
-}
-
-.entityPersonaBoard{
-  position:relative;
-  width:100%;
-  aspect-ratio:16/6;
-  border:1px solid var(--namaa-border-strong);
-  border-radius:var(--ux-radius-4);
-  overflow:hidden;
-  background:var(--namaa-green-900)
-}
-
-.entityPersonaBoard img{
-  object-fit:cover;
-  object-position:center 72%
 }
 
 .entityTeamGrid{
@@ -6470,11 +6417,6 @@
 .roomDetailHeroIdentity em{
   color:color-mix(in srgb,var(--ux-text-inverse) 84%,transparent)!important
 }
-.roomDetailBankMark{
-  width:56px!important;
-  height:56px!important;
-  background:color-mix(in srgb,var(--namaa-card) 95%,transparent)!important
-}
 .roomDetailHero .personaAvatar{
   width:92px!important;
   height:92px!important;
@@ -6535,9 +6477,6 @@
 }
 
 /* Team: individual governed cards, no low-resolution composite board. */
-.entityPersonaBoard{
-  display:none!important
-}
 .entityTeamGrid{
   grid-template-columns:repeat(2,minmax(0,1fr))!important;
   gap:var(--ux-space-3)!important
@@ -7226,9 +7165,6 @@
   box-sizing:border-box!important
 }
 .roomDetailBankMark,
-.personaBankBadge{
-  display:none!important
-}
 .roomDetailHero .personaAvatar{
   width:112px!important;
   height:132px!important;
@@ -7265,9 +7201,6 @@
 }
 
 /* Individual leadership cards only; manager first, governor second. */
-.entityPersonaReference{
-  display:none!important
-}
 .entityTeamGrid{
   width:100%!important;
   max-width:100%!important;
