@@ -5971,3 +5971,313 @@
   transform:scale(1.08)
 }
 
+
+
+/* Entity profile governance redesign — approved NDOS identity */
+.entityDetailSheet{
+  background:var(--namaa-surface-warm)
+}
+
+.roomDetailContent{
+  padding-bottom:calc(var(--ux-space-8) + env(safe-area-inset-bottom))
+}
+
+.roomDetailHero{
+  position:relative;
+  min-height:calc(var(--ux-space-16) * 2);
+  display:block;
+  padding:var(--ux-space-0);
+  overflow:hidden;
+  isolation:isolate;
+  background:var(--namaa-green-900)
+}
+
+.roomDetailHeroBackdrop{
+  position:absolute;
+  inset:var(--ux-space-0);
+  z-index:0
+}
+
+.roomDetailHeroBackdrop img{
+  object-fit:cover;
+  object-position:center 46%
+}
+
+.roomDetailHeroShade{
+  position:absolute;
+  inset:var(--ux-space-0);
+  z-index:1;
+  background:linear-gradient(90deg,color-mix(in srgb,var(--namaa-green-900) 88%,transparent),color-mix(in srgb,var(--namaa-green-900) 48%,transparent))
+}
+
+.roomDetailHeroIdentity{
+  position:relative;
+  z-index:2;
+  min-height:calc(var(--ux-space-16) * 2);
+  display:grid;
+  grid-template-columns:auto auto minmax(0,1fr);
+  align-items:center;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-4)
+}
+
+.roomDetailHeroIdentity>div{
+  min-width:0;
+  display:grid;
+  gap:var(--ux-space-1)
+}
+
+.roomDetailHeroIdentity strong{
+  color:var(--ux-text-inverse);
+  font-size:var(--ux-type-section-title-size);
+  line-height:1.25
+}
+
+.roomDetailHeroIdentity small,
+.roomDetailHeroIdentity em{
+  color:color-mix(in srgb,var(--ux-text-inverse) 84%,transparent);
+  font-size:var(--ux-type-caption-size);
+  font-style:normal;
+  line-height:1.5
+}
+
+.roomDetailHero .personaAvatar{
+  width:var(--ux-space-20);
+  height:var(--ux-space-20);
+  flex-basis:var(--ux-space-20);
+  border-color:color-mix(in srgb,var(--ux-text-inverse) 55%,transparent)
+}
+
+.roomDetailBankMark{
+  position:relative;
+  width:var(--ux-space-12);
+  height:var(--ux-space-12);
+  display:block;
+  flex:0 0 var(--ux-space-12);
+  border-radius:var(--ux-radius-full);
+  background:color-mix(in srgb,var(--namaa-card) 92%,transparent);
+  border:1px solid color-mix(in srgb,var(--ux-text-inverse) 50%,transparent);
+  overflow:hidden
+}
+
+.roomDetailBankMark img{
+  object-fit:contain;
+  padding:var(--ux-space-1)
+}
+
+.entityDetailTabs{
+  top:45px;
+  display:flex;
+  grid-template-columns:none;
+  gap:var(--ux-space-1);
+  padding:var(--ux-space-1);
+  overflow-x:auto;
+  overflow-y:hidden;
+  scrollbar-width:none;
+  background:color-mix(in srgb,var(--namaa-card) 82%,var(--namaa-surface-warm))
+}
+
+.entityDetailTabs::-webkit-scrollbar{
+  display:none
+}
+
+.entityDetailTabs button{
+  flex:0 0 auto;
+  min-height:40px;
+  min-width:max-content;
+  padding-inline:var(--ux-space-3);
+  white-space:nowrap;
+  overflow-wrap:normal
+}
+
+.entityDetailTabs .activeEntityDetailTab{
+  background:var(--namaa-green-900);
+  color:var(--ux-text-inverse)
+}
+
+.entityDetailPanel>section{
+  background:color-mix(in srgb,var(--namaa-surface-warm) 86%,var(--namaa-cream));
+  border-color:var(--namaa-border)
+}
+
+.entityReferenceList{
+  display:grid;
+  gap:var(--ux-space-2)
+}
+
+.entityReferenceList>button{
+  width:100%;
+  min-width:0;
+  min-height:calc(var(--ux-space-12) + var(--ux-space-2));
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border-strong);
+  border-radius:var(--ux-radius-4);
+  background:color-mix(in srgb,var(--namaa-card) 88%,var(--namaa-cream));
+  color:var(--ux-text-primary);
+  font:inherit;
+  text-align:right;
+  cursor:pointer;
+  box-shadow:var(--ux-shadow-xs)
+}
+
+.entityReferenceList>button:focus-visible{
+  outline:0;
+  box-shadow:var(--ux-shadow-focus)
+}
+
+.entityReferenceIcon{
+  width:var(--ux-space-10);
+  height:var(--ux-space-10);
+  display:grid;
+  place-items:center;
+  border-radius:var(--ux-radius-3);
+  background:color-mix(in srgb,var(--namaa-green-700) 12%,var(--namaa-surface-warm));
+  color:var(--namaa-green-900)
+}
+
+.entityReferenceCopy{
+  min-width:0;
+  display:grid;
+  gap:var(--ux-space-1)
+}
+
+.entityReferenceCopy strong{
+  font-size:var(--ux-type-body-sm-size);
+  line-height:1.5;
+  overflow-wrap:anywhere
+}
+
+.entityReferenceCopy small{
+  font-size:var(--ux-type-caption-size);
+  color:var(--ux-text-secondary)
+}
+
+.entityReferenceList>button>svg{
+  color:var(--namaa-green-900)
+}
+
+.entityEmptyState{
+  margin:var(--ux-space-0);
+  padding:var(--ux-space-4);
+  border:1px dashed var(--namaa-border-strong);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-card);
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-body-sm-size);
+  line-height:1.7
+}
+
+.entityPersonaBoard{
+  position:relative;
+  width:100%;
+  aspect-ratio:16/6;
+  border:1px solid var(--namaa-border-strong);
+  border-radius:var(--ux-radius-4);
+  overflow:hidden;
+  background:var(--namaa-green-900)
+}
+
+.entityPersonaBoard img{
+  object-fit:cover;
+  object-position:center 72%
+}
+
+.entityTeamGrid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:var(--ux-space-2)
+}
+
+.entityTeamGrid>button{
+  min-width:0;
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:var(--ux-space-2);
+  padding:var(--ux-space-2);
+  border:1px solid var(--namaa-border-strong);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-card);
+  color:var(--ux-text-primary);
+  font:inherit;
+  text-align:right;
+  cursor:pointer
+}
+
+.entityTeamGrid>button>span:nth-child(2){
+  min-width:0;
+  display:grid;
+  gap:var(--ux-space-1)
+}
+
+.entityTeamGrid strong{
+  font-size:var(--ux-type-caption-size);
+  line-height:1.45;
+  overflow-wrap:anywhere
+}
+
+.entityTeamGrid small{
+  font-size:var(--ux-type-caption-size);
+  color:var(--ux-text-secondary)
+}
+
+.entityTeamPortrait{
+  position:relative;
+  width:var(--ux-space-12);
+  height:var(--ux-space-12);
+  border-radius:var(--ux-radius-full);
+  overflow:hidden;
+  border:1px solid var(--namaa-border-strong);
+  background:var(--namaa-surface-warm)
+}
+
+.entityTeamPortrait img{
+  object-fit:cover;
+  object-position:center 18%
+}
+
+/* Governed document reading surface — reduce white dominance and strengthen hierarchy */
+.governedDocumentSheet{
+  background:var(--namaa-surface-warm)
+}
+
+.governedDocumentHero{
+  background:linear-gradient(135deg,color-mix(in srgb,var(--namaa-green-900) 96%,var(--namaa-card)),color-mix(in srgb,var(--namaa-green-700) 78%,var(--namaa-gold-500)));
+  border-color:var(--namaa-green-900)
+}
+
+.governedHeroCopy>strong,
+.governedHeroCopy>p,
+.governedHeroEyebrow,
+.governedHeroIcon{
+  color:var(--ux-text-inverse)
+}
+
+.governedHeroEyebrow{
+  border-color:color-mix(in srgb,var(--ux-text-inverse) 35%,transparent);
+  background:color-mix(in srgb,var(--namaa-card) 12%,transparent)
+}
+
+.governedMetaStrip{
+  background:color-mix(in srgb,var(--namaa-card) 92%,var(--namaa-cream))
+}
+
+.governedDocumentSection{
+  background:color-mix(in srgb,var(--namaa-card) 58%,var(--namaa-surface-warm))
+}
+
+.governedContentSection{
+  background:color-mix(in srgb,var(--namaa-surface-warm) 82%,var(--namaa-cream))
+}
+
+.governedClauseRow{
+  background:color-mix(in srgb,var(--namaa-card) 78%,var(--namaa-cream))
+}
+
+.governedContentTable th{
+  background:color-mix(in srgb,var(--namaa-green-900) 10%,var(--namaa-surface-warm))
+}
