@@ -16,6 +16,7 @@ import { EntityDashboardMobilePage } from '@/components/conversations/entity-das
 import { algorithmRolesForRoom, type AlgorithmRoleRef } from '@/lib/governance/algorithm-role-registry';
 import { buildOversightPriorityItems, buildOversightSummaryMetrics, filterAndSortOversightItems, type OversightViewFilter, type OversightViewSort } from '@/lib/governance/governance-oversight-view';
 import { buildGovernanceUserActionItems } from '@/lib/governance/governance-user-action-center';
+import { NAMAA_PERSONA_ASSETS } from './persona-assets';
 import styles from './conversation-workspace.module.css';
 
 type RoomKey = 'central' | 'operations' | 'solvency' | 'assets' | 'hilal' | 'advisor' | 'secretary' | 'council';
@@ -191,20 +192,25 @@ function compactChatRoleTitle(room:Room){
 function chatEntityTitle(room:Room){return room.id==='central'?'بنك نماء المركزي':room.title}
 function missingLabel(value:string){if(value==='monthly_net_income')return 'الدخل الشهري الصافي';if(value==='recurring_core_obligations')return 'الالتزامات الأساسية';if(value==='financing_purpose')return 'غرض التمويل';if(value==='requested_amount')return 'مبلغ التمويل';if(value==='expected_installment')return 'القسط الشهري المتوقع';return value}
 
+const roomPersonaKey:Partial<Record<RoomKey,string>>={
+  central:'central-governor',
+  solvency:'solvency-manager',
+  assets:'assets-manager',
+  hilal:'hilal-manager',
+  advisor:'economic-advisor',
+  secretary:'central-secretary',
+  council:'central-governor',
+};
+
 function RoomPortrait({room,size='md'}:{room:Room;size?:'sm'|'md'|'lg'}) {
+  const personaKey=roomPersonaKey[room.id];
+  const portrait=(personaKey?NAMAA_PERSONA_ASSETS[personaKey]:null)??room.avatar;
   return <span className={`${styles.personaAvatar} ${styles[`persona_${size}`]} ${room.id==='central'?styles.centralPersona:''}`} aria-hidden="true">
-    <Image src={room.avatar} alt="" fill sizes={size==='lg'?'88px':size==='md'?'48px':'38px'} />
+    <Image src={portrait} unoptimized={portrait.startsWith('data:')} alt="" fill sizes={size==='lg'?'112px':size==='md'?'48px':'38px'} />
   </span>;
 }
 
-const rolePortraitByKey:Partial<Record<string,string>>={
-  'central-governor':'/brand/governor.webp',
-  'central-bank-manager':'/brand/central-bank-manager.webp',
-  'solvency-manager':'/brand/malaa-manager.webp',
-  'assets-manager':'/brand/assets-manager.webp',
-  'hilal-manager':'/brand/hilal-manager.webp',
-  'economic-advisor':'/brand/economic-advisor.webp',
-};
+const rolePortraitByKey=NAMAA_PERSONA_ASSETS;
 
 function classifyGovernedReference(item:GovernedDocumentRef){
   const title=item.title.replace(/\s+/g,' ').trim();
