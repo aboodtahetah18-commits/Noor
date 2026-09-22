@@ -3191,15 +3191,23 @@
 
 .governedDocumentSheet{
   width:100%;
+  max-width:100%;
+  min-width:0;
   max-height:100dvh;
-  overflow:auto;
+  overflow-y:auto;
+  overflow-x:hidden;
   background:var(--namaa-surface-warm)
 }
 .governedDocumentContent{
+  width:100%;
+  max-width:100%;
+  min-width:0;
   display:grid;
   gap:var(--ux-space-3);
   padding:var(--ux-space-3);
-  background:var(--namaa-surface-warm)
+  background:var(--namaa-surface-warm);
+  overflow-x:hidden;
+  box-sizing:border-box
 }
 .governedDocumentHero{
   position:relative;
@@ -3255,11 +3263,15 @@
   box-shadow:var(--ux-shadow-xs)
 }
 .governedDocumentSection{
+  width:100%;
+  max-width:100%;
+  min-width:0;
   border:1px solid var(--namaa-border);
   border-radius:var(--ux-radius-3);
   background:color-mix(in srgb,var(--namaa-card) 62%,var(--namaa-surface-warm));
   box-shadow:var(--ux-shadow-xs);
-  overflow:hidden
+  overflow:hidden;
+  box-sizing:border-box
 }
 .governedDocumentSection>summary{
   display:flex;
@@ -3429,7 +3441,7 @@
   display:grid;
   gap:var(--ux-space-1)
 }
-.algorithmRoleHero span{
+.algorithmRoleHero>div>span{
   width:fit-content;
   padding:var(--ux-space-1) var(--ux-space-2);
   border:1px solid var(--namaa-border);
@@ -3458,16 +3470,19 @@
   position:relative;
   width:var(--ux-space-24);
   height:var(--ux-space-24);
+  min-width:var(--ux-space-24);
   flex:0 0 var(--ux-space-24);
+  padding:var(--ux-space-0);
   overflow:hidden;
-  border:1px solid var(--namaa-border-strong);
+  border:2px solid var(--namaa-border-strong);
   border-radius:var(--ux-radius-full);
   background:var(--namaa-surface-warm);
   box-shadow:var(--ux-shadow-xs)
 }
 .algorithmRolePortrait img{
   object-fit:cover;
-  object-position:center 22%
+  object-position:center 16%;
+  transform:scale(1.08)
 }
 .algorithmRoleContent>section{
   display:grid;
@@ -5161,8 +5176,46 @@
 
   .governedDocumentContent,
   .algorithmRoleContent{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
     padding:var(--ux-space-3)!important;
+    box-sizing:border-box!important
+  }
+
+  .governedDocumentContent{
+    padding-bottom:calc(var(--ux-size-12) + var(--ux-space-12) + env(safe-area-inset-bottom))!important;
+    overflow-x:hidden!important
+  }
+
+  .algorithmRoleContent{
     padding-bottom:calc(var(--ux-space-8) + env(safe-area-inset-bottom))!important
+  }
+
+  .algorithmRoleHero{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) var(--ux-space-24);
+    align-items:center;
+    min-height:auto
+  }
+
+  .algorithmRoleHero>div{
+    min-width:0
+  }
+
+  .algorithmRolePortrait{
+    justify-self:end;
+    align-self:center
+  }
+
+  .governedDocumentHero,
+  .governedMetaStrip,
+  .governedDocumentSection,
+  .governedContentSection,
+  .governedClauseRow{
+    max-width:100%;
+    min-width:0;
+    box-sizing:border-box
   }
 
   .entityDetailTabs{
@@ -5385,8 +5438,12 @@
 
 
 .governedLocalDocument{
+  width:100%;
+  max-width:100%;
+  min-width:0;
   display:grid;
-  gap:var(--ux-space-2)
+  gap:var(--ux-space-2);
+  overflow-x:hidden
 }
 .governedLocalDocument h3{
   margin:var(--ux-space-3) var(--ux-space-0) var(--ux-space-1);
@@ -5406,14 +5463,21 @@
 
 
 .governedStructuredDocument{
+  width:100%;
+  max-width:100%;
+  min-width:0;
   display:grid;
   gap:var(--ux-space-2)
 }
 .governedContentSection{
+  width:100%;
+  max-width:100%;
+  min-width:0;
   border:1px solid var(--namaa-border);
   border-radius:var(--ux-radius-3);
   background:color-mix(in srgb,var(--namaa-card) 74%,var(--namaa-surface-warm));
-  overflow:hidden
+  overflow:hidden;
+  box-sizing:border-box
 }
 .governedContentSection>summary{
   display:flex;
@@ -5429,9 +5493,13 @@
   font-size:var(--ux-type-body-sm-size)
 }
 .governedContentSectionBody{
+  width:100%;
+  max-width:100%;
+  min-width:0;
   display:grid;
   gap:var(--ux-space-2);
-  padding:var(--ux-space-3)
+  padding:var(--ux-space-3);
+  box-sizing:border-box
 }
 .governedContentSectionBody p{
   margin:var(--ux-space-0);
@@ -5474,9 +5542,13 @@
 }
 .governedTableScroll{
   width:100%;
+  max-width:100%;
+  min-width:0;
   overflow-x:auto;
+  overscroll-behavior-inline:contain;
   border:1px solid var(--namaa-border);
-  border-radius:var(--ux-radius-2)
+  border-radius:var(--ux-radius-2);
+  box-sizing:border-box
 }
 .governedContentTable{
   width:100%;
@@ -5810,11 +5882,15 @@
   position:sticky;
   bottom:var(--ux-space-0);
   z-index:3;
+  width:100%;
+  max-width:100%;
+  min-width:0;
   display:grid;
   grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);
   gap:var(--ux-space-2);
   padding:var(--ux-space-2) var(--ux-space-0) calc(var(--ux-space-2) + env(safe-area-inset-bottom));
-  background:var(--namaa-surface-warm)
+  background:var(--namaa-surface-warm);
+  box-sizing:border-box
 }
 .governedActionRail .primaryActionButton{
   width:100%;
