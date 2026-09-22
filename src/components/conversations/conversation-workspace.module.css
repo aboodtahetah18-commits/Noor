@@ -4380,9 +4380,9 @@
     overflow-y:auto
   }
   .chatHeader{
-    height:60px;
-    min-height:60px;
-    padding:var(--ux-space-0) var(--ux-space-2);
+    height:88px;
+    min-height:88px;
+    padding:var(--ux-space-0) var(--ux-space-3);
     position:relative;
     top:var(--ux-space-0);
     z-index:6;
@@ -4392,8 +4392,8 @@
   }
   .centralChatHeader,
   .centralChatHeader .chatHeaderForeground{
-    min-height:60px;
-    height:60px
+    min-height:96px;
+    height:96px
   }
   .compactMenuButton,
   .mobileTools button{
@@ -5481,17 +5481,9 @@
 
 
   /* Consolidated approved mobile refinements */
-  .chatHeader{
-    min-height:88px!important;
-    padding:var(--ux-space-0) var(--ux-space-3)!important
-  }
   .chatHeaderForeground{
     min-height:88px!important;
     align-items:center!important
-  }
-  .centralChatHeader,
-  .centralChatHeader .chatHeaderForeground{
-    min-height:96px!important
   }
   .chatHeaderBankMark{
     display:none
