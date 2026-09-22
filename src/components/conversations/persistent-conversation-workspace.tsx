@@ -16,6 +16,7 @@ import { EntityDashboardMobilePage } from '@/components/conversations/entity-das
 import { algorithmRolesForRoom, type AlgorithmRoleRef } from '@/lib/governance/algorithm-role-registry';
 import { buildOversightPriorityItems, buildOversightSummaryMetrics, filterAndSortOversightItems, type OversightViewFilter, type OversightViewSort } from '@/lib/governance/governance-oversight-view';
 import { buildGovernanceUserActionItems } from '@/lib/governance/governance-user-action-center';
+import { NAMAA_PERSONA_ASSETS } from './persona-assets';
 import styles from './conversation-workspace.module.css';
 
 type RoomKey = 'central' | 'operations' | 'solvency' | 'assets' | 'hilal' | 'advisor' | 'secretary' | 'council';
@@ -191,26 +192,25 @@ function compactChatRoleTitle(room:Room){
 function chatEntityTitle(room:Room){return room.id==='central'?'بنك نماء المركزي':room.title}
 function missingLabel(value:string){if(value==='monthly_net_income')return 'الدخل الشهري الصافي';if(value==='recurring_core_obligations')return 'الالتزامات الأساسية';if(value==='financing_purpose')return 'غرض التمويل';if(value==='requested_amount')return 'مبلغ التمويل';if(value==='expected_installment')return 'القسط الشهري المتوقع';return value}
 
+const roomPersonaKey:Partial<Record<RoomKey,string>>={
+  central:'central-governor',
+  solvency:'solvency-manager',
+  assets:'assets-manager',
+  hilal:'hilal-manager',
+  advisor:'economic-advisor',
+  secretary:'central-secretary',
+  council:'central-governor',
+};
+
 function RoomPortrait({room,size='md'}:{room:Room;size?:'sm'|'md'|'lg'}) {
+  const personaKey=roomPersonaKey[room.id];
+  const portrait=(personaKey?NAMAA_PERSONA_ASSETS[personaKey]:null)??room.avatar;
   return <span className={`${styles.personaAvatar} ${styles[`persona_${size}`]} ${room.id==='central'?styles.centralPersona:''}`} aria-hidden="true">
-    <Image src={room.avatar} alt="" fill sizes={size==='lg'?'88px':size==='md'?'48px':'38px'} />
+    <Image src={portrait} unoptimized={portrait.startsWith('data:')} alt="" fill sizes={size==='lg'?'112px':size==='md'?'48px':'38px'} />
   </span>;
 }
 
-const rolePortraitByKey:Partial<Record<string,string>>={
-  'central-governor':'/brand/governor.webp',
-  'central-bank-manager':'/brand/central-bank-manager.webp',
-  'solvency-manager':'/brand/malaa-manager.webp',
-  'assets-manager':'/brand/assets-manager.webp',
-  'hilal-manager':'/brand/hilal-manager.webp',
-  'budget-spending-owner':'/brand/personas/budget-spending-owner.webp',
-  'obligations-owner':'/brand/personas/obligations-owner.webp',
-  'goals-owner':'/brand/personas/goals-owner.webp',
-  'investment-owner':'/brand/personas/investment-owner.webp',
-  'liquidity-protection-owner':'/brand/personas/liquidity-protection-owner.webp',
-  'economic-advisor':'/brand/economic-advisor.webp',
-  'central-secretary':'/brand/personas/central-secretary.webp',
-};
+const rolePortraitByKey=NAMAA_PERSONA_ASSETS;
 
 function classifyGovernedReference(item:GovernedDocumentRef){
   const title=item.title.replace(/\s+/g,' ').trim();
@@ -1337,7 +1337,7 @@ return <div className={styles.roomDetailContent}>
 <button type="button" className={detailTab==='records'?styles.activeEntityDetailTab:''} onClick={()=>setDetailTab('records')}>السجلات</button>
 </nav>
 {detailTab==='role'&&<div className={styles.entityDetailPanel}><section><small>المسؤولية الأساسية</small><p>{detail.responsibility}</p></section><section><small>ما الذي يراقبه؟</small><p>{detail.observes}</p></section><section><small>متى يتدخل؟</small><p>{detail.intervention}</p></section><section><small>متى لا يتدخل؟</small><p>{detail.avoids}</p></section><section><small>حدود الحوكمة والصلاحيات</small><p>{detail.governanceNote}</p></section></div>}
-{detailTab==='team'&&<div className={styles.entityDetailPanel}><section><div className={styles.entitySectionHeading}><span><small>الفريق والأدوار الفعلية</small><strong>الشخصيات المعتمدة لهذه الجهة</strong></span><LucideIcon name="circleUserRound" size={20}/></div><div className={styles.entityTeamGrid}>{team.map(role=>{const portrait=rolePortraitByKey[role.key]??room.avatar;return <button type="button" key={role.referenceCode} onClick={()=>{setActiveAlgorithmRole({roomId:room.id,role});setDetailRoomId(null)}}><span className={styles.entityTeamPortrait}><Image src={portrait} alt="" fill sizes="112px"/></span><span><strong>{role.name}</strong><small>{role.kind==='responsibility_owner'?'صاحب مسؤولية مالية':role.kind==='advisor'?'مستشار اقتصادي':role.kind==='bank_manager'||role.kind==='central_bank_manager'?'إدارة البنك':'دور حوكمي'}</small></span><LucideIcon name="chevronLeft" size={16}/></button>})}</div></section><section><small>قاعدة الأدوار</small><p>كل شخصية تعمل داخل تفويضها المعتمد وهوية بنكها. المدير يقود نطاق البنك، وصاحب المسؤولية يحاسب على مجاله، والمستشار يقدم رأيًا دون سلطة تنفيذ أو اعتماد. التنفيذ المالي الخارجي يبقى بيد المستخدم.</p></section></div>}
+{detailTab==='team'&&<div className={styles.entityDetailPanel}><section><div className={styles.entitySectionHeading}><span><small>الفريق والأدوار الفعلية</small><strong>الشخصيات المعتمدة لهذه الجهة</strong></span><LucideIcon name="circleUserRound" size={20}/></div><div className={styles.entityTeamGrid}>{team.map(role=>{const portrait=rolePortraitByKey[role.key];const spriteClass=styles['personaSprite_'+role.key]??'';return <button type="button" key={role.referenceCode} onClick={()=>{setActiveAlgorithmRole({roomId:room.id,role});setDetailRoomId(null)}}><span className={[styles.entityTeamPortrait,!portrait?styles.personaSpritePortrait:'',!portrait?spriteClass:''].filter(Boolean).join(' ')}>{portrait&&<Image src={portrait} alt="" fill sizes="112px"/>}</span><span><strong>{role.name}</strong><small>{role.kind==='responsibility_owner'?'صاحب مسؤولية مالية':role.kind==='advisor'?'مستشار اقتصادي':role.kind==='bank_manager'||role.kind==='central_bank_manager'?'إدارة البنك':'دور حوكمي'}</small></span><LucideIcon name="chevronLeft" size={16}/></button>})}</div></section><section><small>قاعدة الأدوار</small><p>كل شخصية تعمل داخل تفويضها المعتمد وهوية بنكها. المدير يقود نطاق البنك، وصاحب المسؤولية يحاسب على مجاله، والمستشار يقدم رأيًا دون سلطة تنفيذ أو اعتماد. التنفيذ المالي الخارجي يبقى بيد المستخدم.</p></section></div>}
 {detailTab==='files'&&<div className={styles.entityDetailPanel}><section><small>الملفات المرتبطة بهذه الجهة</small>{roomFiles.length?<div className={styles.detailFiles}>{roomFiles.map(file=><span key={file.id}><LucideIcon name="receiptText" size={16}/><b>{file.file_name}</b><em>{attachmentStatusLabel(file.verification_status)}</em></span>)}</div>:<p>لا توجد ملفات مشتركة مسجلة في هذه المحادثة حاليًا.</p>}</section><section><small>المراجع الحاكمة</small><p>المراجع المعتمدة محفوظة داخل نماء، وتظهر في الأقسام المخصصة لها دون إظهار الرموز التقنية للمستخدم.</p></section></div>}
 {detailTab==='policies'&&<div className={styles.entityDetailPanel}><section><small>السياسات واللوائح والمواثيق</small><EntityReferenceList items={policyRefs} roomId={room.id} onOpen={value=>{setActiveGovernedDocument(value);setDetailRoomId(null)}} icon="landmark"/></section></div>}
 {detailTab==='authority'&&<div className={styles.entityDetailPanel}><section><small>مصفوفة الصلاحيات والتفويض</small><EntityReferenceList items={authorityRefs} roomId={room.id} onOpen={value=>{setActiveGovernedDocument(value);setDetailRoomId(null)}} icon="lockKeyhole"/></section></div>}
