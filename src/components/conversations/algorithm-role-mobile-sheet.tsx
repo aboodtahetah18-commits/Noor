@@ -141,7 +141,7 @@ export function AlgorithmRoleMobileSheet({role,onClose}:{role:AlgorithmRoleRef;o
         <section className={styles.algorithmRoleHero}>
           <div><strong>{editText(role.name)}</strong><small>{kindLabel[role.kind]}، ويتبع إلى {editText(role.reportsTo)}</small></div>
           {roleAvatar[role.key]
-            ?<span className={styles.algorithmRolePortrait}><Image className={styles.algorithmRolePortraitImage} src={roleAvatar[role.key]!} alt={role.name} width={96} height={96}/></span>
+            ?<span className={styles.algorithmRolePortrait}><Image className={styles.algorithmRolePortraitImage} src={roleAvatar[role.key]!} alt={role.name} width={144} height={144} quality={100}/></span>
             :<LucideIcon name={role.kind==='advisor'?'sparkles':'circleUserRound'} size={24}/>}
         </section>
 
@@ -151,8 +151,8 @@ export function AlgorithmRoleMobileSheet({role,onClose}:{role:AlgorithmRoleRef;o
         </section>
 
         <section className={styles.governedQuickActions+' '+styles.algorithmRoleEditActions} aria-label="تعديل الوصف الوظيفي">
-          <button type="button" className={styles.governedTypoButton} onClick={()=>{setEditMode('typo');setFeedback('')}}><LucideIcon name="pencil" size={20}/><span><strong>تعديل إصلاحي / إملائي</strong><small>تصحيح إملائي أو صياغي لا يغيّر الحكم أو الصلاحية.</small></span></button>
-          <button type="button" className={styles.governedGovernanceButton} onClick={()=>{setEditMode('governance');setFeedback('')}}><LucideIcon name="landmark" size={20}/><span><strong>طلب تعديل حوكمي</strong><small>أي تغيير في المسؤوليات أو الصلاحيات يمر بالاعتماد.</small></span></button>
+          <button type="button" className={styles.governedTypoButton} onClick={()=>{setEditMode('typo');setFeedback('')}}><LucideIcon name="pencil" size={24}/><span><strong>تعديل إصلاحي / إملائي</strong></span></button>
+          <button type="button" className={styles.governedGovernanceButton} onClick={()=>{setEditMode('governance');setFeedback('')}}><LucideIcon name="landmark" size={24}/><span><strong>طلب تعديل حوكمي</strong></span></button>
         </section>
 
         {editMode&&<form className={styles.governedAmendmentForm} onSubmit={submitEdit}>
