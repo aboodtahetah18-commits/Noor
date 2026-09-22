@@ -12,6 +12,7 @@ const steps = [
   ['approved Namaa brand assets contract','node',['scripts/verify-approved-brand-assets.mjs']],
   ['persona identity contract','node',['scripts/verify-persona-identity-contract.mjs']],
   ['strict visual identity authority','node',['scripts/verify-visual-identity-authority.mjs']],
+  ['final UI authority contract','node',['scripts/verify-final-ui-authority.mjs']],
   ['interaction capabilities contract','node',['scripts/verify-interaction-capabilities-contract.mjs']],
   ['auth lifecycle contract','node',['scripts/verify-auth-lifecycle-contract.mjs']],
   ['Lucide icon contract','node',['scripts/verify-lucide-icon-contract.mjs']],
