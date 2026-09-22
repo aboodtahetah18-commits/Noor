@@ -18,6 +18,19 @@ if(!css.includes('/* Block 4 — compact onboarding and final UI */')) failures.
 if(!css.includes('grid-template-columns:repeat(2,minmax(0,1fr))')) failures.push('mobile compact stage grid missing');
 if(!css.includes('.onboardingReviewPreviousButton')) failures.push('previous-data edit action styling missing');
 
+const roleSheet=fs.readFileSync('src/components/conversations/algorithm-role-mobile-sheet.tsx','utf8');
+const governedSheet=fs.readFileSync('src/components/conversations/governed-document-mobile-sheet.tsx','utf8');
+
+if(!css.includes('/* Final release — dark drawer identity visibility */')) failures.push('final dark drawer identity lock missing');
+if(!css.includes('.mobileSideSheet .roomItemShell .roomCopy strong')) failures.push('dark drawer person name visibility rule missing');
+if(!css.includes('.mobileSideSheet .roomItemShell .roomCopy small')) failures.push('dark drawer role/subtitle visibility rule missing');
+for(const token of ['تعديل إصلاحي / إملائي','طلب تعديل حوكمي']){
+  if(!roleSheet.includes(token)) failures.push('job description edit action missing: '+token);
+  if(!governedSheet.includes(token)) failures.push('governed document edit action missing: '+token);
+}
+if(!roleSheet.includes("operation:'TYPO_CORRECTION'")||!roleSheet.includes("operation:'CREATE'")) failures.push('job description must use governed correction and amendment operations');
+
+
 if(failures.length){
   console.error('FINAL-ONBOARDING-UI-CONTRACT-FAIL');
   for(const failure of failures) console.error('- '+failure);
