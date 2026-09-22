@@ -2,7 +2,7 @@ name: Verify Build
 
 on:
   push:
-    branches: [main]
+    branches: [main, "feature/compact-conversation-identity-bar"]
   pull_request:
     branches: [main]
   workflow_dispatch:
