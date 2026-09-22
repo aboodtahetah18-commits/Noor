@@ -2,7 +2,7 @@ name: Verify Build
 
 on:
   push:
-    branches: [main]
+    branches: [main, "governance/visual-identity-authority-20260922"]
   pull_request:
     branches: [main]
   workflow_dispatch:
