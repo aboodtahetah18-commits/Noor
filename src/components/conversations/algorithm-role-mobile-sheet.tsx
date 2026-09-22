@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { LucideIcon } from '@/components/ui/lucide-icon';
 import type { AlgorithmRoleRef } from '@/lib/governance/algorithm-role-registry';
 import { governedRoomDetails } from '@/lib/conversations/governed-room-details';
+import { NAMAA_PERSONA_ASSETS } from './persona-assets';
 import styles from './conversation-workspace.module.css';
 
 const kindLabel:Record<AlgorithmRoleRef['kind'],string>={
@@ -25,14 +26,7 @@ const policyTitle=(ref:string)=>{
   return null;
 };
 
-const roleAvatar:Partial<Record<string,string>>={
-  'central-governor':'/brand/governor.webp',
-  'central-bank-manager':'/brand/central-bank-manager.webp',
-  'solvency-manager':'/brand/malaa-manager.webp',
-  'assets-manager':'/brand/assets-manager.webp',
-  'hilal-manager':'/brand/hilal-manager.webp',
-  'economic-advisor':'/brand/economic-advisor.webp',
-};
+const roleAvatar=NAMAA_PERSONA_ASSETS;
 
 function RoleItems({items,prefix}:{items:string[];prefix:string}){
   return <div className={styles.algorithmRoleItems}>
