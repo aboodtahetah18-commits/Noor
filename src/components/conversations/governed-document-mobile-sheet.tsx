@@ -274,10 +274,10 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
     if(!documentContent)return;
     const blob=new Blob([documentContent],{type:'text/markdown;charset=utf-8'});
     const url=URL.createObjectURL(blob);
-    const anchor=document.createElement('a');
+    const anchor=globalThis.document.createElement('a');
     anchor.href=url;
     anchor.download=(document.title||'مرجع نماء')+'.md';
-    document.body.appendChild(anchor);
+    globalThis.document.body.appendChild(anchor);
     anchor.click();
     anchor.remove();
     URL.revokeObjectURL(url);
