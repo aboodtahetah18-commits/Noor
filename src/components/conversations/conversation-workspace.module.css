@@ -6007,7 +6007,7 @@
   position:absolute;
   inset:var(--ux-space-0);
   z-index:1;
-  background:linear-gradient(90deg,color-mix(in srgb,var(--namaa-green-900) 88%,transparent),color-mix(in srgb,var(--namaa-green-900) 48%,transparent))
+  background:color-mix(in srgb,var(--namaa-green-900) 62%,transparent)
 }
 
 .roomDetailHeroIdentity{
@@ -6246,7 +6246,7 @@
 }
 
 .governedDocumentHero{
-  background:linear-gradient(135deg,color-mix(in srgb,var(--namaa-green-900) 96%,var(--namaa-card)),color-mix(in srgb,var(--namaa-green-700) 78%,var(--namaa-gold-500)));
+  background:color-mix(in srgb,var(--namaa-green-900) 90%,var(--namaa-green-700));
   border-color:var(--namaa-green-900)
 }
 
