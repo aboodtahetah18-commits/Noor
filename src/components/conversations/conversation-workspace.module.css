@@ -7145,3 +7145,44 @@
 }
 
 
+
+
+/* Approved persona reference strip */
+.entityPersonaReference{
+  display:flex;
+  align-items:center;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-surface-warm);
+  box-shadow:var(--ux-shadow-xs)
+}
+.entityPersonaReferenceThumb{
+  position:relative;
+  width:72px;
+  height:48px;
+  flex:0 0 72px;
+  overflow:hidden;
+  border:1px solid var(--namaa-border-strong);
+  border-radius:var(--ux-radius-2);
+  background:var(--namaa-card)
+}
+.entityPersonaReferenceThumb img{
+  object-fit:cover;
+  object-position:center 72%
+}
+.entityPersonaReference>span:last-child{
+  min-width:0;
+  display:grid;
+  gap:var(--ux-space-1)
+}
+.entityPersonaReference strong{
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-caption-size)
+}
+.entityPersonaReference small{
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  line-height:1.45
+}
