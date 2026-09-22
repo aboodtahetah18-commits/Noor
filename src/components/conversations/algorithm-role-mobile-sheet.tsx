@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { LucideIcon } from '@/components/ui/lucide-icon';
 import type { AlgorithmRoleRef } from '@/lib/governance/algorithm-role-registry';
 import { governedRoomDetails } from '@/lib/conversations/governed-room-details';
@@ -90,7 +90,7 @@ export function AlgorithmRoleMobileSheet({role,onClose}:{role:AlgorithmRoleRef;o
 
   const editText=(value:string)=>applyRoleEdits(value,corrections,amendments);
   const policyTitles=role.policyRefs.map(ref=>policyTitle(ref)).filter((title):title is string=>Boolean(title)).map(editText);
-  const sections=useMemo(()=>[
+  const sections=[
     {title:'المسؤوليات الرئيسية',items:role.accountableFor},
     {title:'الصلاحيات داخل التفويض',items:role.authorities},
     {title:'القرارات التي يملكها أو يرفعها',items:role.decisions??[]},
@@ -105,7 +105,7 @@ export function AlgorithmRoleMobileSheet({role,onClose}:{role:AlgorithmRoleRef;o
     {title:'الشاشات والواجهات المرتبطة',items:role.interfaces??[]},
     {title:'حالات الخطأ والاستثناء',items:role.exceptions??[]},
     {title:'السياسات والمراجع الحاكمة',items:policyTitles},
-  ].map(section=>({...section,items:section.items.map(editText)})).filter(section=>section.items.length),[role,corrections,amendments,policyTitles.join('|')]);
+  ].map(section=>({...section,items:section.items.map(editText)})).filter(section=>section.items.length);
 
   async function submitEdit(event:FormEvent){
     event.preventDefault();
@@ -150,7 +150,7 @@ export function AlgorithmRoleMobileSheet({role,onClose}:{role:AlgorithmRoleRef;o
           <div className={styles.algorithmRoleItem}><span>1.1</span><p>{editText(role.mandate)}</p></div>
         </section>
 
-        <section className={styles.governedQuickActions} aria-label="تعديل الوصف الوظيفي">
+        <section className={styles.governedQuickActions+' '+styles.algorithmRoleEditActions} aria-label="تعديل الوصف الوظيفي">
           <button type="button" className={styles.governedTypoButton} onClick={()=>{setEditMode('typo');setFeedback('')}}><LucideIcon name="pencil" size={20}/><span><strong>تعديل إصلاحي/مطبعي</strong><small>تصحيح نصي لا يغيّر الحكم أو الصلاحية.</small></span></button>
           <button type="button" className={styles.governedGovernanceButton} onClick={()=>{setEditMode('governance');setFeedback('')}}><LucideIcon name="landmark" size={20}/><span><strong>طلب تعديل حوكمي</strong><small>أي تغيير في المسؤوليات أو الصلاحيات يمر بالاعتماد.</small></span></button>
         </section>
