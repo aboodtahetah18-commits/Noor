@@ -4375,8 +4375,7 @@
     display:grid;
     place-items:center;
     padding:var(--ux-space-0);
-    box-shadow:var(--ux-shadow-sm);
-    backdrop-filter:blur(8px)
+    box-shadow:var(--ux-shadow-sm)
   }
   .compactMenuButton:focus-visible,
   .mobileTools button:focus-visible{
