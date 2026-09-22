@@ -7463,3 +7463,167 @@
   background-position:center!important;
   background-repeat:no-repeat!important
 }
+
+
+/* Block 4 — compact onboarding and final UI */
+.onboardingIntake{
+  min-width:0!important;
+  gap:var(--ux-space-3)!important
+}
+.onboardingIntakeHeader{
+  min-height:64px!important;
+  padding:var(--ux-space-3) var(--ux-space-4)!important;
+  border-bottom:1px solid var(--namaa-border)!important
+}
+.onboardingIntakeHeader>div:first-child{
+  min-width:0!important;
+  display:grid!important;
+  gap:var(--ux-space-1)!important
+}
+.onboardingIntakeHeader>div:first-child>strong{
+  color:var(--namaa-green-900)!important;
+  font-size:var(--ux-type-section-title-size)!important;
+  font-weight:900!important;
+  line-height:1.25!important
+}
+.onboardingIntakeHeader>div:first-child>small{
+  color:var(--ux-text-secondary)!important;
+  font-size:var(--ux-type-caption-size)!important
+}
+.onboardingHeaderActions{
+  display:flex!important;
+  align-items:center!important;
+  gap:var(--ux-space-2)!important;
+  flex:0 0 auto!important
+}
+.onboardingReviewPreviousButton{
+  min-height:40px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:var(--ux-space-2)!important;
+  padding:var(--ux-space-2) var(--ux-space-3)!important;
+  border:1px solid var(--namaa-border-strong)!important;
+  border-radius:var(--ux-radius-3)!important;
+  background:var(--namaa-card)!important;
+  color:var(--namaa-green-900)!important;
+  font:inherit!important;
+  font-size:var(--ux-type-caption-size)!important;
+  font-weight:900!important;
+  cursor:pointer!important
+}
+.onboardingStageOverview{
+  padding:var(--ux-space-3)!important;
+  border-radius:var(--ux-radius-4)!important;
+  gap:var(--ux-space-2)!important
+}
+.onboardingStageOverviewHeader{
+  min-height:32px!important
+}
+.onboardingStageOverviewHeader>span,
+.onboardingStageOverviewHeader>strong{
+  font-size:var(--ux-type-caption-size)!important
+}
+.onboardingStageList{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:var(--ux-space-2)!important
+}
+.onboardingStageList>li{
+  min-height:48px!important;
+  display:grid!important;
+  grid-template-columns:28px minmax(0,1fr)!important;
+  align-items:center!important;
+  gap:var(--ux-space-2)!important;
+  padding:var(--ux-space-2)!important;
+  border-radius:var(--ux-radius-3)!important
+}
+.onboardingStageNumber{
+  width:28px!important;
+  height:28px!important;
+  min-width:28px!important;
+  display:grid!important;
+  place-items:center!important;
+  border-radius:var(--ux-radius-full)!important;
+  font-size:var(--ux-type-caption-size)!important;
+  font-weight:900!important
+}
+.onboardingStageList>li>strong{
+  min-width:0!important;
+  font-size:var(--ux-type-caption-size)!important;
+  line-height:1.3!important;
+  overflow-wrap:anywhere!important
+}
+.onboardingStageDone .onboardingStageNumber{
+  background:var(--namaa-green-700)!important;
+  color:var(--ux-text-inverse)!important
+}
+.onboardingStageCurrent{
+  border-color:var(--namaa-green-700)!important;
+  background:color-mix(in srgb,var(--namaa-green-700) 8%,var(--namaa-card))!important
+}
+.onboardingStageCurrent .onboardingStageNumber{
+  background:var(--namaa-green-900)!important;
+  color:var(--ux-text-inverse)!important
+}
+.intakeActions{
+  gap:var(--ux-space-2)!important
+}
+.intakeActions>button{
+  min-height:48px!important
+}
+.intakeActions>button svg{
+  width:20px!important;
+  height:20px!important;
+  flex:0 0 20px!important
+}
+.mobileQuestionByQuestionButton,
+.intakeActions .primaryActionButton{
+  font-size:var(--ux-type-body-sm-size)!important;
+  font-weight:900!important
+}
+
+@media(max-width:767px){
+  .onboardingIntakeHeader{
+    min-height:58px!important;
+    padding:var(--ux-space-2) var(--ux-space-3)!important;
+    gap:var(--ux-space-2)!important
+  }
+  .onboardingIntakeHeader>div:first-child>strong{
+    font-size:var(--ux-type-body-size)!important
+  }
+  .onboardingReviewPreviousButton{
+    width:40px!important;
+    height:40px!important;
+    min-width:40px!important;
+    padding:0!important;
+    justify-content:center!important
+  }
+  .onboardingReviewPreviousButton span{
+    position:absolute!important;
+    width:1px!important;
+    height:1px!important;
+    padding:0!important;
+    margin:-1px!important;
+    overflow:hidden!important;
+    clip:rect(0,0,0,0)!important;
+    white-space:nowrap!important;
+    border:0!important
+  }
+  .onboardingStageOverview{
+    padding:var(--ux-space-2)!important
+  }
+  .onboardingStageList{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:var(--ux-space-1)!important
+  }
+  .onboardingStageList>li{
+    min-height:42px!important;
+    grid-template-columns:26px minmax(0,1fr)!important;
+    padding:var(--ux-space-1) var(--ux-space-2)!important
+  }
+  .onboardingStageNumber{
+    width:26px!important;
+    height:26px!important;
+    min-width:26px!important
+  }
+}
