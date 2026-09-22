@@ -1,5 +1,6 @@
 import type { ConversationRoomKey } from '@/lib/conversations/store';
 import { CENTRAL_ACTIVE_POLICIES } from '@/content/governance/central-active-policies';
+import { CENTRAL_ACTIVE_REGULATIONS } from '@/content/governance/central-active-regulations';
 
 export type GovernedDocumentSection = {
   ref:string;
@@ -40,9 +41,7 @@ export const governedRoomDetails:Record<ConversationRoomKey,GovernedRoomDetail>=
     governanceNote:'محافظ نماء أعلى دور تنفيذي إشرافي، بينما يقود مدير بنك نماء المركزي التشغيل اليومي للمركزي ويتابع أصحاب المسؤوليات مباشرة.',
     sourceRefs:['ROLE-GOV','حوكمة-تأسيس-٢٢'],
     records:[
-      {referenceCode:'NMC-REG-01',title:'سجل القرارات التأسيسية والحالة النهائية',kind:'record',version:'v2.0',sourceUrl:'https://drive.google.com/file/d/1ry5QdRp_0dJiMasHl8toFaU_VZRTuLG1/view'},
-      {referenceCode:'NMC-REG-02',title:'الرقابة والتدقيق وسجل الأثر — بنك نماء المركزي',kind:'record',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1TQ62P-prHNBxND75KgFa0KllyOl-jPgrCU5LQ6WLr54/edit'},
-      {referenceCode:'NMC-REG-03',title:'اللجان والقرارات والاجتماعات — بنك نماء المركزي',kind:'record',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1oupBoVP7fe1JUR-zr46kUfqePhC6MHk-__0UkoROcrE/edit'},
+      ...CENTRAL_ACTIVE_REGULATIONS.map(regulation=>({referenceCode:regulation.referenceCode,title:regulation.title,kind:'record' as const,version:regulation.version??undefined})),
       {referenceCode:'NMC-REF-01',title:'تقرير المراجعة الختامية وإغلاق بنك نماء المركزي',kind:'reference',version:'v2.0',sourceUrl:'https://drive.google.com/file/d/1buvI-zbUmyx2_z0bvm3TafN_LKPpIUWV/view'},
     ],
     policies:[
@@ -64,7 +63,8 @@ export const governedRoomDetails:Record<ConversationRoomKey,GovernedRoomDetail>=
     governanceNote:'وحدة تشغيلية مستقلة داخل بنك نماء المركزي وليست مستشارًا ولا بنكًا تابعًا. وظيفتها إثبات ومطابقة وتسوية البيانات؛ لا تملك الميزانية ولا البنود. تستدعي أحد أصحاب المسؤوليات المالية الخمسة أو المستشار الاقتصادي عند الحاجة، وتوجّه الناتج للجهة المختصة.',
     sourceRefs:['دور-مركز-المطابقة','عمليات-استقبال-٢٠٩','خوارزمية-توجيه-١٦٤'],
     records:[
-      {referenceCode:'OPS-REG-01',title:'الرقابة والتدقيق وسجل الأثر — بنك نماء المركزي',kind:'record',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1TQ62P-prHNBxND75KgFa0KllyOl-jPgrCU5LQ6WLr54/edit'},
+      {referenceCode:'NMC-REG-05',title:'لائحة سجل الأثر والتدقيق',kind:'record',version:'v1.0'},
+      {referenceCode:'NMC-REG-06',title:'لائحة المتابعة والتقارير الدورية',kind:'record',version:'v1.0'},
     ],
     policies:[
       {referenceCode:'OPS-REF-01',title:'تأسيس مركز العمليات والمطابقة — بنك نماء المركزي',kind:'reference',version:'v0.1',sourceUrl:'https://docs.google.com/document/d/1jtP85JWnHPHoCzRxZFOwqDhyFmRNHnCBYP-0R51fKr0/edit'},
@@ -158,8 +158,9 @@ export const governedRoomDetails:Record<ConversationRoomKey,GovernedRoomDetail>=
     governanceNote:'هو المدخل الحواري لمركز الحوكمة والاجتماعات، مع حفظ النسخ التاريخية والتعديلات الرسمية.',
     sourceRefs:['دور-أمين-السر','حوكمة-عرض-٢١١','حوكمة-مراجعة-٢١٢'],
     records:[
-      {referenceCode:'SEC-REG-01',title:'اللجان والقرارات والاجتماعات — بنك نماء المركزي',kind:'record',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1oupBoVP7fe1JUR-zr46kUfqePhC6MHk-__0UkoROcrE/edit'},
-      {referenceCode:'SEC-REG-02',title:'الرقابة والتدقيق وسجل الأثر — بنك نماء المركزي',kind:'record',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1TQ62P-prHNBxND75KgFa0KllyOl-jPgrCU5LQ6WLr54/edit'},
+      {referenceCode:'NMC-REG-02',title:'لائحة اللجان والاجتماعات والقرارات',kind:'record',version:'v1.0'},
+      {referenceCode:'NMC-REG-05',title:'لائحة سجل الأثر والتدقيق',kind:'record',version:'v1.0'},
+      {referenceCode:'NMC-REG-06',title:'لائحة المتابعة والتقارير الدورية',kind:'record',version:'v1.0'},
     ],
     policies:[
       {referenceCode:'NMC-POL-08',title:'سياسة إدارة السياسات واللوائح والتغيير المؤسسي',kind:'policy',version:'v1.0'},
