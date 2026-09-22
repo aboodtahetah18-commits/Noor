@@ -7298,16 +7298,6 @@
   object-position:center 8%!important;
   transform:scale(1.14)
 }
-.centralManagerPortrait{
-  background-image:url('/brand/ndos/personas/namaa-algorithmic-personas.jpg')!important;
-  background-repeat:no-repeat!important;
-  background-size:2150px 1434px!important;
-  background-position:-150px -815px!important;
-  background-color:var(--namaa-green-900)!important
-}
-.centralManagerPortrait img{
-  opacity:0!important
-}
 .entityTeamGrid>button>span:nth-child(2){
   min-width:0!important;
   display:grid!important;
