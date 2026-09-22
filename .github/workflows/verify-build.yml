@@ -2,7 +2,7 @@ name: Verify Build
 
 on:
   push:
-    branches: [main]
+    branches: [main, "feature/refine-conversation-identity-controls"]
   pull_request:
     branches: [main]
   workflow_dispatch:
