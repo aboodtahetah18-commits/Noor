@@ -75,10 +75,12 @@ export function GovernorOnboardingIntake({
   step,
   onAccepted,
   onClose,
+  onReviewPreviousData,
 }:{
   step:string;
   onAccepted:(message:MessagePayload,reply:MessagePayload|null,nextStep:string)=>void;
   onClose:()=>void;
+  onReviewPreviousData?:()=>void;
 }){
   const intakeStep=INTAKE_STAGES.some(stage=>stage.key===step) ? step as IntakeStep : null;
   const structuredStep=([
@@ -288,7 +290,7 @@ export function GovernorOnboardingIntake({
   return <section className={styles.onboardingIntake} aria-label={title}>
     <header className={styles.onboardingIntakeHeader}>
       <div><strong>{title}</strong><small>المرحلة {currentStageIndex+1} من {INTAKE_STAGES.length}</small></div>
-      <div className={styles.onboardingHeaderActions}><button type="button" className={styles.onboardingCloseButton} onClick={onClose} aria-label="إغلاق صفحة الاستكمال"><LucideIcon name="x" size={20}/></button></div>
+      <div className={styles.onboardingHeaderActions}>{currentStageIndex>0&&onReviewPreviousData&&<button type="button" className={styles.onboardingReviewPreviousButton} onClick={onReviewPreviousData}><LucideIcon name="pencil" size={20}/><span>تعديل بيانات سابقة</span></button>}<button type="button" className={styles.onboardingCloseButton} onClick={onClose} aria-label="إغلاق صفحة الاستكمال"><LucideIcon name="x" size={20}/></button></div>
     </header>
 
     <section className={styles.onboardingStageOverview} aria-label="مراحل التأسيس">
@@ -488,10 +490,10 @@ export function GovernorOnboardingIntake({
     {error&&<div className={styles.intakeError} role="alert">{error}</div>}
     <div className={styles.intakeActions}>
       <small>لن ينشئ هذا المكوّن أي تحويل أو سداد أو استثمار. لا ترسل رقم البطاقة كاملًا أو رمز الأمان أو الرقم السري أو رمز التحقق؛ يكفي آخر 4 أرقام فقط.</small>
-      <button type="button" className={styles.mobileQuestionByQuestionButton} onClick={onClose}><LucideIcon name="messageSquareText" size={16}/><span>المتابعة سؤالًا بسؤال في الدردشة</span></button>
+      <button type="button" className={styles.mobileQuestionByQuestionButton} onClick={onClose}><LucideIcon name="messageSquareText" size={20}/><span>متابعة بالدردشة</span></button>
       <button type="button" className={styles.primaryActionButton} onClick={submitCurrent} disabled={saving}>
         <LucideIcon name="circleCheck" size={20}/>
-        <span>{saving?'جارٍ الحفظ…':structuredStep?'تأكيد المجموعة والمتابعة':intakeStep==='review'?'تثبيت ملف التأسيس':'حفظ المرحلة والمتابعة'}</span>
+        <span>{saving?'جارٍ الحفظ…':structuredStep?'تأكيد ومتابعة':intakeStep==='review'?'تثبيت الملف':'حفظ ومتابعة'}</span>
       </button>
     </div>
   </section>;
