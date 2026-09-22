@@ -320,8 +320,8 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
       .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
       .replace(/\n/g,'<br/>');
     popup.document.write(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"/><title>${safeTitle}</title><style>
-      body{font-family:Arial,sans-serif;direction:rtl;margin:40px;color:#10251f;line-height:1.9}
-      h1{color:#0f6f59;font-size:24px;margin-bottom:12px} .meta{color:#667a73;margin-bottom:24px}
+      body{font-family:Arial,sans-serif;direction:rtl;margin:40px;line-height:1.9}
+      h1{font-size:24px;margin-bottom:12px} .meta{margin-bottom:24px}
       .content{white-space:normal;font-size:15px} @media print{body{margin:18mm}}
     </style></head><body><h1>${safeTitle}</h1><div class="meta">نسخة للاطلاع — نماء</div><div class="content">${safeContent}</div><script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></body></html>`);
     popup.document.close();
