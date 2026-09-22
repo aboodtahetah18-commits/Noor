@@ -73,7 +73,7 @@ for (const selector of ['.mustaqbali-topbar','.mustaqbali-sidebar','.p47-page-he
 }
 
 const sourceOfTruth = read('docs/ui-ux/CURRENT_SOURCE_OF_TRUTH.md');
-for (const marker of ['00_نماء_الهوية_البصرية_المرجع_المعتمد_v1.0_2026-09-15','Noto Sans Arabic']) {
+for (const marker of ['نماء — الهوية البصرية المعتمدة v1.0 — 2026-09-22','Noto Sans Arabic']) {
   if (!sourceOfTruth.includes(marker)) fail.push(`approved Namaa source-of-truth marker missing: ${marker}`);
 }
 
