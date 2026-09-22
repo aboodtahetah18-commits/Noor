@@ -237,22 +237,15 @@
   min-height:var(--ux-space-24)
 }
 .centralChatHeader .chatHeaderBuilding{
-  opacity:.14
+  opacity:.22
 }
-.chatBuildingThumb{
-  position:relative;
-  width:var(--ux-space-20);
-  height:var(--ux-space-16);
-  flex:0 0 var(--ux-space-20);
-  overflow:hidden;
-  border:1px solid var(--namaa-border-strong);
-  border-radius:var(--ux-radius-3);
-  background:var(--namaa-card);
-  box-shadow:var(--ux-shadow-xs)
-}
-.chatBuildingThumb img{
-  object-fit:cover;
-  object-position:center 44%
+.centralChatHeader::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:color-mix(in srgb,var(--namaa-card) 72%,transparent);
+  pointer-events:none;
+  z-index:1
 }
 
 .chatIdentity{
@@ -1248,10 +1241,11 @@
 }
 .personaBankBadge{
   position:absolute;
-  inset-inline-end:var(--ux-space-1);
+  left:50%;
   bottom:var(--ux-space-1);
-  width:var(--ux-size-8);
-  height:var(--ux-size-8);
+  transform:translateX(-50%);
+  width:var(--ux-size-6);
+  height:var(--ux-size-6);
   border:1px solid var(--namaa-border-strong);
   border-radius:var(--ux-radius-full);
   background:var(--namaa-card);
@@ -3361,9 +3355,10 @@
   padding:var(--ux-space-3)
 }
 .algorithmRoleHero{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
+  direction:rtl;
+  display:grid;
+  grid-template-columns:var(--ux-space-24) minmax(0,1fr);
+  align-items:center;
   gap:var(--ux-space-3);
   padding:var(--ux-space-3);
   border:1px solid var(--namaa-border-strong);
@@ -3371,19 +3366,10 @@
   background:var(--namaa-surface-warm)
 }
 .algorithmRoleHero>div{
+  grid-column:2;
   min-width:0;
   display:grid;
   gap:var(--ux-space-1)
-}
-.algorithmRoleHero span{
-  width:fit-content;
-  padding:var(--ux-space-1) var(--ux-space-2);
-  border:1px solid var(--namaa-border);
-  border-radius:var(--ux-radius-full);
-  background:var(--namaa-card);
-  color:var(--namaa-green-900);
-  font-size:var(--ux-type-caption-size);
-  font-weight:900
 }
 .algorithmRoleHero strong{
   color:var(--ux-text-primary);
@@ -3401,6 +3387,8 @@
   color:var(--namaa-green-900)
 }
 .algorithmRolePortrait{
+  grid-column:1;
+  grid-row:1;
   position:relative;
   width:var(--ux-space-24);
   height:var(--ux-space-24);
@@ -5301,6 +5289,39 @@
 .governedClauseRow>p{
   padding-inline-start:var(--ux-space-8)
 }
+.governedInlineFlow{
+  display:grid;
+  gap:var(--ux-space-2);
+  margin:var(--ux-space-0);
+  padding:var(--ux-space-0);
+  list-style:none
+}
+.governedInlineFlow li{
+  display:grid;
+  grid-template-columns:var(--ux-size-8) minmax(0,1fr);
+  align-items:center;
+  gap:var(--ux-space-2);
+  padding:var(--ux-space-2) var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-2);
+  background:var(--namaa-surface-warm)
+}
+.governedInlineFlow li>span{
+  display:grid;
+  place-items:center;
+  width:var(--ux-size-8);
+  height:var(--ux-size-8);
+  border-radius:var(--ux-radius-full);
+  background:var(--namaa-card);
+  color:var(--namaa-green-900);
+  font-size:var(--ux-type-caption-size);
+  font-weight:900
+}
+.governedInlineFlow li>strong{
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-body-sm-size);
+  line-height:1.6
+}
 .governedTableScroll{
   width:100%;
   overflow-x:auto;
@@ -5494,6 +5515,25 @@
   color:var(--ux-text-primary);
   font-size:var(--ux-type-body-sm-size);
   overflow-wrap:anywhere
+}
+.governedMetaStrip>div{
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-2)
+}
+.governedMetaType{
+  background:var(--namaa-surface-warm)
+}
+.governedMetaVersion{
+  background:var(--namaa-cream)
+}
+.governedMetaStatus{
+  background:color-mix(in srgb,var(--namaa-green-700) 12%,var(--namaa-card))
+}
+.governedMetaStatus strong{
+  color:var(--namaa-green-900)
+}
+.governedMetaSource{
+  background:color-mix(in srgb,var(--namaa-gold-500) 14%,var(--namaa-card))
 }
 .governedFlowCard{
   display:grid;
