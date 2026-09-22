@@ -5434,6 +5434,50 @@
     overflow:auto!important
   }
 
+  .chatHeaderWithBuilding .chatHeaderBuilding,
+  .centralChatHeader.chatHeaderWithBuilding .chatHeaderBuilding{
+    display:block;
+    opacity:1;
+    z-index:1
+  }
+
+  .chatHeaderWithBuilding .chatHeaderBuilding img{
+    object-fit:cover;
+    object-position:center 42%
+  }
+
+  .chatHeaderWithBuilding .chatHeaderShade{
+    display:block;
+    z-index:2;
+    background:color-mix(in srgb,var(--namaa-green-900) 34%,transparent)
+  }
+
+  .chatHeaderWithBuilding .chatHeaderForeground{
+    position:relative;
+    z-index:3
+  }
+
+  .algorithmRoleHero{
+    grid-template-columns:minmax(0,1fr) var(--ux-space-24)!important;
+    align-items:center!important
+  }
+
+  .algorithmRolePortrait{
+    width:var(--ux-space-24)!important;
+    height:var(--ux-space-24)!important;
+    min-width:var(--ux-space-24)!important;
+    min-height:var(--ux-space-24)!important;
+    flex-basis:var(--ux-space-24)!important;
+    padding:var(--ux-space-0)!important;
+    display:block!important;
+    overflow:hidden!important
+  }
+
+  .algorithmRolePortraitImage{
+    width:100%!important;
+    height:100%!important
+  }
+
 }
 
 
@@ -5927,48 +5971,3 @@
   transform:scale(1.08)
 }
 
-@media(max-width:767px){
-  .chatHeaderWithBuilding .chatHeaderBuilding,
-  .centralChatHeader.chatHeaderWithBuilding .chatHeaderBuilding{
-    display:block;
-    opacity:1;
-    z-index:1
-  }
-
-  .chatHeaderWithBuilding .chatHeaderBuilding img{
-    object-fit:cover;
-    object-position:center 42%
-  }
-
-  .chatHeaderWithBuilding .chatHeaderShade{
-    display:block;
-    z-index:2;
-    background:color-mix(in srgb,var(--namaa-green-900) 34%,transparent)
-  }
-
-  .chatHeaderWithBuilding .chatHeaderForeground{
-    position:relative;
-    z-index:3
-  }
-
-  .algorithmRoleHero{
-    grid-template-columns:minmax(0,1fr) var(--ux-space-24)!important;
-    align-items:center!important
-  }
-
-  .algorithmRolePortrait{
-    width:var(--ux-space-24)!important;
-    height:var(--ux-space-24)!important;
-    min-width:var(--ux-space-24)!important;
-    min-height:var(--ux-space-24)!important;
-    flex-basis:var(--ux-space-24)!important;
-    padding:var(--ux-space-0)!important;
-    display:block!important;
-    overflow:hidden!important
-  }
-
-  .algorithmRolePortraitImage{
-    width:100%!important;
-    height:100%!important
-  }
-}
