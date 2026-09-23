@@ -357,22 +357,32 @@ export function GovernorOnboardingIntake({
       {income.actual_net&&Number(income.actual_net)!==expectedNet&&<label className={styles.intakeDifference}><span>سبب الفرق بين المحسوب والفعلي</span><textarea rows={2} value={income.difference_explanation} onChange={e=>setIncome(v=>({...v,difference_explanation:e.target.value}))}/></label>}
     </div>}
 
-    {intakeStep==='accounts'&&<div className={`${styles.intakeCards} ${styles.desktopStructuredIntake}`}>
-      {accounts.map((item,index)=><article className={styles.intakeCard} key={index}>
-        <div className={styles.intakeCardHeader}><strong>حساب {index+1}</strong>{accounts.length>1&&<button type="button" onClick={()=>setAccounts(current=>current.filter((_,i)=>i!==index))} aria-label="حذف الحساب"><LucideIcon name="trash2" size={16}/></button>}</div>
-        <div className={styles.intakeGrid}>
-          <label><span>البنك أو الجهة</span><input value={item.bank_name} onChange={e=>updateAccount(index,{bank_name:e.target.value})}/></label>
-          <label><span>نوع الحساب</span><select value={item.account_type} onChange={e=>updateAccount(index,{account_type:e.target.value})}><option value="BANK">جاري/بنكي</option><option value="SAVINGS">ادخاري</option><option value="CASH">نقدي</option><option value="INVESTMENT">استثماري</option><option value="OTHER">أخرى</option></select></label>
-          <label><span>معرف مختصر</span><input placeholder="مثال: حساب الراتب" value={item.short_identifier} onChange={e=>updateAccount(index,{short_identifier:e.target.value})}/></label>
-          <label><span>رقم الآيبان إن رغبت</span><input inputMode="text" autoCapitalize="characters" placeholder="SA…" value={item.iban} onChange={e=>updateAccount(index,{iban:e.target.value.toUpperCase()})}/></label>
-          <label><span>آخر 4 أرقام من البطاقة</span><input inputMode="numeric" maxLength={4} placeholder="مثال: 6883" value={item.card_last4} onChange={e=>updateAccount(index,{card_last4:e.target.value.replace(/\D/g,'').slice(0,4)})}/></label>
-          <label><span>نوع البطاقة</span><select value={item.card_type} onChange={e=>updateAccount(index,{card_type:e.target.value})}><option>مدى</option><option>فيزا</option><option>ماستركارد</option><option>أخرى</option></select></label>
-          <label><span>الاستخدام الحالي</span><input placeholder="راتب، ادخار، مصروف…" value={item.usage} onChange={e=>updateAccount(index,{usage:e.target.value})}/></label>
-          <label><span>الرصيد الافتتاحي</span><input type="number" min="0" inputMode="decimal" value={item.opening_balance} onChange={e=>updateAccount(index,{opening_balance:e.target.value})}/></label>
-          <label className={styles.intakeCheckbox}><input type="checkbox" checked={item.included_in_namaa} onChange={e=>updateAccount(index,{included_in_namaa:e.target.checked})}/><span>إدخاله ضمن نماء</span></label>
+    {intakeStep==='accounts'&&<div className={styles.desktopStructuredIntake}>
+      <div className={styles.desktopIntakeTableShell}>
+        <div className={styles.desktopIntakeTableHeader}>
+          <div>
+            <strong>الحسابات المالية</strong>
+            <small>أضف الحساب من نافذة مستقلة؛ وبعد الحفظ يظهر مباشرة كسطر داخل الجدول.</small>
+          </div>
+          <button type="button" className={styles.intakeAddButton} onClick={()=>setMobileEditor({kind:'accounts',index:null,draft:emptyAccount()})}><LucideIcon name="plus" size={18}/><span>إضافة حساب</span></button>
         </div>
-      </article>)}
-      <button type="button" className={styles.intakeAddButton} onClick={()=>setAccounts(current=>[...current,emptyAccount()])}><LucideIcon name="plus" size={16}/><span>إضافة حساب</span></button>
+        <div className={styles.desktopIntakeTableWrap}>
+          <table className={styles.desktopIntakeTable}>
+            <thead><tr><th>الحساب</th><th>البنك/الجهة</th><th>النوع</th><th>الاستخدام</th><th>الرصيد الافتتاحي</th><th>داخل نماء</th><th>الإجراءات</th></tr></thead>
+            <tbody>
+              {accountRows.length?accountRows.map(({item,index},rowIndex)=><tr key={index}>
+                <td><strong>{item.short_identifier||('حساب '+(rowIndex+1))}</strong>{item.card_last4?<small>•••• {item.card_last4}</small>:null}</td>
+                <td>{item.bank_name||'—'}</td>
+                <td>{({BANK:'جاري/بنكي',SAVINGS:'ادخاري',CASH:'نقدي',INVESTMENT:'استثماري',OTHER:'أخرى'} as Record<string,string>)[item.account_type]??item.account_type}</td>
+                <td>{item.usage||'—'}</td>
+                <td>{item.opening_balance||'0'} ر.س</td>
+                <td>{item.included_in_namaa?'نعم':'لا'}</td>
+                <td><div className={styles.desktopIntakeTableActions}><button type="button" onClick={()=>setMobileEditor({kind:'accounts',index,draft:{...item}})}><LucideIcon name="pencil" size={18}/><span>تعديل</span></button><button type="button" onClick={()=>setAccounts(current=>current.filter((_,i)=>i!==index))}><LucideIcon name="trash2" size={18}/><span>حذف</span></button></div></td>
+              </tr>):<tr><td colSpan={7}><div className={styles.desktopIntakeTableEmpty}><strong>لا توجد حسابات مضافة</strong><small>اضغط «إضافة حساب» وأدخل بيانات الحساب الأول.</small></div></td></tr>}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>}
 
     {intakeStep==='obligations'&&<div className={`${styles.intakeCards} ${styles.desktopStructuredIntake}`}>
