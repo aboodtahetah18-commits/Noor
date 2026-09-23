@@ -10933,3 +10933,51 @@
     background:color-mix(in srgb,var(--namaa-green-900) 7%,var(--namaa-card))!important;
   }
 }
+
+
+/* Latest capture fixes: keep wide record editor above the app chrome and fully centered. */
+@media (min-width:768px){
+  .mobileRecordEditorOverlay{
+    position:fixed!important;
+    inset:0!important;
+    z-index:5000!important;
+    isolation:isolate!important;
+    display:block!important;
+    pointer-events:auto!important;
+  }
+
+  .mobileRecordEditorScrim{
+    position:absolute!important;
+    inset:0!important;
+    z-index:1!important;
+    display:block!important;
+    background:rgb(7 43 33 / 52%)!important;
+    backdrop-filter:blur(6px)!important;
+  }
+
+  .mobileRecordEditorSheet,
+  .mobileRecordEditorSheetCompact{
+    z-index:2!important;
+    top:50%!important;
+    right:50%!important;
+    bottom:auto!important;
+    left:auto!important;
+    inset:auto!important;
+    transform:translate(50%,-50%)!important;
+    width:min(94vw,1420px)!important;
+    height:min(90dvh,920px)!important;
+    max-height:90dvh!important;
+    overflow:hidden!important;
+  }
+
+  .mobileRecordEditorBody{
+    overflow:auto!important;
+    overscroll-behavior:contain!important;
+  }
+
+  .mobileRecordEditorActions{
+    position:relative!important;
+    bottom:auto!important;
+    z-index:3!important;
+  }
+}
