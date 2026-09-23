@@ -31,7 +31,6 @@ button,input,select,textarea{font:inherit;color:inherit;}
 .app-page{background:var(--ux-surface-canvas)!important;color:var(--ux-text-primary)!important;padding-block:var(--ux-space-8)!important;}
 .page-shell,.dashboard-shell,.p47-content-shell{width:min(100%,var(--ux-container-content))!important;max-width:var(--ux-container-content)!important;margin-inline:auto!important;padding-inline:var(--ux-space-8)!important;}
 .narrow-shell{width:min(100%,var(--ux-container-form))!important;max-width:var(--ux-container-form)!important;}
-.p47-desktop-sidebar{width:240px!important;background:var(--ux-surface-inverse)!important;box-shadow:var(--ux-shadow-md)!important;}
 /* Removed obsolete 1440px desktop-sidebar draft block. */
 @media(min-width:1440px){.page-shell,.dashboard-shell,.p47-content-shell{padding-inline:var(--ux-space-10)!important;}}
 @media(min-width:768px) and (max-width:1023px){.desktop-top-nav-wrap,.p47-mobile-topbar,.mobile-bottom-nav{display:none!important;}.tablet-top-nav-wrap{display:block!important;}.page-shell,.dashboard-shell,.p47-content-shell{padding-inline:var(--ux-space-6)!important;}}
