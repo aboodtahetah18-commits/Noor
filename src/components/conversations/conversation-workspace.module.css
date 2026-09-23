@@ -10348,14 +10348,81 @@
 }
 
 
-/* Wide structured onboarding — repeatable records use table + modal. */
+/* ========================================================================== */
+/* CANONICAL WIDE CONVERSATION + ONBOARDING LAYER                             */
+/* Tablet/laptop/desktop only. Mobile definitions above remain untouched.      */
+/* ========================================================================== */
 @media (min-width:768px){
+  .page,
+  .workspace,
+  .roomsPane,
+  .contextPane,
+  .chatHeader,
+  .paneTitle,
+  .composer,
+  .contextCard,
+  .agentMessage,
+  .roomItemShell,
+  .roomItem,
+  .desktopIntakeTableWrap,
+  .desktopIntakeTable,
+  .desktopIntakeTable th,
+  .desktopIntakeTable td,
+  .mobileRecordEditorSheet,
+  .mobileRecordEditorHeader,
+  .mobileRecordEditorBody,
+  .mobileRecordEditorActions {
+    border-color:var(--namaa-border)!important;
+  }
+
+  .page,
+  .roomsPane,
+  .contextPane,
+  .chatHeader,
+  .paneTitle,
+  .composer,
+  .contextCard,
+  .agentMessage,
+  .roomItemShell,
+  .roomItem,
+  .desktopIntakeTableWrap,
+  .desktopIntakeTable,
+  .mobileRecordEditorSheet,
+  .mobileRecordEditorHeader,
+  .mobileRecordEditorBody,
+  .mobileRecordEditorActions {
+    background:var(--namaa-card)!important;
+  }
+
+  .chatPane,
+  .messages,
+  .onboardingIntake,
+  .desktopIntakeTableShell,
+  .simpleOnboardingStage,
+  .incomeReconciliation {
+    background:var(--namaa-surface-warm)!important;
+  }
+
+  .workspaceHeader{
+    display:none!important;
+  }
+
+  .userMessage,
+  .activeRoom {
+    background:color-mix(in srgb,var(--namaa-green-900) 10%,var(--namaa-surface-warm))!important;
+    border-color:color-mix(in srgb,var(--namaa-green-700) 35%,var(--namaa-border))!important;
+  }
+
+  .routingNote,
+  .desktopIntakeTable th {
+    background:color-mix(in srgb,var(--namaa-green-900) 7%,var(--namaa-card))!important;
+  }
+
   .desktopIntakeTableShell{
     display:grid;
     gap:12px;
     border:1px solid var(--namaa-border);
     border-radius:18px;
-    background:var(--namaa-surface-warm);
     padding:14px;
   }
 
@@ -10371,6 +10438,14 @@
     gap:4px;
   }
 
+  .desktopIntakeHeaderActions{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:flex-end;
+    gap:8px;
+  }
+
   .desktopIntakeTableHeader strong{
     color:var(--ux-text-primary);
     font-size:18px;
@@ -10382,14 +10457,28 @@
     line-height:1.6;
   }
 
+  .desktopIntakeHeaderActions .intakeAddButton,
+  .desktopIntakeHeaderActions .intakeNoneButton,
   .desktopIntakeTableHeader .intakeAddButton{
     width:auto;
+    min-width:140px;
+    min-height:42px;
+    margin:0;
+  }
+
+  .desktopIntakeTableHeader .intakeAddButton{
     min-width:150px;
-    min-height:44px;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    gap:8px;
+  }
+
+  .desktopIntakeHeaderActions .intakeNoneButton{
+    border:1px solid var(--namaa-border);
+    border-radius:12px;
+    background:var(--namaa-surface-warm);
+    color:var(--ux-text-primary);
+    padding:8px 12px;
+    font:inherit;
+    font-size:12px;
+    font-weight:800;
   }
 
   .desktopIntakeTableWrap{
@@ -10397,7 +10486,7 @@
     overflow:auto;
     border:1px solid var(--namaa-border);
     border-radius:14px;
-    background:var(--namaa-card);
+    box-shadow:none!important;
   }
 
   .desktopIntakeTable{
@@ -10415,7 +10504,6 @@
   }
 
   .desktopIntakeTable th{
-    background:color-mix(in srgb,var(--namaa-green-900) 8%,var(--namaa-card));
     color:var(--namaa-green-900);
     font-size:12px;
     font-weight:900;
@@ -10426,13 +10514,12 @@
     font-size:13px;
   }
 
-  .desktopIntakeTable td strong{
+  .desktopIntakeTable td strong,
+  .desktopIntakeTable td small{
     display:block;
-    color:var(--ux-text-primary);
   }
 
   .desktopIntakeTable td small{
-    display:block;
     margin-top:3px;
     color:var(--ux-text-secondary);
   }
@@ -10452,11 +10539,11 @@
   }
 
   .desktopIntakeTableActions button{
-    min-height:36px;
+    min-height:40px!important;
     display:inline-flex;
     align-items:center;
-    gap:6px;
-    padding:6px 10px;
+    gap:7px!important;
+    padding:8px 11px!important;
     border:1px solid var(--namaa-border);
     border-radius:10px;
     background:var(--namaa-card);
@@ -10464,403 +10551,6 @@
     font:inherit;
     font-size:12px;
     font-weight:800;
-  }
-
-  .desktopIntakeTableEmpty{
-    min-height:120px;
-    display:grid;
-    place-items:center;
-    align-content:center;
-    gap:4px;
-    text-align:center;
-  }
-
-  .desktopIntakeTableEmpty strong{
-    color:var(--ux-text-primary);
-  }
-
-  .desktopIntakeTableEmpty small{
-    color:var(--ux-text-secondary);
-  }
-
-  .mobileRecordEditorOverlay{
-    position:fixed;
-    inset:0;
-    z-index:180;
-    display:block;
-  }
-
-  .mobileRecordEditorScrim{
-    position:absolute;
-    inset:0;
-    border:0;
-    background:rgb(7 43 33 / 44%);
-    backdrop-filter:blur(3px);
-  }
-
-  .mobileRecordEditorSheet{
-    position:absolute;
-    top:50%;
-    right:50%;
-    transform:translate(50%,-50%);
-    width:min(calc(100vw - 80px),1040px);
-    max-height:88dvh;
-    overflow:auto;
-    display:grid;
-    grid-template-rows:auto minmax(0,1fr) auto;
-    border:1px solid var(--namaa-border-strong);
-    border-radius:20px;
-    background:var(--namaa-card);
-    box-shadow:0 24px 70px rgb(0 0 0 / 24%);
-  }
-
-  .mobileRecordEditorHeader{
-    position:sticky;
-    top:0;
-    z-index:2;
-    display:flex;
-    align-items:flex-start;
-    justify-content:space-between;
-    gap:16px;
-    padding:20px 22px;
-    border-bottom:1px solid var(--namaa-border);
-    background:var(--namaa-card);
-  }
-
-  .mobileRecordEditorHeader>div{
-    display:grid;
-    gap:4px;
-  }
-
-  .mobileRecordEditorHeader strong{
-    color:var(--ux-text-primary);
-    font-size:18px;
-  }
-
-  .mobileRecordEditorHeader small{
-    color:var(--ux-text-secondary);
-    font-size:12px;
-  }
-
-  .mobileRecordEditorHeader button{
-    width:42px;
-    height:42px;
-    display:grid;
-    place-items:center;
-    border:1px solid var(--namaa-border);
-    border-radius:12px;
-    background:var(--namaa-surface-warm);
-    color:var(--namaa-green-900);
-  }
-
-  .mobileRecordEditorBody{
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:16px;
-    padding:22px;
-    overflow:auto;
-  }
-
-  .mobileRecordEditorBody label{
-    display:grid;
-    gap:7px;
-  }
-
-  .mobileRecordEditorBody label>span{
-    color:var(--ux-text-primary);
-    font-size:13px;
-    font-weight:800;
-  }
-
-  .mobileRecordEditorBody input,
-  .mobileRecordEditorBody select{
-    width:100%;
-    min-height:46px;
-    border:1px solid var(--namaa-border);
-    border-radius:12px;
-    background:var(--namaa-surface-warm);
-    color:var(--ux-text-primary);
-    padding:10px 12px;
-    font:inherit;
-  }
-
-  .mobileFieldFull{
-    grid-column:1 / -1;
-  }
-
-  .mobileRecordEditorBody .intakeCheckbox{
-    display:flex!important;
-    align-items:center;
-    gap:10px;
-  }
-
-  .mobileRecordEditorBody .intakeCheckbox input{
-    width:22px;
-    min-height:22px;
-    height:22px;
-  }
-
-  .mobileRecordEditorActions{
-    position:sticky;
-    bottom:0;
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:10px;
-    padding:16px 22px 20px;
-    border-top:1px solid var(--namaa-border);
-    background:var(--namaa-card);
-  }
-
-  .mobileRecordEditorActions button{
-    min-height:46px;
-    border:1px solid var(--namaa-border);
-    border-radius:12px;
-    background:var(--namaa-surface-warm);
-    color:var(--ux-text-primary);
-    font:inherit;
-    font-weight:900;
-  }
-
-  .mobileRecordEditorActions button:last-child{
-    border-color:var(--namaa-green-700);
-    background:var(--namaa-green-900);
-    color:#fff;
-  }
-}
-
-
-@media (min-width:768px){
-  .desktopIntakeHeaderActions{
-    display:flex;
-    flex-wrap:wrap;
-    align-items:center;
-    justify-content:flex-end;
-    gap:8px;
-  }
-
-  .desktopIntakeHeaderActions .intakeAddButton,
-  .desktopIntakeHeaderActions .intakeNoneButton{
-    width:auto;
-    min-width:140px;
-    min-height:42px;
-    margin:0;
-  }
-
-  .desktopIntakeHeaderActions .intakeNoneButton{
-    border:1px solid var(--namaa-border);
-    border-radius:12px;
-    background:var(--namaa-surface-warm);
-    color:var(--ux-text-primary);
-    padding:8px 12px;
-    font:inherit;
-    font-size:12px;
-    font-weight:800;
-  }
-
-  .onboardingIntake{
-    background:var(--namaa-surface-warm);
-  }
-
-  .onboardingIntakeHeader,
-  .onboardingStageOverview,
-  .desktopIntakeTableShell,
-  .incomeReconciliation,
-  .simpleOnboardingStage{
-    background:var(--namaa-surface-warm);
-    border-color:var(--namaa-border);
-  }
-
-  .desktopIntakeTableWrap,
-  .desktopIntakeTable,
-  .desktopIntakeTable th,
-  .desktopIntakeTable td,
-  .mobileRecordEditorSheet,
-  .mobileRecordEditorHeader,
-  .mobileRecordEditorBody,
-  .mobileRecordEditorActions{
-    background:var(--namaa-card);
-    border-color:var(--namaa-border);
-  }
-
-  .desktopIntakeTable th{
-    background:color-mix(in srgb,var(--namaa-green-900) 9%,var(--namaa-card));
-  }
-
-  .mobileRecordEditorBody input,
-  .mobileRecordEditorBody select,
-  .mobileRecordEditorActions button,
-  .mobileRecordEditorHeader button{
-    background:var(--namaa-surface-warm);
-    border-color:var(--namaa-border);
-    color:var(--ux-text-primary);
-  }
-}
-
-@media (min-width:768px) and (max-width:1023px){
-  .desktopIntakeTableHeader{
-    align-items:stretch;
-    flex-direction:column;
-  }
-
-  .desktopIntakeHeaderActions{
-    justify-content:flex-start;
-  }
-
-  .mobileRecordEditorSheet{
-    width:min(calc(100vw - 32px),900px);
-  }
-
-  .mobileRecordEditorBody{
-    grid-template-columns:1fr;
-  }
-
-  .mobileFieldFull{
-    grid-column:auto;
-  }
-}
-
-
-/* Execution batch 3 — work center wide identity and dark-mode alignment. */
-@media (min-width:768px){
-  .page{
-    background:var(--namaa-surface-warm);
-    border-color:var(--namaa-border);
-    box-shadow:0 12px 30px rgb(31 41 55 / 7%);
-  }
-
-  .workspace,
-  .roomsPane,
-  .contextPane,
-  .chatPane,
-  .chatHeader,
-  .paneTitle,
-  .composer,
-  .contextCard,
-  .message,
-  .roomItemShell,
-  .roomItem,
-  .mobileRecordEditorSheet,
-  .mobileRecordEditorHeader,
-  .mobileRecordEditorBody,
-  .mobileRecordEditorActions {
-    border-color:var(--namaa-border);
-  }
-
-  .roomsPane,
-  .contextPane,
-  .chatHeader,
-  .paneTitle,
-  .composer,
-  .contextCard,
-  .agentMessage,
-  .roomItemShell,
-  .roomItem {
-    background:var(--namaa-card);
-  }
-
-  .chatPane,
-  .messages {
-    background:var(--namaa-surface-warm);
-    background-image:none;
-  }
-
-  .userMessage {
-    background:color-mix(in srgb,var(--namaa-green-900) 9%,var(--namaa-surface-warm));
-    border-color:color-mix(in srgb,var(--namaa-green-700) 35%,var(--namaa-border));
-  }
-
-  .routingNote,
-  .onboardingIntake,
-  .desktopIntakeTableShell {
-    background:color-mix(in srgb,var(--namaa-green-900) 5%,var(--namaa-surface-warm));
-    border-color:var(--namaa-border);
-  }
-
-  .activeRoom {
-    background:color-mix(in srgb,var(--namaa-gold-500) 18%,var(--namaa-card));
-    border-color:color-mix(in srgb,var(--namaa-gold-500) 60%,var(--namaa-border));
-  }
-
-  .sendButton {
-    background:var(--namaa-green-900);
-    color:var(--namaa-card);
-  }
-
-  .attachButton,
-  .secondaryButton,
-  .roomDetailButton {
-    background:var(--namaa-surface-warm);
-    color:var(--namaa-green-900);
-    border-color:var(--namaa-border);
-  }
-
-  .workspaceHeader{
-    display:none!important;
-  }
-}
-
-
-/* Wide onboarding record editor — near-full-screen on tablet/laptop/desktop. */
-@media (min-width:768px){
-  .mobileRecordEditorSheet,
-  .mobileRecordEditorSheetCompact{
-    position:fixed!important;
-    top:50%!important;
-    right:50%!important;
-    bottom:auto!important;
-    left:auto!important;
-    inset:auto!important;
-    transform:translate(50%,-50%)!important;
-    width:min(94vw,1420px)!important;
-    height:min(90dvh,920px)!important;
-    max-width:none!important;
-    max-height:90dvh!important;
-    border:1px solid var(--namaa-border)!important;
-    border-radius:24px!important;
-    overflow:hidden!important;
-    box-shadow:0 28px 90px rgb(0 0 0 / 28%)!important;
-    grid-template-rows:auto minmax(0,1fr) auto!important;
-    background:var(--namaa-card)!important;
-  }
-
-  .mobileRecordEditorHeader{
-    min-height:78px!important;
-    padding:18px 22px!important;
-  }
-
-  .mobileRecordEditorHeader button{
-    width:46px!important;
-    height:46px!important;
-    min-width:46px!important;
-    min-height:46px!important;
-  }
-
-  .mobileRecordEditorHeader button svg{
-    width:26px!important;
-    height:26px!important;
-  }
-
-  .mobileRecordEditorBody{
-    min-height:0!important;
-    overflow:auto!important;
-    grid-template-columns:repeat(2,minmax(0,1fr))!important;
-    gap:18px!important;
-    padding:22px 24px!important;
-  }
-
-  .mobileRecordEditorActions{
-    padding:16px 22px 18px!important;
-    gap:10px!important;
-  }
-
-  .mobileRecordEditorActions button{
-    min-height:48px!important;
-  }
-
-  .desktopIntakeTableActions button{
-    min-height:40px!important;
-    padding:8px 11px!important;
-    gap:7px!important;
   }
 
   .desktopIntakeTableActions button svg,
@@ -10872,71 +10562,16 @@
     min-width:22px!important;
     stroke-width:2.15!important;
   }
-}
 
-@media (min-width:768px) and (max-width:1023px){
-  .mobileRecordEditorSheet,
-  .mobileRecordEditorSheetCompact{
-    width:calc(100vw - 24px)!important;
-    height:calc(100dvh - 24px)!important;
-    max-height:calc(100dvh - 24px)!important;
-    border-radius:20px!important;
+  .desktopIntakeTableEmpty{
+    min-height:120px;
+    display:grid;
+    place-items:center;
+    align-content:center;
+    gap:4px;
+    text-align:center;
   }
 
-  .mobileRecordEditorBody{
-    grid-template-columns:1fr!important;
-    padding:18px!important;
-  }
-}
-
-
-/* Wide no-white policy — tablet/laptop/desktop only. */
-@media (min-width:768px){
-  .workspaceHeader,
-  .workspace,
-  .roomsPane,
-  .contextPane,
-  .chatHeader,
-  .chatHeaderBankMark,
-  .agentMessage,
-  .composer,
-  .contextCard,
-  .paneTitle,
-  .roomItemShell,
-  .roomItem,
-  .desktopIntakeTableWrap,
-  .desktopIntakeTable th,
-  .desktopIntakeTable td,
-  .mobileRecordEditorSheet,
-  .mobileRecordEditorHeader,
-  .mobileRecordEditorBody,
-  .mobileRecordEditorActions {
-    background:var(--namaa-card)!important;
-  }
-
-  .chatPane,
-  .messages,
-  .onboardingIntake,
-  .desktopIntakeTableShell,
-  .simpleOnboardingStage,
-  .incomeReconciliation {
-    background:var(--namaa-surface-warm)!important;
-  }
-
-  .activeRoom,
-  .userMessage {
-    background:color-mix(in srgb,var(--namaa-green-900) 10%,var(--namaa-surface-warm))!important;
-  }
-
-  .routingNote,
-  .desktopIntakeTable th {
-    background:color-mix(in srgb,var(--namaa-green-900) 7%,var(--namaa-card))!important;
-  }
-}
-
-
-/* Latest capture fixes: keep wide record editor above the app chrome and fully centered. */
-@media (min-width:768px){
   .mobileRecordEditorOverlay{
     position:fixed!important;
     inset:0!important;
@@ -10951,12 +10586,14 @@
     inset:0!important;
     z-index:1!important;
     display:block!important;
+    border:0!important;
     background:rgb(7 43 33 / 52%)!important;
     backdrop-filter:blur(6px)!important;
   }
 
   .mobileRecordEditorSheet,
   .mobileRecordEditorSheetCompact{
+    position:fixed!important;
     z-index:2!important;
     top:50%!important;
     right:50%!important;
@@ -10966,18 +10603,148 @@
     transform:translate(50%,-50%)!important;
     width:min(94vw,1420px)!important;
     height:min(90dvh,920px)!important;
+    max-width:none!important;
     max-height:90dvh!important;
     overflow:hidden!important;
+    display:grid!important;
+    grid-template-rows:auto minmax(0,1fr) auto!important;
+    border:1px solid var(--namaa-border)!important;
+    border-radius:24px!important;
+    background:var(--namaa-card)!important;
+    box-shadow:0 28px 90px rgb(0 0 0 / 28%)!important;
+  }
+
+  .mobileRecordEditorHeader{
+    position:relative!important;
+    top:auto!important;
+    min-height:78px!important;
+    padding:18px 22px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:16px!important;
+    border-bottom:1px solid var(--namaa-border)!important;
+    background:var(--namaa-card)!important;
+  }
+
+  .mobileRecordEditorHeader>div{
+    display:grid;
+    gap:4px;
+  }
+
+  .mobileRecordEditorHeader strong{
+    color:var(--ux-text-primary)!important;
+    font-size:18px!important;
+  }
+
+  .mobileRecordEditorHeader small{
+    color:var(--ux-text-secondary)!important;
+    font-size:12px!important;
+  }
+
+  .mobileRecordEditorHeader button{
+    width:46px!important;
+    height:46px!important;
+    min-width:46px!important;
+    min-height:46px!important;
+    display:grid!important;
+    place-items:center!important;
+    border:1px solid var(--namaa-border)!important;
+    border-radius:13px!important;
+    background:var(--namaa-surface-warm)!important;
+    color:var(--namaa-green-900)!important;
+  }
+
+  .mobileRecordEditorHeader button svg{
+    width:26px!important;
+    height:26px!important;
   }
 
   .mobileRecordEditorBody{
+    min-height:0!important;
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:18px!important;
+    padding:22px 24px!important;
     overflow:auto!important;
     overscroll-behavior:contain!important;
+  }
+
+  .mobileRecordEditorBody label{
+    min-width:0!important;
+    display:grid!important;
+    gap:7px!important;
+  }
+
+  .mobileRecordEditorBody input,
+  .mobileRecordEditorBody select{
+    width:100%!important;
+    min-height:46px!important;
+    border:1px solid var(--namaa-border)!important;
+    border-radius:12px!important;
+    background:var(--namaa-surface-warm)!important;
+    color:var(--ux-text-primary)!important;
+    padding:10px 12px!important;
+    font:inherit!important;
+  }
+
+  .mobileFieldFull,
+  .mobileRecordEditorBody .intakeCheckbox{
+    grid-column:1 / -1!important;
   }
 
   .mobileRecordEditorActions{
     position:relative!important;
     bottom:auto!important;
     z-index:3!important;
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:10px!important;
+    padding:16px 22px 18px!important;
+    border-top:1px solid var(--namaa-border)!important;
+    background:var(--namaa-card)!important;
+  }
+
+  .mobileRecordEditorActions button{
+    min-height:48px!important;
+    border:1px solid var(--namaa-border)!important;
+    border-radius:12px!important;
+    font:inherit!important;
+    font-weight:900!important;
+  }
+
+  .mobileRecordEditorActions button:last-child{
+    border-color:var(--namaa-green-700)!important;
+    background:var(--namaa-green-900)!important;
+    color:var(--ux-text-inverse)!important;
+  }
+}
+
+@media (min-width:768px) and (max-width:1023px){
+  .desktopIntakeTableHeader{
+    align-items:stretch!important;
+    flex-direction:column!important;
+  }
+
+  .desktopIntakeHeaderActions{
+    justify-content:flex-start!important;
+  }
+
+  .mobileRecordEditorSheet,
+  .mobileRecordEditorSheetCompact{
+    width:calc(100vw - 24px)!important;
+    height:calc(100dvh - 24px)!important;
+    max-height:calc(100dvh - 24px)!important;
+    border-radius:20px!important;
+  }
+
+  .mobileRecordEditorBody{
+    grid-template-columns:1fr!important;
+    padding:18px!important;
+  }
+
+  .mobileFieldFull,
+  .mobileRecordEditorBody .intakeCheckbox{
+    grid-column:auto!important;
   }
 }
