@@ -8181,3 +8181,237 @@
   border-color:var(--ux-border-emphasis)!important;
   color:var(--ux-text-primary)!important
 }
+
+
+/* Namaa final mobile refinement — drawer profile, collapsible stages, solid chat bubbles */
+
+/* Keep the user card physically inside the mobile drawer. */
+.mobileSideSheet{
+  position:absolute!important;
+}
+.sideBrandRow{
+  position:relative!important;
+}
+.drawerUserMenu{
+  position:absolute!important;
+  z-index:12!important;
+  top:52px!important;
+  inset-inline:0!important;
+  width:100%!important;
+  max-width:292px!important;
+  margin-inline:auto!important;
+  display:grid!important;
+  gap:var(--ux-space-1)!important;
+  padding:var(--ux-space-2)!important;
+  background:var(--namaa-card)!important;
+  border:1px solid var(--namaa-border-strong)!important;
+  border-radius:var(--ux-radius-3)!important;
+  box-shadow:var(--ux-shadow-md)!important;
+  box-sizing:border-box!important
+}
+.drawerUserMenu>.userMenuIdentity{
+  padding:var(--ux-space-2)!important;
+  gap:var(--ux-space-2)!important
+}
+.drawerUserMenu>.userMenuIdentity strong{
+  font-size:var(--ux-type-body-sm-size)!important
+}
+.drawerUserMenu>.userMenuIdentity small{
+  max-width:190px!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important
+}
+.drawerUserMenu>button{
+  min-height:40px!important;
+  border:0!important;
+  border-radius:var(--ux-radius-2)!important;
+  background:transparent!important;
+  color:var(--ux-text-primary)!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:var(--ux-space-2)!important;
+  padding:var(--ux-space-2)!important;
+  font:inherit!important;
+  font-size:var(--ux-type-caption-size)!important;
+  text-align:right!important
+}
+.drawerUserMenu>button:hover{
+  background:var(--namaa-surface-warm)!important
+}
+
+/* Active onboarding title must remain clearly visible over the green header. */
+.onboardingIntakeHeader>div:first-child{
+  min-width:0!important;
+  display:grid!important;
+  gap:calc(var(--ux-space-1) / 2)!important
+}
+.onboardingIntakeHeader>div:first-child>strong{
+  display:block!important;
+  color:var(--ux-text-inverse)!important;
+  opacity:1!important;
+  font-size:var(--ux-type-body-size)!important;
+  line-height:1.25!important
+}
+.onboardingIntakeHeader>div:first-child>small{
+  color:var(--ux-text-inverse)!important;
+  opacity:.76!important
+}
+.onboardingStageOverviewHeader{
+  width:100%!important;
+  min-height:36px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:var(--ux-space-2)!important;
+  border:0!important;
+  background:transparent!important;
+  color:var(--ux-text-primary)!important;
+  padding:0!important;
+  font:inherit!important;
+  text-align:right!important;
+  cursor:pointer!important
+}
+.onboardingStageOverviewMeta{
+  display:flex!important;
+  align-items:center!important;
+  gap:var(--ux-space-1)!important;
+  direction:ltr!important
+}
+.onboardingStageOverviewMeta>strong{
+  font-size:var(--ux-type-caption-size)!important
+}
+.onboardingStageOverviewMeta>svg{
+  color:var(--namaa-green-900)!important
+}
+
+/* Job-description hero: never truncate the approved role title. */
+@media (max-width:767px){
+  .algorithmRoleHero strong{
+    font-size:clamp(16px,4.4vw,20px)!important;
+    line-height:1.35!important;
+    white-space:normal!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+    text-wrap:balance!important
+  }
+  .algorithmRoleHero small{
+    display:block!important;
+    margin-top:var(--ux-space-1)!important;
+    font-size:var(--ux-type-caption-size)!important;
+    line-height:1.55!important
+  }
+}
+.algorithmRoleEditActions>button{
+  display:grid!important;
+  grid-template-columns:20px auto!important;
+  align-items:center!important;
+  justify-content:center!important;
+  justify-items:center!important;
+  gap:var(--ux-space-1)!important
+}
+.algorithmRoleEditActions>button>span{
+  min-width:0!important;
+  justify-self:center!important
+}
+
+/* Entity profile hero is a direct continuation of the green profile header. */
+.entityDetailSheet{
+  padding:0!important
+}
+.entityDetailSheet .sheetHeader{
+  margin:0!important;
+  border-radius:0!important;
+  position:sticky!important;
+  overflow:hidden!important;
+  isolation:isolate!important
+}
+.entityDetailSheet .sheetHeader::before{
+  content:""!important;
+  position:absolute!important;
+  inset:-18%!important;
+  z-index:0!important;
+  pointer-events:none!important;
+  background-image:url('/brand/namaa-leaf.webp')!important;
+  background-repeat:no-repeat!important;
+  background-size:220px auto!important;
+  background-position:8% 50%!important;
+  opacity:.12!important;
+  transform:rotate(-8deg)!important
+}
+.entityDetailSheet .sheetHeader>*{
+  position:relative!important;
+  z-index:1!important
+}
+.entityDetailSheet .roomDetailHero{
+  margin:0!important;
+  border-radius:0!important;
+  border-inline:0!important;
+  border-top:0!important
+}
+.entityDetailSheet .roomDetailHero::before,
+.mobileFullPageHeader::before,
+.governedDocumentSheet .sheetHeader::before,
+.algorithmRoleSheet .sheetHeader::before,
+.onboardingIntakeHeader::before,
+.mobileRecordEditorHeader::before{
+  background-size:220px auto!important;
+  image-rendering:auto!important;
+  opacity:.12!important
+}
+@media (max-width:767px){
+  .roomDetailHeroIdentity strong{
+    font-size:clamp(17px,4.8vw,21px)!important;
+    line-height:1.35!important;
+    white-space:normal!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+    text-wrap:balance!important
+  }
+}
+
+/* Solid chat surfaces: motifs belong to the conversation canvas, never inside a message bubble. */
+.message,
+.message::before,
+.message::after,
+.message .richMessageHero,
+.message .structuredCard,
+.message .onboardingQuestionCard,
+.message .onboardingQuestionBox,
+.message .onboardingQuestionReason{
+  background-image:none!important
+}
+.agentMessage{
+  background:var(--namaa-green-900)!important;
+  background-color:var(--namaa-green-900)!important;
+  opacity:1!important
+}
+.agentMessage .richMessageHero,
+.agentMessage .structuredCard,
+.agentMessage .onboardingQuestionCard,
+.agentMessage .onboardingQuestionBox,
+.agentMessage .onboardingQuestionReason{
+  background:color-mix(in srgb,var(--namaa-green-900) 88%,var(--ux-text-primary))!important;
+  border-color:color-mix(in srgb,var(--ux-text-inverse) 18%,var(--namaa-green-900))!important;
+  color:var(--ux-text-inverse)!important
+}
+.agentMessage .richMessageHero *,
+.agentMessage .structuredCard *,
+.agentMessage .onboardingQuestionCard *,
+.agentMessage .onboardingQuestionBox *,
+.agentMessage .onboardingQuestionReason *{
+  color:var(--ux-text-inverse)!important
+}
+.userMessage{
+  background:var(--namaa-card)!important;
+  background-color:var(--namaa-card)!important;
+  opacity:1!important
+}
+:global(html[data-theme="dark"]) .agentMessage{
+  background:var(--namaa-green-900)!important;
+  background-color:var(--namaa-green-900)!important
+}
+:global(html[data-theme="dark"]) .userMessage{
+  background:var(--ux-card-bg)!important;
+  background-color:var(--ux-card-bg)!important
+}
