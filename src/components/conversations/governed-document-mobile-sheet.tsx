@@ -473,14 +473,22 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
 
 
   async function submit(event:FormEvent){
-    event.preventDefault(); if(pending||!clauseRef.trim()||!proposedRule.trim())return; setPending(true); setFeedback('');
+    event.preventDefault();
+    if(pending||!clauseRef.trim()||(changeAction!=='DELETE'&&!proposedRule.trim()))return;
+    setPending(true); setFeedback('');
     try{
       const unitLabel=unitType==='article'?'المادة':unitType==='clause'?'البند':'الفقرة';
+      const composedRule=changeAction==='DELETE'
+        ?(currentRule.trim()||'حذف العنصر')
+        :unitType==='clause'&&exampleText.trim()
+          ?proposedRule.trim()+' مثال: '+exampleText.trim()
+          :proposedRule.trim();
+      const actionLabel=changeAction==='ADD'?'إضافة':changeAction==='DELETE'?'حذف':'تعديل';
       const common={
         documentRef:document.referenceCode,documentTitle:document.title,roomKey,
         parentRef:parentRef.trim()||null,changeAction,unitType,
-        currentRule:currentRule.trim()||null,proposedRule:proposedRule.trim(),
-        rationale:rationale.trim()||(changeAction==='ADD'?'إضافة مباشرة خلال مرحلة التأسيس':'تعديل مباشر خلال مرحلة التأسيس'),
+        currentRule:currentRule.trim()||null,proposedRule:composedRule,
+        rationale:rationale.trim()||(actionLabel+' مباشر خلال مرحلة التأسيس'),
       };
       const payload=editMode==='direct'
         ?{operation:'DIRECT_CHANGE' as const,...common,unitRef:clauseRef.trim()}
@@ -492,9 +500,9 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
       const data=await response.json().catch(()=>({})) as {requestId?:string;changeId?:string;error?:string};
       if(!response.ok) throw new Error(data.error||'REQUEST_FAILED');
       setFeedback(editMode==='direct'
-        ?'تم تطبيق '+(changeAction==='ADD'?'الإضافة':'التعديل')+' مباشرة وتسجيلها في سجل التحديثات.'
-        :'تم فتح طلب '+(changeAction==='ADD'?'إضافة':'تعديل')+' حوكمي وإرساله للمراجعة.');
-      setFormOpen(false); setClauseRef(''); setCurrentRule(''); setProposedRule(''); setRationale(''); setParentRef('');
+        ?'تم تطبيق '+actionLabel+' مباشرة وتسجيلها في سجل التحديثات.'
+        :'تم فتح طلب '+actionLabel+' حوكمي وإرساله للمراجعة.');
+      setFormOpen(false); setClauseRef(''); setCurrentRule(''); setProposedRule(''); setExampleText(''); setRationale(''); setParentRef('');
       await load();
       if(editMode==='direct'){
         const responseDocument=await fetch('/api/governance/documents/'+encodeURIComponent(document.referenceCode),{cache:'no-store'});
