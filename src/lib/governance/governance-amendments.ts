@@ -213,7 +213,7 @@ export async function createGovernanceDirectChange(args:{
     .digest('hex').slice(0,16).toUpperCase();
   await appendEvent({
     userId:args.userId,roomKey:'central',senderKey:'central-governor',senderName:'محافظ بنك نماء المركزي',kind:'followup',
-    body:'تم تطبيق '+(args.changeAction==='ADD'?'إضافة':args.changeAction==='DELETE'?'حذف':'تعديل')+' مباشر على '+args.unitRef+' في «'+args.documentTitle+'».',
+    body:'تم '+(args.changeAction==='ADD'?'إضافة':args.changeAction==='DELETE'?'حذف':'تعديل')+' '+(args.unitType==='article'?'المادة':args.unitType==='clause'?'البند':'الفقرة')+' '+args.unitRef+' في «'+args.documentTitle+'» ضمن التحرير المباشر.',
     structured:{
       governance_direct_change:true,change_id:changeId,document_ref:args.documentRef,document_title:args.documentTitle,
       source_room:args.roomKey,unit_ref:args.unitRef,parent_ref:args.parentRef??null,change_action:args.changeAction,
@@ -253,12 +253,30 @@ export async function listGovernanceDirectChanges(userId:string):Promise<Governa
   });
 }
 
+function directChangeSemanticKey(change:GovernanceDirectChange){
+  return [
+    change.documentRef,
+    change.unitType,
+    change.unitRef,
+    change.changeAction,
+    change.parentRef??'',
+    change.currentRule??'',
+    change.proposedRule,
+  ].join('\u001f');
+}
+
 export async function applyGovernanceDirectChanges(userId:string,documentRef:string,content:string){
   const changes=(await listGovernanceDirectChanges(userId)).filter(item=>item.documentRef===documentRef);
-  return changes.reduce((next,change)=>applyStructuredChange(next,{
-    changeAction:change.changeAction,unitType:change.unitType,unitRef:change.unitRef,parentRef:change.parentRef,
-    currentRule:change.currentRule,proposedRule:change.proposedRule,
-  }),content);
+  const seen=new Set<string>();
+  return changes.reduce((next,change)=>{
+    const key=directChangeSemanticKey(change);
+    if(seen.has(key))return next;
+    seen.add(key);
+    return applyStructuredChange(next,{
+      changeAction:change.changeAction,unitType:change.unitType,unitRef:change.unitRef,parentRef:change.parentRef,
+      currentRule:change.currentRule,proposedRule:change.proposedRule,
+    });
+  },content);
 }
 
 export async function createGovernanceTypoCorrection(args:{
