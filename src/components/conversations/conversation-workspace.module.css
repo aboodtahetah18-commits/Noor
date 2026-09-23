@@ -10718,3 +10718,83 @@
     grid-column:auto;
   }
 }
+
+
+/* Execution batch 3 — work center wide identity and dark-mode alignment. */
+@media (min-width:768px){
+  .page{
+    background:var(--namaa-surface-warm);
+    border-color:var(--namaa-border);
+    box-shadow:0 12px 30px rgb(31 41 55 / 7%);
+  }
+
+  .workspace,
+  .roomsPane,
+  .contextPane,
+  .chatPane,
+  .chatHeader,
+  .paneTitle,
+  .composer,
+  .contextCard,
+  .message,
+  .roomItemShell,
+  .roomItem,
+  .mobileRecordEditorSheet,
+  .mobileRecordEditorHeader,
+  .mobileRecordEditorBody,
+  .mobileRecordEditorActions {
+    border-color:var(--namaa-border);
+  }
+
+  .roomsPane,
+  .contextPane,
+  .chatHeader,
+  .paneTitle,
+  .composer,
+  .contextCard,
+  .agentMessage,
+  .roomItemShell,
+  .roomItem {
+    background:var(--namaa-card);
+  }
+
+  .chatPane,
+  .messages {
+    background:var(--namaa-surface-warm);
+    background-image:none;
+  }
+
+  .userMessage {
+    background:color-mix(in srgb,var(--namaa-green-900) 9%,var(--namaa-surface-warm));
+    border-color:color-mix(in srgb,var(--namaa-green-700) 35%,var(--namaa-border));
+  }
+
+  .routingNote,
+  .onboardingIntake,
+  .desktopIntakeTableShell {
+    background:color-mix(in srgb,var(--namaa-green-900) 5%,var(--namaa-surface-warm));
+    border-color:var(--namaa-border);
+  }
+
+  .activeRoom {
+    background:color-mix(in srgb,var(--namaa-gold-500) 18%,var(--namaa-card));
+    border-color:color-mix(in srgb,var(--namaa-gold-500) 60%,var(--namaa-border));
+  }
+
+  .sendButton {
+    background:var(--namaa-green-900);
+    color:var(--namaa-card);
+  }
+
+  .attachButton,
+  .secondaryButton,
+  .roomDetailButton {
+    background:var(--namaa-surface-warm);
+    color:var(--namaa-green-900);
+    border-color:var(--namaa-border);
+  }
+
+  .workspaceHeader{
+    display:none!important;
+  }
+}
