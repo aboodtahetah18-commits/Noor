@@ -141,10 +141,8 @@ a,button,input,select,textarea,summary{transition-duration:var(--ux-motion-durat
   .desktop-top-nav-wrap,.p47-mobile-topbar,.mobile-bottom-nav{display:none!important;}
   .tablet-top-nav-wrap{display:block!important;}
 }
-@media(min-width:1024px){
-  .tablet-top-nav-wrap,.p47-mobile-topbar,.mobile-bottom-nav{display:none!important;}
-  .desktop-top-nav-wrap.p47-desktop-sidebar{display:block!important;}
-}
+/* Legacy desktop-only block removed; wide owner: namaa-wide-experience.css. */
+
 
 /* ========================================================================== */
 /* CR-002 — MUSTAQBALI DESIGN-LED PRODUCT RECONSTRUCTION                      */
@@ -355,11 +353,8 @@ label>span,.field-label{font-weight:500!important;color:var(--ux-text-primary)!i
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important;animation-duration:var(--ux-motion-duration-0)!important;animation-iteration-count:1!important;transition-duration:var(--ux-motion-duration-0)!important;}
 }
-@media(min-width:1024px){
-  .mustaqbali-profile-trigger{width:var(--ux-size-11)!important;height:var(--ux-size-11)!important;min-width:var(--ux-size-11)!important;min-height:var(--ux-size-11)!important;border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default)!important;border-radius:var(--ux-space-3)!important;background:var(--ux-white)!important;color:var(--ux-brand-primary)!important;padding:var(--ux-space-1)!important;display:grid!important;place-items:center!important;}
-  .mustaqbali-profile-trigger .p4913-logo-mark{display:grid;place-items:center;width:var(--ux-size-8);height:var(--ux-size-8);border-radius:var(--ux-radius-sm);overflow:hidden;}
-  .mustaqbali-profile-trigger svg,.mustaqbali-profile-trigger .p60-avatar-image{width:var(--ux-space-8)!important;height:var(--ux-space-8)!important;}
-}
+/* Legacy desktop-only block removed; wide owner: namaa-wide-experience.css. */
+
 
 
 /* === Mustaqbali visual correction — 2026-09-07 Build 05 === */
