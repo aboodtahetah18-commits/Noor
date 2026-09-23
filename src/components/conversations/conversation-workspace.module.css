@@ -10023,7 +10023,7 @@
 .directChangeReceiptCopy{
   min-width:0;
   display:grid;
-  gap:2px;
+  gap:var(--ux-space-1);
 }
 .directChangeReceiptCopy strong{
   color:var(--ux-text-primary);
@@ -10041,7 +10041,7 @@
   min-inline-size:42px;
   min-block-size:28px;
   padding-inline:var(--ux-space-2);
-  border-radius:999px;
+  border-radius:var(--ux-radius-full);
   color:var(--namaa-green-900);
   background:color-mix(in srgb,var(--namaa-green-700) 10%,var(--namaa-card));
   border:1px solid var(--namaa-border);
@@ -10078,7 +10078,7 @@
   font-weight:900;
 }
 .directChangeDetails p{
-  margin:0;
+  margin:var(--ux-space-0);
   color:var(--ux-text-secondary);
   font-size:var(--ux-type-body-sm-size);
   line-height:1.8;
