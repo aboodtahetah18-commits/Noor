@@ -109,6 +109,13 @@ function isMarkdownDivider(line:string){
 function cleanDocumentText(line:string){
   return cleanVisibleArabic(line);
 }
+function splitClauseContent(value:string){
+  const match=value.match(/^(.*?)(?:\s+مثال\s*:\s*)(.+)$/u);
+  return {
+    explanation:(match?.[1]??value).trim(),
+    example:(match?.[2]??'').trim(),
+  };
+}
 
 type GovernedDisplayType='policy'|'procedure'|'matrix'|'mechanism'|'reference';
 
@@ -304,6 +311,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
   const [clauseRef,setClauseRef]=useState('');
   const [currentRule,setCurrentRule]=useState('');
   const [proposedRule,setProposedRule]=useState('');
+  const [exampleText,setExampleText]=useState('');
   const [rationale,setRationale]=useState('');
   const [priority,setPriority]=useState<'NORMAL'|'NEXT_MEETING'|'URGENT'>('NEXT_MEETING');
 
@@ -374,15 +382,16 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
   const displayDescription=governedDisplayDescription(displayType);
   const documentStatus=useMemo(()=>governedDocumentStatus(documentContent),[documentContent]);
   const unitOptions=useMemo(()=>{
-    const items:Array<{ref:string;type:'article'|'clause'|'paragraph';label:string;text:string;parentRef:string|null}>=[];
+    const items:Array<{ref:string;type:'article'|'clause'|'paragraph';label:string;text:string;raw:string;example:string;parentRef:string|null}>=[];
     for(const section of documentSections){
-      items.push({ref:section.number,type:'article',label:'المادة '+section.number,text:section.title,parentRef:null});
+      items.push({ref:section.number,type:'article',label:'المادة '+section.number,text:section.title,raw:section.title,example:'',parentRef:null});
       for(const block of section.blocks){
         if(block.kind==='clause'){
-          items.push({ref:block.number,type:'clause',label:'البند '+block.number,text:block.text||block.title,parentRef:section.number});
+          const parts=splitClauseContent(block.text||block.title);
+          items.push({ref:block.number,type:'clause',label:'البند '+block.number,text:parts.explanation||block.title,raw:block.text||block.title,example:parts.example,parentRef:section.number});
         }else if(block.kind==='paragraph'&&block.number){
           const parent=block.number.split('.').slice(0,-1).join('.');
-          items.push({ref:block.number,type:'paragraph',label:'الفقرة '+block.number,text:block.text,parentRef:parent});
+          items.push({ref:block.number,type:'paragraph',label:'الفقرة '+block.number,text:block.text,raw:block.text,example:'',parentRef:parent});
         }
       }
     }
@@ -412,24 +421,28 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
   function resetEditor(mode:'direct'|'governance',action:'ADD'|'EDIT'|'DELETE'='EDIT'){
     setEditMode(mode);
     setChangeAction(action);
-    setUnitType(action==='ADD'?'paragraph':'paragraph');
+    setUnitType('paragraph');
     setParentRef('');
     setClauseRef('');
     setCurrentRule('');
     setProposedRule('');
+    setExampleText('');
     setRationale('');
     setFeedback('');
     setFormOpen(true);
   }
 
-  function chooseExistingUnit(ref:string){
-    const item=unitOptions.find(candidate=>candidate.ref===ref);
+  function chooseExistingUnit(value:string){
+    const [rawType,...refParts]=value.split(':');
+    const ref=refParts.join(':');
+    const item=unitOptions.find(candidate=>candidate.type===rawType&&candidate.ref===ref);
     setClauseRef(ref);
-    if(!item){setCurrentRule('');setProposedRule('');return}
+    if(!item){setCurrentRule('');setProposedRule('');setExampleText('');return}
     setUnitType(item.type);
     setParentRef(item.parentRef??'');
-    setCurrentRule(item.text);
+    setCurrentRule(item.raw);
     setProposedRule(item.text);
+    setExampleText(item.example);
   }
 
   function updateAddTarget(type:'article'|'clause'|'paragraph',parent:string){
@@ -440,16 +453,19 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
     else setClauseRef('');
     setCurrentRule('');
     setProposedRule('');
+    setExampleText('');
   }
 
   function openUnitEditor(type:'article'|'clause'|'paragraph',reference:string,currentText:string,parent:string|null){
+    const parts=type==='clause'?splitClauseContent(currentText):{explanation:currentText,example:''};
     setEditMode('direct');
     setChangeAction('EDIT');
     setUnitType(type);
     setParentRef(parent??'');
     setClauseRef(reference);
     setCurrentRule(currentText);
-    setProposedRule(currentText);
+    setProposedRule(parts.explanation);
+    setExampleText(parts.example);
     setRationale('');
     setFeedback('');
     setFormOpen(true);
