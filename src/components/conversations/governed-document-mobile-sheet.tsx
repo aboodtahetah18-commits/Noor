@@ -600,18 +600,20 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
           <form className={styles.governedAmendmentForm+' '+styles.governedEditModalCard+' '+(editMode==='direct'?styles.governedTypoForm:styles.governedGovernanceForm)} onSubmit={submit}>
             <header className={styles.governedEditFormHeader}>
               <span className={styles.governedEditFormIcon}><LucideIcon name={editMode==='direct'?'pencil':'landmark'} size={20}/></span>
-              <div><strong>{editMode==='direct'?'تحرير مباشر':'تحرير حوكمي'}</strong><small>{editMode==='direct'?'إضافة أو تعديل مباشر خلال مرحلة ضبط المنصة.':'إضافة أو تعديل يمر بالاجتماع والمراجعة والاعتماد قبل النفاذ.'}</small></div>
+              <div><strong>{editMode==='direct'?'تحرير مباشر':'تحرير حوكمي'}</strong><small>{editMode==='direct'?'إضافة أو تعديل أو حذف مباشر خلال مرحلة ضبط المنصة.':'إضافة أو تعديل أو حذف يمر بالاجتماع والمراجعة والاعتماد قبل النفاذ.'}</small></div>
               <button type="button" className={styles.governedEditClose} onClick={()=>setFormOpen(false)} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button>
             </header>
 
             <label><span>نوع العملية</span><select value={changeAction} onChange={e=>{
               const action=e.target.value as typeof changeAction;
+              const previous=changeAction;
               setChangeAction(action);
               if(action==='ADD') updateAddTarget('paragraph','');
-              else {setClauseRef('');setParentRef('');setCurrentRule('');setProposedRule('')}
+              else if(previous==='ADD'){setClauseRef('');setParentRef('');setCurrentRule('');setProposedRule('');setExampleText('')}
             }}>
               <option value="ADD">إضافة</option>
               <option value="EDIT">تعديل</option>
+              <option value="DELETE">حذف</option>
             </select></label>
 
             {changeAction==='ADD'
@@ -627,18 +629,23 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
                 </select></label>}
                 <label><span>الترقيم</span><input value={clauseRef} readOnly placeholder="يُنشأ تلقائيًا"/></label>
               </>
-              :<label><span>العنصر</span><select value={clauseRef} onChange={e=>chooseExistingUnit(e.target.value)}>
-                <option value="">اختر المادة أو البند أو الفقرة</option>{unitOptions.map(item=><option key={item.type+'-'+item.ref} value={item.ref}>{item.label}</option>)}
+              :<label><span>العنصر</span><select value={clauseRef?unitType+':'+clauseRef:''} onChange={e=>chooseExistingUnit(e.target.value)}>
+                <option value="">اختر المادة أو البند أو الفقرة</option>{unitOptions.map(item=><option key={item.type+'-'+item.ref} value={item.type+':'+item.ref}>{item.label}</option>)}
               </select></label>}
 
-            {changeAction==='EDIT'&&<label><span>النص الحالي</span><textarea value={currentRule} readOnly/></label>}
-            <label><span>{changeAction==='ADD'?'النص الجديد':'النص المعدل'}</span><textarea required value={proposedRule} onChange={e=>setProposedRule(e.target.value)} placeholder={changeAction==='ADD'?'اكتب محتوى العنصر الجديد':'عدّل النص المطلوب'}/></label>
-            <label><span>{editMode==='direct'?'ملاحظة':'مبرر التغيير'}</span><textarea required={editMode==='governance'} value={rationale} onChange={e=>setRationale(e.target.value)} placeholder={editMode==='direct'?'اختياري خلال مرحلة التأسيس':'اشرح سبب الإضافة أو التعديل وأثره'}/></label>
+            {changeAction!=='ADD'&&<label><span>النص الحالي</span><textarea value={currentRule} readOnly/></label>}
+            {changeAction!=='DELETE'&&unitType==='clause'&&<>
+              <label><span>شرح البند</span><textarea required value={proposedRule} onChange={e=>setProposedRule(e.target.value)} placeholder="اكتب شرح البند بوضوح"/></label>
+              <label><span>مثال</span><textarea value={exampleText} onChange={e=>setExampleText(e.target.value)} placeholder="أضف مثالًا عمليًا يوضح البند"/></label>
+            </>}
+            {changeAction!=='DELETE'&&unitType!=='clause'&&<label><span>{changeAction==='ADD'?'النص الجديد':'النص المعدل'}</span><textarea required value={proposedRule} onChange={e=>setProposedRule(e.target.value)} placeholder={changeAction==='ADD'?'اكتب محتوى العنصر الجديد':'عدّل النص المطلوب'}/></label>}
+            {changeAction==='DELETE'&&<p className={styles.governedDeleteNotice}>سيتم حذف {unitType==='article'?'المادة وما يندرج تحتها':unitType==='clause'?'البند وما يندرج تحته':'الفقرة المحددة'} من نسخة العرض. في المسار الحوكمي لا يصبح الحذف نافذًا إلا بعد الاعتماد.</p>}
+            <label><span>{editMode==='direct'?'ملاحظة':'مبرر التغيير'}</span><textarea required={editMode==='governance'} value={rationale} onChange={e=>setRationale(e.target.value)} placeholder={editMode==='direct'?'اختياري خلال مرحلة التأسيس':'اشرح سبب الإضافة أو التعديل أو الحذف وأثره'}/></label>
             {editMode==='governance'&&<label><span>الأولوية</span><select value={priority} onChange={e=>setPriority(e.target.value as typeof priority)}><option value="NORMAL">عادي</option><option value="NEXT_MEETING">للاجتماع القادم</option><option value="URGENT">عاجل، اجتماع فوري</option></select></label>}
             <p>{editMode==='direct'
               ?'يطبق التغيير فورًا في نسخة العرض الحالية ويسجل أثره. هذا المسار مخصص لمرحلة ضبط المنصة.'
               :'المسار: المحافظ، ثم أمين السر، ثم مجلس نماء الأعلى، ثم الاعتماد أو الرفض، ثم تاريخ النفاذ والإصدار الجديد.'}</p>
-            <div className={styles.governedAmendmentActions}><button type="button" onClick={()=>setFormOpen(false)}>إلغاء</button><button type="submit" disabled={pending||!clauseRef.trim()||!proposedRule.trim()}>{pending?'جارٍ الحفظ…':editMode==='direct'?'حفظ مباشر':'إرسال للمحافظ'}</button></div>
+            <div className={styles.governedAmendmentActions}><button type="button" onClick={()=>setFormOpen(false)}>إلغاء</button><button type="submit" disabled={pending||!clauseRef.trim()||(changeAction!=='DELETE'&&!proposedRule.trim())}>{pending?'جارٍ الحفظ…':changeAction==='DELETE'?(editMode==='direct'?'حذف مباشر':'طلب الحذف'):(editMode==='direct'?'حفظ مباشر':'إرسال للمحافظ')}</button></div>
           </form>
         </div>}
 
