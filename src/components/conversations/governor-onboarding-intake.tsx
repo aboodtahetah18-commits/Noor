@@ -332,7 +332,7 @@ export function GovernorOnboardingIntake({
         <div className={styles.desktopIntakeTableHeader}>
           <div><strong>الأفراد والمعالون</strong><small>كل فرد يظهر كسطر مستقل. استخدم نافذة الإضافة لتعبئة البيانات بدل النماذج الطويلة داخل الصفحة.</small></div>
           <div className={styles.desktopIntakeHeaderActions}>
-            <button type="button" className={styles.intakeAddButton} onClick={()=>setMobileEditor({kind:'dependents',index:null,draft:emptyDependent()})}><LucideIcon name="plus" size={18}/><span>إضافة فرد</span></button>
+            <button type="button" className={styles.intakeAddButton} onClick={()=>setMobileEditor({kind:'dependents',index:null,draft:emptyDependent()})}><LucideIcon name="plus" size={20}/><span>إضافة فرد</span></button>
             <button type="button" className={styles.intakeNoneButton} onClick={()=>setDependents([])}>لا يوجد معالون</button>
           </div>
         </div>
@@ -346,7 +346,7 @@ export function GovernorOnboardingIntake({
               <td>{item.monthly_support||'0'} ر.س</td>
               <td>{item.annual_support||'0'} ر.س</td>
               <td>{item.financial_dependency?'نعم':'لا'}</td>
-              <td><div className={styles.desktopIntakeTableActions}><button type="button" onClick={()=>setMobileEditor({kind:'dependents',index,draft:{...item}})}><LucideIcon name="pencil" size={18}/><span>تعديل</span></button><button type="button" onClick={()=>setDependents(current=>current.filter((_,i)=>i!==index))}><LucideIcon name="trash2" size={18}/><span>حذف</span></button></div></td>
+              <td><div className={styles.desktopIntakeTableActions}><button type="button" onClick={()=>setMobileEditor({kind:'dependents',index,draft:{...item}})}><LucideIcon name="pencil" size={20}/><span>تعديل</span></button><button type="button" onClick={()=>setDependents(current=>current.filter((_,i)=>i!==index))}><LucideIcon name="trash2" size={20}/><span>حذف</span></button></div></td>
             </tr>):<tr><td colSpan={7}><div className={styles.desktopIntakeTableEmpty}><strong>لا توجد بيانات أفراد</strong><small>اضغط «إضافة فرد» لإدخال أول سجل.</small></div></td></tr>}</tbody>
           </table>
         </div>
@@ -373,7 +373,7 @@ export function GovernorOnboardingIntake({
             <strong>الحسابات المالية</strong>
             <small>أضف الحساب من نافذة مستقلة؛ وبعد الحفظ يظهر مباشرة كسطر داخل الجدول.</small>
           </div>
-          <button type="button" className={styles.intakeAddButton} onClick={()=>setMobileEditor({kind:'accounts',index:null,draft:emptyAccount()})}><LucideIcon name="plus" size={18}/><span>إضافة حساب</span></button>
+          <button type="button" className={styles.intakeAddButton} onClick={()=>setMobileEditor({kind:'accounts',index:null,draft:emptyAccount()})}><LucideIcon name="plus" size={20}/><span>إضافة حساب</span></button>
         </div>
         <div className={styles.desktopIntakeTableWrap}>
           <table className={styles.desktopIntakeTable}>
@@ -386,7 +386,7 @@ export function GovernorOnboardingIntake({
                 <td>{item.usage||'—'}</td>
                 <td>{item.opening_balance||'0'} ر.س</td>
                 <td>{item.included_in_namaa?'نعم':'لا'}</td>
-                <td><div className={styles.desktopIntakeTableActions}><button type="button" onClick={()=>setMobileEditor({kind:'accounts',index,draft:{...item}})}><LucideIcon name="pencil" size={18}/><span>تعديل</span></button><button type="button" onClick={()=>setAccounts(current=>current.filter((_,i)=>i!==index))}><LucideIcon name="trash2" size={18}/><span>حذف</span></button></div></td>
+                <td><div className={styles.desktopIntakeTableActions}><button type="button" onClick={()=>setMobileEditor({kind:'accounts',index,draft:{...item}})}><LucideIcon name="pencil" size={20}/><span>تعديل</span></button><button type="button" onClick={()=>setAccounts(current=>current.filter((_,i)=>i!==index))}><LucideIcon name="trash2" size={20}/><span>حذف</span></button></div></td>
               </tr>):<tr><td colSpan={7}><div className={styles.desktopIntakeTableEmpty}><strong>لا توجد حسابات مضافة</strong><small>اضغط «إضافة حساب» وأدخل بيانات الحساب الأول.</small></div></td></tr>}
             </tbody>
           </table>
@@ -399,7 +399,7 @@ export function GovernorOnboardingIntake({
         <div className={styles.desktopIntakeTableHeader}>
           <div><strong>الالتزامات المالية</strong><small>أضف كل التزام من نافذة مستقلة ثم راجع القائمة قبل إرسال المجموعة.</small></div>
           <div className={styles.desktopIntakeHeaderActions}>
-            <button type="button" className={styles.intakeAddButton} onClick={()=>setMobileEditor({kind:'obligations',index:null,draft:emptyObligation()})}><LucideIcon name="plus" size={18}/><span>إضافة التزام</span></button>
+            <button type="button" className={styles.intakeAddButton} onClick={()=>setMobileEditor({kind:'obligations',index:null,draft:emptyObligation()})}><LucideIcon name="plus" size={20}/><span>إضافة التزام</span></button>
             <button type="button" className={styles.intakeNoneButton} onClick={()=>setObligations([])}>لا توجد التزامات</button>
           </div>
         </div>
@@ -413,7 +413,7 @@ export function GovernorOnboardingIntake({
               <td>{recurrenceLabel(item.recurrence)}</td>
               <td>{item.due_day?('يوم '+item.due_day):'—'}</td>
               <td>{item.remaining_balance?item.remaining_balance+' ر.س':'—'}</td>
-              <td><div className={styles.desktopIntakeTableActions}><button type="button" onClick={()=>setMobileEditor({kind:'obligations',index,draft:{...item}})}><LucideIcon name="pencil" size={18}/><span>تعديل</span></button><button type="button" onClick={()=>setObligations(current=>current.filter((_,i)=>i!==index))}><LucideIcon name="trash2" size={18}/><span>حذف</span></button></div></td>
+              <td><div className={styles.desktopIntakeTableActions}><button type="button" onClick={()=>setMobileEditor({kind:'obligations',index,draft:{...item}})}><LucideIcon name="pencil" size={20}/><span>تعديل</span></button><button type="button" onClick={()=>setObligations(current=>current.filter((_,i)=>i!==index))}><LucideIcon name="trash2" size={20}/><span>حذف</span></button></div></td>
             </tr>):<tr><td colSpan={7}><div className={styles.desktopIntakeTableEmpty}><strong>لا توجد التزامات مضافة</strong><small>اضغط «إضافة التزام» لإدخال أول سجل.</small></div></td></tr>}</tbody>
           </table>
         </div>
@@ -425,7 +425,7 @@ export function GovernorOnboardingIntake({
         <div className={styles.desktopIntakeTableHeader}>
           <div><strong>الأهداف المالية</strong><small>أضف كل هدف في نافذة مستقلة؛ وبعد الحفظ يظهر في الجدول مع إمكانية التعديل أو الحذف.</small></div>
           <div className={styles.desktopIntakeHeaderActions}>
-            <button type="button" className={styles.intakeAddButton} onClick={()=>setMobileEditor({kind:'goals',index:null,draft:emptyGoal()})}><LucideIcon name="plus" size={18}/><span>إضافة هدف</span></button>
+            <button type="button" className={styles.intakeAddButton} onClick={()=>setMobileEditor({kind:'goals',index:null,draft:emptyGoal()})}><LucideIcon name="plus" size={20}/><span>إضافة هدف</span></button>
             <button type="button" className={styles.intakeNoneButton} onClick={()=>setGoals([])}>لا توجد أهداف الآن</button>
           </div>
         </div>
@@ -439,7 +439,7 @@ export function GovernorOnboardingIntake({
               <td>{item.target_date||'—'}</td>
               <td>{item.priority||'—'}</td>
               <td>{item.flexibility||'—'}</td>
-              <td><div className={styles.desktopIntakeTableActions}><button type="button" onClick={()=>setMobileEditor({kind:'goals',index,draft:{...item}})}><LucideIcon name="pencil" size={18}/><span>تعديل</span></button><button type="button" onClick={()=>setGoals(current=>current.filter((_,i)=>i!==index))}><LucideIcon name="trash2" size={18}/><span>حذف</span></button></div></td>
+              <td><div className={styles.desktopIntakeTableActions}><button type="button" onClick={()=>setMobileEditor({kind:'goals',index,draft:{...item}})}><LucideIcon name="pencil" size={20}/><span>تعديل</span></button><button type="button" onClick={()=>setGoals(current=>current.filter((_,i)=>i!==index))}><LucideIcon name="trash2" size={20}/><span>حذف</span></button></div></td>
             </tr>):<tr><td colSpan={7}><div className={styles.desktopIntakeTableEmpty}><strong>لا توجد أهداف مضافة</strong><small>اضغط «إضافة هدف» لإدخال أول سجل.</small></div></td></tr>}</tbody>
           </table>
         </div>
