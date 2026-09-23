@@ -8620,3 +8620,215 @@
     padding:var(--ux-space-3)!important
   }
 }
+
+
+/* Namaa final upload pass — full-screen edits and solid chat canvas */
+
+/* Chat canvas: one dark green surface with no decorative imagery. */
+.chatPane,
+.messages{
+  background:var(--namaa-green-900)!important;
+  background-image:none!important
+}
+.messagesBuildingBackdrop{
+  display:none!important
+}
+.chatPane::before,
+.chatPane::after,
+.messages::before,
+.messages::after{
+  content:none!important;
+  display:none!important;
+  background:none!important;
+  background-image:none!important
+}
+
+/* Keep both speakers fully opaque and motif-free on the solid chat canvas. */
+.agentMessage,
+.userMessage,
+.agentMessage::before,
+.agentMessage::after,
+.userMessage::before,
+.userMessage::after{
+  background-image:none!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important
+}
+.agentMessage{
+  background:color-mix(in srgb,var(--namaa-green-700) 76%,var(--namaa-green-900))!important;
+  border-color:color-mix(in srgb,var(--ux-text-inverse) 22%,var(--namaa-green-900))!important;
+  opacity:1!important
+}
+.userMessage{
+  background:var(--namaa-card)!important;
+  border-color:var(--namaa-border-strong)!important;
+  opacity:1!important
+}
+
+/* Full-screen amendment flow, matching the governed-reference page hierarchy. */
+.governedEditModal{
+  position:fixed!important;
+  inset:0!important;
+  z-index:320!important;
+  display:block!important;
+  padding:0!important;
+  background:var(--namaa-card)!important
+}
+.governedEditModalScrim{
+  display:none!important
+}
+.governedEditModalCard{
+  position:fixed!important;
+  inset:0!important;
+  z-index:321!important;
+  width:100%!important;
+  max-width:none!important;
+  height:100dvh!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:auto!important;
+  overscroll-behavior:contain!important;
+  border:0!important;
+  border-radius:0!important;
+  background:var(--namaa-card)!important;
+  box-shadow:none!important;
+  display:flex!important;
+  flex-direction:column!important
+}
+.governedEditModalCard>.governedEditFormHeader{
+  position:sticky!important;
+  top:0!important;
+  z-index:6!important;
+  min-height:88px!important;
+  margin:0!important;
+  padding:var(--ux-space-3) var(--ux-space-4)!important;
+  display:grid!important;
+  grid-template-columns:44px minmax(0,1fr) 44px!important;
+  align-items:center!important;
+  gap:var(--ux-space-3)!important;
+  background:var(--namaa-green-900)!important;
+  color:var(--ux-text-inverse)!important;
+  border:0!important;
+  border-bottom:1px solid color-mix(in srgb,var(--ux-text-inverse) 18%,transparent)!important;
+  border-radius:0!important
+}
+.governedEditModalCard>.governedEditFormHeader::before{
+  content:""!important;
+  position:absolute!important;
+  inset:0!important;
+  pointer-events:none!important;
+  background-image:url('/brand/namaa-leaf.webp')!important;
+  background-repeat:no-repeat!important;
+  background-position:8% 50%!important;
+  background-size:150px auto!important;
+  filter:brightness(0) invert(1)!important;
+  opacity:.08!important
+}
+.governedEditModalCard>.governedEditFormHeader>*{
+  position:relative!important;
+  z-index:1!important
+}
+.governedEditModalCard>.governedEditFormHeader>div{
+  min-width:0!important
+}
+.governedEditModalCard>.governedEditFormHeader strong{
+  color:var(--ux-text-inverse)!important;
+  font-size:var(--ux-type-body-size)!important
+}
+.governedEditModalCard>.governedEditFormHeader small{
+  color:color-mix(in srgb,var(--ux-text-inverse) 78%,transparent)!important
+}
+.governedEditModalCard>.governedEditFormHeader .governedEditFormIcon,
+.governedEditModalCard>.governedEditFormHeader .governedEditClose{
+  width:44px!important;
+  height:44px!important;
+  min-width:44px!important;
+  display:grid!important;
+  place-items:center!important;
+  padding:0!important;
+  border:1px solid color-mix(in srgb,var(--ux-text-inverse) 34%,transparent)!important;
+  border-radius:var(--ux-radius-full)!important;
+  background:color-mix(in srgb,var(--ux-text-inverse) 8%,transparent)!important;
+  color:var(--ux-text-inverse)!important
+}
+.governedEditModalCard>label,
+.governedEditModalCard>p{
+  margin-inline:var(--ux-space-4)!important
+}
+.governedEditModalCard>label:first-of-type{
+  margin-top:var(--ux-space-4)!important
+}
+.governedEditModalCard textarea{
+  min-height:128px!important
+}
+.governedEditModalCard>.governedAmendmentActions{
+  position:sticky!important;
+  bottom:0!important;
+  z-index:7!important;
+  margin-top:auto!important;
+  padding:var(--ux-space-3) var(--ux-space-4) calc(var(--ux-space-3) + env(safe-area-inset-bottom))!important;
+  background:var(--namaa-card)!important;
+  border-top:1px solid var(--namaa-border)!important;
+  box-shadow:0 -8px 24px color-mix(in srgb,var(--namaa-text) 8%,transparent)!important
+}
+.governedEditModalCard>.governedAmendmentActions>button{
+  min-height:52px!important
+}
+
+/* Dark mode: full-screen amendment workspace becomes deep Namaa gold with white typography. */
+:global(html[data-theme="dark"]) .governedEditModal,
+:global(html[data-theme="dark"]) .governedEditModalCard{
+  background:color-mix(in srgb,var(--namaa-gold-action) 54%,var(--namaa-text))!important;
+  color:var(--ux-text-inverse)!important
+}
+:global(html[data-theme="dark"]) .governedEditModalCard label>span,
+:global(html[data-theme="dark"]) .governedEditModalCard>p,
+:global(html[data-theme="dark"]) .governedEditModalCard input,
+:global(html[data-theme="dark"]) .governedEditModalCard textarea,
+:global(html[data-theme="dark"]) .governedEditModalCard select{
+  color:var(--ux-text-inverse)!important
+}
+:global(html[data-theme="dark"]) .governedEditModalCard input,
+:global(html[data-theme="dark"]) .governedEditModalCard textarea,
+:global(html[data-theme="dark"]) .governedEditModalCard select{
+  background:color-mix(in srgb,var(--namaa-text) 18%,transparent)!important;
+  border-color:color-mix(in srgb,var(--ux-text-inverse) 26%,transparent)!important
+}
+:global(html[data-theme="dark"]) .governedEditModalCard input::placeholder,
+:global(html[data-theme="dark"]) .governedEditModalCard textarea::placeholder{
+  color:color-mix(in srgb,var(--ux-text-inverse) 68%,transparent)!important
+}
+:global(html[data-theme="dark"]) .governedEditModalCard>.governedAmendmentActions{
+  background:color-mix(in srgb,var(--namaa-gold-action) 54%,var(--namaa-text))!important;
+  border-top-color:color-mix(in srgb,var(--ux-text-inverse) 22%,transparent)!important
+}
+
+/* Persona presentation: avoid browser smoothing artifacts caused by transforms and filters. */
+.personaAvatar img,
+.entityTeamPortrait img,
+.algorithmRolePortraitImage{
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  object-position:center 18%!important;
+  transform:none!important;
+  filter:none!important;
+  opacity:1!important;
+  image-rendering:auto!important;
+  backface-visibility:hidden!important
+}
+
+@media (max-width:767px){
+  .governedEditModalCard>.governedEditFormHeader{
+    min-height:76px!important;
+    padding:var(--ux-space-2) var(--ux-space-3)!important
+  }
+  .governedEditModalCard>label,
+  .governedEditModalCard>p{
+    margin-inline:var(--ux-space-3)!important
+  }
+  .governedEditModalCard>.governedAmendmentActions{
+    padding-inline:var(--ux-space-3)!important
+  }
+}
