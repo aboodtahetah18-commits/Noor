@@ -5174,7 +5174,7 @@
     border-color:color-mix(in srgb,var(--ux-text-inverse) 44%,transparent)!important;
     background:color-mix(in srgb,var(--ux-text-inverse) 8%,transparent)!important;
     color:var(--ux-text-inverse)!important;
-    box-shadow:none!important
+    box-shadow:var(--ux-shadow-none)!important
   }
 
   .governedDocumentContent,
@@ -8024,7 +8024,7 @@
   border-color:color-mix(in srgb,var(--ux-text-inverse) 42%,transparent)!important;
   background:color-mix(in srgb,var(--ux-text-inverse) 8%,transparent)!important;
   color:var(--ux-text-inverse)!important;
-  box-shadow:none!important
+  box-shadow:var(--ux-shadow-none)!important
 }
 
 /* Dashboard primary reading card follows the chat-header green treatment. */
@@ -8288,7 +8288,7 @@
 /* Job-description hero: never truncate the approved role title. */
 @media (max-width:767px){
   .algorithmRoleHero strong{
-    font-size:clamp(16px,4.4vw,20px)!important;
+    font-size:var(--ux-type-card-title-size)!important;
     line-height:1.35!important;
     white-space:normal!important;
     overflow:visible!important;
@@ -8361,7 +8361,7 @@
 }
 @media (max-width:767px){
   .roomDetailHeroIdentity strong{
-    font-size:clamp(17px,4.8vw,21px)!important;
+    font-size:var(--ux-type-card-title-size)!important;
     line-height:1.35!important;
     white-space:normal!important;
     overflow:visible!important;
@@ -8436,7 +8436,7 @@
 .personaAvatar{
   overflow:hidden!important;
   background:var(--namaa-card)!important;
-  box-shadow:none!important
+  box-shadow:var(--ux-shadow-none)!important
 }
 
 /* One solid surface per chat bubble — no motif, tint, transparency or inherited image inside messages. */
@@ -8478,7 +8478,7 @@
   background:transparent!important;
   background-color:transparent!important;
   background-image:none!important;
-  box-shadow:none!important
+  box-shadow:var(--ux-shadow-none)!important
 }
 .agentMessage .onboardingQuestionCard,
 .agentMessage .onboardingQuestionBox,
@@ -8558,8 +8558,8 @@
   inset:0!important;
   border:0!important;
   background:color-mix(in srgb,var(--namaa-text) 42%,transparent)!important;
-  backdrop-filter:blur(2px)!important;
-  -webkit-backdrop-filter:blur(2px)!important
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important
 }
 .governedEditModalCard{
   position:relative!important;
@@ -8692,7 +8692,7 @@
   border:0!important;
   border-radius:0!important;
   background:var(--namaa-card)!important;
-  box-shadow:none!important;
+  box-shadow:var(--ux-shadow-none)!important;
   display:flex!important;
   flex-direction:column!important
 }
@@ -8770,7 +8770,7 @@
   padding:var(--ux-space-3) var(--ux-space-4) calc(var(--ux-space-3) + env(safe-area-inset-bottom))!important;
   background:var(--namaa-card)!important;
   border-top:1px solid var(--namaa-border)!important;
-  box-shadow:0 -8px 24px color-mix(in srgb,var(--namaa-text) 8%,transparent)!important
+  box-shadow:var(--ux-shadow-md)!important
 }
 .governedEditModalCard>.governedAmendmentActions>button{
   min-height:52px!important
