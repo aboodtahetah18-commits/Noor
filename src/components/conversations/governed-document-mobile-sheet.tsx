@@ -308,6 +308,27 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
   const isFlowDocument=displayType==='procedure'||displayType==='mechanism';
   const isMatrixDocument=displayType==='matrix';
   const displayDescription=governedDisplayDescription(displayType);
+  const clauseTextByRef=useMemo(()=>{
+    const map=new Map<string,string>();
+    for(const section of documentSections){
+      for(const block of section.blocks){
+        if(block.kind!=='clause')continue;
+        const value=[block.title,block.text].filter(Boolean).join('\n').trim();
+        if(block.number&&value)map.set(westernDigits(block.number).trim(),value);
+      }
+    }
+    return map;
+  },[documentSections]);
+
+  function updateClauseReference(value:string){
+    const normalized=westernDigits(value).trim();
+    setClauseRef(value);
+    const matched=clauseTextByRef.get(normalized);
+    if(matched!==undefined){
+      setCurrentRule(matched);
+      if(editMode==='typo'&&!proposedRule.trim())setProposedRule(matched);
+    }
+  }
 
   function downloadLocalCopy(){
     if(!documentContent)return;
@@ -424,21 +445,25 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
           </button>
         </section>
 
-        {formOpen&&<form className={styles.governedAmendmentForm+' '+(editMode==='typo'?styles.governedTypoForm:styles.governedGovernanceForm)} onSubmit={submit}>
-          <header className={styles.governedEditFormHeader}>
-            <span className={styles.governedEditFormIcon}><LucideIcon name={editMode==='typo'?'pencil':'landmark'} size={20}/></span>
-            <div><strong>{editMode==='typo'?'تعديل إملائي':'طلب تعديل'}</strong><small>{editMode==='typo'?'يصحح الخطأ دون تغيير المعنى أو الحكم.':'يغيّر المضمون أو الضابط ويمر بمسار المراجعة والاعتماد.'}</small></div>
-          </header>
-          <label><span>رقم البند أو المادة</span><input value={clauseRef} onChange={e=>setClauseRef(e.target.value)} placeholder="مثال: 1.2"/></label>
-          <label><span>{editMode==='typo'?'النص الحالي كما يظهر':'النص أو الوضع الحالي'}</span><textarea required={editMode==='typo'} value={currentRule} onChange={e=>setCurrentRule(e.target.value)} placeholder={editMode==='typo'?'انسخ النص الذي يحتوي الخطأ حرفيًا':'اختياري — اكتب النص الحالي الذي تريد مراجعته'}/></label>
-          <label><span>{editMode==='typo'?'النص المصحح':'التعديل المقترح'}</span><textarea required value={proposedRule} onChange={e=>setProposedRule(e.target.value)} placeholder={editMode==='typo'?'اكتب الصياغة المصححة فقط':'اكتب التعديل المقترح بدقة'}/></label>
-          <label><span>{editMode==='typo'?'سبب التصحيح':'مبرر التعديل'}</span><textarea required value={rationale} onChange={e=>setRationale(e.target.value)} placeholder={editMode==='typo'?'مثال: خطأ إملائي أو تحسين وضوح دون تغيير المعنى':'لماذا نحتاج هذا التعديل؟ وما أثره المتوقع؟'}/></label>
-          {editMode==='governance'&&<label><span>الأولوية</span><select value={priority} onChange={e=>setPriority(e.target.value as typeof priority)}><option value="NORMAL">عادي</option><option value="NEXT_MEETING">للاجتماع القادم</option><option value="URGENT">عاجل، اجتماع فوري</option></select></label>}
-          <p>{editMode==='typo'
-            ?'يطبّق التصحيح على نسخة العرض ويسجل في سجل التحديثات، دون إنشاء قرار أو اعتماد حوكمي.'
-            :'المسار: المحافظ، ثم أمين السر، ثم مجلس نماء الأعلى، ثم الاعتماد أو الرفض، ثم تاريخ النفاذ والإصدار الجديد.'}</p>
-          <div className={styles.governedAmendmentActions}><button type="button" onClick={()=>setFormOpen(false)}>إلغاء</button><button type="submit" disabled={pending}>{pending?'جارٍ الحفظ…':editMode==='typo'?'حفظ التصحيح':'إرسال للمحافظ'}</button></div>
-        </form>}
+        {formOpen&&<div className={styles.governedEditModal} role="dialog" aria-modal="true" aria-label={editMode==='typo'?'تعديل إملائي':'طلب تعديل'}>
+          <button type="button" className={styles.governedEditModalScrim} aria-label="إغلاق" onClick={()=>setFormOpen(false)}/>
+          <form className={styles.governedAmendmentForm+' '+styles.governedEditModalCard+' '+(editMode==='typo'?styles.governedTypoForm:styles.governedGovernanceForm)} onSubmit={submit}>
+            <header className={styles.governedEditFormHeader}>
+              <span className={styles.governedEditFormIcon}><LucideIcon name={editMode==='typo'?'pencil':'landmark'} size={20}/></span>
+              <div><strong>{editMode==='typo'?'تعديل إملائي':'طلب تعديل'}</strong><small>{editMode==='typo'?'يصحح الخطأ دون تغيير المعنى أو الحكم.':'يغيّر المضمون أو الضابط ويمر بمسار المراجعة والاعتماد.'}</small></div>
+              <button type="button" className={styles.governedEditClose} onClick={()=>setFormOpen(false)} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button>
+            </header>
+            <label><span>رقم البند أو المادة</span><input value={clauseRef} onChange={e=>updateClauseReference(e.target.value)} placeholder="مثال: 1.2"/></label>
+            <label><span>{editMode==='typo'?'النص الحالي كما يظهر':'النص أو الوضع الحالي'}</span><textarea required={editMode==='typo'} value={currentRule} onChange={e=>setCurrentRule(e.target.value)} placeholder="يظهر تلقائيًا عند إدخال رقم البند، ويمكن تعديله عند الحاجة"/></label>
+            <label><span>{editMode==='typo'?'النص المصحح':'التعديل المقترح'}</span><textarea required value={proposedRule} onChange={e=>setProposedRule(e.target.value)} placeholder={editMode==='typo'?'ابدأ من النص الحالي وصحح المطلوب فقط':'اكتب التعديل المقترح بدقة'}/></label>
+            <label><span>{editMode==='typo'?'سبب التصحيح':'مبرر التعديل'}</span><textarea required value={rationale} onChange={e=>setRationale(e.target.value)} placeholder={editMode==='typo'?'مثال: خطأ إملائي أو تحسين وضوح دون تغيير المعنى':'لماذا نحتاج هذا التعديل؟ وما أثره المتوقع؟'}/></label>
+            {editMode==='governance'&&<label><span>الأولوية</span><select value={priority} onChange={e=>setPriority(e.target.value as typeof priority)}><option value="NORMAL">عادي</option><option value="NEXT_MEETING">للاجتماع القادم</option><option value="URGENT">عاجل، اجتماع فوري</option></select></label>}
+            <p>{editMode==='typo'
+              ?'يطبّق التصحيح على نسخة العرض ويسجل في سجل التحديثات، دون إنشاء قرار أو اعتماد حوكمي.'
+              :'المسار: المحافظ، ثم أمين السر، ثم مجلس نماء الأعلى، ثم الاعتماد أو الرفض، ثم تاريخ النفاذ والإصدار الجديد.'}</p>
+            <div className={styles.governedAmendmentActions}><button type="button" onClick={()=>setFormOpen(false)}>إلغاء</button><button type="submit" disabled={pending}>{pending?'جارٍ الحفظ…':editMode==='typo'?'حفظ التصحيح':'إرسال للمحافظ'}</button></div>
+          </form>
+        </div>}
 
         <section className={styles.governedHistorySection}>
           <header className={styles.governedHistoryHeader}>
