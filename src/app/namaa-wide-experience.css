@@ -358,3 +358,165 @@
     min-height: 0;
   }
 }
+
+
+@media (min-width: 768px) {
+  .namaa-knowledge-page {
+    min-height: 100%;
+    padding: 24px;
+    color: var(--namaa-wide-text);
+  }
+
+  .namaa-knowledge-shell {
+    width: min(100%, 1540px);
+    margin-inline: auto;
+    display: grid;
+    gap: 18px;
+  }
+
+  .namaa-knowledge-hero {
+    min-height: 154px;
+    padding: 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background:
+      linear-gradient(90deg, rgb(250 249 244 / 98%), rgb(250 249 244 / 90%)),
+      radial-gradient(circle at 85% 20%, rgb(212 175 107 / 18%), transparent 22rem);
+  }
+
+  .namaa-knowledge-hero p {
+    margin: 0 0 4px;
+    color: var(--namaa-wide-gold);
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .namaa-knowledge-hero h1 {
+    margin: 0;
+    color: var(--namaa-wide-green);
+    font-size: clamp(30px, 4vw, 46px);
+  }
+
+  .namaa-knowledge-hero span {
+    display: block;
+    margin-top: 8px;
+    color: var(--namaa-wide-muted);
+  }
+
+  .namaa-knowledge-hero svg {
+    color: var(--namaa-wide-gold);
+  }
+
+  .namaa-knowledge-grid {
+    display: grid;
+    grid-template-columns: minmax(220px, .85fr) minmax(420px, 2fr) minmax(240px, .9fr);
+    gap: 18px;
+    align-items: start;
+  }
+
+  .namaa-knowledge-nav,
+  .namaa-knowledge-main,
+  .namaa-knowledge-review {
+    padding: 18px;
+  }
+
+  .namaa-knowledge-nav nav {
+    margin-top: 16px;
+    display: grid;
+    gap: 8px;
+  }
+
+  .namaa-knowledge-nav nav a,
+  .namaa-knowledge-cards a {
+    text-decoration: none;
+    color: var(--namaa-wide-text);
+    border: 1px solid var(--namaa-wide-border);
+    border-radius: 13px;
+    background: #fff;
+  }
+
+  .namaa-knowledge-nav nav a {
+    padding: 12px 14px;
+    font-weight: 800;
+  }
+
+  .namaa-knowledge-nav nav a:hover,
+  .namaa-knowledge-cards a:hover {
+    border-color: rgb(212 175 107 / 72%);
+    background: rgb(212 175 107 / 7%);
+  }
+
+  .namaa-knowledge-summary {
+    margin: 18px 0;
+    padding: 18px;
+    border-radius: 16px;
+    border: 1px solid rgb(11 107 79 / 18%);
+    background: rgb(11 107 79 / 5%);
+  }
+
+  .namaa-knowledge-summary p {
+    color: var(--namaa-wide-muted);
+    line-height: 1.9;
+    margin-bottom: 0;
+  }
+
+  .namaa-knowledge-cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .namaa-knowledge-cards a {
+    padding: 16px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 6px 12px;
+    align-items: center;
+  }
+
+  .namaa-knowledge-cards a span {
+    grid-column: 1;
+    color: var(--namaa-wide-muted);
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .namaa-knowledge-cards a svg {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    color: var(--namaa-wide-gold);
+  }
+
+  .namaa-knowledge-review {
+    display: grid;
+    gap: 12px;
+  }
+
+  .namaa-knowledge-review > article {
+    border: 1px solid var(--namaa-wide-border);
+    border-radius: 14px;
+    padding: 14px;
+    background: #fff;
+  }
+
+  .namaa-knowledge-review > article p {
+    margin-bottom: 0;
+    color: var(--namaa-wide-muted);
+    line-height: 1.7;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .namaa-knowledge-page {
+    padding: 16px;
+  }
+
+  .namaa-knowledge-grid {
+    grid-template-columns: minmax(210px, .8fr) minmax(0, 1.7fr);
+  }
+
+  .namaa-knowledge-review {
+    grid-column: 1 / -1;
+  }
+}
