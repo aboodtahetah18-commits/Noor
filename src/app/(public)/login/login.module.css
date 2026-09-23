@@ -59,6 +59,7 @@
 
 .visual{
   grid-column:2;
+  grid-row:1;
   position:relative;
   isolation:isolate;
   display:flex;
@@ -225,6 +226,7 @@
 
 .panel{
   grid-column:1;
+  grid-row:1;
   position:relative;
   min-width:0;
   display:flex;
