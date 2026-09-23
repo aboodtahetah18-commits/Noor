@@ -111,9 +111,14 @@ function normalizedComparableLine(value:string){
   return value
     .trim()
     .replace(/^#{1,6}\s*/u,'')
-    .replace(/^[-*•]\s*/u,'')
+    .replace(/^[-*•]+\s*/u,'')
+    .replace(/\*\*|__|\*|_|\`/g,'')
+    .replace(/[A-Za-z][A-Za-z0-9_./:-]*/g,'')
     .replace(/^\d+(?:\.\d+)*[.)-]?\s*/u,'')
     .replace(/^(?:المادة|البند|الفقرة)\s+\d+(?:\.\d+)*\s*[:.)-]?\s*/u,'')
+    .replace(/\s+[—–-]\s+/g,'، ')
+    .replace(/\s{2,}/g,' ')
+    .replace(/\s+([،؛:.])/g,'$1')
     .trim();
 }
 function findCurrentRuleLine(lines:string[],currentRule?:string|null){
