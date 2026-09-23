@@ -7,7 +7,7 @@ const mapping:Record<ActionIconName,LucideIconName>={
 };
 
 export function ActionIcon({name,className='p49-ui-icon'}:{name:ActionIconName;className?:string}){
-  return <LucideIcon name={mapping[name]} size={20} className={className}/>;
+  return <LucideIcon name={mapping[name]} size={24} className={className}/>;
 }
 
 export function inferActionIcon(label:string):ActionIconName{
