@@ -666,7 +666,7 @@ function DirectGovernanceChangeCard({data}:{data:Record<string,unknown>}){
 
   return <section className={styles.directChangeReceipt} aria-label="إيصال التحرير المباشر">
     <div className={styles.directChangeReceiptMain}>
-      <span className={styles.directChangeReceiptIcon} aria-hidden="true"><LucideIcon name={action==='DELETE'?'trash2':'pencil'} size={17}/></span>
+      <span className={styles.directChangeReceiptIcon} aria-hidden="true"><LucideIcon name={action==='DELETE'?'trash2':'pencil'} size={16}/></span>
       <div className={styles.directChangeReceiptCopy}>
         <strong>{actionLabel} {unitLabel} {unitRef}</strong>
         <small>تم التطبيق مباشرة · لا يتطلب اعتمادًا حوكميًا</small>
