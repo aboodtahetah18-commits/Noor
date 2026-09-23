@@ -126,6 +126,14 @@ function governedDisplayDescription(type:GovernedDisplayType){
     reference:'مرجع حاكم معتمد يوضح القواعد المنظمة لهذا النطاق داخل نماء.',
   } as const)[type];
 }
+function governedDocumentStatus(content:string){
+  const match=content.match(/^الحالة\s*:\s*(.+)$/mu);
+  const raw=match?.[1]?.trim()??'';
+  if(!raw)return 'معتمد';
+  const cleaned=cleanVisibleArabic(raw);
+  if(/جاهز للاعتماد|جاهزة للاعتماد/u.test(cleaned))return 'معتمد';
+  return cleaned||'معتمد';
+}
 function sectionIcon(title:string,type:GovernedDisplayType):LucideIconName{
   if(/مصفوفة|صلاحيات|مسؤوليات/.test(title)) return 'layoutGrid';
   if(/خطوات|مسار|اعتماد/.test(title)) return 'listChecks';
@@ -341,6 +349,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
   const isFlowDocument=displayType==='procedure'||displayType==='mechanism';
   const isMatrixDocument=displayType==='matrix';
   const displayDescription=governedDisplayDescription(displayType);
+  const documentStatus=useMemo(()=>governedDocumentStatus(documentContent),[documentContent]);
   const clauseTextByRef=useMemo(()=>{
     const map=new Map<string,string>();
     for(const section of documentSections){
@@ -432,7 +441,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
           </div>
           <span className={styles.governedHeroIcon} aria-hidden="true"><Image src="/brand/ndos/namaa-logo-white-transparent.png" alt="" width={64} height={64}/></span>
           <section className={styles.governedMetaStrip} aria-label="ملخص الوثيقة">
-            <div><small>الحالة</small><strong className={styles.governedStatusActive}>سارية</strong></div>
+            <div><small>الحالة</small><strong className={styles.governedStatusActive}>{documentStatus}</strong></div>
             <div><small>الإصدار</small><strong>{document.version?document.version.replace(/^v/i,''):'المعتمد'}</strong></div>
             <div><small>المصدر</small><strong>نماء</strong></div>
           </section>
