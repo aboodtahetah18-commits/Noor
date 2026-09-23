@@ -10314,3 +10314,35 @@
     max-width:560px;
   }
 }
+
+
+/* Wide work center: remove the oversized descriptive banner and start with the working panes. */
+@media (min-width:768px){
+  .workspaceHeader{
+    display:none !important;
+  }
+
+  .page{
+    min-height:calc(100dvh - 88px);
+  }
+
+  .workspace{
+    min-height:calc(100dvh - 88px);
+  }
+
+  .paneTitle{
+    position:sticky;
+    top:0;
+    z-index:3;
+    background:#fff;
+  }
+
+  .roomDetailButton svg,
+  .secondaryButton svg,
+  .mobileTools svg,
+  .attachButton svg,
+  .sendButton svg {
+    width:22px !important;
+    height:22px !important;
+  }
+}
