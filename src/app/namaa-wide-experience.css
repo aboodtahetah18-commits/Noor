@@ -3866,3 +3866,164 @@
     min-width:780px!important;
   }
 }
+
+
+/* ========================================================================== */
+/* WIDE DATA DENSITY PASS — accounts / obligations / goals / settings         */
+/* ========================================================================== */
+@media (min-width:768px){
+  .namaa-collection-card{
+    padding:16px!important;
+  }
+
+  .namaa-collection-head{
+    gap:14px!important;
+    padding-bottom:12px!important;
+    margin-bottom:12px!important;
+  }
+
+  .namaa-collection-head h2{
+    margin:2px 0 3px!important;
+    line-height:1.35!important;
+  }
+
+  .namaa-table-wrap{
+    border-radius:14px!important;
+    background:var(--namaa-wide-card)!important;
+  }
+
+  .namaa-data-table th,
+  .namaa-data-table td{
+    padding:11px 12px!important;
+  }
+
+  .namaa-data-table thead th{
+    font-size:12px!important;
+    font-weight:900!important;
+    color:var(--namaa-wide-green)!important;
+    background:var(--namaa-wide-card-strong)!important;
+  }
+
+  .namaa-data-table tbody td{
+    font-size:13px!important;
+    background:var(--namaa-wide-card)!important;
+  }
+
+  .namaa-data-table tbody tr:nth-child(even) td{
+    background:var(--namaa-wide-surface-2)!important;
+  }
+
+  html[data-theme="dark"] .namaa-data-table tbody tr:nth-child(even) td{
+    background:#234037!important;
+  }
+
+  .namaa-data-table tbody tr:hover td{
+    background:#b7c7bb!important;
+  }
+
+  html[data-theme="dark"] .namaa-data-table tbody tr:hover td{
+    background:#2d4d41!important;
+  }
+
+  .namaa-data-table strong{
+    line-height:1.45!important;
+  }
+
+  .namaa-table-note{
+    margin-top:4px!important;
+    line-height:1.45!important;
+  }
+
+  .namaa-data-table .p49-resource-actions{
+    display:flex!important;
+    flex-wrap:wrap!important;
+    align-items:center!important;
+    gap:7px!important;
+  }
+
+  .namaa-data-table .p49-modal-trigger,
+  .namaa-data-table .primary-link,
+  .namaa-data-table .secondary-link,
+  .namaa-data-table .button-link{
+    min-height:40px!important;
+    padding:7px 10px!important;
+  }
+
+  .namaa-data-table .p49-trigger-content{
+    gap:7px!important;
+  }
+
+  .namaa-data-table .p49-trigger-content svg,
+  .namaa-data-table .primary-link svg,
+  .namaa-data-table .secondary-link svg{
+    width:22px!important;
+    height:22px!important;
+    min-width:22px!important;
+  }
+
+  .namaa-goals-table{
+    min-width:1040px!important;
+  }
+
+  .namaa-goals-table th:nth-child(1){min-width:180px!important;}
+  .namaa-goals-table th:nth-child(2){min-width:150px!important;}
+  .namaa-goals-table th:nth-child(3),
+  .namaa-goals-table th:nth-child(4),
+  .namaa-goals-table th:nth-child(5),
+  .namaa-goals-table th:nth-child(6){min-width:130px!important;}
+  .namaa-goals-table th:nth-child(7){min-width:130px!important;}
+  .namaa-goals-table th:nth-child(8){min-width:210px!important;}
+
+  .namaa-settings-main{
+    min-width:0!important;
+  }
+
+  .namaa-settings-section{
+    min-width:0!important;
+  }
+
+  .namaa-settings-summary-grid,
+  .namaa-settings-control-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:10px!important;
+  }
+
+  .namaa-settings-summary-grid article,
+  .namaa-settings-control-grid a{
+    min-width:0!important;
+    padding:14px!important;
+  }
+
+  .namaa-settings-summary-grid article :where(strong,span),
+  .namaa-settings-control-grid a :where(strong,span){
+    max-width:100%!important;
+    overflow-wrap:anywhere!important;
+    white-space:normal!important;
+  }
+
+  .namaa-settings-control-grid a{
+    align-content:start!important;
+    min-height:92px!important;
+  }
+
+  .p74-focus-summary{
+    min-width:0!important;
+  }
+
+  .p74-focus-summary strong,
+  .p74-focus-summary small{
+    max-width:100%!important;
+    overflow-wrap:anywhere!important;
+  }
+}
+
+@media (min-width:768px) and (max-width:1023px){
+  .namaa-settings-summary-grid,
+  .namaa-settings-control-grid{
+    grid-template-columns:1fr!important;
+  }
+
+  .namaa-goals-table{
+    min-width:920px!important;
+  }
+}
