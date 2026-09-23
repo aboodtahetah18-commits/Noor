@@ -46,9 +46,9 @@ export default async function ReportsPage() {
       </header>
 
       <section className="namaa-observatory-kpis">
-        <article><span>الدخل الفعلي</span><strong>{formatSar(report.income.actual)}</strong><small>{incomeDelta>=0?'أعلى من المتوقع':'أقل من المتوقع'} بـ {formatSar(Math.abs(incomeDelta))}</small></article>
+        <article><span>الدخل الفعلي</span><strong>{formatSar(report.income.actual)}</strong><small>{incomeDelta>=0?'أعلى من المتوقع':'أقل من المتوقع'} بـ {formatSar(String(Math.abs(incomeDelta)))}</small></article>
         <article><span>المصروف الفعلي</span><strong>{formatSar(report.expense.actual)}</strong><small>استخدام {utilization.toLocaleString('ar-SA-u-nu-latn',{maximumFractionDigits:1})}٪ من المخطط</small></article>
-        <article><span>الادخار</span><strong>{formatSar(report.saving.actual)}</strong><small>{savingDelta>=0?'فوق الخطة':'دون الخطة'} بـ {formatSar(Math.abs(savingDelta))}</small></article>
+        <article><span>الادخار</span><strong>{formatSar(report.saving.actual)}</strong><small>{savingDelta>=0?'فوق الخطة':'دون الخطة'} بـ {formatSar(String(Math.abs(savingDelta)))}</small></article>
         <article><span>حالة الدورة</span><strong>{report.finalResult.status==='FINALIZED'?'مغلقة':'نشطة'}</strong><small>{report.cycle.source==='LIVE'?'بيانات حية':'لقطة تاريخية'}</small></article>
       </section>
 
@@ -56,8 +56,8 @@ export default async function ReportsPage() {
         <section className="namaa-observatory-main namaa-wide-panel">
           <div className="namaa-investments-section-title"><div><p>الوضع العام الآن</p><h2>{report.cycle.name}</h2></div><LucideIcon name="chart" size={20}/></div>
           <div className="namaa-observatory-grid">
-            <article><span>الانحراف في المصروف</span><strong className={expenseDelta>0?'is-risk':''}>{formatSar(expenseDelta)}</strong><small>{expenseDelta>0?'تجاوز المخطط':'ضمن المخطط'}</small></article>
-            <article><span>الأموال المحمية</span><strong>{formatSar(Number(report.goalContributions)+Number(report.emergencyContribution))}</strong><small>أهداف + طوارئ</small></article>
+            <article><span>الانحراف في المصروف</span><strong className={expenseDelta>0?'is-risk':''}>{formatSar(String(expenseDelta))}</strong><small>{expenseDelta>0?'تجاوز المخطط':'ضمن المخطط'}</small></article>
+            <article><span>الأموال المحمية</span><strong>{formatSar(String(Number(report.goalContributions)+Number(report.emergencyContribution)))}</strong><small>أهداف + طوارئ</small></article>
             <article><span>أكبر تجاوز</span><strong>{report.biggestOverrun?.categoryName??'لا يوجد'}</strong><small>{report.biggestOverrun?formatSar(report.biggestOverrun.actual):'الوضع مستقر'}</small></article>
             <article><span>حالة المراجعة</span><strong>{report.reviewStatus??'تشغيلية'}</strong><small>تتحدث مع كل دورة</small></article>
           </div>
@@ -71,7 +71,7 @@ export default async function ReportsPage() {
 
         <aside className="namaa-observatory-side namaa-wide-panel">
           <div className="namaa-investments-section-title"><div><p>ما يحتاج الانتباه</p><h2>المخاطر والحالات</h2></div><LucideIcon name="triangleAlert" size={20}/></div>
-          {expenseDelta>0?<article className="is-warning"><strong>تجاوز في الإنفاق</strong><p>المصروف الحالي أعلى من المخطط بـ {formatSar(expenseDelta)}.</p><Link href="/cases">فتح مسار القرار</Link></article>:<article><strong>الإنفاق ضمن الخطة</strong><p>لا يوجد تجاوز حالي في المصروف الإجمالي.</p></article>}
+          {expenseDelta>0?<article className="is-warning"><strong>تجاوز في الإنفاق</strong><p>المصروف الحالي أعلى من المخطط بـ {formatSar(String(expenseDelta))}.</p><Link href="/cases">فتح مسار القرار</Link></article>:<article><strong>الإنفاق ضمن الخطة</strong><p>لا يوجد تجاوز حالي في المصروف الإجمالي.</p></article>}
           {report.biggestOverrun?<article className="is-warning"><strong>{report.biggestOverrun.categoryName}</strong><p>أكبر بند متجاوز يحتاج متابعة سياقية.</p></article>:null}
           <article><strong>التوقعات المستقبلية</strong><p>تحليل الضغط المالي القادم والسيولة قبل وقوع الخطر.</p><Link href="/reports/future-pressure">فتح التوقعات</Link></article>
           <article><strong>مسار الخطر الحرج</strong><p>إيقاف مؤقت، تصعيد للمستخدم والمحافظ، ثم تفعيل لجنة الاستقرار والسيولة والتمويل عند التحقق.</p></article>
