@@ -95,15 +95,7 @@ body { min-height:100vh; }
 @media(max-width:767px){.settings-grid{grid-template-columns:1fr;}.settings-summary{grid-template-columns:repeat(3,1fr);}.settings-summary-card strong{font-size:var(--ux-type-card-title-size);}}
 @media(max-width:767px){.settings-summary{grid-template-columns:1fr 1fr;}.settings-summary-card:last-child{grid-column:1/-1;}.settings-obligation-row{align-items:flex-start;flex-direction:column;}.settings-obligation-row form,.settings-obligation-row button{width:100%;}.settings-page .section-title-row{align-items:flex-start;flex-direction:column;}.settings-page .section-title-row .button-link{width:100%;}}
 
-/* Legacy contract literals retained for historical exact-string test compatibility only.
-   Runtime CSS uses governed UX tokens and the executable rules below.
-   min-height:44px
-   font-size:16px;min-height:48px
-   scroll-padding-bottom:110px
-   .transaction-table thead,.report-table thead{display:none}
-   .pagination-row{direction:rtl}
-   .mobile-bottom-nav,.desktop-top-nav-wrap{display:none!important}
-*/
+/* Legacy exact-string desktop contract notes removed. */
 /* Phase 32 — Mobile Hardening */
 .mobile-bottom-nav{display:none;}
 .protected-app-shell{min-height:100vh;min-width:0;}
@@ -209,7 +201,7 @@ body { min-height:100vh; }
 @media(min-width:768px) and (max-width:1023px){
   html{scroll-padding-top:var(--ux-space-24);}
   .protected-app-shell{background:var(--ux-surface-default);padding-top:var(--ux-space-24);padding-bottom:var(--ux-space-0);}
-  .mobile-bottom-nav,.desktop-top-nav-wrap{display:none!important}
+  .mobile-bottom-nav{display:none!important}
 
   .tablet-top-nav-wrap{position:fixed;z-index:var(--ux-z-sticky);display:block;inset-inline:0;top:0;height:108px;background:var(--ux-surface-default);border-bottom:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);box-shadow:var(--ux-shadow-sm);}
   .tablet-top-nav{height:100%;max-width:1000px;margin:var(--ux-space-0) auto;padding:var(--ux-space-2) var(--ux-space-5) var(--ux-space-2);display:grid;grid-template-rows:42px 38px;gap:var(--ux-space-2);}
