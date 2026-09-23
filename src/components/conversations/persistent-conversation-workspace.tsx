@@ -664,26 +664,24 @@ function DirectGovernanceChangeCard({data}:{data:Record<string,unknown>}){
   const proposedRule=typeof data.proposed_rule==='string'?data.proposed_rule:null;
   const rationale=typeof data.rationale==='string'?data.rationale:null;
 
-  return <section className={`${styles.structuredCard} ${styles.kind_followup}`} aria-label="تفاصيل التحرير المباشر">
-    <header className={styles.structuredCardHeader}>
-      <span aria-hidden="true"><LucideIcon name="pencil" size={16}/></span>
-      <strong>تحرير مباشر</strong>
-    </header>
-    <div className={styles.facts}>
-      <span><small>الحالة</small><strong>مطبق مباشرة</strong></span>
-      <span><small>الإجراء</small><strong>{actionLabel}</strong></span>
-      <span><small>العنصر</small><strong>{unitLabel} {unitRef}</strong></span>
+  return <section className={styles.directChangeReceipt} aria-label="إيصال التحرير المباشر">
+    <div className={styles.directChangeReceiptMain}>
+      <span className={styles.directChangeReceiptIcon} aria-hidden="true"><LucideIcon name={action==='DELETE'?'trash2':'pencil'} size={17}/></span>
+      <div className={styles.directChangeReceiptCopy}>
+        <strong>{actionLabel} {unitLabel} {unitRef}</strong>
+        <small>تم التطبيق مباشرة · لا يتطلب اعتمادًا حوكميًا</small>
+      </div>
+      <span className={styles.directChangeReceiptStatus}>تم</span>
     </div>
-    <button type="button" className={styles.secondaryButton} onClick={()=>setExpanded(value=>!value)} aria-expanded={expanded}>
+    <button type="button" className={styles.directChangeDetailsButton} onClick={()=>setExpanded(value=>!value)} aria-expanded={expanded}>
       <LucideIcon name="listChecks" size={16}/>
       <span>{expanded?'إخفاء التفاصيل':'عرض التفاصيل'}</span>
     </button>
-    {expanded&&<div className={styles.governedClauseDetails}>
+    {expanded&&<div className={styles.directChangeDetails}>
       <div><small>الوثيقة</small><p>{documentTitle}</p></div>
-      {currentRule&&<div><small>النص السابق</small><p>{currentRule}</p></div>}
-      {action!=='DELETE'&&proposedRule&&<div><small>{action==='ADD'?'النص المضاف':'النص بعد التعديل'}</small><p>{proposedRule}</p></div>}
+      {currentRule&&<div><small>قبل</small><p>{currentRule}</p></div>}
+      {action!=='DELETE'&&proposedRule&&<div><small>{action==='ADD'?'المحتوى المضاف':'بعد التعديل'}</small><p>{proposedRule}</p></div>}
       {rationale&&<div><small>الملاحظة</small><p>{rationale}</p></div>}
-      <div><small>المسار</small><p>هذا تحرير مباشر لمرحلة ضبط المنصة، ولا يحتاج اعتماد مجلس نماء الأعلى. الاعتماد يخص التحرير الحوكمي فقط.</p></div>
     </div>}
   </section>;
 }
