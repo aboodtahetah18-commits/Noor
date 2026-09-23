@@ -549,10 +549,10 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
               :documentContent
                 ?<div className={styles.governedStructuredDocument}>
                   {documentSections.map((section,sectionIndex)=><details className={styles.governedContentSection+' '+(isMatrixDocument?styles.governedMatrixSection:'')+' '+(isFlowDocument?styles.governedFlowSection:'')} key={section.number+'-'+sectionIndex} open={sectionIndex===0||isMatrixDocument}>
-                    <summary><span><LucideIcon name={sectionIcon(section.title,displayType)} size={16}/><strong>{'المادة ('+section.number+'): '+section.title}</strong></span></summary>
+                    <summary><span><LucideIcon name={sectionIcon(section.title,displayType)} size={16}/><strong>{'المادة ('+section.number+'): '+section.title}</strong></span><small>إظهار / إخفاء</small></summary>
                     <div className={styles.governedContentSectionBody}>
                       <div className={styles.governedArticleAction}>
-                        <button type="button" onClick={()=>openUnitEditor('article',section.number,section.title,null)}><LucideIcon name="pencil" size={16}/>تعديل المادة</button>
+                        <button type="button" onClick={()=>openUnitEditor('article',section.number,section.title,null)}><LucideIcon name="pencil" size={16}/>تعديل</button>
                       </div>
                       {section.blocks.map((block,blockIndex)=>block.kind==='paragraph'
                         ?<article className={styles.governedParagraphRow} key={'p-'+blockIndex}>
@@ -568,7 +568,10 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
                               <div className={styles.governedClauseHeading}><span>{'البند '+block.number}</span><strong>{block.title}</strong></div>
                               <button type="button" onClick={()=>openUnitEditor('clause',block.number,block.text||block.title,section.number)} aria-label={'تعديل البند '+block.number}><LucideIcon name="pencil" size={16}/>تعديل</button>
                             </div>
-                            {block.text&&<p>{block.text}</p>}
+                            {block.text&&<div className={styles.governedClauseDetails}>
+                              <div><small>الشرح</small><p>{splitClauseContent(block.text).explanation}</p></div>
+                              <div><small>مثال</small><p>{splitClauseContent(block.text).example||'لم يضف مثال لهذا البند بعد.'}</p></div>
+                            </div>}
                           </article>
                           :<div className={styles.governedTableScroll} key={'t-'+blockIndex}>
                           <table className={styles.governedContentTable}>
