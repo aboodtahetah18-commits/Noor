@@ -571,10 +571,15 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
               <button type="button" className={styles.governedEditClose} onClick={()=>setFormOpen(false)} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button>
             </header>
 
-            <div className={styles.governedEditChoice} role="group" aria-label="نوع العملية">
-              <button type="button" className={changeAction==='ADD'?styles.governedEditChoiceActive:''} onClick={()=>{setChangeAction('ADD');updateAddTarget('paragraph','')}}>إضافة</button>
-              <button type="button" className={changeAction==='EDIT'?styles.governedEditChoiceActive:''} onClick={()=>{setChangeAction('EDIT');setClauseRef('');setParentRef('');setCurrentRule('');setProposedRule('')}}>تعديل</button>
-            </div>
+            <label><span>نوع العملية</span><select value={changeAction} onChange={e=>{
+              const action=e.target.value as typeof changeAction;
+              setChangeAction(action);
+              if(action==='ADD') updateAddTarget('paragraph','');
+              else {setClauseRef('');setParentRef('');setCurrentRule('');setProposedRule('')}
+            }}>
+              <option value="ADD">إضافة</option>
+              <option value="EDIT">تعديل</option>
+            </select></label>
 
             {changeAction==='ADD'
               ?<>
