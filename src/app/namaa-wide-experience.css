@@ -2056,18 +2056,18 @@
   :root {
     --namaa-wide-green:#0b6b4f;
     --namaa-wide-green-deep:#07513d;
-    --namaa-wide-green-soft:#dcebe4;
-    --namaa-wide-green-soft-2:#edf5f1;
+    --namaa-wide-green-soft:#a9c1b3;
+    --namaa-wide-green-soft-2:#b8c9bd;
     --namaa-wide-gold:#d4af6b;
-    --namaa-wide-gold-soft:#f3ead7;
-    --namaa-wide-surface:#f2f1e8;
-    --namaa-wide-surface-2:#e8efe9;
+    --namaa-wide-gold-soft:#cdbb91;
+    --namaa-wide-surface:#c7d4c8;
+    --namaa-wide-surface-2:#bccbbb;
     --namaa-wide-card:#d0dbcf;
-    --namaa-wide-card-strong:#e2ebe4;
-    --namaa-wide-input:#f6f3e8;
-    --namaa-wide-text:#1f2937;
-    --namaa-wide-muted:#61758a;
-    --namaa-wide-border:#c9d8cf;
+    --namaa-wide-card-strong:#becdbf;
+    --namaa-wide-input:#b7c7bb;
+    --namaa-wide-text:#18261f;
+    --namaa-wide-muted:#50685e;
+    --namaa-wide-border:#98ad9f;
     --namaa-wide-shadow:0 12px 32px rgb(31 41 55 / 8%);
   }
 
@@ -2083,8 +2083,8 @@
     --namaa-wide-card:#183128;
     --namaa-wide-card-strong:#1d3a30;
     --namaa-wide-input:#203c33;
-    --namaa-wide-text:#f3f7f4;
-    --namaa-wide-muted:#c0d0c9;
+    --namaa-wide-text:#decfae;
+    --namaa-wide-muted:#adbaa9;
     --namaa-wide-border:#2f4e43;
     --namaa-wide-shadow:0 16px 36px rgb(0 0 0 / 22%);
   }
@@ -3462,5 +3462,170 @@
 
   .mustaqbali-global-search{
     min-width:240px!important;
+  }
+}
+
+
+/* ========================================================================== */
+/* FINAL DARK MODE PASS — identity contrast without white / washed-out panels */
+/* ========================================================================== */
+@media (min-width:768px){
+  html[data-theme="dark"]{
+    --namaa-wide-green:#79bea7;
+    --namaa-wide-green-deep:#0d3028;
+    --namaa-wide-green-soft:#1a3b31;
+    --namaa-wide-green-soft-2:#163229;
+    --namaa-wide-gold:#d8b86f;
+    --namaa-wide-gold-soft:#433821;
+    --namaa-wide-surface:#10211c;
+    --namaa-wide-surface-2:#162c25;
+    --namaa-wide-card:#1d372e;
+    --namaa-wide-card-strong:#28463a;
+    --namaa-wide-input:#315044;
+    --namaa-wide-border:#526f63;
+    --namaa-wide-text:#decfae;
+    --namaa-wide-muted:#adbaa9;
+    --namaa-wide-inverse:#e1cca0;
+  }
+
+  html[data-theme="dark"] .protected-app-shell,
+  html[data-theme="dark"] .protected-app-shell > #main-content,
+  html[data-theme="dark"] .app-page,
+  html[data-theme="dark"] .page-shell,
+  html[data-theme="dark"] .dashboard-shell,
+  html[data-theme="dark"] .p47-content-shell{
+    background:var(--namaa-wide-surface)!important;
+    color:var(--namaa-wide-text)!important;
+  }
+
+  html[data-theme="dark"] .protected-app-shell :where(
+    .namaa-wide-card,
+    .namaa-wide-panel,
+    .p47-resource-card,
+    .p47-panel,
+    .p47-analysis-card,
+    .p47-command-panel,
+    .p74-focus-summary,
+    .detail-list,
+    .form-card,
+    .summary-card,
+    .dashboard-card,
+    .more-hub-section,
+    .more-hub-card,
+    .cycle-create-card
+  ){
+    background:var(--namaa-wide-card)!important;
+    color:var(--namaa-wide-text)!important;
+    border-color:var(--namaa-wide-border)!important;
+    box-shadow:0 12px 28px rgb(0 0 0 / 18%)!important;
+  }
+
+  html[data-theme="dark"] .protected-app-shell :where(
+    h1,h2,h3,h4,strong,label,.field-label
+  ){
+    color:var(--namaa-wide-text)!important;
+  }
+
+  html[data-theme="dark"] .protected-app-shell :where(
+    p,small,.muted,[class*="subtitle"],[class*="description"]
+  ){
+    color:var(--namaa-wide-muted)!important;
+  }
+
+  html[data-theme="dark"] .protected-app-shell :where(
+    input,select,textarea,
+    .mustaqbali-global-search,
+    .mustaqbali-tablet-search,
+    .mustaqbali-theme-toggle
+  ){
+    background:var(--namaa-wide-input)!important;
+    color:var(--namaa-wide-text)!important;
+    border-color:var(--namaa-wide-border)!important;
+  }
+
+  html[data-theme="dark"] .protected-app-shell :where(input,textarea)::placeholder{
+    color:#9dad9f!important;
+    opacity:.9!important;
+  }
+
+  html[data-theme="dark"] .protected-app-shell :where(
+    .primary-button,.primary-link,.namaa-wide-action
+  ){
+    background:#145b48!important;
+    color:#e1cca0!important;
+    border-color:#397a66!important;
+  }
+
+  html[data-theme="dark"] .protected-app-shell :where(
+    .secondary-button,.secondary-link,.button-link,
+    .p49-modal-trigger,.namaa-wide-action-secondary
+  ){
+    background:#4a3d24!important;
+    color:#dfc889!important;
+    border-color:#8e7440!important;
+  }
+
+  html[data-theme="dark"] .protected-app-shell :where(
+    .namaa-banks-hero,.namaa-investments-header,.namaa-knowledge-hero,
+    .namaa-decisions-hero,.namaa-observatory-hero,.namaa-lab-hero,.namaa-settings-hero
+  ){
+    background:linear-gradient(135deg,#294a3e,#1b372f)!important;
+    border-color:#587267!important;
+  }
+
+  html[data-theme="dark"] .namaa-banks-selector a{
+    background:#25473b!important;
+    color:#d8c9a6!important;
+    border-color:#567065!important;
+  }
+
+  html[data-theme="dark"] .namaa-banks-selector a.is-active{
+    background:linear-gradient(135deg,#8e753d,#5a492b)!important;
+    color:#e5d19e!important;
+    border-color:#b9954e!important;
+  }
+
+  html[data-theme="dark"] .namaa-decisions-list article.is-warning,
+  html[data-theme="dark"] .namaa-observatory-side > article.is-warning,
+  html[data-theme="dark"] .namaa-lab-item.is-warning{
+    background:#4b3d24!important;
+    border-color:#8e7440!important;
+  }
+
+  html[data-theme="dark"] .namaa-decisions-list article.is-critical,
+  html[data-theme="dark"] .namaa-wide-risk-critical{
+    background:#4a2928!important;
+    border-color:#8c5350!important;
+  }
+
+  html[data-theme="dark"] .namaa-wide-risk-warning{
+    background:#4b3d24!important;
+    border-color:#8e7440!important;
+  }
+
+  html[data-theme="dark"] .p49-action-dialog .p49-dialog-shell,
+  html[data-theme="dark"] .p49-action-dialog .p49-dialog-body{
+    background:var(--namaa-wide-card)!important;
+    color:var(--namaa-wide-text)!important;
+  }
+
+  html[data-theme="dark"] .p49-action-dialog .p49-dialog-header{
+    background:var(--namaa-wide-card-strong)!important;
+    border-color:var(--namaa-wide-border)!important;
+  }
+
+  html[data-theme="dark"] .mustaqbali-topbar.namaa-topbar{
+    background:#203b32!important;
+    border-bottom-color:#567065!important;
+  }
+
+  html[data-theme="dark"] .mustaqbali-topbar-menu,
+  html[data-theme="dark"] .mustaqbali-topbar-actions > a,
+  html[data-theme="dark"] .mustaqbali-topbar-actions > button,
+  html[data-theme="dark"] .mustaqbali-profile-trigger,
+  html[data-theme="dark"] .mustaqbali-global-search{
+    background:#2e4e42!important;
+    color:#dccb9f!important;
+    border-color:#60786e!important;
   }
 }
