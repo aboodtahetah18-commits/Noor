@@ -1,23 +1,12 @@
 'use client';
 
 import Image from 'next/image';
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { LucideIcon } from '@/components/ui/lucide-icon';
 import type { AlgorithmRoleRef } from '@/lib/governance/algorithm-role-registry';
 import { governedRoomDetails } from '@/lib/conversations/governed-room-details';
 import { NAMAA_PERSONA_ASSETS } from './persona-assets';
 import styles from './conversation-workspace.module.css';
-
-const kindLabel:Record<AlgorithmRoleRef['kind'],string>={
-  governor:'محافظ بنك نماء المركزي',
-  central_bank_manager:'مدير بنك نماء المركزي',
-  bank_manager:'مدير البنك',
-  responsibility_owner:'مسؤول مالي',
-  advisor:'مستشار اقتصادي',
-  operations:'وحدة تشغيلية',
-  secretary:'أمين السر المركزي',
-  council:'جهة حوكمة واعتماد',
-};
 
 const policyTitle=(ref:string)=>{
   for(const detail of Object.values(governedRoomDetails)){
@@ -106,15 +95,12 @@ export function AlgorithmRoleMobileSheet({role,onClose}:{role:AlgorithmRoleRef;o
     {title:'حالات الخطأ والاستثناء',items:role.exceptions??[]},
     {title:'السياسات والمراجع الحاكمة',items:policyTitles},
   ].map(section=>({...section,items:section.items.map(editText)})).filter(section=>section.items.length);
-  const clauseTextByRef=useMemo(()=>{
-    const map=new Map<string,string>();
-    map.set('1.1',editText(role.mandate));
-    sections.forEach((section,index)=>{
-      const prefix=String(index+2);
-      section.items.forEach((item,itemIndex)=>map.set(prefix+'.'+String(itemIndex+1),item));
-    });
-    return map;
-  },[role.mandate,sections,corrections,amendments]);
+  const clauseTextByRef=new Map<string,string>();
+  clauseTextByRef.set('1.1',editText(role.mandate));
+  sections.forEach((section,index)=>{
+    const prefix=String(index+2);
+    section.items.forEach((item,itemIndex)=>clauseTextByRef.set(prefix+'.'+String(itemIndex+1),item));
+  });
   function updateClauseReference(value:string){
     const normalized=value.trim().replace(/[٠-٩]/g,d=>String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)));
     setClauseRef(value);
