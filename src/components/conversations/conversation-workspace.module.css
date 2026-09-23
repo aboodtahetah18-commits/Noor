@@ -2162,7 +2162,8 @@
 .chatFont_small .message>p,.chatFont_medium .message>p,.chatFont_large .message>p,
 .chatFont_small .onboardingMessageContent>p,.chatFont_medium .onboardingMessageContent>p,.chatFont_large .onboardingMessageContent>p,
 .chatFont_small .onboardingQuestionBox strong,.chatFont_medium .onboardingQuestionBox strong,.chatFont_large .onboardingQuestionBox strong{
-  font-size:var(--namaa-chat-copy-size)
+  font-size:var(--namaa-chat-copy-size);
+  font-weight:800
 }
 
 .onboardingHeaderActions{
@@ -2244,6 +2245,21 @@
   display:grid;
   grid-template-columns:repeat(3,1fr);
   gap:var(--ux-space-2)
+}
+.fontSizeSliderRow{
+  grid-column:1 / -1;
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:var(--ux-space-2);
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  font-weight:800
+}
+.fontSizeSlider{
+  width:100%;
+  accent-color:var(--namaa-green-700);
+  cursor:pointer
 }
 .fontSizeChoices button,.settingsActionGrid button{
   min-height:40px;
@@ -2796,7 +2812,7 @@
 }
 .oversightUserActionButtons button:disabled{opacity:.55;cursor:not-allowed}
 
-.messageCopy{white-space:pre-wrap;overflow-wrap:anywhere}
+.messageCopy{white-space:pre-wrap;overflow-wrap:anywhere;font-weight:800}
 .messageMeta{
   display:flex;
   align-items:center;
