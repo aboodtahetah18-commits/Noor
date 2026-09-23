@@ -3117,3 +3117,67 @@
     min-width:280px!important;
   }
 }
+
+
+/* ========================================================================== */
+/* WIDE LEGACY-SURFACE OVERRIDE — catches generic old cards/inputs on wide UI  */
+/* ========================================================================== */
+@media (min-width:768px){
+  html[data-theme="light"] .protected-app-shell :where(
+    .card,
+    .panel,
+    .dashboard-card,
+    .detail-list,
+    .statement-kpis>div,
+    .more-hub-section,
+    .more-hub-card,
+    .cycle-create-card,
+    .auth-stage,
+    .auth-panel
+  ){
+    background:var(--namaa-wide-card)!important;
+    border-color:var(--namaa-wide-border)!important;
+    color:var(--namaa-wide-text)!important;
+  }
+
+  html[data-theme="light"] .protected-app-shell :where(
+    input,
+    select,
+    textarea,
+    .mustaqbali-global-search,
+    .mustaqbali-tablet-search,
+    .mustaqbali-theme-toggle
+  ){
+    background:var(--namaa-wide-input)!important;
+    color:var(--namaa-wide-text)!important;
+    border-color:var(--namaa-wide-border)!important;
+  }
+
+  html[data-theme="dark"] .protected-app-shell :where(
+    .card,
+    .panel,
+    .dashboard-card,
+    .detail-list,
+    .statement-kpis>div,
+    .more-hub-section,
+    .more-hub-card,
+    .cycle-create-card,
+    .auth-stage,
+    .auth-panel
+  ){
+    background:var(--namaa-wide-card)!important;
+    border-color:var(--namaa-wide-border)!important;
+    color:var(--namaa-wide-text)!important;
+  }
+
+  .protected-app-shell :where(
+    .more-hub-card,
+    .cycle-create-card,
+    .detail-list,
+    .statement-kpis>div
+  ) :where(h1,h2,h3,strong,span,p,small){
+    max-width:100%!important;
+    overflow-wrap:anywhere!important;
+    white-space:normal!important;
+  }
+}
