@@ -119,7 +119,7 @@ export function AlgorithmRoleMobileSheet({role,onClose}:{role:AlgorithmRoleRef;o
       const response=await fetch('/api/governance/amendments',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)});
       const data=await response.json().catch(()=>({})) as {error?:string};
       if(!response.ok)throw new Error(data.error||'REQUEST_FAILED');
-      setFeedback(editMode==='typo'?'تم تطبيق التصحيح الإصلاحي وتسجيله.':'تم فتح طلب تعديل حوكمي وإرساله لمسار الاعتماد.');
+      setFeedback(editMode==='typo'?'تم تطبيق التصحيح الإملائي وتسجيله.':'تم فتح طلب التعديل وإرساله لمسار الاعتماد.');
       setEditMode(null);setClauseRef('');setCurrentRule('');setProposedRule('');setRationale('');
       const refresh=await fetch('/api/governance/amendments',{cache:'no-store'});
       const refreshed=await refresh.json().catch(()=>({})) as {corrections?:RoleCorrection[];amendments?:RoleAmendment[]};
@@ -151,12 +151,12 @@ export function AlgorithmRoleMobileSheet({role,onClose}:{role:AlgorithmRoleRef;o
         </section>
 
         <section className={styles.governedQuickActions+' '+styles.algorithmRoleEditActions} aria-label="تعديل الوصف الوظيفي">
-          <button type="button" className={styles.governedTypoButton} onClick={()=>{setEditMode('typo');setFeedback('')}}><LucideIcon name="pencil" size={24}/><span><strong>تعديل إصلاحي / إملائي</strong></span></button>
-          <button type="button" className={styles.governedGovernanceButton} onClick={()=>{setEditMode('governance');setFeedback('')}}><LucideIcon name="landmark" size={24}/><span><strong>طلب تعديل حوكمي</strong></span></button>
+          <button type="button" className={styles.governedTypoButton} onClick={()=>{setEditMode('typo');setFeedback('')}}><LucideIcon name="pencil" size={20}/><span><strong>تعديل إملائي</strong></span></button>
+          <button type="button" className={styles.governedGovernanceButton} onClick={()=>{setEditMode('governance');setFeedback('')}}><LucideIcon name="landmark" size={20}/><span><strong>طلب تعديل</strong></span></button>
         </section>
 
         {editMode&&<form className={styles.governedAmendmentForm} onSubmit={submitEdit}>
-          <header className={styles.governedEditFormHeader}><span className={styles.governedEditFormIcon}><LucideIcon name={editMode==='typo'?'pencil':'landmark'} size={20}/></span><div><strong>{editMode==='typo'?'تعديل إصلاحي / إملائي':'طلب تعديل حوكمي'}</strong><small>{editMode==='typo'?'لتصحيح خطأ إملائي أو صياغي دون تغيير المسؤولية أو الصلاحية.':'لتغيير المضمون أو التفويض أو المسؤوليات عبر مسار الاعتماد.'}</small></div></header>
+          <header className={styles.governedEditFormHeader}><span className={styles.governedEditFormIcon}><LucideIcon name={editMode==='typo'?'pencil':'landmark'} size={20}/></span><div><strong>{editMode==='typo'?'تعديل إملائي':'طلب تعديل'}</strong><small>{editMode==='typo'?'لتصحيح خطأ إملائي أو صياغي دون تغيير المسؤولية أو الصلاحية.':'لتغيير المضمون أو التفويض أو المسؤوليات عبر مسار الاعتماد.'}</small></div></header>
           <label><span>رقم المادة أو البند</span><input value={clauseRef} onChange={event=>setClauseRef(event.target.value)} placeholder="مثال: 2.3"/></label>
           <label><span>النص الحالي</span><textarea required value={currentRule} onChange={event=>setCurrentRule(event.target.value)} placeholder="انسخ النص الحالي كما يظهر"/></label>
           <label><span>{editMode==='typo'?'النص المصحح':'التعديل المقترح'}</span><textarea required value={proposedRule} onChange={event=>setProposedRule(event.target.value)} placeholder="اكتب النص المقترح"/></label>
