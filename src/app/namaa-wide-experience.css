@@ -3629,3 +3629,240 @@
     border-color:#60786e!important;
   }
 }
+
+
+/* ========================================================================== */
+/* WIDE DIALOG + TABLE + FORM FINAL CONTRACT                                  */
+/* One scroll owner, no clipped controls, no action bar covering content.     */
+/* ========================================================================== */
+@media (min-width:768px){
+  .p49-action-dialog{
+    box-sizing:border-box!important;
+    overflow:visible!important;
+    overscroll-behavior:contain!important;
+    margin:auto!important;
+  }
+
+  .p49-action-dialog .p49-dialog-shell{
+    min-width:0!important;
+    min-height:0!important;
+    overflow:hidden!important;
+    display:grid!important;
+    grid-template-rows:auto minmax(0,1fr)!important;
+  }
+
+  .p49-action-dialog .p49-dialog-header{
+    position:relative!important;
+    top:auto!important;
+    z-index:2!important;
+    flex:0 0 auto!important;
+    min-width:0!important;
+    overflow:visible!important;
+  }
+
+  .p49-action-dialog .p49-dialog-title-block{
+    min-width:0!important;
+    flex:1 1 auto!important;
+  }
+
+  .p49-action-dialog .p49-dialog-title-block > div{
+    min-width:0!important;
+  }
+
+  .p49-action-dialog .p49-dialog-title-block h2,
+  .p49-action-dialog .p49-dialog-title-block p{
+    max-width:100%!important;
+    overflow-wrap:anywhere!important;
+    white-space:normal!important;
+  }
+
+  .p49-action-dialog .p49-dialog-tools{
+    flex:0 0 auto!important;
+    display:flex!important;
+    align-items:center!important;
+    gap:8px!important;
+    position:relative!important;
+    z-index:3!important;
+  }
+
+  .p49-action-dialog .p49-dialog-body{
+    min-width:0!important;
+    min-height:0!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    overscroll-behavior:contain!important;
+    scrollbar-gutter:stable!important;
+    position:relative!important;
+  }
+
+  .p49-action-dialog .p49-dialog-body > *{
+    min-width:0!important;
+    max-width:100%!important;
+  }
+
+  .p49-action-dialog .form-grid,
+  .p49-action-dialog .p47-settings-form{
+    width:100%!important;
+    min-width:0!important;
+    align-content:start!important;
+  }
+
+  .p49-action-dialog .form-grid > *,
+  .p49-action-dialog .p47-settings-form > *{
+    min-width:0!important;
+    max-width:100%!important;
+  }
+
+  .p49-action-dialog label{
+    min-width:0!important;
+    max-width:100%!important;
+  }
+
+  .p49-action-dialog :where(input,select,textarea){
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    box-sizing:border-box!important;
+  }
+
+  .p49-action-dialog textarea{
+    resize:vertical!important;
+    min-height:120px!important;
+    max-height:320px!important;
+  }
+
+  .p49-action-dialog :where(.p49-dialog-actions,.form-actions,.actions,.p47-dialog-actions){
+    position:relative!important;
+    inset:auto!important;
+    bottom:auto!important;
+    z-index:auto!important;
+    display:flex!important;
+    flex-wrap:wrap!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    gap:10px!important;
+    padding-top:14px!important;
+    margin-top:8px!important;
+    border-top:1px solid var(--namaa-wide-border)!important;
+    background:transparent!important;
+  }
+
+  .p49-action-dialog :where(.p49-dialog-actions,.form-actions,.actions,.p47-dialog-actions) > *{
+    min-width:140px!important;
+    max-width:100%!important;
+    flex:0 1 auto!important;
+  }
+
+  .namaa-table-wrap{
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    overflow-x:auto!important;
+    overflow-y:visible!important;
+    overscroll-behavior-inline:contain!important;
+    scrollbar-gutter:stable!important;
+  }
+
+  .namaa-data-table{
+    width:100%!important;
+    min-width:860px!important;
+    table-layout:auto!important;
+  }
+
+  .namaa-data-table th,
+  .namaa-data-table td{
+    vertical-align:middle!important;
+    overflow-wrap:anywhere!important;
+    word-break:normal!important;
+  }
+
+  .namaa-data-table th{
+    white-space:normal!important;
+    line-height:1.45!important;
+  }
+
+  .namaa-data-table td{
+    line-height:1.6!important;
+  }
+
+  .namaa-data-table td:last-child{
+    min-width:190px!important;
+    width:auto!important;
+  }
+
+  .namaa-data-table td:last-child :where(
+    .p49-resource-actions,
+    .entity-action-rail,
+    [class*="action"]
+  ){
+    display:flex!important;
+    flex-wrap:wrap!important;
+    align-items:center!important;
+    gap:8px!important;
+    min-width:0!important;
+  }
+
+  .namaa-data-table td:last-child :where(button,a){
+    max-width:100%!important;
+    white-space:normal!important;
+  }
+
+  .namaa-collection-card,
+  .p47-resource-card{
+    min-width:0!important;
+    overflow:visible!important;
+  }
+
+  .namaa-collection-head{
+    min-width:0!important;
+    align-items:center!important;
+  }
+
+  .namaa-collection-head > div{
+    min-width:0!important;
+  }
+
+  .namaa-collection-head :where(h2,small,span){
+    max-width:100%!important;
+    overflow-wrap:anywhere!important;
+  }
+}
+
+@media (min-width:768px) and (max-width:1023px){
+  .p49-action-dialog{
+    width:calc(100vw - 20px)!important;
+    max-width:none!important;
+    max-height:calc(100dvh - 20px)!important;
+  }
+
+  .p49-action-dialog .p49-dialog-shell{
+    height:calc(100dvh - 20px)!important;
+    max-height:calc(100dvh - 20px)!important;
+  }
+
+  .p49-action-dialog .p49-dialog-header{
+    padding:16px!important;
+  }
+
+  .p49-action-dialog .p49-dialog-body{
+    padding:16px!important;
+  }
+
+  .p49-action-dialog .p49-dialog-title-icon{
+    width:44px!important;
+    height:44px!important;
+    min-width:44px!important;
+  }
+
+  .p49-action-dialog .p49-dialog-title-block h2{
+    font-size:22px!important;
+  }
+
+  .p49-action-dialog :where(.p49-dialog-actions,.form-actions,.actions,.p47-dialog-actions) > *{
+    flex:1 1 180px!important;
+  }
+
+  .namaa-data-table{
+    min-width:780px!important;
+  }
+}
