@@ -4160,3 +4160,110 @@
     border-radius:18px!important;
   }
 }
+
+
+/* ========================================================================== */
+/* INVESTMENT ACTION DIALOGS                                                   */
+/* ========================================================================== */
+@media (min-width:768px){
+  .namaa-investments-actions > .p49-modal-trigger{
+    min-height:46px!important;
+    padding:0 14px!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:8px!important;
+    text-decoration:none!important;
+    font-weight:800!important;
+  }
+
+  .namaa-investment-dialog-content{
+    display:grid!important;
+    gap:18px!important;
+    min-width:0!important;
+  }
+
+  .namaa-investment-dialog-intro{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:18px!important;
+    padding:16px!important;
+    border:1px solid var(--namaa-wide-border)!important;
+    border-radius:16px!important;
+    background:var(--namaa-wide-card-strong)!important;
+  }
+
+  .namaa-investment-dialog-intro > div{
+    min-width:0!important;
+  }
+
+  .namaa-investment-dialog-intro span{
+    display:block!important;
+    margin-bottom:4px!important;
+    color:var(--namaa-wide-gold)!important;
+    font-size:12px!important;
+    font-weight:900!important;
+  }
+
+  .namaa-investment-dialog-intro strong{
+    display:block!important;
+    color:var(--namaa-wide-text)!important;
+    font-size:18px!important;
+  }
+
+  .namaa-investment-dialog-intro p{
+    margin:6px 0 0!important;
+    color:var(--namaa-wide-muted)!important;
+    line-height:1.7!important;
+  }
+
+  .namaa-investment-dialog-intro svg{
+    flex:0 0 auto!important;
+    color:var(--namaa-wide-gold)!important;
+  }
+
+  .namaa-investment-dialog-full{
+    grid-column:1 / -1!important;
+  }
+
+  .namaa-investment-dialog-grid{
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:12px!important;
+  }
+
+  .namaa-investment-dialog-grid article{
+    min-width:0!important;
+    padding:14px!important;
+    border:1px solid var(--namaa-wide-border)!important;
+    border-radius:14px!important;
+    background:var(--namaa-wide-card-strong)!important;
+  }
+
+  .namaa-investment-dialog-grid article span{
+    display:block!important;
+    color:var(--namaa-wide-gold)!important;
+    font-size:12px!important;
+    font-weight:900!important;
+    margin-bottom:5px!important;
+  }
+
+  .namaa-investment-dialog-grid article strong{
+    display:block!important;
+    color:var(--namaa-wide-text)!important;
+    overflow-wrap:anywhere!important;
+  }
+
+  .namaa-investment-dialog-grid article p{
+    color:var(--namaa-wide-muted)!important;
+    line-height:1.7!important;
+    margin-bottom:0!important;
+  }
+}
+
+@media (min-width:768px) and (max-width:1023px){
+  .namaa-investment-dialog-grid{
+    grid-template-columns:1fr!important;
+  }
+}
