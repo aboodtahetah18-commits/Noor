@@ -37,8 +37,8 @@ const statusLabel:Record<string,string>={
 };
 
 type DocumentBlock =
-  | {kind:'paragraph';number:string|null;text:string}
-  | {kind:'clause';number:string;title:string;text:string}
+  | {kind:'paragraph';number:string|null;text:string;sourceText:string}
+  | {kind:'clause';number:string;title:string;text:string;sourceText:string}
   | {kind:'table';headers:string[];rows:string[][]};
 type DocumentSection={number:string;title:string;blocks:DocumentBlock[]};
 
@@ -190,19 +190,19 @@ function parseGovernedDocument(content:string):DocumentSection[]{
     current={number:String(fallbackSectionCounter),title:'المحتوى المعتمد',blocks:[]};
     return current;
   };
-  const pushClause=(number:string,text:string,title='البند')=>{
+  const pushClause=(number:string,text:string,title='البند',sourceText=text)=>{
     const target=ensureSection();
     const cleaned=cleanDocumentText(text);
     const cleanedTitle=cleanDocumentText(title)||'البند';
-    if(cleaned||cleanedTitle)target.blocks.push({kind:'clause',number:westernDigits(number),title:cleanedTitle,text:cleaned});
+    if(cleaned||cleanedTitle)target.blocks.push({kind:'clause',number:westernDigits(number),title:cleanedTitle,text:cleaned,sourceText});
   };
-  const pushParagraph=(text:string,number:string|null=null)=>{
+  const pushParagraph=(text:string,number:string|null=null,sourceText=text)=>{
     const cleaned=cleanDocumentText(text);
     if(!cleaned)return;
     const target=ensureSection();
     fallbackParagraphCounter+=1;
     const resolved=number?westernDigits(number):target.number+'.'+String(fallbackParagraphCounter);
-    target.blocks.push({kind:'paragraph',number:resolved,text:cleaned});
+    target.blocks.push({kind:'paragraph',number:resolved,text:cleaned,sourceText});
   };
 
   for(let index=0;index<lines.length;index++){
@@ -221,13 +221,13 @@ function parseGovernedDocument(content:string):DocumentSection[]{
 
     const explicitClause=normalized.match(/^البند\s+(\d+(?:\.\d+)*)\s*(?::|：|[–—-])?\s*(.*)$/u);
     if(explicitClause){
-      pushClause(explicitClause[1]??String(++fallbackClauseCounter),explicitClause[2]??'','البند');
+      pushClause(explicitClause[1]??String(++fallbackClauseCounter),explicitClause[2]??'','البند',raw);
       continue;
     }
 
     const explicitParagraph=normalized.match(/^الفقرة\s+(\d+(?:\.\d+)*)\s*(?::|：|[–—-])?\s*(.*)$/u);
     if(explicitParagraph){
-      pushParagraph(explicitParagraph[2]??'',explicitParagraph[1]??null);
+      pushParagraph(explicitParagraph[2]??'',explicitParagraph[1]??null,raw);
       continue;
     }
 
@@ -241,7 +241,7 @@ function parseGovernedDocument(content:string):DocumentSection[]{
         beginSection(numbered?.[1]??String(fallbackSectionCounter+1),numbered?.[2]??heading);
       }else{
         fallbackClauseCounter+=1;
-        pushClause(ensureSection().number+'.'+String(fallbackClauseCounter),'',normalizeHeadingText(heading));
+        pushClause(ensureSection().number+'.'+String(fallbackClauseCounter),'',normalizeHeadingText(heading),raw);
       }
       continue;
     }
@@ -271,8 +271,8 @@ function parseGovernedDocument(content:string):DocumentSection[]{
     if(legacyClause){
       const body=legacyClause[2]??'';
       const withSeparator=body.match(/^([^:–—-]+?)\s*(?::|[–—-])\s*(.+)$/);
-      if(withSeparator)pushClause(legacyClause[1]??'',withSeparator[2]??'',withSeparator[1]??'البند');
-      else pushClause(legacyClause[1]??'',body,'البند');
+      if(withSeparator)pushClause(legacyClause[1]??'',withSeparator[2]??'',withSeparator[1]??'البند',raw);
+      else pushClause(legacyClause[1]??'',body,'البند',raw);
       continue;
     }
 
@@ -283,12 +283,12 @@ function parseGovernedDocument(content:string):DocumentSection[]{
     }
 
     if(/\*\*[^*]+:\*\*/.test(normalized)||/\*\*[^*]+\*\*\s*:/.test(normalized)){
-      for(const part of documentLineParts(normalized))pushParagraph(part);
+      for(const part of documentLineParts(normalized))pushParagraph(part,null,raw);
       continue;
     }
 
     if(!sections.length&&!current&&/^(?:ميثاق|سياسة|لائحة|دليل|آليات|قاعدة|محرك|مصفوفة|تقرير)\b/u.test(cleanVisibleArabic(normalized)))continue;
-    pushParagraph(normalized);
+    pushParagraph(normalized,null,raw);
   }
 
   pushCurrent();
@@ -399,10 +399,10 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
       for(const block of section.blocks){
         if(block.kind==='clause'){
           const parts=splitClauseContent(block.text||block.title);
-          items.push({ref:block.number,type:'clause',label:'البند '+block.number,text:parts.explanation||block.title,raw:block.text||block.title,example:parts.example,parentRef:section.number});
+          items.push({ref:block.number,type:'clause',label:'البند '+block.number,text:parts.explanation||block.title,raw:block.sourceText||block.text||block.title,example:parts.example,parentRef:section.number});
         }else if(block.kind==='paragraph'&&block.number){
           const parent=block.number.split('.').slice(0,-1).join('.');
-          items.push({ref:block.number,type:'paragraph',label:'الفقرة '+block.number,text:block.text,raw:block.text,example:'',parentRef:parent});
+          items.push({ref:block.number,type:'paragraph',label:'الفقرة '+block.number,text:block.text,raw:block.sourceText||block.text,example:'',parentRef:parent});
         }
       }
     }
@@ -569,7 +569,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
                         ?<article className={styles.governedParagraphRow} key={'p-'+blockIndex}>
                           <div className={styles.governedUnitToolbar}>
                             <strong>{block.number?'الفقرة ('+block.number+')':'فقرة'}</strong>
-                            {block.number&&<button type="button" onClick={()=>openUnitEditor('paragraph',block.number??'',block.text,(block.number??'').split('.').slice(0,-1).join('.'))} aria-label="تعديل الفقرة"><LucideIcon name="pencil" size={16}/>تعديل</button>}
+                            {block.number&&<button type="button" onClick={()=>openUnitEditor('paragraph',block.number??'',block.sourceText||block.text,(block.number??'').split('.').slice(0,-1).join('.'))} aria-label="تعديل الفقرة"><LucideIcon name="pencil" size={16}/>تعديل</button>}
                           </div>
                           <p>{block.text}</p>
                         </article>
@@ -577,7 +577,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
                           ?<article className={styles.governedClauseRow} key={'c-'+block.number+'-'+blockIndex}>
                             <div className={styles.governedUnitToolbar}>
                               <div className={styles.governedClauseHeading}><span>{'البند '+block.number}</span><strong>{block.title}</strong></div>
-                              <button type="button" onClick={()=>openUnitEditor('clause',block.number,block.text||block.title,section.number)} aria-label={'تعديل البند '+block.number}><LucideIcon name="pencil" size={16}/>تعديل</button>
+                              <button type="button" onClick={()=>openUnitEditor('clause',block.number,block.sourceText||block.text||block.title,section.number)} aria-label={'تعديل البند '+block.number}><LucideIcon name="pencil" size={16}/>تعديل</button>
                             </div>
                             {block.text&&<div className={styles.governedClauseDetails}>
                               <div><small>الشرح</small><p>{splitClauseContent(block.text).explanation}</p></div>
