@@ -340,7 +340,18 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
     return()=>{cancelled=true};
   },[document.referenceCode]);
   const related=useMemo(()=>amendments.filter(item=>item.documentRef===document.referenceCode),[amendments,document.referenceCode]);
-  const relatedDirect=useMemo(()=>directChanges.filter(item=>item.documentRef===document.referenceCode),[directChanges,document.referenceCode]);
+  const relatedDirect=useMemo(()=>{
+    const items=directChanges.filter(item=>item.documentRef===document.referenceCode);
+    const seen=new Set<string>();
+    return items.filter(item=>{
+      const key=[
+        item.documentRef,item.unitType,item.unitRef,item.changeAction,item.parentRef??'',item.currentRule??'',item.proposedRule,
+      ].join('\u001f');
+      if(seen.has(key))return false;
+      seen.add(key);
+      return true;
+    });
+  },[directChanges,document.referenceCode]);
   const relatedCorrections=useMemo(()=>corrections.filter(item=>item.documentRef===document.referenceCode),[corrections,document.referenceCode]);
   const history=useMemo(()=>{
     const typoItems=relatedCorrections.map(item=>({
