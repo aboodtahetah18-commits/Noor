@@ -4027,3 +4027,136 @@
     min-width:920px!important;
   }
 }
+
+
+/* ========================================================================== */
+/* FINAL DIALOG AUTHORITY — native ActionDialog                                */
+/* One viewport-bound shell, vertical body scroll only, zero horizontal scroll.*/
+/* ========================================================================== */
+@media (min-width:768px){
+  .p49-action-dialog{
+    position:fixed!important;
+    inset:0!important;
+    margin:auto!important;
+    padding:0!important;
+    width:min(1180px,calc(100vw - 48px))!important;
+    max-width:calc(100vw - 48px)!important;
+    height:min(860px,calc(100dvh - 48px))!important;
+    max-height:calc(100dvh - 48px)!important;
+    overflow:hidden!important;
+    box-sizing:border-box!important;
+    border:0!important;
+    background:transparent!important;
+  }
+
+  .p49-action-dialog.is-sm{
+    width:min(620px,calc(100vw - 48px))!important;
+    height:auto!important;
+    max-height:calc(100dvh - 48px)!important;
+  }
+
+  .p49-action-dialog.is-md{
+    width:min(860px,calc(100vw - 48px))!important;
+  }
+
+  .p49-action-dialog.is-lg{
+    width:min(1040px,calc(100vw - 48px))!important;
+  }
+
+  .p49-action-dialog.is-xl{
+    width:min(1280px,calc(100vw - 48px))!important;
+  }
+
+  .p49-action-dialog::backdrop{
+    background:rgb(7 43 33 / 64%)!important;
+    backdrop-filter:blur(6px)!important;
+  }
+
+  .p49-action-dialog .p49-dialog-shell{
+    width:100%!important;
+    max-width:100%!important;
+    height:100%!important;
+    max-height:100%!important;
+    min-width:0!important;
+    min-height:0!important;
+    overflow:hidden!important;
+    display:grid!important;
+    grid-template-rows:auto minmax(0,1fr)!important;
+    box-sizing:border-box!important;
+    border:1px solid var(--namaa-wide-border)!important;
+    border-radius:22px!important;
+    background:var(--namaa-wide-card)!important;
+  }
+
+  .p49-action-dialog.is-sm .p49-dialog-shell{
+    height:auto!important;
+    max-height:calc(100dvh - 48px)!important;
+  }
+
+  .p49-action-dialog .p49-dialog-header{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    overflow:hidden!important;
+    box-sizing:border-box!important;
+  }
+
+  .p49-action-dialog .p49-dialog-title-block{
+    min-width:0!important;
+    max-width:calc(100% - 110px)!important;
+  }
+
+  .p49-action-dialog .p49-dialog-tools{
+    flex:0 0 auto!important;
+    max-width:100px!important;
+  }
+
+  .p49-action-dialog .p49-dialog-body{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    min-height:0!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    scrollbar-gutter:stable!important;
+    overscroll-behavior:contain!important;
+    box-sizing:border-box!important;
+  }
+
+  .p49-action-dialog .p49-dialog-body > *,
+  .p49-action-dialog .p49-dialog-body form,
+  .p49-action-dialog .p49-dialog-body fieldset,
+  .p49-action-dialog .p49-dialog-body label,
+  .p49-action-dialog .p49-dialog-body :where(input,select,textarea,button){
+    min-width:0!important;
+    max-width:100%!important;
+    box-sizing:border-box!important;
+  }
+
+  .p49-action-dialog .namaa-table-wrap,
+  .p49-action-dialog .desktopIntakeTableWrap{
+    max-width:100%!important;
+    overflow-x:auto!important;
+    overflow-y:visible!important;
+  }
+}
+
+@media (min-width:768px) and (max-width:1023px){
+  .p49-action-dialog,
+  .p49-action-dialog.is-sm,
+  .p49-action-dialog.is-md,
+  .p49-action-dialog.is-lg,
+  .p49-action-dialog.is-xl{
+    width:calc(100vw - 20px)!important;
+    max-width:calc(100vw - 20px)!important;
+    height:calc(100dvh - 20px)!important;
+    max-height:calc(100dvh - 20px)!important;
+  }
+
+  .p49-action-dialog .p49-dialog-shell,
+  .p49-action-dialog.is-sm .p49-dialog-shell{
+    height:100%!important;
+    max-height:100%!important;
+    border-radius:18px!important;
+  }
+}
