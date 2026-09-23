@@ -327,21 +327,30 @@ export function GovernorOnboardingIntake({
       <p>إذا كانت البيانات صحيحة، ثبّت ملف التأسيس. ويمكنك إغلاق الصفحة والعودة للدردشة إذا أردت تعديل معلومة أولًا.</p>
     </section>}
 
-    {intakeStep==='dependents'&&<div className={`${styles.intakeCards} ${styles.desktopStructuredIntake}`}>
-      {dependents.map((item,index)=><article className={styles.intakeCard} key={index}>
-        <div className={styles.intakeCardHeader}><strong>فرد {index+1}</strong>{dependents.length>1&&<button type="button" onClick={()=>setDependents(current=>current.filter((_,i)=>i!==index))} aria-label="حذف الفرد"><LucideIcon name="trash2" size={16}/></button>}</div>
-        <div className={styles.intakeGrid}>
-          <label><span>الاسم</span><input value={item.name} onChange={e=>updateDependent(index,{name:e.target.value})}/></label>
-          <label><span>العلاقة</span><select value={item.relationship} onChange={e=>updateDependent(index,{relationship:e.target.value})}><option value="">اختر</option><option>زوج/زوجة</option><option>ابن/ابنة</option><option>والد/والدة</option><option>قريب</option><option>غير ذلك</option></select></label>
-          <label><span>العمر إن كان مهمًا للاحتياج</span><input type="number" min="0" value={item.age} onChange={e=>updateDependent(index,{age:e.target.value})}/></label>
-          <label><span>الدعم الشهري</span><input type="number" min="0" inputMode="decimal" value={item.monthly_support} onChange={e=>updateDependent(index,{monthly_support:e.target.value})}/></label>
-          <label><span>مصروف سنوي إضافي</span><input type="number" min="0" inputMode="decimal" value={item.annual_support} onChange={e=>updateDependent(index,{annual_support:e.target.value})}/></label>
-          <label className={styles.intakeWide}><span>{item.relationship.includes('ابن')||item.relationship.includes('ابنة')?(Number(item.age||0)<=2?'احتياجات رعاية/حليب/علاج إن وجدت':'احتياجات تعليم/نقل/علاج إن وجدت'):'احتياجات خاصة مؤثرة ماليًا إن وجدت'}</span><input value={item.special_needs} onChange={e=>updateDependent(index,{special_needs:e.target.value})}/></label>
-          <label className={styles.intakeCheckbox}><input type="checkbox" checked={item.financial_dependency} onChange={e=>updateDependent(index,{financial_dependency:e.target.checked})}/><span>يعتمد عليّ ماليًا</span></label>
+    {intakeStep==='dependents'&&<div className={styles.desktopStructuredIntake}>
+      <div className={styles.desktopIntakeTableShell}>
+        <div className={styles.desktopIntakeTableHeader}>
+          <div><strong>الأفراد والمعالون</strong><small>كل فرد يظهر كسطر مستقل. استخدم نافذة الإضافة لتعبئة البيانات بدل النماذج الطويلة داخل الصفحة.</small></div>
+          <div className={styles.desktopIntakeHeaderActions}>
+            <button type="button" className={styles.intakeAddButton} onClick={()=>setMobileEditor({kind:'dependents',index:null,draft:emptyDependent()})}><LucideIcon name="plus" size={18}/><span>إضافة فرد</span></button>
+            <button type="button" className={styles.intakeNoneButton} onClick={()=>setDependents([])}>لا يوجد معالون</button>
+          </div>
         </div>
-      </article>)}
-      <button type="button" className={styles.intakeAddButton} onClick={()=>setDependents(current=>[...current,emptyDependent()])}><LucideIcon name="plus" size={16}/><span>إضافة فرد</span></button>
-      <button type="button" className={styles.intakeNoneButton} onClick={()=>setDependents([])}>لا يوجد أشخاص أعولهم ماليًا</button>
+        <div className={styles.desktopIntakeTableWrap}>
+          <table className={styles.desktopIntakeTable}>
+            <thead><tr><th>الاسم</th><th>العلاقة</th><th>العمر</th><th>الدعم الشهري</th><th>دعم سنوي</th><th>يعتمد ماليًا</th><th>الإجراءات</th></tr></thead>
+            <tbody>{dependentRows.length?dependentRows.map(({item,index},rowIndex)=><tr key={index}>
+              <td><strong>{item.name||('فرد '+(rowIndex+1))}</strong>{item.special_needs?<small>{item.special_needs}</small>:null}</td>
+              <td>{item.relationship||'—'}</td>
+              <td>{item.age||'—'}</td>
+              <td>{item.monthly_support||'0'} ر.س</td>
+              <td>{item.annual_support||'0'} ر.س</td>
+              <td>{item.financial_dependency?'نعم':'لا'}</td>
+              <td><div className={styles.desktopIntakeTableActions}><button type="button" onClick={()=>setMobileEditor({kind:'dependents',index,draft:{...item}})}><LucideIcon name="pencil" size={18}/><span>تعديل</span></button><button type="button" onClick={()=>setDependents(current=>current.filter((_,i)=>i!==index))}><LucideIcon name="trash2" size={18}/><span>حذف</span></button></div></td>
+            </tr>):<tr><td colSpan={7}><div className={styles.desktopIntakeTableEmpty}><strong>لا توجد بيانات أفراد</strong><small>اضغط «إضافة فرد» لإدخال أول سجل.</small></div></td></tr>}</tbody>
+          </table>
+        </div>
+      </div>
     </div>}
 
     {intakeStep==='income'&&<div className={styles.intakeCard}>
@@ -385,38 +394,56 @@ export function GovernorOnboardingIntake({
       </div>
     </div>}
 
-    {intakeStep==='obligations'&&<div className={`${styles.intakeCards} ${styles.desktopStructuredIntake}`}>
-      {obligations.map((item,index)=><article className={styles.intakeCard} key={index}>
-        <div className={styles.intakeCardHeader}><strong>التزام {index+1}</strong>{obligations.length>1&&<button type="button" onClick={()=>setObligations(current=>current.filter((_,i)=>i!==index))} aria-label="حذف الالتزام"><LucideIcon name="trash2" size={16}/></button>}</div>
-        <div className={styles.intakeGrid}>
-          <label><span>اسم الالتزام</span><input value={item.name} onChange={e=>updateObligation(index,{name:e.target.value})}/></label>
-          <label><span>المبلغ</span><input type="number" min="0" inputMode="decimal" value={item.amount} onChange={e=>updateObligation(index,{amount:e.target.value})}/></label>
-          <label><span>التكرار</span><select value={item.recurrence} onChange={e=>updateObligation(index,{recurrence:e.target.value})}><option value="MONTHLY">شهري</option><option value="WEEKLY">أسبوعي</option><option value="YEARLY">سنوي</option><option value="ONE_TIME">مرة واحدة</option><option value="OTHER">آخر</option></select></label>
-          <label><span>الجهة</span><input value={item.provider} onChange={e=>updateObligation(index,{provider:e.target.value})}/></label>
-          <label><span>يوم الاستحقاق إن وجد</span><input type="number" min="1" max="31" value={item.due_day} onChange={e=>updateObligation(index,{due_day:e.target.value})}/></label>
-          <label><span>الرصيد المتبقي إن توفر</span><input type="number" min="0" inputMode="decimal" value={item.remaining_balance} onChange={e=>updateObligation(index,{remaining_balance:e.target.value})}/></label>
-          <label><span>تاريخ الانتهاء إن وجد</span><input type="date" value={item.end_date} onChange={e=>updateObligation(index,{end_date:e.target.value})}/></label>
-          <label><span>تكلفة التمويل/الرسوم إن عُرفت</span><input type="number" min="0" inputMode="decimal" value={item.finance_cost} onChange={e=>updateObligation(index,{finance_cost:e.target.value})}/></label>
+    {intakeStep==='obligations'&&<div className={styles.desktopStructuredIntake}>
+      <div className={styles.desktopIntakeTableShell}>
+        <div className={styles.desktopIntakeTableHeader}>
+          <div><strong>الالتزامات المالية</strong><small>أضف كل التزام من نافذة مستقلة ثم راجع القائمة قبل إرسال المجموعة.</small></div>
+          <div className={styles.desktopIntakeHeaderActions}>
+            <button type="button" className={styles.intakeAddButton} onClick={()=>setMobileEditor({kind:'obligations',index:null,draft:emptyObligation()})}><LucideIcon name="plus" size={18}/><span>إضافة التزام</span></button>
+            <button type="button" className={styles.intakeNoneButton} onClick={()=>setObligations([])}>لا توجد التزامات</button>
+          </div>
         </div>
-      </article>)}
-      <button type="button" className={styles.intakeAddButton} onClick={()=>setObligations(current=>[...current,emptyObligation()])}><LucideIcon name="plus" size={16}/><span>إضافة التزام</span></button>
-      <button type="button" className={styles.intakeNoneButton} onClick={()=>setObligations([])}>لا توجد التزامات مالية قائمة</button>
+        <div className={styles.desktopIntakeTableWrap}>
+          <table className={styles.desktopIntakeTable}>
+            <thead><tr><th>الالتزام</th><th>الجهة</th><th>المبلغ</th><th>التكرار</th><th>الاستحقاق</th><th>الرصيد المتبقي</th><th>الإجراءات</th></tr></thead>
+            <tbody>{obligationRows.length?obligationRows.map(({item,index},rowIndex)=><tr key={index}>
+              <td><strong>{item.name||('التزام '+(rowIndex+1))}</strong></td>
+              <td>{item.provider||'—'}</td>
+              <td>{item.amount||'0'} ر.س</td>
+              <td>{recurrenceLabel(item.recurrence)}</td>
+              <td>{item.due_day?('يوم '+item.due_day):'—'}</td>
+              <td>{item.remaining_balance?item.remaining_balance+' ر.س':'—'}</td>
+              <td><div className={styles.desktopIntakeTableActions}><button type="button" onClick={()=>setMobileEditor({kind:'obligations',index,draft:{...item}})}><LucideIcon name="pencil" size={18}/><span>تعديل</span></button><button type="button" onClick={()=>setObligations(current=>current.filter((_,i)=>i!==index))}><LucideIcon name="trash2" size={18}/><span>حذف</span></button></div></td>
+            </tr>):<tr><td colSpan={7}><div className={styles.desktopIntakeTableEmpty}><strong>لا توجد التزامات مضافة</strong><small>اضغط «إضافة التزام» لإدخال أول سجل.</small></div></td></tr>}</tbody>
+          </table>
+        </div>
+      </div>
     </div>}
 
-    {intakeStep==='goals'&&<div className={`${styles.intakeCards} ${styles.desktopStructuredIntake}`}>
-      {goals.map((item,index)=><article className={styles.intakeCard} key={index}>
-        <div className={styles.intakeCardHeader}><strong>هدف {index+1}</strong>{goals.length>1&&<button type="button" onClick={()=>setGoals(current=>current.filter((_,i)=>i!==index))} aria-label="حذف الهدف"><LucideIcon name="trash2" size={16}/></button>}</div>
-        <div className={styles.intakeGrid}>
-          <label><span>اسم الهدف</span><input value={item.name} onChange={e=>updateGoal(index,{name:e.target.value})}/></label>
-          <label><span>المبلغ المستهدف</span><input type="number" min="0" inputMode="decimal" value={item.target_amount} onChange={e=>updateGoal(index,{target_amount:e.target.value})}/></label>
-          <label><span>الموعد أو التاريخ المتوقع</span><input type="date" value={item.target_date} onChange={e=>updateGoal(index,{target_date:e.target.value})}/></label>
-          <label><span>الأولوية كما تراها</span><input placeholder="مثال: عالية أو بعد السكن" value={item.priority} onChange={e=>updateGoal(index,{priority:e.target.value})}/></label>
-          <label><span>مرونة الموعد</span><input placeholder="مرن / غير مرن / وصفك" value={item.flexibility} onChange={e=>updateGoal(index,{flexibility:e.target.value})}/></label>
-          <label><span>مبلغ مخصص حاليًا</span><input type="number" min="0" inputMode="decimal" value={item.allocated_amount} onChange={e=>updateGoal(index,{allocated_amount:e.target.value})}/></label>
+    {intakeStep==='goals'&&<div className={styles.desktopStructuredIntake}>
+      <div className={styles.desktopIntakeTableShell}>
+        <div className={styles.desktopIntakeTableHeader}>
+          <div><strong>الأهداف المالية</strong><small>أضف كل هدف في نافذة مستقلة؛ وبعد الحفظ يظهر في الجدول مع إمكانية التعديل أو الحذف.</small></div>
+          <div className={styles.desktopIntakeHeaderActions}>
+            <button type="button" className={styles.intakeAddButton} onClick={()=>setMobileEditor({kind:'goals',index:null,draft:emptyGoal()})}><LucideIcon name="plus" size={18}/><span>إضافة هدف</span></button>
+            <button type="button" className={styles.intakeNoneButton} onClick={()=>setGoals([])}>لا توجد أهداف الآن</button>
+          </div>
         </div>
-      </article>)}
-      <button type="button" className={styles.intakeAddButton} onClick={()=>setGoals(current=>[...current,emptyGoal()])}><LucideIcon name="plus" size={16}/><span>إضافة هدف</span></button>
-      <button type="button" className={styles.intakeNoneButton} onClick={()=>setGoals([])}>لا توجد أهداف أريد تسجيلها الآن</button>
+        <div className={styles.desktopIntakeTableWrap}>
+          <table className={styles.desktopIntakeTable}>
+            <thead><tr><th>الهدف</th><th>المبلغ المستهدف</th><th>المبلغ المخصص</th><th>التاريخ المتوقع</th><th>الأولوية</th><th>مرونة الموعد</th><th>الإجراءات</th></tr></thead>
+            <tbody>{goalRows.length?goalRows.map(({item,index},rowIndex)=><tr key={index}>
+              <td><strong>{item.name||('هدف '+(rowIndex+1))}</strong></td>
+              <td>{item.target_amount||'0'} ر.س</td>
+              <td>{item.allocated_amount||'0'} ر.س</td>
+              <td>{item.target_date||'—'}</td>
+              <td>{item.priority||'—'}</td>
+              <td>{item.flexibility||'—'}</td>
+              <td><div className={styles.desktopIntakeTableActions}><button type="button" onClick={()=>setMobileEditor({kind:'goals',index,draft:{...item}})}><LucideIcon name="pencil" size={18}/><span>تعديل</span></button><button type="button" onClick={()=>setGoals(current=>current.filter((_,i)=>i!==index))}><LucideIcon name="trash2" size={18}/><span>حذف</span></button></div></td>
+            </tr>):<tr><td colSpan={7}><div className={styles.desktopIntakeTableEmpty}><strong>لا توجد أهداف مضافة</strong><small>اضغط «إضافة هدف» لإدخال أول سجل.</small></div></td></tr>}</tbody>
+          </table>
+        </div>
+      </div>
     </div>}
 
     {intakeStep==='dependents'&&<div className={styles.mobileStructuredIntake}>
