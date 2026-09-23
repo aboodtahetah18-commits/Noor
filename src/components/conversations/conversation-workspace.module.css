@@ -10685,3 +10685,147 @@
     grid-column:auto!important;
   }
 }
+
+
+/* Wide identity hard guard — no white/near-white surfaces in conversations. */
+@media (min-width:768px){
+  .page,
+  .workspace,
+  .roomsPane,
+  .contextPane,
+  .chatPane,
+  .chatHeader,
+  .paneTitle,
+  .composer,
+  .contextCard,
+  .agentMessage,
+  .roomItemShell,
+  .roomItem,
+  .desktopIntakeTableShell,
+  .desktopIntakeTableWrap,
+  .desktopIntakeTable,
+  .desktopIntakeTable th,
+  .desktopIntakeTable td,
+  .mobileRecordEditorSheet,
+  .mobileRecordEditorHeader,
+  .mobileRecordEditorBody,
+  .mobileRecordEditorActions,
+  .onboardingIntake,
+  .simpleOnboardingStage,
+  .incomeReconciliation{
+    background:var(--namaa-wide-card)!important;
+    border-color:var(--namaa-wide-border)!important;
+    color:var(--namaa-wide-text)!important;
+  }
+
+  .chatPane,
+  .messages,
+  .onboardingIntake,
+  .desktopIntakeTableShell,
+  .simpleOnboardingStage,
+  .incomeReconciliation{
+    background:var(--namaa-wide-surface)!important;
+  }
+
+  .chatHeader{
+    background:var(--namaa-wide-card-strong)!important;
+  }
+
+  .message{
+    background:var(--namaa-wide-card)!important;
+    color:var(--namaa-wide-text)!important;
+    border-color:var(--namaa-wide-border)!important;
+  }
+
+  .userMessage{
+    background:#b9cbbd!important;
+  }
+
+  html[data-theme="dark"] .userMessage{
+    background:#29483d!important;
+  }
+
+  .activeRoom{
+    background:#c6b889!important;
+    border-color:#a98a48!important;
+  }
+
+  html[data-theme="dark"] .activeRoom{
+    background:#4b432d!important;
+    border-color:#8d7640!important;
+  }
+
+  .routingNote{
+    background:var(--namaa-wide-card-strong)!important;
+    border-color:var(--namaa-wide-border)!important;
+    color:var(--namaa-wide-muted)!important;
+  }
+
+  .desktopIntakeTable th{
+    background:var(--namaa-wide-card-strong)!important;
+    color:var(--namaa-wide-green)!important;
+  }
+
+  .desktopIntakeTable tbody tr:hover td{
+    background:var(--namaa-wide-surface-2)!important;
+  }
+
+  .mobileRecordEditorScrim{
+    background:rgb(7 43 33 / 58%)!important;
+  }
+
+  .mobileRecordEditorHeader{
+    background:var(--namaa-wide-card-strong)!important;
+  }
+
+  .mobileRecordEditorHeader button{
+    background:var(--namaa-wide-input)!important;
+    color:var(--namaa-wide-text)!important;
+  }
+
+  .mobileRecordEditorBody input,
+  .mobileRecordEditorBody select,
+  .mobileRecordEditorBody textarea{
+    background:var(--namaa-wide-input)!important;
+    color:var(--namaa-wide-text)!important;
+    border-color:var(--namaa-wide-border)!important;
+  }
+
+  .mobileRecordEditorActions{
+    background:var(--namaa-wide-card-strong)!important;
+  }
+
+  .mobileRecordEditorActions button:first-child{
+    background:var(--namaa-wide-input)!important;
+    color:var(--namaa-wide-text)!important;
+  }
+
+  .mobileRecordEditorActions button:last-child{
+    background:var(--namaa-wide-green-deep)!important;
+    color:var(--namaa-wide-inverse)!important;
+  }
+
+  .roomCopy,
+  .roomCopy strong,
+  .roomCopy small,
+  .entityTitle,
+  .entityTitle strong,
+  .contextCard,
+  .contextCard strong,
+  .contextCard span,
+  .message,
+  .message strong,
+  .message p,
+  .message span{
+    min-width:0!important;
+    max-width:100%!important;
+    overflow-wrap:anywhere!important;
+    white-space:normal!important;
+  }
+
+  .roomItem,
+  .contextCard,
+  .message{
+    overflow:hidden!important;
+  }
+}
