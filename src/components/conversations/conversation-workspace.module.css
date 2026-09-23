@@ -9519,3 +9519,71 @@
   image-rendering:auto!important;
   filter:none!important
 }
+
+
+/* FINAL AUTHORITY — dark counterparty text, composer copy, and progress badge */
+/*
+  This block is intentionally last in the stylesheet.
+  It supersedes earlier dark-chat experiments so legacy rules cannot recolor
+  counterparty copy or the composer placeholder.
+*/
+
+/* Every textual node in an incoming/counterparty message is white in dark mode. */
+:global(html[data-theme="dark"]) .page .agentMessage,
+:global(html[data-theme="dark"]) .page .agentMessage :is(p,strong,small,b,span,time,em,li,label){
+  color:var(--ux-text-inverse)!important;
+  -webkit-text-fill-color:var(--ux-text-inverse)!important
+}
+:global(html[data-theme="dark"]) .page .agentMessage>.messageIdentity strong,
+:global(html[data-theme="dark"]) .page .agentMessage>.messageIdentity small,
+:global(html[data-theme="dark"]) .page .agentMessage>.messageCopy,
+:global(html[data-theme="dark"]) .page .agentMessage>p,
+:global(html[data-theme="dark"]) .page .agentMessage>.onboardingMessageContent>p,
+:global(html[data-theme="dark"]) .page .agentMessage>.messageMeta{
+  color:var(--ux-text-inverse)!important;
+  -webkit-text-fill-color:var(--ux-text-inverse)!important;
+  font-weight:800!important
+}
+
+/* Preserve operational icon color while keeping all copy white. */
+:global(html[data-theme="dark"]) .page .agentMessage .onboardingQuestionIcon svg,
+:global(html[data-theme="dark"]) .page .agentMessage .structuredCardHeader svg,
+:global(html[data-theme="dark"]) .page .agentMessage .inlineIntakeButton svg{
+  color:var(--namaa-green-900)!important;
+  stroke:var(--namaa-green-900)!important;
+  -webkit-text-fill-color:initial!important
+}
+
+/* Dark composer: bright Namaa green surface, no motif; actual and placeholder copy are white and bold. */
+:global(html[data-theme="dark"]) .page .composer,
+:global(html[data-theme="dark"]) .page .composer textarea{
+  background-image:none!important
+}
+:global(html[data-theme="dark"]) .page .composer{
+  background:color-mix(in srgb,var(--namaa-green-700) 82%,var(--namaa-green-900))!important
+}
+:global(html[data-theme="dark"]) .page .composer textarea{
+  background:color-mix(in srgb,var(--namaa-green-700) 76%,var(--namaa-green-900))!important;
+  color:var(--ux-text-inverse)!important;
+  -webkit-text-fill-color:var(--ux-text-inverse)!important;
+  font-weight:900!important
+}
+:global(html[data-theme="dark"]) .page .composer textarea::placeholder{
+  color:var(--ux-text-inverse)!important;
+  -webkit-text-fill-color:var(--ux-text-inverse)!important;
+  opacity:1!important;
+  font-weight:900!important
+}
+
+/* Progress percentage: visibly larger, wider and heavier. */
+.page .onboardingQuestionHeader>b{
+  min-width:76px!important;
+  min-height:52px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding-inline:var(--ux-space-3)!important;
+  font-size:var(--ux-type-body-size)!important;
+  font-weight:900!important;
+  line-height:1!important
+}
