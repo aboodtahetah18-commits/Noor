@@ -9204,3 +9204,166 @@
   opacity:1!important;
   visibility:visible!important
 }
+
+
+/* Namaa final chat visual lock — approved light/dark composition */
+
+/* LIGHT — white canvas with restrained Namaa leaf motifs; messages remain solid. */
+:global(html:not([data-theme="dark"])) .page .messages{
+  position:relative!important;
+  background:var(--namaa-card)!important;
+  background-image:none!important;
+  isolation:isolate!important
+}
+:global(html:not([data-theme="dark"])) .page .messages::before{
+  content:""!important;
+  display:block!important;
+  position:absolute!important;
+  inset:0!important;
+  z-index:0!important;
+  pointer-events:none!important;
+  background-image:
+    url('/brand/namaa-leaf.webp'),
+    url('/brand/namaa-leaf.webp'),
+    url('/brand/namaa-leaf.webp')!important;
+  background-repeat:no-repeat!important;
+  background-size:260px auto,220px auto,180px auto!important;
+  background-position:8% 14%,92% 52%,18% 88%!important;
+  opacity:.055!important
+}
+:global(html:not([data-theme="dark"])) .page .messages>*{
+  position:relative!important;
+  z-index:1!important
+}
+:global(html:not([data-theme="dark"])) .page .userMessage{
+  background:color-mix(in srgb,var(--namaa-user-message) 88%,var(--namaa-green-700))!important;
+  border-color:color-mix(in srgb,var(--namaa-green-700) 24%,var(--namaa-border))!important
+}
+:global(html:not([data-theme="dark"])) .page .agentMessage{
+  background:color-mix(in srgb,var(--namaa-gold-500) 84%,var(--namaa-text))!important;
+  border-color:color-mix(in srgb,var(--namaa-gold-500) 72%,var(--namaa-text))!important
+}
+:global(html:not([data-theme="dark"])) .page .agentMessage .messageIdentity strong,
+:global(html:not([data-theme="dark"])) .page .agentMessage .messageIdentity small,
+:global(html:not([data-theme="dark"])) .page .agentMessage .messageCopy,
+:global(html:not([data-theme="dark"])) .page .agentMessage .messageMeta{
+  color:var(--namaa-text)!important
+}
+:global(html:not([data-theme="dark"])) .page .agentMessage .onboardingQuestionCard,
+:global(html:not([data-theme="dark"])) .page .agentMessage .onboardingQuestionReason,
+:global(html:not([data-theme="dark"])) .page .agentMessage .onboardingQuestionBox,
+:global(html:not([data-theme="dark"])) .page .agentMessage .structuredCard,
+:global(html:not([data-theme="dark"])) .page .agentMessage .richMessageHero{
+  background:color-mix(in srgb,var(--namaa-gold-500) 78%,var(--namaa-cream))!important;
+  border-color:color-mix(in srgb,var(--namaa-gold-500) 62%,var(--namaa-text))!important;
+  color:var(--namaa-text)!important
+}
+:global(html:not([data-theme="dark"])) .page .agentMessage .onboardingQuestionCard *,
+:global(html:not([data-theme="dark"])) .page .agentMessage .onboardingQuestionReason *,
+:global(html:not([data-theme="dark"])) .page .agentMessage .onboardingQuestionBox *,
+:global(html:not([data-theme="dark"])) .page .agentMessage .structuredCard *,
+:global(html:not([data-theme="dark"])) .page .agentMessage .richMessageHero *{
+  color:var(--namaa-text)!important
+}
+:global(html:not([data-theme="dark"])) .page .agentMessage .onboardingQuestionIcon,
+:global(html:not([data-theme="dark"])) .page .agentMessage .onboardingQuestionHeader>b,
+:global(html:not([data-theme="dark"])) .page .agentMessage .onboardingQuestionBox>span{
+  background:var(--namaa-cream)!important;
+  border-color:var(--namaa-green-900)!important;
+  color:var(--namaa-green-900)!important
+}
+:global(html:not([data-theme="dark"])) .page .agentMessage .onboardingQuestionIcon svg,
+:global(html:not([data-theme="dark"])) .page .agentMessage .structuredCardHeader svg,
+:global(html:not([data-theme="dark"])) .page .agentMessage .inlineIntakeButton svg{
+  color:var(--namaa-green-900)!important;
+  stroke:var(--namaa-green-900)!important
+}
+
+/* LIGHT composer — same green family as the chat header, with white field and white icons. */
+:global(html:not([data-theme="dark"])) .page .composer{
+  background:var(--namaa-green-900)!important;
+  border-top-color:color-mix(in srgb,var(--namaa-card) 24%,var(--namaa-green-900))!important
+}
+:global(html:not([data-theme="dark"])) .page .composer textarea{
+  background:var(--namaa-card)!important;
+  border-color:var(--namaa-card)!important;
+  color:var(--namaa-text)!important;
+  font-weight:800!important
+}
+:global(html:not([data-theme="dark"])) .page .composer textarea::placeholder{
+  color:var(--namaa-muted)!important;
+  font-weight:800!important
+}
+:global(html:not([data-theme="dark"])) .page .attachButton,
+:global(html:not([data-theme="dark"])) .page .sendButton{
+  background:var(--namaa-green-900)!important;
+  border:1px solid color-mix(in srgb,var(--namaa-card) 38%,var(--namaa-green-900))!important;
+  color:var(--namaa-card)!important
+}
+:global(html:not([data-theme="dark"])) .page .attachButton svg,
+:global(html:not([data-theme="dark"])) .page .sendButton svg{
+  color:var(--namaa-card)!important;
+  stroke:var(--namaa-card)!important
+}
+
+/* DARK — governor identity and message heading remain white on the deep green bubble. */
+:global(html[data-theme="dark"]) .page .agentMessage>.messageIdentity strong,
+:global(html[data-theme="dark"]) .page .agentMessage>.messageIdentity small,
+:global(html[data-theme="dark"]) .page .agentMessage>.messageCopy,
+:global(html[data-theme="dark"]) .page .agentMessage>.messageMeta{
+  color:var(--namaa-card)!important
+}
+
+/* DARK — green operational icons, light-gold borders, no yellow icon glyphs. */
+:global(html[data-theme="dark"]) .page .agentMessage .onboardingQuestionIcon,
+:global(html[data-theme="dark"]) .page .agentMessage .onboardingQuestionHeader>b,
+:global(html[data-theme="dark"]) .page .agentMessage .onboardingQuestionBox>span{
+  background:color-mix(in srgb,var(--namaa-gold-500) 64%,var(--namaa-cream))!important;
+  border-color:color-mix(in srgb,var(--namaa-gold-500) 74%,var(--namaa-cream))!important;
+  color:var(--namaa-green-900)!important
+}
+:global(html[data-theme="dark"]) .page .agentMessage .onboardingQuestionIcon svg,
+:global(html[data-theme="dark"]) .page .agentMessage .structuredCardHeader svg,
+:global(html[data-theme="dark"]) .page .agentMessage .inlineIntakeButton svg{
+  color:var(--namaa-green-900)!important;
+  stroke:var(--namaa-green-900)!important
+}
+:global(html[data-theme="dark"]) .page .agentMessage .onboardingQuestionCard,
+:global(html[data-theme="dark"]) .page .agentMessage .onboardingQuestionReason,
+:global(html[data-theme="dark"]) .page .agentMessage .onboardingQuestionBox{
+  border-color:color-mix(in srgb,var(--namaa-gold-500) 42%,var(--namaa-green-700))!important
+}
+
+/* DARK composer — fully green; white bold copy; dark-gold circles with dark-green glyphs. */
+:global(html[data-theme="dark"]) .page .composer{
+  background:var(--namaa-green-900)!important;
+  border-top-color:color-mix(in srgb,var(--namaa-gold-500) 34%,var(--namaa-green-900))!important
+}
+:global(html[data-theme="dark"]) .page .composer textarea{
+  background:color-mix(in srgb,var(--namaa-green-900) 88%,var(--namaa-green-700))!important;
+  border-color:color-mix(in srgb,var(--namaa-card) 24%,var(--namaa-green-900))!important;
+  color:var(--namaa-card)!important;
+  font-weight:800!important
+}
+:global(html[data-theme="dark"]) .page .composer textarea::placeholder{
+  color:color-mix(in srgb,var(--namaa-card) 82%,transparent)!important;
+  font-weight:800!important
+}
+:global(html[data-theme="dark"]) .page .attachButton,
+:global(html[data-theme="dark"]) .page .sendButton{
+  background:color-mix(in srgb,var(--namaa-gold-500) 84%,var(--namaa-text))!important;
+  border:1px solid color-mix(in srgb,var(--namaa-gold-500) 72%,var(--namaa-cream))!important;
+  color:var(--namaa-green-900)!important
+}
+:global(html[data-theme="dark"]) .page .attachButton svg,
+:global(html[data-theme="dark"]) .page .sendButton svg{
+  color:var(--namaa-green-900)!important;
+  stroke:var(--namaa-green-900)!important
+}
+
+/* Message copy itself is always strong and readable for both speakers. */
+.page .messageCopy,
+.page .onboardingMessageContent>p,
+.page .onboardingQuestionBox strong{
+  font-weight:800!important
+}
