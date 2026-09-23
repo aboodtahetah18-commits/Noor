@@ -12,7 +12,8 @@ import styles from './conversation-workspace.module.css';
 
 type Amendment={
   requestId:string; documentRef:string; documentTitle:string; roomKey:string;
-  clauseRef:string|null; currentRule:string|null; proposedRule:string; rationale:string;
+  clauseRef:string|null; parentRef:string|null; changeAction:'ADD'|'EDIT'; unitType:'article'|'clause'|'paragraph';
+  currentRule:string|null; proposedRule:string; rationale:string;
   priority:'NORMAL'|'NEXT_MEETING'|'URGENT'; status:string; requestedAt:string;
   governorReviewedAt:string|null; secretaryReceivedAt:string|null; councilDecisionAt:string|null;
   councilDecisionId:string|null; effectiveAt:string|null; nextVersion:string|null; discussionNotes:string[];
@@ -22,6 +23,11 @@ type TypoCorrection={
   correctionId:string; documentRef:string; documentTitle:string; roomKey:string;
   clauseRef:string|null; currentRule:string; correctedRule:string; rationale:string;
   correctedAt:string; status:'APPLIED';
+};
+type DirectChange={
+  changeId:string; documentRef:string; documentTitle:string; roomKey:string;
+  unitRef:string; parentRef:string|null; changeAction:'ADD'|'EDIT'; unitType:'article'|'clause'|'paragraph';
+  currentRule:string|null; proposedRule:string; rationale:string; changedAt:string; status:'APPLIED';
 };
 
 const statusLabel:Record<string,string>={
@@ -278,11 +284,15 @@ function parseGovernedDocument(content:string):DocumentSection[]{
 
 export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document:GovernedDocumentRef;roomKey:string;onClose:()=>void}){
   const [amendments,setAmendments]=useState<Amendment[]>([]);
+  const [directChanges,setDirectChanges]=useState<DirectChange[]>([]);
   const [corrections,setCorrections]=useState<TypoCorrection[]>([]);
   const [documentContent,setDocumentContent]=useState('');
   const [documentLoading,setDocumentLoading]=useState(true);
   const [formOpen,setFormOpen]=useState(false);
-  const [editMode,setEditMode]=useState<'typo'|'governance'>('governance');
+  const [editMode,setEditMode]=useState<'direct'|'governance'>('direct');
+  const [changeAction,setChangeAction]=useState<'ADD'|'EDIT'>('EDIT');
+  const [unitType,setUnitType]=useState<'article'|'clause'|'paragraph'>('paragraph');
+  const [parentRef,setParentRef]=useState('');
   const [pending,setPending]=useState(false);
   const [feedback,setFeedback]=useState('');
   const [clauseRef,setClauseRef]=useState('');
@@ -293,9 +303,10 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
 
   async function load(){
     const response=await fetch('/api/governance/amendments',{cache:'no-store'});
-    const data=await response.json().catch(()=>({})) as {amendments?:Amendment[];corrections?:TypoCorrection[]};
+    const data=await response.json().catch(()=>({})) as {amendments?:Amendment[];directChanges?:DirectChange[];corrections?:TypoCorrection[]};
     if(response.ok){
       setAmendments(Array.isArray(data.amendments)?data.amendments:[]);
+      setDirectChanges(Array.isArray(data.directChanges)?data.directChanges:[]);
       setCorrections(Array.isArray(data.corrections)?data.corrections:[]);
     }
   }
@@ -315,11 +326,17 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
     return()=>{cancelled=true};
   },[document.referenceCode]);
   const related=useMemo(()=>amendments.filter(item=>item.documentRef===document.referenceCode),[amendments,document.referenceCode]);
+  const relatedDirect=useMemo(()=>directChanges.filter(item=>item.documentRef===document.referenceCode),[directChanges,document.referenceCode]);
   const relatedCorrections=useMemo(()=>corrections.filter(item=>item.documentRef===document.referenceCode),[corrections,document.referenceCode]);
   const history=useMemo(()=>{
     const typoItems=relatedCorrections.map(item=>({
       id:item.correctionId,at:item.correctedAt,type:'تعديل إملائي',status:'تم',
       summary:item.clauseRef?`تصحيح إملائي في ${item.clauseRef}: ${item.rationale}`:item.rationale,
+      tone:'typo' as const,
+    }));
+    const directItems=relatedDirect.map(item=>({
+      id:item.changeId,at:item.changedAt,type:item.changeAction==='ADD'?'إضافة مباشرة':'تعديل مباشر',status:'تم',
+      summary:(item.changeAction==='ADD'?'إضافة ':'تعديل ')+item.unitRef+(item.rationale?': '+item.rationale:''),
       tone:'typo' as const,
     }));
     const governanceItems=related.flatMap(item=>{
@@ -341,8 +358,8 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
       });
       return items;
     });
-    return [...typoItems,...governanceItems].sort((a,b)=>b.at.localeCompare(a.at));
-  },[related,relatedCorrections]);
+    return [...typoItems,...directItems,...governanceItems].sort((a,b)=>b.at.localeCompare(a.at));
+  },[related,relatedCorrections,relatedDirect]);
   const documentSections=useMemo(()=>parseGovernedDocument(documentContent),[documentContent]);
   const displayType=useMemo(()=>resolveGovernedDisplayType(document,documentContent),[document,documentContent]);
   const displayLabel=governedDisplayLabel(displayType);
@@ -350,30 +367,80 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
   const isMatrixDocument=displayType==='matrix';
   const displayDescription=governedDisplayDescription(displayType);
   const documentStatus=useMemo(()=>governedDocumentStatus(documentContent),[documentContent]);
-  const clauseTextByRef=useMemo(()=>{
-    const map=new Map<string,string>();
+  const unitOptions=useMemo(()=>{
+    const items:Array<{ref:string;type:'article'|'clause'|'paragraph';label:string;text:string;parentRef:string|null}>=[];
     for(const section of documentSections){
+      items.push({ref:section.number,type:'article',label:'المادة '+section.number,text:section.title,parentRef:null});
       for(const block of section.blocks){
-        if(block.kind!=='clause')continue;
-        const value=[block.title,block.text].filter(Boolean).join('\n').trim();
-        if(block.number&&value)map.set(westernDigits(block.number).trim(),value);
+        if(block.kind==='clause'){
+          items.push({ref:block.number,type:'clause',label:'البند '+block.number,text:block.text||block.title,parentRef:section.number});
+        }else if(block.kind==='paragraph'&&block.number){
+          const parent=block.number.split('.').slice(0,-1).join('.');
+          items.push({ref:block.number,type:'paragraph',label:'الفقرة '+block.number,text:block.text,parentRef:parent});
+        }
       }
     }
-    return map;
+    return items;
   },[documentSections]);
 
-  function updateClauseReference(value:string){
-    const normalized=westernDigits(value).trim();
-    setClauseRef(value);
-    const matched=clauseTextByRef.get(normalized);
-    if(matched!==undefined){
-      setCurrentRule(matched);
-      if(editMode==='typo'&&!proposedRule.trim())setProposedRule(matched);
+  const articleOptions=useMemo(()=>unitOptions.filter(item=>item.type==='article'),[unitOptions]);
+  const clauseOptions=useMemo(()=>unitOptions.filter(item=>item.type==='clause'),[unitOptions]);
+
+  function nextUnitRef(type:'article'|'clause'|'paragraph',parent:string){
+    if(type==='article'){
+      const max=Math.max(0,...articleOptions.map(item=>Number(item.ref)||0));
+      return String(max+1);
     }
+    if(type==='clause'){
+      const article=parent.replace(/^المادة\s+/u,'').trim();
+      const siblings=clauseOptions.filter(item=>item.ref.startsWith(article+'.'));
+      const max=Math.max(0,...siblings.map(item=>Number(item.ref.split('.').at(-1))||0));
+      return article+'.'+String(max+1);
+    }
+    const clause=parent.replace(/^البند\s+/u,'').trim();
+    const siblings=unitOptions.filter(item=>item.type==='paragraph'&&item.ref.startsWith(clause+'.'));
+    const max=Math.max(0,...siblings.map(item=>Number(item.ref.split('.').at(-1))||0));
+    return clause+'.'+String(max+1);
   }
 
-  function openUnitEditor(reference:string,currentText:string){
-    setEditMode('governance');
+  function resetEditor(mode:'direct'|'governance',action:'ADD'|'EDIT'='EDIT'){
+    setEditMode(mode);
+    setChangeAction(action);
+    setUnitType(action==='ADD'?'paragraph':'paragraph');
+    setParentRef('');
+    setClauseRef('');
+    setCurrentRule('');
+    setProposedRule('');
+    setRationale('');
+    setFeedback('');
+    setFormOpen(true);
+  }
+
+  function chooseExistingUnit(ref:string){
+    const item=unitOptions.find(candidate=>candidate.ref===ref);
+    setClauseRef(ref);
+    if(!item){setCurrentRule('');setProposedRule('');return}
+    setUnitType(item.type);
+    setParentRef(item.parentRef??'');
+    setCurrentRule(item.text);
+    setProposedRule(item.text);
+  }
+
+  function updateAddTarget(type:'article'|'clause'|'paragraph',parent:string){
+    setUnitType(type);
+    setParentRef(parent);
+    if(type==='article')setClauseRef(nextUnitRef(type,''));
+    else if(parent)setClauseRef(nextUnitRef(type,parent));
+    else setClauseRef('');
+    setCurrentRule('');
+    setProposedRule('');
+  }
+
+  function openUnitEditor(type:'article'|'clause'|'paragraph',reference:string,currentText:string,parent:string|null){
+    setEditMode('direct');
+    setChangeAction('EDIT');
+    setUnitType(type);
+    setParentRef(parent??'');
     setClauseRef(reference);
     setCurrentRule(currentText);
     setProposedRule(currentText);
@@ -403,29 +470,37 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
 
 
   async function submit(event:FormEvent){
-    event.preventDefault(); if(pending)return; setPending(true); setFeedback('');
+    event.preventDefault(); if(pending||!clauseRef.trim()||!proposedRule.trim())return; setPending(true); setFeedback('');
     try{
-      const payload=editMode==='typo'
-        ?{operation:'TYPO_CORRECTION' as const,documentRef:document.referenceCode,documentTitle:document.title,roomKey,
-          clauseRef:clauseRef.trim()||null,currentRule:currentRule.trim(),correctedRule:proposedRule.trim(),rationale:rationale.trim()}
-        :{operation:'CREATE' as const,documentRef:document.referenceCode,documentTitle:document.title,roomKey,
-          clauseRef:clauseRef.trim()||null,currentRule:currentRule.trim()||null,proposedRule:proposedRule.trim(),rationale:rationale.trim(),priority};
+      const unitLabel=unitType==='article'?'المادة':unitType==='clause'?'البند':'الفقرة';
+      const common={
+        documentRef:document.referenceCode,documentTitle:document.title,roomKey,
+        parentRef:parentRef.trim()||null,changeAction,unitType,
+        currentRule:currentRule.trim()||null,proposedRule:proposedRule.trim(),
+        rationale:rationale.trim()||(changeAction==='ADD'?'إضافة مباشرة خلال مرحلة التأسيس':'تعديل مباشر خلال مرحلة التأسيس'),
+      };
+      const payload=editMode==='direct'
+        ?{operation:'DIRECT_CHANGE' as const,...common,unitRef:clauseRef.trim()}
+        :{operation:'CREATE' as const,...common,clauseRef:unitLabel+' '+clauseRef.trim(),priority,
+          rationale:rationale.trim()||'تغيير حوكمي يتطلب المراجعة والاعتماد قبل النفاذ'};
       const response=await fetch('/api/governance/amendments',{
         method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload),
       });
-      const data=await response.json().catch(()=>({})) as {requestId?:string;correctionId?:string;error?:string};
+      const data=await response.json().catch(()=>({})) as {requestId?:string;changeId?:string;error?:string};
       if(!response.ok) throw new Error(data.error||'REQUEST_FAILED');
-      setFeedback(editMode==='typo'
-        ?'تم تطبيق التصحيح المطبعي دون فتح مسار حوكمي أو إحالة إلى مجلس نماء الأعلى.'
-        :'تم فتح طلب التعديل وإرساله للمراجعة.');
-      setFormOpen(false); setClauseRef(''); setCurrentRule(''); setProposedRule(''); setRationale('');
+      setFeedback(editMode==='direct'
+        ?'تم تطبيق '+(changeAction==='ADD'?'الإضافة':'التعديل')+' مباشرة وتسجيلها في سجل التحديثات.'
+        :'تم فتح طلب '+(changeAction==='ADD'?'إضافة':'تعديل')+' حوكمي وإرساله للمراجعة.');
+      setFormOpen(false); setClauseRef(''); setCurrentRule(''); setProposedRule(''); setRationale(''); setParentRef('');
       await load();
-      if(editMode==='typo'){
+      if(editMode==='direct'){
         const responseDocument=await fetch('/api/governance/documents/'+encodeURIComponent(document.referenceCode),{cache:'no-store'});
         const next=await responseDocument.json().catch(()=>({})) as {document?:{content?:string}};
         if(responseDocument.ok)setDocumentContent(String(next.document?.content??''));
       }
-    }catch{ setFeedback(editMode==='typo'?'تعذر تطبيق التصحيح الإملائي الآن.':'تعذر فتح طلب التعديل الآن.'); } finally{ setPending(false); }
+    }catch{
+      setFeedback(editMode==='direct'?'تعذر تطبيق التحرير المباشر الآن.':'تعذر فتح الطلب الحوكمي الآن.');
+    }finally{setPending(false)}
   }
 
   return <div className={styles.mobileOverlay} role="dialog" aria-modal="true" aria-label={'تفاصيل '+document.title}>
