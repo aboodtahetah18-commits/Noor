@@ -4671,11 +4671,7 @@
     background:var(--ux-card-bg);
     color:var(--ux-text-primary)
   }
-  :global(html[data-theme="dark"]) .agentMessage{
-    background:var(--ux-card-bg);
-    border-color:var(--ux-border-emphasis);
-    color:var(--ux-text-primary)
-  }
+  
   :global(html[data-theme="dark"]) .userMessage{
     background:color-mix(in srgb,var(--ux-section-soft-teal) 72%,var(--ux-card-bg));
     border-color:var(--namaa-green-700);
@@ -4708,11 +4704,7 @@
   :global(html[data-theme="dark"]) .entityDetailTabs{
     border-color:var(--ux-border-emphasis)
   }
-  :global(html[data-theme="dark"]) .composer textarea{
-    background:var(--ux-section-soft-blue);
-    border-color:var(--ux-border-emphasis);
-    color:var(--ux-text-primary)
-  }
+  
   :global(html[data-theme="dark"]) .composer textarea::placeholder{
     color:var(--ux-text-muted)
   }
@@ -8956,9 +8948,7 @@
   color:var(--namaa-card)
 }
 :global(html[data-theme="dark"]) .userMessage .messageMeta,
-:global(html[data-theme="dark"]) .agentMessage .messageMeta,
-:global(html[data-theme="dark"]) .userMessage .messageIdentity small,
-:global(html[data-theme="dark"]) .agentMessage .messageIdentity small{
+:global(html[data-theme="dark"]) .userMessage .messageIdentity small{
   color:var(--ux-dark-text-secondary)!important
 }
 :global(html[data-theme="dark"]) .agentMessage .messageIdentity,
@@ -9009,9 +8999,7 @@
   border-color:var(--ux-dark-border)!important;
   color:var(--namaa-card)!important
 }
-:global(html[data-theme="dark"]) .composer textarea::placeholder{
-  color:var(--ux-dark-text-secondary)!important
-}
+
 :global(html[data-theme="dark"]) .attachButton{
   background:var(--ux-dark-page-bg)!important;
   border-color:var(--ux-dark-border)!important;
@@ -9584,6 +9572,59 @@
   justify-content:center!important;
   padding-inline:var(--ux-space-3)!important;
   font-size:var(--ux-type-body-size)!important;
+  font-weight:900!important;
+  line-height:1!important
+}
+
+
+/* Namaa dark incoming-message typography authority */
+/* One authoritative dark-mode rule: incoming/counterparty message identity + primary copy are always white. */
+:global(html[data-theme="dark"]) .page .chatPane .agentMessage .messageIdentity strong,
+:global(html[data-theme="dark"]) .page .chatPane .agentMessage .messageIdentity small,
+:global(html[data-theme="dark"]) .page .chatPane .agentMessage .messageCopy,
+:global(html[data-theme="dark"]) .page .chatPane .agentMessage>p,
+:global(html[data-theme="dark"]) .page .chatPane .agentMessage .onboardingMessageContent>p,
+:global(html[data-theme="dark"]) .page .chatPane .agentMessage .messageMeta{
+  color:var(--ux-text-inverse)!important;
+  -webkit-text-fill-color:var(--ux-text-inverse)!important;
+  opacity:1!important;
+  font-weight:800!important
+}
+
+/* Composer in dark mode: bright green surface, bold white text/placeholder, no pattern. */
+:global(html[data-theme="dark"]) .page .composer{
+  background:color-mix(in srgb,var(--namaa-green-700) 82%,var(--namaa-green-900))!important;
+  background-image:none!important
+}
+:global(html[data-theme="dark"]) .page .composer::before,
+:global(html[data-theme="dark"]) .page .composer::after{
+  content:none!important;
+  display:none!important;
+  background:none!important
+}
+:global(html[data-theme="dark"]) .page .composer textarea{
+  background:color-mix(in srgb,var(--namaa-green-700) 76%,var(--namaa-green-900))!important;
+  background-image:none!important;
+  color:var(--ux-text-inverse)!important;
+  -webkit-text-fill-color:var(--ux-text-inverse)!important;
+  font-weight:900!important
+}
+:global(html[data-theme="dark"]) .page .composer textarea::placeholder{
+  color:var(--ux-text-inverse)!important;
+  -webkit-text-fill-color:var(--ux-text-inverse)!important;
+  opacity:1!important;
+  font-weight:900!important
+}
+
+/* Progress percentage: larger, wider, and easier to read. */
+.page .onboardingQuestionHeader>b{
+  min-width:88px!important;
+  min-height:58px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding-inline:var(--ux-space-4)!important;
+  font-size:var(--ux-type-card-title-size)!important;
   font-weight:900!important;
   line-height:1!important
 }
