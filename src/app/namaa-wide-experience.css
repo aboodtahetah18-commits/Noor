@@ -1634,7 +1634,7 @@
     display:block !important;
     z-index:120 !important;
     border:0 !important;
-    border-left:1px solid rgb(255 255 255 / 10%) !important;
+    border-left:1px solid rgb(212 175 107 / 20%) !important;
     border-right:0 !important;
     box-shadow:-8px 0 28px rgb(31 41 55 / 8%) !important;
     overflow:hidden;
@@ -1677,7 +1677,7 @@
     overflow-x:hidden;
     padding-top:4px;
     scrollbar-width:thin;
-    scrollbar-color:rgb(255 255 255 / 22%) transparent;
+    scrollbar-color:rgb(212 175 107 / 32%) transparent;
   }
 
   .namaa-wide-sidebar-nav .mustaqbali-nav-section {
@@ -1697,7 +1697,7 @@
     align-items:center;
     gap:12px;
     border-radius:14px;
-    color:rgb(255 255 255 / 92%) !important;
+    color:#e6d9b8 !important;
   }
 
   .namaa-wide-sidebar-nav .mustaqbali-nav-section > a.is-active {
@@ -2062,7 +2062,7 @@
     --namaa-wide-gold-soft:#f3ead7;
     --namaa-wide-surface:#f2f1e8;
     --namaa-wide-surface-2:#e8efe9;
-    --namaa-wide-card:#eef3ee;
+    --namaa-wide-card:#d0dbcf;
     --namaa-wide-card-strong:#e2ebe4;
     --namaa-wide-input:#f6f3e8;
     --namaa-wide-text:#1f2937;
