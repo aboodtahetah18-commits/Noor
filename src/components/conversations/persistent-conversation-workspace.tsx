@@ -1304,7 +1304,7 @@ export function PersistentConversationWorkspace(){
   const groupedWithNext=next?isSameConversationGroup(message,next):false;
   const groupPosition=groupedWithPrevious?(groupedWithNext?'middle':'end'):(groupedWithNext?'start':'single');
   const showTimeDivider=shouldShowConversationTimeDivider(previous,message);
-  const hasLaterAgentResponse=message.sender_type==='user'&&visibleMessages.slice(messageIndex+1).some(nextMessage=>nextMessage.sender_type!=='user');
+  const hasLaterAgentResponse=message.sender_type==='user'&&messages.slice(messageIndex+1).some(nextMessage=>nextMessage.sender_type!=='user');
   return <div key={message.id} className={styles.messageClusterItem}>
     {showTimeDivider&&<div className={styles.conversationTimeDivider} role="separator"><span>{formatConversationTimeDivider(message.created_at)}</span></div>}
     <article className={`${styles.message} ${message.sender_type==='user'?styles.userMessage:styles.agentMessage} ${groupedWithPrevious?styles.groupContinuation:styles.groupStart} ${groupedWithNext?styles.groupHasNext:styles.groupEnd} ${activeRoom.id==='council'&&message.sender_type!=='user'?councilSpeakerClass(message.sender_key):''}`} data-group-position={groupPosition}>
