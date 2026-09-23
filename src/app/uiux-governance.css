@@ -771,48 +771,8 @@ html[data-theme="dark"] .mustaqbali-sidebar-brand img{opacity:1!important;}
 .p4913-filter-hint{margin:var(--ux-space-0) var(--ux-space-0) var(--ux-space-3)!important;color:var(--ux-text-secondary)!important;font-size:var(--ux-type-caption-size)!important;}
 
 /* Desktop shell: top bar is independent, sidebar begins underneath it. */
-@media(min-width:1024px){
-  .desktop-top-nav-wrap.mustaqbali-sidebar{
-    inset-block-start:var(--ux-shell-topbar-height)!important;
-    inset-block-end:var(--ux-space-0)!important;
-    inset-inline-start:var(--ux-space-0)!important;
-    inset-inline-end:auto!important;
-    height:calc(100dvh - var(--ux-shell-topbar-height))!important;
-    background:var(--ux-shell-sidebar-bg)!important;
-    border-inline-end:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-shell-topbar-border)!important;
-  }
-  .mustaqbali-sidebar-inner{padding:var(--ux-space-4) var(--ux-space-3)!important;}
-  .mustaqbali-sidebar-nav{padding-top:var(--ux-space-0)!important;}
-  html[data-sidebar="collapsed"] .mustaqbali-sidebar{width:var(--ux-shell-sidebar-collapsed)!important;}
-  html[data-sidebar="collapsed"] .mustaqbali-nav-section>p{display:none!important;}
-  html[data-sidebar="collapsed"] .mustaqbali-sidebar-nav a,html[data-sidebar="collapsed"] .mustaqbali-sidebar-footer a{justify-content:center!important;padding-inline:var(--ux-space-0)!important;}
-  html[data-sidebar="collapsed"] .mustaqbali-nav-label,html[data-sidebar="collapsed"] .mustaqbali-sidebar-footer a span{display:none!important;}
+/* Legacy desktop media block removed; canonical wide layout is in namaa-wide-experience.css. */
 
-  .mustaqbali-topbar{
-    display:grid!important;
-    grid-template-areas:"brand search actions"!important;
-    grid-template-columns:minmax(320px,.9fr) minmax(300px,520px) minmax(220px,.7fr)!important;
-    position:fixed!important;inset-block-start:var(--ux-space-0)!important;inset-inline:var(--ux-space-0)!important;
-    height:var(--ux-shell-topbar-height)!important;
-    background:var(--ux-shell-sidebar-bg)!important;
-    color:var(--ux-white)!important;
-    border-bottom:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-shell-topbar-border)!important;
-    padding-inline:var(--ux-space-5)!important;
-    z-index:var(--ux-z-navigation)!important;
-  }
-  .mustaqbali-topbar-brand-zone{grid-area:brand;display:flex;align-items:center;gap:var(--ux-space-3);min-width:0;}
-  .mustaqbali-topbar-menu{width:var(--ux-size-11);height:var(--ux-size-11);min-width:var(--ux-size-11);min-height:var(--ux-size-11);display:grid;place-items:center;border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-alpha-white-18);border-radius:var(--ux-radius-md);background:var(--ux-alpha-white-10);color:var(--ux-white);}
-  .mustaqbali-topbar-logo{display:flex;align-items:center;min-width:0;}
-  .mustaqbali-topbar-logo img{display:block;width:var(--ux-logo-desktop-width);height:auto;max-height:48px;object-fit:contain;}
-  .mustaqbali-topbar-page-label{color:var(--ux-alpha-white-84);font-size:var(--ux-type-body-sm-size);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .mustaqbali-global-search{grid-area:search;justify-self:center;width:100%;background:var(--ux-shell-topbar-control)!important;border-color:var(--ux-alpha-white-18)!important;}
-  .mustaqbali-topbar-actions{grid-area:actions;justify-self:end!important;display:flex;align-items:center;gap:var(--ux-space-2)!important;}
-  .mustaqbali-topbar-actions>a,.mustaqbali-topbar-actions>button,.mustaqbali-profile-trigger{background:var(--ux-alpha-white-10)!important;color:var(--ux-white)!important;border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-alpha-white-18)!important;border-radius:var(--ux-radius-md)!important;}
-  .mustaqbali-profile-trigger{order:-1!important;}
-  .mustaqbali-topbar-actions>a:hover,.mustaqbali-topbar-actions>button:hover,.mustaqbali-profile-trigger:hover{background:var(--ux-alpha-white-18)!important;}
-  .protected-app-shell>#main-content{margin-inline-start:var(--ux-shell-sidebar-expanded)!important;padding-block-start:var(--ux-shell-topbar-height)!important;}
-  html[data-sidebar="collapsed"] .protected-app-shell>#main-content{margin-inline-start:var(--ux-shell-sidebar-collapsed)!important;}
-}
 
 /* Tablet/mobile header uses the same dark identity block as desktop. */
 @media(max-width:1023px){
@@ -905,16 +865,8 @@ html[data-theme="dark"] .p47-empty-state>p:not(.p47-kicker){color:var(--ux-dark-
 
 
 /* === Build 18 — topbar identity, CTA visibility, resilient error presentation === */
-@media(min-width:1024px){
-  .mustaqbali-topbar{
-    grid-template-areas:"actions search brand"!important;
-    grid-template-columns:minmax(220px,.7fr) minmax(300px,520px) minmax(300px,.9fr)!important;
-  }
-  .mustaqbali-topbar-brand-zone{justify-self:end!important;justify-content:flex-start!important;max-width:100%!important;overflow:hidden!important;}
-  .mustaqbali-topbar-logo{max-width:var(--ux-logo-desktop-width)!important;overflow:hidden!important;}
-  .mustaqbali-topbar-logo img{width:100%!important;max-width:var(--ux-logo-desktop-width)!important;max-height:42px!important;object-fit:contain!important;object-position:center!important;}
-  .mustaqbali-topbar-actions{justify-self:start!important;}
-}
+/* Legacy desktop media block removed; canonical wide layout is in namaa-wide-experience.css. */
+
 .p74-next-step>a{
   min-width:var(--ux-size-24)!important;
   color:var(--ux-white)!important;
@@ -930,12 +882,8 @@ html[data-theme="dark"] .p74-next-step>a>span,html[data-theme="dark"] .p74-next-
 
 /* === Build 19 — visible defect repair: logo, modal forms, compact headers === */
 /* Topbar identity uses one clean logo and one menu control only. */
-@media(min-width:1024px){
-  .mustaqbali-topbar-brand-zone{flex-direction:row!important;gap:var(--ux-space-3)!important;overflow:visible!important;}
-  .mustaqbali-topbar-logo{display:flex!important;align-items:center!important;justify-content:center!important;width:var(--ux-logo-desktop-width)!important;max-width:var(--ux-logo-desktop-width)!important;overflow:hidden!important;border:var(--ux-border-width-0)!important;background:transparent!important;}
-  .mustaqbali-topbar-logo img{display:block!important;width:100%!important;height:48px!important;max-height:48px!important;object-fit:contain!important;object-position:center!important;}
-  .mustaqbali-topbar-menu{flex:0 0 var(--ux-size-11)!important;}
-}
+/* Legacy desktop media block removed; canonical wide layout is in namaa-wide-experience.css. */
+
 
 /* Profile trigger is a user identity control, not an application-logo duplicate. */
 .p60-avatar-fallback{width:var(--ux-space-8)!important;height:var(--ux-space-8)!important;display:grid!important;place-items:center!important;color:currentColor!important;}
@@ -988,23 +936,8 @@ html[data-theme="dark"] .cycle-back-link{background:var(--ux-dark-card-bg)!impor
 
 
 /* === Build 20 — final cross-device shell and theme closure === */
-@media(min-width:1024px){
-  .mustaqbali-topbar{
-    grid-template-areas:"brand search actions"!important;
-    grid-template-columns:minmax(300px,.9fr) minmax(300px,520px) minmax(220px,.7fr)!important;
-  }
-  .mustaqbali-topbar-brand-zone{
-    grid-area:brand!important;
-    justify-self:start!important;
-    justify-content:flex-start!important;
-    direction:rtl!important;
-  }
-  .mustaqbali-topbar-actions{
-    grid-area:actions!important;
-    justify-self:end!important;
-  }
-  .mustaqbali-global-search{grid-area:search!important;justify-self:center!important;}
-}
+/* Legacy desktop media block removed; canonical wide layout is in namaa-wide-experience.css. */
+
 
 /* Every interactive surface inherits the active theme rather than a legacy white canvas. */
 html[data-theme="light"] :where(dialog,.p49-dialog-shell,.p49-dialog-body,.p55-profile-dialog,.p4913-filter-content){
