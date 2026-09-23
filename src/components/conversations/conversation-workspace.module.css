@@ -9018,3 +9018,178 @@
 .userMessage *{
   background-image:none!important
 }
+
+
+/* Namaa contrast rule — distinct surfaces, black dark-chat canvas, gold/user balance */
+/*
+  Contrast rule:
+  Never place a message/card foreground on a background with a near-identical hue/value.
+  Adjacent chat layers must remain visually distinct in both light and dark themes.
+*/
+
+/* Read receipts are blue in both themes. */
+.messageReceipt,
+.messageReceiptRead{
+  color:#2D9CDB!important
+}
+
+/* LIGHT: user stays mint; assistant becomes the approved logo-gold family with dark text. */
+:global(html:not([data-theme="dark"])) .chatPane,
+:global(html:not([data-theme="dark"])) .messages{
+  background:#FFFFFF!important;
+  background-image:none!important
+}
+:global(html:not([data-theme="dark"])) .userMessage{
+  background:#E8F5F1!important;
+  border-color:#DCE8F1!important;
+  color:#0B2545!important
+}
+:global(html:not([data-theme="dark"])) .userMessage *{
+  color:#0B2545
+}
+:global(html:not([data-theme="dark"])) .userMessage .messageReceipt,
+:global(html:not([data-theme="dark"])) .userMessage .messageReceiptRead{
+  color:#2D9CDB!important
+}
+:global(html:not([data-theme="dark"])) .agentMessage{
+  background:#B98A3D!important;
+  border-color:#9E742F!important;
+  color:#111111!important
+}
+:global(html:not([data-theme="dark"])) .agentMessage .messageCopy,
+:global(html:not([data-theme="dark"])) .agentMessage .messageIdentity strong,
+:global(html:not([data-theme="dark"])) .agentMessage .messageIdentity small,
+:global(html:not([data-theme="dark"])) .agentMessage .messageMeta,
+:global(html:not([data-theme="dark"])) .agentMessage .onboardingQuestionCard,
+:global(html:not([data-theme="dark"])) .agentMessage .onboardingQuestionReason,
+:global(html:not([data-theme="dark"])) .agentMessage .onboardingQuestionBox,
+:global(html:not([data-theme="dark"])) .agentMessage .structuredCard,
+:global(html:not([data-theme="dark"])) .agentMessage .richMessageHero{
+  color:#111111!important
+}
+:global(html:not([data-theme="dark"])) .agentMessage .onboardingQuestionCard,
+:global(html:not([data-theme="dark"])) .agentMessage .onboardingQuestionReason,
+:global(html:not([data-theme="dark"])) .agentMessage .onboardingQuestionBox,
+:global(html:not([data-theme="dark"])) .agentMessage .structuredCard,
+:global(html:not([data-theme="dark"])) .agentMessage .richMessageHero{
+  background:#D8B875!important;
+  border-color:#8D692F!important
+}
+:global(html:not([data-theme="dark"])) .agentMessage .onboardingQuestionIcon,
+:global(html:not([data-theme="dark"])) .agentMessage .onboardingQuestionHeader>b,
+:global(html:not([data-theme="dark"])) .agentMessage .onboardingQuestionBox>span{
+  background:#FFF8E9!important;
+  border-color:#145246!important;
+  color:#145246!important
+}
+:global(html:not([data-theme="dark"])) .agentMessage .onboardingQuestionIcon svg,
+:global(html:not([data-theme="dark"])) .agentMessage .structuredCardHeader svg,
+:global(html:not([data-theme="dark"])) .agentMessage .inlineIntakeButton svg{
+  color:#145246!important;
+  stroke:#145246!important
+}
+:global(html:not([data-theme="dark"])) .agentMessage .onboardingProgressTrack{
+  background:#FFF8E9!important;
+  border:1px solid #8D692F!important
+}
+:global(html:not([data-theme="dark"])) .agentMessage .onboardingProgressTrack>span{
+  background:#145246!important
+}
+:global(html:not([data-theme="dark"])) .agentMessage .inlineIntakeButton{
+  background:#FFF8E9!important;
+  border-color:#145246!important;
+  color:#145246!important
+}
+:global(html:not([data-theme="dark"])) .agentMessage .inlineIntakeButton *{
+  color:#145246!important
+}
+
+/* DARK: black chat canvas; user is light gold with dark-green text; assistant stays deep green. */
+:global(html[data-theme="dark"]) .chatPane,
+:global(html[data-theme="dark"]) .messages{
+  background:#090B0A!important;
+  background-color:#090B0A!important;
+  background-image:none!important;
+  color:#F7FAFC!important
+}
+:global(html[data-theme="dark"]) .messagesBuildingBackdrop,
+:global(html[data-theme="dark"]) .chatPane::before,
+:global(html[data-theme="dark"]) .chatPane::after,
+:global(html[data-theme="dark"]) .messages::before,
+:global(html[data-theme="dark"]) .messages::after{
+  display:none!important;
+  content:none!important;
+  background:none!important;
+  background-image:none!important
+}
+:global(html[data-theme="dark"]) .userMessage{
+  background:#F1D79A!important;
+  border-color:#C79A43!important;
+  color:#123B2F!important
+}
+:global(html[data-theme="dark"]) .userMessage .messageCopy,
+:global(html[data-theme="dark"]) .userMessage .messageIdentity strong,
+:global(html[data-theme="dark"]) .userMessage .messageIdentity small,
+:global(html[data-theme="dark"]) .userMessage .messageMeta{
+  color:#123B2F!important
+}
+:global(html[data-theme="dark"]) .userMessage .messageReceipt,
+:global(html[data-theme="dark"]) .userMessage .messageReceiptRead{
+  color:#2D9CDB!important
+}
+:global(html[data-theme="dark"]) .agentMessage{
+  background:#1E5A52!important;
+  border-color:#4E8B80!important;
+  color:#F7FAFC!important
+}
+:global(html[data-theme="dark"]) .agentMessage .messageCopy,
+:global(html[data-theme="dark"]) .agentMessage .messageIdentity strong,
+:global(html[data-theme="dark"]) .agentMessage .messageIdentity small,
+:global(html[data-theme="dark"]) .agentMessage .messageMeta{
+  color:#F7FAFC!important
+}
+:global(html[data-theme="dark"]) .agentMessage .onboardingQuestionCard,
+:global(html[data-theme="dark"]) .agentMessage .onboardingQuestionReason,
+:global(html[data-theme="dark"]) .agentMessage .onboardingQuestionBox,
+:global(html[data-theme="dark"]) .agentMessage .structuredCard,
+:global(html[data-theme="dark"]) .agentMessage .richMessageHero{
+  background:#163844!important;
+  border-color:#4E8B80!important;
+  color:#F7FAFC!important
+}
+:global(html[data-theme="dark"]) .agentMessage .onboardingQuestionIcon,
+:global(html[data-theme="dark"]) .agentMessage .onboardingQuestionHeader>b,
+:global(html[data-theme="dark"]) .agentMessage .onboardingQuestionBox>span{
+  background:#F1D79A!important;
+  border-color:#FCAA30!important;
+  color:#123B2F!important
+}
+:global(html[data-theme="dark"]) .agentMessage .onboardingQuestionIcon svg,
+:global(html[data-theme="dark"]) .agentMessage .structuredCardHeader svg,
+:global(html[data-theme="dark"]) .agentMessage .inlineIntakeButton svg{
+  color:#FCAA30!important;
+  stroke:#FCAA30!important
+}
+:global(html[data-theme="dark"]) .agentMessage .onboardingProgressTrack{
+  background:#102A34!important;
+  border:1px solid #4E8B80!important
+}
+:global(html[data-theme="dark"]) .agentMessage .onboardingProgressTrack>span{
+  background:#FCAA30!important
+}
+:global(html[data-theme="dark"]) .agentMessage .inlineIntakeButton{
+  background:#F1D79A!important;
+  border-color:#FCAA30!important;
+  color:#123B2F!important
+}
+:global(html[data-theme="dark"]) .agentMessage .inlineIntakeButton *{
+  color:#123B2F!important
+}
+
+/* General icon visibility guard for chat controls/cards. */
+.agentMessage svg,
+.userMessage svg,
+.composer svg{
+  opacity:1!important;
+  visibility:visible!important
+}
