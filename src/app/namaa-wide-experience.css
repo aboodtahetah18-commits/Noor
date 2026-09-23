@@ -3286,3 +3286,60 @@
     color:var(--namaa-wide-muted)!important;
   }
 }
+
+
+/* ========================================================================== */
+/* EXECUTION BATCH 8 — fixes for issues visible in latest production captures */
+/* ========================================================================== */
+@media (min-width:1024px) {
+  body .protected-app-shell > .mobile-bottom-nav,
+  body .protected-app-shell > .p47-mobile-topbar,
+  body .protected-app-shell > .tablet-top-nav-wrap {
+    display:none!important;
+  }
+
+  .mustaqbali-topbar.namaa-topbar {
+    grid-template-columns:auto minmax(320px,620px) auto!important;
+    align-items:center!important;
+    column-gap:16px!important;
+    overflow:visible!important;
+  }
+
+  .mustaqbali-topbar-brand-zone,
+  .mustaqbali-topbar-actions {
+    min-width:0!important;
+    display:flex!important;
+    align-items:center!important;
+    gap:8px!important;
+  }
+
+  .mustaqbali-topbar-actions {
+    justify-content:flex-start!important;
+    flex-wrap:nowrap!important;
+  }
+
+  .mustaqbali-topbar-actions > a,
+  .mustaqbali-topbar-actions > button,
+  .mustaqbali-profile-trigger,
+  .mustaqbali-topbar-menu {
+    width:46px!important;
+    height:46px!important;
+    min-width:46px!important;
+    min-height:46px!important;
+    flex:0 0 46px!important;
+    margin:0!important;
+    position:relative!important;
+    top:auto!important;
+    right:auto!important;
+    left:auto!important;
+    transform:none!important;
+  }
+
+  .mustaqbali-global-search {
+    width:100%!important;
+    max-width:620px!important;
+    justify-self:center!important;
+    align-self:center!important;
+    min-width:0!important;
+  }
+}
