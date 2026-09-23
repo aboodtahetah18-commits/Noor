@@ -9367,3 +9367,59 @@
 .page .onboardingQuestionBox strong{
   font-weight:800!important
 }
+
+
+/* Namaa dark chat lock — white counterparty copy and deep-gold composer controls */
+
+/* Dark mode: every visible counterparty heading and primary message line is white. */
+:global(html[data-theme="dark"]) .page .agentMessage>.messageIdentity strong,
+:global(html[data-theme="dark"]) .page .agentMessage>.messageIdentity small,
+:global(html[data-theme="dark"]) .page .agentMessage>.messageCopy,
+:global(html[data-theme="dark"]) .page .agentMessage>p,
+:global(html[data-theme="dark"]) .page .agentMessage>.onboardingMessageContent>p,
+:global(html[data-theme="dark"]) .page .agentMessage>.messageMeta{
+  color:var(--namaa-card)!important;
+  font-weight:800!important
+}
+
+/* Dark composer: solid deep green, no motif or decorative layer. */
+:global(html[data-theme="dark"]) .page .composer{
+  background:var(--namaa-green-900)!important;
+  background-image:none!important;
+  border-top-color:color-mix(in srgb,var(--namaa-gold-500) 32%,var(--namaa-green-900))!important
+}
+:global(html[data-theme="dark"]) .page .composer::before,
+:global(html[data-theme="dark"]) .page .composer::after{
+  content:none!important;
+  display:none!important;
+  background:none!important;
+  background-image:none!important
+}
+:global(html[data-theme="dark"]) .page .composer textarea{
+  background:color-mix(in srgb,var(--namaa-green-900) 92%,var(--namaa-text))!important;
+  background-image:none!important;
+  border-color:color-mix(in srgb,var(--namaa-card) 20%,var(--namaa-green-900))!important;
+  color:var(--namaa-card)!important;
+  font-weight:900!important
+}
+:global(html[data-theme="dark"]) .page .composer textarea::placeholder{
+  color:var(--namaa-card)!important;
+  opacity:1!important;
+  font-weight:900!important
+}
+
+/* Dark composer controls: deeper approved gold, with dark-green glyphs. */
+:global(html[data-theme="dark"]) .page .attachButton,
+:global(html[data-theme="dark"]) .page .sendButton{
+  background:var(--namaa-gold-500)!important;
+  border:1px solid color-mix(in srgb,var(--namaa-gold-500) 78%,var(--namaa-text))!important;
+  color:var(--namaa-green-900)!important
+}
+:global(html[data-theme="dark"]) .page .attachButton svg,
+:global(html[data-theme="dark"]) .page .sendButton svg{
+  color:var(--namaa-green-900)!important;
+  stroke:var(--namaa-green-900)!important
+}
+:global(html[data-theme="dark"]) .page .sendButton:disabled{
+  opacity:.88!important
+}
