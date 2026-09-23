@@ -9748,3 +9748,93 @@
   background:var(--ux-dark-card-bg)!important;
   border-color:color-mix(in srgb,var(--namaa-gold-500) 42%,var(--ux-dark-border))!important
 }
+
+
+/* Namaa contrast invariant — foreground and surface must never share the same luminance band */
+/*
+  Contrast invariant:
+  - Dark surface => light foreground.
+  - Light surface => dark foreground.
+  - Never allow text/icon and its immediate background to share a near-identical tone.
+  - Brand exceptions must still preserve strong readable contrast.
+*/
+
+/* Governed documents in dark mode: force every structural surface dark and every default label/icon light. */
+:global(html[data-theme="dark"]) .governedDocumentSheet .governedDocumentSection,
+:global(html[data-theme="dark"]) .governedDocumentSheet .governedContentSection,
+:global(html[data-theme="dark"]) .governedDocumentSheet .governedContentSection:nth-child(2n),
+:global(html[data-theme="dark"]) .governedDocumentSheet .governedContentSection:nth-child(3n),
+:global(html[data-theme="dark"]) .governedDocumentSheet .governedContentSection:nth-child(4n),
+:global(html[data-theme="dark"]) .governedDocumentSheet .governedParagraphRow,
+:global(html[data-theme="dark"]) .governedDocumentSheet .governedClauseRow,
+:global(html[data-theme="dark"]) .governedDocumentSheet .governedTableScroll,
+:global(html[data-theme="dark"]) .governedDocumentSheet .governedContentTable{
+  background:var(--ux-dark-card-bg)!important;
+  background-image:none!important;
+  border-color:var(--ux-dark-border)!important;
+  color:var(--ux-text-inverse)!important
+}
+
+:global(html[data-theme="dark"]) .governedDocumentSheet .governedDocumentSection>summary,
+:global(html[data-theme="dark"]) .governedDocumentSheet .governedContentSection>summary,
+:global(html[data-theme="dark"]) .governedDocumentSheet .governedContentSection:nth-child(2n)>summary,
+:global(html[data-theme="dark"]) .governedDocumentSheet .governedContentSection:nth-child(3n)>summary,
+:global(html[data-theme="dark"]) .governedDocumentSheet .governedContentSection:nth-child(4n)>summary{
+  background:color-mix(in srgb,var(--namaa-green-900) 58%,var(--ux-dark-card-bg))!important;
+  color:var(--ux-text-inverse)!important
+}
+
+:global(html[data-theme="dark"]) .governedDocumentSheet .governedDocumentSection>summary *,
+:global(html[data-theme="dark"]) .governedDocumentSheet .governedContentSection>summary *,
+:global(html[data-theme="dark"]) .governedDocumentSheet .governedContentSectionBody>p,
+:global(html[data-theme="dark"]) .governedDocumentSheet .governedParagraphRow>p,
+:global(html[data-theme="dark"]) .governedDocumentSheet .governedClauseHeading>strong,
+:global(html[data-theme="dark"]) .governedDocumentSheet .governedClauseRow>p,
+:global(html[data-theme="dark"]) .governedDocumentSheet .governedContentTable th,
+:global(html[data-theme="dark"]) .governedDocumentSheet .governedContentTable td{
+  color:var(--ux-text-inverse)!important;
+  -webkit-text-fill-color:var(--ux-text-inverse)!important
+}
+
+:global(html[data-theme="dark"]) .governedDocumentSheet .governedDocumentSection>summary svg,
+:global(html[data-theme="dark"]) .governedDocumentSheet .governedContentSection>summary svg{
+  color:var(--ux-text-inverse)!important;
+  stroke:var(--ux-text-inverse)!important
+}
+
+/* Paragraph marker is intentionally light-gold on the dark surface. */
+:global(html[data-theme="dark"]) .governedDocumentSheet .governedParagraphRow .governedUnitToolbar>strong{
+  color:var(--namaa-gold-500)!important;
+  -webkit-text-fill-color:var(--namaa-gold-500)!important
+}
+
+/* All inline edit controls use the logo gold for both label and icon. */
+:global(html[data-theme="dark"]) .governedDocumentSheet .governedArticleAction button,
+:global(html[data-theme="dark"]) .governedDocumentSheet .governedUnitToolbar>button{
+  background:color-mix(in srgb,var(--ux-dark-card-bg) 90%,var(--namaa-green-900))!important;
+  border-color:var(--namaa-gold-500)!important;
+  color:var(--namaa-gold-500)!important;
+  -webkit-text-fill-color:var(--namaa-gold-500)!important
+}
+:global(html[data-theme="dark"]) .governedDocumentSheet .governedArticleAction button svg,
+:global(html[data-theme="dark"]) .governedDocumentSheet .governedUnitToolbar>button svg{
+  color:var(--namaa-gold-500)!important;
+  stroke:var(--namaa-gold-500)!important
+}
+
+/* Entity-file governed references: dark cards always use white titles, metadata and icons. */
+:global(html[data-theme="dark"]) .entityDetailSheet .entityReferenceList>button{
+  background:var(--ux-dark-card-bg)!important;
+  border-color:var(--ux-dark-border)!important;
+  color:var(--ux-text-inverse)!important
+}
+:global(html[data-theme="dark"]) .entityDetailSheet .entityReferenceList>button strong,
+:global(html[data-theme="dark"]) .entityDetailSheet .entityReferenceList>button small,
+:global(html[data-theme="dark"]) .entityDetailSheet .entityReferenceList>button svg,
+:global(html[data-theme="dark"]) .entityDetailSheet .entityReferenceCopy,
+:global(html[data-theme="dark"]) .entityDetailSheet .entityReferenceCopy *{
+  color:var(--ux-text-inverse)!important;
+  -webkit-text-fill-color:var(--ux-text-inverse)!important;
+  stroke:currentColor!important;
+  opacity:1!important
+}
