@@ -8130,7 +8130,7 @@
 }
 
 /* Chat bubbles: other party on the left in Namaa green; user on the right in a neutral surface. */
-.agentMessage{
+.chatPane .agentMessage{
   align-self:flex-end!important;
   margin-left:auto!important;
   margin-right:var(--ux-space-0)!important;
@@ -8149,7 +8149,7 @@
 .agentMessage>.messageIdentity{
   border-bottom-color:color-mix(in srgb,var(--ux-text-inverse) 22%,transparent)!important
 }
-.userMessage{
+.chatPane .userMessage{
   align-self:flex-start!important;
   margin-left:var(--ux-space-0)!important;
   margin-right:auto!important;
@@ -8381,7 +8381,7 @@
 .message .onboardingQuestionReason{
   background-image:none!important
 }
-.agentMessage{
+.chatPane .agentMessage{
   background:var(--namaa-green-900)!important;
   background-color:var(--namaa-green-900)!important;
   opacity:1!important
@@ -8402,7 +8402,7 @@
 .agentMessage .onboardingQuestionReason *{
   color:var(--ux-text-inverse)!important
 }
-.userMessage{
+.chatPane .userMessage{
   background:var(--namaa-card)!important;
   background-color:var(--namaa-card)!important;
   opacity:1!important
@@ -8441,7 +8441,7 @@
 
 /* One solid surface per chat bubble — no motif, tint, transparency or inherited image inside messages. */
 .agentMessage,
-.userMessage{
+.chatPane .userMessage{
   opacity:1!important;
   background-image:none!important;
   backdrop-filter:none!important;
@@ -8460,11 +8460,11 @@
   background:none!important;
   background-image:none!important
 }
-.agentMessage{
+.chatPane .agentMessage{
   background:var(--namaa-green-900)!important;
   border-color:color-mix(in srgb,var(--namaa-green-700) 68%,var(--namaa-green-900))!important
 }
-.userMessage{
+.chatPane .userMessage{
   background:var(--namaa-card)!important;
   border-color:var(--namaa-border-strong)!important
 }
@@ -8649,12 +8649,12 @@
   backdrop-filter:none!important;
   -webkit-backdrop-filter:none!important
 }
-.agentMessage{
+.chatPane .agentMessage{
   background:color-mix(in srgb,var(--namaa-green-700) 76%,var(--namaa-green-900))!important;
   border-color:color-mix(in srgb,var(--ux-text-inverse) 22%,var(--namaa-green-900))!important;
   opacity:1!important
 }
-.userMessage{
+.chatPane .userMessage{
   background:var(--namaa-card)!important;
   border-color:var(--namaa-border-strong)!important;
   opacity:1!important
