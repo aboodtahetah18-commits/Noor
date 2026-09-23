@@ -2367,3 +2367,240 @@
     border-color:var(--namaa-wide-border)!important;
   }
 }
+
+
+/* ========================================================================== */
+/* EXECUTION BATCH 3 — compact wide pages + identity-first surfaces           */
+/* Removes oversized blank regions and eliminates raw white wide surfaces.    */
+/* ========================================================================== */
+@media (min-width:768px) {
+  .namaa-banks-wide,
+  .namaa-investments-page,
+  .namaa-knowledge-page,
+  .namaa-decisions-wide,
+  .namaa-observatory-wide,
+  .namaa-lab-wide,
+  .namaa-settings-wide {
+    padding-top:12px!important;
+    padding-bottom:24px!important;
+  }
+
+  .namaa-banks-hero,
+  .namaa-investments-header,
+  .namaa-knowledge-hero,
+  .namaa-decisions-hero,
+  .namaa-observatory-hero,
+  .namaa-lab-hero,
+  .namaa-settings-hero {
+    min-height:0!important;
+    padding:16px 18px!important;
+    margin-bottom:12px!important;
+    background:
+      linear-gradient(135deg,var(--namaa-wide-card-strong),var(--namaa-wide-green-soft-2))!important;
+    border-color:var(--namaa-wide-border)!important;
+  }
+
+  .namaa-banks-hero h1,
+  .namaa-investments-header h1,
+  .namaa-knowledge-hero h1,
+  .namaa-decisions-hero h1,
+  .namaa-observatory-hero h1,
+  .namaa-lab-hero h1,
+  .namaa-settings-hero h1 {
+    font-size:clamp(28px,3vw,38px)!important;
+    line-height:1.25!important;
+    color:var(--namaa-wide-text)!important;
+  }
+
+  .namaa-banks-hero p,
+  .namaa-investments-header p,
+  .namaa-knowledge-hero p,
+  .namaa-decisions-hero p,
+  .namaa-observatory-hero p,
+  .namaa-lab-hero p,
+  .namaa-settings-hero p {
+    color:var(--namaa-wide-gold)!important;
+  }
+
+  .namaa-banks-layout,
+  .namaa-investments-grid,
+  .namaa-knowledge-grid,
+  .namaa-decisions-layout,
+  .namaa-observatory-layout,
+  .namaa-lab-layout,
+  .namaa-settings-layout {
+    gap:12px!important;
+  }
+
+  .namaa-banks-team,
+  .namaa-banks-dashboard,
+  .namaa-banks-goals,
+  .namaa-investments-chat,
+  .namaa-investments-dashboard,
+  .namaa-investments-followup,
+  .namaa-knowledge-nav,
+  .namaa-knowledge-main,
+  .namaa-knowledge-review,
+  .namaa-decisions-feed,
+  .namaa-decisions-side,
+  .namaa-observatory-main,
+  .namaa-observatory-side,
+  .namaa-lab-dashboard,
+  .namaa-lab-center,
+  .namaa-lab-side,
+  .namaa-settings-nav,
+  .namaa-settings-section {
+    min-height:0!important;
+    padding:14px!important;
+    background:var(--namaa-wide-card)!important;
+    border-color:var(--namaa-wide-border)!important;
+  }
+
+  .namaa-investments-section-title {
+    padding-bottom:10px!important;
+    border-bottom-color:var(--namaa-wide-border)!important;
+  }
+
+  .namaa-investments-section-title h2 {
+    color:var(--namaa-wide-text)!important;
+  }
+
+  .namaa-investments-section-title p {
+    color:var(--namaa-wide-gold)!important;
+  }
+
+  .namaa-banks-kpis,
+  .namaa-decisions-kpis,
+  .namaa-observatory-kpis,
+  .namaa-lab-kpis,
+  .namaa-settings-summary-grid,
+  .namaa-settings-control-grid {
+    gap:8px!important;
+  }
+
+  .namaa-banks-kpis article,
+  .namaa-decisions-kpis article,
+  .namaa-observatory-kpis article,
+  .namaa-lab-kpis article,
+  .namaa-settings-summary-grid article,
+  .namaa-settings-control-grid a {
+    padding:12px!important;
+    background:var(--namaa-wide-card-strong)!important;
+    border-color:var(--namaa-wide-border)!important;
+  }
+
+  .namaa-investments-empty,
+  .namaa-banks-empty,
+  .namaa-decisions-empty,
+  .namaa-observatory-empty,
+  .namaa-lab-empty {
+    min-height:140px!important;
+    margin:14px 0!important;
+    padding:18px!important;
+    background:var(--namaa-wide-green-soft-2)!important;
+    border-color:var(--namaa-wide-border)!important;
+  }
+
+  .namaa-investments-participants span,
+  .namaa-investments-chat-note,
+  .namaa-knowledge-summary,
+  .namaa-lab-version-card,
+  .namaa-settings-impact-note {
+    background:var(--namaa-wide-gold-soft)!important;
+    border-color:color-mix(in srgb,var(--namaa-wide-gold) 60%,var(--namaa-wide-border))!important;
+    color:var(--namaa-wide-text)!important;
+  }
+
+  .namaa-knowledge-nav nav a,
+  .namaa-knowledge-cards a,
+  .namaa-knowledge-review > article,
+  .namaa-decisions-list article,
+  .namaa-decisions-side li,
+  .namaa-observatory-grid article,
+  .namaa-observatory-side > article,
+  .namaa-lab-item,
+  .namaa-lab-side > article,
+  .namaa-banks-team-list article,
+  .namaa-banks-goals-list article,
+  .namaa-banks-pending-list article,
+  .namaa-investments-dashboard-grid article,
+  .namaa-investments-followup-list article {
+    background:var(--namaa-wide-card-strong)!important;
+    border-color:var(--namaa-wide-border)!important;
+  }
+
+  .namaa-banks-selector a {
+    background:var(--namaa-wide-green-soft)!important;
+    color:var(--namaa-wide-text)!important;
+    border-color:var(--namaa-wide-border)!important;
+  }
+
+  .namaa-banks-selector a.is-active {
+    background:linear-gradient(135deg,var(--namaa-wide-gold),var(--namaa-wide-gold-soft))!important;
+    color:#173d32!important;
+    border-color:var(--namaa-wide-gold)!important;
+  }
+
+  .namaa-observatory-periods span,
+  .namaa-lab-shortcuts a,
+  .namaa-lab-item-actions a,
+  .namaa-lab-item-actions button,
+  .namaa-lab-side a,
+  .namaa-settings-nav nav a {
+    background:var(--namaa-wide-green-soft)!important;
+    color:var(--namaa-wide-text)!important;
+    border-color:var(--namaa-wide-border)!important;
+  }
+
+  .namaa-settings-nav {
+    position:sticky;
+    top:12px!important;
+  }
+
+  .namaa-table-wrap,
+  .desktopIntakeTableWrap {
+    box-shadow:none!important;
+  }
+
+  html[data-theme="dark"] .namaa-banks-selector a.is-active {
+    background:linear-gradient(135deg,#9e7d3b,#4d3f28)!important;
+    color:#f8edcd!important;
+  }
+
+  html[data-theme="dark"] .namaa-investments-participants span,
+  html[data-theme="dark"] .namaa-investments-chat-note,
+  html[data-theme="dark"] .namaa-knowledge-summary,
+  html[data-theme="dark"] .namaa-lab-version-card,
+  html[data-theme="dark"] .namaa-settings-impact-note {
+    background:var(--namaa-wide-gold-soft)!important;
+    color:var(--namaa-wide-text)!important;
+  }
+}
+
+@media (min-width:1024px) {
+  .mustaqbali-topbar.namaa-topbar {
+    grid-template-columns:auto minmax(320px,560px) auto!important;
+    padding-inline:16px!important;
+  }
+
+  .mustaqbali-global-search {
+    max-width:560px!important;
+  }
+
+  .namaa-wide-sidebar-inner {
+    gap:8px!important;
+  }
+
+  .namaa-wide-sidebar-brand {
+    min-height:72px!important;
+    padding:8px 12px!important;
+  }
+
+  .namaa-wide-sidebar-nav .mustaqbali-nav-section {
+    gap:4px!important;
+  }
+
+  .namaa-wide-sidebar-nav .mustaqbali-nav-section > a {
+    min-height:52px!important;
+  }
+}
