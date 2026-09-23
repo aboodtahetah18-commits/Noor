@@ -7975,3 +7975,209 @@
   position:absolute!important;
   z-index:2!important
 }
+
+
+/* Namaa mobile readability refinement — dashboard, governed pages, chat contrast */
+
+/* Dashboard and governed-page headers use the same approved Namaa identity. */
+.mobileFullPageHeader,
+.governedDocumentSheet .sheetHeader,
+.algorithmRoleSheet .sheetHeader{
+  position:sticky!important;
+  overflow:hidden!important;
+  isolation:isolate!important;
+  background:var(--namaa-green-900)!important;
+  color:var(--ux-text-inverse)!important;
+  border-bottom-color:color-mix(in srgb,var(--ux-text-inverse) 18%,transparent)!important
+}
+.mobileFullPageHeader::before,
+.governedDocumentSheet .sheetHeader::before,
+.algorithmRoleSheet .sheetHeader::before{
+  content:""!important;
+  position:absolute!important;
+  inset:-24%!important;
+  z-index:0!important;
+  pointer-events:none!important;
+  background-image:url('/brand/namaa-leaf.webp')!important;
+  background-repeat:no-repeat!important;
+  background-size:44% auto!important;
+  background-position:8% 50%!important;
+  opacity:.09!important;
+  transform:rotate(-8deg)!important
+}
+.mobileFullPageHeader>*,
+.governedDocumentSheet .sheetHeader>*,
+.algorithmRoleSheet .sheetHeader>*{
+  position:relative!important;
+  z-index:1!important
+}
+.mobileFullPageHeader strong,
+.mobileFullPageHeader small,
+.governedDocumentSheet .sheetHeader strong,
+.algorithmRoleSheet .sheetHeader strong{
+  color:var(--ux-text-inverse)!important
+}
+.mobileFullPageHeader small{opacity:.86!important}
+.mobileFullPageHeader button,
+.governedDocumentSheet .sheetHeader>button,
+.algorithmRoleSheet .sheetHeader>button{
+  border-color:color-mix(in srgb,var(--ux-text-inverse) 42%,transparent)!important;
+  background:color-mix(in srgb,var(--ux-text-inverse) 8%,transparent)!important;
+  color:var(--ux-text-inverse)!important;
+  box-shadow:none!important
+}
+
+/* Dashboard primary reading card follows the chat-header green treatment. */
+.dashboardHero{
+  position:relative!important;
+  overflow:hidden!important;
+  isolation:isolate!important;
+  background:var(--namaa-green-900)!important;
+  border-color:color-mix(in srgb,var(--namaa-green-700) 58%,var(--namaa-border))!important;
+  color:var(--ux-text-inverse)!important
+}
+.dashboardHero::before{
+  content:""!important;
+  position:absolute!important;
+  inset:-24%!important;
+  z-index:0!important;
+  pointer-events:none!important;
+  background-image:url('/brand/namaa-leaf.webp')!important;
+  background-repeat:no-repeat!important;
+  background-size:42% auto!important;
+  background-position:8% 50%!important;
+  opacity:.08!important;
+  transform:rotate(-8deg)!important
+}
+.dashboardHero>*{
+  position:relative!important;
+  z-index:1!important
+}
+.dashboardHero strong,
+.dashboardHero small,
+.dashboardHero>svg{
+  color:var(--ux-text-inverse)!important
+}
+.dashboardHero small{opacity:.82!important}
+.dashboardHero span{
+  background:color-mix(in srgb,var(--ux-text-inverse) 12%,transparent)!important;
+  color:var(--ux-text-inverse)!important;
+  border:1px solid color-mix(in srgb,var(--ux-text-inverse) 22%,transparent)!important
+}
+
+/* Governed actions stay compact and fit on one mobile row. */
+.governedQuickActions{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:var(--ux-space-1)!important
+}
+.governedQuickActions>button{
+  min-width:0!important;
+  min-height:52px!important;
+  padding:var(--ux-space-2)!important;
+  gap:var(--ux-space-1)!important;
+  justify-content:center!important;
+  border-radius:var(--ux-radius-3)!important;
+  overflow:hidden!important
+}
+.governedQuickActions>button>svg{
+  width:20px!important;
+  height:20px!important;
+  min-width:20px!important;
+  flex:0 0 20px!important
+}
+.governedQuickActions>button strong{
+  font-size:var(--ux-type-caption-size)!important;
+  line-height:1.25!important;
+  text-align:center!important;
+  overflow-wrap:anywhere!important
+}
+.algorithmRoleEditActions{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important
+}
+
+/* Role and governed clauses reserve only the width needed for Western numerals. */
+.algorithmRoleItem{
+  grid-template-columns:minmax(40px,auto) minmax(0,1fr)!important;
+  gap:var(--ux-space-1)!important
+}
+.algorithmRoleItem>span{
+  min-width:40px!important;
+  text-align:right!important
+}
+.governedClauseHeading{
+  gap:var(--ux-space-1)!important
+}
+.governedClauseHeading>span{
+  min-width:40px!important;
+  padding-inline:var(--ux-space-1)!important
+}
+
+/* Approved mark: transparent Namaa mark, never white-on-white. */
+.governedHeroIcon{
+  width:56px!important;
+  height:56px!important;
+  display:grid!important;
+  place-items:center!important;
+  overflow:hidden!important;
+  border-radius:var(--ux-radius-full)!important;
+  background:color-mix(in srgb,var(--namaa-green-700) 42%,transparent)!important;
+  border:1px solid color-mix(in srgb,var(--ux-text-inverse) 28%,transparent)!important
+}
+.governedHeroIcon img{
+  width:44px!important;
+  height:auto!important;
+  object-fit:contain!important
+}
+
+/* Chat bubbles: other party on the left in Namaa green; user on the right in a neutral surface. */
+.agentMessage{
+  align-self:flex-end!important;
+  margin-left:auto!important;
+  margin-right:var(--ux-space-0)!important;
+  background:var(--namaa-green-900)!important;
+  border-color:var(--namaa-green-900)!important;
+  color:var(--ux-text-inverse)!important
+}
+.agentMessage>p,
+.agentMessage>.messageIdentity strong{
+  color:var(--ux-text-inverse)!important
+}
+.agentMessage>.messageIdentity small,
+.agentMessage>.messageMeta{
+  color:color-mix(in srgb,var(--ux-text-inverse) 78%,transparent)!important
+}
+.agentMessage>.messageIdentity{
+  border-bottom-color:color-mix(in srgb,var(--ux-text-inverse) 22%,transparent)!important
+}
+.userMessage{
+  align-self:flex-start!important;
+  margin-left:var(--ux-space-0)!important;
+  margin-right:auto!important;
+  background:var(--namaa-card)!important;
+  border-color:var(--namaa-border-strong)!important;
+  color:var(--ux-text-primary)!important
+}
+
+@media (max-width:767px){
+  .governedQuickActions>button{
+    min-height:48px!important;
+    padding-inline:var(--ux-space-1)!important
+  }
+  .governedQuickActions>button strong{
+    font-size:var(--ux-type-caption-size)!important
+  }
+  .algorithmRoleItem{
+    padding-inline:var(--ux-space-2)!important
+  }
+}
+
+:global(html[data-theme="dark"]) .agentMessage{
+  background:var(--namaa-green-900)!important;
+  border-color:color-mix(in srgb,var(--namaa-green-700) 74%,var(--ux-border-emphasis))!important;
+  color:var(--ux-text-inverse)!important
+}
+:global(html[data-theme="dark"]) .userMessage{
+  background:var(--ux-card-bg)!important;
+  border-color:var(--ux-border-emphasis)!important;
+  color:var(--ux-text-primary)!important
+}
