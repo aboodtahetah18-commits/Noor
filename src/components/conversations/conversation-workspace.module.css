@@ -9992,3 +9992,123 @@
   background:none!important;
   background-image:none!important
 }
+
+
+/* Direct governance edit receipt: compact, image-free, brand-native system confirmation. */
+.directChangeReceipt{
+  display:grid;
+  gap:var(--ux-space-2);
+  margin-block-start:var(--ux-space-2);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-card);
+}
+.directChangeReceiptMain{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:var(--ux-space-2);
+}
+.directChangeReceiptIcon{
+  inline-size:36px;
+  block-size:36px;
+  display:grid;
+  place-items:center;
+  border-radius:var(--ux-radius-2);
+  color:var(--namaa-green-900);
+  background:color-mix(in srgb,var(--namaa-green-700) 10%,var(--namaa-card));
+  border:1px solid var(--namaa-border);
+}
+.directChangeReceiptCopy{
+  min-width:0;
+  display:grid;
+  gap:var(--ux-space-1);
+}
+.directChangeReceiptCopy strong{
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-body-sm-size);
+}
+.directChangeReceiptCopy small{
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  line-height:1.6;
+}
+.directChangeReceiptStatus{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-inline-size:42px;
+  min-block-size:28px;
+  padding-inline:var(--ux-space-2);
+  border-radius:var(--ux-radius-full);
+  color:var(--namaa-green-900);
+  background:color-mix(in srgb,var(--namaa-green-700) 10%,var(--namaa-card));
+  border:1px solid var(--namaa-border);
+  font-size:var(--ux-type-caption-size);
+  font-weight:900;
+}
+.directChangeDetailsButton{
+  min-block-size:40px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:var(--ux-space-2);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-2);
+  color:var(--namaa-green-900);
+  background:var(--namaa-surface-warm);
+  font:inherit;
+  font-weight:800;
+  cursor:pointer;
+}
+.directChangeDetails{
+  display:grid;
+  gap:var(--ux-space-2);
+  padding-block-start:var(--ux-space-2);
+  border-block-start:1px solid var(--namaa-border);
+}
+.directChangeDetails>div{
+  display:grid;
+  gap:var(--ux-space-1);
+}
+.directChangeDetails small{
+  color:var(--namaa-green-900);
+  font-size:var(--ux-type-caption-size);
+  font-weight:900;
+}
+.directChangeDetails p{
+  margin:var(--ux-space-0);
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-body-sm-size);
+  line-height:1.8;
+}
+
+
+/* FINAL AUTHORITY — institutional chat actions use the approved Namaa gold accent. */
+.page .agentMessage .directChangeReceiptIcon,
+.page .agentMessage .directChangeReceiptStatus,
+.page .agentMessage .directChangeDetailsButton{
+  background:var(--namaa-gold-500)!important;
+  border-color:var(--namaa-gold-500)!important;
+  color:var(--namaa-green-900)!important;
+  -webkit-text-fill-color:var(--namaa-green-900)!important
+}
+.page .agentMessage .directChangeReceiptIcon svg,
+.page .agentMessage .directChangeDetailsButton svg{
+  color:var(--namaa-green-900)!important;
+  stroke:var(--namaa-green-900)!important
+}
+:global(html[data-theme="dark"]) .page .agentMessage .directChangeReceiptStatus,
+:global(html[data-theme="dark"]) .page .agentMessage .directChangeDetailsButton,
+:global(html[data-theme="dark"]) .page .agentMessage .directChangeReceiptIcon{
+  background:var(--namaa-gold-500)!important;
+  border-color:var(--namaa-gold-500)!important;
+  color:var(--namaa-green-900)!important;
+  -webkit-text-fill-color:var(--namaa-green-900)!important
+}
+:global(html[data-theme="dark"]) .page .agentMessage .directChangeReceiptIcon svg,
+:global(html[data-theme="dark"]) .page .agentMessage .directChangeDetailsButton svg{
+  color:var(--namaa-green-900)!important;
+  stroke:var(--namaa-green-900)!important
+}

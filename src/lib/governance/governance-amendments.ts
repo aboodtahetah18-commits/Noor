@@ -107,55 +107,83 @@ function unitLinePrefix(unitType:GovernanceUnitType,unitRef:string){
 function escapeRegExp(value:string){
   return value.replace(/[.*+?^$()|[\]\\]/g,'\\$&').replace(/[{}]/g,'\\$&');
 }
+function normalizedComparableLine(value:string){
+  return value
+    .trim()
+    .replace(/^#{1,6}\s*/u,'')
+    .replace(/^[-*•]+\s*/u,'')
+    .replace(/\*\*|__|\*|_|\`/g,'')
+    .replace(/[A-Za-z][A-Za-z0-9_./:-]*/g,'')
+    .replace(/^\d+(?:\.\d+)*[.)-]?\s*/u,'')
+    .replace(/^(?:المادة|البند|الفقرة)\s+\d+(?:\.\d+)*\s*[:.)-]?\s*/u,'')
+    .replace(/\s+[—–-]\s+/g,'، ')
+    .replace(/\s{2,}/g,' ')
+    .replace(/\s+([،؛:.])/g,'$1')
+    .trim();
+}
+function findCurrentRuleLine(lines:string[],currentRule?:string|null){
+  const target=currentRule?.trim();
+  if(!target)return -1;
+  const exact=lines.findIndex(line=>line.trim()===target);
+  if(exact>=0)return exact;
+  const normalizedTarget=normalizedComparableLine(target);
+  if(!normalizedTarget)return -1;
+  return lines.findIndex(line=>normalizedComparableLine(line)===normalizedTarget);
+}
 function applyStructuredChange(content:string,change:{
   changeAction:GovernanceChangeAction;unitType:GovernanceUnitType;unitRef:string;parentRef?:string|null;
   currentRule?:string|null;proposedRule:string;
 }){
   const prefix=unitLinePrefix(change.unitType,change.unitRef);
+  const lines=content.replace(/\r/g,'').split('\n');
+  const currentRuleIndex=findCurrentRuleLine(lines,change.currentRule);
+  const prefixIndex=lines.findIndex(line=>line.trim().startsWith(prefix));
+
   if(change.changeAction==='DELETE'){
-    const lines=content.replace(/\r/g,'').split('\n');
-    let prefixIndex=lines.findIndex(line=>line.trim().startsWith(prefix));
-    if(prefixIndex<0&&change.unitType==='clause'){
+    let targetIndex=change.unitType==='paragraph'&&currentRuleIndex>=0?currentRuleIndex:prefixIndex;
+    if(targetIndex<0&&change.unitType==='clause'){
       const legacyPattern=new RegExp('^'+escapeRegExp(change.unitRef)+'(?:\\s|[.)-])');
-      prefixIndex=lines.findIndex(line=>legacyPattern.test(line.trim()));
+      targetIndex=lines.findIndex(line=>legacyPattern.test(line.trim()));
     }
-    if(prefixIndex>=0){
-      let endIndex=prefixIndex+1;
-      if(change.unitType==='article'){
-        while(endIndex<lines.length&&!/^المادة\s+\d+/u.test(lines[endIndex]?.trim()??''))endIndex+=1;
-      }else if(change.unitType==='clause'){
-        while(endIndex<lines.length&&!/^(?:المادة|البند)\s+\d+/u.test(lines[endIndex]?.trim()??'')
-          &&!/^\d+(?:\.\d+)+\s/u.test(lines[endIndex]?.trim()??''))endIndex+=1;
-      }
-      lines.splice(prefixIndex,endIndex-prefixIndex);
-      return lines.join('\n').replace(/\n{3,}/g,'\n\n');
+    if(targetIndex<0&&currentRuleIndex>=0)targetIndex=currentRuleIndex;
+    if(targetIndex<0)return content;
+
+    let endIndex=targetIndex+1;
+    if(change.unitType==='article'){
+      while(endIndex<lines.length&&!/^المادة\s+\d+/u.test(lines[endIndex]?.trim()??''))endIndex+=1;
+    }else if(change.unitType==='clause'){
+      while(endIndex<lines.length&&!/^(?:المادة|البند)\s+\d+/u.test(lines[endIndex]?.trim()??'')
+        &&!/^\d+(?:\.\d+)+\s/u.test(lines[endIndex]?.trim()??''))endIndex+=1;
     }
-    if(change.currentRule){
-      const exactIndex=lines.findIndex(line=>line.trim()===change.currentRule?.trim());
-      if(exactIndex>=0){
-        lines.splice(exactIndex,1);
-        return lines.join('\n').replace(/\n{3,}/g,'\n\n');
-      }
-      if(content.includes(change.currentRule))return content.replace(change.currentRule,'').replace(/\n{3,}/g,'\n\n');
-    }
-    return content;
+    lines.splice(targetIndex,endIndex-targetIndex);
+    return lines.join('\n').replace(/\n{3,}/g,'\n\n');
   }
 
   if(change.changeAction==='EDIT'){
+    if(change.unitType==='paragraph'&&currentRuleIndex>=0){
+      const sourceLine=lines[currentRuleIndex]??'';
+      lines[currentRuleIndex]=change.currentRule&&sourceLine.includes(change.currentRule)
+        ?sourceLine.replace(change.currentRule,change.proposedRule.trim())
+        :change.proposedRule.trim();
+      return lines.join('\n');
+    }
     const linePattern=new RegExp('^'+escapeRegExp(prefix)+'\\s*.*$','mu');
     if(linePattern.test(content))return content.replace(linePattern,prefix+' '+change.proposedRule.trim());
     if(change.currentRule&&content.includes(change.currentRule))return content.replace(change.currentRule,change.proposedRule.trim());
+    if(currentRuleIndex>=0){
+      lines[currentRuleIndex]=change.proposedRule.trim();
+      return lines.join('\n');
+    }
     return content;
   }
 
   const newLine=prefix+' '+change.proposedRule.trim();
-  if(content.split('\n').some(line=>line.trim().startsWith(prefix)))return content;
+  if(lines.some(line=>line.trim().startsWith(prefix)))return content;
   if(change.unitType==='article')return content.trimEnd()+'\n\n'+newLine+'\n';
 
   const parentPrefix=change.unitType==='clause'
     ?'المادة '+String(change.parentRef??'').replace(/^المادة\s+/u,'').trim()+':'
     :'البند '+String(change.parentRef??'').replace(/^البند\s+/u,'').trim()+':';
-  const lines=content.replace(/\r/g,'').split('\n');
   const parentIndex=lines.findIndex(line=>line.trim().startsWith(parentPrefix));
   if(parentIndex<0)return content.trimEnd()+'\n'+newLine+'\n';
 
@@ -174,13 +202,23 @@ export async function createGovernanceDirectChange(args:{
   userId:string;documentRef:string;documentTitle:string;roomKey:string;unitRef:string;parentRef?:string|null;
   changeAction:GovernanceChangeAction;unitType:GovernanceUnitType;currentRule?:string|null;proposedRule:string;rationale:string;
 }){
+  const duplicate=(await listGovernanceDirectChanges(args.userId)).find(item=>
+    item.documentRef===args.documentRef
+    &&item.unitRef===args.unitRef
+    &&item.unitType===args.unitType
+    &&item.changeAction===args.changeAction
+    &&(item.currentRule??'')===(args.currentRule??'')
+    &&item.proposedRule===args.proposedRule
+  );
+  if(duplicate)return {changeId:duplicate.changeId,status:'APPLIED' as const,unitRef:duplicate.unitRef,deduplicated:true};
+
   const now=new Date().toISOString();
   const changeId='DIR-'+createHash('sha256')
     .update(JSON.stringify({userId:args.userId,documentRef:args.documentRef,now,unitRef:args.unitRef,proposedRule:args.proposedRule}))
     .digest('hex').slice(0,16).toUpperCase();
   await appendEvent({
     userId:args.userId,roomKey:'central',senderKey:'central-governor',senderName:'محافظ بنك نماء المركزي',kind:'followup',
-    body:'تم تطبيق '+(args.changeAction==='ADD'?'إضافة':args.changeAction==='DELETE'?'حذف':'تعديل')+' مباشر على '+args.unitRef+' في «'+args.documentTitle+'».',
+    body:'تم '+(args.changeAction==='ADD'?'إضافة':args.changeAction==='DELETE'?'حذف':'تعديل')+' '+(args.unitType==='article'?'المادة':args.unitType==='clause'?'البند':'الفقرة')+' '+args.unitRef+' في «'+args.documentTitle+'» ضمن التحرير المباشر.',
     structured:{
       governance_direct_change:true,change_id:changeId,document_ref:args.documentRef,document_title:args.documentTitle,
       source_room:args.roomKey,unit_ref:args.unitRef,parent_ref:args.parentRef??null,change_action:args.changeAction,
@@ -220,12 +258,30 @@ export async function listGovernanceDirectChanges(userId:string):Promise<Governa
   });
 }
 
+function directChangeSemanticKey(change:GovernanceDirectChange){
+  return [
+    change.documentRef,
+    change.unitType,
+    change.unitRef,
+    change.changeAction,
+    change.parentRef??'',
+    change.currentRule??'',
+    change.proposedRule,
+  ].join('\u001f');
+}
+
 export async function applyGovernanceDirectChanges(userId:string,documentRef:string,content:string){
   const changes=(await listGovernanceDirectChanges(userId)).filter(item=>item.documentRef===documentRef);
-  return changes.reduce((next,change)=>applyStructuredChange(next,{
-    changeAction:change.changeAction,unitType:change.unitType,unitRef:change.unitRef,parentRef:change.parentRef,
-    currentRule:change.currentRule,proposedRule:change.proposedRule,
-  }),content);
+  const seen=new Set<string>();
+  return changes.reduce((next,change)=>{
+    const key=directChangeSemanticKey(change);
+    if(seen.has(key))return next;
+    seen.add(key);
+    return applyStructuredChange(next,{
+      changeAction:change.changeAction,unitType:change.unitType,unitRef:change.unitRef,parentRef:change.parentRef,
+      currentRule:change.currentRule,proposedRule:change.proposedRule,
+    });
+  },content);
 }
 
 export async function createGovernanceTypoCorrection(args:{

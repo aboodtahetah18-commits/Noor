@@ -10,7 +10,7 @@ import {
   applyGovernanceTypoCorrections,
 } from '@/lib/governance/governance-amendments';
 
-const headers={'Cache-Control':'private, max-age=300'};
+const headers={'Cache-Control':'private, no-store, max-age=0'};
 
 export async function GET(_request:Request,{params}:{params:Promise<{referenceCode:string}>}){
   const user=await getAuthenticatedUser();

@@ -123,6 +123,30 @@ function UserMessageExtras({
   </div>;
 }
 
+function governanceDirectMessageKey(message:Message){
+  const data=message.structured_data;
+  if(data?.governance_direct_change!==true)return null;
+  return [
+    String(data.document_ref??''),
+    String(data.unit_type??''),
+    String(data.unit_ref??''),
+    String(data.change_action??''),
+    String(data.parent_ref??''),
+    String(data.current_rule??''),
+    String(data.proposed_rule??''),
+  ].join('\u001f');
+}
+function dedupeGovernanceDirectMessages(items:Message[]){
+  const seen=new Set<string>();
+  return items.filter(message=>{
+    const key=governanceDirectMessageKey(message);
+    if(!key)return true;
+    if(seen.has(key))return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 function messageGroupKey(message:Message){
   if(message.sender_type==='user')return 'user';
   return message.sender_type+':'+String(message.sender_key??message.sender_name);
@@ -652,6 +676,40 @@ function RichStructuredMessageHero({
   </section>;
 }
 
+function DirectGovernanceChangeCard({data}:{data:Record<string,unknown>}){
+  const [expanded,setExpanded]=useState(false);
+  const action=String(data.change_action??'EDIT');
+  const unitType=String(data.unit_type??'paragraph');
+  const actionLabel=action==='ADD'?'إضافة':action==='DELETE'?'حذف':'تعديل';
+  const unitLabel=unitType==='article'?'المادة':unitType==='clause'?'البند':'الفقرة';
+  const unitRef=typeof data.unit_ref==='string'?data.unit_ref:'غير محدد';
+  const documentTitle=typeof data.document_title==='string'?data.document_title:'وثيقة الحوكمة';
+  const currentRule=typeof data.current_rule==='string'?data.current_rule:null;
+  const proposedRule=typeof data.proposed_rule==='string'?data.proposed_rule:null;
+  const rationale=typeof data.rationale==='string'?data.rationale:null;
+
+  return <section className={styles.directChangeReceipt} aria-label="إيصال التحرير المباشر">
+    <div className={styles.directChangeReceiptMain}>
+      <span className={styles.directChangeReceiptIcon} aria-hidden="true"><LucideIcon name={action==='DELETE'?'trash2':'pencil'} size={16}/></span>
+      <div className={styles.directChangeReceiptCopy}>
+        <strong>{actionLabel} {unitLabel} {unitRef}</strong>
+        <small>تم التطبيق مباشرة · لا يتطلب اعتمادًا حوكميًا</small>
+      </div>
+      <span className={styles.directChangeReceiptStatus}>تم</span>
+    </div>
+    <button type="button" className={styles.directChangeDetailsButton} onClick={()=>setExpanded(value=>!value)} aria-expanded={expanded}>
+      <LucideIcon name="listChecks" size={16}/>
+      <span>{expanded?'إخفاء التفاصيل':'عرض التفاصيل'}</span>
+    </button>
+    {expanded&&<div className={styles.directChangeDetails}>
+      <div><small>الوثيقة</small><p>{documentTitle}</p></div>
+      {currentRule&&<div><small>قبل</small><p>{currentRule}</p></div>}
+      {action!=='DELETE'&&proposedRule&&<div><small>{action==='ADD'?'المحتوى المضاف':'بعد التعديل'}</small><p>{proposedRule}</p></div>}
+      {rationale&&<div><small>الملاحظة</small><p>{rationale}</p></div>}
+    </div>}
+  </section>;
+}
+
 function StructuredFacts({data}:{data?:Record<string,unknown>}){
   if(!data)return null;
   const confidence=typeof data.confidence_percent==='number'?data.confidence_percent:null;
@@ -890,6 +948,7 @@ export function PersistentConversationWorkspace(){
   const [desktopContextVisible,setDesktopContextVisible]=useState(true);
   const activeRoom=useMemo(()=>rooms.find(r=>r.id===activeRoomId)??rooms[0],[activeRoomId]);
   const loading=loadedRoomId!==activeRoomId;
+  const visibleMessages=useMemo(()=>dedupeGovernanceDirectMessages(messages),[messages]);
 
   useEffect(()=>{
     queueMicrotask(()=>{
@@ -1238,9 +1297,9 @@ export function PersistentConversationWorkspace(){
     <div className={`${styles.workspace} ${styles.withoutRooms} ${desktopContextVisible?'':styles.withoutContext}`}>
       <main className={styles.chatPane}><header className={`${styles.chatHeader} ${activeRoom.id==='central'?styles.centralChatHeader:''}`}><div className={styles.chatHeaderShade} aria-hidden="true"/><div className={styles.desktopChatHeaderForeground}><div className={styles.chatIdentity}><RoomPortrait room={activeRoom} size={activeRoom.id==='central'?'lg':'md'}/><div><div className={styles.entityTitle}><strong>{chatRoleTitle(activeRoom)}</strong></div><small>{chatEntityTitle(activeRoom)}</small></div></div><span className={styles.chatHeaderBankMark} aria-hidden="true"><Image src={activeRoom.bankLogo} alt="" fill sizes="56px"/></span></div><div className={styles.chatHeaderForeground}><button type="button" className={styles.compactMenuButton} aria-label="فتح القائمة الجانبية" onClick={()=>setRoomsOpen(true)}><LucideIcon name="menu" size={20}/></button><RoomPortrait room={activeRoom} size="md"/><div className={styles.compactRoleTitle}><strong>{compactChatRoleTitle(activeRoom)}</strong></div><div className={styles.mobileTools}><button type="button" aria-label="لوحة الجهة" onClick={()=>setEntityDashboardRoom(activeRoomId)}><LucideIcon name="chart" size={20}/></button><button type="button" aria-label="معلومات الجهة" onClick={()=>{setDetailRoomId(activeRoomId);setDetailTab('role')}}><LucideIcon name="info" size={20}/></button></div></div></header>
         <div className={`${styles.routingNote} ${styles.specialistRoutingNote}`}><LucideIcon name="sparkles" size={16}/><span>{activeRoom.specialists}</span></div>
-        <div ref={messagesScrollRef} className={styles.messages} aria-live="polite">{activeRoom.building&&<span className={styles.messagesBuildingBackdrop} aria-hidden="true"><Image src={activeRoom.building} alt="" fill sizes="100vw"/></span>}{loading&&<p>جارٍ تحميل سجل المحادثة…</p>}{!loading&&!messages.length&&<article className={`${styles.message} ${styles.agentMessage}`}><p>{onboardingComplete===false?'أنا محافظ بنك نماء المركزي. سأبدأ معك بسؤال واحد في كل مرة حتى أبني ملفك من معلوماتك أنت، دون افتراضات.':'هذه بداية محادثتك مع '+activeRoom.title+'. اكتب سؤالك أو القرار الذي تريد دراسته.'}</p></article>}{messages.map((message,messageIndex)=>{
-  const previous=messages[messageIndex-1];
-  const next=messages[messageIndex+1];
+        <div ref={messagesScrollRef} className={styles.messages} aria-live="polite">{activeRoom.building&&<span className={styles.messagesBuildingBackdrop} aria-hidden="true"><Image src={activeRoom.building} alt="" fill sizes="100vw"/></span>}{loading&&<p>جارٍ تحميل سجل المحادثة…</p>}{!loading&&!visibleMessages.length&&<article className={`${styles.message} ${styles.agentMessage}`}><p>{onboardingComplete===false?'أنا محافظ بنك نماء المركزي. سأبدأ معك بسؤال واحد في كل مرة حتى أبني ملفك من معلوماتك أنت، دون افتراضات.':'هذه بداية محادثتك مع '+activeRoom.title+'. اكتب سؤالك أو القرار الذي تريد دراسته.'}</p></article>}{visibleMessages.map((message,messageIndex)=>{
+  const previous=visibleMessages[messageIndex-1];
+  const next=visibleMessages[messageIndex+1];
   const groupedWithPrevious=isSameConversationGroup(previous,message);
   const groupedWithNext=next?isSameConversationGroup(message,next):false;
   const groupPosition=groupedWithPrevious?(groupedWithNext?'middle':'end'):(groupedWithNext?'start':'single');
@@ -1253,7 +1312,9 @@ export function PersistentConversationWorkspace(){
     {!groupedWithPrevious&&message.sender_type==='user'&&<div className={styles.userMessageIdentity}>{profile?.image&&<span className={styles.userMessageAvatar} aria-hidden="true" style={{backgroundImage:`url("${profile.image.replace(/"/g,'')}")`}}/>}<span className={styles.userMessageIdentityCopy}><strong>{meetingUserDisplayName(profile?.name||message.sender_name)}</strong><small>{activeRoom.id==='council'?'صاحب المحفظة':'أنت'}</small></span></div>}
     {message.structured_data?.onboarding===true?<OnboardingMessageContent message={message} showStructuredAction={onboardingComplete===false&&message.sender_type!=='user'&&String(message.structured_data?.onboarding_step??'')===String(onboardingStep??'')&&STRUCTURED_INTAKE_STEPS.has(String(onboardingStep??''))} onOpenStructuredIntake={()=>setIntakeDismissed(false)}/>:<p className={styles.messageCopy}>{message.body}</p>}
     {message.sender_type==='user'&&<UserMessageExtras message={message} attachments={attachments}/>}
-    {message.message_kind!=='message'&&message.structured_data?.onboarding!==true&&<section className={`${styles.structuredCard} ${styles[`kind_${message.message_kind}`]}`}>
+    {message.structured_data?.governance_direct_change===true
+      ?<DirectGovernanceChangeCard data={message.structured_data}/>
+      :message.message_kind!=='message'&&message.structured_data?.onboarding!==true&&<section className={`${styles.structuredCard} ${styles[`kind_${message.message_kind}`]}`}>
       {!groupedWithPrevious&&<RichStructuredMessageHero room={activeRoom} kind={message.message_kind} data={message.structured_data} senderName={activeRoom.id==='central'?'محافظ بنك نماء المركزي':message.sender_name}/>} 
       <header className={styles.structuredCardHeader}><span aria-hidden="true"><LucideIcon name={messageKindIcon(message.message_kind)} size={16}/></span><strong>التفاصيل</strong></header>
       <OversightStructuredCards
