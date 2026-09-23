@@ -435,10 +435,10 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
 
         <section className={styles.governedQuickActions} aria-label="إجراءات المرجع">
           <button type="button" className={styles.governedTypoButton} onClick={()=>{setEditMode('typo');setFormOpen(true);setFeedback('')}}>
-            <LucideIcon name="pencil" size={20}/><span><strong>تعديل إملائي</strong></span>
+            <LucideIcon name="pencil" size={24}/><span><strong>تعديل إملائي</strong></span>
           </button>
           <button type="button" className={styles.governedGovernanceButton} onClick={()=>{setEditMode('governance');setFormOpen(true);setFeedback('')}}>
-            <LucideIcon name="landmark" size={20}/><span><strong>طلب تعديل</strong></span>
+            <LucideIcon name="landmark" size={24}/><span><strong>طلب تعديل</strong></span>
           </button>
           <button type="button" className={styles.governedPdfButton} onClick={downloadLocalCopy} disabled={!documentContent}>
             <LucideIcon name="receiptText" size={20}/><span><strong>تحميل PDF</strong></span>
