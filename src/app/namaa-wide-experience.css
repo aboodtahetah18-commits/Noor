@@ -1824,3 +1824,98 @@
     padding-inline-end:0 !important;
   }
 }
+
+
+@media (min-width:768px) {
+  /* Repeatable-data UX borrowed from mobile simplicity, translated to wide tables. */
+  .namaa-data-table .namaa-table-note {
+    display:block;
+    margin-top:5px;
+    color:var(--namaa-wide-muted);
+    font-size:11px;
+    font-weight:700;
+  }
+
+  .namaa-table-status {
+    display:inline-flex;
+    align-items:center;
+    min-height:28px;
+    padding:4px 9px;
+    border-radius:999px;
+    background:rgb(11 107 79 / 8%);
+    color:var(--namaa-wide-green);
+    font-size:11px;
+    font-weight:900;
+    white-space:nowrap;
+  }
+
+  .namaa-table-status.is-overdue,
+  .namaa-table-status.is-warning {
+    background:#fff1f1;
+    color:#991b1b;
+  }
+
+  .namaa-table-status.is-due {
+    background:#fff7e8;
+    color:#92400e;
+  }
+
+  .namaa-table-status.is-paid,
+  .namaa-table-status.is-active {
+    background:rgb(11 107 79 / 9%);
+    color:var(--namaa-wide-green);
+  }
+
+  .namaa-table-status.is-inactive,
+  .namaa-table-status.is-cancelled {
+    background:#f3f4f6;
+    color:#6b7280;
+  }
+
+  .namaa-data-table .p49-resource-actions {
+    gap:8px;
+    flex-wrap:wrap;
+  }
+
+  .namaa-data-table .p49-modal-trigger,
+  .namaa-data-table .secondary-link,
+  .namaa-data-table .primary-link {
+    min-height:38px;
+    padding-inline:10px;
+  }
+
+  .namaa-data-table .p49-trigger-content svg,
+  .namaa-collection-head .p49-trigger-content svg,
+  .p49-action-dialog .p49-ui-icon {
+    width:21px !important;
+    height:21px !important;
+  }
+
+  .p49-dialog-close .p49-ui-icon {
+    width:24px !important;
+    height:24px !important;
+  }
+
+  .p49-dialog-title-icon .p49-ui-icon {
+    width:26px !important;
+    height:26px !important;
+  }
+
+  .p49-action-dialog.is-xl .account-form-primary-grid,
+  .p49-action-dialog.is-lg .account-form-primary-grid {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:16px;
+  }
+
+  .p49-action-dialog.is-xl .account-form-actions,
+  .p49-action-dialog.is-lg .account-form-actions {
+    justify-content:flex-end;
+    padding-top:8px;
+  }
+
+  .p49-action-dialog.is-xl .account-form-actions .primary-button,
+  .p49-action-dialog.is-lg .account-form-actions .primary-button {
+    min-width:180px;
+    min-height:48px;
+  }
+}
