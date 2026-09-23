@@ -9,7 +9,7 @@ type PendingItem = {
   accountName:string;
   transactionDate?:string|null;
   direction:string;
-  amount:number|string;
+  amount:string;
   detectedKind:string;
   duplicateCandidate?:boolean;
   importId:string;
