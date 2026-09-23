@@ -4,7 +4,11 @@ export const dynamic='force-dynamic';
 import { NextResponse } from 'next/server';
 import { getAuthenticatedUser } from '@/auth/require-authenticated-user';
 import { getLocalGovernanceDocument } from '@/content/governance';
-import { applyGovernanceTypoCorrections } from '@/lib/governance/governance-amendments';
+import {
+  applyEffectiveGovernanceAmendments,
+  applyGovernanceDirectChanges,
+  applyGovernanceTypoCorrections,
+} from '@/lib/governance/governance-amendments';
 
 const headers={'Cache-Control':'private, max-age=300'};
 
@@ -15,7 +19,9 @@ export async function GET(_request:Request,{params}:{params:Promise<{referenceCo
   const decodedReference=decodeURIComponent(referenceCode);
   const document=getLocalGovernanceDocument(decodedReference);
   if(!document)return NextResponse.json({ok:false,error:'DOCUMENT_NOT_FOUND'},{status:404,headers});
-  const content=await applyGovernanceTypoCorrections(user.id,decodedReference,document.content);
+  let content=await applyGovernanceDirectChanges(user.id,decodedReference,document.content);
+  content=await applyGovernanceTypoCorrections(user.id,decodedReference,content);
+  content=await applyEffectiveGovernanceAmendments(user.id,decodedReference,content);
   return NextResponse.json({
     ok:true,
     document:{
