@@ -5753,7 +5753,7 @@
   font-size:var(--ux-type-body-sm-size)
 }
 .governedParagraphRow>p{
-  margin:0;
+  margin:var(--ux-space-0);
   color:var(--ux-text-secondary);
   font-size:var(--ux-type-body-sm-size);
   line-height:1.85
