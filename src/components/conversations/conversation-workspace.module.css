@@ -9577,8 +9577,7 @@
 }
 
 
-/* Namaa dark incoming-message typography authority */
-/* One authoritative dark-mode rule: incoming/counterparty message identity + primary copy are always white. */
+/* Namaa final contrast authority — dark mode governed surfaces + chat */
 :global(html[data-theme="dark"]) .page .chatPane .agentMessage .messageIdentity strong,
 :global(html[data-theme="dark"]) .page .chatPane .agentMessage .messageIdentity small,
 :global(html[data-theme="dark"]) .page .chatPane .agentMessage .messageCopy,
@@ -9591,20 +9590,52 @@
   font-weight:800!important
 }
 
-/* Composer in dark mode: bright green surface, bold white text/placeholder, no pattern. */
+/* Light-gold controls inside dark incoming messages use dark green, never white. */
+:global(html[data-theme="dark"]) .page .chatPane .agentMessage .onboardingQuestionHeader>b,
+:global(html[data-theme="dark"]) .page .chatPane .agentMessage .onboardingQuestionBox>span,
+:global(html[data-theme="dark"]) .page .chatPane .agentMessage .inlineIntakeButton,
+:global(html[data-theme="dark"]) .page .chatPane .agentMessage .inlineIntakeButton *{
+  color:var(--namaa-green-900)!important;
+  -webkit-text-fill-color:var(--namaa-green-900)!important
+}
+:global(html[data-theme="dark"]) .page .chatPane .agentMessage .onboardingQuestionIcon svg,
+:global(html[data-theme="dark"]) .page .chatPane .agentMessage .inlineIntakeButton svg{
+  color:var(--namaa-green-900)!important;
+  stroke:var(--namaa-green-900)!important
+}
+
+/* Progress percentage returns to the compact circle size; only the number gains emphasis. */
+.page .onboardingQuestionHeader>b{
+  width:56px!important;
+  min-width:56px!important;
+  max-width:56px!important;
+  height:56px!important;
+  min-height:56px!important;
+  padding:0!important;
+  display:grid!important;
+  place-items:center!important;
+  border-radius:var(--ux-radius-full)!important;
+  font-size:var(--ux-type-body-sm-size)!important;
+  font-weight:900!important;
+  line-height:1!important
+}
+
+/* Dark composer: same deep-green family as the dark message surface, no motif. */
 :global(html[data-theme="dark"]) .page .composer{
-  background:color-mix(in srgb,var(--namaa-green-700) 82%,var(--namaa-green-900))!important;
+  background:var(--namaa-green-900)!important;
   background-image:none!important
 }
 :global(html[data-theme="dark"]) .page .composer::before,
 :global(html[data-theme="dark"]) .page .composer::after{
   content:none!important;
   display:none!important;
-  background:none!important
+  background:none!important;
+  background-image:none!important
 }
 :global(html[data-theme="dark"]) .page .composer textarea{
-  background:color-mix(in srgb,var(--namaa-green-700) 76%,var(--namaa-green-900))!important;
+  background:color-mix(in srgb,var(--namaa-green-900) 88%,var(--ux-dark-card-bg))!important;
   background-image:none!important;
+  border-color:color-mix(in srgb,var(--ux-text-inverse) 20%,var(--namaa-green-900))!important;
   color:var(--ux-text-inverse)!important;
   -webkit-text-fill-color:var(--ux-text-inverse)!important;
   font-weight:900!important
@@ -9616,15 +9647,50 @@
   font-weight:900!important
 }
 
-/* Progress percentage: larger, wider, and easier to read. */
-.page .onboardingQuestionHeader>b{
-  min-width:88px!important;
-  min-height:58px!important;
-  display:inline-flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  padding-inline:var(--ux-space-4)!important;
-  font-size:var(--ux-type-card-title-size)!important;
-  font-weight:900!important;
-  line-height:1!important
+/* Dark governed/document surfaces: never dark text on dark surfaces or light text on light cards. */
+:global(html[data-theme="dark"]) .governedDocumentSheet,
+:global(html[data-theme="dark"]) .entityDetailSheet{
+  background:var(--ux-dark-page-bg)!important;
+  color:var(--ux-text-inverse)!important
+}
+:global(html[data-theme="dark"]) .governedDocumentSection,
+:global(html[data-theme="dark"]) .governedContentSection,
+:global(html[data-theme="dark"]) .governedLocalDocument,
+:global(html[data-theme="dark"]) .governedStructuredDocument,
+:global(html[data-theme="dark"]) .governedClauseRow,
+:global(html[data-theme="dark"]) .governedContentTable th,
+:global(html[data-theme="dark"]) .governedContentTable td,
+:global(html[data-theme="dark"]) .entityDetailPanel>section,
+:global(html[data-theme="dark"]) .entityReferenceList>button{
+  background:var(--ux-dark-card-bg)!important;
+  border-color:var(--ux-dark-border)!important;
+  color:var(--ux-text-inverse)!important
+}
+:global(html[data-theme="dark"]) .governedDocumentSection>summary,
+:global(html[data-theme="dark"]) .governedContentSection>summary,
+:global(html[data-theme="dark"]) .governedDocumentSection>summary *,
+:global(html[data-theme="dark"]) .governedContentSection>summary *,
+:global(html[data-theme="dark"]) .governedClauseRow *,
+:global(html[data-theme="dark"]) .governedContentSectionBody>p,
+:global(html[data-theme="dark"]) .governedContentTable th,
+:global(html[data-theme="dark"]) .governedContentTable td,
+:global(html[data-theme="dark"]) .entityDetailPanel>section>small,
+:global(html[data-theme="dark"]) .entityDetailPanel>section>p,
+:global(html[data-theme="dark"]) .entityReferenceCopy strong,
+:global(html[data-theme="dark"]) .entityReferenceCopy small,
+:global(html[data-theme="dark"]) .entityReferenceList>button>svg,
+:global(html[data-theme="dark"]) .entityReferenceIcon,
+:global(html[data-theme="dark"]) .entityReferenceIcon svg{
+  color:var(--ux-text-inverse)!important;
+  -webkit-text-fill-color:var(--ux-text-inverse)!important;
+  stroke:currentColor!important
+}
+:global(html[data-theme="dark"]) .entityReferenceIcon{
+  background:color-mix(in srgb,var(--namaa-green-700) 18%,var(--ux-dark-card-bg))!important;
+  border-color:var(--ux-dark-border)!important
+}
+:global(html[data-theme="dark"]) .governedDocumentSection[open],
+:global(html[data-theme="dark"]) .governedContentSection[open]{
+  background:var(--ux-dark-card-bg)!important;
+  border-color:color-mix(in srgb,var(--namaa-gold-500) 42%,var(--ux-dark-border))!important
 }
