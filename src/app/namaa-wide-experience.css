@@ -520,3 +520,346 @@
     grid-column: 1 / -1;
   }
 }
+
+
+.namaa-wide-only { display:none; }
+.namaa-mobile-only { display:block; }
+
+@media (min-width:768px) {
+  .namaa-wide-only { display:block; }
+  .namaa-mobile-only { display:none !important; }
+
+  .namaa-decisions-wide,
+  .namaa-observatory-wide {
+    padding:24px;
+    color:var(--namaa-wide-text);
+  }
+
+  .namaa-decisions-wide,
+  .namaa-observatory-wide {
+    width:min(100%,1540px);
+    margin-inline:auto;
+  }
+
+  .namaa-decisions-hero,
+  .namaa-observatory-hero {
+    padding:24px 28px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:24px;
+    margin-bottom:18px;
+  }
+
+  .namaa-decisions-hero p,
+  .namaa-observatory-hero p {
+    margin:0 0 4px;
+    color:var(--namaa-wide-gold);
+    font-size:12px;
+    font-weight:800;
+  }
+
+  .namaa-decisions-hero h1,
+  .namaa-observatory-hero h1 {
+    margin:0;
+    color:var(--namaa-wide-green);
+    font-size:clamp(30px,4vw,44px);
+  }
+
+  .namaa-decisions-hero span,
+  .namaa-observatory-hero span {
+    display:block;
+    margin-top:8px;
+    color:var(--namaa-wide-muted);
+  }
+
+  .namaa-decisions-hero-actions,
+  .namaa-observatory-actions {
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+
+  .namaa-decisions-hero-actions a,
+  .namaa-observatory-actions a,
+  .namaa-observatory-empty a {
+    min-height:42px;
+    padding:0 14px;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    text-decoration:none;
+    font-weight:800;
+  }
+
+  .namaa-decisions-kpis,
+  .namaa-observatory-kpis {
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:12px;
+    margin-bottom:18px;
+  }
+
+  .namaa-decisions-kpis article,
+  .namaa-observatory-kpis article {
+    border:1px solid var(--namaa-wide-border);
+    border-radius:16px;
+    background:#fff;
+    padding:16px;
+    box-shadow:var(--namaa-wide-shadow);
+  }
+
+  .namaa-decisions-kpis span,
+  .namaa-observatory-kpis span {
+    color:var(--namaa-wide-muted);
+    font-size:12px;
+  }
+
+  .namaa-decisions-kpis strong,
+  .namaa-observatory-kpis strong {
+    display:block;
+    margin:4px 0;
+    color:var(--namaa-wide-green);
+    font-size:28px;
+  }
+
+  .namaa-decisions-kpis small,
+  .namaa-observatory-kpis small {
+    color:var(--namaa-wide-muted);
+  }
+
+  .namaa-decisions-layout,
+  .namaa-observatory-layout {
+    display:grid;
+    grid-template-columns:minmax(0,2fr) minmax(260px,.8fr);
+    gap:18px;
+    align-items:start;
+  }
+
+  .namaa-decisions-feed,
+  .namaa-decisions-side,
+  .namaa-observatory-main,
+  .namaa-observatory-side,
+  .namaa-observatory-empty {
+    padding:18px;
+  }
+
+  .namaa-decisions-list {
+    display:grid;
+    gap:12px;
+    margin-top:16px;
+  }
+
+  .namaa-decisions-list article {
+    display:grid;
+    grid-template-columns:minmax(130px,.6fr) minmax(0,1.7fr) minmax(150px,.7fr);
+    gap:16px;
+    align-items:center;
+    padding:15px;
+    border:1px solid var(--namaa-wide-border);
+    border-radius:14px;
+    background:#fff;
+  }
+
+  .namaa-decisions-list article.is-warning {
+    border-color:#f5c56b;
+    background:#fffaf0;
+  }
+
+  .namaa-decisions-list article.is-critical {
+    border-color:#ef4444;
+    background:#fff7f7;
+  }
+
+  .namaa-decisions-status span,
+  .namaa-decisions-meta span {
+    display:inline-flex;
+    border-radius:999px;
+    padding:5px 9px;
+    background:rgb(11 107 79 / 7%);
+    color:var(--namaa-wide-green);
+    font-size:12px;
+    font-weight:800;
+  }
+
+  .namaa-decisions-status small,
+  .namaa-decisions-meta small {
+    display:block;
+    margin-top:7px;
+    color:var(--namaa-wide-muted);
+  }
+
+  .namaa-decisions-list h3 {
+    margin:0 0 6px;
+    color:var(--namaa-wide-text);
+  }
+
+  .namaa-decisions-list p {
+    margin:0 0 5px;
+    color:var(--namaa-wide-muted);
+  }
+
+  .namaa-decisions-meta {
+    display:grid;
+    justify-items:start;
+    gap:8px;
+  }
+
+  .namaa-decisions-meta a,
+  .namaa-observatory-side a {
+    color:var(--namaa-wide-green);
+    font-weight:800;
+    text-decoration:none;
+  }
+
+  .namaa-decisions-side ol {
+    display:grid;
+    gap:12px;
+    margin:16px 0 0;
+    padding:0;
+    list-style:none;
+    counter-reset:decision-step;
+  }
+
+  .namaa-decisions-side li {
+    counter-increment:decision-step;
+    position:relative;
+    padding:14px 50px 14px 14px;
+    border:1px solid var(--namaa-wide-border);
+    border-radius:14px;
+    background:#fff;
+  }
+
+  .namaa-decisions-side li::before {
+    content:counter(decision-step);
+    position:absolute;
+    right:14px;
+    top:14px;
+    width:26px;
+    height:26px;
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    background:var(--namaa-wide-green);
+    color:#fff;
+    font-weight:800;
+  }
+
+  .namaa-decisions-side li span {
+    display:block;
+    margin-top:5px;
+    color:var(--namaa-wide-muted);
+    line-height:1.7;
+  }
+
+  .namaa-observatory-grid {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px;
+    margin-top:16px;
+  }
+
+  .namaa-observatory-grid article {
+    border:1px solid var(--namaa-wide-border);
+    border-radius:14px;
+    padding:16px;
+    background:#fff;
+  }
+
+  .namaa-observatory-grid span {
+    display:block;
+    color:var(--namaa-wide-muted);
+    font-size:12px;
+  }
+
+  .namaa-observatory-grid strong {
+    display:block;
+    margin:5px 0;
+    color:var(--namaa-wide-green);
+    font-size:20px;
+  }
+
+  .namaa-observatory-grid strong.is-risk {
+    color:#b45309;
+  }
+
+  .namaa-observatory-grid small {
+    color:var(--namaa-wide-muted);
+  }
+
+  .namaa-observatory-trends {
+    margin-top:16px;
+    border-top:1px solid var(--namaa-wide-border);
+    padding-top:16px;
+  }
+
+  .namaa-observatory-periods {
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin:14px 0;
+  }
+
+  .namaa-observatory-periods span {
+    border-radius:999px;
+    padding:7px 12px;
+    background:rgb(212 175 107 / 11%);
+    border:1px solid rgb(212 175 107 / 32%);
+    color:#6d5326;
+    font-weight:800;
+  }
+
+  .namaa-observatory-trends p,
+  .namaa-observatory-side p,
+  .namaa-observatory-empty p {
+    color:var(--namaa-wide-muted);
+    line-height:1.8;
+  }
+
+  .namaa-observatory-side {
+    display:grid;
+    gap:12px;
+  }
+
+  .namaa-observatory-side > article {
+    border:1px solid var(--namaa-wide-border);
+    border-radius:14px;
+    padding:14px;
+    background:#fff;
+  }
+
+  .namaa-observatory-side > article.is-warning {
+    border-color:#f5c56b;
+    background:#fffaf0;
+  }
+
+  .namaa-observatory-empty {
+    text-align:center;
+    min-height:300px;
+    display:grid;
+    place-items:center;
+    align-content:center;
+    gap:10px;
+  }
+}
+
+@media (min-width:768px) and (max-width:1023px) {
+  .namaa-decisions-wide,
+  .namaa-observatory-wide {
+    padding:16px;
+  }
+
+  .namaa-decisions-kpis,
+  .namaa-observatory-kpis {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .namaa-decisions-layout,
+  .namaa-observatory-layout {
+    grid-template-columns:1fr;
+  }
+
+  .namaa-decisions-list article {
+    grid-template-columns:1fr;
+  }
+}
