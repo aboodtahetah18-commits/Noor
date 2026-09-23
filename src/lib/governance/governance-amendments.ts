@@ -163,13 +163,13 @@ export async function createGovernanceDirectChange(args:{
 
 export async function listGovernanceDirectChanges(userId:string):Promise<GovernanceDirectChange[]>{
   const sql=getRawSql();
-  const rows=await sql\`
+  const rows=await sql`
     select structured_data,created_at
     from public.conversation_messages
-    where user_id=\${userId}::uuid
+    where user_id=${userId}::uuid
       and structured_data->>'governance_direct_change'='true'
     order by created_at asc
-  \`;
+  `;
   return rows.map(row=>{
     const data=record(row.structured_data)??{};
     return {
