@@ -11078,3 +11078,124 @@
     min-width:780px!important;
   }
 }
+
+
+/* ========================================================================== */
+/* FINAL MODAL AUTHORITY — portal-based record editor                          */
+/* Prevents ancestor clipping, double scrollbars and horizontal overflow.      */
+/* ========================================================================== */
+@media (min-width:768px){
+  .mobileRecordEditorOverlay{
+    position:fixed!important;
+    inset:0!important;
+    width:100vw!important;
+    height:100dvh!important;
+    overflow:hidden!important;
+    z-index:2147483000!important;
+    isolation:isolate!important;
+    pointer-events:auto!important;
+    display:grid!important;
+    place-items:center!important;
+    padding:clamp(10px,2vw,24px)!important;
+    box-sizing:border-box!important;
+  }
+
+  .mobileRecordEditorScrim{
+    position:absolute!important;
+    inset:0!important;
+    width:100%!important;
+    height:100%!important;
+    z-index:0!important;
+    border:0!important;
+    margin:0!important;
+    padding:0!important;
+    background:rgb(7 43 33 / 64%)!important;
+    backdrop-filter:blur(6px)!important;
+  }
+
+  .mobileRecordEditorSheet,
+  .mobileRecordEditorSheetCompact{
+    position:relative!important;
+    inset:auto!important;
+    top:auto!important;
+    right:auto!important;
+    bottom:auto!important;
+    left:auto!important;
+    transform:none!important;
+    z-index:1!important;
+    width:min(1180px,calc(100vw - 48px))!important;
+    max-width:calc(100vw - 48px)!important;
+    height:min(860px,calc(100dvh - 48px))!important;
+    max-height:calc(100dvh - 48px)!important;
+    min-width:0!important;
+    min-height:0!important;
+    margin:0!important;
+    overflow:hidden!important;
+    display:grid!important;
+    grid-template-rows:auto minmax(0,1fr) auto!important;
+    box-sizing:border-box!important;
+    border:1px solid var(--namaa-wide-border)!important;
+    border-radius:22px!important;
+    background:var(--namaa-wide-card)!important;
+    box-shadow:0 32px 110px rgb(0 0 0 / 36%)!important;
+  }
+
+  .mobileRecordEditorHeader{
+    min-width:0!important;
+    overflow:hidden!important;
+    box-sizing:border-box!important;
+  }
+
+  .mobileRecordEditorBody{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    min-height:0!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    scrollbar-gutter:stable!important;
+    overscroll-behavior:contain!important;
+    box-sizing:border-box!important;
+  }
+
+  .mobileRecordEditorBody > *,
+  .mobileRecordEditorBody label,
+  .mobileRecordEditorBody :where(input,select,textarea,button){
+    min-width:0!important;
+    max-width:100%!important;
+    box-sizing:border-box!important;
+  }
+
+  .mobileRecordEditorActions{
+    position:relative!important;
+    inset:auto!important;
+    width:100%!important;
+    min-width:0!important;
+    overflow:hidden!important;
+    box-sizing:border-box!important;
+    background:var(--namaa-wide-card-strong)!important;
+    border-top:1px solid var(--namaa-wide-border)!important;
+  }
+
+  .mobileRecordEditorActions button{
+    min-width:0!important;
+    width:100%!important;
+    max-width:100%!important;
+    box-sizing:border-box!important;
+  }
+}
+
+@media (min-width:768px) and (max-width:1023px){
+  .mobileRecordEditorOverlay{
+    padding:10px!important;
+  }
+
+  .mobileRecordEditorSheet,
+  .mobileRecordEditorSheetCompact{
+    width:calc(100vw - 20px)!important;
+    max-width:calc(100vw - 20px)!important;
+    height:calc(100dvh - 20px)!important;
+    max-height:calc(100dvh - 20px)!important;
+    border-radius:18px!important;
+  }
+}
