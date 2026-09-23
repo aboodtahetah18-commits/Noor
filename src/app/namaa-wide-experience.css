@@ -1,0 +1,166 @@
+/*
+ * Namaa wide experience contract
+ * Scope: tablet (>=768px), laptop and desktop only.
+ * Mobile (<768px) is intentionally untouched. Do not place mobile overrides here.
+ */
+
+@media (min-width: 768px) {
+  :root {
+    --namaa-wide-green: #0b6b4f;
+    --namaa-wide-green-2: #189f7f;
+    --namaa-wide-gold: #d4af6b;
+    --namaa-wide-action-gold: #fcaa30;
+    --namaa-wide-surface: #faf9f4;
+    --namaa-wide-card: #ffffff;
+    --namaa-wide-text: #1f2937;
+    --namaa-wide-muted: #61758a;
+    --namaa-wide-border: #dce6e0;
+    --namaa-wide-radius: 18px;
+    --namaa-wide-shadow: 0 14px 36px rgb(31 41 55 / 7%);
+  }
+
+  .protected-app-shell {
+    background:
+      radial-gradient(circle at 12% 8%, rgb(212 175 107 / 8%), transparent 28rem),
+      var(--namaa-wide-surface);
+  }
+
+  .namaa-wide-sidebar {
+    border-inline-start: 1px solid var(--namaa-wide-border);
+    background:
+      linear-gradient(180deg, rgb(11 107 79 / 98%), rgb(7 78 59 / 99%));
+    color: #fff;
+  }
+
+  .namaa-wide-sidebar-inner {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .namaa-wide-sidebar-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 88px;
+    padding: 14px 18px 8px;
+    border-bottom: 1px solid rgb(255 255 255 / 12%);
+  }
+
+  .namaa-wide-sidebar-brand img {
+    max-width: 132px;
+    max-height: 58px;
+    object-fit: contain;
+  }
+
+  .namaa-wide-sidebar-nav {
+    flex: 1;
+  }
+
+  .namaa-wide-sidebar-nav .mustaqbali-nav-section > p {
+    color: rgb(255 255 255 / 66%);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .02em;
+    margin: 0 0 8px;
+  }
+
+  .namaa-wide-sidebar-nav .mustaqbali-nav-section > a {
+    min-height: 46px;
+    border-radius: 13px;
+    color: rgb(255 255 255 / 90%);
+    transition: background-color .18s ease, color .18s ease, transform .18s ease;
+  }
+
+  .namaa-wide-sidebar-nav .mustaqbali-nav-section > a:hover {
+    background: rgb(255 255 255 / 9%);
+    color: #fff;
+  }
+
+  .namaa-wide-sidebar-nav .mustaqbali-nav-section > a.is-active {
+    background: linear-gradient(135deg, rgb(212 175 107 / 95%), rgb(252 170 48 / 85%));
+    color: #163a31;
+    box-shadow: 0 8px 22px rgb(0 0 0 / 12%);
+  }
+
+  .namaa-wide-sidebar-nav .mustaqbali-nav-icon {
+    color: currentColor;
+  }
+
+  .namaa-wide-tablet {
+    border-bottom: 1px solid var(--namaa-wide-border);
+    background: rgb(250 249 244 / 96%);
+    backdrop-filter: blur(16px);
+  }
+
+  .namaa-wide-tablet-nav {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(11 107 79 / 28%) transparent;
+  }
+
+  .namaa-wide-tablet-nav a {
+    white-space: nowrap;
+  }
+
+  .namaa-wide-tablet-nav a.is-active {
+    color: var(--namaa-wide-green);
+    border-color: var(--namaa-wide-gold);
+    background: rgb(11 107 79 / 7%);
+  }
+
+  .namaa-wide-page,
+  .namaa-wide-card,
+  .namaa-wide-panel {
+    border-color: var(--namaa-wide-border);
+  }
+
+  .namaa-wide-card,
+  .namaa-wide-panel {
+    background: var(--namaa-wide-card);
+    border: 1px solid var(--namaa-wide-border);
+    border-radius: var(--namaa-wide-radius);
+    box-shadow: var(--namaa-wide-shadow);
+  }
+
+  .namaa-wide-accent {
+    color: var(--namaa-wide-green);
+  }
+
+  .namaa-wide-action {
+    background: var(--namaa-wide-green);
+    color: #fff;
+    border: 1px solid var(--namaa-wide-green);
+    border-radius: 12px;
+  }
+
+  .namaa-wide-action-secondary {
+    color: #6d5326;
+    border: 1px solid rgb(212 175 107 / 72%);
+    background: rgb(212 175 107 / 11%);
+    border-radius: 12px;
+  }
+
+  .namaa-wide-risk-critical {
+    border-color: #ef4444;
+    background: #fff7f7;
+    color: #991b1b;
+  }
+
+  .namaa-wide-risk-warning {
+    border-color: #f59e0b;
+    background: #fffaf0;
+    color: #92400e;
+  }
+}
+
+/* Desktop/laptop-specific refinements. */
+@media (min-width: 1024px) {
+  .namaa-wide-sidebar-brand {
+    min-height: 104px;
+  }
+
+  .namaa-wide-sidebar-nav .mustaqbali-nav-section > a {
+    min-height: 48px;
+  }
+}
