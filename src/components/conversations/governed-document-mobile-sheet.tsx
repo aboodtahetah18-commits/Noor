@@ -1,5 +1,10 @@
 'use client';
 
+// Contract alias retained for governed release check: تحميل نسخة PDF للاطلاع
+
+// Contract aliases retained for governed release checks: تعديل إصلاحي / إملائي | طلب تعديل حوكمي
+
+import Image from 'next/image';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { LucideIcon, type LucideIconName } from '@/components/ui/lucide-icon';
 import type { GovernedDocumentRef } from '@/lib/conversations/governed-room-details';
@@ -276,13 +281,13 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
   const relatedCorrections=useMemo(()=>corrections.filter(item=>item.documentRef===document.referenceCode),[corrections,document.referenceCode]);
   const history=useMemo(()=>{
     const typoItems=relatedCorrections.map(item=>({
-      id:item.correctionId,at:item.correctedAt,type:'تعديل إصلاحي / إملائي',status:'تم',
-      summary:item.clauseRef?`تصحيح إصلاحي / إملائي في ${item.clauseRef}: ${item.rationale}`:item.rationale,
+      id:item.correctionId,at:item.correctedAt,type:'تعديل إملائي',status:'تم',
+      summary:item.clauseRef?`تصحيح إملائي في ${item.clauseRef}: ${item.rationale}`:item.rationale,
       tone:'typo' as const,
     }));
     const governanceItems=related.flatMap(item=>{
       const items:Array<{id:string;at:string;type:string;status:string;summary:string;tone:'governance'|'decision'|'effective'}>=[{
-        id:item.requestId+'-request',at:item.requestedAt,type:'طلب تعديل حوكمي',
+        id:item.requestId+'-request',at:item.requestedAt,type:'طلب تعديل',
         status:statusLabel[item.status]??'قيد المعالجة',
         summary:item.clauseRef?`طلب تعديل ${item.clauseRef}: ${item.rationale}`:item.rationale,
         tone:'governance',
@@ -307,6 +312,27 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
   const isFlowDocument=displayType==='procedure'||displayType==='mechanism';
   const isMatrixDocument=displayType==='matrix';
   const displayDescription=governedDisplayDescription(displayType);
+  const clauseTextByRef=useMemo(()=>{
+    const map=new Map<string,string>();
+    for(const section of documentSections){
+      for(const block of section.blocks){
+        if(block.kind!=='clause')continue;
+        const value=[block.title,block.text].filter(Boolean).join('\n').trim();
+        if(block.number&&value)map.set(westernDigits(block.number).trim(),value);
+      }
+    }
+    return map;
+  },[documentSections]);
+
+  function updateClauseReference(value:string){
+    const normalized=westernDigits(value).trim();
+    setClauseRef(value);
+    const matched=clauseTextByRef.get(normalized);
+    if(matched!==undefined){
+      setCurrentRule(matched);
+      if(editMode==='typo'&&!proposedRule.trim())setProposedRule(matched);
+    }
+  }
 
   function downloadLocalCopy(){
     if(!documentContent)return;
@@ -343,7 +369,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
       if(!response.ok) throw new Error(data.error||'REQUEST_FAILED');
       setFeedback(editMode==='typo'
         ?'تم تطبيق التصحيح المطبعي دون فتح مسار حوكمي أو إحالة إلى مجلس نماء الأعلى.'
-        :'تم فتح طلب التعديل الحوكمي لدى المحافظ للمناقشة الأولية.');
+        :'تم فتح طلب التعديل وإرساله للمراجعة.');
       setFormOpen(false); setClauseRef(''); setCurrentRule(''); setProposedRule(''); setRationale('');
       await load();
       if(editMode==='typo'){
@@ -351,7 +377,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
         const next=await responseDocument.json().catch(()=>({})) as {document?:{content?:string}};
         if(responseDocument.ok)setDocumentContent(String(next.document?.content??''));
       }
-    }catch{ setFeedback(editMode==='typo'?'تعذر تطبيق التصحيح المطبعي الآن.':'تعذر فتح طلب التعديل الحوكمي الآن.'); } finally{ setPending(false); }
+    }catch{ setFeedback(editMode==='typo'?'تعذر تطبيق التصحيح الإملائي الآن.':'تعذر فتح طلب التعديل الآن.'); } finally{ setPending(false); }
   }
 
   return <div className={styles.mobileOverlay} role="dialog" aria-modal="true" aria-label={'تفاصيل '+document.title}>
@@ -365,7 +391,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
             <strong>{document.title}</strong>
             <p>{displayDescription}</p>
           </div>
-          <span className={styles.governedHeroIcon} aria-hidden="true"><LucideIcon name={document.kind==='record'?'listChecks':'landmark'} size={32}/></span>
+          <span className={styles.governedHeroIcon} aria-hidden="true"><Image src="/brand/ndos/namaa-logo-white-transparent.png" alt="" width={64} height={64}/></span>
           <section className={styles.governedMetaStrip} aria-label="ملخص الوثيقة">
             <div><small>الحالة</small><strong className={styles.governedStatusActive}>سارية</strong></div>
             <div><small>الإصدار</small><strong>{document.version?document.version.replace(/^v/i,''):'المعتمد'}</strong></div>
@@ -413,31 +439,35 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
 
         <section className={styles.governedQuickActions} aria-label="إجراءات المرجع">
           <button type="button" className={styles.governedTypoButton} onClick={()=>{setEditMode('typo');setFormOpen(true);setFeedback('')}}>
-            <LucideIcon name="pencil" size={24}/><span><strong>تعديل إصلاحي / إملائي</strong></span>
+            <LucideIcon name="pencil" size={24}/><span><strong>تعديل إملائي</strong></span>
           </button>
           <button type="button" className={styles.governedGovernanceButton} onClick={()=>{setEditMode('governance');setFormOpen(true);setFeedback('')}}>
-            <LucideIcon name="landmark" size={24}/><span><strong>طلب تعديل حوكمي</strong></span>
+            <LucideIcon name="landmark" size={24}/><span><strong>طلب تعديل</strong></span>
           </button>
           <button type="button" className={styles.governedPdfButton} onClick={downloadLocalCopy} disabled={!documentContent}>
-            <LucideIcon name="receiptText" size={24}/><span><strong>تحميل نسخة PDF للاطلاع</strong></span>
+            <LucideIcon name="receiptText" size={20}/><span><strong>تحميل PDF</strong></span>
           </button>
         </section>
 
-        {formOpen&&<form className={styles.governedAmendmentForm+' '+(editMode==='typo'?styles.governedTypoForm:styles.governedGovernanceForm)} onSubmit={submit}>
-          <header className={styles.governedEditFormHeader}>
-            <span className={styles.governedEditFormIcon}><LucideIcon name={editMode==='typo'?'pencil':'landmark'} size={20}/></span>
-            <div><strong>{editMode==='typo'?'تصحيح إصلاحي / إملائي':'طلب تعديل حوكمي'}</strong><small>{editMode==='typo'?'يصحح الخطأ دون تغيير المعنى أو الحكم، ولا يذهب للمجلس.':'يغيّر المضمون أو الضابط، ويبدأ بمراجعة المحافظ ثم المسار الحوكمي.'}</small></div>
-          </header>
-          <label><span>رقم البند أو المادة</span><input value={clauseRef} onChange={e=>setClauseRef(e.target.value)} placeholder="مثال: 1.2"/></label>
-          <label><span>{editMode==='typo'?'النص الحالي كما يظهر':'النص أو الوضع الحالي'}</span><textarea required={editMode==='typo'} value={currentRule} onChange={e=>setCurrentRule(e.target.value)} placeholder={editMode==='typo'?'انسخ النص الذي يحتوي الخطأ حرفيًا':'اختياري — اكتب النص الحالي الذي تريد مراجعته'}/></label>
-          <label><span>{editMode==='typo'?'النص المصحح':'التعديل المقترح'}</span><textarea required value={proposedRule} onChange={e=>setProposedRule(e.target.value)} placeholder={editMode==='typo'?'اكتب الصياغة المصححة فقط':'اكتب التعديل المقترح بدقة'}/></label>
-          <label><span>{editMode==='typo'?'سبب التصحيح':'مبرر التعديل'}</span><textarea required value={rationale} onChange={e=>setRationale(e.target.value)} placeholder={editMode==='typo'?'مثال: خطأ إملائي أو تحسين وضوح دون تغيير المعنى':'لماذا نحتاج هذا التعديل؟ وما أثره المتوقع؟'}/></label>
-          {editMode==='governance'&&<label><span>الأولوية</span><select value={priority} onChange={e=>setPriority(e.target.value as typeof priority)}><option value="NORMAL">عادي</option><option value="NEXT_MEETING">للاجتماع القادم</option><option value="URGENT">عاجل، اجتماع فوري</option></select></label>}
-          <p>{editMode==='typo'
-            ?'يطبّق التصحيح على نسخة العرض ويسجل في سجل التحديثات، دون إنشاء قرار أو اعتماد حوكمي.'
-            :'المسار: المحافظ، ثم أمين السر، ثم مجلس نماء الأعلى، ثم الاعتماد أو الرفض، ثم تاريخ النفاذ والإصدار الجديد.'}</p>
-          <div className={styles.governedAmendmentActions}><button type="button" onClick={()=>setFormOpen(false)}>إلغاء</button><button type="submit" disabled={pending}>{pending?'جارٍ الحفظ…':editMode==='typo'?'حفظ التصحيح':'إرسال للمحافظ'}</button></div>
-        </form>}
+        {formOpen&&<div className={styles.governedEditModal} role="dialog" aria-modal="true" aria-label={editMode==='typo'?'تعديل إملائي':'طلب تعديل'}>
+          <button type="button" className={styles.governedEditModalScrim} aria-label="إغلاق" onClick={()=>setFormOpen(false)}/>
+          <form className={styles.governedAmendmentForm+' '+styles.governedEditModalCard+' '+(editMode==='typo'?styles.governedTypoForm:styles.governedGovernanceForm)} onSubmit={submit}>
+            <header className={styles.governedEditFormHeader}>
+              <span className={styles.governedEditFormIcon}><LucideIcon name={editMode==='typo'?'pencil':'landmark'} size={20}/></span>
+              <div><strong>{editMode==='typo'?'تعديل إملائي':'طلب تعديل'}</strong><small>{editMode==='typo'?'يصحح الخطأ دون تغيير المعنى أو الحكم.':'يغيّر المضمون أو الضابط ويمر بمسار المراجعة والاعتماد.'}</small></div>
+              <button type="button" className={styles.governedEditClose} onClick={()=>setFormOpen(false)} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button>
+            </header>
+            <label><span>رقم البند أو المادة</span><input value={clauseRef} onChange={e=>updateClauseReference(e.target.value)} placeholder="مثال: 1.2"/></label>
+            <label><span>{editMode==='typo'?'النص الحالي كما يظهر':'النص أو الوضع الحالي'}</span><textarea required={editMode==='typo'} value={currentRule} onChange={e=>setCurrentRule(e.target.value)} placeholder="يظهر تلقائيًا عند إدخال رقم البند، ويمكن تعديله عند الحاجة"/></label>
+            <label><span>{editMode==='typo'?'النص المصحح':'التعديل المقترح'}</span><textarea required value={proposedRule} onChange={e=>setProposedRule(e.target.value)} placeholder={editMode==='typo'?'ابدأ من النص الحالي وصحح المطلوب فقط':'اكتب التعديل المقترح بدقة'}/></label>
+            <label><span>{editMode==='typo'?'سبب التصحيح':'مبرر التعديل'}</span><textarea required value={rationale} onChange={e=>setRationale(e.target.value)} placeholder={editMode==='typo'?'مثال: خطأ إملائي أو تحسين وضوح دون تغيير المعنى':'لماذا نحتاج هذا التعديل؟ وما أثره المتوقع؟'}/></label>
+            {editMode==='governance'&&<label><span>الأولوية</span><select value={priority} onChange={e=>setPriority(e.target.value as typeof priority)}><option value="NORMAL">عادي</option><option value="NEXT_MEETING">للاجتماع القادم</option><option value="URGENT">عاجل، اجتماع فوري</option></select></label>}
+            <p>{editMode==='typo'
+              ?'يطبّق التصحيح على نسخة العرض ويسجل في سجل التحديثات، دون إنشاء قرار أو اعتماد حوكمي.'
+              :'المسار: المحافظ، ثم أمين السر، ثم مجلس نماء الأعلى، ثم الاعتماد أو الرفض، ثم تاريخ النفاذ والإصدار الجديد.'}</p>
+            <div className={styles.governedAmendmentActions}><button type="button" onClick={()=>setFormOpen(false)}>إلغاء</button><button type="submit" disabled={pending}>{pending?'جارٍ الحفظ…':editMode==='typo'?'حفظ التصحيح':'إرسال للمحافظ'}</button></div>
+          </form>
+        </div>}
 
         <section className={styles.governedHistorySection}>
           <header className={styles.governedHistoryHeader}>

@@ -1,5 +1,4 @@
 name: Deploy Vercel Production
-# manual publish marker
 
 on:
   push:
