@@ -10126,7 +10126,7 @@
   .workspaceHeader{
     min-height:92px;
     padding:20px 24px;
-    background:#fff;
+    background:var(--namaa-card);
     border-bottom-color:#dce6e0;
   }
 
@@ -10141,7 +10141,7 @@
   .workspace{
     grid-template-columns:minmax(220px,264px) minmax(520px,1fr) minmax(220px,280px);
     min-height:calc(100dvh - 225px);
-    background:#fff;
+    background:var(--namaa-card);
   }
 
   .workspace.withoutContext{
@@ -10149,13 +10149,13 @@
   }
 
   .roomsPane{
-    background:#fff;
+    background:var(--namaa-card);
     border-inline-end:1px solid #dce6e0;
     padding:16px;
   }
 
   .contextPane{
-    background:#fff;
+    background:var(--namaa-card);
     border-inline-start:1px solid #dce6e0;
     padding:16px;
   }
@@ -10212,7 +10212,7 @@
   .chatHeader{
     min-height:78px;
     padding-inline:18px;
-    background:#fff;
+    background:var(--namaa-card);
     border-bottom-color:#dce6e0;
   }
 
@@ -10228,7 +10228,7 @@
     border-radius:12px;
     overflow:hidden;
     border:1px solid #dce6e0;
-    background:#fff;
+    background:var(--namaa-card);
   }
 
   .routingNote{
@@ -10259,7 +10259,7 @@
   }
 
   .agentMessage{
-    background:#fff;
+    background:var(--namaa-card);
   }
 
   .userMessage{
@@ -10272,7 +10272,7 @@
     border-color:#dce6e0;
     border-radius:16px;
     box-shadow:0 10px 26px rgb(31 41 55 / 7%);
-    background:#fff;
+    background:var(--namaa-card);
   }
 
   .sendButton{
@@ -10287,7 +10287,7 @@
   .contextCard{
     border-color:#dce6e0;
     border-radius:14px;
-    background:#fff;
+    background:var(--namaa-card);
     box-shadow:0 8px 18px rgb(31 41 55 / 4%);
   }
 
@@ -10334,7 +10334,7 @@
     position:sticky;
     top:0;
     z-index:3;
-    background:#fff;
+    background:var(--namaa-card);
   }
 
   .roomDetailButton svg,
