@@ -10083,3 +10083,32 @@
   font-size:var(--ux-type-body-sm-size);
   line-height:1.8;
 }
+
+
+/* FINAL AUTHORITY — institutional chat actions use the approved Namaa gold accent. */
+.page .agentMessage .directChangeReceiptIcon,
+.page .agentMessage .directChangeReceiptStatus,
+.page .agentMessage .directChangeDetailsButton{
+  background:var(--namaa-gold-500)!important;
+  border-color:var(--namaa-gold-500)!important;
+  color:var(--namaa-green-900)!important;
+  -webkit-text-fill-color:var(--namaa-green-900)!important
+}
+.page .agentMessage .directChangeReceiptIcon svg,
+.page .agentMessage .directChangeDetailsButton svg{
+  color:var(--namaa-green-900)!important;
+  stroke:var(--namaa-green-900)!important
+}
+:global(html[data-theme="dark"]) .page .agentMessage .directChangeReceiptStatus,
+:global(html[data-theme="dark"]) .page .agentMessage .directChangeDetailsButton,
+:global(html[data-theme="dark"]) .page .agentMessage .directChangeReceiptIcon{
+  background:var(--namaa-gold-500)!important;
+  border-color:var(--namaa-gold-500)!important;
+  color:var(--namaa-green-900)!important;
+  -webkit-text-fill-color:var(--namaa-green-900)!important
+}
+:global(html[data-theme="dark"]) .page .agentMessage .directChangeReceiptIcon svg,
+:global(html[data-theme="dark"]) .page .agentMessage .directChangeDetailsButton svg{
+  color:var(--namaa-green-900)!important;
+  stroke:var(--namaa-green-900)!important
+}
