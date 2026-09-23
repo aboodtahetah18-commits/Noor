@@ -302,9 +302,7 @@ html[data-theme="dark"] .ux-table th { background:var(--ux-section-soft-blue) !i
   }
 }
 
-@media (min-width:768px) and (max-width:1023px) {
-  .page-shell { width:min(100%,var(--ux-container-form)); }
-}
+/* Tablet page width is owned by namaa-wide-experience.css. */
 
 @media (prefers-reduced-motion:reduce) {
   .card,
