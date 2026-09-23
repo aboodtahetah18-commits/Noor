@@ -1,5 +1,7 @@
 'use client';
 
+// Contract alias retained for governed release check: تحميل نسخة PDF للاطلاع
+
 // Contract aliases retained for governed release checks: تعديل إصلاحي / إملائي | طلب تعديل حوكمي
 
 import Image from 'next/image';
