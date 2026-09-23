@@ -123,6 +123,30 @@ function UserMessageExtras({
   </div>;
 }
 
+function governanceDirectMessageKey(message:Message){
+  const data=message.structured_data;
+  if(data?.governance_direct_change!==true)return null;
+  return [
+    String(data.document_ref??''),
+    String(data.unit_type??''),
+    String(data.unit_ref??''),
+    String(data.change_action??''),
+    String(data.parent_ref??''),
+    String(data.current_rule??''),
+    String(data.proposed_rule??''),
+  ].join('\u001f');
+}
+function dedupeGovernanceDirectMessages(items:Message[]){
+  const seen=new Set<string>();
+  return items.filter(message=>{
+    const key=governanceDirectMessageKey(message);
+    if(!key)return true;
+    if(seen.has(key))return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 function messageGroupKey(message:Message){
   if(message.sender_type==='user')return 'user';
   return message.sender_type+':'+String(message.sender_key??message.sender_name);
@@ -924,6 +948,7 @@ export function PersistentConversationWorkspace(){
   const [desktopContextVisible,setDesktopContextVisible]=useState(true);
   const activeRoom=useMemo(()=>rooms.find(r=>r.id===activeRoomId)??rooms[0],[activeRoomId]);
   const loading=loadedRoomId!==activeRoomId;
+  const visibleMessages=useMemo(()=>dedupeGovernanceDirectMessages(messages),[messages]);
 
   useEffect(()=>{
     queueMicrotask(()=>{
@@ -1272,14 +1297,14 @@ export function PersistentConversationWorkspace(){
     <div className={`${styles.workspace} ${styles.withoutRooms} ${desktopContextVisible?'':styles.withoutContext}`}>
       <main className={styles.chatPane}><header className={`${styles.chatHeader} ${activeRoom.id==='central'?styles.centralChatHeader:''}`}><div className={styles.chatHeaderShade} aria-hidden="true"/><div className={styles.desktopChatHeaderForeground}><div className={styles.chatIdentity}><RoomPortrait room={activeRoom} size={activeRoom.id==='central'?'lg':'md'}/><div><div className={styles.entityTitle}><strong>{chatRoleTitle(activeRoom)}</strong></div><small>{chatEntityTitle(activeRoom)}</small></div></div><span className={styles.chatHeaderBankMark} aria-hidden="true"><Image src={activeRoom.bankLogo} alt="" fill sizes="56px"/></span></div><div className={styles.chatHeaderForeground}><button type="button" className={styles.compactMenuButton} aria-label="فتح القائمة الجانبية" onClick={()=>setRoomsOpen(true)}><LucideIcon name="menu" size={20}/></button><RoomPortrait room={activeRoom} size="md"/><div className={styles.compactRoleTitle}><strong>{compactChatRoleTitle(activeRoom)}</strong></div><div className={styles.mobileTools}><button type="button" aria-label="لوحة الجهة" onClick={()=>setEntityDashboardRoom(activeRoomId)}><LucideIcon name="chart" size={20}/></button><button type="button" aria-label="معلومات الجهة" onClick={()=>{setDetailRoomId(activeRoomId);setDetailTab('role')}}><LucideIcon name="info" size={20}/></button></div></div></header>
         <div className={`${styles.routingNote} ${styles.specialistRoutingNote}`}><LucideIcon name="sparkles" size={16}/><span>{activeRoom.specialists}</span></div>
-        <div ref={messagesScrollRef} className={styles.messages} aria-live="polite">{activeRoom.building&&<span className={styles.messagesBuildingBackdrop} aria-hidden="true"><Image src={activeRoom.building} alt="" fill sizes="100vw"/></span>}{loading&&<p>جارٍ تحميل سجل المحادثة…</p>}{!loading&&!messages.length&&<article className={`${styles.message} ${styles.agentMessage}`}><p>{onboardingComplete===false?'أنا محافظ بنك نماء المركزي. سأبدأ معك بسؤال واحد في كل مرة حتى أبني ملفك من معلوماتك أنت، دون افتراضات.':'هذه بداية محادثتك مع '+activeRoom.title+'. اكتب سؤالك أو القرار الذي تريد دراسته.'}</p></article>}{messages.map((message,messageIndex)=>{
-  const previous=messages[messageIndex-1];
-  const next=messages[messageIndex+1];
+        <div ref={messagesScrollRef} className={styles.messages} aria-live="polite">{activeRoom.building&&<span className={styles.messagesBuildingBackdrop} aria-hidden="true"><Image src={activeRoom.building} alt="" fill sizes="100vw"/></span>}{loading&&<p>جارٍ تحميل سجل المحادثة…</p>}{!loading&&!visibleMessages.length&&<article className={`${styles.message} ${styles.agentMessage}`}><p>{onboardingComplete===false?'أنا محافظ بنك نماء المركزي. سأبدأ معك بسؤال واحد في كل مرة حتى أبني ملفك من معلوماتك أنت، دون افتراضات.':'هذه بداية محادثتك مع '+activeRoom.title+'. اكتب سؤالك أو القرار الذي تريد دراسته.'}</p></article>}{visibleMessages.map((message,messageIndex)=>{
+  const previous=visibleMessages[messageIndex-1];
+  const next=visibleMessages[messageIndex+1];
   const groupedWithPrevious=isSameConversationGroup(previous,message);
   const groupedWithNext=next?isSameConversationGroup(message,next):false;
   const groupPosition=groupedWithPrevious?(groupedWithNext?'middle':'end'):(groupedWithNext?'start':'single');
   const showTimeDivider=shouldShowConversationTimeDivider(previous,message);
-  const hasLaterAgentResponse=message.sender_type==='user'&&messages.slice(messageIndex+1).some(nextMessage=>nextMessage.sender_type!=='user');
+  const hasLaterAgentResponse=message.sender_type==='user'&&visibleMessages.slice(messageIndex+1).some(nextMessage=>nextMessage.sender_type!=='user');
   return <div key={message.id} className={styles.messageClusterItem}>
     {showTimeDivider&&<div className={styles.conversationTimeDivider} role="separator"><span>{formatConversationTimeDivider(message.created_at)}</span></div>}
     <article className={`${styles.message} ${message.sender_type==='user'?styles.userMessage:styles.agentMessage} ${groupedWithPrevious?styles.groupContinuation:styles.groupStart} ${groupedWithNext?styles.groupHasNext:styles.groupEnd} ${activeRoom.id==='council'&&message.sender_type!=='user'?councilSpeakerClass(message.sender_key):''}`} data-group-position={groupPosition}>
