@@ -214,7 +214,7 @@ function parseGovernedDocument(content:string):DocumentSection[]{
         beginSection(numbered?.[1]??String(fallbackSectionCounter+1),numbered?.[2]??heading);
       }else{
         fallbackClauseCounter+=1;
-        pushClause((current?.number??String(fallbackSectionCounter||1))+'.'+String(fallbackClauseCounter),'',normalizeHeadingText(heading));
+        pushClause(ensureSection().number+'.'+String(fallbackClauseCounter),'',normalizeHeadingText(heading));
       }
       continue;
     }
@@ -457,13 +457,13 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
                     <summary><span><LucideIcon name={sectionIcon(section.title,displayType)} size={16}/><strong>{'المادة ('+section.number+'): '+section.title}</strong></span></summary>
                     <div className={styles.governedContentSectionBody}>
                       <div className={styles.governedArticleAction}>
-                        <button type="button" onClick={()=>openUnitEditor('المادة '+section.number,section.title)}><LucideIcon name="pencil" size={15}/>تعديل المادة</button>
+                        <button type="button" onClick={()=>openUnitEditor('المادة '+section.number,section.title)}><LucideIcon name="pencil" size={16}/>تعديل المادة</button>
                       </div>
                       {section.blocks.map((block,blockIndex)=>block.kind==='paragraph'
                         ?<article className={styles.governedParagraphRow} key={'p-'+blockIndex}>
                           <div className={styles.governedUnitToolbar}>
                             <strong>{block.number?'الفقرة ('+block.number+')':'فقرة'}</strong>
-                            <button type="button" onClick={()=>openUnitEditor(block.number?'الفقرة '+block.number:'فقرة من المادة '+section.number,block.text)} aria-label="تعديل الفقرة"><LucideIcon name="pencil" size={14}/>تعديل</button>
+                            <button type="button" onClick={()=>openUnitEditor(block.number?'الفقرة '+block.number:'فقرة من المادة '+section.number,block.text)} aria-label="تعديل الفقرة"><LucideIcon name="pencil" size={16}/>تعديل</button>
                           </div>
                           <p>{block.text}</p>
                         </article>
@@ -471,7 +471,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
                           ?<article className={styles.governedClauseRow} key={'c-'+block.number+'-'+blockIndex}>
                             <div className={styles.governedUnitToolbar}>
                               <div className={styles.governedClauseHeading}><span>{'البند '+block.number}</span><strong>{block.title}</strong></div>
-                              <button type="button" onClick={()=>openUnitEditor('البند '+block.number,[block.title,block.text].filter(Boolean).join('\n'))} aria-label={'تعديل البند '+block.number}><LucideIcon name="pencil" size={14}/>تعديل</button>
+                              <button type="button" onClick={()=>openUnitEditor('البند '+block.number,[block.title,block.text].filter(Boolean).join('\n'))} aria-label={'تعديل البند '+block.number}><LucideIcon name="pencil" size={16}/>تعديل</button>
                             </div>
                             {block.text&&<p>{block.text}</p>}
                           </article>
