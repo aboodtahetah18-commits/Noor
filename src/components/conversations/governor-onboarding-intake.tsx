@@ -299,7 +299,7 @@ export function GovernorOnboardingIntake({
     <section className={styles.onboardingStageOverview} aria-label="مراحل التأسيس">
       <button type="button" className={styles.onboardingStageOverviewHeader} onClick={()=>setStagesOpen(open=>!open)} aria-expanded={stagesOpen}>
         <span>مراحل التأسيس</span>
-        <span className={styles.onboardingStageOverviewMeta}><strong>{currentStageIndex+1}/{INTAKE_STAGES.length}</strong><LucideIcon name={stagesOpen?'chevronUp':'chevronDown'} size={18}/></span>
+        <span className={styles.onboardingStageOverviewMeta}><strong>{currentStageIndex+1}/{INTAKE_STAGES.length}</strong><LucideIcon name={stagesOpen?'chevronUp':'chevronDown'} size={20}/></span>
       </button>
       {stagesOpen&&<ol className={styles.onboardingStageList}>
         {visibleStages.map((stage,windowIndex)=>{const index=stageWindowStart+windowIndex;return <li key={stage.key} className={index<currentStageIndex?styles.onboardingStageDone:index===currentStageIndex?styles.onboardingStageCurrent:styles.onboardingStageUpcoming}>
