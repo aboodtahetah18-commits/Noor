@@ -8415,3 +8415,208 @@
   background:var(--ux-card-bg)!important;
   background-color:var(--ux-card-bg)!important
 }
+
+
+/* Namaa precision pass — solid chat, crisp identity, edit modals */
+
+/* Persona images: keep the approved assets crisp at every presentation size. */
+.personaAvatar img,
+.entityTeamPortrait img,
+.algorithmRolePortraitImage,
+.messageIdentity img{
+  image-rendering:auto!important;
+  object-fit:cover!important;
+  object-position:center 18%!important;
+  filter:none!important;
+  opacity:1!important;
+  transform:translateZ(0)
+}
+.entityTeamPortrait,
+.algorithmRolePortrait,
+.personaAvatar{
+  overflow:hidden!important;
+  background:var(--namaa-card)!important;
+  box-shadow:none!important
+}
+
+/* One solid surface per chat bubble — no motif, tint, transparency or inherited image inside messages. */
+.agentMessage,
+.userMessage{
+  opacity:1!important;
+  background-image:none!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important
+}
+.agentMessage::before,
+.agentMessage::after,
+.userMessage::before,
+.userMessage::after,
+.agentMessage .onboardingMessageContent::before,
+.agentMessage .onboardingMessageContent::after,
+.userMessage .onboardingMessageContent::before,
+.userMessage .onboardingMessageContent::after{
+  content:none!important;
+  display:none!important;
+  background:none!important;
+  background-image:none!important
+}
+.agentMessage{
+  background:var(--namaa-green-900)!important;
+  border-color:color-mix(in srgb,var(--namaa-green-700) 68%,var(--namaa-green-900))!important
+}
+.userMessage{
+  background:var(--namaa-card)!important;
+  border-color:var(--namaa-border-strong)!important
+}
+.agentMessage .richMessageHero,
+.agentMessage .structuredCard,
+.agentMessage .onboardingQuestionCard,
+.agentMessage .onboardingQuestionBox,
+.agentMessage .onboardingQuestionReason,
+.agentMessage .goalAnalysisCard,
+.agentMessage .goalAnalysisCard>div>span{
+  background:transparent!important;
+  background-color:transparent!important;
+  background-image:none!important;
+  box-shadow:none!important
+}
+.agentMessage .onboardingQuestionCard,
+.agentMessage .onboardingQuestionBox,
+.agentMessage .onboardingQuestionReason{
+  border-color:color-mix(in srgb,var(--ux-text-inverse) 24%,transparent)!important
+}
+
+/* Accent indicators remain readable without introducing non-brand colors. */
+.agentMessage .onboardingQuestionIcon{
+  background:var(--namaa-cream)!important;
+  border-color:var(--namaa-gold-500)!important;
+  color:var(--namaa-green-900)!important
+}
+.agentMessage .onboardingQuestionIcon svg{
+  color:var(--namaa-green-900)!important
+}
+.agentMessage .onboardingQuestionHeader>b{
+  min-width:48px!important;
+  min-height:40px!important;
+  display:grid!important;
+  place-items:center!important;
+  border-radius:var(--ux-radius-full)!important;
+  background:var(--namaa-cream)!important;
+  border:1px solid var(--namaa-gold-500)!important;
+  color:var(--namaa-green-900)!important;
+  opacity:1!important
+}
+.agentMessage .onboardingQuestionBox>span{
+  display:inline-flex!important;
+  width:max-content!important;
+  padding:var(--ux-space-1) var(--ux-space-2)!important;
+  border-radius:var(--ux-radius-full)!important;
+  background:var(--namaa-cream)!important;
+  border:1px solid var(--namaa-gold-500)!important;
+  color:var(--namaa-green-900)!important;
+  opacity:1!important;
+  font-weight:900!important
+}
+.agentMessage .onboardingProgressTrack{
+  background:color-mix(in srgb,var(--ux-text-inverse) 28%,transparent)!important
+}
+.agentMessage .onboardingProgressTrack>span{
+  background:var(--namaa-gold-500)!important
+}
+
+/* Decorative identity motif: white-only, restrained, and rendered at a smaller native scale for sharper edges. */
+.chatHeader::before,
+.algorithmRoleHero::before,
+.onboardingIntakeHeader::before,
+.mobileRecordEditorHeader::before,
+.roomDetailHero::before,
+.entityDetailSheet .sheetHeader::before,
+.mobileFullPageHeader::before,
+.governedDocumentSheet .sheetHeader::before,
+.algorithmRoleSheet .sheetHeader::before,
+.dashboardHero::before{
+  background-image:url('/brand/namaa-leaf.webp')!important;
+  background-size:160px auto!important;
+  background-repeat:no-repeat!important;
+  filter:brightness(0) invert(1)!important;
+  opacity:.10!important;
+  image-rendering:auto!important
+}
+
+/* Edit actions open above the document instead of extending it vertically. */
+.governedEditModal{
+  position:fixed!important;
+  inset:0!important;
+  z-index:260!important;
+  display:grid!important;
+  place-items:center!important;
+  padding:var(--ux-space-4)!important;
+  box-sizing:border-box!important
+}
+.governedEditModalScrim{
+  position:absolute!important;
+  inset:0!important;
+  border:0!important;
+  background:color-mix(in srgb,var(--namaa-text) 42%,transparent)!important;
+  backdrop-filter:blur(2px)!important;
+  -webkit-backdrop-filter:blur(2px)!important
+}
+.governedEditModalCard{
+  position:relative!important;
+  z-index:1!important;
+  width:min(100%,560px)!important;
+  max-height:min(82dvh,760px)!important;
+  overflow:auto!important;
+  overscroll-behavior:contain!important;
+  margin:0!important;
+  padding:var(--ux-space-4)!important;
+  border:1px solid var(--namaa-border-strong)!important;
+  border-radius:var(--ux-radius-4)!important;
+  background:var(--namaa-card)!important;
+  box-shadow:var(--ux-shadow-lg)!important
+}
+.governedEditFormHeader{
+  grid-template-columns:auto minmax(0,1fr) auto!important;
+  align-items:center!important
+}
+.governedEditClose{
+  width:36px!important;
+  height:36px!important;
+  display:grid!important;
+  place-items:center!important;
+  border:1px solid var(--namaa-border)!important;
+  border-radius:var(--ux-radius-full)!important;
+  background:var(--namaa-card)!important;
+  color:var(--namaa-green-900)!important;
+  padding:0!important
+}
+.governedEditModalCard textarea{
+  min-height:92px!important;
+  resize:vertical!important
+}
+
+/* Dark mode keeps the same solid-speaker logic. */
+:global(html[data-theme="dark"]) .agentMessage{
+  background:var(--namaa-green-900)!important;
+  background-image:none!important
+}
+:global(html[data-theme="dark"]) .userMessage{
+  background:var(--ux-card-bg)!important;
+  background-image:none!important
+}
+:global(html[data-theme="dark"]) .governedEditModalCard{
+  background:var(--ux-card-bg)!important
+}
+
+@media (max-width:767px){
+  .governedEditModal{
+    align-items:end!important;
+    padding:var(--ux-space-2)!important
+  }
+  .governedEditModalCard{
+    width:100%!important;
+    max-height:86dvh!important;
+    border-radius:var(--ux-radius-4) var(--ux-radius-4) var(--ux-radius-2) var(--ux-radius-2)!important;
+    padding:var(--ux-space-3)!important
+  }
+}
