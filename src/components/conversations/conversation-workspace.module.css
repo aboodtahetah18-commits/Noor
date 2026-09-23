@@ -3381,6 +3381,32 @@
   font-size:var(--ux-type-caption-size);
   line-height:1.7
 }
+
+.governedEditChoice{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:var(--ux-space-2);
+  padding:var(--ux-space-1);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-surface-warm)
+}
+.governedEditChoice button{
+  min-height:var(--ux-size-10);
+  border:1px solid transparent;
+  border-radius:var(--ux-radius-2);
+  background:transparent;
+  color:var(--ux-text-secondary);
+  font:inherit;
+  font-weight:900;
+  cursor:pointer
+}
+.governedEditChoice .governedEditChoiceActive{
+  border-color:var(--namaa-border-strong);
+  background:var(--namaa-card);
+  color:var(--namaa-green-900);
+  box-shadow:var(--ux-shadow-xs)
+}
 .governedAmendmentActions{
   display:flex;
   justify-content:flex-end;
