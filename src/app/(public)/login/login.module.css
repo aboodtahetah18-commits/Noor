@@ -486,7 +486,7 @@
 :global(html[data-theme="dark"]) .logoLight{display:block}
 :global(html[data-theme="dark"]) .logoDark{display:none}
 
-@media(max-width:1023px){
+@media(max-width:767px){
   .page{
     min-height:100dvh;
     display:block;
