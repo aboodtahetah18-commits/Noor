@@ -10112,3 +10112,205 @@
   color:var(--namaa-green-900)!important;
   stroke:var(--namaa-green-900)!important
 }
+
+
+/* Wide work-center alignment — tablet/laptop/desktop only. Mobile rules remain unchanged. */
+@media (min-width:768px){
+  .page{
+    border-radius:18px;
+    border-color:#dce6e0;
+    background:#faf9f4;
+    box-shadow:0 14px 36px rgb(31 41 55 / 7%);
+  }
+
+  .workspaceHeader{
+    min-height:92px;
+    padding:20px 24px;
+    background:#fff;
+    border-bottom-color:#dce6e0;
+  }
+
+  .eyebrow{
+    color:#d4af6b;
+  }
+
+  .headingCopy h1{
+    color:#0b6b4f;
+  }
+
+  .workspace{
+    grid-template-columns:minmax(220px,264px) minmax(520px,1fr) minmax(220px,280px);
+    min-height:calc(100dvh - 225px);
+    background:#fff;
+  }
+
+  .workspace.withoutContext{
+    grid-template-columns:minmax(220px,264px) minmax(520px,1fr);
+  }
+
+  .roomsPane{
+    background:#fff;
+    border-inline-end:1px solid #dce6e0;
+    padding:16px;
+  }
+
+  .contextPane{
+    background:#fff;
+    border-inline-start:1px solid #dce6e0;
+    padding:16px;
+  }
+
+  .paneTitle{
+    min-height:44px;
+    height:auto;
+    padding-bottom:10px;
+    border-bottom:1px solid #dce6e0;
+    margin-bottom:12px;
+  }
+
+  .paneTitle>span{
+    color:#0b6b4f;
+    font-weight:900;
+  }
+
+  .roomList{
+    gap:8px;
+  }
+
+  .roomItemShell{
+    border:1px solid transparent;
+    border-radius:14px;
+    transition:background-color .18s ease,border-color .18s ease,box-shadow .18s ease;
+  }
+
+  .roomItemShell:hover{
+    border-color:#dce6e0;
+    background:#faf9f4;
+  }
+
+  .roomItem{
+    min-height:58px;
+    border-radius:14px;
+    padding:9px 10px;
+  }
+
+  .activeRoom{
+    background:rgb(212 175 107 / 11%);
+    border-color:rgb(212 175 107 / 72%);
+    box-shadow:0 8px 20px rgb(31 41 55 / 5%);
+  }
+
+  .roomCopy strong{
+    font-size:13px;
+    color:#1f2937;
+  }
+
+  .chatPane{
+    background:#faf9f4;
+  }
+
+  .chatHeader{
+    min-height:78px;
+    padding-inline:18px;
+    background:#fff;
+    border-bottom-color:#dce6e0;
+  }
+
+  .desktopChatHeaderForeground{
+    min-height:78px;
+  }
+
+  .entityTitle strong{
+    color:#0b6b4f;
+  }
+
+  .chatHeaderBankMark{
+    border-radius:12px;
+    overflow:hidden;
+    border:1px solid #dce6e0;
+    background:#fff;
+  }
+
+  .routingNote{
+    margin:12px 14px 0;
+    border-color:#dce6e0;
+    background:rgb(11 107 79 / 4%);
+    color:#61758a;
+  }
+
+  .routingNote svg{
+    color:#d4af6b;
+  }
+
+  .messages{
+    padding:18px 20px 22px;
+    gap:14px;
+    background:#faf9f4;
+    background-image:none;
+  }
+
+  .messagesBuildingBackdrop{
+    opacity:.035;
+  }
+
+  .message{
+    border-color:#dce6e0;
+    box-shadow:0 8px 18px rgb(31 41 55 / 4%);
+  }
+
+  .agentMessage{
+    background:#fff;
+  }
+
+  .userMessage{
+    background:rgb(11 107 79 / 7%);
+    border-color:rgb(11 107 79 / 22%);
+  }
+
+  .composer{
+    margin:0 14px 14px;
+    border-color:#dce6e0;
+    border-radius:16px;
+    box-shadow:0 10px 26px rgb(31 41 55 / 7%);
+    background:#fff;
+  }
+
+  .sendButton{
+    background:#0b6b4f;
+  }
+
+  .attachButton{
+    background:#faf9f4;
+    color:#0b6b4f;
+  }
+
+  .contextCard{
+    border-color:#dce6e0;
+    border-radius:14px;
+    background:#fff;
+    box-shadow:0 8px 18px rgb(31 41 55 / 4%);
+  }
+
+  .contextCard small{
+    color:#d4af6b;
+    font-weight:800;
+  }
+
+  .contextCard strong{
+    color:#0b6b4f;
+  }
+}
+
+@media (min-width:768px) and (max-width:1023px){
+  .workspace{
+    grid-template-columns:minmax(210px,240px) minmax(0,1fr) minmax(210px,240px);
+  }
+
+  .workspace.withoutContext{
+    grid-template-columns:minmax(210px,240px) minmax(0,1fr);
+  }
+
+  .headingCopy p{
+    max-width:560px;
+  }
+}
