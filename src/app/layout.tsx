@@ -17,6 +17,7 @@ import '../design-system/ndos-v1.2.acceptance.css';
 import '../design-system/ndos-v1.2.css';
 import '../design-system/ndos-v1.2.enforcement.css';
 import './namaa-wide-experience.css';
+import './namaa-shell-visibility.css';
 
 const notoSansArabic = Noto_Sans_Arabic({
   subsets: ['arabic'],
