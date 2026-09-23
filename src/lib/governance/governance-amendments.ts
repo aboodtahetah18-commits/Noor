@@ -114,13 +114,18 @@ function applyStructuredChange(content:string,change:{
   const prefix=unitLinePrefix(change.unitType,change.unitRef);
   if(change.changeAction==='DELETE'){
     const lines=content.replace(/\r/g,'').split('\n');
-    const prefixIndex=lines.findIndex(line=>line.trim().startsWith(prefix));
+    let prefixIndex=lines.findIndex(line=>line.trim().startsWith(prefix));
+    if(prefixIndex<0&&change.unitType==='clause'){
+      const legacyPattern=new RegExp('^'+escapeRegExp(change.unitRef)+'(?:\\s|[.)-])');
+      prefixIndex=lines.findIndex(line=>legacyPattern.test(line.trim()));
+    }
     if(prefixIndex>=0){
       let endIndex=prefixIndex+1;
       if(change.unitType==='article'){
         while(endIndex<lines.length&&!/^المادة\s+\d+/u.test(lines[endIndex]?.trim()??''))endIndex+=1;
       }else if(change.unitType==='clause'){
-        while(endIndex<lines.length&&!/^(?:المادة|البند)\s+\d+/u.test(lines[endIndex]?.trim()??''))endIndex+=1;
+        while(endIndex<lines.length&&!/^(?:المادة|البند)\s+\d+/u.test(lines[endIndex]?.trim()??'')
+          &&!/^\d+(?:\.\d+)+\s/u.test(lines[endIndex]?.trim()??''))endIndex+=1;
       }
       lines.splice(prefixIndex,endIndex-prefixIndex);
       return lines.join('\n').replace(/\n{3,}/g,'\n\n');
@@ -135,8 +140,15 @@ function applyStructuredChange(content:string,change:{
     }
     return content;
   }
+
   if(change.changeAction==='EDIT'){
-    const linePattern=new RegExp('^'+escapeRegExp(prefix)+'\\s*.*
+    const linePattern=new RegExp('^'+escapeRegExp(prefix)+'\\s*.*$','mu');
+    if(linePattern.test(content))return content.replace(linePattern,prefix+' '+change.proposedRule.trim());
+    if(change.currentRule&&content.includes(change.currentRule))return content.replace(change.currentRule,change.proposedRule.trim());
+    return content;
+  }
+
+  const newLine=prefix+' '+change.proposedRule.trim();
   if(content.split('\n').some(line=>line.trim().startsWith(prefix)))return content;
   if(change.unitType==='article')return content.trimEnd()+'\n\n'+newLine+'\n';
 
