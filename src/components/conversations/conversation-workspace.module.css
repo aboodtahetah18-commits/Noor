@@ -10627,3 +10627,94 @@
     color:#fff;
   }
 }
+
+
+@media (min-width:768px){
+  .desktopIntakeHeaderActions{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:flex-end;
+    gap:8px;
+  }
+
+  .desktopIntakeHeaderActions .intakeAddButton,
+  .desktopIntakeHeaderActions .intakeNoneButton{
+    width:auto;
+    min-width:140px;
+    min-height:42px;
+    margin:0;
+  }
+
+  .desktopIntakeHeaderActions .intakeNoneButton{
+    border:1px solid var(--namaa-border);
+    border-radius:12px;
+    background:var(--namaa-surface-warm);
+    color:var(--ux-text-primary);
+    padding:8px 12px;
+    font:inherit;
+    font-size:12px;
+    font-weight:800;
+  }
+
+  .onboardingIntake{
+    background:var(--namaa-surface-warm);
+  }
+
+  .onboardingIntakeHeader,
+  .onboardingStageOverview,
+  .desktopIntakeTableShell,
+  .incomeReconciliation,
+  .simpleOnboardingStage{
+    background:var(--namaa-surface-warm);
+    border-color:var(--namaa-border);
+  }
+
+  .desktopIntakeTableWrap,
+  .desktopIntakeTable,
+  .desktopIntakeTable th,
+  .desktopIntakeTable td,
+  .mobileRecordEditorSheet,
+  .mobileRecordEditorHeader,
+  .mobileRecordEditorBody,
+  .mobileRecordEditorActions{
+    background:var(--namaa-card);
+    border-color:var(--namaa-border);
+  }
+
+  .desktopIntakeTable th{
+    background:color-mix(in srgb,var(--namaa-green-900) 9%,var(--namaa-card));
+  }
+
+  .mobileRecordEditorBody input,
+  .mobileRecordEditorBody select,
+  .mobileRecordEditorActions button,
+  .mobileRecordEditorHeader button{
+    background:var(--namaa-surface-warm);
+    border-color:var(--namaa-border);
+    color:var(--ux-text-primary);
+  }
+}
+
+@media (min-width:768px) and (max-width:1023px){
+  .desktopIntakeTableHeader{
+    align-items:stretch;
+    flex-direction:column;
+  }
+
+  .desktopIntakeHeaderActions{
+    justify-content:flex-start;
+  }
+
+  .mobileRecordEditorSheet{
+    width:min(calc(100vw - 32px),900px);
+  }
+
+  .mobileRecordEditorBody{
+    grid-template-columns:1fr;
+  }
+
+  .mobileFieldFull{
+    grid-column:auto;
+  }
+}
