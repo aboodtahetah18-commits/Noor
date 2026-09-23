@@ -3099,3 +3099,190 @@
     flex:1 1 220px!important;
   }
 }
+
+
+/* ========================================================================== */
+/* EXECUTION BATCH 7 — final wide dark-mode contrast and identity guard       */
+/* Keeps tablet/laptop/desktop on identity colors with zero raw-white panels. */
+/* ========================================================================== */
+@media (min-width:768px) {
+  .protected-app-shell :where(
+    .namaa-wide-card,
+    .namaa-wide-panel,
+    .p47-resource-card,
+    .p47-panel,
+    .p47-analysis-card,
+    .p47-command-panel,
+    .p74-focus-summary,
+    .namaa-collection-card,
+    .p49-action-dialog .p49-dialog-shell,
+    .p49-action-dialog .p49-dialog-body
+  ) {
+    background:var(--namaa-wide-card)!important;
+    border-color:var(--namaa-wide-border)!important;
+  }
+
+  .protected-app-shell :where(
+    .namaa-data-table,
+    .namaa-data-table td,
+    .namaa-table-wrap
+  ) {
+    background:var(--namaa-wide-card)!important;
+  }
+
+  .protected-app-shell :where(
+    .namaa-data-table th,
+    .p49-dialog-header,
+    .namaa-settings-nav nav a,
+    .namaa-banks-selector a
+  ) {
+    background:var(--namaa-wide-card-strong)!important;
+  }
+
+  .protected-app-shell :where(
+    .namaa-data-table tbody tr:hover td,
+    .namaa-settings-control-grid a:hover,
+    .namaa-knowledge-nav nav a:hover
+  ) {
+    background:var(--namaa-wide-green-soft-2)!important;
+  }
+
+  .protected-app-shell :where(
+    .p49-action-dialog,
+    .p49-action-dialog *,
+    .namaa-wide-card,
+    .namaa-wide-panel
+  ) {
+    color-scheme:light;
+  }
+
+  html[data-theme="dark"] .protected-app-shell :where(
+    .p49-action-dialog,
+    .p49-action-dialog *,
+    .namaa-wide-card,
+    .namaa-wide-panel
+  ) {
+    color-scheme:dark;
+  }
+
+  html[data-theme="dark"] .protected-app-shell :where(
+    .namaa-data-table,
+    .namaa-data-table td,
+    .namaa-table-wrap,
+    .p49-action-dialog .p49-dialog-shell,
+    .p49-action-dialog .p49-dialog-body,
+    .namaa-wide-card,
+    .namaa-wide-panel
+  ) {
+    background:var(--namaa-wide-card)!important;
+    color:var(--namaa-wide-text)!important;
+  }
+
+  html[data-theme="dark"] .protected-app-shell :where(
+    .namaa-data-table th,
+    .p49-dialog-header,
+    .namaa-settings-nav nav a,
+    .namaa-banks-selector a,
+    .namaa-settings-control-grid a,
+    .namaa-banks-kpis article,
+    .namaa-decisions-kpis article,
+    .namaa-observatory-kpis article,
+    .namaa-lab-kpis article
+  ) {
+    background:var(--namaa-wide-card-strong)!important;
+    color:var(--namaa-wide-text)!important;
+    border-color:var(--namaa-wide-border)!important;
+  }
+
+  html[data-theme="dark"] .protected-app-shell :where(
+    input,
+    select,
+    textarea
+  ) {
+    background:var(--namaa-wide-input)!important;
+    color:var(--namaa-wide-text)!important;
+    border-color:var(--namaa-wide-border)!important;
+  }
+
+  html[data-theme="dark"] .protected-app-shell :where(
+    input,
+    textarea
+  )::placeholder {
+    color:var(--namaa-wide-muted)!important;
+    opacity:.82!important;
+  }
+
+  html[data-theme="dark"] .protected-app-shell :where(
+    .primary-button,
+    .primary-link,
+    .namaa-wide-action
+  ) {
+    background:#0f5b46!important;
+    color:#f2f7f4!important;
+    border-color:#2d8067!important;
+  }
+
+  html[data-theme="dark"] .protected-app-shell :where(
+    .secondary-button,
+    .secondary-link,
+    .button-link,
+    .p49-modal-trigger,
+    .namaa-wide-action-secondary
+  ) {
+    background:#3a3223!important;
+    color:#f5e6bd!important;
+    border-color:#8a6d38!important;
+  }
+
+  html[data-theme="dark"] .protected-app-shell :where(
+    .danger-button
+  ) {
+    background:#4a2626!important;
+    color:#ffd0d0!important;
+    border-color:#8d4a4a!important;
+  }
+
+  html[data-theme="dark"] .protected-app-shell :where(
+    .namaa-table-status.is-overdue,
+    .namaa-table-status.is-warning
+  ) {
+    background:#482727!important;
+    color:#ffd2d2!important;
+  }
+
+  html[data-theme="dark"] .protected-app-shell :where(
+    .namaa-table-status.is-due
+  ) {
+    background:#4a3a20!important;
+    color:#ffe0a5!important;
+  }
+
+  html[data-theme="dark"] .protected-app-shell :where(
+    .namaa-table-status.is-paid,
+    .namaa-table-status.is-active
+  ) {
+    background:#1d4638!important;
+    color:#bcebd8!important;
+  }
+
+  html[data-theme="dark"] .protected-app-shell :where(
+    .namaa-table-status.is-inactive,
+    .namaa-table-status.is-cancelled
+  ) {
+    background:#26332f!important;
+    color:#c1cdc8!important;
+  }
+
+  .protected-app-shell :where(
+    .namaa-table-empty,
+    .p47-empty-state,
+    .namaa-banks-empty,
+    .namaa-lab-empty,
+    .namaa-observatory-empty,
+    .namaa-decisions-empty
+  ) {
+    background:var(--namaa-wide-green-soft-2)!important;
+    border-color:var(--namaa-wide-border)!important;
+    color:var(--namaa-wide-muted)!important;
+  }
+}
