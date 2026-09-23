@@ -191,7 +191,6 @@ body { font-family:var(--ux-font-family-base); }
 .ux-table tbody tr:hover { background:var(--ux-section-soft-teal) !important; }
 
 /* Protected application shell. */
-.mustaqbali-topbar,
 .mustaqbali-tablet-topbar,
 .p47-mobile-topbar.mustaqbali-mobile-header {
   background:var(--ux-shell-topbar-bg) !important;
@@ -199,22 +198,15 @@ body { font-family:var(--ux-font-family-base); }
   border-color:var(--ux-shell-topbar-border) !important;
   box-shadow:var(--ux-shadow-xs) !important;
 }
-.mustaqbali-sidebar,
 .mustaqbali-mobile-drawer {
   background:var(--ux-shell-sidebar-bg) !important;
   color:var(--ux-text-inverse) !important;
 }
-.mustaqbali-sidebar-nav a,
-.mustaqbali-sidebar-footer a,
 .mustaqbali-mobile-drawer a {
   color:var(--ux-text-inverse) !important;
   border-radius:var(--ux-radius-md);
 }
-.mustaqbali-sidebar-nav a:hover,
-.mustaqbali-sidebar-footer a:hover,
 .mustaqbali-mobile-drawer a:hover { background:var(--ux-shell-sidebar-hover) !important; }
-.mustaqbali-sidebar-nav a.is-active,
-.mustaqbali-sidebar-footer a.is-active,
 .mustaqbali-mobile-drawer a.is-active {
   background:var(--ux-shell-sidebar-active-soft) !important;
   color:var(--ux-text-inverse) !important;
@@ -280,7 +272,6 @@ html[data-theme="dark"] .onboarding-money-hero {
   background:var(--ux-card-bg) !important;
   border-color:var(--ux-border-default) !important;
 }
-html[data-theme="dark"] .mustaqbali-topbar,
 html[data-theme="dark"] .mustaqbali-tablet-topbar,
 html[data-theme="dark"] .p47-mobile-topbar.mustaqbali-mobile-header { background:var(--ux-shell-topbar-bg) !important; }
 html[data-theme="dark"] .transaction-table th,
