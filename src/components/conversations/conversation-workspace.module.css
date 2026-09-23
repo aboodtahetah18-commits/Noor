@@ -10888,3 +10888,48 @@
     padding:18px!important;
   }
 }
+
+
+/* Wide no-white policy — tablet/laptop/desktop only. */
+@media (min-width:768px){
+  .workspaceHeader,
+  .workspace,
+  .roomsPane,
+  .contextPane,
+  .chatHeader,
+  .chatHeaderBankMark,
+  .agentMessage,
+  .composer,
+  .contextCard,
+  .paneTitle,
+  .roomItemShell,
+  .roomItem,
+  .desktopIntakeTableWrap,
+  .desktopIntakeTable th,
+  .desktopIntakeTable td,
+  .mobileRecordEditorSheet,
+  .mobileRecordEditorHeader,
+  .mobileRecordEditorBody,
+  .mobileRecordEditorActions {
+    background:var(--namaa-card)!important;
+  }
+
+  .chatPane,
+  .messages,
+  .onboardingIntake,
+  .desktopIntakeTableShell,
+  .simpleOnboardingStage,
+  .incomeReconciliation {
+    background:var(--namaa-surface-warm)!important;
+  }
+
+  .activeRoom,
+  .userMessage {
+    background:color-mix(in srgb,var(--namaa-green-900) 10%,var(--namaa-surface-warm))!important;
+  }
+
+  .routingNote,
+  .desktopIntakeTable th {
+    background:color-mix(in srgb,var(--namaa-green-900) 7%,var(--namaa-card))!important;
+  }
+}
