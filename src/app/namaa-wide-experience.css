@@ -1919,3 +1919,125 @@
     min-height:48px;
   }
 }
+
+
+/* Canonical wide baseline.
+   This replaces the removed draft/legacy desktop layers and is the single owner
+   for tablet/laptop/desktop composition from 768px upward. */
+@media (min-width:768px) {
+  .protected-app-shell > #main-content {
+    min-width:0;
+    width:100%;
+  }
+
+  .protected-app-shell .page-shell,
+  .protected-app-shell .dashboard-shell,
+  .protected-app-shell .p47-content-shell,
+  .protected-app-shell .app-page {
+    min-width:0;
+  }
+
+  .protected-app-shell .page-shell,
+  .protected-app-shell .dashboard-shell,
+  .protected-app-shell .p47-content-shell {
+    width:min(100%,1540px);
+    max-width:1540px;
+    margin-inline:auto;
+    padding-inline:24px;
+  }
+
+  .protected-app-shell .app-page {
+    padding-block:24px 40px;
+  }
+
+  .protected-app-shell .page-header,
+  .protected-app-shell .p47-page-heading,
+  .protected-app-shell .p47-resource-header {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:18px;
+    margin-bottom:18px;
+  }
+
+  .protected-app-shell .page-header > div:first-child,
+  .protected-app-shell .p47-page-heading > div:first-child,
+  .protected-app-shell .p47-resource-header > div:first-child {
+    min-width:0;
+  }
+
+  .protected-app-shell .page-header > div:last-child,
+  .protected-app-shell .p47-page-heading > div:last-child,
+  .protected-app-shell .p47-resource-header > div:last-child {
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  .protected-app-shell :where(.card,.panel,.p47-panel,.p47-resource-card,.dashboard-card,.form-card) {
+    border:1px solid var(--namaa-wide-border);
+    border-radius:var(--namaa-wide-radius);
+    background:var(--namaa-wide-card);
+    box-shadow:var(--namaa-wide-shadow);
+  }
+
+  .protected-app-shell :where(input,select,textarea) {
+    min-height:44px;
+  }
+
+  .protected-app-shell .form-grid {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:16px;
+  }
+
+  .protected-app-shell .form-grid > :where(.full,[data-full-width],button:last-child) {
+    grid-column:1 / -1;
+  }
+
+  .protected-app-shell :where(.transaction-table-wrap,.report-table-wrap,.ux-table-shell) {
+    max-width:100%;
+    overflow:auto;
+    border:1px solid var(--namaa-wide-border);
+    border-radius:14px;
+    background:#fff;
+  }
+
+  .protected-app-shell :where(.transaction-table,.report-table,.ux-table) {
+    width:100%;
+    border-collapse:collapse;
+  }
+
+  .protected-app-shell :where(.transaction-table,.report-table,.ux-table) th,
+  .protected-app-shell :where(.transaction-table,.report-table,.ux-table) td {
+    padding:12px 14px;
+    border-bottom:1px solid var(--namaa-wide-border);
+    text-align:right;
+    vertical-align:middle;
+  }
+
+  .protected-app-shell :where(.transaction-table,.report-table,.ux-table) th {
+    background:rgb(11 107 79 / 4%);
+    color:var(--namaa-wide-green);
+    font-size:12px;
+    font-weight:900;
+  }
+
+  .protected-app-shell :where(.primary-link,.primary-button,.secondary-link,.secondary-button,.button-link,.p49-modal-trigger) svg {
+    width:21px !important;
+    height:21px !important;
+  }
+}
+
+@media (min-width:768px) and (max-width:1023px) {
+  .protected-app-shell .page-shell,
+  .protected-app-shell .dashboard-shell,
+  .protected-app-shell .p47-content-shell {
+    padding-inline:16px;
+  }
+
+  .protected-app-shell .form-grid {
+    grid-template-columns:1fr;
+  }
+}
