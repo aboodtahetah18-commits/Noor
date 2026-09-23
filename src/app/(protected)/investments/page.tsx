@@ -11,7 +11,7 @@ const portfolioActions = [
 export default function InvestmentsPage() {
   return (
     <main className="namaa-investments-page" dir="rtl">
-      <section className="namaa-investments-shell">
+      <section className="namaa-investments-shell namaa-wide-only">
         <header className="namaa-investments-header namaa-wide-card">
           <div>
             <p>بنك الأصول الاستثمارية</p>
