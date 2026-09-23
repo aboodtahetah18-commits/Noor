@@ -7699,3 +7699,260 @@
   text-align:center!important;
   overflow-wrap:anywhere!important
 }
+
+
+/* Final approved mobile polish — single-deploy authority */
+
+/* Shared Namaa motif */
+.chatHeader,
+.algorithmRoleHero,
+.onboardingIntakeHeader,
+.mobileRecordEditorHeader,
+.roomDetailHero{
+  position:relative!important;
+  overflow:hidden!important;
+  isolation:isolate
+}
+.chatHeader::before,
+.algorithmRoleHero::before,
+.onboardingIntakeHeader::before,
+.mobileRecordEditorHeader::before,
+.roomDetailHero::before{
+  content:""!important;
+  position:absolute!important;
+  inset:-20%!important;
+  z-index:0!important;
+  pointer-events:none!important;
+  background-image:url('/brand/namaa-leaf.webp')!important;
+  background-repeat:no-repeat!important;
+  background-size:44% auto!important;
+  background-position:8% 50%!important;
+  opacity:.09!important;
+  transform:rotate(-8deg)!important
+}
+.chatHeader>*,
+.algorithmRoleHero>*,
+.onboardingIntakeHeader>*,
+.mobileRecordEditorHeader>*,
+.roomDetailHero>*{
+  position:relative!important;
+  z-index:1!important
+}
+
+/* Compact chat header, applied to all rooms. */
+@media (max-width:767px){
+  .chatHeader,
+  .centralChatHeader{
+    height:72px!important;
+    min-height:72px!important;
+    padding-inline:var(--ux-space-3)!important
+  }
+  .chatHeaderForeground,
+  .centralChatHeader .chatHeaderForeground{
+    min-height:72px!important;
+    height:72px!important
+  }
+  .chatHeaderForeground .persona_md{
+    width:42px!important;
+    height:42px!important;
+    flex-basis:42px!important
+  }
+  .compactRoleTitle strong{
+    font-size:var(--ux-type-body-sm-size)!important;
+    white-space:nowrap!important
+  }
+}
+
+/* Role/job description: green hero + stable bottom actions. */
+.algorithmRoleHero{
+  background:var(--namaa-green-900)!important;
+  border-color:color-mix(in srgb,var(--namaa-green-700) 58%,var(--namaa-border))!important;
+  color:var(--ux-text-inverse)!important;
+  box-shadow:var(--ux-shadow-sm)!important
+}
+.algorithmRoleHero strong,
+.algorithmRoleHero small{
+  color:var(--ux-text-inverse)!important
+}
+.algorithmRoleHero small{opacity:.86!important}
+.algorithmRolePortrait{
+  border-color:color-mix(in srgb,var(--ux-text-inverse) 70%,transparent)!important;
+  background:var(--namaa-card)!important
+}
+.algorithmRoleEditActions{
+  position:sticky!important;
+  bottom:0!important;
+  z-index:30!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  background:color-mix(in srgb,var(--namaa-card) 96%,transparent)!important;
+  padding:var(--ux-space-2)!important;
+  margin-inline:calc(var(--ux-space-3) * -1)!important;
+  margin-bottom:calc(var(--ux-space-3) * -1)!important;
+  border-top:1px solid var(--namaa-border)!important;
+  box-shadow:var(--ux-shadow-sm)!important
+}
+.algorithmRoleEditActions>button{
+  min-height:64px!important;
+  border-radius:var(--ux-radius-3)!important
+}
+.algorithmRoleEditActions>button strong{
+  font-size:var(--ux-type-body-sm-size)!important;
+  line-height:1.25!important
+}
+.algorithmRoleEditActions>button>svg{
+  width:26px!important;
+  height:26px!important;
+  min-width:26px!important
+}
+@media (max-width:767px){
+  .algorithmRoleHero{
+    display:grid!important;
+    grid-template-columns:104px minmax(0,1fr)!important;
+    align-items:center!important
+  }
+  .algorithmRoleHero>div{
+    min-width:0!important
+  }
+  .algorithmRoleHero strong{
+    display:block!important;
+    font-size:var(--ux-type-section-title-size)!important;
+    line-height:1.3!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important
+  }
+  .algorithmRolePortrait{
+    width:104px!important;
+    height:104px!important;
+    min-width:104px!important;
+    min-height:104px!important;
+    border-radius:var(--ux-radius-full)!important
+  }
+}
+
+/* Entity profile title stays on one line where space permits. */
+@media (max-width:767px){
+  .roomDetailHeroIdentity strong{
+    font-size:var(--ux-type-section-title-size)!important;
+    line-height:1.3!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important
+  }
+}
+
+/* Onboarding: branded header and four vertical steps without visible scrollbar. */
+.onboardingIntakeHeader{
+  background:var(--namaa-green-900)!important;
+  border-bottom-color:color-mix(in srgb,var(--namaa-green-700) 58%,var(--namaa-border))!important;
+  color:var(--ux-text-inverse)!important
+}
+.onboardingIntakeHeader strong,
+.onboardingIntakeHeader small{
+  color:var(--ux-text-inverse)!important
+}
+.onboardingIntakeHeader small{opacity:.84!important}
+.onboardingReviewPreviousButton,
+.onboardingCloseButton{
+  color:var(--ux-text-inverse)!important;
+  border-color:color-mix(in srgb,var(--ux-text-inverse) 36%,transparent)!important;
+  background:color-mix(in srgb,var(--namaa-green-900) 72%,transparent)!important
+}
+.onboardingStageList{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:var(--ux-space-2)!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  scrollbar-width:none!important;
+  -ms-overflow-style:none!important;
+  scroll-snap-type:x proximity!important
+}
+.onboardingStageList::-webkit-scrollbar{display:none!important}
+.onboardingStageList>li{
+  min-width:0!important;
+  min-height:104px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:var(--ux-space-2)!important;
+  padding:var(--ux-space-2)!important;
+  text-align:center!important;
+  scroll-snap-align:center!important
+}
+.onboardingStageNumber{
+  width:40px!important;
+  height:40px!important;
+  min-width:40px!important;
+  border:2px solid var(--namaa-border-strong)!important;
+  font-size:var(--ux-type-body-sm-size)!important
+}
+.onboardingStageList>li>strong{
+  font-size:var(--ux-type-caption-size)!important;
+  line-height:1.35!important;
+  text-align:center!important;
+  overflow-wrap:anywhere!important
+}
+
+/* Add-record sheet: no dead top space, branded green header with motif. */
+.mobileRecordEditorOverlay{
+  background:color-mix(in srgb,var(--namaa-text) 18%,transparent)!important
+}
+.mobileRecordEditorScrim{
+  display:block!important;
+  position:absolute!important;
+  inset:0!important;
+  border:0!important;
+  background:transparent!important;
+  z-index:1!important
+}
+.mobileRecordEditorSheetCompact{
+  position:fixed!important;
+  top:0!important;
+  bottom:0!important;
+  inset-inline:0!important;
+  width:100%!important;
+  height:100dvh!important;
+  max-height:100dvh!important;
+  border:0!important;
+  border-radius:0!important;
+  z-index:2!important;
+  grid-template-rows:auto minmax(0,1fr) auto!important
+}
+.mobileRecordEditorHeader{
+  min-height:84px!important;
+  padding:var(--ux-space-3) var(--ux-space-4)!important;
+  background:var(--namaa-green-900)!important;
+  border-bottom-color:color-mix(in srgb,var(--namaa-green-700) 58%,var(--namaa-border))!important;
+  color:var(--ux-text-inverse)!important
+}
+.mobileRecordEditorHeader strong,
+.mobileRecordEditorHeader small{
+  color:var(--ux-text-inverse)!important
+}
+.mobileRecordEditorHeader small{opacity:.84!important}
+.mobileRecordEditorHeader button{
+  color:var(--ux-text-inverse)!important;
+  border-color:color-mix(in srgb,var(--ux-text-inverse) 36%,transparent)!important;
+  background:color-mix(in srgb,var(--namaa-green-900) 72%,transparent)!important
+}
+.mobileRecordEditorBody{
+  padding-top:var(--ux-space-3)!important
+}
+
+/* Drawer outside-click authority. */
+.mobileOverlay{
+  isolation:isolate!important
+}
+.mobileOverlay>.scrim{
+  position:absolute!important;
+  inset:0!important;
+  z-index:1!important;
+  width:100%!important;
+  height:100%!important
+}
+.mobileSideSheet{
+  position:absolute!important;
+  z-index:2!important
+}
