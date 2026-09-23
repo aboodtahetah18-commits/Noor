@@ -140,17 +140,14 @@ html[data-theme="dark"]{color-scheme:dark;--ux-page-bg:#111A17;--ux-card-bg:#172
 html[data-theme="dark"] body{background:var(--ux-page-bg)!important;color:var(--ux-text-primary)!important;}
 
 /* Official mark: never crop, recolor, mask, or redraw. */
-.mustaqbali-topbar-logo,.mustaqbali-tablet-brand,.mustaqbali-mobile-brand,.mustaqbali-drawer-brand{border-radius:0!important;overflow:visible!important;background:transparent!important;}
-.mustaqbali-topbar-logo img,.mustaqbali-tablet-brand img,.mustaqbali-mobile-brand img,.mustaqbali-drawer-brand img,.auth-brand-symbol{aspect-ratio:auto!important;object-fit:contain!important;filter:none!important;}
-.mustaqbali-topbar-logo img{width:var(--ux-logo-desktop-width)!important;height:auto!important;max-height:64px!important;}
+.mustaqbali-tablet-brand,.mustaqbali-mobile-brand,.mustaqbali-drawer-brand{border-radius:0!important;overflow:visible!important;background:transparent!important;}
+.mustaqbali-tablet-brand img,.mustaqbali-mobile-brand img,.mustaqbali-drawer-brand img,.auth-brand-symbol{aspect-ratio:auto!important;object-fit:contain!important;filter:none!important;}
 .mustaqbali-tablet-brand img{width:var(--ux-logo-tablet-width)!important;height:auto!important;max-height:60px!important;}
 .mustaqbali-mobile-brand img{width:var(--ux-logo-mobile-width)!important;height:auto!important;max-height:54px!important;}
 .mustaqbali-drawer-brand img{width:112px!important;height:auto!important;}
 
-.mustaqbali-topbar{background:var(--ux-shell-topbar-bg)!important;border-color:var(--namaa-border)!important;box-shadow:0 1px 0 var(--namaa-border)!important;}
 .mustaqbali-global-search,.mustaqbali-tablet-search{background:var(--namaa-surface-warm)!important;border-color:var(--namaa-border)!important;}
-.mustaqbali-sidebar,.desktop-top-nav-wrap{background:var(--namaa-green-900)!important;}
-.mustaqbali-sidebar a.is-active,.mustaqbali-nav-section a.is-active{background:rgb(255 255 255 / .13)!important;color:#fff!important;box-shadow:inset -3px 0 var(--namaa-gold-500)!important;}
+.mustaqbali-nav-section a.is-active{background:rgb(255 255 255 / .13)!important;color:#fff!important;box-shadow:inset -3px 0 var(--namaa-gold-500)!important;}
 
 .primary,.primary-button,.primary-link,.auth-form button,.p47-primary-action,.p47-sidebar-add{background:var(--namaa-green-900)!important;border-color:var(--namaa-green-900)!important;color:#fff!important;}
 .primary:hover,.primary-button:hover,.primary-link:hover{background:var(--namaa-green-700)!important;border-color:var(--namaa-green-700)!important;}
