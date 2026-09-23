@@ -20,7 +20,7 @@ const pages = [
 export function DesktopTopNav() {
   const pathname = usePathname();
   return (
-    <aside className="desktop-top-nav-wrap mustaqbali-sidebar namaa-wide-sidebar" dir="rtl">
+    <aside id="namaa-desktop-sidebar" data-namaa-side="right" className="desktop-top-nav-wrap mustaqbali-sidebar namaa-wide-sidebar" dir="rtl">
       <div className="mustaqbali-sidebar-inner namaa-wide-sidebar-inner">
         <Link href="/conversations" className="namaa-wide-sidebar-brand" aria-label="نماء — مركز العمل">
           <BrandLogo surface="auto" priority />
