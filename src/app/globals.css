@@ -275,12 +275,8 @@ body { min-height:100vh; }
   .card,.panel{border-radius:var(--ux-radius-4);}
 }
 
-@media(min-width:1024px) and (max-width:1023px){
-  .dashboard-hero{flex-direction:row;align-items:center;}
-  .dashboard-hero-side{min-width:220px;border-top:var(--ux-border-width-0);padding-top:var(--ux-space-4);}
-  .settings-grid{grid-template-columns:minmax(0,1.45fr) minmax(220px,.65fr);}
-  .settings-summary{grid-template-columns:1fr;position:sticky;top:var(--ux-space-24);}
-}
+/* Obsolete desktop draft block removed; canonical wide layout lives in namaa-wide-experience.css. */
+
 
 /* Phase 35 — RTL audit hardening */
 html[dir="rtl"] body{direction:rtl;text-align:start;}
@@ -555,26 +551,8 @@ summary{cursor:pointer;min-height:var(--ux-size-11);display:flex;align-items:cen
 .p47-secondary-action{border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);background:var(--ux-surface-default);color:var(--ux-text-secondary);}.p47-secondary-action:hover{border-color:var(--ux-border-default);background:var(--ux-surface-default);}.p47-quiet-action{border:var(--ux-border-width-1) var(--ux-border-style-default) transparent;background:var(--ux-color-transparent);color:var(--ux-text-secondary);}.p47-quiet-action:hover{background:var(--ux-surface-default);color:var(--ux-text-primary);}
 
 /* desktop sidebar */
-@media(min-width:1024px){
-  html{scroll-padding-top:var(--ux-space-4);}
-  .protected-app-shell{padding-top:var(--ux-space-0)!important;background:var(--ux-surface-canvas)!important;min-height:100vh;}
-  .protected-app-shell>#main-content{margin-inline-start:var(--ux-space-24);min-height:100vh;}
-  .desktop-top-nav-wrap.p47-desktop-sidebar{display:block!important;position:fixed!important;z-index:var(--ux-z-sticky)!important;inset-block:0!important;inset-inline-start:0!important;inset-inline-end:auto!important;width:268px!important;height:100dvh!important;background:var(--ux-color-ink)!important;border:var(--ux-border-width-0)!important;box-shadow:var(--ux-shadow-md)!important;backdrop-filter:none!important;}
-  .p47-sidebar-inner{height:100%;display:flex;flex-direction:column;padding:var(--ux-space-5) var(--ux-space-4) var(--ux-space-4);color:var(--ux-text-inverse);overflow:hidden;}
-  .p47-sidebar-brand{display:flex;align-items:center;gap:var(--ux-space-3);padding:var(--ux-space-1) var(--ux-space-1) var(--ux-space-5);color:var(--ux-text-inverse);text-decoration:none;border-bottom:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);}
-  .p47-brand-mark{display:grid;place-items:center;width:var(--ux-size-10);height:var(--ux-size-10);border-radius:var(--ux-radius-3);background:var(--ux-surface-inverse);font-size:var(--ux-type-card-title-size);font-weight:700;box-shadow:var(--ux-shadow-xs);}
-  .p47-sidebar-brand>span:last-child{display:grid;gap:var(--ux-space-0);}.p47-sidebar-brand strong{font-size:var(--ux-type-body-size);}.p47-sidebar-brand small{font-size:var(--ux-type-caption-size);color:var(--ux-text-inverse);}
-  .p47-sidebar-add{display:flex;align-items:center;gap:var(--ux-space-2);margin:var(--ux-space-4) var(--ux-space-0) var(--ux-space-3);padding:var(--ux-space-3);border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);border-radius:var(--ux-radius-3);background:var(--ux-surface-inverse);color:var(--ux-text-inverse);text-decoration:none;transition:var(--ux-motion-duration-base) ease;}
-  .p47-sidebar-add:hover{background:var(--ux-surface-inverse);transform:translateY(-1px);}.p47-sidebar-add>span:last-child{display:grid;gap:var(--ux-space-0);}.p47-sidebar-add strong{font-size:var(--ux-type-table-head-size);}.p47-sidebar-add small{color:var(--ux-text-inverse);font-size:var(--ux-type-caption-size);}
-  .p47-sidebar-nav{flex:1;min-height:0;overflow-y:auto;padding:var(--ux-space-0) var(--ux-space-0) var(--ux-space-2);scrollbar-width:thin;scrollbar-color:var(--ux-surface-inverse) transparent;}
-  .p47-nav-section{display:grid;gap:var(--ux-space-1);padding:var(--ux-space-2) var(--ux-space-0) var(--ux-space-1);}.p47-nav-section>p{margin:var(--ux-space-0) var(--ux-space-2) var(--ux-space-1);color:var(--ux-text-secondary);font-size:var(--ux-type-caption-size);font-weight:700;letter-spacing:0;}
-  .p47-nav-section>a,.p47-sidebar-footer>a{display:flex;align-items:center;gap:var(--ux-space-2);min-height:var(--ux-size-10);padding:var(--ux-space-2) var(--ux-space-2);border-radius:var(--ux-radius-2);color:var(--ux-text-inverse);text-decoration:none;font-size:var(--ux-type-table-head-size);font-weight:700;transition:var(--ux-motion-duration-base) ease;}
-  .p47-nav-section>a:hover,.p47-sidebar-footer>a:hover{color:var(--ux-text-inverse);background:var(--ux-surface-inverse);}.p47-nav-section>a.is-active,.p47-sidebar-footer>a.is-active{color:var(--ux-text-inverse);background:var(--ux-surface-inverse);box-shadow:var(--ux-shadow-md);}
-  .p47-nav-icon{width:var(--ux-size-5);height:var(--ux-size-5);display:grid;place-items:center;flex:0 0 21px;}.p47-nav-icon svg{width:var(--ux-size-5);height:var(--ux-size-5);fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
-  .p47-sidebar-footer{padding-top:var(--ux-space-3);border-top:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);}
-  .p47-sidebar-status{display:flex;align-items:center;gap:var(--ux-space-2);padding:var(--ux-space-2);color:var(--ux-text-inverse);font-size:var(--ux-type-caption-size);}.p47-sidebar-status i{width:var(--ux-size-4);height:var(--ux-size-4);border-radius:var(--ux-radius-full);background:var(--ux-surface-inverse);box-shadow:var(--ux-shadow-md);}
-  .app-page{padding:var(--ux-space-0)!important;}.page-shell{max-width:none!important;}
-}
+/* Obsolete desktop draft block removed; canonical wide layout lives in namaa-wide-experience.css. */
+
 
 /* Dashboard */
 .p47-financial-hero{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,.62fr);gap:var(--ux-space-5);padding:var(--ux-space-8);border-radius:var(--ux-radius-6);background:var(--ux-surface-inverse);color:var(--ux-text-inverse);box-shadow:var(--ux-shadow-xs);overflow:hidden;position:relative;}
@@ -593,9 +571,8 @@ summary{cursor:pointer;min-height:var(--ux-size-11);display:flex;align-items:cen
 .p47-modules-panel{margin-top:var(--ux-space-0);}.p47-module-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--ux-space-2);}.p47-module-grid>a{display:grid;grid-template-columns:auto 1fr;grid-template-areas:"num title" "num desc";column-gap:var(--ux-space-2);padding:var(--ux-space-3);border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);border-radius:var(--ux-radius-3);background:var(--ux-surface-default);color:inherit;text-decoration:none;transition:var(--ux-motion-duration-base) ease;}.p47-module-grid>a:hover{background:var(--ux-surface-default);border-color:var(--ux-border-default);transform:translateY(-1px);}.p47-module-grid>a>span{grid-area:num;display:grid;place-items:center;width:var(--ux-size-8);height:var(--ux-size-8);border-radius:var(--ux-radius-2);background:var(--ux-surface-default);color:var(--ux-text-primary);font-size:var(--ux-type-caption-size);font-weight:700;}.p47-module-grid strong{grid-area:title;font-size:var(--ux-type-caption-size);}.p47-module-grid small{grid-area:desc;color:var(--ux-text-secondary);font-size:var(--ux-type-caption-size);line-height:var(--ux-type-caption-line);}
 .p47-empty-shell{display:grid;place-items:center;min-height:calc(100vh - var(--ux-size-10));}.p47-empty-state{max-width:540px;text-align:center;padding:var(--ux-space-12) var(--ux-space-8);border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);border-radius:var(--ux-radius-6);background:var(--ux-surface-default);}.p47-empty-icon{display:grid;place-items:center;width:var(--ux-size-14);height:var(--ux-size-14);margin:var(--ux-space-0) auto var(--ux-space-4);border-radius:var(--ux-radius-4);background:var(--ux-surface-inverse);color:var(--ux-text-inverse);font-weight:700;font-size:var(--ux-type-card-title-size);}.p47-empty-state h1{margin:var(--ux-space-1) var(--ux-space-0) var(--ux-space-2);}.p47-empty-state>p:not(.p47-kicker){color:var(--ux-text-secondary);line-height:var(--ux-type-body-line);margin-bottom:var(--ux-space-5);}
 
-@media(min-width:1024px) and (max-width:1439px){
-  .desktop-top-nav-wrap.p47-desktop-sidebar{width:238px!important;}.protected-app-shell>#main-content{margin-inline-start:var(--ux-space-24);}.p47-content-shell{width:min(100% - var(--ux-size-9),1180px);}.p47-financial-hero{grid-template-columns:1.25fr .75fr;}.p47-command-metrics{grid-template-columns:repeat(2,minmax(0,1fr));}.p47-module-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
-}
+/* Obsolete desktop draft block removed; canonical wide layout lives in namaa-wide-experience.css. */
+
 
 @media(min-width:768px) and (max-width:1023px){
   .p47-content-shell{width:min(100% - var(--ux-size-9),960px);padding:var(--ux-space-6) var(--ux-space-0) var(--ux-space-10);}.p47-page-heading{gap:var(--ux-space-4);}.p47-financial-hero{grid-template-columns:1fr .62fr;padding:var(--ux-space-6);}.p47-hero-main h2{font-size:var(--ux-type-display-size);}.p47-command-metrics{grid-template-columns:repeat(2,minmax(0,1fr));}.p47-kpi-strip{grid-template-columns:repeat(2,minmax(0,1fr));}.p47-dashboard-grid{grid-template-columns:1fr;}.p47-module-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
@@ -904,19 +881,8 @@ label:has(input),label:has(select),label:has(textarea){color:var(--ux-color-ink)
 .p49-tab-panel{padding-top:var(--ux-space-1);}
 
 /* Desktop sidebar: richer and unmistakably branded */
-@media(min-width:1024px){
-  .desktop-top-nav-wrap.p47-desktop-sidebar{
-    background:var(--ux-surface-inverse)!important;
-    border-inline-end:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default)!important;
-    box-shadow:var(--ux-shadow-md)!important;}
-  .p47-brand-mark{background:var(--ux-surface-default)!important;color:var(--ux-text-primary)!important;box-shadow:var(--ux-shadow-xs)!important;}
-  .p47-sidebar-add{border-color:var(--ux-border-default)!important;background:var(--ux-surface-inverse)!important;}
-  .p47-nav-section>a.is-active,.p47-sidebar-footer>a.is-active{
-    background:var(--ux-surface-inverse)!important;color:var(--ux-text-inverse)!important;
-    box-shadow:var(--ux-shadow-md)!important;}
-  .p47-nav-section>a:hover,.p47-sidebar-footer>a:hover{background:var(--ux-surface-inverse)!important;}
-  .p47-nav-section>p{color:var(--ux-text-primary)!important;}
-}
+/* Obsolete desktop draft block removed; canonical wide layout lives in namaa-wide-experience.css. */
+
 
 /* Mobile bars carry the same visual identity */
 @media(max-width:1023px){
@@ -1481,12 +1447,8 @@ label:has(input),label:has(select),label:has(textarea){color:var(--ux-color-ink)
   }
 }
 
-@media (min-width:1024px) {
-  .protected-app-shell .page-shell,
-  .protected-app-shell .dashboard-shell {
-    max-width:1440px;
-  }
-}
+/* Obsolete desktop draft block removed; canonical wide layout lives in namaa-wide-experience.css. */
+
 
 /* P72 — Dashboard & Daily Financial Command Center Finalization */
 .p72-dashboard-actions{align-items:center;}
