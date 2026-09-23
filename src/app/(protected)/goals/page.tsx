@@ -57,7 +57,7 @@ export default async function Page({searchParams}:{searchParams:Promise<{error?:
               <td>{gap?<span className="namaa-table-status is-warning">{formatSar(gap.toFixed(2))}</span>:'لا توجد'}</td>
               <td>{g.targetDate??'غير محدد'}</td>
               <td><div className="p49-resource-actions">
-                <ActionDialog title={\`تفاصيل \${g.name}\`} size="lg" trigger="التفاصيل">
+                <ActionDialog title={`تفاصيل ${g.name}`} size="lg" trigger="التفاصيل">
                   <div className="detail-list">
                     <div><span>الحالة</span><strong>{L[g.status]??g.status}</strong></div>
                     <div><span>المتبقي</span><strong>{formatSar(String(g.remainingAmount))}</strong></div>
@@ -68,7 +68,7 @@ export default async function Page({searchParams}:{searchParams:Promise<{error?:
                   </div>
                   <div className="p49-dialog-actions"><Link className="secondary-link" href={'/goals/'+g.id}>إدارة الرحلات والتمويل المتقدم</Link></div>
                 </ActionDialog>
-                {required>0?<ActionDialog title={\`اعتماد مساهمة \${g.name}\`} description="لن يتم تنفيذ تحويل مالي تلقائيًا." size="lg" trigger="اعتماد المساهمة">
+                {required>0?<ActionDialog title={`اعتماد مساهمة ${g.name}`} description="لن يتم تنفيذ تحويل مالي تلقائيًا." size="lg" trigger="اعتماد المساهمة">
                   <form action={approveGoalCycleCommitmentAction} className="form-grid">
                     <input type="hidden" name="goalId" value={g.id}/>
                     <input type="hidden" name="requiredAmount" value={g.requiredContribution??''}/>
