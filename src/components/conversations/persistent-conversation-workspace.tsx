@@ -652,6 +652,42 @@ function RichStructuredMessageHero({
   </section>;
 }
 
+function DirectGovernanceChangeCard({data}:{data:Record<string,unknown>}){
+  const [expanded,setExpanded]=useState(false);
+  const action=String(data.change_action??'EDIT');
+  const unitType=String(data.unit_type??'paragraph');
+  const actionLabel=action==='ADD'?'إضافة':action==='DELETE'?'حذف':'تعديل';
+  const unitLabel=unitType==='article'?'المادة':unitType==='clause'?'البند':'الفقرة';
+  const unitRef=typeof data.unit_ref==='string'?data.unit_ref:'غير محدد';
+  const documentTitle=typeof data.document_title==='string'?data.document_title:'وثيقة الحوكمة';
+  const currentRule=typeof data.current_rule==='string'?data.current_rule:null;
+  const proposedRule=typeof data.proposed_rule==='string'?data.proposed_rule:null;
+  const rationale=typeof data.rationale==='string'?data.rationale:null;
+
+  return <section className={`${styles.structuredCard} ${styles.kind_followup}`} aria-label="تفاصيل التحرير المباشر">
+    <header className={styles.structuredCardHeader}>
+      <span aria-hidden="true"><LucideIcon name="pencil" size={16}/></span>
+      <strong>تحرير مباشر</strong>
+    </header>
+    <div className={styles.facts}>
+      <span><small>الحالة</small><strong>مطبق مباشرة</strong></span>
+      <span><small>الإجراء</small><strong>{actionLabel}</strong></span>
+      <span><small>العنصر</small><strong>{unitLabel} {unitRef}</strong></span>
+    </div>
+    <button type="button" className={styles.secondaryButton} onClick={()=>setExpanded(value=>!value)} aria-expanded={expanded}>
+      <LucideIcon name="listChecks" size={16}/>
+      <span>{expanded?'إخفاء التفاصيل':'عرض التفاصيل'}</span>
+    </button>
+    {expanded&&<div className={styles.governedClauseDetails}>
+      <div><small>الوثيقة</small><p>{documentTitle}</p></div>
+      {currentRule&&<div><small>النص السابق</small><p>{currentRule}</p></div>}
+      {action!=='DELETE'&&proposedRule&&<div><small>{action==='ADD'?'النص المضاف':'النص بعد التعديل'}</small><p>{proposedRule}</p></div>}
+      {rationale&&<div><small>الملاحظة</small><p>{rationale}</p></div>}
+      <div><small>المسار</small><p>هذا تحرير مباشر لمرحلة ضبط المنصة، ولا يحتاج اعتماد مجلس نماء الأعلى. الاعتماد يخص التحرير الحوكمي فقط.</p></div>
+    </div>}
+  </section>;
+}
+
 function StructuredFacts({data}:{data?:Record<string,unknown>}){
   if(!data)return null;
   const confidence=typeof data.confidence_percent==='number'?data.confidence_percent:null;
@@ -1253,7 +1289,9 @@ export function PersistentConversationWorkspace(){
     {!groupedWithPrevious&&message.sender_type==='user'&&<div className={styles.userMessageIdentity}>{profile?.image&&<span className={styles.userMessageAvatar} aria-hidden="true" style={{backgroundImage:`url("${profile.image.replace(/"/g,'')}")`}}/>}<span className={styles.userMessageIdentityCopy}><strong>{meetingUserDisplayName(profile?.name||message.sender_name)}</strong><small>{activeRoom.id==='council'?'صاحب المحفظة':'أنت'}</small></span></div>}
     {message.structured_data?.onboarding===true?<OnboardingMessageContent message={message} showStructuredAction={onboardingComplete===false&&message.sender_type!=='user'&&String(message.structured_data?.onboarding_step??'')===String(onboardingStep??'')&&STRUCTURED_INTAKE_STEPS.has(String(onboardingStep??''))} onOpenStructuredIntake={()=>setIntakeDismissed(false)}/>:<p className={styles.messageCopy}>{message.body}</p>}
     {message.sender_type==='user'&&<UserMessageExtras message={message} attachments={attachments}/>}
-    {message.message_kind!=='message'&&message.structured_data?.onboarding!==true&&<section className={`${styles.structuredCard} ${styles[`kind_${message.message_kind}`]}`}>
+    {message.structured_data?.governance_direct_change===true
+      ?<DirectGovernanceChangeCard data={message.structured_data}/>
+      :message.message_kind!=='message'&&message.structured_data?.onboarding!==true&&<section className={`${styles.structuredCard} ${styles[`kind_${message.message_kind}`]}`}>
       {!groupedWithPrevious&&<RichStructuredMessageHero room={activeRoom} kind={message.message_kind} data={message.structured_data} senderName={activeRoom.id==='central'?'محافظ بنك نماء المركزي':message.sender_name}/>} 
       <header className={styles.structuredCardHeader}><span aria-hidden="true"><LucideIcon name={messageKindIcon(message.message_kind)} size={16}/></span><strong>التفاصيل</strong></header>
       <OversightStructuredCards
