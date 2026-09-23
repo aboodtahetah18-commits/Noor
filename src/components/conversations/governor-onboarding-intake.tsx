@@ -1,6 +1,7 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { LucideIcon } from '@/components/ui/lucide-icon';
 import styles from './conversation-workspace.module.css';
 
@@ -97,6 +98,18 @@ export function GovernorOnboardingIntake({
   const [saving,setSaving]=useState(false);
   const [error,setError]=useState('');
   const [mobileEditor,setMobileEditor]=useState<MobileEditor>(null);
+
+  useEffect(()=>{
+    if(!mobileEditor) return;
+    const previousOverflow=document.body.style.overflow;
+    const previousOverscroll=document.body.style.overscrollBehavior;
+    document.body.style.overflow='hidden';
+    document.body.style.overscrollBehavior='none';
+    return()=>{
+      document.body.style.overflow=previousOverflow;
+      document.body.style.overscrollBehavior=previousOverscroll;
+    };
+  },[mobileEditor]);
   const [simpleAnswer,setSimpleAnswer]=useState('');
   const [stagesOpen,setStagesOpen]=useState(true);
 
@@ -482,7 +495,7 @@ export function GovernorOnboardingIntake({
       <div className={styles.mobileIntakeFooter}><button type="button" className={styles.intakeAddButton} onClick={()=>setMobileEditor({kind:'goals',index:null,draft:emptyGoal()})}><LucideIcon name="plus" size={16}/><span>إضافة هدف</span></button><button type="button" className={styles.intakeNoneButton} onClick={()=>setGoals([])}>لا توجد أهداف أريد تسجيلها الآن</button></div>
     </div>}
 
-    {mobileEditor&&<div className={styles.mobileRecordEditorOverlay} role="dialog" aria-modal="true" aria-label="تحرير السجل">
+    {mobileEditor&&typeof document!=='undefined'?createPortal(<div className={styles.mobileRecordEditorOverlay} role="dialog" aria-modal="true" aria-label="تحرير السجل">
       <button type="button" className={styles.mobileRecordEditorScrim} aria-label="إغلاق محرر السجل" onClick={()=>setMobileEditor(null)}/>
       <aside className={styles.mobileRecordEditorSheet+' '+(mobileEditor.kind==='dependents'?styles.mobileRecordEditorSheetCompact:'')}>
         <header className={styles.mobileRecordEditorHeader}><div><strong>{mobileEditor.kind==='dependents'?(mobileEditor.index===null?'إضافة فرد جديد':'تعديل الفرد'):(mobileEditor.index===null?'إضافة سجل':'تعديل السجل')}</strong><small>{mobileEditor.kind==='dependents'?'أدخل البيانات الأساسية ثم احفظ الفرد.':'احفظ هذا السجل ثم عد للقائمة.'}</small></div><button type="button" onClick={()=>setMobileEditor(null)} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button></header>
@@ -528,7 +541,7 @@ export function GovernorOnboardingIntake({
         </div>
         <footer className={styles.mobileRecordEditorActions}><button type="button" onClick={()=>setMobileEditor(null)}>إلغاء</button><button type="button" onClick={saveMobileEditor}>حفظ السجل</button></footer>
       </aside>
-    </div>}
+    </div>,document.body):null}
 
     {error&&<div className={styles.intakeError} role="alert">{error}</div>}
     <div className={styles.intakeActions}>
