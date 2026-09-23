@@ -1,12 +1,6 @@
 import Link from 'next/link';
 import { LucideIcon } from '@/components/ui/lucide-icon';
-
-const portfolioActions = [
-  { href: '/advisor', label: 'إضافة محفظة', icon: 'plus' as const },
-  { href: '/advisor', label: 'طلب تحليل', icon: 'chart' as const },
-  { href: '/conversations', label: 'التحديث عبر الدردشة', icon: 'messageSquareText' as const },
-  { href: '/reports', label: 'عرض المتابعة', icon: 'listChecks' as const },
-];
+import { InvestmentActionDialogs } from './investment-action-dialogs';
 
 export default function InvestmentsPage() {
   return (
@@ -18,14 +12,7 @@ export default function InvestmentsPage() {
             <h1>الاستثمارات</h1>
             <span>إدارة المحافظ، التقييم، المتابعة، والتحليل قبل أي توصية شراء أو خروج.</span>
           </div>
-          <div className="namaa-investments-actions">
-            {portfolioActions.map((action) => (
-              <Link key={action.label} href={action.href} className="namaa-wide-action-secondary">
-                <LucideIcon name={action.icon} size={20} />
-                <span>{action.label}</span>
-              </Link>
-            ))}
-          </div>
+          <InvestmentActionDialogs />
         </header>
 
         <div className="namaa-investments-grid">
