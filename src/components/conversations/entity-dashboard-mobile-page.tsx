@@ -49,7 +49,7 @@ export function EntityDashboardMobilePage({roomKey,onClose}:{roomKey:string;onCl
       {error&&<div className={styles.dashboardStateCard}><LucideIcon name="triangleAlert" size={24}/><p>{error}</p></div>}
       {dashboard&&<>
         <section className={`${styles.dashboardHero} ${styles['dashboard_'+dashboard.state]}`}>
-          <div><span>{statusLabel[dashboard.state]}</span><strong>{dashboard.headline}</strong><small>آخر تحديث: {new Intl.DateTimeFormat('ar-SA',{dateStyle:'medium',timeStyle:'short'}).format(new Date(dashboard.generatedAt))}</small></div>
+          <div><span>{statusLabel[dashboard.state]}</span><strong>{dashboard.headline}</strong><small>آخر تحديث: {new Intl.DateTimeFormat('en-GB',{dateStyle:'medium',timeStyle:'short'}).format(new Date(dashboard.generatedAt))}</small></div>
           <LucideIcon name="chart" size={24}/>
         </section>
 
