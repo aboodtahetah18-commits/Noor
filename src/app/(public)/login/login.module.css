@@ -80,7 +80,7 @@
   z-index:-1;
   pointer-events:none;
   border:1px solid rgb(226 195 127 / 24%);
-  background:rgb(255 255 255 / 2%);
+  background:rgb(212 175 107 / 5%);
 }
 
 .visual::before{
@@ -120,9 +120,9 @@
   display:grid;
   place-items:center;
   flex:0 0 76px;
-  border:1px solid rgb(255 255 255 / 20%);
+  border:1px solid rgb(226 195 127 / 24%);
   border-radius:20px;
-  background:rgb(255 255 255 / 9%);
+  background:rgb(212 175 107 / 10%);
   backdrop-filter:blur(8px);
 }
 
@@ -202,9 +202,9 @@
   align-items:center;
   gap:10px;
   padding:9px 12px;
-  border:1px solid rgb(255 255 255 / 12%);
+  border:1px solid rgb(212 175 107 / 16%);
   border-radius:12px;
-  background:rgb(255 255 255 / 6%);
+  background:rgb(24 159 127 / 8%);
   color:rgb(247 251 249 / 90%);
   font-size:13px;
 }
