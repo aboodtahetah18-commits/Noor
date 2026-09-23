@@ -10346,3 +10346,284 @@
     height:22px !important;
   }
 }
+
+
+/* Wide structured onboarding — repeatable records use table + modal. */
+@media (min-width:768px){
+  .desktopIntakeTableShell{
+    display:grid;
+    gap:12px;
+    border:1px solid var(--namaa-border);
+    border-radius:18px;
+    background:var(--namaa-surface-warm);
+    padding:14px;
+  }
+
+  .desktopIntakeTableHeader{
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:16px;
+  }
+
+  .desktopIntakeTableHeader>div{
+    display:grid;
+    gap:4px;
+  }
+
+  .desktopIntakeTableHeader strong{
+    color:var(--ux-text-primary);
+    font-size:18px;
+  }
+
+  .desktopIntakeTableHeader small{
+    color:var(--ux-text-secondary);
+    font-size:12px;
+    line-height:1.6;
+  }
+
+  .desktopIntakeTableHeader .intakeAddButton{
+    width:auto;
+    min-width:150px;
+    min-height:44px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+  }
+
+  .desktopIntakeTableWrap{
+    width:100%;
+    overflow:auto;
+    border:1px solid var(--namaa-border);
+    border-radius:14px;
+    background:var(--namaa-card);
+  }
+
+  .desktopIntakeTable{
+    width:100%;
+    min-width:920px;
+    border-collapse:collapse;
+  }
+
+  .desktopIntakeTable th,
+  .desktopIntakeTable td{
+    padding:12px 14px;
+    text-align:right;
+    border-bottom:1px solid var(--namaa-border);
+    vertical-align:middle;
+  }
+
+  .desktopIntakeTable th{
+    background:color-mix(in srgb,var(--namaa-green-900) 8%,var(--namaa-card));
+    color:var(--namaa-green-900);
+    font-size:12px;
+    font-weight:900;
+  }
+
+  .desktopIntakeTable td{
+    color:var(--ux-text-primary);
+    font-size:13px;
+  }
+
+  .desktopIntakeTable td strong{
+    display:block;
+    color:var(--ux-text-primary);
+  }
+
+  .desktopIntakeTable td small{
+    display:block;
+    margin-top:3px;
+    color:var(--ux-text-secondary);
+  }
+
+  .desktopIntakeTable tbody tr:last-child td{
+    border-bottom:0;
+  }
+
+  .desktopIntakeTable tbody tr:hover td{
+    background:color-mix(in srgb,var(--namaa-gold-500) 7%,var(--namaa-card));
+  }
+
+  .desktopIntakeTableActions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+  }
+
+  .desktopIntakeTableActions button{
+    min-height:36px;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:6px 10px;
+    border:1px solid var(--namaa-border);
+    border-radius:10px;
+    background:var(--namaa-card);
+    color:var(--namaa-green-900);
+    font:inherit;
+    font-size:12px;
+    font-weight:800;
+  }
+
+  .desktopIntakeTableEmpty{
+    min-height:120px;
+    display:grid;
+    place-items:center;
+    align-content:center;
+    gap:4px;
+    text-align:center;
+  }
+
+  .desktopIntakeTableEmpty strong{
+    color:var(--ux-text-primary);
+  }
+
+  .desktopIntakeTableEmpty small{
+    color:var(--ux-text-secondary);
+  }
+
+  .mobileRecordEditorOverlay{
+    position:fixed;
+    inset:0;
+    z-index:180;
+    display:block;
+  }
+
+  .mobileRecordEditorScrim{
+    position:absolute;
+    inset:0;
+    border:0;
+    background:rgb(7 43 33 / 44%);
+    backdrop-filter:blur(3px);
+  }
+
+  .mobileRecordEditorSheet{
+    position:absolute;
+    top:50%;
+    right:50%;
+    transform:translate(50%,-50%);
+    width:min(calc(100vw - 80px),1040px);
+    max-height:88dvh;
+    overflow:auto;
+    display:grid;
+    grid-template-rows:auto minmax(0,1fr) auto;
+    border:1px solid var(--namaa-border-strong);
+    border-radius:20px;
+    background:var(--namaa-card);
+    box-shadow:0 24px 70px rgb(0 0 0 / 24%);
+  }
+
+  .mobileRecordEditorHeader{
+    position:sticky;
+    top:0;
+    z-index:2;
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:16px;
+    padding:20px 22px;
+    border-bottom:1px solid var(--namaa-border);
+    background:var(--namaa-card);
+  }
+
+  .mobileRecordEditorHeader>div{
+    display:grid;
+    gap:4px;
+  }
+
+  .mobileRecordEditorHeader strong{
+    color:var(--ux-text-primary);
+    font-size:18px;
+  }
+
+  .mobileRecordEditorHeader small{
+    color:var(--ux-text-secondary);
+    font-size:12px;
+  }
+
+  .mobileRecordEditorHeader button{
+    width:42px;
+    height:42px;
+    display:grid;
+    place-items:center;
+    border:1px solid var(--namaa-border);
+    border-radius:12px;
+    background:var(--namaa-surface-warm);
+    color:var(--namaa-green-900);
+  }
+
+  .mobileRecordEditorBody{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:16px;
+    padding:22px;
+    overflow:auto;
+  }
+
+  .mobileRecordEditorBody label{
+    display:grid;
+    gap:7px;
+  }
+
+  .mobileRecordEditorBody label>span{
+    color:var(--ux-text-primary);
+    font-size:13px;
+    font-weight:800;
+  }
+
+  .mobileRecordEditorBody input,
+  .mobileRecordEditorBody select{
+    width:100%;
+    min-height:46px;
+    border:1px solid var(--namaa-border);
+    border-radius:12px;
+    background:var(--namaa-surface-warm);
+    color:var(--ux-text-primary);
+    padding:10px 12px;
+    font:inherit;
+  }
+
+  .mobileFieldFull{
+    grid-column:1 / -1;
+  }
+
+  .mobileRecordEditorBody .intakeCheckbox{
+    display:flex!important;
+    align-items:center;
+    gap:10px;
+  }
+
+  .mobileRecordEditorBody .intakeCheckbox input{
+    width:22px;
+    min-height:22px;
+    height:22px;
+  }
+
+  .mobileRecordEditorActions{
+    position:sticky;
+    bottom:0;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    padding:16px 22px 20px;
+    border-top:1px solid var(--namaa-border);
+    background:var(--namaa-card);
+  }
+
+  .mobileRecordEditorActions button{
+    min-height:46px;
+    border:1px solid var(--namaa-border);
+    border-radius:12px;
+    background:var(--namaa-surface-warm);
+    color:var(--ux-text-primary);
+    font:inherit;
+    font-weight:900;
+  }
+
+  .mobileRecordEditorActions button:last-child{
+    border-color:var(--namaa-green-700);
+    background:var(--namaa-green-900);
+    color:#fff;
+  }
+}
