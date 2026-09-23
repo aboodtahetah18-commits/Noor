@@ -265,8 +265,6 @@ label>span,.field-label{font-weight:500!important;color:var(--ux-text-primary)!i
 
 /* Desktop shell layout removed.
    Wide-layout ownership lives exclusively in namaa-wide-experience.css. */
-.mustaqbali-sidebar{display:none;}
-.mustaqbali-topbar{display:none;}
 
 /* Tablet shell */
 @media(min-width:768px) and (max-width:1023px){
@@ -361,8 +359,6 @@ label>span,.field-label{font-weight:500!important;color:var(--ux-text-primary)!i
 /* Logo rules: colored logo on light surfaces, white logo on dark surfaces. */
 .mustaqbali-logo-dark{display:none!important;}
 .mustaqbali-logo-light{display:block!important;}
-.mustaqbali-sidebar-brand img{background:transparent!important;}
-.mustaqbali-sidebar-brand a{overflow:visible!important;}
 
 /* Public authentication: remove decorative clutter and give the brand first visual priority. */
 .auth-stage{align-items:stretch!important;}
@@ -533,8 +529,7 @@ html[data-theme="light"] .p47-dashboard-page{
 html[data-theme="light"] .mustaqbali-logo-light{display:block!important;}
 html[data-theme="light"] .mustaqbali-logo-dark{display:none!important;}
 html[data-theme="light"] .p47-mobile-topbar.mustaqbali-mobile-header,
-html[data-theme="light"] .tablet-top-nav-wrap.mustaqbali-tablet-wrap,
-html[data-theme="light"] .mustaqbali-topbar{
+html[data-theme="light"] .tablet-top-nav-wrap.mustaqbali-tablet-wrap{
   background:var(--ux-shell-topbar-bg)!important;
   color:var(--ux-brand-primary)!important;
   border-color:var(--ux-shell-topbar-border)!important;
@@ -597,7 +592,6 @@ html[data-theme="dark"] .p47-dashboard-page{
 }
 html[data-theme="dark"] .mustaqbali-logo-light{display:none!important;}
 html[data-theme="dark"] .mustaqbali-logo-dark{display:block!important;}
-html[data-theme="dark"] .mustaqbali-topbar,
 html[data-theme="dark"] .p47-mobile-topbar.mustaqbali-mobile-header,
 html[data-theme="dark"] .tablet-top-nav-wrap.mustaqbali-tablet-wrap{
   background:var(--ux-dark-shell-topbar-bg)!important;
@@ -706,10 +700,7 @@ html[data-theme="dark"] .mustaqbali-theme-toggle{
 .auth-panel{position:relative;}
 
 /* Brand contrast is surface-driven: sidebar/auth visual are always dark surfaces. */
-.mustaqbali-sidebar-brand img,
 .auth-brand-logo-dark-surface{filter:none!important;}
-html[data-theme="light"] .mustaqbali-sidebar-brand img,
-html[data-theme="dark"] .mustaqbali-sidebar-brand img{opacity:1!important;}
 
 /* Compatibility hook retained for UX-P29 audit; theme activation remains explicit. */
 @media(prefers-color-scheme:dark){
@@ -804,167 +795,4 @@ html[data-theme="dark"] .p4913-filter-toggle,html[data-theme="dark"] .p4913-filt
 }
 
 
-/* === Build 17 — shell contrast and header cleanup === */
-/* The desktop top bar stays dark in both themes, matching the right sidebar. */
-html[data-theme="light"] .mustaqbali-topbar{
-  background:var(--ux-shell-sidebar-bg)!important;
-  color:var(--ux-white)!important;
-  border-color:var(--ux-shell-topbar-border)!important;
-}
-html[data-theme="light"] .mustaqbali-topbar-menu,
-html[data-theme="light"] .mustaqbali-topbar-actions>a,
-html[data-theme="light"] .mustaqbali-topbar-actions>button,
-html[data-theme="light"] .mustaqbali-profile-trigger{
-  background:var(--ux-alpha-white-10)!important;
-  color:var(--ux-white)!important;
-  border-color:var(--ux-alpha-white-18)!important;
-}
-html[data-theme="light"] .mustaqbali-global-search{
-  background:var(--ux-white)!important;
-  color:var(--ux-brand-primary)!important;
-  border-color:var(--ux-alpha-white-18)!important;
-}
-html[data-theme="light"] .mustaqbali-global-search input{
-  background:var(--ux-white)!important;
-  color:var(--ux-brand-primary)!important;
-}
-html[data-theme="light"] .mustaqbali-topbar-logo img,
-html[data-theme="dark"] .mustaqbali-topbar-logo img{
-  width:var(--ux-logo-desktop-width)!important;
-  max-height:44px!important;
-  object-fit:contain!important;
-  object-position:center!important;
-}
-.mustaqbali-topbar-brand-zone{justify-content:flex-start!important;}
-.mustaqbali-topbar-page-label{display:none!important;}
-
-/* Remove the legacy decorative circle that cuts into page headers. */
-.page-header::before,.p47-page-heading::before,.p47-resource-header::before,.p47-flow-header::before,.p47-closure-header::before,.p47-analysis-header::before,.dashboard-header::before,.p47-section-header::before{display:none!important;}
-
-/* Header cards remain visibly distinct in light mode. */
-html[data-theme="light"] :where(.page-header,.dashboard-header,.p47-page-heading,.p47-resource-header,.p47-flow-header,.p47-closure-header,.p47-analysis-header,.p47-section-header){
-  background:var(--ux-section-soft-blue)!important;
-  border-color:var(--ux-border-emphasis)!important;
-  box-shadow:var(--ux-shadow-m)!important;
-}
-
-/* Empty/first-run states keep strong contrast in both themes. */
-.p47-empty-state{border-color:var(--ux-border-emphasis)!important;box-shadow:var(--ux-shadow-m)!important;}
-.p47-empty-icon{background:var(--ux-brand-primary)!important;color:var(--ux-white)!important;}
-html[data-theme="dark"] .p47-empty-state{background:var(--ux-dark-card-bg)!important;border-color:var(--ux-dark-border)!important;}
-html[data-theme="dark"] .p47-empty-icon{background:var(--ux-brand-secondary)!important;color:var(--ux-white)!important;}
-html[data-theme="dark"] .p47-empty-state .p47-kicker{color:var(--ux-brand-secondary)!important;}
-html[data-theme="dark"] .p47-empty-state h1{color:var(--ux-white)!important;}
-html[data-theme="dark"] .p47-empty-state>p:not(.p47-kicker){color:var(--ux-dark-text-secondary)!important;}
-
-
-/* === Build 18 — topbar identity, CTA visibility, resilient error presentation === */
-/* Legacy desktop media block removed; canonical wide layout is in namaa-wide-experience.css. */
-
-.p74-next-step>a{
-  min-width:var(--ux-size-24)!important;
-  color:var(--ux-white)!important;
-  background:var(--ux-brand-primary)!important;
-  gap:var(--ux-space-2)!important;
-  padding-inline:var(--ux-space-4)!important;
-}
-.p74-next-step>a>span{color:var(--ux-white)!important;font-size:var(--ux-type-button-size)!important;font-weight:var(--ux-type-button-weight)!important;}
-.p74-next-step>a>svg{color:var(--ux-white)!important;flex:0 0 auto!important;}
-html[data-theme="dark"] .p74-next-step>a{background:var(--ux-brand-secondary)!important;color:var(--ux-white)!important;}
-html[data-theme="dark"] .p74-next-step>a>span,html[data-theme="dark"] .p74-next-step>a>svg{color:var(--ux-white)!important;}
-.warning-banner{border-color:var(--ux-warning)!important;background:var(--ux-soft-orange)!important;color:var(--ux-text-primary)!important;}
-
-/* === Build 19 — visible defect repair: logo, modal forms, compact headers === */
-/* Topbar identity uses one clean logo and one menu control only. */
-/* Legacy desktop media block removed; canonical wide layout is in namaa-wide-experience.css. */
-
-
-/* Profile trigger is a user identity control, not an application-logo duplicate. */
-.p60-avatar-fallback{width:var(--ux-space-8)!important;height:var(--ux-space-8)!important;display:grid!important;place-items:center!important;color:currentColor!important;}
-.p60-avatar-fallback svg{width:var(--ux-space-6)!important;height:var(--ux-space-6)!important;}
-
-/* All modal forms stay inside the dialog and preserve two-column compact layout. */
-dialog.p49-action-dialog{inline-size:min(760px,calc(100vw - var(--ux-space-8)))!important;max-inline-size:calc(100vw - var(--ux-space-8))!important;overflow:hidden!important;}
-dialog.p49-action-dialog.is-sm{inline-size:min(460px,calc(100vw - var(--ux-space-8)))!important;}
-dialog.p49-action-dialog.is-md{inline-size:min(640px,calc(100vw - var(--ux-space-8)))!important;}
-dialog.p49-action-dialog.is-lg{inline-size:min(820px,calc(100vw - var(--ux-space-8)))!important;}
-dialog.p49-action-dialog.is-xl{inline-size:min(980px,calc(100vw - var(--ux-space-8)))!important;}
-.p49-dialog-shell,.p49-dialog-body,.p55-profile-dialog{inline-size:100%!important;max-inline-size:100%!important;min-inline-size:0!important;box-sizing:border-box!important;}
-.p49-dialog-body{overflow-x:hidden!important;}
-.p55-profile-dialog{display:grid!important;gap:var(--ux-space-4)!important;}
-.p55-profile-form,.p60-security-form,.p47-settings-form{
-  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:var(--ux-space-3)!important;inline-size:100%!important;min-inline-size:0!important;
-  padding-block:var(--ux-space-3)!important;border-block-end:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default)!important;
-}
-.p55-profile-form>label,.p60-security-form>label,.p47-settings-form>label{display:grid!important;gap:var(--ux-space-2)!important;min-inline-size:0!important;max-inline-size:100%!important;white-space:normal!important;overflow-wrap:anywhere!important;}
-.p55-profile-form input,.p60-security-form input,.p47-settings-form input,.p55-profile-form select,.p60-security-form select,.p47-settings-form select{
-  inline-size:100%!important;max-inline-size:100%!important;min-inline-size:0!important;box-sizing:border-box!important;overflow:hidden!important;text-overflow:ellipsis!important;
-}
-.p60-security-form input[type="file"]{padding:var(--ux-space-2)!important;white-space:normal!important;text-overflow:clip!important;}
-.p55-profile-actions,.p55-profile-form>.primary-button,.p60-security-form>.secondary-button,.p47-settings-form>.primary-button{grid-column:1/-1!important;}
-.p60-security-form>.secondary-button,.p47-settings-form>.primary-button{justify-self:stretch!important;width:100%!important;}
-.p55-profile-summary{min-inline-size:0!important;overflow:hidden!important;}
-.p55-profile-summary>div{min-inline-size:0!important;}
-.p55-profile-summary span,.p55-profile-summary strong,.p55-profile-summary small{overflow-wrap:anywhere!important;}
-
-/* Header back/action controls stay visible; no empty dark slabs. */
-.cycle-back-link{width:var(--ux-size-11)!important;height:var(--ux-size-11)!important;min-width:var(--ux-size-11)!important;min-height:var(--ux-size-11)!important;padding:var(--ux-space-0)!important;display:grid!important;place-items:center!important;background:var(--ux-white)!important;color:var(--ux-brand-primary)!important;border-color:var(--ux-border-emphasis)!important;}
-.cycle-back-link svg{display:block!important;color:currentColor!important;}
-html[data-theme="dark"] .cycle-back-link{background:var(--ux-dark-card-bg)!important;color:var(--ux-white)!important;border-color:var(--ux-dark-border)!important;}
-
-/* Compact filters are truly invisible until the toggle is activated. */
-.p4913-filter-content[hidden]{display:none!important;visibility:hidden!important;pointer-events:none!important;}
-.p4913-filter-shell:not(.is-open) .p4913-filter-content{display:none!important;}
-.p4913-filter-shell.is-open .p4913-filter-content{display:block!important;visibility:visible!important;pointer-events:auto!important;}
-
-/* Header action buttons remain compact and legible. */
-.p4913-header-filter-actions{align-self:center!important;}
-.p4913-filter-toggle{min-height:var(--ux-size-11)!important;white-space:nowrap!important;}
-
-@media(max-width:767px){
-  dialog.p49-action-dialog,dialog.p49-action-dialog.is-sm,dialog.p49-action-dialog.is-md,dialog.p49-action-dialog.is-lg,dialog.p49-action-dialog.is-xl{inline-size:calc(100vw - var(--ux-space-4))!important;max-inline-size:calc(100vw - var(--ux-space-4))!important;}
-  .p49-dialog-body{padding:var(--ux-space-4)!important;}
-  .p55-profile-form,.p60-security-form,.p47-settings-form{grid-template-columns:1fr!important;}
-  .p55-profile-actions,.p55-profile-form>.primary-button,.p60-security-form>.secondary-button,.p47-settings-form>.primary-button{grid-column:auto!important;}
-}
-
-
-/* === Build 20 — final cross-device shell and theme closure === */
-/* Legacy desktop media block removed; canonical wide layout is in namaa-wide-experience.css. */
-
-
-/* Every interactive surface inherits the active theme rather than a legacy white canvas. */
-html[data-theme="light"] :where(dialog,.p49-dialog-shell,.p49-dialog-body,.p55-profile-dialog,.p4913-filter-content){
-  background:var(--ux-card-bg)!important;
-  color:var(--ux-text-primary)!important;
-  border-color:var(--ux-border-emphasis)!important;
-}
-html[data-theme="dark"] :where(dialog,.p49-dialog-shell,.p49-dialog-body,.p55-profile-dialog,.p4913-filter-content){
-  background:var(--ux-dark-card-bg)!important;
-  color:var(--ux-dark-text-primary)!important;
-  border-color:var(--ux-dark-border)!important;
-}
-html[data-theme="dark"] :where(.p49-dialog-body,.p55-profile-dialog,.p55-profile-form,.p60-security-form,.p47-settings-form) :where(label,span,strong,p,h1,h2,h3){
-  color:inherit;
-}
-html[data-theme="dark"] :where(.p55-profile-form,.p60-security-form,.p47-settings-form) :where(input,select,textarea){
-  background:var(--ux-dark-surface-muted)!important;
-  color:var(--ux-dark-text-primary)!important;
-  border-color:var(--ux-dark-border)!important;
-}
-html[data-theme="light"] :where(.p55-profile-form,.p60-security-form,.p47-settings-form) :where(input,select,textarea){
-  background:var(--ux-white)!important;
-  color:var(--ux-text-primary)!important;
-  border-color:var(--ux-border-emphasis)!important;
-}
-
-/* Compact mobile: no control or dialog may exceed the viewport. */
-@media(max-width:767px){
-  :where(dialog.p49-action-dialog,.p49-dialog-shell,.p49-dialog-body,.p55-profile-dialog,.p4913-filter-content){
-    max-inline-size:calc(100vw - var(--ux-space-4))!important;
-    inline-size:calc(100vw - var(--ux-space-4))!important;
-  }
-  .p4913-filter-content{inset-inline-end:var(--ux-space-0)!important;}
-  .p55-profile-form,.p60-security-form,.p47-settings-form{grid-template-columns:1fr!important;}
-  .mustaqbali-mobile-header,.mustaqbali-tablet-wrap{overflow:hidden!important;}
-}
+/* Legacy desktop shell visual builds 17–20 removed. Wide shell is owned by namaa-wide-experience.css. */
