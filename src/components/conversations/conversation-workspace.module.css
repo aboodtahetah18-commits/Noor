@@ -8625,8 +8625,7 @@
 /* Namaa final upload pass — full-screen edits and solid chat canvas */
 
 /* Chat canvas: one dark green surface with no decorative imagery. */
-.chatPane,
-.messages{
+.chatPane{
   background:var(--namaa-green-900)!important;
   background-image:none!important
 }
