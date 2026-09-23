@@ -863,3 +863,376 @@
     grid-template-columns:1fr;
   }
 }
+
+
+@media (min-width:768px) {
+  .namaa-settings-legacy { display:none !important; }
+
+  .namaa-lab-wide,
+  .namaa-settings-wide {
+    width:min(100%,1540px);
+    margin-inline:auto;
+    padding:24px;
+    color:var(--namaa-wide-text);
+  }
+
+  .namaa-lab-hero,
+  .namaa-settings-hero {
+    padding:24px 28px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:24px;
+    margin-bottom:18px;
+  }
+
+  .namaa-lab-hero p,
+  .namaa-settings-hero p {
+    margin:0 0 4px;
+    color:var(--namaa-wide-gold);
+    font-size:12px;
+    font-weight:800;
+  }
+
+  .namaa-lab-hero h1,
+  .namaa-settings-hero h1 {
+    margin:0;
+    color:var(--namaa-wide-green);
+    font-size:clamp(30px,4vw,44px);
+  }
+
+  .namaa-lab-hero span,
+  .namaa-settings-hero span {
+    display:block;
+    margin-top:8px;
+    color:var(--namaa-wide-muted);
+  }
+
+  .namaa-lab-actions {
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+
+  .namaa-lab-actions a {
+    min-height:42px;
+    padding:0 14px;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    text-decoration:none;
+    font-weight:800;
+  }
+
+  .namaa-lab-layout {
+    display:grid;
+    grid-template-columns:minmax(240px,.8fr) minmax(420px,1.8fr) minmax(240px,.8fr);
+    gap:18px;
+    align-items:start;
+  }
+
+  .namaa-lab-dashboard,
+  .namaa-lab-center,
+  .namaa-lab-side {
+    padding:18px;
+  }
+
+  .namaa-lab-kpis {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:10px;
+    margin-top:16px;
+  }
+
+  .namaa-lab-kpis article {
+    border:1px solid var(--namaa-wide-border);
+    border-radius:14px;
+    padding:14px;
+    background:#fff;
+  }
+
+  .namaa-lab-kpis span {
+    display:block;
+    color:var(--namaa-wide-muted);
+    font-size:12px;
+  }
+
+  .namaa-lab-kpis strong {
+    display:block;
+    margin-top:4px;
+    color:var(--namaa-wide-green);
+    font-size:24px;
+  }
+
+  .namaa-lab-version-card {
+    margin-top:14px;
+    padding:14px;
+    border-radius:14px;
+    border:1px solid rgb(212 175 107 / 35%);
+    background:rgb(212 175 107 / 9%);
+  }
+
+  .namaa-lab-version-card p {
+    color:var(--namaa-wide-muted);
+    line-height:1.7;
+  }
+
+  .namaa-lab-version-card span {
+    color:#6d5326;
+    font-size:12px;
+    font-weight:800;
+  }
+
+  .namaa-lab-shortcuts {
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin:16px 0;
+  }
+
+  .namaa-lab-shortcuts a,
+  .namaa-lab-item-actions a,
+  .namaa-lab-item-actions button,
+  .namaa-lab-side a {
+    border:1px solid var(--namaa-wide-border);
+    border-radius:10px;
+    padding:8px 11px;
+    text-decoration:none;
+    background:#fff;
+    color:var(--namaa-wide-green);
+    font-weight:800;
+  }
+
+  .namaa-lab-feed {
+    display:grid;
+    gap:12px;
+  }
+
+  .namaa-lab-item {
+    border:1px solid var(--namaa-wide-border);
+    border-radius:14px;
+    padding:15px;
+    background:#fff;
+  }
+
+  .namaa-lab-item.is-warning {
+    border-color:#f5c56b;
+    background:#fffaf0;
+  }
+
+  .namaa-lab-item-head {
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    align-items:center;
+  }
+
+  .namaa-lab-item-head > div {
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+  }
+
+  .namaa-lab-item-head span {
+    border-radius:999px;
+    padding:5px 9px;
+    background:rgb(11 107 79 / 7%);
+    color:var(--namaa-wide-green);
+    font-size:11px;
+    font-weight:800;
+  }
+
+  .namaa-lab-item-head time {
+    color:var(--namaa-wide-muted);
+    font-size:12px;
+  }
+
+  .namaa-lab-item h3 {
+    margin:14px 0 6px;
+  }
+
+  .namaa-lab-item > p,
+  .namaa-lab-reason strong,
+  .namaa-lab-side p,
+  .namaa-lab-empty p {
+    color:var(--namaa-wide-muted);
+    line-height:1.8;
+  }
+
+  .namaa-lab-reason {
+    padding:12px;
+    border-radius:12px;
+    background:rgb(11 107 79 / 4%);
+    border:1px solid rgb(11 107 79 / 12%);
+  }
+
+  .namaa-lab-reason small,
+  .namaa-lab-reason strong {
+    display:block;
+  }
+
+  .namaa-lab-item-actions {
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:12px;
+  }
+
+  .namaa-lab-item-actions form {
+    margin:0;
+  }
+
+  .namaa-lab-side {
+    display:grid;
+    gap:12px;
+  }
+
+  .namaa-lab-side > article {
+    border:1px solid var(--namaa-wide-border);
+    border-radius:14px;
+    padding:14px;
+    background:#fff;
+  }
+
+  .namaa-settings-hero-status {
+    display:flex;
+    align-items:center;
+    gap:10px;
+    color:var(--namaa-wide-green);
+    font-weight:800;
+  }
+
+  .namaa-settings-layout {
+    display:grid;
+    grid-template-columns:minmax(220px,.72fr) minmax(0,2.4fr);
+    gap:18px;
+    align-items:start;
+  }
+
+  .namaa-settings-nav {
+    padding:18px;
+    position:sticky;
+    top:18px;
+  }
+
+  .namaa-settings-nav nav {
+    display:grid;
+    gap:8px;
+    margin-top:16px;
+  }
+
+  .namaa-settings-nav nav a {
+    text-decoration:none;
+    color:var(--namaa-wide-text);
+    font-weight:800;
+    padding:11px 12px;
+    border-radius:11px;
+    border:1px solid var(--namaa-wide-border);
+    background:#fff;
+  }
+
+  .namaa-settings-main {
+    display:grid;
+    gap:18px;
+  }
+
+  .namaa-settings-section {
+    padding:18px;
+    scroll-margin-top:24px;
+  }
+
+  .namaa-settings-summary-grid,
+  .namaa-settings-control-grid {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px;
+    margin-top:16px;
+  }
+
+  .namaa-settings-summary-grid article,
+  .namaa-settings-control-grid a {
+    border:1px solid var(--namaa-wide-border);
+    border-radius:14px;
+    padding:14px;
+    background:#fff;
+  }
+
+  .namaa-settings-summary-grid span,
+  .namaa-settings-control-grid span {
+    display:block;
+    color:var(--namaa-wide-muted);
+    font-size:12px;
+  }
+
+  .namaa-settings-summary-grid strong,
+  .namaa-settings-control-grid strong {
+    display:block;
+    margin-top:5px;
+    color:var(--namaa-wide-text);
+  }
+
+  .namaa-settings-control-grid a {
+    text-decoration:none;
+  }
+
+  .namaa-settings-control-grid a:hover {
+    border-color:rgb(212 175 107 / 70%);
+    background:rgb(212 175 107 / 6%);
+  }
+
+  .namaa-settings-intro {
+    color:var(--namaa-wide-muted);
+    line-height:1.8;
+    margin:16px 0 0;
+  }
+
+  .namaa-settings-impact-note {
+    margin-top:16px;
+    display:flex;
+    gap:12px;
+    align-items:flex-start;
+    padding:14px;
+    border-radius:14px;
+    background:#fffaf0;
+    border:1px solid #f5c56b;
+  }
+
+  .namaa-settings-impact-note svg {
+    color:#b45309;
+    flex:0 0 auto;
+  }
+
+  .namaa-settings-impact-note p {
+    margin:4px 0 0;
+    color:#7c5a1d;
+    line-height:1.8;
+  }
+}
+
+@media (min-width:768px) and (max-width:1023px) {
+  .namaa-lab-wide,
+  .namaa-settings-wide {
+    padding:16px;
+  }
+
+  .namaa-lab-layout,
+  .namaa-settings-layout {
+    grid-template-columns:1fr;
+  }
+
+  .namaa-settings-nav {
+    position:static;
+  }
+
+  .namaa-lab-dashboard {
+    order:1;
+  }
+
+  .namaa-lab-center {
+    order:2;
+  }
+
+  .namaa-lab-side {
+    order:3;
+  }
+}
