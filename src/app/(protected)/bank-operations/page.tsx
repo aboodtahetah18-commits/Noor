@@ -3,10 +3,12 @@ import { requireAuthenticatedUser } from '@/auth/require-authenticated-user';
 import { getDailyBankOperationsCenter } from '@/features/bank-operations/queries/get-daily-bank-operations-center';
 import { formatSar } from '@/lib/format-money';
 import { FocusedNextStep } from '@/components/ux/focused-next-step';
+import { BanksWide } from './banks-wide';
 const KIND:Record<string,string>={EXPENSE:'مصروف',INCOME:'دخل',TRANSFER:'تحويل',REFUND:'استرداد',FEE:'رسوم',UNKNOWN:'غير معروف'};
-export default async function BankOperationsPage({searchParams}:{searchParams:Promise<{error?:string}>}){
+export default async function BankOperationsPage({searchParams}:{searchParams:Promise<{error?:string;bank?:string}>}){
   const user=await requireAuthenticatedUser();const [center,q]=await Promise.all([getDailyBankOperationsCenter(user.id),searchParams]);
-  return <main className="p47-page" dir="rtl"><section className="p47-content-shell">
+  const selected=(q.bank==='hilal'||q.bank==='solvency'||q.bank==='assets')?q.bank:'central';
+  return <main className="p47-page" dir="rtl"><BanksWide selected={selected} pendingReviewCount={center.pendingReviewCount} pendingItems={center.pendingItems}/><section className="p47-content-shell namaa-mobile-only">
     <header className="p47-page-heading"><div><p className="p47-kicker">التشغيل اليومي</p><div className="title-with-help"><h1>مركز العمليات البنكية</h1></div><div className="p47-cycle-line"><span className={`p47-status-dot ${center.pendingReviewCount?'is-warn':'is-good'}`}/><span>{center.pendingReviewCount?`${center.pendingReviewCount} تحتاج قرارك`:'لا توجد عمليات معلقة'}</span></div></div></header>
     {q.error?<section className="p47-panel p47-danger-panel"><strong>{q.error}</strong></section>:null}
     <section className="p47-bank-journey"><div className="is-current"><b>1</b><span>ألصق الرسالة</span></div><div><b>2</b><span>تحقق من التكرار</span></div><div><b>3</b><span>التاجر والبند</span></div><div><b>4</b><span>المراجعة</span></div><div><b>5</b><span>السجل والخطة</span></div></section>
