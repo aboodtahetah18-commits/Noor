@@ -5669,7 +5669,19 @@
   padding:var(--ux-space-3);
   cursor:pointer;
   color:var(--ux-text-primary);
-  background:color-mix(in srgb,var(--namaa-gold-500) 7%,var(--namaa-surface-warm))
+  background:color-mix(in srgb,var(--namaa-green-700) 10%,var(--namaa-surface-warm))
+}
+.governedContentSection>summary>span{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:var(--ux-space-2)
+}
+.governedContentSection>summary>small{
+  flex:0 0 auto;
+  color:var(--namaa-green-900);
+  font-size:var(--ux-type-caption-size);
+  font-weight:800
 }
 .governedContentSection>summary strong{
   font-size:var(--ux-type-body-sm-size)
@@ -5721,6 +5733,39 @@
 }
 .governedClauseRow>p{
   padding-inline-start:var(--ux-space-8)
+}
+.governedClauseDetails{
+  display:grid;
+  gap:var(--ux-space-2)
+}
+.governedClauseDetails>div{
+  display:grid;
+  gap:var(--ux-space-1);
+  padding:var(--ux-space-2);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-2);
+  background:var(--namaa-card)
+}
+.governedClauseDetails small{
+  color:var(--namaa-green-900);
+  font-size:var(--ux-type-caption-size);
+  font-weight:900
+}
+.governedClauseDetails p{
+  margin:var(--ux-space-0);
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-body-sm-size);
+  line-height:1.8
+}
+.governedDeleteNotice{
+  margin:var(--ux-space-0);
+  padding:var(--ux-space-2) var(--ux-space-3);
+  border:1px solid var(--namaa-gold-500);
+  border-radius:var(--ux-radius-2);
+  background:var(--namaa-surface-warm);
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-caption-size);
+  line-height:1.7
 }
 
 .governedArticleAction{

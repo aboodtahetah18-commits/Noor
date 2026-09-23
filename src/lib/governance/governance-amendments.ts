@@ -10,7 +10,7 @@ export type GovernanceAmendmentStatus=
   |'EFFECTIVE'
   |'REJECTED';
 
-export type GovernanceChangeAction='ADD'|'EDIT';
+export type GovernanceChangeAction='ADD'|'EDIT'|'DELETE';
 export type GovernanceUnitType='article'|'clause'|'paragraph';
 
 export type GovernanceAmendmentRequest={
@@ -112,12 +112,42 @@ function applyStructuredChange(content:string,change:{
   currentRule?:string|null;proposedRule:string;
 }){
   const prefix=unitLinePrefix(change.unitType,change.unitRef);
+  if(change.changeAction==='DELETE'){
+    const lines=content.replace(/\r/g,'').split('\n');
+    let prefixIndex=lines.findIndex(line=>line.trim().startsWith(prefix));
+    if(prefixIndex<0&&change.unitType==='clause'){
+      const legacyPattern=new RegExp('^'+escapeRegExp(change.unitRef)+'(?:\\s|[.)-])');
+      prefixIndex=lines.findIndex(line=>legacyPattern.test(line.trim()));
+    }
+    if(prefixIndex>=0){
+      let endIndex=prefixIndex+1;
+      if(change.unitType==='article'){
+        while(endIndex<lines.length&&!/^المادة\s+\d+/u.test(lines[endIndex]?.trim()??''))endIndex+=1;
+      }else if(change.unitType==='clause'){
+        while(endIndex<lines.length&&!/^(?:المادة|البند)\s+\d+/u.test(lines[endIndex]?.trim()??'')
+          &&!/^\d+(?:\.\d+)+\s/u.test(lines[endIndex]?.trim()??''))endIndex+=1;
+      }
+      lines.splice(prefixIndex,endIndex-prefixIndex);
+      return lines.join('\n').replace(/\n{3,}/g,'\n\n');
+    }
+    if(change.currentRule){
+      const exactIndex=lines.findIndex(line=>line.trim()===change.currentRule?.trim());
+      if(exactIndex>=0){
+        lines.splice(exactIndex,1);
+        return lines.join('\n').replace(/\n{3,}/g,'\n\n');
+      }
+      if(content.includes(change.currentRule))return content.replace(change.currentRule,'').replace(/\n{3,}/g,'\n\n');
+    }
+    return content;
+  }
+
   if(change.changeAction==='EDIT'){
     const linePattern=new RegExp('^'+escapeRegExp(prefix)+'\\s*.*$','mu');
     if(linePattern.test(content))return content.replace(linePattern,prefix+' '+change.proposedRule.trim());
     if(change.currentRule&&content.includes(change.currentRule))return content.replace(change.currentRule,change.proposedRule.trim());
     return content;
   }
+
   const newLine=prefix+' '+change.proposedRule.trim();
   if(content.split('\n').some(line=>line.trim().startsWith(prefix)))return content;
   if(change.unitType==='article')return content.trimEnd()+'\n\n'+newLine+'\n';
@@ -150,7 +180,7 @@ export async function createGovernanceDirectChange(args:{
     .digest('hex').slice(0,16).toUpperCase();
   await appendEvent({
     userId:args.userId,roomKey:'central',senderKey:'central-governor',senderName:'محافظ بنك نماء المركزي',kind:'followup',
-    body:'تم تطبيق '+(args.changeAction==='ADD'?'إضافة':'تعديل')+' مباشر على '+args.unitRef+' في «'+args.documentTitle+'».',
+    body:'تم تطبيق '+(args.changeAction==='ADD'?'إضافة':args.changeAction==='DELETE'?'حذف':'تعديل')+' مباشر على '+args.unitRef+' في «'+args.documentTitle+'».',
     structured:{
       governance_direct_change:true,change_id:changeId,document_ref:args.documentRef,document_title:args.documentTitle,
       source_room:args.roomKey,unit_ref:args.unitRef,parent_ref:args.parentRef??null,change_action:args.changeAction,

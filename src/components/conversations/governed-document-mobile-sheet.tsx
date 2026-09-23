@@ -12,7 +12,7 @@ import styles from './conversation-workspace.module.css';
 
 type Amendment={
   requestId:string; documentRef:string; documentTitle:string; roomKey:string;
-  clauseRef:string|null; parentRef:string|null; changeAction:'ADD'|'EDIT'; unitType:'article'|'clause'|'paragraph';
+  clauseRef:string|null; parentRef:string|null; changeAction:'ADD'|'EDIT'|'DELETE'; unitType:'article'|'clause'|'paragraph';
   currentRule:string|null; proposedRule:string; rationale:string;
   priority:'NORMAL'|'NEXT_MEETING'|'URGENT'; status:string; requestedAt:string;
   governorReviewedAt:string|null; secretaryReceivedAt:string|null; councilDecisionAt:string|null;
@@ -26,7 +26,7 @@ type TypoCorrection={
 };
 type DirectChange={
   changeId:string; documentRef:string; documentTitle:string; roomKey:string;
-  unitRef:string; parentRef:string|null; changeAction:'ADD'|'EDIT'; unitType:'article'|'clause'|'paragraph';
+  unitRef:string; parentRef:string|null; changeAction:'ADD'|'EDIT'|'DELETE'; unitType:'article'|'clause'|'paragraph';
   currentRule:string|null; proposedRule:string; rationale:string; changedAt:string; status:'APPLIED';
 };
 
@@ -109,6 +109,13 @@ function isMarkdownDivider(line:string){
 function cleanDocumentText(line:string){
   return cleanVisibleArabic(line);
 }
+function splitClauseContent(value:string){
+  const match=value.match(/^(.*?)(?:\s+مثال\s*:\s*)(.+)$/u);
+  return {
+    explanation:(match?.[1]??value).trim(),
+    example:(match?.[2]??'').trim(),
+  };
+}
 
 type GovernedDisplayType='policy'|'procedure'|'matrix'|'mechanism'|'reference';
 
@@ -165,6 +172,7 @@ function parseGovernedDocument(content:string):DocumentSection[]{
   let current:DocumentSection|null=null;
   let fallbackSectionCounter=0;
   let fallbackClauseCounter=0;
+  let fallbackParagraphCounter=0;
 
   const pushCurrent=()=>{
     if(current&&current.blocks.length) sections.push(current);
@@ -173,6 +181,7 @@ function parseGovernedDocument(content:string):DocumentSection[]{
     pushCurrent();
     fallbackSectionCounter=Math.max(fallbackSectionCounter,Number(number)||0);
     fallbackClauseCounter=0;
+    fallbackParagraphCounter=0;
     current={number:westernDigits(number),title:normalizeHeadingText(title)||'مادة',blocks:[]};
   };
   const ensureSection=()=>{
@@ -189,7 +198,11 @@ function parseGovernedDocument(content:string):DocumentSection[]{
   };
   const pushParagraph=(text:string,number:string|null=null)=>{
     const cleaned=cleanDocumentText(text);
-    if(cleaned)ensureSection().blocks.push({kind:'paragraph',number:number?westernDigits(number):null,text:cleaned});
+    if(!cleaned)return;
+    const target=ensureSection();
+    fallbackParagraphCounter+=1;
+    const resolved=number?westernDigits(number):target.number+'.'+String(fallbackParagraphCounter);
+    target.blocks.push({kind:'paragraph',number:resolved,text:cleaned});
   };
 
   for(let index=0;index<lines.length;index++){
@@ -290,7 +303,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
   const [documentLoading,setDocumentLoading]=useState(true);
   const [formOpen,setFormOpen]=useState(false);
   const [editMode,setEditMode]=useState<'direct'|'governance'>('direct');
-  const [changeAction,setChangeAction]=useState<'ADD'|'EDIT'>('EDIT');
+  const [changeAction,setChangeAction]=useState<'ADD'|'EDIT'|'DELETE'>('EDIT');
   const [unitType,setUnitType]=useState<'article'|'clause'|'paragraph'>('paragraph');
   const [parentRef,setParentRef]=useState('');
   const [pending,setPending]=useState(false);
@@ -298,6 +311,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
   const [clauseRef,setClauseRef]=useState('');
   const [currentRule,setCurrentRule]=useState('');
   const [proposedRule,setProposedRule]=useState('');
+  const [exampleText,setExampleText]=useState('');
   const [rationale,setRationale]=useState('');
   const [priority,setPriority]=useState<'NORMAL'|'NEXT_MEETING'|'URGENT'>('NEXT_MEETING');
 
@@ -335,8 +349,8 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
       tone:'typo' as const,
     }));
     const directItems=relatedDirect.map(item=>({
-      id:item.changeId,at:item.changedAt,type:item.changeAction==='ADD'?'إضافة مباشرة':'تعديل مباشر',status:'تم',
-      summary:(item.changeAction==='ADD'?'إضافة ':'تعديل ')+item.unitRef+(item.rationale?': '+item.rationale:''),
+      id:item.changeId,at:item.changedAt,type:item.changeAction==='ADD'?'إضافة مباشرة':item.changeAction==='DELETE'?'حذف مباشر':'تعديل مباشر',status:'تم',
+      summary:(item.changeAction==='ADD'?'إضافة ':item.changeAction==='DELETE'?'حذف ':'تعديل ')+item.unitRef+(item.rationale?': '+item.rationale:''),
       tone:'typo' as const,
     }));
     const governanceItems=related.flatMap(item=>{
@@ -368,15 +382,16 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
   const displayDescription=governedDisplayDescription(displayType);
   const documentStatus=useMemo(()=>governedDocumentStatus(documentContent),[documentContent]);
   const unitOptions=useMemo(()=>{
-    const items:Array<{ref:string;type:'article'|'clause'|'paragraph';label:string;text:string;parentRef:string|null}>=[];
+    const items:Array<{ref:string;type:'article'|'clause'|'paragraph';label:string;text:string;raw:string;example:string;parentRef:string|null}>=[];
     for(const section of documentSections){
-      items.push({ref:section.number,type:'article',label:'المادة '+section.number,text:section.title,parentRef:null});
+      items.push({ref:section.number,type:'article',label:'المادة '+section.number,text:section.title,raw:section.title,example:'',parentRef:null});
       for(const block of section.blocks){
         if(block.kind==='clause'){
-          items.push({ref:block.number,type:'clause',label:'البند '+block.number,text:block.text||block.title,parentRef:section.number});
+          const parts=splitClauseContent(block.text||block.title);
+          items.push({ref:block.number,type:'clause',label:'البند '+block.number,text:parts.explanation||block.title,raw:block.text||block.title,example:parts.example,parentRef:section.number});
         }else if(block.kind==='paragraph'&&block.number){
           const parent=block.number.split('.').slice(0,-1).join('.');
-          items.push({ref:block.number,type:'paragraph',label:'الفقرة '+block.number,text:block.text,parentRef:parent});
+          items.push({ref:block.number,type:'paragraph',label:'الفقرة '+block.number,text:block.text,raw:block.text,example:'',parentRef:parent});
         }
       }
     }
@@ -403,27 +418,31 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
     return clause+'.'+String(max+1);
   }
 
-  function resetEditor(mode:'direct'|'governance',action:'ADD'|'EDIT'='EDIT'){
+  function resetEditor(mode:'direct'|'governance',action:'ADD'|'EDIT'|'DELETE'='EDIT'){
     setEditMode(mode);
     setChangeAction(action);
-    setUnitType(action==='ADD'?'paragraph':'paragraph');
+    setUnitType('paragraph');
     setParentRef('');
     setClauseRef('');
     setCurrentRule('');
     setProposedRule('');
+    setExampleText('');
     setRationale('');
     setFeedback('');
     setFormOpen(true);
   }
 
-  function chooseExistingUnit(ref:string){
-    const item=unitOptions.find(candidate=>candidate.ref===ref);
+  function chooseExistingUnit(value:string){
+    const [rawType,...refParts]=value.split(':');
+    const ref=refParts.join(':');
+    const item=unitOptions.find(candidate=>candidate.type===rawType&&candidate.ref===ref);
     setClauseRef(ref);
-    if(!item){setCurrentRule('');setProposedRule('');return}
+    if(!item){setCurrentRule('');setProposedRule('');setExampleText('');return}
     setUnitType(item.type);
     setParentRef(item.parentRef??'');
-    setCurrentRule(item.text);
+    setCurrentRule(item.raw);
     setProposedRule(item.text);
+    setExampleText(item.example);
   }
 
   function updateAddTarget(type:'article'|'clause'|'paragraph',parent:string){
@@ -434,16 +453,19 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
     else setClauseRef('');
     setCurrentRule('');
     setProposedRule('');
+    setExampleText('');
   }
 
   function openUnitEditor(type:'article'|'clause'|'paragraph',reference:string,currentText:string,parent:string|null){
+    const parts=type==='clause'?splitClauseContent(currentText):{explanation:currentText,example:''};
     setEditMode('direct');
     setChangeAction('EDIT');
     setUnitType(type);
     setParentRef(parent??'');
     setClauseRef(reference);
     setCurrentRule(currentText);
-    setProposedRule(currentText);
+    setProposedRule(parts.explanation);
+    setExampleText(parts.example);
     setRationale('');
     setFeedback('');
     setFormOpen(true);
@@ -451,14 +473,22 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
 
 
   async function submit(event:FormEvent){
-    event.preventDefault(); if(pending||!clauseRef.trim()||!proposedRule.trim())return; setPending(true); setFeedback('');
+    event.preventDefault();
+    if(pending||!clauseRef.trim()||(changeAction!=='DELETE'&&!proposedRule.trim()))return;
+    setPending(true); setFeedback('');
     try{
       const unitLabel=unitType==='article'?'المادة':unitType==='clause'?'البند':'الفقرة';
+      const composedRule=changeAction==='DELETE'
+        ?(currentRule.trim()||'حذف العنصر')
+        :unitType==='clause'&&exampleText.trim()
+          ?proposedRule.trim()+' مثال: '+exampleText.trim()
+          :proposedRule.trim();
+      const actionLabel=changeAction==='ADD'?'إضافة':changeAction==='DELETE'?'حذف':'تعديل';
       const common={
         documentRef:document.referenceCode,documentTitle:document.title,roomKey,
         parentRef:parentRef.trim()||null,changeAction,unitType,
-        currentRule:currentRule.trim()||null,proposedRule:proposedRule.trim(),
-        rationale:rationale.trim()||(changeAction==='ADD'?'إضافة مباشرة خلال مرحلة التأسيس':'تعديل مباشر خلال مرحلة التأسيس'),
+        currentRule:currentRule.trim()||null,proposedRule:composedRule,
+        rationale:rationale.trim()||(actionLabel+' مباشر خلال مرحلة التأسيس'),
       };
       const payload=editMode==='direct'
         ?{operation:'DIRECT_CHANGE' as const,...common,unitRef:clauseRef.trim()}
@@ -470,9 +500,9 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
       const data=await response.json().catch(()=>({})) as {requestId?:string;changeId?:string;error?:string};
       if(!response.ok) throw new Error(data.error||'REQUEST_FAILED');
       setFeedback(editMode==='direct'
-        ?'تم تطبيق '+(changeAction==='ADD'?'الإضافة':'التعديل')+' مباشرة وتسجيلها في سجل التحديثات.'
-        :'تم فتح طلب '+(changeAction==='ADD'?'إضافة':'تعديل')+' حوكمي وإرساله للمراجعة.');
-      setFormOpen(false); setClauseRef(''); setCurrentRule(''); setProposedRule(''); setRationale(''); setParentRef('');
+        ?'تم تطبيق '+actionLabel+' مباشرة وتسجيلها في سجل التحديثات.'
+        :'تم فتح طلب '+actionLabel+' حوكمي وإرساله للمراجعة.');
+      setFormOpen(false); setClauseRef(''); setCurrentRule(''); setProposedRule(''); setExampleText(''); setRationale(''); setParentRef('');
       await load();
       if(editMode==='direct'){
         const responseDocument=await fetch('/api/governance/documents/'+encodeURIComponent(document.referenceCode),{cache:'no-store'});
@@ -519,10 +549,10 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
               :documentContent
                 ?<div className={styles.governedStructuredDocument}>
                   {documentSections.map((section,sectionIndex)=><details className={styles.governedContentSection+' '+(isMatrixDocument?styles.governedMatrixSection:'')+' '+(isFlowDocument?styles.governedFlowSection:'')} key={section.number+'-'+sectionIndex} open={sectionIndex===0||isMatrixDocument}>
-                    <summary><span><LucideIcon name={sectionIcon(section.title,displayType)} size={16}/><strong>{'المادة ('+section.number+'): '+section.title}</strong></span></summary>
+                    <summary><span><LucideIcon name={sectionIcon(section.title,displayType)} size={16}/><strong>{'المادة ('+section.number+'): '+section.title}</strong></span><small>إظهار / إخفاء</small></summary>
                     <div className={styles.governedContentSectionBody}>
                       <div className={styles.governedArticleAction}>
-                        <button type="button" onClick={()=>openUnitEditor('article',section.number,section.title,null)}><LucideIcon name="pencil" size={16}/>تعديل المادة</button>
+                        <button type="button" onClick={()=>openUnitEditor('article',section.number,section.title,null)}><LucideIcon name="pencil" size={16}/>تعديل</button>
                       </div>
                       {section.blocks.map((block,blockIndex)=>block.kind==='paragraph'
                         ?<article className={styles.governedParagraphRow} key={'p-'+blockIndex}>
@@ -538,7 +568,10 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
                               <div className={styles.governedClauseHeading}><span>{'البند '+block.number}</span><strong>{block.title}</strong></div>
                               <button type="button" onClick={()=>openUnitEditor('clause',block.number,block.text||block.title,section.number)} aria-label={'تعديل البند '+block.number}><LucideIcon name="pencil" size={16}/>تعديل</button>
                             </div>
-                            {block.text&&<p>{block.text}</p>}
+                            {block.text&&<div className={styles.governedClauseDetails}>
+                              <div><small>الشرح</small><p>{splitClauseContent(block.text).explanation}</p></div>
+                              <div><small>مثال</small><p>{splitClauseContent(block.text).example||'لم يضف مثال لهذا البند بعد.'}</p></div>
+                            </div>}
                           </article>
                           :<div className={styles.governedTableScroll} key={'t-'+blockIndex}>
                           <table className={styles.governedContentTable}>
@@ -567,18 +600,20 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
           <form className={styles.governedAmendmentForm+' '+styles.governedEditModalCard+' '+(editMode==='direct'?styles.governedTypoForm:styles.governedGovernanceForm)} onSubmit={submit}>
             <header className={styles.governedEditFormHeader}>
               <span className={styles.governedEditFormIcon}><LucideIcon name={editMode==='direct'?'pencil':'landmark'} size={20}/></span>
-              <div><strong>{editMode==='direct'?'تحرير مباشر':'تحرير حوكمي'}</strong><small>{editMode==='direct'?'إضافة أو تعديل مباشر خلال مرحلة ضبط المنصة.':'إضافة أو تعديل يمر بالاجتماع والمراجعة والاعتماد قبل النفاذ.'}</small></div>
+              <div><strong>{editMode==='direct'?'تحرير مباشر':'تحرير حوكمي'}</strong><small>{editMode==='direct'?'إضافة أو تعديل أو حذف مباشر خلال مرحلة ضبط المنصة.':'إضافة أو تعديل أو حذف يمر بالاجتماع والمراجعة والاعتماد قبل النفاذ.'}</small></div>
               <button type="button" className={styles.governedEditClose} onClick={()=>setFormOpen(false)} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button>
             </header>
 
             <label><span>نوع العملية</span><select value={changeAction} onChange={e=>{
               const action=e.target.value as typeof changeAction;
+              const previous=changeAction;
               setChangeAction(action);
               if(action==='ADD') updateAddTarget('paragraph','');
-              else {setClauseRef('');setParentRef('');setCurrentRule('');setProposedRule('')}
+              else if(previous==='ADD'){setClauseRef('');setParentRef('');setCurrentRule('');setProposedRule('');setExampleText('')}
             }}>
               <option value="ADD">إضافة</option>
               <option value="EDIT">تعديل</option>
+              <option value="DELETE">حذف</option>
             </select></label>
 
             {changeAction==='ADD'
@@ -594,18 +629,23 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
                 </select></label>}
                 <label><span>الترقيم</span><input value={clauseRef} readOnly placeholder="يُنشأ تلقائيًا"/></label>
               </>
-              :<label><span>العنصر</span><select value={clauseRef} onChange={e=>chooseExistingUnit(e.target.value)}>
-                <option value="">اختر المادة أو البند أو الفقرة</option>{unitOptions.map(item=><option key={item.type+'-'+item.ref} value={item.ref}>{item.label}</option>)}
+              :<label><span>العنصر</span><select value={clauseRef?unitType+':'+clauseRef:''} onChange={e=>chooseExistingUnit(e.target.value)}>
+                <option value="">اختر المادة أو البند أو الفقرة</option>{unitOptions.map(item=><option key={item.type+'-'+item.ref} value={item.type+':'+item.ref}>{item.label}</option>)}
               </select></label>}
 
-            {changeAction==='EDIT'&&<label><span>النص الحالي</span><textarea value={currentRule} readOnly/></label>}
-            <label><span>{changeAction==='ADD'?'النص الجديد':'النص المعدل'}</span><textarea required value={proposedRule} onChange={e=>setProposedRule(e.target.value)} placeholder={changeAction==='ADD'?'اكتب محتوى العنصر الجديد':'عدّل النص المطلوب'}/></label>
-            <label><span>{editMode==='direct'?'ملاحظة':'مبرر التغيير'}</span><textarea required={editMode==='governance'} value={rationale} onChange={e=>setRationale(e.target.value)} placeholder={editMode==='direct'?'اختياري خلال مرحلة التأسيس':'اشرح سبب الإضافة أو التعديل وأثره'}/></label>
+            {changeAction!=='ADD'&&<label><span>النص الحالي</span><textarea value={currentRule} readOnly/></label>}
+            {changeAction!=='DELETE'&&unitType==='clause'&&<>
+              <label><span>شرح البند</span><textarea required value={proposedRule} onChange={e=>setProposedRule(e.target.value)} placeholder="اكتب شرح البند بوضوح"/></label>
+              <label><span>مثال</span><textarea value={exampleText} onChange={e=>setExampleText(e.target.value)} placeholder="أضف مثالًا عمليًا يوضح البند"/></label>
+            </>}
+            {changeAction!=='DELETE'&&unitType!=='clause'&&<label><span>{changeAction==='ADD'?'النص الجديد':'النص المعدل'}</span><textarea required value={proposedRule} onChange={e=>setProposedRule(e.target.value)} placeholder={changeAction==='ADD'?'اكتب محتوى العنصر الجديد':'عدّل النص المطلوب'}/></label>}
+            {changeAction==='DELETE'&&<p className={styles.governedDeleteNotice}>سيتم حذف {unitType==='article'?'المادة وما يندرج تحتها':unitType==='clause'?'البند وما يندرج تحته':'الفقرة المحددة'} من نسخة العرض. في المسار الحوكمي لا يصبح الحذف نافذًا إلا بعد الاعتماد.</p>}
+            <label><span>{editMode==='direct'?'ملاحظة':'مبرر التغيير'}</span><textarea required={editMode==='governance'} value={rationale} onChange={e=>setRationale(e.target.value)} placeholder={editMode==='direct'?'اختياري خلال مرحلة التأسيس':'اشرح سبب الإضافة أو التعديل أو الحذف وأثره'}/></label>
             {editMode==='governance'&&<label><span>الأولوية</span><select value={priority} onChange={e=>setPriority(e.target.value as typeof priority)}><option value="NORMAL">عادي</option><option value="NEXT_MEETING">للاجتماع القادم</option><option value="URGENT">عاجل، اجتماع فوري</option></select></label>}
             <p>{editMode==='direct'
               ?'يطبق التغيير فورًا في نسخة العرض الحالية ويسجل أثره. هذا المسار مخصص لمرحلة ضبط المنصة.'
               :'المسار: المحافظ، ثم أمين السر، ثم مجلس نماء الأعلى، ثم الاعتماد أو الرفض، ثم تاريخ النفاذ والإصدار الجديد.'}</p>
-            <div className={styles.governedAmendmentActions}><button type="button" onClick={()=>setFormOpen(false)}>إلغاء</button><button type="submit" disabled={pending||!clauseRef.trim()||!proposedRule.trim()}>{pending?'جارٍ الحفظ…':editMode==='direct'?'حفظ مباشر':'إرسال للمحافظ'}</button></div>
+            <div className={styles.governedAmendmentActions}><button type="button" onClick={()=>setFormOpen(false)}>إلغاء</button><button type="submit" disabled={pending||!clauseRef.trim()||(changeAction!=='DELETE'&&!proposedRule.trim())}>{pending?'جارٍ الحفظ…':changeAction==='DELETE'?(editMode==='direct'?'حذف مباشر':'طلب الحذف'):(editMode==='direct'?'حفظ مباشر':'إرسال للمحافظ')}</button></div>
           </form>
         </div>}
 
