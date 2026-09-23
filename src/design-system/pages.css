@@ -315,14 +315,6 @@ html[data-theme="dark"] .ux-table th { background:var(--ux-section-soft-blue) !i
   .page-shell { width:min(100%,var(--ux-container-form)); }
 }
 
-@media (min-width:1024px) {
-  .page-shell { width:min(100%,var(--ux-container-content)); }
-}
-
-@media (min-width:1440px) {
-  .page-shell { width:min(100%,var(--ux-container-wide)); }
-}
-
 @media (prefers-reduced-motion:reduce) {
   .card,
   .panel,
