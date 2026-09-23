@@ -9236,12 +9236,12 @@
   z-index:1!important
 }
 :global(html:not([data-theme="dark"])) .page .userMessage{
-  background:color-mix(in srgb,var(--namaa-user-message) 88%,var(--namaa-green-700))!important;
-  border-color:color-mix(in srgb,var(--namaa-green-700) 24%,var(--namaa-border))!important
+  background:color-mix(in srgb,var(--namaa-user-message) 88%,var(--namaa-green-700));
+  border-color:color-mix(in srgb,var(--namaa-green-700) 24%,var(--namaa-border))
 }
 :global(html:not([data-theme="dark"])) .page .agentMessage{
-  background:color-mix(in srgb,var(--namaa-gold-500) 84%,var(--namaa-text))!important;
-  border-color:color-mix(in srgb,var(--namaa-gold-500) 72%,var(--namaa-text))!important
+  background:color-mix(in srgb,var(--namaa-gold-500) 84%,var(--namaa-text));
+  border-color:color-mix(in srgb,var(--namaa-gold-500) 72%,var(--namaa-text))
 }
 :global(html:not([data-theme="dark"])) .page .agentMessage .messageIdentity strong,
 :global(html:not([data-theme="dark"])) .page .agentMessage .messageIdentity small,
