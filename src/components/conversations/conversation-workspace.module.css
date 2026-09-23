@@ -9423,3 +9423,99 @@
 :global(html[data-theme="dark"]) .page .sendButton:disabled{
   opacity:.88!important
 }
+
+
+/* Namaa dark governed surfaces — eliminate light-on-light states */
+
+/* Dark mode must never pair a light surface with light text. */
+:global(html[data-theme="dark"]) .entityDetailSheet,
+:global(html[data-theme="dark"]) .governedDocumentSheet{
+  background:var(--ux-dark-page-bg)!important;
+  color:var(--namaa-card)!important
+}
+
+:global(html[data-theme="dark"]) .entityDetailTabs{
+  background:var(--ux-dark-card-bg)!important;
+  border-color:var(--ux-dark-border)!important
+}
+:global(html[data-theme="dark"]) .entityDetailTabs button{
+  color:var(--ux-dark-text-secondary)!important
+}
+:global(html[data-theme="dark"]) .entityDetailTabs .activeEntityDetailTab{
+  background:var(--namaa-green-900)!important;
+  color:var(--namaa-card)!important
+}
+
+:global(html[data-theme="dark"]) .entityDetailPanel>section{
+  background:var(--ux-dark-card-bg)!important;
+  border-color:var(--ux-dark-border)!important;
+  color:var(--namaa-card)!important
+}
+:global(html[data-theme="dark"]) .entityDetailPanel>section>small,
+:global(html[data-theme="dark"]) .entityDetailPanel>section>p{
+  color:var(--namaa-card)!important
+}
+
+:global(html[data-theme="dark"]) .entityReferenceList>button,
+:global(html[data-theme="dark"]) .entityTeamGrid>button,
+:global(html[data-theme="dark"]) .detailList>span,
+:global(html[data-theme="dark"]) .detailList>button{
+  background:var(--ux-dark-card-bg)!important;
+  border-color:var(--ux-dark-border)!important;
+  color:var(--namaa-card)!important
+}
+:global(html[data-theme="dark"]) .entityReferenceCopy strong,
+:global(html[data-theme="dark"]) .entityTeamGrid strong,
+:global(html[data-theme="dark"]) .detailList>button>span,
+:global(html[data-theme="dark"]) .detailList>span{
+  color:var(--namaa-card)!important
+}
+:global(html[data-theme="dark"]) .entityReferenceCopy small,
+:global(html[data-theme="dark"]) .entityTeamGrid small{
+  color:var(--ux-dark-text-secondary)!important
+}
+:global(html[data-theme="dark"]) .entityReferenceIcon{
+  background:color-mix(in srgb,var(--namaa-green-700) 18%,var(--ux-dark-card-bg))!important;
+  color:var(--namaa-card)!important
+}
+:global(html[data-theme="dark"]) .entityReferenceIcon svg,
+:global(html[data-theme="dark"]) .entityReferenceList>button>svg,
+:global(html[data-theme="dark"]) .detailList>button>svg{
+  color:var(--namaa-card)!important;
+  stroke:var(--namaa-card)!important
+}
+
+/* Governed-reference sections remain dark and readable in dark mode. */
+:global(html[data-theme="dark"]) .governedMetaStrip,
+:global(html[data-theme="dark"]) .governedDocumentSection,
+:global(html[data-theme="dark"]) .governedContentSection,
+:global(html[data-theme="dark"]) .governedClauseRow,
+:global(html[data-theme="dark"]) .governedContentTable th,
+:global(html[data-theme="dark"]) .governedContentTable td{
+  background:var(--ux-dark-card-bg)!important;
+  border-color:var(--ux-dark-border)!important;
+  color:var(--namaa-card)!important
+}
+:global(html[data-theme="dark"]) .governedDocumentSection>summary,
+:global(html[data-theme="dark"]) .governedContentSection>summary,
+:global(html[data-theme="dark"]) .governedDocumentSection>summary strong,
+:global(html[data-theme="dark"]) .governedContentSection>summary strong,
+:global(html[data-theme="dark"]) .governedClauseRow p,
+:global(html[data-theme="dark"]) .governedContentSectionBody>p,
+:global(html[data-theme="dark"]) .governedContentTable th,
+:global(html[data-theme="dark"]) .governedContentTable td{
+  color:var(--namaa-card)!important
+}
+:global(html[data-theme="dark"]) .governedDocumentSection[open],
+:global(html[data-theme="dark"]) .governedContentSection[open]{
+  border-color:color-mix(in srgb,var(--namaa-gold-500) 48%,var(--ux-dark-border))!important
+}
+
+/* Persona presentation: never enlarge raster assets with CSS transforms. */
+.roomDetailHero .personaAvatar img,
+.entityTeamPortrait img,
+.algorithmRolePortraitImage{
+  transform:none!important;
+  image-rendering:auto!important;
+  filter:none!important
+}
