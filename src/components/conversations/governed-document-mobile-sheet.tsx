@@ -12,7 +12,7 @@ import styles from './conversation-workspace.module.css';
 
 type Amendment={
   requestId:string; documentRef:string; documentTitle:string; roomKey:string;
-  clauseRef:string|null; parentRef:string|null; changeAction:'ADD'|'EDIT'; unitType:'article'|'clause'|'paragraph';
+  clauseRef:string|null; parentRef:string|null; changeAction:'ADD'|'EDIT'|'DELETE'; unitType:'article'|'clause'|'paragraph';
   currentRule:string|null; proposedRule:string; rationale:string;
   priority:'NORMAL'|'NEXT_MEETING'|'URGENT'; status:string; requestedAt:string;
   governorReviewedAt:string|null; secretaryReceivedAt:string|null; councilDecisionAt:string|null;
@@ -26,7 +26,7 @@ type TypoCorrection={
 };
 type DirectChange={
   changeId:string; documentRef:string; documentTitle:string; roomKey:string;
-  unitRef:string; parentRef:string|null; changeAction:'ADD'|'EDIT'; unitType:'article'|'clause'|'paragraph';
+  unitRef:string; parentRef:string|null; changeAction:'ADD'|'EDIT'|'DELETE'; unitType:'article'|'clause'|'paragraph';
   currentRule:string|null; proposedRule:string; rationale:string; changedAt:string; status:'APPLIED';
 };
 
@@ -165,6 +165,7 @@ function parseGovernedDocument(content:string):DocumentSection[]{
   let current:DocumentSection|null=null;
   let fallbackSectionCounter=0;
   let fallbackClauseCounter=0;
+  let fallbackParagraphCounter=0;
 
   const pushCurrent=()=>{
     if(current&&current.blocks.length) sections.push(current);
@@ -173,6 +174,7 @@ function parseGovernedDocument(content:string):DocumentSection[]{
     pushCurrent();
     fallbackSectionCounter=Math.max(fallbackSectionCounter,Number(number)||0);
     fallbackClauseCounter=0;
+    fallbackParagraphCounter=0;
     current={number:westernDigits(number),title:normalizeHeadingText(title)||'مادة',blocks:[]};
   };
   const ensureSection=()=>{
@@ -189,7 +191,11 @@ function parseGovernedDocument(content:string):DocumentSection[]{
   };
   const pushParagraph=(text:string,number:string|null=null)=>{
     const cleaned=cleanDocumentText(text);
-    if(cleaned)ensureSection().blocks.push({kind:'paragraph',number:number?westernDigits(number):null,text:cleaned});
+    if(!cleaned)return;
+    const target=ensureSection();
+    fallbackParagraphCounter+=1;
+    const resolved=number?westernDigits(number):target.number+'.'+String(fallbackParagraphCounter);
+    target.blocks.push({kind:'paragraph',number:resolved,text:cleaned});
   };
 
   for(let index=0;index<lines.length;index++){
@@ -290,7 +296,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
   const [documentLoading,setDocumentLoading]=useState(true);
   const [formOpen,setFormOpen]=useState(false);
   const [editMode,setEditMode]=useState<'direct'|'governance'>('direct');
-  const [changeAction,setChangeAction]=useState<'ADD'|'EDIT'>('EDIT');
+  const [changeAction,setChangeAction]=useState<'ADD'|'EDIT'|'DELETE'>('EDIT');
   const [unitType,setUnitType]=useState<'article'|'clause'|'paragraph'>('paragraph');
   const [parentRef,setParentRef]=useState('');
   const [pending,setPending]=useState(false);
@@ -335,8 +341,8 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
       tone:'typo' as const,
     }));
     const directItems=relatedDirect.map(item=>({
-      id:item.changeId,at:item.changedAt,type:item.changeAction==='ADD'?'إضافة مباشرة':'تعديل مباشر',status:'تم',
-      summary:(item.changeAction==='ADD'?'إضافة ':'تعديل ')+item.unitRef+(item.rationale?': '+item.rationale:''),
+      id:item.changeId,at:item.changedAt,type:item.changeAction==='ADD'?'إضافة مباشرة':item.changeAction==='DELETE'?'حذف مباشر':'تعديل مباشر',status:'تم',
+      summary:(item.changeAction==='ADD'?'إضافة ':item.changeAction==='DELETE'?'حذف ':'تعديل ')+item.unitRef+(item.rationale?': '+item.rationale:''),
       tone:'typo' as const,
     }));
     const governanceItems=related.flatMap(item=>{
@@ -403,7 +409,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
     return clause+'.'+String(max+1);
   }
 
-  function resetEditor(mode:'direct'|'governance',action:'ADD'|'EDIT'='EDIT'){
+  function resetEditor(mode:'direct'|'governance',action:'ADD'|'EDIT'|'DELETE'='EDIT'){
     setEditMode(mode);
     setChangeAction(action);
     setUnitType(action==='ADD'?'paragraph':'paragraph');
