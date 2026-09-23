@@ -4267,3 +4267,94 @@
     grid-template-columns:1fr!important;
   }
 }
+
+
+/* ========================================================================== */
+/* INVESTMENTS TOP ACTION BAR — balanced, aligned and responsive              */
+/* ========================================================================== */
+@media (min-width:768px){
+  .namaa-investments-header{
+    align-items:center!important;
+  }
+
+  .namaa-investments-header > div:first-child{
+    min-width:0!important;
+    max-width:760px!important;
+  }
+
+  .namaa-investments-actions{
+    width:min(100%,760px)!important;
+    display:grid!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:12px!important;
+    align-items:stretch!important;
+    justify-content:stretch!important;
+    margin:0!important;
+  }
+
+  .namaa-investments-actions > .p49-modal-trigger{
+    width:100%!important;
+    min-width:0!important;
+    min-height:50px!important;
+    height:50px!important;
+    max-height:50px!important;
+    padding:0 14px!important;
+    margin:0!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    border-radius:14px!important;
+    box-sizing:border-box!important;
+    white-space:normal!important;
+    text-align:center!important;
+    line-height:1.35!important;
+    font-weight:900!important;
+  }
+
+  .namaa-top-action-content{
+    width:100%!important;
+    min-width:0!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:9px!important;
+  }
+
+  .namaa-top-action-content > span{
+    min-width:0!important;
+    overflow-wrap:anywhere!important;
+    line-height:1.35!important;
+  }
+
+  .namaa-top-action-content svg{
+    width:20px!important;
+    height:20px!important;
+    min-width:20px!important;
+    flex:0 0 20px!important;
+    stroke-width:2.2!important;
+  }
+}
+
+@media (min-width:1024px) and (max-width:1320px){
+  .namaa-investments-header{
+    align-items:stretch!important;
+    flex-direction:column!important;
+  }
+
+  .namaa-investments-actions{
+    width:100%!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  }
+}
+
+@media (min-width:768px) and (max-width:1023px){
+  .namaa-investments-actions{
+    width:100%!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+
+  .namaa-investments-actions > .p49-modal-trigger{
+    min-height:52px!important;
+    height:auto!important;
+  }
+}
