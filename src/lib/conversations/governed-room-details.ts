@@ -87,7 +87,7 @@ export const governedRoomDetails:Record<ConversationRoomKey,GovernedRoomDetail>=
     policies:[
       {referenceCode:'MAL-CHR-01',title:'ميثاق وتشغيل بنك ملاءة',kind:'charter',sourceUrl:'https://docs.google.com/document/d/1rtRYHnMxMp7u62InuJm9dqiAORkPkGBk-oFJL3K1rw8/edit'},
       {referenceCode:'MAL-POL-01',title:'سياسة الحماية والسيولة والطوارئ لبنك ملاءة',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1qoFG-CIdd003DvGqqyccpkf1TGJ-29pOItYBtpciSfc/edit'},
-      {referenceCode:'MAL-POL-02',title:'دليل الوكلاء ومصفوفة الصلاحيات لبنك ملاءة',kind:'policy',sourceUrl:'https://docs.google.com/document/d/11Z_DtA8vJQqZ02xC4CWu1oGsFBLApZhGWVWjra8-9lA/edit'},
+      {referenceCode:'MAL-POL-02',title:'دليل الأدوار ومصفوفة الصلاحيات لبنك ملاءة',kind:'policy',sourceUrl:'https://docs.google.com/document/d/11Z_DtA8vJQqZ02xC4CWu1oGsFBLApZhGWVWjra8-9lA/edit'},
       {referenceCode:'MAL-REF-01',title:'دليل العمليات والآليات والخوارزميات التشغيلية لبنك ملاءة',kind:'reference',sourceUrl:'https://docs.google.com/document/d/1armGZRtKTfoIDcwbJ5t1K9LEjNPnNyES7CdD4vvEOiI/edit'},
       {referenceCode:'MAL-POL-03',title:'سياسة التعلم والتغيير والتدقيق لبنك ملاءة',kind:'policy',sourceUrl:'https://docs.google.com/document/d/10qY_ADXVjbm1_BRrTRlwCSCM2p1SBos3jztpaHOKaXI/edit'},
       {referenceCode:'MAL-POL-04',title:'سياسة رأس مال الحماية والاحتياطي المستثمر لبنك ملاءة',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1_fGVfq_HJnf5lg9FmsNyet59IBOAWFPCrVqtUFNx9IA/edit'},
@@ -106,11 +106,11 @@ export const governedRoomDetails:Record<ConversationRoomKey,GovernedRoomDetail>=
     policies:[
       {referenceCode:'AST-CHR-01',title:'ميثاق وتشغيل بنك الأصول الاستثماري',kind:'charter',sourceUrl:'https://docs.google.com/document/d/1Vg-RrBMLCwFYlWBOTsnwv5C9tWOKw-6IuGX7X3hhgnw/edit'},
       {referenceCode:'AST-POL-01',title:'السياسة المالية والاستثمارية الشاملة لبنك الأصول',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1uDE3kINPLykYKjtxZEpgn-TG1qkgOFjeRuUlioWxGjc/edit'},
-      {referenceCode:'AST-POL-02',title:'دليل الوكلاء ومصفوفة الصلاحيات لبنك الأصول',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1S91uTKPX3fS9MXAM9DohWjf3oFG2pa_3MEfi48AlXd0/edit'},
+      {referenceCode:'AST-POL-02',title:'دليل الأدوار ومصفوفة الصلاحيات لبنك الأصول',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1S91uTKPX3fS9MXAM9DohWjf3oFG2pa_3MEfi48AlXd0/edit'},
       {referenceCode:'AST-REF-01',title:'دليل العمليات والآليات والخوارزميات التشغيلية لبنك الأصول',kind:'reference',sourceUrl:'https://docs.google.com/document/d/1R-MmR_a7kW1EdaIhA98btwfebpyD2w4sRV6RegHCUTo/edit'},
       {referenceCode:'AST-POL-03',title:'سياسة التعلم والتغيير والتدقيق لبنك الأصول',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1PWd0l_KxshiS26kZ2pRClT1WgJCfWJbJ2U6qs-R3NWo/edit'},
       {referenceCode:'AST-POL-04',title:'سياسة رأس المال المؤهل والتوزيع الاستراتيجي لبنك الأصول',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1z8D2uiGW5dEi4fiI3hyjUS0p_NFk8u4eJ6duOj_wiK8/edit'},
-      {referenceCode:'AST-REF-02',title:'آليات تحليل الفرص الاستثمارية',kind:'reference',sourceUrl:'https://docs.google.com/document/d/1yUKPCHoFdHkcU_jxGX1-0T0hn8rytDCSEgz8RIHlnak/edit'},
+      {referenceCode:'AST-REF-02',title:'آليات تحليل الفرص الاستثمارية لبنك الأصول',kind:'reference',sourceUrl:'https://docs.google.com/document/d/1yUKPCHoFdHkcU_jxGX1-0T0hn8rytDCSEgz8RIHlnak/edit'},
     ],
   },
   hilal:{
@@ -126,7 +126,7 @@ export const governedRoomDetails:Record<ConversationRoomKey,GovernedRoomDetail>=
     policies:[
       {referenceCode:'HIL-CHR-01',title:'ميثاق وتشغيل بنك الهلال',kind:'charter',sourceUrl:'https://docs.google.com/document/d/1Z1cnyyVmym1VDGU6ZSFakMIBznUvKPiVr4fuvctkJyo/edit'},
       {referenceCode:'HIL-POL-01',title:'سياسة الميزانية والإنفاق والتدفقات النقدية لبنك الهلال',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1YoWUyS1AgqWAZcnAd-HzD3WvG35_aQfbQL5H8oBTmYA/edit'},
-      {referenceCode:'HIL-POL-02',title:'دليل الوكلاء ومصفوفة الصلاحيات لبنك الهلال',kind:'policy',sourceUrl:'https://docs.google.com/document/d/13TXLBG8Axn862QQZ51yzYfwjVhQbPlNUFEaA3DccbN4/edit'},
+      {referenceCode:'HIL-POL-02',title:'دليل الأدوار ومصفوفة الصلاحيات لبنك الهلال',kind:'policy',sourceUrl:'https://docs.google.com/document/d/13TXLBG8Axn862QQZ51yzYfwjVhQbPlNUFEaA3DccbN4/edit'},
       {referenceCode:'HIL-REF-01',title:'دليل العمليات والآليات والخوارزميات التشغيلية لبنك الهلال',kind:'reference',sourceUrl:'https://docs.google.com/document/d/182x3t6eGfqFed9j3mNUKsgjJmFPNnOHLUPNzGgcUKEE/edit'},
       {referenceCode:'HIL-POL-03',title:'سياسة التمويل الداخلي والائتمان والسداد لبنك الهلال',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1aNBxa_NH4CjXRcEUkm8Mm8t5Iv3nakGHvZO8SD5inQg/edit'},
       {referenceCode:'HIL-POL-04',title:'سياسة التعلم والتغيير والتدقيق لبنك الهلال',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1N60Gvu8gYueP5cJ2aA0uZbv-9z3z7_9B9ZX2bW3MKZU/edit'},
