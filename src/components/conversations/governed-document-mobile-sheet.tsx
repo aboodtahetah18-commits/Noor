@@ -31,10 +31,10 @@ const statusLabel:Record<string,string>={
 };
 
 type DocumentBlock =
-  | {kind:'paragraph';text:string}
+  | {kind:'paragraph';number:string|null;text:string}
   | {kind:'clause';number:string;title:string;text:string}
   | {kind:'table';headers:string[];rows:string[][]};
-type DocumentSection={title:string;blocks:DocumentBlock[]};
+type DocumentSection={number:string;title:string;blocks:DocumentBlock[]};
 
 const westernDigits=(value:string)=>value
   .replace(/[٠-٩]/g,d=>String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)))
@@ -148,51 +148,80 @@ function normalizeHeadingText(value:string){
 function parseGovernedDocument(content:string):DocumentSection[]{
   const lines=content.replace(/\r/g,'').split('\n');
   const sections:DocumentSection[]=[];
-  let current:DocumentSection={title:'المحتوى المعتمد',blocks:[]};
-  let sectionCounter=0;
-  let clauseCounter=0;
+  let current:DocumentSection|null=null;
+  let fallbackSectionCounter=0;
+  let fallbackClauseCounter=0;
 
-  const flush=()=>{
-    if(current.blocks.length) sections.push(current);
+  const pushCurrent=()=>{
+    if(current&&current.blocks.length) sections.push(current);
   };
-  const beginSection=(title:string)=>{
-    flush();
-    sectionCounter+=1;
-    clauseCounter=0;
-    current={title:String(sectionCounter)+' '+(normalizeHeadingText(title)||'قسم'),blocks:[]};
+  const beginSection=(number:string,title:string)=>{
+    pushCurrent();
+    fallbackSectionCounter=Math.max(fallbackSectionCounter,Number(number)||0);
+    fallbackClauseCounter=0;
+    current={number:westernDigits(number),title:normalizeHeadingText(title)||'مادة',blocks:[]};
   };
-  const pushClause=(text:string,title?:string)=>{
-    clauseCounter+=1;
+  const ensureSection=()=>{
+    if(current)return current;
+    fallbackSectionCounter+=1;
+    current={number:String(fallbackSectionCounter),title:'المحتوى المعتمد',blocks:[]};
+    return current;
+  };
+  const pushClause=(number:string,text:string,title='البند')=>{
+    const target=ensureSection();
     const cleaned=cleanDocumentText(text);
-    const cleanedTitle=title?cleanDocumentText(title):'البند';
-    if(cleaned||cleanedTitle) current.blocks.push({kind:'clause',number:String(sectionCounter||1)+'.'+String(clauseCounter),title:cleanedTitle||'البند',text:cleaned});
+    const cleanedTitle=cleanDocumentText(title)||'البند';
+    if(cleaned||cleanedTitle)target.blocks.push({kind:'clause',number:westernDigits(number),title:cleanedTitle,text:cleaned});
   };
-  const pushParagraph=(text:string)=>{
+  const pushParagraph=(text:string,number:string|null=null)=>{
     const cleaned=cleanDocumentText(text);
-    if(cleaned) current.blocks.push({kind:'paragraph',text:cleaned});
+    if(cleaned)ensureSection().blocks.push({kind:'paragraph',number:number?westernDigits(number):null,text:cleaned});
   };
 
   for(let index=0;index<lines.length;index++){
     const raw=lines[index]??'';
     const trimmed=raw.trim();
-    if(!trimmed) continue;
+    if(!trimmed)continue;
     const normalized=westernDigits(trimmed);
+
+    if(/^(?:الإصدار|النوع|الحالة|الجهة المالكة|المرجعية العليا|المرجع الأعلى)\s*:/u.test(normalized))continue;
+
+    const article=normalized.match(/^المادة\s+(\d+)\s*(?::|：|[–—-])?\s*(.*)$/u);
+    if(article){
+      beginSection(article[1]??String(fallbackSectionCounter+1),article[2]??'');
+      continue;
+    }
+
+    const explicitClause=normalized.match(/^البند\s+(\d+(?:\.\d+)*)\s*(?::|：|[–—-])?\s*(.*)$/u);
+    if(explicitClause){
+      pushClause(explicitClause[1]??String(++fallbackClauseCounter),explicitClause[2]??'','البند');
+      continue;
+    }
+
+    const explicitParagraph=normalized.match(/^الفقرة\s+(\d+(?:\.\d+)*)\s*(?::|：|[–—-])?\s*(.*)$/u);
+    if(explicitParagraph){
+      pushParagraph(explicitParagraph[2]??'',explicitParagraph[1]??null);
+      continue;
+    }
 
     const markdownHeading=normalized.match(/^(#{1,6})\s+(.+)$/);
     if(markdownHeading){
       const level=(markdownHeading[1]??'').length;
       const heading=markdownHeading[2]??'';
+      if(level===1&&!sections.length&&!current)continue;
       if(level<=2){
-        beginSection(heading);
+        const numbered=heading.match(/^(\d+)\s*[.)-]?\s*(.*)$/);
+        beginSection(numbered?.[1]??String(fallbackSectionCounter+1),numbered?.[2]??heading);
       }else{
-        pushClause('',normalizeHeadingText(heading));
+        fallbackClauseCounter+=1;
+        pushClause((current?.number??String(fallbackSectionCounter||1))+'.'+String(fallbackClauseCounter),'',normalizeHeadingText(heading));
       }
       continue;
     }
 
-    const explicitSection=normalized.match(/^(?:الباب|الفصل|المادة)\s+(.+)$/);
-    if(explicitSection){
-      beginSection(explicitSection[1]??normalized);
+    const topLevelNumbered=normalized.match(/^(\d+)\s*[.)-]\s+(.+)$/);
+    if(topLevelNumbered){
+      beginSection(topLevelNumbered[1]??String(fallbackSectionCounter+1),topLevelNumbered[2]??'');
       continue;
     }
 
@@ -207,35 +236,35 @@ function parseGovernedDocument(content:string):DocumentSection[]{
         rows.push(markdownCells(candidate));
         index+=1;
       }
-      current.blocks.push({kind:'table',headers,rows});
+      ensureSection().blocks.push({kind:'table',headers,rows});
       continue;
     }
 
-    const explicitClause=normalized.match(/^(\d+(?:\.\d+)+|\d+|[أابجدهـويزحطكلمنسعفصقرشتثخذضظغ])\s*[.)-]?\s+(.+)$/u);
-    if(explicitClause){
-      const body=explicitClause[2]??'';
+    const legacyClause=normalized.match(/^(\d+(?:\.\d+)+)\s*[.)-]?\s+(.+)$/);
+    if(legacyClause){
+      const body=legacyClause[2]??'';
       const withSeparator=body.match(/^([^:–—-]+?)\s*(?::|[–—-])\s*(.+)$/);
-      if(withSeparator) pushClause(withSeparator[2]??'',withSeparator[1]??'البند');
-      else pushClause(body,'البند');
+      if(withSeparator)pushClause(legacyClause[1]??'',withSeparator[2]??'',withSeparator[1]??'البند');
+      else pushClause(legacyClause[1]??'',body,'البند');
       continue;
     }
 
     const clause=parseClauseLine(normalized);
     if(clause){
-      pushClause(clause.text,clause.title);
+      pushClause(clause.number,clause.text,clause.title);
       continue;
     }
 
     if(/\*\*[^*]+:\*\*/.test(normalized)||/\*\*[^*]+\*\*\s*:/.test(normalized)){
-      for(const part of documentLineParts(normalized)) pushParagraph(part);
+      for(const part of documentLineParts(normalized))pushParagraph(part);
       continue;
     }
 
+    if(!sections.length&&!current&&/^(?:ميثاق|سياسة|لائحة|دليل|آليات|قاعدة|محرك|مصفوفة|تقرير)\b/u.test(cleanVisibleArabic(normalized)))continue;
     pushParagraph(normalized);
   }
 
-  flush();
-  if(!sections.length&&current.blocks.length) sections.push(current);
+  pushCurrent();
   return sections.filter(section=>section.blocks.length&&Boolean(section.title));
 }
 
@@ -334,6 +363,16 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
     }
   }
 
+  function openUnitEditor(reference:string,currentText:string){
+    setEditMode('governance');
+    setClauseRef(reference);
+    setCurrentRule(currentText);
+    setProposedRule(currentText);
+    setRationale('');
+    setFeedback('');
+    setFormOpen(true);
+  }
+
   function downloadLocalCopy(){
     if(!documentContent)return;
     const popup=globalThis.open('','_blank','noopener,noreferrer');
@@ -414,17 +453,29 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
               ?<p>جارٍ تحميل المرجع المعتمد داخل نماء…</p>
               :documentContent
                 ?<div className={styles.governedStructuredDocument}>
-                  {documentSections.map((section,sectionIndex)=><details className={styles.governedContentSection+' '+(isMatrixDocument?styles.governedMatrixSection:'')+' '+(isFlowDocument?styles.governedFlowSection:'')} key={sectionIndex} open={sectionIndex===0||isMatrixDocument}>
-                    <summary><span><LucideIcon name={sectionIcon(section.title,displayType)} size={16}/><strong>{section.title}</strong></span></summary>
+                  {documentSections.map((section,sectionIndex)=><details className={styles.governedContentSection+' '+(isMatrixDocument?styles.governedMatrixSection:'')+' '+(isFlowDocument?styles.governedFlowSection:'')} key={section.number+'-'+sectionIndex} open={sectionIndex===0||isMatrixDocument}>
+                    <summary><span><LucideIcon name={sectionIcon(section.title,displayType)} size={16}/><strong>{'المادة ('+section.number+'): '+section.title}</strong></span></summary>
                     <div className={styles.governedContentSectionBody}>
+                      <div className={styles.governedArticleAction}>
+                        <button type="button" onClick={()=>openUnitEditor('المادة '+section.number,section.title)}><LucideIcon name="pencil" size={15}/>تعديل المادة</button>
+                      </div>
                       {section.blocks.map((block,blockIndex)=>block.kind==='paragraph'
-                        ?<p key={blockIndex}>{block.text}</p>
+                        ?<article className={styles.governedParagraphRow} key={'p-'+blockIndex}>
+                          <div className={styles.governedUnitToolbar}>
+                            <strong>{block.number?'الفقرة ('+block.number+')':'فقرة'}</strong>
+                            <button type="button" onClick={()=>openUnitEditor(block.number?'الفقرة '+block.number:'فقرة من المادة '+section.number,block.text)} aria-label="تعديل الفقرة"><LucideIcon name="pencil" size={14}/>تعديل</button>
+                          </div>
+                          <p>{block.text}</p>
+                        </article>
                         :block.kind==='clause'
-                          ?<article className={styles.governedClauseRow} key={blockIndex}>
-                            <div className={styles.governedClauseHeading}><span>{block.number}</span><strong>{block.title}</strong></div>
+                          ?<article className={styles.governedClauseRow} key={'c-'+block.number+'-'+blockIndex}>
+                            <div className={styles.governedUnitToolbar}>
+                              <div className={styles.governedClauseHeading}><span>{'البند '+block.number}</span><strong>{block.title}</strong></div>
+                              <button type="button" onClick={()=>openUnitEditor('البند '+block.number,[block.title,block.text].filter(Boolean).join('\n'))} aria-label={'تعديل البند '+block.number}><LucideIcon name="pencil" size={14}/>تعديل</button>
+                            </div>
                             {block.text&&<p>{block.text}</p>}
                           </article>
-                          :<div className={styles.governedTableScroll} key={blockIndex}>
+                          :<div className={styles.governedTableScroll} key={'t-'+blockIndex}>
                           <table className={styles.governedContentTable}>
                             <thead><tr>{block.headers.map((header,headerIndex)=><th scope="col" key={headerIndex}>{header||'البيان'}</th>)}</tr></thead>
                             <tbody>{block.rows.map((row,rowIndex)=><tr key={rowIndex}>{block.headers.map((_,cellIndex)=><td key={cellIndex}>{row[cellIndex]||'غير محدد'}</td>)}</tr>)}</tbody>
@@ -457,7 +508,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
               <div><strong>{editMode==='typo'?'تعديل إملائي':'طلب تعديل'}</strong><small>{editMode==='typo'?'يصحح الخطأ دون تغيير المعنى أو الحكم.':'يغيّر المضمون أو الضابط ويمر بمسار المراجعة والاعتماد.'}</small></div>
               <button type="button" className={styles.governedEditClose} onClick={()=>setFormOpen(false)} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button>
             </header>
-            <label><span>رقم البند أو المادة</span><input value={clauseRef} onChange={e=>updateClauseReference(e.target.value)} placeholder="مثال: 1.2"/></label>
+            <label><span>المادة أو البند أو الفقرة</span><input value={clauseRef} onChange={e=>updateClauseReference(e.target.value)} placeholder="مثال: المادة 2، البند 2.1، الفقرة 2.1.1"/></label>
             <label><span>{editMode==='typo'?'النص الحالي كما يظهر':'النص أو الوضع الحالي'}</span><textarea required={editMode==='typo'} value={currentRule} onChange={e=>setCurrentRule(e.target.value)} placeholder="يظهر تلقائيًا عند إدخال رقم البند، ويمكن تعديله عند الحاجة"/></label>
             <label><span>{editMode==='typo'?'النص المصحح':'التعديل المقترح'}</span><textarea required value={proposedRule} onChange={e=>setProposedRule(e.target.value)} placeholder={editMode==='typo'?'ابدأ من النص الحالي وصحح المطلوب فقط':'اكتب التعديل المقترح بدقة'}/></label>
             <label><span>{editMode==='typo'?'سبب التصحيح':'مبرر التعديل'}</span><textarea required value={rationale} onChange={e=>setRationale(e.target.value)} placeholder={editMode==='typo'?'مثال: خطأ إملائي أو تحسين وضوح دون تغيير المعنى':'لماذا نحتاج هذا التعديل؟ وما أثره المتوقع؟'}/></label>
