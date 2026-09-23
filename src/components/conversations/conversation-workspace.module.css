@@ -8832,3 +8832,189 @@
     padding-inline:var(--ux-space-3)!important
   }
 }
+
+
+/* Namaa approved chat palettes — 2026-09-23 */
+
+/* LIGHT — approved visual board */
+:global(html:not([data-theme="dark"])) .chatPane,
+:global(html:not([data-theme="dark"])) .messages{
+  background:#F8FAF7!important;
+  background-image:none!important
+}
+:global(html:not([data-theme="dark"])) .userMessage{
+  background:#E8F5F1!important;
+  border-color:#DCE8F1!important;
+  color:#0B2545!important
+}
+:global(html:not([data-theme="dark"])) .agentMessage{
+  background:#FFFFFF!important;
+  border-color:#DCE8F1!important;
+  color:#0B2545!important
+}
+:global(html:not([data-theme="dark"])) .userMessage *,
+:global(html:not([data-theme="dark"])) .agentMessage *{
+  color:#0B2545
+}
+:global(html:not([data-theme="dark"])) .userMessage .messageMeta,
+:global(html:not([data-theme="dark"])) .agentMessage .messageMeta,
+:global(html:not([data-theme="dark"])) .userMessage .messageIdentity small,
+:global(html:not([data-theme="dark"])) .agentMessage .messageIdentity small{
+  color:#5E7486!important
+}
+:global(html:not([data-theme="dark"])) .agentMessage .messageIdentity,
+:global(html:not([data-theme="dark"])) .userMessage .messageIdentity{
+  border-bottom-color:#DCE8F1!important
+}
+:global(html:not([data-theme="dark"])) .agentMessage .onboardingQuestionCard,
+:global(html:not([data-theme="dark"])) .agentMessage .onboardingQuestionReason,
+:global(html:not([data-theme="dark"])) .agentMessage .onboardingQuestionBox,
+:global(html:not([data-theme="dark"])) .agentMessage .structuredCard,
+:global(html:not([data-theme="dark"])) .agentMessage .richMessageHero{
+  background:#FFFFFF!important;
+  background-image:none!important;
+  border-color:#DCE8F1!important;
+  color:#0B2545!important
+}
+:global(html:not([data-theme="dark"])) .agentMessage .onboardingQuestionIcon,
+:global(html:not([data-theme="dark"])) .agentMessage .onboardingQuestionHeader>b,
+:global(html:not([data-theme="dark"])) .agentMessage .onboardingQuestionBox>span{
+  background:#E8F5F1!important;
+  border-color:#DCE8F1!important;
+  color:#145246!important
+}
+:global(html:not([data-theme="dark"])) .agentMessage .onboardingQuestionIcon svg{
+  color:#145246!important
+}
+:global(html:not([data-theme="dark"])) .agentMessage .onboardingProgressTrack{
+  background:#DCE8F1!important
+}
+:global(html:not([data-theme="dark"])) .agentMessage .onboardingProgressTrack>span{
+  background:#145246!important
+}
+:global(html:not([data-theme="dark"])) .agentMessage .inlineIntakeButton{
+  background:#145246!important;
+  border-color:#145246!important;
+  color:#FFFFFF!important
+}
+:global(html:not([data-theme="dark"])) .agentMessage .inlineIntakeButton *{
+  color:#FFFFFF!important
+}
+:global(html:not([data-theme="dark"])) .composer{
+  background:#FFFFFF!important;
+  border-top-color:#DCE8F1!important
+}
+:global(html:not([data-theme="dark"])) .composer textarea{
+  background:#FFFFFF!important;
+  border-color:#DCE8F1!important;
+  color:#0B2545!important
+}
+:global(html:not([data-theme="dark"])) .attachButton{
+  background:#FFFFFF!important;
+  border-color:#DCE8F1!important;
+  color:#0B2545!important
+}
+:global(html:not([data-theme="dark"])) .sendButton{
+  background:#21B58F!important;
+  color:#FFFFFF!important
+}
+
+/* DARK — approved visual board */
+:global(html[data-theme="dark"]) .chatPane,
+:global(html[data-theme="dark"]) .messages{
+  background:#102A34!important;
+  background-image:none!important;
+  color:#F7FAFC!important
+}
+:global(html[data-theme="dark"]) .chatHeader{
+  background:#145246!important;
+  border-bottom-color:#2B6D63!important
+}
+:global(html[data-theme="dark"]) .userMessage{
+  background:#21B58F!important;
+  border-color:#2B6D63!important;
+  color:#F7FAFC!important
+}
+:global(html[data-theme="dark"]) .agentMessage{
+  background:#1E5A52!important;
+  border-color:#2B6D63!important;
+  color:#F7FAFC!important
+}
+:global(html[data-theme="dark"]) .userMessage *,
+:global(html[data-theme="dark"]) .agentMessage *{
+  color:#F7FAFC
+}
+:global(html[data-theme="dark"]) .userMessage .messageMeta,
+:global(html[data-theme="dark"]) .agentMessage .messageMeta,
+:global(html[data-theme="dark"]) .userMessage .messageIdentity small,
+:global(html[data-theme="dark"]) .agentMessage .messageIdentity small{
+  color:#C8D5DE!important
+}
+:global(html[data-theme="dark"]) .agentMessage .messageIdentity,
+:global(html[data-theme="dark"]) .userMessage .messageIdentity{
+  border-bottom-color:#2B6D63!important
+}
+:global(html[data-theme="dark"]) .agentMessage .onboardingQuestionCard,
+:global(html[data-theme="dark"]) .agentMessage .onboardingQuestionReason,
+:global(html[data-theme="dark"]) .agentMessage .onboardingQuestionBox,
+:global(html[data-theme="dark"]) .agentMessage .structuredCard,
+:global(html[data-theme="dark"]) .agentMessage .richMessageHero{
+  background:#1E5A52!important;
+  background-image:none!important;
+  border-color:#2B6D63!important;
+  color:#F7FAFC!important
+}
+:global(html[data-theme="dark"]) .agentMessage .onboardingQuestionIcon,
+:global(html[data-theme="dark"]) .agentMessage .onboardingQuestionHeader>b,
+:global(html[data-theme="dark"]) .agentMessage .onboardingQuestionBox>span{
+  background:#163844!important;
+  border-color:#FCAA30!important;
+  color:#FCAA30!important
+}
+:global(html[data-theme="dark"]) .agentMessage .onboardingQuestionIcon svg{
+  color:#FCAA30!important
+}
+:global(html[data-theme="dark"]) .agentMessage .onboardingProgressTrack{
+  background:#163844!important;
+  border:1px solid #2B6D63!important
+}
+:global(html[data-theme="dark"]) .agentMessage .onboardingProgressTrack>span{
+  background:#FCAA30!important
+}
+:global(html[data-theme="dark"]) .agentMessage .inlineIntakeButton{
+  background:#102A34!important;
+  border-color:#FCAA30!important;
+  color:#F7FAFC!important
+}
+:global(html[data-theme="dark"]) .agentMessage .inlineIntakeButton *{
+  color:#F7FAFC!important
+}
+:global(html[data-theme="dark"]) .composer{
+  background:#163844!important;
+  border-top-color:#2B6D63!important
+}
+:global(html[data-theme="dark"]) .composer textarea{
+  background:#102A34!important;
+  border-color:#2B6D63!important;
+  color:#F7FAFC!important
+}
+:global(html[data-theme="dark"]) .composer textarea::placeholder{
+  color:#C8D5DE!important
+}
+:global(html[data-theme="dark"]) .attachButton{
+  background:#102A34!important;
+  border-color:#2B6D63!important;
+  color:#F7FAFC!important
+}
+:global(html[data-theme="dark"]) .sendButton{
+  background:#21B58F!important;
+  color:#F7FAFC!important
+}
+
+/* The approved chat surfaces are always opaque and pattern-free. */
+.agentMessage,
+.userMessage,
+.agentMessage *,
+.userMessage *{
+  background-image:none!important
+}
