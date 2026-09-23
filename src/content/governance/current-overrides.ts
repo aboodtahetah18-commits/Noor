@@ -1,7 +1,13 @@
 import { CENTRAL_ACTIVE_POLICIES } from './central-active-policies';
 import { CENTRAL_ACTIVE_REGULATIONS } from './central-active-regulations';
+import { REVIEWED_HILAL_DOCUMENTS } from './reviewed-hilal-20260923';
+import { REVIEWED_MALAA_DOCUMENTS } from './reviewed-malaa-20260923';
+import { REVIEWED_ASSETS_DOCUMENTS } from './reviewed-assets-20260923';
 
 export const CURRENT_GOVERNANCE_OVERRIDES=[
+  ...REVIEWED_HILAL_DOCUMENTS,
+  ...REVIEWED_MALAA_DOCUMENTS,
+  ...REVIEWED_ASSETS_DOCUMENTS,
   ...CENTRAL_ACTIVE_POLICIES,
   ...CENTRAL_ACTIVE_REGULATIONS,
   ...[
