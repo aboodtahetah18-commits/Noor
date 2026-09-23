@@ -5147,6 +5147,14 @@
     background:var(--namaa-card)!important;
     box-shadow:var(--ux-shadow-xs)
   }
+  .entityDetailSheet .sheetHeader{
+    background:var(--namaa-green-900)!important;
+    color:var(--ux-text-inverse)!important;
+    border-bottom-color:color-mix(in srgb,var(--ux-text-inverse) 18%,transparent)!important
+  }
+  .entityDetailSheet .sheetHeader strong{
+    color:var(--ux-text-inverse)!important
+  }
 
   .mobileFullPageSheet .sheetHeader>button,
   .entityDetailSheet .sheetHeader>button,
@@ -5161,6 +5169,12 @@
     background:var(--namaa-card)!important;
     color:var(--namaa-green-900)!important;
     box-shadow:var(--ux-shadow-xs)
+  }
+  .entityDetailSheet .sheetHeader>button{
+    border-color:color-mix(in srgb,var(--ux-text-inverse) 44%,transparent)!important;
+    background:color-mix(in srgb,var(--ux-text-inverse) 8%,transparent)!important;
+    color:var(--ux-text-inverse)!important;
+    box-shadow:none!important
   }
 
   .governedDocumentContent,
@@ -7951,6 +7965,11 @@
   z-index:1!important;
   width:100%!important;
   height:100%!important
+}
+.mobileOverlay>.mobileSheet,
+.mobileOverlay>.userMenuCard{
+  z-index:2!important;
+  pointer-events:auto!important
 }
 .mobileSideSheet{
   position:absolute!important;
