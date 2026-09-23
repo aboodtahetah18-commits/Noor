@@ -9838,3 +9838,86 @@
   stroke:currentColor!important;
   opacity:1!important
 }
+
+
+/* Namaa final asset-quality authority — HQ personas, bank marks, and light chat motifs */
+
+/* HQ persona files are rendered at their native geometry without CSS scaling or filters. */
+.personaAvatar img,
+.entityTeamPortrait img,
+.algorithmRolePortraitImage,
+.messageIdentity img{
+  image-rendering:auto!important;
+  object-fit:cover!important;
+  object-position:center 16%!important;
+  transform:none!important;
+  filter:none!important;
+  opacity:1!important
+}
+.roomDetailHero .personaAvatar img{
+  object-position:center 14%!important;
+  transform:none!important
+}
+.entityTeamPortrait img{
+  object-position:center 12%!important;
+  transform:none!important
+}
+
+/* Bank marks use the approved high-resolution identity files and must never be recolored. */
+.chatHeaderBankMark img,
+.richMessageVisual>img{
+  object-fit:contain!important;
+  object-position:center!important;
+  transform:none!important;
+  filter:none!important;
+  opacity:1!important;
+  image-rendering:auto!important
+}
+
+/* Light chat canvas: large, quiet Namaa leaf marks across the white surface only. */
+:global(html:not([data-theme="dark"])) .page .messages{
+  position:relative!important;
+  isolation:isolate!important;
+  background:var(--namaa-card)!important;
+  background-image:none!important
+}
+:global(html:not([data-theme="dark"])) .page .messages::before{
+  content:""!important;
+  display:block!important;
+  position:absolute!important;
+  inset:0!important;
+  z-index:0!important;
+  pointer-events:none!important;
+  background-image:
+    url('/brand/namaa-leaf.webp'),
+    url('/brand/namaa-leaf.webp'),
+    url('/brand/namaa-leaf.webp'),
+    url('/brand/namaa-leaf.webp')!important;
+  background-repeat:no-repeat!important;
+  background-size:340px auto,300px auto,280px auto,240px auto!important;
+  background-position:-70px 8%,calc(100% + 90px) 34%,-55px 68%,calc(100% + 55px) 92%!important;
+  opacity:.045!important
+}
+:global(html:not([data-theme="dark"])) .page .messages>*{
+  position:relative!important;
+  z-index:1!important
+}
+
+/* Motifs belong to the canvas, never inside a message card. */
+:global(html:not([data-theme="dark"])) .page .agentMessage,
+:global(html:not([data-theme="dark"])) .page .userMessage,
+:global(html:not([data-theme="dark"])) .page .agentMessage::before,
+:global(html:not([data-theme="dark"])) .page .agentMessage::after,
+:global(html:not([data-theme="dark"])) .page .userMessage::before,
+:global(html:not([data-theme="dark"])) .page .userMessage::after{
+  background-image:none!important
+}
+
+/* Dark chat remains completely free of canvas motifs. */
+:global(html[data-theme="dark"]) .page .messages::before,
+:global(html[data-theme="dark"]) .page .messages::after{
+  content:none!important;
+  display:none!important;
+  background:none!important;
+  background-image:none!important
+}
