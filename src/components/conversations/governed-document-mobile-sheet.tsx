@@ -12,7 +12,8 @@ import styles from './conversation-workspace.module.css';
 
 type Amendment={
   requestId:string; documentRef:string; documentTitle:string; roomKey:string;
-  clauseRef:string|null; currentRule:string|null; proposedRule:string; rationale:string;
+  clauseRef:string|null; parentRef:string|null; changeAction:'ADD'|'EDIT'; unitType:'article'|'clause'|'paragraph';
+  currentRule:string|null; proposedRule:string; rationale:string;
   priority:'NORMAL'|'NEXT_MEETING'|'URGENT'; status:string; requestedAt:string;
   governorReviewedAt:string|null; secretaryReceivedAt:string|null; councilDecisionAt:string|null;
   councilDecisionId:string|null; effectiveAt:string|null; nextVersion:string|null; discussionNotes:string[];
@@ -22,6 +23,11 @@ type TypoCorrection={
   correctionId:string; documentRef:string; documentTitle:string; roomKey:string;
   clauseRef:string|null; currentRule:string; correctedRule:string; rationale:string;
   correctedAt:string; status:'APPLIED';
+};
+type DirectChange={
+  changeId:string; documentRef:string; documentTitle:string; roomKey:string;
+  unitRef:string; parentRef:string|null; changeAction:'ADD'|'EDIT'; unitType:'article'|'clause'|'paragraph';
+  currentRule:string|null; proposedRule:string; rationale:string; changedAt:string; status:'APPLIED';
 };
 
 const statusLabel:Record<string,string>={
@@ -278,11 +284,15 @@ function parseGovernedDocument(content:string):DocumentSection[]{
 
 export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document:GovernedDocumentRef;roomKey:string;onClose:()=>void}){
   const [amendments,setAmendments]=useState<Amendment[]>([]);
+  const [directChanges,setDirectChanges]=useState<DirectChange[]>([]);
   const [corrections,setCorrections]=useState<TypoCorrection[]>([]);
   const [documentContent,setDocumentContent]=useState('');
   const [documentLoading,setDocumentLoading]=useState(true);
   const [formOpen,setFormOpen]=useState(false);
-  const [editMode,setEditMode]=useState<'typo'|'governance'>('governance');
+  const [editMode,setEditMode]=useState<'direct'|'governance'>('direct');
+  const [changeAction,setChangeAction]=useState<'ADD'|'EDIT'>('EDIT');
+  const [unitType,setUnitType]=useState<'article'|'clause'|'paragraph'>('paragraph');
+  const [parentRef,setParentRef]=useState('');
   const [pending,setPending]=useState(false);
   const [feedback,setFeedback]=useState('');
   const [clauseRef,setClauseRef]=useState('');
@@ -293,9 +303,10 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
 
   async function load(){
     const response=await fetch('/api/governance/amendments',{cache:'no-store'});
-    const data=await response.json().catch(()=>({})) as {amendments?:Amendment[];corrections?:TypoCorrection[]};
+    const data=await response.json().catch(()=>({})) as {amendments?:Amendment[];directChanges?:DirectChange[];corrections?:TypoCorrection[]};
     if(response.ok){
       setAmendments(Array.isArray(data.amendments)?data.amendments:[]);
+      setDirectChanges(Array.isArray(data.directChanges)?data.directChanges:[]);
       setCorrections(Array.isArray(data.corrections)?data.corrections:[]);
     }
   }
@@ -315,11 +326,17 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
     return()=>{cancelled=true};
   },[document.referenceCode]);
   const related=useMemo(()=>amendments.filter(item=>item.documentRef===document.referenceCode),[amendments,document.referenceCode]);
+  const relatedDirect=useMemo(()=>directChanges.filter(item=>item.documentRef===document.referenceCode),[directChanges,document.referenceCode]);
   const relatedCorrections=useMemo(()=>corrections.filter(item=>item.documentRef===document.referenceCode),[corrections,document.referenceCode]);
   const history=useMemo(()=>{
     const typoItems=relatedCorrections.map(item=>({
       id:item.correctionId,at:item.correctedAt,type:'تعديل إملائي',status:'تم',
       summary:item.clauseRef?`تصحيح إملائي في ${item.clauseRef}: ${item.rationale}`:item.rationale,
+      tone:'typo' as const,
+    }));
+    const directItems=relatedDirect.map(item=>({
+      id:item.changeId,at:item.changedAt,type:item.changeAction==='ADD'?'إضافة مباشرة':'تعديل مباشر',status:'تم',
+      summary:(item.changeAction==='ADD'?'إضافة ':'تعديل ')+item.unitRef+(item.rationale?': '+item.rationale:''),
       tone:'typo' as const,
     }));
     const governanceItems=related.flatMap(item=>{
@@ -341,8 +358,8 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
       });
       return items;
     });
-    return [...typoItems,...governanceItems].sort((a,b)=>b.at.localeCompare(a.at));
-  },[related,relatedCorrections]);
+    return [...typoItems,...directItems,...governanceItems].sort((a,b)=>b.at.localeCompare(a.at));
+  },[related,relatedCorrections,relatedDirect]);
   const documentSections=useMemo(()=>parseGovernedDocument(documentContent),[documentContent]);
   const displayType=useMemo(()=>resolveGovernedDisplayType(document,documentContent),[document,documentContent]);
   const displayLabel=governedDisplayLabel(displayType);
@@ -350,30 +367,80 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
   const isMatrixDocument=displayType==='matrix';
   const displayDescription=governedDisplayDescription(displayType);
   const documentStatus=useMemo(()=>governedDocumentStatus(documentContent),[documentContent]);
-  const clauseTextByRef=useMemo(()=>{
-    const map=new Map<string,string>();
+  const unitOptions=useMemo(()=>{
+    const items:Array<{ref:string;type:'article'|'clause'|'paragraph';label:string;text:string;parentRef:string|null}>=[];
     for(const section of documentSections){
+      items.push({ref:section.number,type:'article',label:'المادة '+section.number,text:section.title,parentRef:null});
       for(const block of section.blocks){
-        if(block.kind!=='clause')continue;
-        const value=[block.title,block.text].filter(Boolean).join('\n').trim();
-        if(block.number&&value)map.set(westernDigits(block.number).trim(),value);
+        if(block.kind==='clause'){
+          items.push({ref:block.number,type:'clause',label:'البند '+block.number,text:block.text||block.title,parentRef:section.number});
+        }else if(block.kind==='paragraph'&&block.number){
+          const parent=block.number.split('.').slice(0,-1).join('.');
+          items.push({ref:block.number,type:'paragraph',label:'الفقرة '+block.number,text:block.text,parentRef:parent});
+        }
       }
     }
-    return map;
+    return items;
   },[documentSections]);
 
-  function updateClauseReference(value:string){
-    const normalized=westernDigits(value).trim();
-    setClauseRef(value);
-    const matched=clauseTextByRef.get(normalized);
-    if(matched!==undefined){
-      setCurrentRule(matched);
-      if(editMode==='typo'&&!proposedRule.trim())setProposedRule(matched);
+  const articleOptions=useMemo(()=>unitOptions.filter(item=>item.type==='article'),[unitOptions]);
+  const clauseOptions=useMemo(()=>unitOptions.filter(item=>item.type==='clause'),[unitOptions]);
+
+  function nextUnitRef(type:'article'|'clause'|'paragraph',parent:string){
+    if(type==='article'){
+      const max=Math.max(0,...articleOptions.map(item=>Number(item.ref)||0));
+      return String(max+1);
     }
+    if(type==='clause'){
+      const article=parent.replace(/^المادة\s+/u,'').trim();
+      const siblings=clauseOptions.filter(item=>item.ref.startsWith(article+'.'));
+      const max=Math.max(0,...siblings.map(item=>Number(item.ref.split('.').at(-1))||0));
+      return article+'.'+String(max+1);
+    }
+    const clause=parent.replace(/^البند\s+/u,'').trim();
+    const siblings=unitOptions.filter(item=>item.type==='paragraph'&&item.ref.startsWith(clause+'.'));
+    const max=Math.max(0,...siblings.map(item=>Number(item.ref.split('.').at(-1))||0));
+    return clause+'.'+String(max+1);
   }
 
-  function openUnitEditor(reference:string,currentText:string){
-    setEditMode('governance');
+  function resetEditor(mode:'direct'|'governance',action:'ADD'|'EDIT'='EDIT'){
+    setEditMode(mode);
+    setChangeAction(action);
+    setUnitType(action==='ADD'?'paragraph':'paragraph');
+    setParentRef('');
+    setClauseRef('');
+    setCurrentRule('');
+    setProposedRule('');
+    setRationale('');
+    setFeedback('');
+    setFormOpen(true);
+  }
+
+  function chooseExistingUnit(ref:string){
+    const item=unitOptions.find(candidate=>candidate.ref===ref);
+    setClauseRef(ref);
+    if(!item){setCurrentRule('');setProposedRule('');return}
+    setUnitType(item.type);
+    setParentRef(item.parentRef??'');
+    setCurrentRule(item.text);
+    setProposedRule(item.text);
+  }
+
+  function updateAddTarget(type:'article'|'clause'|'paragraph',parent:string){
+    setUnitType(type);
+    setParentRef(parent);
+    if(type==='article')setClauseRef(nextUnitRef(type,''));
+    else if(parent)setClauseRef(nextUnitRef(type,parent));
+    else setClauseRef('');
+    setCurrentRule('');
+    setProposedRule('');
+  }
+
+  function openUnitEditor(type:'article'|'clause'|'paragraph',reference:string,currentText:string,parent:string|null){
+    setEditMode('direct');
+    setChangeAction('EDIT');
+    setUnitType(type);
+    setParentRef(parent??'');
     setClauseRef(reference);
     setCurrentRule(currentText);
     setProposedRule(currentText);
@@ -382,50 +449,39 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
     setFormOpen(true);
   }
 
-  function downloadLocalCopy(){
-    if(!documentContent)return;
-    const popup=globalThis.open('','_blank','noopener,noreferrer');
-    if(!popup){
-      setFeedback('تعذر فتح نسخة الاطلاع. اسمح بالنوافذ المنبثقة ثم أعد المحاولة.');
-      return;
-    }
-    const safeTitle=(document.title||'مرجع نماء').replace(/[<>&]/g,'');
-    const safeContent=documentContent
-      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-      .replace(/\n/g,'<br/>');
-    popup.document.write(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"/><title>${safeTitle}</title><style>
-      body{font-family:Arial,sans-serif;direction:rtl;margin:40px;line-height:1.9}
-      h1{font-size:24px;margin-bottom:12px} .meta{margin-bottom:24px}
-      .content{white-space:normal;font-size:15px} @media print{body{margin:18mm}}
-    </style></head><body><h1>${safeTitle}</h1><div class="meta">نسخة للاطلاع — نماء</div><div class="content">${safeContent}</div><script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></body></html>`);
-    popup.document.close();
-  }
-
 
   async function submit(event:FormEvent){
-    event.preventDefault(); if(pending)return; setPending(true); setFeedback('');
+    event.preventDefault(); if(pending||!clauseRef.trim()||!proposedRule.trim())return; setPending(true); setFeedback('');
     try{
-      const payload=editMode==='typo'
-        ?{operation:'TYPO_CORRECTION' as const,documentRef:document.referenceCode,documentTitle:document.title,roomKey,
-          clauseRef:clauseRef.trim()||null,currentRule:currentRule.trim(),correctedRule:proposedRule.trim(),rationale:rationale.trim()}
-        :{operation:'CREATE' as const,documentRef:document.referenceCode,documentTitle:document.title,roomKey,
-          clauseRef:clauseRef.trim()||null,currentRule:currentRule.trim()||null,proposedRule:proposedRule.trim(),rationale:rationale.trim(),priority};
+      const unitLabel=unitType==='article'?'المادة':unitType==='clause'?'البند':'الفقرة';
+      const common={
+        documentRef:document.referenceCode,documentTitle:document.title,roomKey,
+        parentRef:parentRef.trim()||null,changeAction,unitType,
+        currentRule:currentRule.trim()||null,proposedRule:proposedRule.trim(),
+        rationale:rationale.trim()||(changeAction==='ADD'?'إضافة مباشرة خلال مرحلة التأسيس':'تعديل مباشر خلال مرحلة التأسيس'),
+      };
+      const payload=editMode==='direct'
+        ?{operation:'DIRECT_CHANGE' as const,...common,unitRef:clauseRef.trim()}
+        :{operation:'CREATE' as const,...common,clauseRef:unitLabel+' '+clauseRef.trim(),priority,
+          rationale:rationale.trim()||'تغيير حوكمي يتطلب المراجعة والاعتماد قبل النفاذ'};
       const response=await fetch('/api/governance/amendments',{
         method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload),
       });
-      const data=await response.json().catch(()=>({})) as {requestId?:string;correctionId?:string;error?:string};
+      const data=await response.json().catch(()=>({})) as {requestId?:string;changeId?:string;error?:string};
       if(!response.ok) throw new Error(data.error||'REQUEST_FAILED');
-      setFeedback(editMode==='typo'
-        ?'تم تطبيق التصحيح المطبعي دون فتح مسار حوكمي أو إحالة إلى مجلس نماء الأعلى.'
-        :'تم فتح طلب التعديل وإرساله للمراجعة.');
-      setFormOpen(false); setClauseRef(''); setCurrentRule(''); setProposedRule(''); setRationale('');
+      setFeedback(editMode==='direct'
+        ?'تم تطبيق '+(changeAction==='ADD'?'الإضافة':'التعديل')+' مباشرة وتسجيلها في سجل التحديثات.'
+        :'تم فتح طلب '+(changeAction==='ADD'?'إضافة':'تعديل')+' حوكمي وإرساله للمراجعة.');
+      setFormOpen(false); setClauseRef(''); setCurrentRule(''); setProposedRule(''); setRationale(''); setParentRef('');
       await load();
-      if(editMode==='typo'){
+      if(editMode==='direct'){
         const responseDocument=await fetch('/api/governance/documents/'+encodeURIComponent(document.referenceCode),{cache:'no-store'});
         const next=await responseDocument.json().catch(()=>({})) as {document?:{content?:string}};
         if(responseDocument.ok)setDocumentContent(String(next.document?.content??''));
       }
-    }catch{ setFeedback(editMode==='typo'?'تعذر تطبيق التصحيح الإملائي الآن.':'تعذر فتح طلب التعديل الآن.'); } finally{ setPending(false); }
+    }catch{
+      setFeedback(editMode==='direct'?'تعذر تطبيق التحرير المباشر الآن.':'تعذر فتح الطلب الحوكمي الآن.');
+    }finally{setPending(false)}
   }
 
   return <div className={styles.mobileOverlay} role="dialog" aria-modal="true" aria-label={'تفاصيل '+document.title}>
@@ -466,13 +522,13 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
                     <summary><span><LucideIcon name={sectionIcon(section.title,displayType)} size={16}/><strong>{'المادة ('+section.number+'): '+section.title}</strong></span></summary>
                     <div className={styles.governedContentSectionBody}>
                       <div className={styles.governedArticleAction}>
-                        <button type="button" onClick={()=>openUnitEditor('المادة '+section.number,section.title)}><LucideIcon name="pencil" size={16}/>تعديل المادة</button>
+                        <button type="button" onClick={()=>openUnitEditor('article',section.number,section.title,null)}><LucideIcon name="pencil" size={16}/>تعديل المادة</button>
                       </div>
                       {section.blocks.map((block,blockIndex)=>block.kind==='paragraph'
                         ?<article className={styles.governedParagraphRow} key={'p-'+blockIndex}>
                           <div className={styles.governedUnitToolbar}>
                             <strong>{block.number?'الفقرة ('+block.number+')':'فقرة'}</strong>
-                            <button type="button" onClick={()=>openUnitEditor(block.number?'الفقرة '+block.number:'فقرة من المادة '+section.number,block.text)} aria-label="تعديل الفقرة"><LucideIcon name="pencil" size={16}/>تعديل</button>
+                            {block.number&&<button type="button" onClick={()=>openUnitEditor('paragraph',block.number??'',block.text,(block.number??'').split('.').slice(0,-1).join('.'))} aria-label="تعديل الفقرة"><LucideIcon name="pencil" size={16}/>تعديل</button>}
                           </div>
                           <p>{block.text}</p>
                         </article>
@@ -480,7 +536,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
                           ?<article className={styles.governedClauseRow} key={'c-'+block.number+'-'+blockIndex}>
                             <div className={styles.governedUnitToolbar}>
                               <div className={styles.governedClauseHeading}><span>{'البند '+block.number}</span><strong>{block.title}</strong></div>
-                              <button type="button" onClick={()=>openUnitEditor('البند '+block.number,[block.title,block.text].filter(Boolean).join('\n'))} aria-label={'تعديل البند '+block.number}><LucideIcon name="pencil" size={16}/>تعديل</button>
+                              <button type="button" onClick={()=>openUnitEditor('clause',block.number,block.text||block.title,section.number)} aria-label={'تعديل البند '+block.number}><LucideIcon name="pencil" size={16}/>تعديل</button>
                             </div>
                             {block.text&&<p>{block.text}</p>}
                           </article>
@@ -498,34 +554,58 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
         </details>
 
         <section className={styles.governedQuickActions} aria-label="إجراءات المرجع">
-          <button type="button" className={styles.governedTypoButton} onClick={()=>{setEditMode('typo');setFormOpen(true);setFeedback('')}}>
-            <LucideIcon name="pencil" size={24}/><span><strong>تعديل إملائي</strong></span>
+          <button type="button" className={styles.governedTypoButton} onClick={()=>resetEditor('direct','EDIT')}>
+            <LucideIcon name="pencil" size={24}/><span><strong>تحرير مباشر</strong></span>
           </button>
-          <button type="button" className={styles.governedGovernanceButton} onClick={()=>{setEditMode('governance');setFormOpen(true);setFeedback('')}}>
-            <LucideIcon name="landmark" size={24}/><span><strong>طلب تعديل</strong></span>
-          </button>
-          <button type="button" className={styles.governedPdfButton} onClick={downloadLocalCopy} disabled={!documentContent}>
-            <LucideIcon name="receiptText" size={20}/><span><strong>تحميل PDF</strong></span>
+          <button type="button" className={styles.governedGovernanceButton} onClick={()=>resetEditor('governance','EDIT')}>
+            <LucideIcon name="landmark" size={24}/><span><strong>تحرير حوكمي</strong></span>
           </button>
         </section>
 
-        {formOpen&&<div className={styles.governedEditModal} role="dialog" aria-modal="true" aria-label={editMode==='typo'?'تعديل إملائي':'طلب تعديل'}>
+        {formOpen&&<div className={styles.governedEditModal} role="dialog" aria-modal="true" aria-label={editMode==='direct'?'تحرير مباشر':'تحرير حوكمي'}>
           <button type="button" className={styles.governedEditModalScrim} aria-label="إغلاق" onClick={()=>setFormOpen(false)}/>
-          <form className={styles.governedAmendmentForm+' '+styles.governedEditModalCard+' '+(editMode==='typo'?styles.governedTypoForm:styles.governedGovernanceForm)} onSubmit={submit}>
+          <form className={styles.governedAmendmentForm+' '+styles.governedEditModalCard+' '+(editMode==='direct'?styles.governedTypoForm:styles.governedGovernanceForm)} onSubmit={submit}>
             <header className={styles.governedEditFormHeader}>
-              <span className={styles.governedEditFormIcon}><LucideIcon name={editMode==='typo'?'pencil':'landmark'} size={20}/></span>
-              <div><strong>{editMode==='typo'?'تعديل إملائي':'طلب تعديل'}</strong><small>{editMode==='typo'?'يصحح الخطأ دون تغيير المعنى أو الحكم.':'يغيّر المضمون أو الضابط ويمر بمسار المراجعة والاعتماد.'}</small></div>
+              <span className={styles.governedEditFormIcon}><LucideIcon name={editMode==='direct'?'pencil':'landmark'} size={20}/></span>
+              <div><strong>{editMode==='direct'?'تحرير مباشر':'تحرير حوكمي'}</strong><small>{editMode==='direct'?'إضافة أو تعديل مباشر خلال مرحلة ضبط المنصة.':'إضافة أو تعديل يمر بالاجتماع والمراجعة والاعتماد قبل النفاذ.'}</small></div>
               <button type="button" className={styles.governedEditClose} onClick={()=>setFormOpen(false)} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button>
             </header>
-            <label><span>المادة أو البند أو الفقرة</span><input value={clauseRef} onChange={e=>updateClauseReference(e.target.value)} placeholder="مثال: المادة 2، البند 2.1، الفقرة 2.1.1"/></label>
-            <label><span>{editMode==='typo'?'النص الحالي كما يظهر':'النص أو الوضع الحالي'}</span><textarea required={editMode==='typo'} value={currentRule} onChange={e=>setCurrentRule(e.target.value)} placeholder="يظهر تلقائيًا عند إدخال رقم البند، ويمكن تعديله عند الحاجة"/></label>
-            <label><span>{editMode==='typo'?'النص المصحح':'التعديل المقترح'}</span><textarea required value={proposedRule} onChange={e=>setProposedRule(e.target.value)} placeholder={editMode==='typo'?'ابدأ من النص الحالي وصحح المطلوب فقط':'اكتب التعديل المقترح بدقة'}/></label>
-            <label><span>{editMode==='typo'?'سبب التصحيح':'مبرر التعديل'}</span><textarea required value={rationale} onChange={e=>setRationale(e.target.value)} placeholder={editMode==='typo'?'مثال: خطأ إملائي أو تحسين وضوح دون تغيير المعنى':'لماذا نحتاج هذا التعديل؟ وما أثره المتوقع؟'}/></label>
+
+            <label><span>نوع العملية</span><select value={changeAction} onChange={e=>{
+              const action=e.target.value as typeof changeAction;
+              setChangeAction(action);
+              if(action==='ADD') updateAddTarget('paragraph','');
+              else {setClauseRef('');setParentRef('');setCurrentRule('');setProposedRule('')}
+            }}>
+              <option value="ADD">إضافة</option>
+              <option value="EDIT">تعديل</option>
+            </select></label>
+
+            {changeAction==='ADD'
+              ?<>
+                <label><span>نوع الإضافة</span><select value={unitType} onChange={e=>updateAddTarget(e.target.value as typeof unitType,'')}>
+                  <option value="article">مادة</option><option value="clause">بند</option><option value="paragraph">فقرة</option>
+                </select></label>
+                {unitType==='clause'&&<label><span>تحت المادة</span><select value={parentRef} onChange={e=>updateAddTarget('clause',e.target.value)}>
+                  <option value="">اختر المادة</option>{articleOptions.map(item=><option key={item.ref} value={item.ref}>{item.label}</option>)}
+                </select></label>}
+                {unitType==='paragraph'&&<label><span>تحت البند</span><select value={parentRef} onChange={e=>updateAddTarget('paragraph',e.target.value)}>
+                  <option value="">اختر البند</option>{clauseOptions.map(item=><option key={item.ref} value={item.ref}>{item.label}</option>)}
+                </select></label>}
+                <label><span>الترقيم</span><input value={clauseRef} readOnly placeholder="يُنشأ تلقائيًا"/></label>
+              </>
+              :<label><span>العنصر</span><select value={clauseRef} onChange={e=>chooseExistingUnit(e.target.value)}>
+                <option value="">اختر المادة أو البند أو الفقرة</option>{unitOptions.map(item=><option key={item.type+'-'+item.ref} value={item.ref}>{item.label}</option>)}
+              </select></label>}
+
+            {changeAction==='EDIT'&&<label><span>النص الحالي</span><textarea value={currentRule} readOnly/></label>}
+            <label><span>{changeAction==='ADD'?'النص الجديد':'النص المعدل'}</span><textarea required value={proposedRule} onChange={e=>setProposedRule(e.target.value)} placeholder={changeAction==='ADD'?'اكتب محتوى العنصر الجديد':'عدّل النص المطلوب'}/></label>
+            <label><span>{editMode==='direct'?'ملاحظة':'مبرر التغيير'}</span><textarea required={editMode==='governance'} value={rationale} onChange={e=>setRationale(e.target.value)} placeholder={editMode==='direct'?'اختياري خلال مرحلة التأسيس':'اشرح سبب الإضافة أو التعديل وأثره'}/></label>
             {editMode==='governance'&&<label><span>الأولوية</span><select value={priority} onChange={e=>setPriority(e.target.value as typeof priority)}><option value="NORMAL">عادي</option><option value="NEXT_MEETING">للاجتماع القادم</option><option value="URGENT">عاجل، اجتماع فوري</option></select></label>}
-            <p>{editMode==='typo'
-              ?'يطبّق التصحيح على نسخة العرض ويسجل في سجل التحديثات، دون إنشاء قرار أو اعتماد حوكمي.'
+            <p>{editMode==='direct'
+              ?'يطبق التغيير فورًا في نسخة العرض الحالية ويسجل أثره. هذا المسار مخصص لمرحلة ضبط المنصة.'
               :'المسار: المحافظ، ثم أمين السر، ثم مجلس نماء الأعلى، ثم الاعتماد أو الرفض، ثم تاريخ النفاذ والإصدار الجديد.'}</p>
-            <div className={styles.governedAmendmentActions}><button type="button" onClick={()=>setFormOpen(false)}>إلغاء</button><button type="submit" disabled={pending}>{pending?'جارٍ الحفظ…':editMode==='typo'?'حفظ التصحيح':'إرسال للمحافظ'}</button></div>
+            <div className={styles.governedAmendmentActions}><button type="button" onClick={()=>setFormOpen(false)}>إلغاء</button><button type="submit" disabled={pending||!clauseRef.trim()||!proposedRule.trim()}>{pending?'جارٍ الحفظ…':editMode==='direct'?'حفظ مباشر':'إرسال للمحافظ'}</button></div>
           </form>
         </div>}
 

@@ -10,10 +10,27 @@ import {
   addGovernanceAmendmentDiscussion,
   advanceGovernanceAmendment,
   createGovernanceAmendmentRequest,
+  createGovernanceDirectChange,
   createGovernanceTypoCorrection,
   listGovernanceAmendments,
+  listGovernanceDirectChanges,
   listGovernanceTypoCorrections,
 } from '@/lib/governance/governance-amendments';
+
+
+const directChangeSchema=z.object({
+  operation:z.literal('DIRECT_CHANGE'),
+  documentRef:z.string().trim().min(3).max(120),
+  documentTitle:z.string().trim().min(3).max(300),
+  roomKey:z.string().trim().min(2).max(40),
+  unitRef:z.string().trim().min(1).max(120),
+  parentRef:z.string().trim().max(120).optional().nullable(),
+  changeAction:z.enum(['ADD','EDIT']),
+  unitType:z.enum(['article','clause','paragraph']),
+  currentRule:z.string().trim().max(4000).optional().nullable(),
+  proposedRule:z.string().trim().min(1).max(4000),
+  rationale:z.string().trim().min(1).max(1000),
+});
 
 const typoCorrectionSchema=z.object({
   operation:z.literal('TYPO_CORRECTION'),
@@ -31,6 +48,9 @@ const createSchema=z.object({
   documentTitle:z.string().trim().min(3).max(300),
   roomKey:z.string().trim().min(2).max(40),
   clauseRef:z.string().trim().max(120).optional().nullable(),
+  parentRef:z.string().trim().max(120).optional().nullable(),
+  changeAction:z.enum(['ADD','EDIT']).default('EDIT'),
+  unitType:z.enum(['article','clause','paragraph']).default('paragraph'),
   currentRule:z.string().trim().max(4000).optional().nullable(),
   proposedRule:z.string().trim().min(3).max(4000),
   rationale:z.string().trim().min(3).max(4000),
@@ -51,18 +71,19 @@ const advanceSchema=z.object({
   effectiveAt:z.string().trim().max(40).optional().nullable(),
   nextVersion:z.string().trim().max(80).optional().nullable(),
 });
-const bodySchema=z.discriminatedUnion('operation',[createSchema,typoCorrectionSchema,discussSchema,advanceSchema]);
+const bodySchema=z.discriminatedUnion('operation',[createSchema,directChangeSchema,typoCorrectionSchema,discussSchema,advanceSchema]);
 const headers={'Cache-Control':'no-store'};
 
 export async function GET(){
   const user=await getAuthenticatedUser();
   if(!user)return NextResponse.json({ok:false,error:'UNAUTHORIZED'},{status:401,headers});
   try{
-    const [amendments,corrections]=await Promise.all([
+    const [amendments,directChanges,corrections]=await Promise.all([
       listGovernanceAmendments(user.id),
+      listGovernanceDirectChanges(user.id),
       listGovernanceTypoCorrections(user.id),
     ]);
-    return NextResponse.json({ok:true,amendments,corrections},{headers});
+    return NextResponse.json({ok:true,amendments,directChanges,corrections},{headers});
   }catch(error){
     console.error('[governance-amendments-get]',{name:error instanceof Error?error.name:'UnknownError'});
     return NextResponse.json({ok:false,error:'GOVERNANCE_AMENDMENTS_UNAVAILABLE'},{status:503,headers});
@@ -80,15 +101,17 @@ export async function POST(request:Request){
     const body=parsed.data;
     const result=body.operation==='CREATE'
       ?await createGovernanceAmendmentRequest({userId:user.id,...body})
-      :body.operation==='TYPO_CORRECTION'
-        ?await createGovernanceTypoCorrection({userId:user.id,...body})
-        :body.operation==='DISCUSS'
+      :body.operation==='DIRECT_CHANGE'
+        ?await createGovernanceDirectChange({userId:user.id,...body})
+        :body.operation==='TYPO_CORRECTION'
+          ?await createGovernanceTypoCorrection({userId:user.id,...body})
+          :body.operation==='DISCUSS'
           ?await addGovernanceAmendmentDiscussion({userId:user.id,requestId:body.requestId,note:body.note,actor:body.actor})
           :await advanceGovernanceAmendment({
           userId:user.id,requestId:body.requestId,action:body.action,note:body.note,
           decisionId:body.decisionId,effectiveAt:body.effectiveAt,nextVersion:body.nextVersion,
         });
-    return NextResponse.json({ok:true,...result},{status:body.operation==='CREATE'||body.operation==='TYPO_CORRECTION'?201:200,headers});
+    return NextResponse.json({ok:true,...result},{status:body.operation==='CREATE'||body.operation==='DIRECT_CHANGE'||body.operation==='TYPO_CORRECTION'?201:200,headers});
   }catch(error){
     const code=error instanceof Error?error.message:'GOVERNANCE_AMENDMENT_FAILED';
     const status=code==='GOVERNANCE_AMENDMENT_NOT_FOUND'?404:code==='GOVERNANCE_EFFECTIVE_DATE_AND_VERSION_REQUIRED'?422:500;
