@@ -159,7 +159,7 @@ export function AlgorithmRoleMobileSheet({role,onClose}:{role:AlgorithmRoleRef;o
         <section className={styles.algorithmRoleHero}>
           <div><strong>{editText(role.name)}</strong><small>يتبع إلى {editText(role.reportsTo)}</small></div>
           {roleAvatar[role.key]
-            ?<span className={styles.algorithmRolePortrait}><Image className={styles.algorithmRolePortraitImage} src={roleAvatar[role.key]!} alt={role.name} width={288} height={288} quality={100} sizes="144px"/></span>
+            ?<span className={styles.algorithmRolePortrait}><Image className={styles.algorithmRolePortraitImage} src={roleAvatar[role.key]!} alt={role.name} width={288} height={288} unoptimized/></span>
             :<LucideIcon name={role.kind==='advisor'?'sparkles':'circleUserRound'} size={24}/>}
         </section>
 
@@ -169,8 +169,8 @@ export function AlgorithmRoleMobileSheet({role,onClose}:{role:AlgorithmRoleRef;o
         </section>
 
         <section className={styles.governedQuickActions+' '+styles.algorithmRoleEditActions} aria-label="تعديل الوصف الوظيفي">
-          <button type="button" className={styles.governedTypoButton} onClick={()=>{setEditMode('typo');setFeedback('')}}><LucideIcon name="pencil" size={20}/><span><strong>تعديل إملائي</strong></span></button>
-          <button type="button" className={styles.governedGovernanceButton} onClick={()=>{setEditMode('governance');setFeedback('')}}><LucideIcon name="landmark" size={20}/><span><strong>طلب تعديل</strong></span></button>
+          <button type="button" className={styles.governedTypoButton} onClick={()=>{setEditMode('typo');setFeedback('')}}><LucideIcon name="pencil" size={24}/><span><strong>تعديل إملائي</strong></span></button>
+          <button type="button" className={styles.governedGovernanceButton} onClick={()=>{setEditMode('governance');setFeedback('')}}><LucideIcon name="landmark" size={24}/><span><strong>طلب تعديل</strong></span></button>
         </section>
 
         {editMode&&<div className={styles.governedEditModal} role="dialog" aria-modal="true" aria-label={editMode==='typo'?'تعديل إملائي':'طلب تعديل'}>
