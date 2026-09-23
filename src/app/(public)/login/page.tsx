@@ -38,9 +38,14 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           </div>
 
           <div className={styles.visualCopy}>
-            <p>منصة إدارة مالية شخصية</p>
-            <h1>قرار مالي أوضح، في كل دورة.</h1>
-            <small>تابع ميزانيتك، التزاماتك، أهدافك، وقراراتك من مكان واحد — دون تنفيذ أي حركة مالية نيابةً عنك.</small>
+            <span className={styles.identityBadge}>منصة إدارة مالية شخصية</span>
+            <h1>قرار مالي أوضح،<br/>ضمن تجربة واحدة.</h1>
+            <p>تابع الميزانية، الالتزامات، الأهداف والقرارات من مكان واحد، مع بقاء التنفيذ المالي بيدك.</p>
+            <div className={styles.featureStrip} aria-label="مزايا نماء">
+              <span><b>01</b> رؤية مالية موحدة</span>
+              <span><b>02</b> قرارات قابلة للتتبع</span>
+              <span><b>03</b> متابعة دون تنفيذ تلقائي</span>
+            </div>
           </div>
         </aside>
 
@@ -57,8 +62,8 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
             <>
               <div className={styles.heading}>
                 <p className={styles.kicker}>مرحبًا بعودتك</p>
-                <h2 id="login-title">تسجيل الدخول</h2>
-                <p>أدخل بيانات حسابك للوصول إلى نماء.</p>
+                <h2 id="login-title">تسجيل الدخول إلى نماء</h2>
+                <p>استخدم بريدك الإلكتروني وكلمة المرور للمتابعة إلى مساحة العمل.</p>
               </div>
               <LoginForm returnTo={returnTo} />
             </>
