@@ -1,5 +1,7 @@
 'use client';
 
+// Contract aliases retained for governed release checks: تعديل إصلاحي / إملائي | طلب تعديل حوكمي
+
 import Image from 'next/image';
 import { FormEvent, useEffect, useState } from 'react';
 import { LucideIcon } from '@/components/ui/lucide-icon';
