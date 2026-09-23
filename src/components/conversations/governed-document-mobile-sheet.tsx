@@ -278,7 +278,7 @@ function parseGovernedDocument(content:string):DocumentSection[]{
 
     const clause=parseClauseLine(normalized);
     if(clause){
-      pushClause(clause.number,clause.text,clause.title);
+      pushClause(clause.number,clause.text,clause.title,raw);
       continue;
     }
 
@@ -467,14 +467,14 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
     setExampleText('');
   }
 
-  function openUnitEditor(type:'article'|'clause'|'paragraph',reference:string,currentText:string,parent:string|null){
+  function openUnitEditor(type:'article'|'clause'|'paragraph',reference:string,currentText:string,parent:string|null,sourceText?:string){
     const parts=type==='clause'?splitClauseContent(currentText):{explanation:currentText,example:''};
     setEditMode('direct');
     setChangeAction('EDIT');
     setUnitType(type);
     setParentRef(parent??'');
     setClauseRef(reference);
-    setCurrentRule(currentText);
+    setCurrentRule(sourceText??currentText);
     setProposedRule(parts.explanation);
     setExampleText(parts.example);
     setRationale('');
@@ -569,7 +569,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
                         ?<article className={styles.governedParagraphRow} key={'p-'+blockIndex}>
                           <div className={styles.governedUnitToolbar}>
                             <strong>{block.number?'الفقرة ('+block.number+')':'فقرة'}</strong>
-                            {block.number&&<button type="button" onClick={()=>openUnitEditor('paragraph',block.number??'',block.sourceText||block.text,(block.number??'').split('.').slice(0,-1).join('.'))} aria-label="تعديل الفقرة"><LucideIcon name="pencil" size={16}/>تعديل</button>}
+                            {block.number&&<button type="button" onClick={()=>openUnitEditor('paragraph',block.number??'',block.text,(block.number??'').split('.').slice(0,-1).join('.'),block.sourceText)} aria-label="تعديل الفقرة"><LucideIcon name="pencil" size={16}/>تعديل</button>}
                           </div>
                           <p>{block.text}</p>
                         </article>
@@ -577,7 +577,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
                           ?<article className={styles.governedClauseRow} key={'c-'+block.number+'-'+blockIndex}>
                             <div className={styles.governedUnitToolbar}>
                               <div className={styles.governedClauseHeading}><span>{'البند '+block.number}</span><strong>{block.title}</strong></div>
-                              <button type="button" onClick={()=>openUnitEditor('clause',block.number,block.sourceText||block.text||block.title,section.number)} aria-label={'تعديل البند '+block.number}><LucideIcon name="pencil" size={16}/>تعديل</button>
+                              <button type="button" onClick={()=>openUnitEditor('clause',block.number,block.text||block.title,section.number,block.sourceText)} aria-label={'تعديل البند '+block.number}><LucideIcon name="pencil" size={16}/>تعديل</button>
                             </div>
                             {block.text&&<div className={styles.governedClauseDetails}>
                               <div><small>الشرح</small><p>{splitClauseContent(block.text).explanation}</p></div>
