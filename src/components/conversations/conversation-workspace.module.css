@@ -10829,3 +10829,106 @@
     overflow:hidden!important;
   }
 }
+
+
+/* Final wide dark pass for work center only. */
+@media (min-width:768px){
+  :global(html[data-theme="dark"]) .page,
+  :global(html[data-theme="dark"]) .workspace,
+  :global(html[data-theme="dark"]) .roomsPane,
+  :global(html[data-theme="dark"]) .contextPane,
+  :global(html[data-theme="dark"]) .chatPane,
+  :global(html[data-theme="dark"]) .messages{
+    background:var(--namaa-wide-surface)!important;
+    color:var(--namaa-wide-text)!important;
+  }
+
+  :global(html[data-theme="dark"]) .chatHeader,
+  :global(html[data-theme="dark"]) .paneTitle,
+  :global(html[data-theme="dark"]) .composer,
+  :global(html[data-theme="dark"]) .contextCard,
+  :global(html[data-theme="dark"]) .roomItemShell,
+  :global(html[data-theme="dark"]) .roomItem,
+  :global(html[data-theme="dark"]) .agentMessage{
+    background:var(--namaa-wide-card)!important;
+    color:var(--namaa-wide-text)!important;
+    border-color:var(--namaa-wide-border)!important;
+  }
+
+  :global(html[data-theme="dark"]) .chatHeader{
+    background:var(--namaa-wide-card-strong)!important;
+  }
+
+  :global(html[data-theme="dark"]) .userMessage{
+    background:#2a4b3f!important;
+    color:#decfae!important;
+    border-color:#5a796c!important;
+  }
+
+  :global(html[data-theme="dark"]) .routingNote{
+    background:#2a473c!important;
+    color:#adbaa9!important;
+    border-color:#587267!important;
+  }
+
+  :global(html[data-theme="dark"]) .message,
+  :global(html[data-theme="dark"]) .message *{
+    color:inherit!important;
+  }
+
+  :global(html[data-theme="dark"]) .messageIdentity,
+  :global(html[data-theme="dark"]) .messageMeta{
+    color:#a9b7ab!important;
+  }
+
+  :global(html[data-theme="dark"]) .composer textarea,
+  :global(html[data-theme="dark"]) .mobileRecordEditorBody input,
+  :global(html[data-theme="dark"]) .mobileRecordEditorBody select,
+  :global(html[data-theme="dark"]) .mobileRecordEditorBody textarea{
+    background:var(--namaa-wide-input)!important;
+    color:var(--namaa-wide-text)!important;
+    border-color:var(--namaa-wide-border)!important;
+  }
+
+  :global(html[data-theme="dark"]) .attachButton,
+  :global(html[data-theme="dark"]) .secondaryButton,
+  :global(html[data-theme="dark"]) .roomDetailButton{
+    background:#315044!important;
+    color:#decfae!important;
+    border-color:#5d776b!important;
+  }
+
+  :global(html[data-theme="dark"]) .sendButton{
+    background:#145b48!important;
+    color:#e1cca0!important;
+    border-color:#397a66!important;
+  }
+
+  :global(html[data-theme="dark"]) .desktopIntakeTable th{
+    background:#29463b!important;
+    color:#d8b86f!important;
+  }
+
+  :global(html[data-theme="dark"]) .desktopIntakeTable td{
+    background:#1f382f!important;
+    color:#decfae!important;
+  }
+
+  :global(html[data-theme="dark"]) .desktopIntakeTable tbody tr:hover td{
+    background:#28483c!important;
+  }
+
+  :global(html[data-theme="dark"]) .mobileRecordEditorSheet,
+  :global(html[data-theme="dark"]) .mobileRecordEditorBody,
+  :global(html[data-theme="dark"]) .mobileRecordEditorActions{
+    background:#1d372e!important;
+    color:#decfae!important;
+    border-color:#526f63!important;
+  }
+
+  :global(html[data-theme="dark"]) .mobileRecordEditorHeader{
+    background:#28463a!important;
+    color:#decfae!important;
+    border-color:#526f63!important;
+  }
+}
