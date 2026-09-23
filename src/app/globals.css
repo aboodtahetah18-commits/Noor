@@ -200,82 +200,8 @@ body { min-height:100vh; }
 
 @media(min-width:768px){.mobile-bottom-nav{display:none!important;}}
 
-/* Phase 33 — Desktop Hardening */
-.desktop-top-nav-wrap{display:none;}
-
-@media(min-width:1024px){
-  html{scroll-padding-top:var(--ux-space-20);}
-  .protected-app-shell{background:var(--ux-surface-default);padding-top:var(--ux-space-20);}
-  .desktop-top-nav-wrap{position:fixed;z-index:var(--ux-z-sticky);display:block;inset-inline:0;top:0;height:76px;background:var(--ux-surface-default);border-bottom:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);box-shadow:var(--ux-shadow-sm);}
-  .desktop-top-nav{height:100%;max-width:1320px;margin:var(--ux-space-0) auto;padding:var(--ux-space-0) var(--ux-space-6);display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:var(--ux-space-6);}
-  .desktop-brand{display:flex;align-items:center;gap:var(--ux-space-2);min-width:205px;color:var(--ux-text-primary);text-decoration:none;}
-  .desktop-brand-mark{display:grid;place-items:center;width:var(--ux-size-9);height:var(--ux-size-9);border-radius:var(--ux-radius-3);background:var(--ux-surface-inverse);color:var(--ux-text-inverse);font-weight:700;font-size:var(--ux-type-body-size);}
-  .desktop-brand>span:last-child{display:grid;gap:var(--ux-space-0);}
-  .desktop-brand strong{font-size:var(--ux-type-body-sm-size);line-height:var(--ux-type-body-line);}
-  .desktop-brand small{font-size:var(--ux-type-caption-size);color:var(--ux-text-secondary);white-space:nowrap;}
-  .desktop-nav-links{display:flex;align-items:center;justify-content:center;gap:var(--ux-space-0);min-width:0;}
-  .desktop-nav-links a{display:inline-flex;align-items:center;justify-content:center;min-height:var(--ux-size-10);padding:var(--ux-space-2) var(--ux-space-2);border-radius:var(--ux-radius-2);color:var(--ux-action-primary);text-decoration:none;font-size:var(--ux-type-button-size);font-weight:700;white-space:nowrap;}
-  .desktop-nav-links a:hover{background:var(--ux-primary-a12);color:var(--ux-action-primary);}
-  .desktop-nav-links a.is-active{background:var(--ux-primary-a12);color:var(--ux-action-primary);}
-  .desktop-quick-add{display:inline-flex;align-items:center;justify-content:center;min-height:var(--ux-size-10);padding:var(--ux-space-2) var(--ux-space-3);border-radius:var(--ux-radius-2);background:var(--ux-surface-inverse);color:var(--ux-text-inverse);text-decoration:none;font-size:var(--ux-type-table-head-size);font-weight:700;white-space:nowrap;}
-
-  .app-page{padding:var(--ux-space-6) var(--ux-space-8) var(--ux-space-10);}
-  .page-shell{max-width:1280px;}
-  .dashboard-shell{max-width:1280px;}
-  .narrow-shell{max-width:820px;}
-  .page-header{align-items:center;margin-bottom:var(--ux-space-5);}
-  .page-header h1{font-size:var(--ux-type-page-title-size);letter-spacing:0;}
-  .page-header>div:last-child{display:flex;align-items:center;gap:var(--ux-space-2);flex-wrap:wrap;justify-content:flex-end;}
-  .page-header>div:last-child .primary-link,.page-header>div:last-child .button-link{min-height:var(--ux-size-10);padding:var(--ux-space-2) var(--ux-space-3);}
-
-  .card,.panel{border-radius:var(--ux-radius-3);}
-  .card{padding:var(--ux-space-5);margin-bottom:var(--ux-space-4);}
-  .panel{padding:var(--ux-space-5);}
-  .dashboard-header{align-items:center;margin-bottom:var(--ux-space-4);}
-  .dashboard-hero{min-height:190px;padding:var(--ux-space-6) var(--ux-space-8);border-radius:var(--ux-radius-4);}
-  .dashboard-hero h2{font-size:var(--ux-type-display-size);}
-  .dashboard-hero-side{min-width:250px;}
-  .dashboard-kpis{gap:var(--ux-space-3);margin:var(--ux-space-3) var(--ux-space-0);}
-  .dashboard-kpis article{padding:var(--ux-space-4);min-height:108px;}
-  .dashboard-main-grid{grid-template-columns:minmax(0,1.35fr) minmax(320px,.65fr);gap:var(--ux-space-3);margin-bottom:var(--ux-space-3);}
-  .dashboard-triple-grid{gap:var(--ux-space-3);}
-  .dashboard-card{padding:var(--ux-space-5);border-radius:var(--ux-radius-4);}
-  .dashboard-card-head{margin-bottom:var(--ux-space-4);}
-
-  .transaction-filter-card{padding:var(--ux-space-4);}
-  .transaction-filter-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--ux-space-2) var(--ux-space-3);}
-  .transaction-filter-grid label{font-size:var(--ux-type-button-size);}
-  .transaction-filter-grid input,.transaction-filter-grid select{min-height:var(--ux-size-10);padding:var(--ux-space-2) var(--ux-space-2);}
-  .transaction-filter-grid .primary,.transaction-filter-grid .button-link{min-height:var(--ux-size-10);}
-  .transaction-table-wrap,.report-table-wrap{max-width:100%;overflow:auto;border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);border-radius:var(--ux-radius-3);}
-  .transaction-table,.report-table{min-width:0;width:100%;table-layout:auto;}
-  .transaction-table th,.transaction-table td,.report-table th,.report-table td{padding:var(--ux-space-3) var(--ux-space-3);}
-  .transaction-table thead th,.report-table thead th{position:sticky;top:0;z-index:var(--ux-z-base);background:var(--ux-surface-default);}
-  .transaction-table tbody tr:hover,.report-table tbody tr:hover{background:var(--ux-surface-default);}
-  .transaction-table td:nth-child(3){min-width:210px;}
-  .pagination-row{padding-top:var(--ux-space-4);}
-
-  .settings-grid{grid-template-columns:minmax(0,1.65fr) minmax(300px,.7fr);gap:var(--ux-space-4);}
-  .settings-summary{position:sticky;top:var(--ux-space-24);}
-  .onboarding-welcome{max-width:1060px;}
-  .onboarding-summary{grid-template-columns:repeat(4,minmax(0,1fr));}
-}
-
-@media(min-width:1024px) and (max-width:1439px){
-  .desktop-top-nav{padding-inline:var(--ux-space-5);gap:var(--ux-space-3);}
-  .desktop-brand{min-width:170px;}
-  .desktop-brand small{display:none;}
-  .desktop-nav-links a{padding-inline:var(--ux-space-2);font-size:var(--ux-type-button-size);}
-  .desktop-quick-add{padding-inline:var(--ux-space-2);}
-  .app-page{padding-inline:var(--ux-space-5);}
-  .dashboard-main-grid{grid-template-columns:minmax(0,1.2fr) minmax(300px,.8fr);}
-}
-
-@media(min-width:1440px){
-  .desktop-top-nav{max-width:1360px;padding-inline:var(--ux-space-8);}
-  .app-page{padding-top:var(--ux-space-8);}
-  .dashboard-shell,.page-shell{max-width:1300px;}
-}
+/* Legacy desktop hardening removed.
+   Desktop/laptop/tablet composition is owned by namaa-wide-experience.css. */
 
 /* Phase 34 — Tablet Hardening (701px–999px) */
 .tablet-top-nav-wrap{display:none;}
