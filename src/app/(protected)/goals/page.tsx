@@ -27,8 +27,64 @@ export default async function Page({searchParams}:{searchParams:Promise<{error?:
 
     {data.cycle?<section className="card p47-cycle-context"><div><span>الدورة الحالية</span><strong>{data.cycle.startDate} → {data.cycle.endDate}</strong></div><p>كل هدف بتاريخ محدد يحصل على مساهمة مطلوبة مستقلة. أنت من يحدد المبلغ الذي تستطيع تخصيصه فعليًا.</p></section>:null}
 
+
+    {goals.length>0?<section className="p47-resource-card namaa-wide-only namaa-collection-card">
+      <div className="namaa-collection-head">
+        <div><span>الأهداف النشطة</span><h2>جدول الأهداف والتمويل</h2><small>يعرض كل هدف كسطر مستقل حتى تبقى الصفحة واضحة عند زيادة عدد الأهداف.</small></div>
+        <ActionDialog title="إنشاء هدف مالي" description="أدخل بيانات الهدف ثم احفظه ليظهر مباشرة في الجدول." size="xl" triggerClassName="primary-link" trigger="إضافة هدف">
+          <form action={createGoalAction} className="form-grid">
+            <label>اسم الهدف<input name="name" required placeholder="مثال: سفر الشتاء"/></label>
+            <label>قيمة الهدف<input name="targetAmount" inputMode="decimal" required placeholder="5000"/></label>
+            <label>الرصيد الحالي<input name="openingBalance" inputMode="decimal" defaultValue="0.00"/></label>
+            <label>تاريخ البداية<input name="startDate" type="date" required defaultValue={today}/></label>
+            <label>التاريخ المستهدف<input name="targetDate" type="date"/></label>
+            <label>الأولوية<input name="priority" type="number" min="1" placeholder="1"/></label>
+            <button className="primary-button" type="submit">إنشاء الهدف</button>
+          </form>
+        </ActionDialog>
+      </div>
+      <div className="namaa-table-wrap">
+        <table className="namaa-data-table namaa-goals-table">
+          <thead><tr><th>الهدف</th><th>الحالة</th><th>المتبقي</th><th>المطلوب للدورة</th><th>المعتمد</th><th>الفجوة</th><th>الموعد</th><th>الإجراءات</th></tr></thead>
+          <tbody>{goals.map(g=>{
+            const required=Number(g.requiredContribution??0),approved=Number(g.approvedThisCycle??0),gap=Math.max(0,Number(g.gapThisCycle??0));
+            return <tr key={g.id}>
+              <td><strong>{g.name}</strong><small className="namaa-table-note">{g.remainingCycles!=null?g.remainingCycles+' دورة متبقية':'بدون عدد دورات محسوب'}</small></td>
+              <td><span className={'namaa-table-status '+(gap>0?'is-warning':'is-active')}>{L[g.status]??g.status}</span></td>
+              <td><strong>{formatSar(String(g.remainingAmount))}</strong></td>
+              <td>{required?formatSar(required.toFixed(2)):'—'}</td>
+              <td>{formatSar(approved.toFixed(2))}</td>
+              <td>{gap?<span className="namaa-table-status is-warning">{formatSar(gap.toFixed(2))}</span>:'لا توجد'}</td>
+              <td>{g.targetDate??'غير محدد'}</td>
+              <td><div className="p49-resource-actions">
+                <ActionDialog title={\`تفاصيل \${g.name}\`} size="lg" trigger="التفاصيل">
+                  <div className="detail-list">
+                    <div><span>الحالة</span><strong>{L[g.status]??g.status}</strong></div>
+                    <div><span>المتبقي</span><strong>{formatSar(String(g.remainingAmount))}</strong></div>
+                    <div><span>المطلوب للدورة</span><strong>{required?formatSar(required.toFixed(2)):'—'}</strong></div>
+                    <div><span>المعتمد</span><strong>{formatSar(approved.toFixed(2))}</strong></div>
+                    <div><span>الفجوة</span><strong>{gap?formatSar(gap.toFixed(2)):'لا توجد'}</strong></div>
+                    <div><span>الموعد</span><strong>{g.targetDate??'غير محدد'}</strong></div>
+                  </div>
+                  <div className="p49-dialog-actions"><Link className="secondary-link" href={'/goals/'+g.id}>إدارة الرحلات والتمويل المتقدم</Link></div>
+                </ActionDialog>
+                {required>0?<ActionDialog title={\`اعتماد مساهمة \${g.name}\`} description="لن يتم تنفيذ تحويل مالي تلقائيًا." size="lg" trigger="اعتماد المساهمة">
+                  <form action={approveGoalCycleCommitmentAction} className="form-grid">
+                    <input type="hidden" name="goalId" value={g.id}/>
+                    <input type="hidden" name="requiredAmount" value={g.requiredContribution??''}/>
+                    <label><span>مساهمة هذه الدورة</span><input name="approvedAmount" inputMode="decimal" defaultValue={approved>0?g.approvedThisCycle:g.requiredContribution??''} required/></label>
+                    <button className="p47-primary-action" type="submit">اعتماد المساهمة</button>
+                  </form>
+                </ActionDialog>:null}
+              </div></td>
+            </tr>;
+          })}</tbody>
+        </table>
+      </div>
+    </section>:null}
+
     {goals.length===0?<section className="card p47-empty-financial"><span>◎</span><h2>لا توجد أهداف نشطة تحتاج تمويلًا</h2><p>أنشئ هدفًا مثل السفر أو شراء سيارة أو دفعة منزل، ثم أضف الموعد ليحسب النظام الوتيرة المطلوبة.</p><ActionDialog title="إنشاء أول هدف" size="lg" triggerClassName="p47-primary-action" trigger="إنشاء أول هدف"><form action={createGoalAction} className="form-grid"><label>اسم الهدف<input name="name" required/></label><label>قيمة الهدف<input name="targetAmount" inputMode="decimal" required/></label><label>الرصيد الحالي<input name="openingBalance" inputMode="decimal" defaultValue="0.00"/></label><label>تاريخ البداية<input name="startDate" type="date" required defaultValue={today}/></label><label>التاريخ المستهدف<input name="targetDate" type="date"/></label><label>الأولوية<input name="priority" type="number" min="1"/></label><button className="primary-button" type="submit">إنشاء الهدف</button></form></ActionDialog></section>:
-    <section className="p47-goal-portfolio">{goals.map(g=>{
+    <section className="p47-goal-portfolio namaa-mobile-only">{goals.map(g=>{
       const required=Number(g.requiredContribution??0),approved=Number(g.approvedThisCycle??0),gap=Math.max(0,Number(g.gapThisCycle??0));
       const targetKnown=Boolean(g.targetDate);
       return <article key={g.id} className={`p47-goal-card ${gap>0?'is-attention':''}`}>
