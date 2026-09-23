@@ -449,25 +449,6 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
     setFormOpen(true);
   }
 
-  function downloadLocalCopy(){
-    if(!documentContent)return;
-    const popup=globalThis.open('','_blank','noopener,noreferrer');
-    if(!popup){
-      setFeedback('تعذر فتح نسخة الاطلاع. اسمح بالنوافذ المنبثقة ثم أعد المحاولة.');
-      return;
-    }
-    const safeTitle=(document.title||'مرجع نماء').replace(/[<>&]/g,'');
-    const safeContent=documentContent
-      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-      .replace(/\n/g,'<br/>');
-    popup.document.write(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"/><title>${safeTitle}</title><style>
-      body{font-family:Arial,sans-serif;direction:rtl;margin:40px;line-height:1.9}
-      h1{font-size:24px;margin-bottom:12px} .meta{margin-bottom:24px}
-      .content{white-space:normal;font-size:15px} @media print{body{margin:18mm}}
-    </style></head><body><h1>${safeTitle}</h1><div class="meta">نسخة للاطلاع — نماء</div><div class="content">${safeContent}</div><script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></body></html>`);
-    popup.document.close();
-  }
-
 
   async function submit(event:FormEvent){
     event.preventDefault(); if(pending||!clauseRef.trim()||!proposedRule.trim())return; setPending(true); setFeedback('');
@@ -541,13 +522,13 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
                     <summary><span><LucideIcon name={sectionIcon(section.title,displayType)} size={16}/><strong>{'المادة ('+section.number+'): '+section.title}</strong></span></summary>
                     <div className={styles.governedContentSectionBody}>
                       <div className={styles.governedArticleAction}>
-                        <button type="button" onClick={()=>openUnitEditor('المادة '+section.number,section.title)}><LucideIcon name="pencil" size={16}/>تعديل المادة</button>
+                        <button type="button" onClick={()=>openUnitEditor('article',section.number,section.title,null)}><LucideIcon name="pencil" size={16}/>تعديل المادة</button>
                       </div>
                       {section.blocks.map((block,blockIndex)=>block.kind==='paragraph'
                         ?<article className={styles.governedParagraphRow} key={'p-'+blockIndex}>
                           <div className={styles.governedUnitToolbar}>
                             <strong>{block.number?'الفقرة ('+block.number+')':'فقرة'}</strong>
-                            <button type="button" onClick={()=>openUnitEditor(block.number?'الفقرة '+block.number:'فقرة من المادة '+section.number,block.text)} aria-label="تعديل الفقرة"><LucideIcon name="pencil" size={16}/>تعديل</button>
+                            {block.number&&<button type="button" onClick={()=>openUnitEditor('paragraph',block.number??'',block.text,(block.number??'').split('.').slice(0,-1).join('.'))} aria-label="تعديل الفقرة"><LucideIcon name="pencil" size={16}/>تعديل</button>}
                           </div>
                           <p>{block.text}</p>
                         </article>
@@ -555,7 +536,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
                           ?<article className={styles.governedClauseRow} key={'c-'+block.number+'-'+blockIndex}>
                             <div className={styles.governedUnitToolbar}>
                               <div className={styles.governedClauseHeading}><span>{'البند '+block.number}</span><strong>{block.title}</strong></div>
-                              <button type="button" onClick={()=>openUnitEditor('البند '+block.number,[block.title,block.text].filter(Boolean).join('\n'))} aria-label={'تعديل البند '+block.number}><LucideIcon name="pencil" size={16}/>تعديل</button>
+                              <button type="button" onClick={()=>openUnitEditor('clause',block.number,block.text||block.title,section.number)} aria-label={'تعديل البند '+block.number}><LucideIcon name="pencil" size={16}/>تعديل</button>
                             </div>
                             {block.text&&<p>{block.text}</p>}
                           </article>
@@ -573,34 +554,53 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
         </details>
 
         <section className={styles.governedQuickActions} aria-label="إجراءات المرجع">
-          <button type="button" className={styles.governedTypoButton} onClick={()=>{setEditMode('typo');setFormOpen(true);setFeedback('')}}>
-            <LucideIcon name="pencil" size={24}/><span><strong>تعديل إملائي</strong></span>
+          <button type="button" className={styles.governedTypoButton} onClick={()=>resetEditor('direct','EDIT')}>
+            <LucideIcon name="pencil" size={24}/><span><strong>تحرير مباشر</strong></span>
           </button>
-          <button type="button" className={styles.governedGovernanceButton} onClick={()=>{setEditMode('governance');setFormOpen(true);setFeedback('')}}>
-            <LucideIcon name="landmark" size={24}/><span><strong>طلب تعديل</strong></span>
-          </button>
-          <button type="button" className={styles.governedPdfButton} onClick={downloadLocalCopy} disabled={!documentContent}>
-            <LucideIcon name="receiptText" size={20}/><span><strong>تحميل PDF</strong></span>
+          <button type="button" className={styles.governedGovernanceButton} onClick={()=>resetEditor('governance','EDIT')}>
+            <LucideIcon name="landmark" size={24}/><span><strong>تحرير حوكمي</strong></span>
           </button>
         </section>
 
-        {formOpen&&<div className={styles.governedEditModal} role="dialog" aria-modal="true" aria-label={editMode==='typo'?'تعديل إملائي':'طلب تعديل'}>
+        {formOpen&&<div className={styles.governedEditModal} role="dialog" aria-modal="true" aria-label={editMode==='direct'?'تحرير مباشر':'تحرير حوكمي'}>
           <button type="button" className={styles.governedEditModalScrim} aria-label="إغلاق" onClick={()=>setFormOpen(false)}/>
-          <form className={styles.governedAmendmentForm+' '+styles.governedEditModalCard+' '+(editMode==='typo'?styles.governedTypoForm:styles.governedGovernanceForm)} onSubmit={submit}>
+          <form className={styles.governedAmendmentForm+' '+styles.governedEditModalCard+' '+(editMode==='direct'?styles.governedTypoForm:styles.governedGovernanceForm)} onSubmit={submit}>
             <header className={styles.governedEditFormHeader}>
-              <span className={styles.governedEditFormIcon}><LucideIcon name={editMode==='typo'?'pencil':'landmark'} size={20}/></span>
-              <div><strong>{editMode==='typo'?'تعديل إملائي':'طلب تعديل'}</strong><small>{editMode==='typo'?'يصحح الخطأ دون تغيير المعنى أو الحكم.':'يغيّر المضمون أو الضابط ويمر بمسار المراجعة والاعتماد.'}</small></div>
+              <span className={styles.governedEditFormIcon}><LucideIcon name={editMode==='direct'?'pencil':'landmark'} size={20}/></span>
+              <div><strong>{editMode==='direct'?'تحرير مباشر':'تحرير حوكمي'}</strong><small>{editMode==='direct'?'إضافة أو تعديل مباشر خلال مرحلة ضبط المنصة.':'إضافة أو تعديل يمر بالاجتماع والمراجعة والاعتماد قبل النفاذ.'}</small></div>
               <button type="button" className={styles.governedEditClose} onClick={()=>setFormOpen(false)} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button>
             </header>
-            <label><span>المادة أو البند أو الفقرة</span><input value={clauseRef} onChange={e=>updateClauseReference(e.target.value)} placeholder="مثال: المادة 2، البند 2.1، الفقرة 2.1.1"/></label>
-            <label><span>{editMode==='typo'?'النص الحالي كما يظهر':'النص أو الوضع الحالي'}</span><textarea required={editMode==='typo'} value={currentRule} onChange={e=>setCurrentRule(e.target.value)} placeholder="يظهر تلقائيًا عند إدخال رقم البند، ويمكن تعديله عند الحاجة"/></label>
-            <label><span>{editMode==='typo'?'النص المصحح':'التعديل المقترح'}</span><textarea required value={proposedRule} onChange={e=>setProposedRule(e.target.value)} placeholder={editMode==='typo'?'ابدأ من النص الحالي وصحح المطلوب فقط':'اكتب التعديل المقترح بدقة'}/></label>
-            <label><span>{editMode==='typo'?'سبب التصحيح':'مبرر التعديل'}</span><textarea required value={rationale} onChange={e=>setRationale(e.target.value)} placeholder={editMode==='typo'?'مثال: خطأ إملائي أو تحسين وضوح دون تغيير المعنى':'لماذا نحتاج هذا التعديل؟ وما أثره المتوقع؟'}/></label>
+
+            <div className={styles.governedEditChoice} role="group" aria-label="نوع العملية">
+              <button type="button" className={changeAction==='ADD'?styles.governedEditChoiceActive:''} onClick={()=>{setChangeAction('ADD');updateAddTarget('paragraph','')}}>إضافة</button>
+              <button type="button" className={changeAction==='EDIT'?styles.governedEditChoiceActive:''} onClick={()=>{setChangeAction('EDIT');setClauseRef('');setParentRef('');setCurrentRule('');setProposedRule('')}}>تعديل</button>
+            </div>
+
+            {changeAction==='ADD'
+              ?<>
+                <label><span>نوع الإضافة</span><select value={unitType} onChange={e=>updateAddTarget(e.target.value as typeof unitType,'')}>
+                  <option value="article">مادة</option><option value="clause">بند</option><option value="paragraph">فقرة</option>
+                </select></label>
+                {unitType==='clause'&&<label><span>تحت المادة</span><select value={parentRef} onChange={e=>updateAddTarget('clause',e.target.value)}>
+                  <option value="">اختر المادة</option>{articleOptions.map(item=><option key={item.ref} value={item.ref}>{item.label}</option>)}
+                </select></label>}
+                {unitType==='paragraph'&&<label><span>تحت البند</span><select value={parentRef} onChange={e=>updateAddTarget('paragraph',e.target.value)}>
+                  <option value="">اختر البند</option>{clauseOptions.map(item=><option key={item.ref} value={item.ref}>{item.label}</option>)}
+                </select></label>}
+                <label><span>الترقيم</span><input value={clauseRef} readOnly placeholder="يُنشأ تلقائيًا"/></label>
+              </>
+              :<label><span>العنصر</span><select value={clauseRef} onChange={e=>chooseExistingUnit(e.target.value)}>
+                <option value="">اختر المادة أو البند أو الفقرة</option>{unitOptions.map(item=><option key={item.type+'-'+item.ref} value={item.ref}>{item.label}</option>)}
+              </select></label>}
+
+            {changeAction==='EDIT'&&<label><span>النص الحالي</span><textarea value={currentRule} readOnly/></label>}
+            <label><span>{changeAction==='ADD'?'النص الجديد':'النص المعدل'}</span><textarea required value={proposedRule} onChange={e=>setProposedRule(e.target.value)} placeholder={changeAction==='ADD'?'اكتب محتوى العنصر الجديد':'عدّل النص المطلوب'}/></label>
+            <label><span>{editMode==='direct'?'ملاحظة':'مبرر التغيير'}</span><textarea required={editMode==='governance'} value={rationale} onChange={e=>setRationale(e.target.value)} placeholder={editMode==='direct'?'اختياري خلال مرحلة التأسيس':'اشرح سبب الإضافة أو التعديل وأثره'}/></label>
             {editMode==='governance'&&<label><span>الأولوية</span><select value={priority} onChange={e=>setPriority(e.target.value as typeof priority)}><option value="NORMAL">عادي</option><option value="NEXT_MEETING">للاجتماع القادم</option><option value="URGENT">عاجل، اجتماع فوري</option></select></label>}
-            <p>{editMode==='typo'
-              ?'يطبّق التصحيح على نسخة العرض ويسجل في سجل التحديثات، دون إنشاء قرار أو اعتماد حوكمي.'
+            <p>{editMode==='direct'
+              ?'يطبق التغيير فورًا في نسخة العرض الحالية ويسجل أثره. هذا المسار مخصص لمرحلة ضبط المنصة.'
               :'المسار: المحافظ، ثم أمين السر، ثم مجلس نماء الأعلى، ثم الاعتماد أو الرفض، ثم تاريخ النفاذ والإصدار الجديد.'}</p>
-            <div className={styles.governedAmendmentActions}><button type="button" onClick={()=>setFormOpen(false)}>إلغاء</button><button type="submit" disabled={pending}>{pending?'جارٍ الحفظ…':editMode==='typo'?'حفظ التصحيح':'إرسال للمحافظ'}</button></div>
+            <div className={styles.governedAmendmentActions}><button type="button" onClick={()=>setFormOpen(false)}>إلغاء</button><button type="submit" disabled={pending||!clauseRef.trim()||!proposedRule.trim()}>{pending?'جارٍ الحفظ…':editMode==='direct'?'حفظ مباشر':'إرسال للمحافظ'}</button></div>
           </form>
         </div>}
 
