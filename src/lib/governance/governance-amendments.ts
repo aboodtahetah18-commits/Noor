@@ -105,8 +105,25 @@ function unitLinePrefix(unitType:GovernanceUnitType,unitRef:string){
   return 'الفقرة '+unitRef+':';
 }
 function escapeRegExp(value:string){
-  return value.replace(/[.*+?^$()|[\]\\]/g,'\\function escapeRegExp(value:string){
   return value.replace(/[.*+?^$()|[\]\\]/g,'\\$&').replace(/[{}]/g,'\\$&');
+}
+function normalizedComparableLine(value:string){
+  return value
+    .trim()
+    .replace(/^#{1,6}\s*/u,'')
+    .replace(/^[-*•]\s*/u,'')
+    .replace(/^\d+(?:\.\d+)*[.)-]?\s*/u,'')
+    .replace(/^(?:المادة|البند|الفقرة)\s+\d+(?:\.\d+)*\s*[:.)-]?\s*/u,'')
+    .trim();
+}
+function findCurrentRuleLine(lines:string[],currentRule?:string|null){
+  const target=currentRule?.trim();
+  if(!target)return -1;
+  const exact=lines.findIndex(line=>line.trim()===target);
+  if(exact>=0)return exact;
+  const normalizedTarget=normalizedComparableLine(target);
+  if(!normalizedTarget)return -1;
+  return lines.findIndex(line=>normalizedComparableLine(line)===normalizedTarget);
 }
 function applyStructuredChange(content:string,change:{
   changeAction:GovernanceChangeAction;unitType:GovernanceUnitType;unitRef:string;parentRef?:string|null;
