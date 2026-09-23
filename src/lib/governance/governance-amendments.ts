@@ -10,12 +10,18 @@ export type GovernanceAmendmentStatus=
   |'EFFECTIVE'
   |'REJECTED';
 
+export type GovernanceChangeAction='ADD'|'EDIT';
+export type GovernanceUnitType='article'|'clause'|'paragraph';
+
 export type GovernanceAmendmentRequest={
   requestId:string;
   documentRef:string;
   documentTitle:string;
   roomKey:string;
   clauseRef:string|null;
+  parentRef:string|null;
+  changeAction:GovernanceChangeAction;
+  unitType:GovernanceUnitType;
   currentRule:string|null;
   proposedRule:string;
   rationale:string;
@@ -41,6 +47,22 @@ export type GovernanceTypoCorrection={
   correctedRule:string;
   rationale:string;
   correctedAt:string;
+  status:'APPLIED';
+};
+
+export type GovernanceDirectChange={
+  changeId:string;
+  documentRef:string;
+  documentTitle:string;
+  roomKey:string;
+  unitRef:string;
+  parentRef:string|null;
+  changeAction:GovernanceChangeAction;
+  unitType:GovernanceUnitType;
+  currentRule:string|null;
+  proposedRule:string;
+  rationale:string;
+  changedAt:string;
   status:'APPLIED';
 };
 
@@ -74,6 +96,106 @@ async function appendEvent(args:{
     )
   `;
   await sql`update public.conversation_threads set updated_at=now() where id=${id}::uuid`;
+}
+
+
+function unitLinePrefix(unitType:GovernanceUnitType,unitRef:string){
+  if(unitType==='article')return 'المادة '+unitRef+':';
+  if(unitType==='clause')return 'البند '+unitRef+':';
+  return 'الفقرة '+unitRef+':';
+}
+function escapeRegExp(value:string){
+  return value.replace(/[.*+?^$()|[\]\\]/g,'\\$&').replace(/[{}]/g,'\\$&');
+}
+function applyStructuredChange(content:string,change:{
+  changeAction:GovernanceChangeAction;unitType:GovernanceUnitType;unitRef:string;parentRef?:string|null;
+  currentRule?:string|null;proposedRule:string;
+}){
+  const prefix=unitLinePrefix(change.unitType,change.unitRef);
+  if(change.changeAction==='EDIT'){
+    const linePattern=new RegExp('^'+escapeRegExp(prefix)+'\\s*.*$','mu');
+    if(linePattern.test(content))return content.replace(linePattern,prefix+' '+change.proposedRule.trim());
+    if(change.currentRule&&content.includes(change.currentRule))return content.replace(change.currentRule,change.proposedRule.trim());
+    return content;
+  }
+  const newLine=prefix+' '+change.proposedRule.trim();
+  if(content.split('\n').some(line=>line.trim().startsWith(prefix)))return content;
+  if(change.unitType==='article')return content.trimEnd()+'\n\n'+newLine+'\n';
+
+  const parentPrefix=change.unitType==='clause'
+    ?'المادة '+String(change.parentRef??'').replace(/^المادة\s+/u,'').trim()+':'
+    :'البند '+String(change.parentRef??'').replace(/^البند\s+/u,'').trim()+':';
+  const lines=content.replace(/\r/g,'').split('\n');
+  const parentIndex=lines.findIndex(line=>line.trim().startsWith(parentPrefix));
+  if(parentIndex<0)return content.trimEnd()+'\n'+newLine+'\n';
+
+  let insertAt=parentIndex+1;
+  for(let i=parentIndex+1;i<lines.length;i++){
+    const line=lines[i]?.trim()??'';
+    if(change.unitType==='clause'&&/^المادة\s+/u.test(line))break;
+    if(change.unitType==='paragraph'&&/^(?:المادة|البند)\s+/u.test(line))break;
+    insertAt=i+1;
+  }
+  lines.splice(insertAt,0,newLine);
+  return lines.join('\n');
+}
+
+export async function createGovernanceDirectChange(args:{
+  userId:string;documentRef:string;documentTitle:string;roomKey:string;unitRef:string;parentRef?:string|null;
+  changeAction:GovernanceChangeAction;unitType:GovernanceUnitType;currentRule?:string|null;proposedRule:string;rationale:string;
+}){
+  const now=new Date().toISOString();
+  const changeId='DIR-'+createHash('sha256')
+    .update(JSON.stringify({userId:args.userId,documentRef:args.documentRef,now,unitRef:args.unitRef,proposedRule:args.proposedRule}))
+    .digest('hex').slice(0,16).toUpperCase();
+  await appendEvent({
+    userId:args.userId,roomKey:'central',senderKey:'central-governor',senderName:'محافظ بنك نماء المركزي',kind:'followup',
+    body:'تم تطبيق '+(args.changeAction==='ADD'?'إضافة':'تعديل')+' مباشر على '+args.unitRef+' في «'+args.documentTitle+'».',
+    structured:{
+      governance_direct_change:true,change_id:changeId,document_ref:args.documentRef,document_title:args.documentTitle,
+      source_room:args.roomKey,unit_ref:args.unitRef,parent_ref:args.parentRef??null,change_action:args.changeAction,
+      unit_type:args.unitType,current_rule:args.currentRule??null,proposed_rule:args.proposedRule,rationale:args.rationale,
+      changed_at:now,status:'APPLIED',council_required:false,governance_change:false,external_execution:false,
+    },
+  });
+  return {changeId,status:'APPLIED' as const,unitRef:args.unitRef};
+}
+
+export async function listGovernanceDirectChanges(userId:string):Promise<GovernanceDirectChange[]>{
+  const sql=getRawSql();
+  const rows=await sql\`
+    select structured_data,created_at
+    from public.conversation_messages
+    where user_id=\${userId}::uuid
+      and structured_data->>'governance_direct_change'='true'
+    order by created_at asc
+  \`;
+  return rows.map(row=>{
+    const data=record(row.structured_data)??{};
+    return {
+      changeId:text(data.change_id)??'DIR-UNKNOWN',
+      documentRef:text(data.document_ref)??'غير مرقم',
+      documentTitle:text(data.document_title)??'وثيقة حوكمة',
+      roomKey:text(data.source_room)??'central',
+      unitRef:text(data.unit_ref)??'غير مرقم',
+      parentRef:text(data.parent_ref),
+      changeAction:(text(data.change_action) as GovernanceChangeAction)??'EDIT',
+      unitType:(text(data.unit_type) as GovernanceUnitType)??'paragraph',
+      currentRule:text(data.current_rule),
+      proposedRule:text(data.proposed_rule)??'',
+      rationale:text(data.rationale)??'',
+      changedAt:text(data.changed_at)??String(row.created_at),
+      status:'APPLIED' as const,
+    };
+  });
+}
+
+export async function applyGovernanceDirectChanges(userId:string,documentRef:string,content:string){
+  const changes=(await listGovernanceDirectChanges(userId)).filter(item=>item.documentRef===documentRef);
+  return changes.reduce((next,change)=>applyStructuredChange(next,{
+    changeAction:change.changeAction,unitType:change.unitType,unitRef:change.unitRef,parentRef:change.parentRef,
+    currentRule:change.currentRule,proposedRule:change.proposedRule,
+  }),content);
 }
 
 export async function createGovernanceTypoCorrection(args:{
@@ -152,7 +274,8 @@ export async function applyGovernanceTypoCorrections(userId:string,documentRef:s
 }
 
 export async function createGovernanceAmendmentRequest(args:{
-  userId:string;documentRef:string;documentTitle:string;roomKey:string;clauseRef?:string|null;
+  userId:string;documentRef:string;documentTitle:string;roomKey:string;clauseRef?:string|null;parentRef?:string|null;
+  changeAction?:GovernanceChangeAction;unitType?:GovernanceUnitType;
   currentRule?:string|null;proposedRule:string;rationale:string;priority:GovernanceAmendmentPriority;
 }){
   const now=new Date().toISOString();
@@ -165,6 +288,9 @@ export async function createGovernanceAmendmentRequest(args:{
     document_title:args.documentTitle,
     source_room:args.roomKey,
     clause_ref:args.clauseRef??null,
+    parent_ref:args.parentRef??null,
+    change_action:args.changeAction??'EDIT',
+    unit_type:args.unitType??'paragraph',
     current_rule:args.currentRule??null,
     proposed_rule:args.proposedRule,
     rationale:args.rationale,
@@ -277,6 +403,9 @@ export async function listGovernanceAmendments(userId:string):Promise<Governance
         documentTitle:text(data.document_title)??'وثيقة حوكمة',
         roomKey:text(data.source_room)??'central',
         clauseRef:text(data.clause_ref),
+        parentRef:text(data.parent_ref),
+        changeAction:(text(data.change_action) as GovernanceChangeAction)??'EDIT',
+        unitType:(text(data.unit_type) as GovernanceUnitType)??'paragraph',
         currentRule:text(data.current_rule),
         proposedRule:text(data.proposed_rule)??'',
         rationale:text(data.rationale)??'',
@@ -311,6 +440,22 @@ export async function listGovernanceAmendments(userId:string):Promise<Governance
   return [...map.values()].sort((a,b)=>b.requestedAt.localeCompare(a.requestedAt));
 }
 
+
+
+export async function applyEffectiveGovernanceAmendments(userId:string,documentRef:string,content:string){
+  const amendments=(await listGovernanceAmendments(userId))
+    .filter(item=>item.documentRef===documentRef&&item.status==='EFFECTIVE')
+    .sort((a,b)=>a.requestedAt.localeCompare(b.requestedAt));
+  return amendments.reduce((next,item)=>{
+    const rawRef=item.clauseRef??'';
+    const unitRef=rawRef.replace(/^(?:المادة|البند|الفقرة)\s+/u,'').trim();
+    if(!unitRef)return next;
+    return applyStructuredChange(next,{
+      changeAction:item.changeAction,unitType:item.unitType,unitRef,parentRef:item.parentRef,
+      currentRule:item.currentRule,proposedRule:item.proposedRule,
+    });
+  },content);
+}
 
 export type GovernanceAmendmentConversationCommand=
   |{kind:'DISCUSS';requestId:string;note:string}
