@@ -5704,6 +5704,60 @@
 .governedClauseRow>p{
   padding-inline-start:var(--ux-space-8)
 }
+
+.governedArticleAction{
+  display:flex;
+  justify-content:flex-start
+}
+.governedArticleAction button,
+.governedUnitToolbar>button{
+  min-height:var(--ux-size-9);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:var(--ux-space-1);
+  padding:var(--ux-space-1) var(--ux-space-2);
+  border:1px solid var(--namaa-border-strong);
+  border-radius:var(--ux-radius-2);
+  background:var(--namaa-card);
+  color:var(--namaa-green-900);
+  font:inherit;
+  font-size:var(--ux-type-caption-size);
+  font-weight:900;
+  cursor:pointer
+}
+.governedArticleAction button:active,
+.governedUnitToolbar>button:active{
+  background:var(--namaa-surface-warm)
+}
+.governedUnitToolbar{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:var(--ux-space-2)
+}
+.governedUnitToolbar>.governedClauseHeading{
+  flex:1 1 auto;
+  min-width:0
+}
+.governedParagraphRow{
+  display:grid;
+  gap:var(--ux-space-2);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-2);
+  background:var(--namaa-card)
+}
+.governedParagraphRow .governedUnitToolbar>strong{
+  color:var(--namaa-green-900);
+  font-size:var(--ux-type-body-sm-size)
+}
+.governedParagraphRow>p{
+  margin:0;
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-body-sm-size);
+  line-height:1.85
+}
 .governedTableScroll{
   width:100%;
   max-width:100%;
