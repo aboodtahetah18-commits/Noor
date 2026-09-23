@@ -2908,3 +2908,194 @@
     grid-template-columns:1fr!important;
   }
 }
+
+
+/* ========================================================================== */
+/* EXECUTION BATCH 6 — anti-overlap contract for wide interfaces              */
+/* Prevents buttons, toolbars, fields and cards from colliding at any width.  */
+/* ========================================================================== */
+@media (min-width:768px) {
+  .protected-app-shell :where(
+    .p49-resource-actions,
+    .p49-dialog-actions,
+    .namaa-lab-actions,
+    .namaa-lab-item-actions,
+    .namaa-banks-selector,
+    .namaa-investments-actions,
+    .namaa-settings-actions,
+    .namaa-collection-head,
+    .p47-section-heading,
+    .p47-resource-header,
+    .page-header
+  ) {
+    min-width:0!important;
+  }
+
+  .protected-app-shell :where(
+    .p49-resource-actions,
+    .p49-dialog-actions,
+    .namaa-lab-actions,
+    .namaa-lab-item-actions,
+    .namaa-banks-selector,
+    .namaa-investments-actions,
+    .namaa-settings-actions
+  ) {
+    display:flex!important;
+    flex-wrap:wrap!important;
+    align-items:center!important;
+    gap:10px!important;
+  }
+
+  .protected-app-shell :where(
+    .p49-resource-actions,
+    .p49-dialog-actions,
+    .namaa-lab-actions,
+    .namaa-lab-item-actions,
+    .namaa-banks-selector,
+    .namaa-investments-actions,
+    .namaa-settings-actions
+  ) > * {
+    min-width:0!important;
+    max-width:100%!important;
+  }
+
+  .protected-app-shell :where(
+    button,
+    .primary-button,
+    .secondary-button,
+    .primary-link,
+    .secondary-link,
+    .button-link,
+    .p49-modal-trigger,
+    .namaa-wide-action,
+    .namaa-wide-action-secondary
+  ) {
+    box-sizing:border-box!important;
+    max-width:100%!important;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .protected-app-shell :where(
+    .primary-button,
+    .secondary-button,
+    .primary-link,
+    .secondary-link,
+    .button-link,
+    .p49-modal-trigger,
+    .namaa-wide-action,
+    .namaa-wide-action-secondary
+  ) {
+    min-height:46px!important;
+    padding-inline:14px!important;
+    white-space:normal!important;
+    line-height:1.35!important;
+    text-align:center!important;
+  }
+
+  .protected-app-shell :where(
+    .p49-trigger-content,
+    .primary-button,
+    .secondary-button,
+    .primary-link,
+    .secondary-link,
+    .button-link,
+    .namaa-wide-action,
+    .namaa-wide-action-secondary
+  ) > svg {
+    flex:0 0 auto!important;
+  }
+
+  .protected-app-shell :where(
+    .p49-trigger-content,
+    .primary-button,
+    .secondary-button,
+    .primary-link,
+    .secondary-link,
+    .button-link,
+    .namaa-wide-action,
+    .namaa-wide-action-secondary
+  ) > span {
+    min-width:0!important;
+    overflow-wrap:anywhere!important;
+  }
+
+  .protected-app-shell :where(
+    .namaa-banks-layout,
+    .namaa-investments-grid,
+    .namaa-knowledge-grid,
+    .namaa-decisions-layout,
+    .namaa-observatory-layout,
+    .namaa-lab-layout,
+    .namaa-settings-layout
+  ) > * {
+    min-width:0!important;
+  }
+
+  .protected-app-shell :where(
+    .namaa-banks-kpis,
+    .namaa-decisions-kpis,
+    .namaa-observatory-kpis,
+    .namaa-lab-kpis,
+    .namaa-settings-summary-grid,
+    .namaa-settings-control-grid
+  ) > * {
+    min-width:0!important;
+    overflow-wrap:anywhere!important;
+  }
+
+  .p49-action-dialog .form-grid > *,
+  .p49-action-dialog .p47-settings-form > * {
+    min-width:0!important;
+  }
+
+  .p49-action-dialog :where(input,select,textarea,button) {
+    max-width:100%!important;
+    box-sizing:border-box!important;
+  }
+
+  .namaa-data-table td,
+  .namaa-data-table th {
+    min-width:0!important;
+  }
+
+  .namaa-data-table td:last-child {
+    min-width:180px!important;
+  }
+}
+
+@media (min-width:768px) and (max-width:1180px) {
+  .protected-app-shell :where(
+    .namaa-banks-kpis,
+    .namaa-decisions-kpis,
+    .namaa-observatory-kpis,
+    .namaa-lab-kpis,
+    .namaa-settings-summary-grid,
+    .namaa-settings-control-grid
+  ) {
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+
+  .protected-app-shell :where(
+    .p47-resource-header,
+    .page-header,
+    .namaa-collection-head
+  ) {
+    align-items:stretch!important;
+    flex-direction:column!important;
+  }
+}
+
+@media (min-width:768px) and (max-width:900px) {
+  .protected-app-shell :where(
+    .p49-resource-actions,
+    .p49-dialog-actions,
+    .namaa-lab-actions,
+    .namaa-lab-item-actions,
+    .namaa-banks-selector,
+    .namaa-investments-actions,
+    .namaa-settings-actions
+  ) > * {
+    flex:1 1 220px!important;
+  }
+}
