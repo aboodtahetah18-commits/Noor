@@ -1612,27 +1612,30 @@
 
   .protected-app-shell {
     padding-top:var(--namaa-topbar-height) !important;
-    padding-inline-end:var(--namaa-sidebar-expanded) !important;
+    padding-right:var(--namaa-sidebar-expanded) !important;
+    padding-left:0 !important;
     min-height:100dvh;
-    transition:padding-inline-end .18s ease;
+    transition:padding-right .18s ease;
   }
 
   html[data-sidebar="collapsed"] .protected-app-shell {
-    padding-inline-end:var(--namaa-sidebar-collapsed) !important;
+    padding-right:var(--namaa-sidebar-collapsed) !important;
+    padding-left:0 !important;
   }
 
   .desktop-top-nav-wrap.namaa-wide-sidebar {
     position:fixed !important;
     inset-block:0 !important;
-    inset-inline-end:0 !important;
-    inset-inline-start:auto !important;
+    right:0 !important;
+    left:auto !important;
     top:0 !important;
     width:var(--namaa-sidebar-expanded) !important;
     height:100dvh !important;
     display:block !important;
     z-index:120 !important;
     border:0 !important;
-    border-inline-start:1px solid rgb(255 255 255 / 10%) !important;
+    border-left:1px solid rgb(255 255 255 / 10%) !important;
+    border-right:0 !important;
     box-shadow:-8px 0 28px rgb(31 41 55 / 8%) !important;
     overflow:hidden;
     transition:width .18s ease;
@@ -1745,8 +1748,8 @@
   .mustaqbali-topbar.namaa-topbar {
     position:fixed !important;
     top:0 !important;
-    inset-inline-start:0 !important;
-    inset-inline-end:var(--namaa-sidebar-expanded) !important;
+    left:0 !important;
+    right:var(--namaa-sidebar-expanded) !important;
     height:var(--namaa-topbar-height) !important;
     min-height:var(--namaa-topbar-height) !important;
     z-index:110 !important;
@@ -1759,11 +1762,11 @@
     border-bottom:1px solid var(--namaa-wide-border) !important;
     box-shadow:0 6px 20px rgb(31 41 55 / 5%) !important;
     backdrop-filter:blur(14px);
-    transition:inset-inline-end .18s ease;
+    transition:right .18s ease;
   }
 
   html[data-sidebar="collapsed"] .mustaqbali-topbar.namaa-topbar {
-    inset-inline-end:var(--namaa-sidebar-collapsed) !important;
+    right:var(--namaa-sidebar-collapsed) !important;
   }
 
   .mustaqbali-topbar-brand-zone {
@@ -1821,7 +1824,8 @@
 
   .protected-app-shell {
     padding-top:0 !important;
-    padding-inline-end:0 !important;
+    padding-right:0 !important;
+    padding-left:0 !important;
   }
 }
 
