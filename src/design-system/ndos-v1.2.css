@@ -71,7 +71,7 @@
   --ux-success:var(--namaa-success);
   --ux-warning:var(--namaa-warning);
   --ux-error:var(--namaa-danger);
-  --ux-page-bg:var(--namaa-surface-warm);
+  --ux-page-bg:#FFFFFF;
   --ux-card-bg:var(--namaa-card);
   --ux-shell-topbar-bg:rgb(255 255 255 / .96);
   --ux-shell-topbar-border:var(--namaa-border);
@@ -132,8 +132,8 @@
 }
 
 html,body{font-family:var(--namaa-font)!important;}
-html[data-theme="light"]{color-scheme:light;--ux-page-bg:var(--namaa-surface-warm);--ux-card-bg:var(--namaa-card);--ux-shell-topbar-bg:rgb(255 255 255 / .96);--ux-shell-topbar-border:var(--namaa-border);--ux-shell-sidebar-bg:var(--namaa-green-900);--ux-border-default:var(--namaa-border);--ux-border-emphasis:var(--namaa-border-strong);--ux-text-primary:var(--namaa-text);--ux-text-secondary:var(--namaa-muted);--ux-text-muted:var(--namaa-muted);--ux-section-soft-blue:#F3F8F5;--ux-section-soft-teal:#EDF8F4;}
-html[data-theme="light"] body{background:var(--namaa-surface-warm)!important;color:var(--namaa-text)!important;}
+html[data-theme="light"]{color-scheme:light;--ux-page-bg:#FFFFFF;--ux-card-bg:var(--namaa-card);--ux-shell-topbar-bg:rgb(255 255 255 / .96);--ux-shell-topbar-border:var(--namaa-border);--ux-shell-sidebar-bg:var(--namaa-green-900);--ux-border-default:var(--namaa-border);--ux-border-emphasis:var(--namaa-border-strong);--ux-text-primary:var(--namaa-text);--ux-text-secondary:var(--namaa-muted);--ux-text-muted:var(--namaa-muted);--ux-section-soft-blue:#F3F8F5;--ux-section-soft-teal:#EDF8F4;}
+html[data-theme="light"] body{background:#FFFFFF!important;color:var(--namaa-text)!important;}
 
 /* Dark mode is a derived accessibility theme. Frozen primary brand colors are unchanged. */
 html[data-theme="dark"]{color-scheme:dark;--ux-page-bg:#111A17;--ux-card-bg:#17231F;--ux-shell-topbar-bg:#13201C;--ux-shell-topbar-border:#2A3B35;--ux-shell-sidebar-bg:#081B15;--ux-border-default:#31443D;--ux-border-emphasis:#40584F;--ux-text-primary:#F6F7F5;--ux-text-secondary:#C5D0CB;--ux-text-muted:#AAB7B1;--ux-section-soft-blue:#1A2A24;--ux-section-soft-teal:#173329;--ux-action-primary:var(--namaa-green-700);--ux-focus-ring:var(--namaa-gold-500);}

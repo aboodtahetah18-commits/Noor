@@ -1,7 +1,7 @@
 /* NAMAA theme mappings. Frozen visual authority is NDOS v1.2 FINAL. */
 html[data-theme="light"] {
   color-scheme: light;
-  --ux-page-bg:var(--namaa-surface-warm);
+  --ux-page-bg:#FFFFFF;
   --ux-card-bg:var(--namaa-card);
   --ux-shell-topbar-bg:var(--namaa-card);
   --ux-shell-topbar-border:var(--namaa-border);
@@ -16,7 +16,7 @@ html[data-theme="light"] {
   --ux-text-muted:var(--namaa-muted);
   --ux-section-soft-blue:var(--namaa-surface-warm);
   --ux-section-soft-teal:var(--namaa-cream);
-  --ux-surface-canvas:var(--namaa-surface-warm);
+  --ux-surface-canvas:#FFFFFF;
   --ux-surface-default:var(--namaa-card);
   --ux-surface-inverse:var(--namaa-green-900);
   --ux-action-primary:var(--namaa-green-900);
