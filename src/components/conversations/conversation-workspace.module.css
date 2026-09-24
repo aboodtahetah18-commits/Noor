@@ -12660,17 +12660,3 @@
   border-top:1px solid var(--namaa-border);
   background:var(--namaa-card)
 }
-@media(max-width:767px){
-  .directoryTabs>button span{display:none}
-  .meetingActions{
-    flex-wrap:nowrap!important
-  }
-  .meetingActions button{
-    min-width:0!important;
-    flex:1 1 0
-  }
-  .meetingDetailsModal{
-    width:100%;
-    max-height:94dvh
-  }
-}
