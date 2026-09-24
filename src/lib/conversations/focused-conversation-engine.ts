@@ -4,6 +4,7 @@ import { algorithmRoleByKey, type AlgorithmRoleRef } from '@/lib/governance/algo
 import { getEntityOperationalDashboard } from '@/lib/conversations/entity-operational-dashboard';
 import { getGovernanceMeetingSchedule } from '@/lib/governance/governance-meeting-scheduler';
 import type { ConversationMessageKind, ConversationRoomKey } from '@/lib/conversations/store';
+import { createBudgetCommitteeConversationReply } from '@/lib/conversations/budget-committee-conversation-engine';
 
 type FocusedReply={
   id:string;
@@ -137,6 +138,10 @@ export async function createFocusedMeetingReply(args:{
   const meeting=schedule.meetings.find(item=>item.id===args.meetingId);
   const threadId=threadRows[0]?.id?String(threadRows[0].id):null;
   if(!meeting||!threadId)return null;
+  if(/ميزانية|إنفاق/.test(meeting.title)){
+    const budgetReply=await createBudgetCommitteeConversationReply(args);
+    if(budgetReply)return budgetReply;
+  }
   const owner=meetingOwner(meeting.title);
   const missing=meeting.missing_data??[];
   const historyRows=await sql`
