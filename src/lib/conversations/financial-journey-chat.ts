@@ -25,6 +25,7 @@ function noneLike(value:string){
 function parseValue(kind:string|undefined,options:string[]|undefined,text:string){
   const raw=text.trim();
   if(!raw)return null;
+  if(/^(هل|كيف|متى|ليش|لماذا|وش|إيش|ايش|أين|وين)\b/i.test(raw)||/[؟?]$/.test(raw)) return null;
   if(kind==='number'){
     if(noneLike(raw))return 0;
     return firstNumber(raw);
