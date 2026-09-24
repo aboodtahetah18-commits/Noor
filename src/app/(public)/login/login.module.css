@@ -546,3 +546,123 @@
     background:var(--ux-page-bg);
   }
 }
+
+
+/* Laptop/tablet login stays horizontal; only mobile stacks vertically. */
+@media (min-width:768px) and (max-width:1023px){
+  .page{
+    min-height:100dvh;
+    display:grid;
+    place-items:center;
+    padding:var(--ux-space-4);
+    background:var(--ux-page-bg);
+  }
+
+  .shell{
+    width:min(100%,var(--ux-container-wide));
+    min-height:min(760px,calc(100dvh - var(--ux-space-8)));
+    display:grid;
+    grid-template-columns:minmax(0,1fr) minmax(320px,.82fr);
+    border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);
+    border-radius:var(--ux-radius-xl);
+    overflow:hidden;
+    box-shadow:var(--ux-shadow-lg);
+    background:var(--ux-card-bg);
+  }
+
+  .visual{
+    grid-column:2;
+    min-height:0;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    gap:var(--ux-space-5);
+    padding:var(--ux-space-6);
+    background:var(--ux-shell-sidebar-bg);
+    color:var(--ux-text-inverse);
+  }
+
+  .visual::before,
+  .visual::after{
+    display:block;
+  }
+
+  .brand{
+    position:relative;
+    inset:auto;
+  }
+
+  .logoFrame{
+    padding:var(--ux-space-2);
+    border:var(--ux-border-width-1) var(--ux-border-style-default) var(--namaa-gold-500);
+    border-radius:var(--ux-radius-lg);
+    background:var(--ux-shell-sidebar-active-soft);
+  }
+
+  .logo{
+    width:var(--ux-logo-tablet-width);
+  }
+
+  .brandText,
+  .visualCopy{
+    display:grid;
+  }
+
+  .visualCopy{
+    gap:var(--ux-space-3);
+  }
+
+  .visualCopy h1{
+    font-size:var(--ux-type-section-title-size);
+    line-height:var(--ux-type-section-title-line);
+  }
+
+  .featureStrip{
+    gap:var(--ux-space-1);
+  }
+
+  .featureStrip span{
+    min-height:var(--ux-size-9);
+    padding:var(--ux-space-2);
+  }
+
+  .heroTheme,
+  .mobileHeroCopy{
+    display:none;
+  }
+
+  .panel{
+    grid-column:1;
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    padding:var(--ux-space-6);
+    background:var(--ux-card-bg);
+  }
+
+  .themeButton{
+    display:block;
+  }
+
+  .heading{
+    display:grid;
+    margin-block-end:var(--ux-space-5);
+  }
+
+  .footer{
+    margin-block-start:var(--ux-space-5);
+  }
+
+  :global(html[data-theme="dark"]) .page{
+    background:var(--ux-page-bg);
+  }
+
+  :global(html[data-theme="dark"]) .panel{
+    background:var(--ux-card-bg);
+  }
+
+  :global(html[data-theme="dark"]) .visual{
+    background:var(--ux-shell-sidebar-bg);
+  }
+}
