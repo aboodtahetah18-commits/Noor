@@ -11,28 +11,70 @@ type TableRow=Record<string,string>;
 
 function tableRowsFromFact(section:ExtendedProfileSection|null,fact?:FactEnvelope){
   if(!section?.table) return [] as TableRow[];
-  const items=fact?.value?.items;
-  if(!Array.isArray(items)) return [] as TableRow[];
-  return items.flatMap(item=>{
-    if(!item||typeof item!=='object'||Array.isArray(item)) return [];
-    const source=item as Record<string,unknown>;
-    const row:TableRow={};
-    for(const column of section.table?.columns??[]){
-      const value=source[column.key]??(column.key==='due_day'?source.due_note:undefined);
-      row[column.key]=value===null||value===undefined?'':String(value);
+  const value=fact?.value??{};
+  const items=value.items;
+  if(Array.isArray(items)){
+    return items.flatMap(item=>{
+      if(!item||typeof item!=='object'||Array.isArray(item)) return [];
+      const source=item as Record<string,unknown>;
+      const row:TableRow={};
+      for(const column of section.table?.columns??[]){
+        const cell=source[column.key]??(column.key==='due_day'?source.due_note:undefined);
+        row[column.key]=cell===null||cell===undefined?'':String(cell);
+      }
+      return [row];
+    });
+  }
+
+  const text=(key:string)=>typeof value[key]==='string'?String(value[key]).trim():'';
+  if(section.key==='assets_investments'&&Object.keys(value).length){
+    const legacy:TableRow={
+      category:text('asset_type')||'أخرى',
+      custom_category:'',
+      name:text('asset_type'),
+      ownership_share:text('ownership_share'),
+      current_value:value.current_value===undefined?'':String(value.current_value),
+      valuation_date:text('valuation_date'),
+      liquidity_notes:text('liquidity_notes'),
+      goal_link:text('goal_link'),
+      risk_notes:text('risk_notes'),
+    };
+    if(legacy.category&&!section.table.categoryOptions?.includes(legacy.category)){
+      legacy.custom_category=legacy.category;
+      legacy.category='أخرى';
     }
-    return [row];
-  });
+    return Object.values(legacy).some(Boolean)?[legacy]:[];
+  }
+  if(section.key==='renewals_insurance'){
+    const rows:TableRow[]=[];
+    if(text('renewals')) rows.push({category:'تجديد حكومي',name:text('renewals'),due_date:text('renewal_dates'),notes:''});
+    if(text('insurance_policies')) rows.push({category:'وثيقة أخرى',name:text('insurance_policies'),due_date:text('renewal_dates'),notes:''});
+    if(text('claims_notes')) rows.push({category:'مطالبة تأمينية',name:'مطالبة أو تحمل قائم',notes:text('claims_notes')});
+    return rows;
+  }
+  if(section.key==='routine_events'){
+    const rows:TableRow[]=[];
+    if(text('routine_places')) rows.push({category:'مكان متكرر',name:text('routine_places')});
+    if(text('routine_times')) rows.push({category:'وقت متكرر',name:text('routine_times')});
+    if(text('recurring_events')) rows.push({category:'مناسبة',name:text('recurring_events')});
+    if(text('change_notes')) rows.push({category:'تغير في الروتين',name:text('change_notes')});
+    return rows;
+  }
+  return [];
 }
 
 function rowLabel(section:ExtendedProfileSection,row:TableRow){
-  if(section.key==='budget_behavior') return row.category==='أخرى'?(row.custom_category||'بند جديد'):(row.category||'بند');
+  if(section.table?.allowCustomCategory&&row.category==='أخرى') return row.custom_category||row.name||'عنصر جديد';
   return row.vehicle_name||row.name||row.category||row.beneficiary||'العنصر';
 }
 
 function displayCell(section:ExtendedProfileSection,row:TableRow,column:ExtendedProfileTableColumn){
-  if(section.key==='budget_behavior'&&column.key==='category'&&row.category==='أخرى'&&row.custom_category) return row.custom_category;
+  if(section.table?.allowCustomCategory&&column.key==='category'&&row.category==='أخرى'&&row.custom_category) return row.custom_category;
   return row[column.key]||'—';
+}
+
+function stockField(key:string){
+  return ['share_count','share_cost','total_cost','market_price','market_value'].includes(key);
 }
 
 export function ExtendedProfileSheet({
@@ -168,8 +210,8 @@ export function ExtendedProfileSheet({
       setError('أكمل الحقل الأساسي قبل الإضافة.');
       return false;
     }
-    if(active.key==='budget_behavior'&&draftRow.category==='أخرى'&&!(draftRow.custom_category??'').trim()){
-      setError('اكتب اسم البند الجديد.');
+    if(active.table.allowCustomCategory&&draftRow.category==='أخرى'&&!(draftRow.custom_category??'').trim()){
+      setError('اكتب اسم النوع الجديد.');
       return false;
     }
     for(const column of active.table.columns){
@@ -186,6 +228,27 @@ export function ExtendedProfileSheet({
       }
     }
     return true;
+  }
+
+  function updateDraftValue(key:string,value:string){
+    setDraftRow(current=>{
+      if(!current) return current;
+      const next={...current,[key]:value};
+      if(active?.key==='assets_investments'){
+        if(key==='category'&&value!=='أسهم مباشرة'){
+          for(const stockKey of ['share_count','share_cost','total_cost','market_price','market_value']) next[stockKey]='';
+        }
+        const count=Number(next.share_count||0);
+        const cost=Number(next.share_cost||0);
+        const market=Number(next.market_price||0);
+        if(Number.isFinite(count)&&Number.isFinite(cost)&&count>=0&&cost>=0) next.total_cost=String(Number((count*cost).toFixed(2)));
+        if(Number.isFinite(count)&&Number.isFinite(market)&&count>=0&&market>=0){
+          next.market_value=String(Number((count*market).toFixed(2)));
+          next.current_value=next.market_value;
+        }
+      }
+      return next;
+    });
   }
 
   async function commitDraftRow(){
@@ -238,7 +301,7 @@ export function ExtendedProfileSheet({
   const isLast=activeIndex===visibleSections.length-1;
   const displayColumns=active?.table?.columns.filter(column=>column.key!=='custom_category')??[];
   const categoryOptions=active?.table?.categoryOptions??[];
-  const usedCategories=new Set(tableRows.map(row=>row.category).filter(Boolean));
+  const usedCategories=new Set(active?.key==='budget_behavior'?tableRows.map(row=>row.category).filter(Boolean):[]);
 
   return <div className={styles.mobileOverlay} role="dialog" aria-modal="true" aria-label="الملف المالي التفصيلي">
     <button type="button" className={styles.scrim} aria-label="إغلاق" onClick={onClose}/>
@@ -295,18 +358,20 @@ export function ExtendedProfileSheet({
                     <div className={styles.extendedAddForm}>
                       {active.table.columns.map(column=>{
                         if(column.key==='custom_category'&&draftRow.category!=='أخرى') return null;
+                        if(active.key==='assets_investments'&&stockField(column.key)&&draftRow.category!=='أسهم مباشرة') return null;
                         const options=column.key==='category'&&categoryOptions.length
-                          ? categoryOptions.filter(option=>option==='أخرى'||!usedCategories.has(option)||draftRow.category===option)
+                          ? categoryOptions.filter(option=>active.key!=='budget_behavior'||option==='أخرى'||!usedCategories.has(option)||draftRow.category===option)
                           : column.options??[];
+                        const readOnly=active.key==='assets_investments'&&['total_cost','market_value'].includes(column.key);
                         return <label key={column.key} className={column.kind==='textarea'?styles.extendedAddWide:undefined}>
                           <span>{column.label}</span>
                           {column.kind==='select'
-                            ? <select value={draftRow[column.key]??''} onChange={event=>setDraftRow(current=>current?{...current,[column.key]:event.target.value}:current)}>
+                            ? <select value={draftRow[column.key]??''} onChange={event=>updateDraftValue(column.key,event.target.value)}>
                                 <option value="">اختر</option>
                                 {options.map(option=><option key={option} value={option}>{option}</option>)}
                               </select>
                             : column.kind==='textarea'
-                              ? <textarea rows={3} value={draftRow[column.key]??''} onChange={event=>setDraftRow(current=>current?{...current,[column.key]:event.target.value}:current)}/>
+                              ? <textarea rows={3} value={draftRow[column.key]??''} onChange={event=>updateDraftValue(column.key,event.target.value)}/>
                               : <input
                                   type={column.kind==='number'?'number':column.kind==='date'?'date':'text'}
                                   min={column.key==='due_day'?'1':column.kind==='number'?'0':undefined}
@@ -314,7 +379,8 @@ export function ExtendedProfileSheet({
                                   inputMode={column.kind==='number'?'decimal':undefined}
                                   placeholder={column.placeholder??(column.key==='due_day'?'مثال: 25':undefined)}
                                   value={draftRow[column.key]??''}
-                                  onChange={event=>setDraftRow(current=>current?{...current,[column.key]:event.target.value}:current)}
+                                  readOnly={readOnly}
+                                  onChange={event=>updateDraftValue(column.key,event.target.value)}
                                 />}
                         </label>;
                       })}
