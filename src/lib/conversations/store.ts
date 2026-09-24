@@ -115,14 +115,20 @@ export async function getConversationRoom(userId: string, roomKey: ConversationR
   return { threadId, room: governedRooms[roomKey], messages, participants, attachments };
 }
 
-export async function appendUserMessage(userId: string, userName: string, roomKey: ConversationRoomKey, body: string) {
+export async function appendUserMessage(
+  userId: string,
+  userName: string,
+  roomKey: ConversationRoomKey,
+  body: string,
+  structuredData:Record<string,unknown>={},
+) {
   const text = body.trim();
   if (!text || text.length > 8000) throw new Error('CONVERSATION_MESSAGE_INVALID');
   const threadId = await ensureThread(userId, roomKey);
   const id = randomUUID();
   const sql = getRawSql();
   const rows = await sql.transaction([
-    sql`insert into public.conversation_messages (id,thread_id,user_id,sender_type,sender_key,sender_name,message_kind,body,structured_data) values (${id},${threadId},${userId},'user',${userId},${userName},'message',${text},'{}'::jsonb) returning id,sender_type,sender_key,sender_name,message_kind,body,structured_data,created_at`,
+    sql`insert into public.conversation_messages (id,thread_id,user_id,sender_type,sender_key,sender_name,message_kind,body,structured_data) values (${id},${threadId},${userId},'user',${userId},${userName},'message',${text},${JSON.stringify(structuredData)}::jsonb) returning id,sender_type,sender_key,sender_name,message_kind,body,structured_data,created_at`,
     sql`update public.conversation_threads set updated_at=now() where id=${threadId} and user_id=${userId} returning id`,
   ]);
   return rows[0]?.[0];
