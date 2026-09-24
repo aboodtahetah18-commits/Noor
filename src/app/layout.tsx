@@ -20,6 +20,7 @@ import '../design-system/ndos-v1.2.enforcement.css';
 import '../design-system/shell.css';
 import '../design-system/page-architecture.css';
 import '../design-system/governance.css';
+import '../design-system/financial.css';
 
 const notoSansArabic = Noto_Sans_Arabic({
   subsets: ['arabic'],

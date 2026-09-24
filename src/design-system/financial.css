@@ -1,0 +1,401 @@
+/* NAMAA financial operating surfaces — desktop/laptop/tablet first. */
+
+.namaa-financial-page {
+  inline-size:100%;
+  max-inline-size:var(--ux-container-content);
+  margin-inline:auto;
+  display:grid;
+  gap:var(--ux-space-5);
+}
+
+.namaa-financial-page :where(.p47-content-shell,.page-shell) {
+  min-inline-size:0;
+}
+
+.namaa-financial-header {
+  margin:0;
+}
+
+.namaa-financial-card,
+.namaa-financial-page :where(.p47-panel,.p47-resource-card,.p74-focus-summary,.p47-budget-hero,.p47-protection-hero) {
+  min-inline-size:0;
+  border:var(--ux-border-width-1) solid var(--ux-border-default);
+  border-radius:var(--ux-radius-lg);
+  background:var(--ux-card-bg);
+  color:var(--ux-text-primary);
+  box-shadow:var(--ux-shadow-xs);
+}
+
+.namaa-financial-page .p74-focus-summary,
+.namaa-financial-page .p47-budget-hero,
+.namaa-financial-page .p47-protection-hero {
+  padding:var(--ux-space-4);
+}
+
+.namaa-financial-page .p74-inline-metrics,
+.namaa-financial-page .p47-budget-summary-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));
+  gap:var(--ux-space-3);
+}
+
+.namaa-financial-page .p74-inline-metrics > span,
+.namaa-financial-page .p47-budget-summary-grid > article {
+  min-inline-size:0;
+  display:grid;
+  gap:var(--ux-space-1);
+  padding:var(--ux-space-3);
+  border:var(--ux-border-width-1) solid var(--ux-border-default);
+  border-radius:var(--ux-radius-md);
+  background:var(--ux-card-bg);
+  color:var(--ux-text-secondary);
+}
+
+.namaa-financial-page .p74-inline-metrics b,
+.namaa-financial-page .p47-budget-summary-grid strong {
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-card-title-size);
+}
+
+.namaa-financial-page :where(.namaa-table-wrap,.p47-budget-list,.p47-transaction-list,.list) {
+  min-inline-size:0;
+}
+
+.namaa-financial-page .namaa-table-wrap {
+  overflow:auto;
+  border:var(--ux-border-width-1) solid var(--ux-border-default);
+  border-radius:var(--ux-radius-lg);
+}
+
+.namaa-financial-page .namaa-data-table {
+  inline-size:100%;
+  min-inline-size:760px;
+  border-collapse:collapse;
+  background:var(--ux-card-bg);
+}
+
+.namaa-financial-page .namaa-data-table :where(th,td) {
+  padding:var(--ux-space-3);
+  border-block-end:var(--ux-border-width-1) solid var(--ux-border-default);
+  text-align:start;
+  vertical-align:middle;
+}
+
+.namaa-financial-page .namaa-data-table th {
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  font-weight:700;
+  background:var(--ux-page-bg);
+}
+
+.namaa-financial-page .p47-budget-list {
+  display:grid;
+  gap:var(--ux-space-3);
+}
+
+.namaa-financial-page .p47-budget-list > article {
+  display:grid;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-4);
+  border:var(--ux-border-width-1) solid var(--ux-border-default);
+  border-radius:var(--ux-radius-md);
+  background:var(--ux-surface-default);
+}
+
+.namaa-financial-page .p47-budget-item-main,
+.namaa-financial-page .p47-budget-item-values,
+.namaa-financial-page .section-title-row,
+.namaa-financial-page .p47-section-heading {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:var(--ux-space-3);
+}
+
+.namaa-financial-page .p47-budget-item-values {
+  flex-wrap:wrap;
+}
+
+.namaa-financial-page .p47-budget-item-bar,
+.namaa-financial-page .p47-progress-track {
+  block-size:8px;
+  overflow:hidden;
+  border-radius:var(--ux-radius-full);
+  background:var(--ux-border-default);
+}
+
+.namaa-financial-page .p47-budget-item-bar > span,
+.namaa-financial-page .p47-progress-track > i,
+.namaa-financial-page .p47-budget-hero-progress > div > span {
+  display:block;
+  block-size:100%;
+  border-radius:inherit;
+  background:var(--ux-brand-primary);
+}
+
+.namaa-financial-page .p47-transaction-list {
+  display:grid;
+  gap:var(--ux-space-2);
+}
+
+.namaa-financial-page .p47-transaction-row {
+  min-inline-size:0;
+  display:grid;
+  grid-template-columns:minmax(110px,auto) minmax(0,1fr) auto auto;
+  align-items:center;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-3) var(--ux-space-4);
+  border:var(--ux-border-width-1) solid var(--ux-border-default);
+  border-radius:var(--ux-radius-md);
+  background:var(--ux-surface-default);
+}
+
+.namaa-financial-page .p47-transaction-main {
+  min-inline-size:0;
+}
+
+.namaa-financial-page .p47-transaction-main > span,
+.namaa-financial-page .muted {
+  color:var(--ux-text-secondary);
+}
+
+.namaa-financial-page .p47-transaction-kind,
+.namaa-financial-page .p47-transaction-state > span {
+  display:inline-flex;
+  align-items:center;
+  inline-size:max-content;
+  padding:var(--ux-space-1) var(--ux-space-2);
+  border-radius:var(--ux-radius-full);
+  background:var(--ux-section-soft-teal);
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-caption-size);
+  font-weight:700;
+}
+
+.namaa-financial-page :where(.form-grid,.p47-flow-form,.p73-entry-form) {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:var(--ux-space-3);
+}
+
+.namaa-financial-page :where(.form-grid,.p47-flow-form,.p73-entry-form) > label {
+  min-inline-size:0;
+  display:grid;
+  gap:var(--ux-space-2);
+}
+
+.namaa-financial-page :where(.form-grid,.p47-flow-form,.p73-entry-form) > .full,
+.namaa-financial-page :where(.form-grid,.p47-flow-form,.p73-entry-form) > button,
+.namaa-financial-page :where(.form-grid,.p47-flow-form,.p73-entry-form) > fieldset {
+  grid-column:1/-1;
+}
+
+.namaa-financial-page :where(input,select,textarea) {
+  inline-size:100%;
+  min-inline-size:0;
+  min-block-size:var(--ux-size-10);
+  box-sizing:border-box;
+  border:var(--ux-border-width-1) solid var(--ux-border-default);
+  border-radius:var(--ux-radius-md);
+  background:var(--ux-control-bg);
+  color:var(--ux-control-text);
+  font:inherit;
+}
+
+.namaa-financial-page .p49-action-row,
+.namaa-financial-page .p47-inline-actions {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:var(--ux-space-2);
+}
+
+.namaa-financial-page .p47-pagination {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--ux-space-3);
+  padding-block-start:var(--ux-space-3);
+}
+
+@media (min-width:768px) and (max-width:1023px) {
+  .namaa-financial-page {
+    gap:var(--ux-space-4);
+  }
+
+  .namaa-financial-page .p47-transaction-row {
+    grid-template-columns:minmax(96px,auto) minmax(0,1fr) auto;
+  }
+
+  .namaa-financial-page .p47-transaction-amount {
+    grid-column:2/-1;
+    justify-self:start;
+  }
+}
+
+@media (max-width:767px) {
+  .namaa-financial-page :where(.form-grid,.p47-flow-form,.p73-entry-form) {
+    grid-template-columns:minmax(0,1fr);
+  }
+
+  .namaa-financial-page .p47-transaction-row {
+    grid-template-columns:minmax(0,1fr);
+  }
+}
+
+
+/* Financial forms and dialogs take precedence over legacy P20/P49 rules. */
+.namaa-financial-page :where(input,select,textarea) {
+  min-block-size:var(--ux-size-10) !important;
+  padding-inline:var(--ux-space-3) !important;
+  border:var(--ux-border-width-1) solid var(--ux-border-default) !important;
+  border-radius:var(--ux-radius-md) !important;
+  background:var(--ux-control-bg) !important;
+  color:var(--ux-control-text) !important;
+  box-shadow:none !important;
+}
+
+.namaa-financial-page :where(input,textarea)::placeholder {
+  color:var(--ux-control-placeholder) !important;
+}
+
+.namaa-financial-page :where(input,select,textarea):focus {
+  border-color:var(--ux-focus-ring) !important;
+  outline:var(--ux-border-width-2) solid var(--ux-focus-ring) !important;
+  outline-offset:var(--ux-border-width-1);
+  box-shadow:var(--ux-shadow-focus) !important;
+}
+
+.namaa-financial-page :where(.primary-button,.primary-link,.p47-primary-action) {
+  min-block-size:var(--ux-size-10) !important;
+  padding-inline:var(--ux-space-4) !important;
+  border-radius:10px !important;
+  border-color:var(--ux-brand-primary) !important;
+  background:var(--ux-brand-primary) !important;
+  color:var(--ux-action-contrast) !important;
+}
+
+.namaa-financial-page :where(.secondary-button,.secondary-link,.button-link,.p47-secondary-action,.p49-modal-trigger) {
+  min-block-size:var(--ux-size-10) !important;
+  padding-inline:var(--ux-space-4) !important;
+  border-radius:10px !important;
+  border-color:var(--ux-brand-primary) !important;
+  background:var(--ux-card-bg) !important;
+  color:var(--ux-brand-primary) !important;
+}
+
+.namaa-financial-page .danger-button {
+  min-block-size:var(--ux-size-10) !important;
+  padding-inline:var(--ux-space-4) !important;
+  border-radius:10px !important;
+  border-color:var(--ux-error) !important;
+  background:var(--ux-error) !important;
+  color:var(--ux-action-contrast) !important;
+}
+
+.namaa-financial-page .p49-action-dialog {
+  inline-size:min(calc(100vw - var(--ux-space-8)),760px);
+  max-block-size:min(90dvh,900px);
+  border:0;
+  padding:0;
+  background:transparent;
+  box-shadow:none !important;
+}
+
+.namaa-financial-page .p49-action-dialog.is-sm { inline-size:min(calc(100vw - var(--ux-space-8)),480px); }
+.namaa-financial-page .p49-action-dialog.is-lg { inline-size:min(calc(100vw - var(--ux-space-8)),880px); }
+.namaa-financial-page .p49-action-dialog.is-xl { inline-size:min(calc(100vw - var(--ux-space-8)),1040px); }
+
+.namaa-financial-page .p49-action-dialog::backdrop {
+  background:var(--ux-alpha-overlay) !important;
+}
+
+.namaa-financial-page .p49-dialog-shell {
+  max-block-size:min(90dvh,900px);
+  border-radius:var(--ux-radius-xl);
+  overflow:hidden;
+}
+
+.namaa-financial-page .p49-dialog-header {
+  position:relative;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:var(--ux-space-4);
+  padding:var(--ux-space-4) var(--ux-space-5);
+  background:var(--ux-card-bg);
+  border-block-end:var(--ux-border-width-1) solid var(--ux-border-default);
+}
+
+.namaa-financial-page .p49-dialog-title-block {
+  min-inline-size:0;
+  display:flex;
+  align-items:flex-start;
+  gap:var(--ux-space-3);
+}
+
+.namaa-financial-page .p49-dialog-title-block h2,
+.namaa-financial-page .p49-dialog-title-block p {
+  margin:0;
+}
+
+.namaa-financial-page .p49-dialog-title-block p {
+  margin-block-start:var(--ux-space-1);
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-body-sm-size);
+  line-height:var(--ux-type-body-sm-line);
+}
+
+.namaa-financial-page .p49-dialog-tools {
+  display:flex;
+  align-items:center;
+  gap:var(--ux-space-2);
+  flex:0 0 auto;
+}
+
+.namaa-financial-page .p49-dialog-close {
+  inline-size:var(--ux-size-8) !important;
+  block-size:var(--ux-size-8) !important;
+  min-inline-size:var(--ux-size-8) !important;
+  min-block-size:var(--ux-size-8) !important;
+  padding:0 !important;
+  border-radius:10px !important;
+}
+
+.namaa-financial-page .p49-dialog-body {
+  overflow:auto;
+  padding:var(--ux-space-5);
+}
+
+.namaa-financial-page .p49-dialog-body :where(.form-grid,.p47-flow-form,.account-form,.p73-entry-form) {
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:var(--ux-space-3) !important;
+}
+
+.namaa-financial-page .p49-dialog-body :where(.form-grid,.p47-flow-form,.account-form,.p73-entry-form) > :where(.full,fieldset,button:last-child) {
+  grid-column:1/-1;
+}
+
+.namaa-financial-page .p49-dialog-actions,
+.namaa-financial-page .p49-dialog-body .inline-actions,
+.namaa-financial-page .p49-dialog-body .actions-row {
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:var(--ux-space-2);
+  flex-wrap:wrap;
+}
+
+@media (min-width:768px) and (max-width:1023px) {
+  .namaa-financial-page .p49-action-dialog.is-xl,
+  .namaa-financial-page .p49-action-dialog.is-lg {
+    inline-size:min(calc(100vw - var(--ux-space-6)),840px);
+  }
+}
+
+@media (max-width:767px) {
+  .namaa-financial-page .p49-dialog-body :where(.form-grid,.p47-flow-form,.account-form,.p73-entry-form) {
+    grid-template-columns:minmax(0,1fr) !important;
+  }
+}

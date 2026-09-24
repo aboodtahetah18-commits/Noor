@@ -11,6 +11,7 @@ import { recordExpenseAction } from './actions';
 import { EmptyState } from '@/components/ui/feedback-state';
 import { ActionDialog } from '@/components/overlays/action-dialog';
 import { BankMessageDialogTrigger } from '@/components/bank-message-dialog';
+import { PageHeader } from '@/components/ui';
 export default async function ExpensesPage() {
   const user = await requireAuthenticatedUser();
   const cycle = await getCurrentFinancialCycle(user.id);
@@ -19,10 +20,10 @@ export default async function ExpensesPage() {
   const expenses = cycle ? await listExpenses(user.id, cycle.id) : [];
   const today = await getUserOperationalDate(user.id);
 
-  return <main className="page-shell p47-flow-page" dir="rtl">
-    <header className="page-header p47-flow-header"><div><div className="title-with-help"><h1>إدخال مصروف يدوي</h1></div></div></header>
+  return <main className="page-shell p47-flow-page namaa-financial-page namaa-expenses-page namaa-migrated-shell" dir="rtl">
+    <PageHeader className="page-header p47-flow-header namaa-financial-header namaa-migrated-header" eyebrow="المصروفات" title="إدخال مصروف يدوي" description="سجّل المصروف يدويًا فقط عند عدم توفر رسالة بنكية، مع إبقاء المسار اليومي مختصرًا وواضحًا."/>
     {!cycle ? <EmptyState title="لا توجد دورة مالية نشطة" action={<Link className="primary-link" href="/cycles/new">بدء دورة مالية</Link>}><p>ابدأ دورة مالية قبل تسجيل المصروفات اليدوية.</p></EmptyState> : <>
-      <section className="card p47-flow-card">
+      <section className="card p47-flow-card namaa-financial-card">
         <div className="section-title-row"><div><h2>المصروفات اليدوية</h2><p className="muted">التسجيل اليدوي مسار استثنائي؛ ابدأ بالمبلغ ثم البند والحساب وأكمل التفاصيل الضرورية فقط.</p></div><div className="p49-action-row"><BankMessageDialogTrigger className="button-link">إضافة رسالة بنكية</BankMessageDialogTrigger><ActionDialog trigger="إضافة مصروف" title="إضافة مصروف يدوي" description="استخدم الإدخال اليدوي فقط عند عدم توفر رسالة بنكية." size="lg" triggerClassName="primary-link"><form action={recordExpenseAction} className="form-grid p73-entry-form p73-expense-form">
           <input type="hidden" name="cycleId" value={cycle.id}/>
           <input type="hidden" name="idempotencyKey" value={randomUUID()}/>
