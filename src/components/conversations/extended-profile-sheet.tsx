@@ -18,7 +18,7 @@ function tableRowsFromFact(section:ExtendedProfileSection|null,fact?:FactEnvelop
     const source=item as Record<string,unknown>;
     const row:TableRow={};
     for(const column of section.table?.columns??[]){
-      const value=source[column.key];
+      const value=source[column.key]??(column.key==='due_day'?source.due_note:undefined);
       row[column.key]=value===null||value===undefined?'':String(value);
     }
     return [row];
@@ -28,15 +28,18 @@ function tableRowsFromFact(section:ExtendedProfileSection|null,fact?:FactEnvelop
 export function ExtendedProfileSheet({
   open,
   onClose,
+  initialSection,
 }:{
   open:boolean;
   onClose:()=>void;
+  initialSection?:string|null;
 }){
   const [sections,setSections]=useState<ExtendedProfileSection[]>([]);
   const [facts,setFacts]=useState<Record<string,FactEnvelope>>({});
   const [activeKey,setActiveKey]=useState('');
   const [values,setValues]=useState<Record<string,string>>({});
   const [tableRows,setTableRows]=useState<TableRow[]>([]);
+  const [draftRow,setDraftRow]=useState<TableRow|null>(null);
   const [loading,setLoading]=useState(false);
   const [saving,setSaving]=useState(false);
   const [error,setError]=useState('');
@@ -55,15 +58,17 @@ export function ExtendedProfileSheet({
         const nextSections=Array.isArray(data.sections)?data.sections:[];
         setSections(nextSections);
         setFacts(data.facts&&typeof data.facts==='object'?data.facts:{});
-        setActiveKey(current=>current||nextSections[0]?.key||'');
+        const preferred=initialSection&&nextSections.some(section=>section.key===initialSection)?initialSection:null;
+        setActiveKey(preferred??nextSections[0]?.key??'');
       })
       .catch(()=>{if(!cancelled)setError('تعذر تحميل الملف المالي التفصيلي الآن.')})
       .finally(()=>{if(!cancelled)setLoading(false)});
     return()=>{cancelled=true};
-  },[open]);
+  },[open,initialSection]);
 
   useEffect(()=>{
     if(!active) return;
+    queueMicrotask(()=>setDraftRow(null));
     if(active.table){
       queueMicrotask(()=>setTableRows(tableRowsFromFact(active,facts[active.key])));
       return;
@@ -79,15 +84,37 @@ export function ExtendedProfileSheet({
 
   if(!open) return null;
 
-  function addTableRow(){
+  function openAddModal(){
     if(!active?.table) return;
     const row:TableRow={};
     for(const column of active.table.columns) row[column.key]='';
-    setTableRows(current=>[...current,row]);
+    row.recurrence='شهري';
+    setDraftRow(row);
   }
 
-  function updateTableCell(index:number,key:string,value:string){
-    setTableRows(current=>current.map((row,rowIndex)=>rowIndex===index?{...row,[key]:value}:row));
+  function addDraftRow(){
+    if(!active?.table||!draftRow) return;
+    const name=(draftRow.name??'').trim();
+    const amount=Number(draftRow.amount??'');
+    const dueDay=(draftRow.due_day??'').trim();
+    if(!name){
+      setError(active.key==='subscriptions'?'اكتب اسم الاشتراك قبل الإضافة.':'اكتب اسم الفاتورة قبل الإضافة.');
+      return;
+    }
+    if(!Number.isFinite(amount)||amount<0){
+      setError('أدخل قيمة صحيحة.');
+      return;
+    }
+    if(dueDay){
+      const day=Number(dueDay);
+      if(!Number.isInteger(day)||day<1||day>31){
+        setError('يوم الاستحقاق يجب أن يكون رقمًا من 1 إلى 31.');
+        return;
+      }
+    }
+    setError('');
+    setTableRows(current=>[...current,{...draftRow,name,amount:String(amount)}]);
+    setDraftRow(null);
   }
 
   function removeTableRow(index:number){
@@ -155,6 +182,7 @@ export function ExtendedProfileSheet({
             <strong>{section.title}</strong>
           </button>)}
         </nav>
+
         {active&&<section className={styles.extendedEditor}>
           <header><strong>{active.title}</strong><small>{active.summary}</small></header>
 
@@ -162,32 +190,52 @@ export function ExtendedProfileSheet({
             ? <div className={styles.extendedTableSection}>
                 <div className={styles.extendedTableToolbar}>
                   <span>{tableRows.length?tableRows.length+' عناصر مسجلة':'لا توجد عناصر مسجلة'}</span>
-                  <button type="button" onClick={addTableRow}><LucideIcon name="plus" size={16}/><span>{active.table.addLabel}</span></button>
+                  <button type="button" onClick={openAddModal}><LucideIcon name="plus" size={16}/><span>{active.table.addLabel}</span></button>
                 </div>
+
                 {tableRows.length===0
                   ? <div className={styles.extendedTableEmpty}><LucideIcon name="receiptText" size={24}/><span>{active.table.emptyLabel}</span></div>
                   : <div className={styles.extendedDataTableWrap}>
                       <table className={styles.extendedDataTable}>
-                        <thead><tr>{active.table.columns.map(column=><th key={column.key}>{column.label}</th>)}<th aria-label="إجراءات"/></tr></thead>
+                        <thead><tr>{active.table.columns.map(column=><th key={column.key}>{column.label}</th>)}<th>الإجراء</th></tr></thead>
                         <tbody>{tableRows.map((row,rowIndex)=><tr key={rowIndex}>
-                          {active.table?.columns.map(column=><td key={column.key} data-label={column.label}>
-                            {column.kind==='select'
-                              ? <select value={row[column.key]??''} onChange={event=>updateTableCell(rowIndex,column.key,event.target.value)}>
-                                  <option value="">اختر</option>
-                                  {column.options?.map(option=><option key={option} value={option}>{option}</option>)}
-                                </select>
-                              : <input
-                                  type={column.kind==='number'?'number':'text'}
-                                  min={column.kind==='number'?'0':undefined}
-                                  inputMode={column.kind==='number'?'decimal':undefined}
-                                  value={row[column.key]??''}
-                                  onChange={event=>updateTableCell(rowIndex,column.key,event.target.value)}
-                                />}
-                          </td>)}
+                          {active.table?.columns.map(column=><td key={column.key}>{row[column.key]||'—'}</td>)}
                           <td className={styles.extendedRowActions}><button type="button" onClick={()=>removeTableRow(rowIndex)} aria-label="حذف السطر"><LucideIcon name="trash2" size={16}/></button></td>
                         </tr>)}</tbody>
                       </table>
                     </div>}
+
+                {draftRow&&<div className={styles.extendedAddModalBackdrop} role="presentation">
+                  <section className={styles.extendedAddModal} role="dialog" aria-modal="true" aria-label={active.table.addLabel}>
+                    <header>
+                      <div><strong>{active.table.addLabel}</strong><small>{active.key==='subscriptions'?'أدخل الاشتراك وقيمته ودورية السداد ويوم الاستحقاق.':'أدخل الفاتورة وقيمتها ودورية السداد ويوم الاستحقاق المتوقع.'}</small></div>
+                      <button type="button" onClick={()=>setDraftRow(null)} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button>
+                    </header>
+                    <div className={styles.extendedAddForm}>
+                      {active.table.columns.map(column=><label key={column.key}>
+                        <span>{column.label}</span>
+                        {column.kind==='select'
+                          ? <select value={draftRow[column.key]??''} onChange={event=>setDraftRow(current=>current?{...current,[column.key]:event.target.value}:current)}>
+                              <option value="">اختر</option>
+                              {column.options?.map(option=><option key={option} value={option}>{option}</option>)}
+                            </select>
+                          : <input
+                              type={column.kind==='number'?'number':'text'}
+                              min={column.key==='due_day'?'1':column.kind==='number'?'0':undefined}
+                              max={column.key==='due_day'?'31':undefined}
+                              inputMode={column.kind==='number'?'decimal':undefined}
+                              placeholder={column.key==='due_day'?'مثال: 25':undefined}
+                              value={draftRow[column.key]??''}
+                              onChange={event=>setDraftRow(current=>current?{...current,[column.key]:event.target.value}:current)}
+                            />}
+                      </label>)}
+                    </div>
+                    <footer>
+                      <button type="button" className={styles.secondaryButton} onClick={()=>setDraftRow(null)}>إلغاء</button>
+                      <button type="button" className={styles.primaryActionButton} onClick={addDraftRow}><LucideIcon name="plus" size={16}/><span>إضافة إلى الجدول</span></button>
+                    </footer>
+                  </section>
+                </div>}
               </div>
             : <div className={styles.intakeGrid}>
                 {active.fields.map(field=><label key={field.key} className={field.kind==='textarea'?styles.intakeWide:undefined}>

@@ -11785,3 +11785,139 @@
   color:var(--ux-text-inverse)!important;
   -webkit-text-fill-color:var(--ux-text-inverse)!important
 }
+
+
+/* Bills/subscriptions authority — add in a focused modal, then render as a real table. */
+.extendedAddModalBackdrop{
+  position:fixed;
+  inset:0;
+  z-index:90;
+  display:grid;
+  place-items:center;
+  padding:var(--ux-space-4);
+  background:color-mix(in srgb,var(--namaa-text) 28%,transparent)
+}
+.extendedAddModal{
+  width:min(560px,100%);
+  max-height:88dvh;
+  overflow:auto;
+  display:grid;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-4);
+  border:1px solid var(--namaa-border-strong);
+  border-radius:var(--ux-radius-4);
+  background:var(--namaa-card);
+  box-shadow:var(--ux-shadow-lg)
+}
+.extendedAddModal>header{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:var(--ux-space-3);
+  padding-bottom:var(--ux-space-3);
+  border-bottom:1px solid var(--namaa-border)
+}
+.extendedAddModal>header>div{
+  display:grid;
+  gap:var(--ux-space-1)
+}
+.extendedAddModal>header strong{
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-body-size)
+}
+.extendedAddModal>header small{
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  line-height:1.6
+}
+.extendedAddModal>header>button{
+  width:40px;
+  height:40px;
+  display:grid;
+  place-items:center;
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-full);
+  background:var(--namaa-card);
+  color:var(--namaa-green-900)
+}
+.extendedAddForm{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:var(--ux-space-3)
+}
+.extendedAddForm label{
+  display:grid;
+  gap:var(--ux-space-1)
+}
+.extendedAddForm label>span{
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-caption-size);
+  font-weight:900
+}
+.extendedAddForm input,
+.extendedAddForm select{
+  width:100%;
+  min-height:44px;
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-card);
+  color:var(--ux-text-primary);
+  padding:var(--ux-space-2) var(--ux-space-3);
+  font:inherit
+}
+.extendedAddModal>footer{
+  display:flex;
+  justify-content:flex-end;
+  gap:var(--ux-space-2);
+  padding-top:var(--ux-space-2);
+  border-top:1px solid var(--namaa-border)
+}
+.extendedDataTableWrap{
+  overflow-x:auto!important
+}
+.extendedDataTable{
+  min-width:620px!important;
+  display:table!important
+}
+.extendedDataTable thead{
+  display:table-header-group!important
+}
+.extendedDataTable tbody{
+  display:table-row-group!important
+}
+.extendedDataTable tr{
+  display:table-row!important
+}
+.extendedDataTable th,
+.extendedDataTable td{
+  display:table-cell!important;
+  padding:var(--ux-space-3)!important;
+  border-bottom:1px solid var(--namaa-border)!important;
+  text-align:right!important;
+  white-space:nowrap!important
+}
+.extendedDataTable td::before{
+  content:none!important;
+  display:none!important
+}
+.extendedRowActions{
+  width:52px!important;
+  grid-column:auto!important
+}
+
+@media (max-width:767px){
+  .extendedAddModalBackdrop{
+    padding:var(--ux-space-3)
+  }
+  .extendedAddModal{
+    width:100%;
+    max-height:86dvh;
+    padding:var(--ux-space-3)
+  }
+  .extendedAddForm{
+    grid-template-columns:1fr
+  }
+  .extendedDataTableWrap{
+    margin-inline:calc(var(--ux-space-1) * -1)!important
+  }
+}
