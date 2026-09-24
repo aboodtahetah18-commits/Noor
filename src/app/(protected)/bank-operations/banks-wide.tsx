@@ -1,7 +1,9 @@
 import type React from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { LucideIcon } from '@/components/ui/lucide-icon';
 import { formatSar } from '@/lib/format-money';
+import { NAMAA_PERSONA_ASSETS } from '@/components/conversations/persona-assets';
 
 type PendingItem = {
   rowId:string;
@@ -29,10 +31,47 @@ type RecentApproved = {
 const KIND:Record<string,string>={EXPENSE:'مصروف',INCOME:'دخل',TRANSFER:'تحويل',REFUND:'استرداد',FEE:'رسوم',UNKNOWN:'غير معروف'};
 
 const banks = {
-  central:{name:'بنك نماء المركزي',subtitle:'الحوكمة والاستقرار والرقابة',team:['محافظ بنك نماء المركزي','المستشار الاقتصادي','أمين السر المركزي'],goals:['الاستقرار المالي','سلامة السيولة','اتساق القرارات بين البنوك']},
-  hilal:{name:'بنك الهلال',subtitle:'التمويل الداخلي والالتزامات',team:['مدير بنك الهلال','مسؤول الالتزامات','مسؤول الميزانية والإنفاق'],goals:['ضبط التمويل الداخلي','خفض ضغط الالتزامات','رفع وضوح التدفقات']},
-  solvency:{name:'بنك ملاءة',subtitle:'الحماية والاحتياطي والسيولة',team:['مدير بنك ملاءة','مسؤول السيولة والحماية','مسؤول الالتزامات'],goals:['رفع هامش الأمان','حماية الاحتياطي','تخفيف مخاطر السيولة']},
-  assets:{name:'بنك الأصول الاستثمارية',subtitle:'الأصول والاستثمار والأهداف',team:['مدير بنك الأصول','مسؤول الاستثمار','مسؤول الأهداف'],goals:['تحسين جودة المحافظ','ضبط المخاطر الاستثمارية','ربط الاستثمار بالأهداف']},
+  central:{
+    name:'بنك نماء المركزي',
+    subtitle:'الحوكمة والاستقرار والرقابة',
+    team:[
+      {key:'central-governor',name:'محافظ بنك نماء المركزي'},
+      {key:'central-bank-manager',name:'مدير بنك نماء المركزي'},
+      {key:'economic-advisor',name:'المستشار الاقتصادي'},
+      {key:'central-secretary',name:'أمين السر المركزي'},
+    ],
+    goals:['الاستقرار المالي','سلامة السيولة','اتساق القرارات بين البنوك'],
+  },
+  hilal:{
+    name:'بنك الهلال',
+    subtitle:'التمويل الداخلي والالتزامات',
+    team:[
+      {key:'hilal-manager',name:'مدير بنك الهلال'},
+      {key:'obligations-owner',name:'مسؤول الالتزامات'},
+      {key:'budget-spending-owner',name:'مسؤول الميزانية والإنفاق'},
+    ],
+    goals:['ضبط التمويل الداخلي','خفض ضغط الالتزامات','رفع وضوح التدفقات'],
+  },
+  solvency:{
+    name:'بنك ملاءة',
+    subtitle:'الحماية والاحتياطي والسيولة',
+    team:[
+      {key:'solvency-manager',name:'مدير بنك ملاءة'},
+      {key:'liquidity-protection-owner',name:'مسؤول السيولة والحماية'},
+      {key:'obligations-owner',name:'مسؤول الالتزامات'},
+    ],
+    goals:['رفع هامش الأمان','حماية الاحتياطي','تخفيف مخاطر السيولة'],
+  },
+  assets:{
+    name:'بنك الأصول الاستثمارية',
+    subtitle:'الأصول والاستثمار والأهداف',
+    team:[
+      {key:'assets-manager',name:'مدير بنك الأصول'},
+      {key:'investment-owner',name:'مسؤول الاستثمار'},
+      {key:'goals-owner',name:'مسؤول الأهداف'},
+    ],
+    goals:['تحسين جودة المحافظ','ضبط المخاطر الاستثمارية','ربط الاستثمار بالأهداف'],
+  },
 } as const;
 
 type BankKey=keyof typeof banks;
@@ -85,7 +124,18 @@ export function BanksWide({selected,pendingReviewCount,pendingItems,dashboardDat
       <aside className="namaa-banks-team namaa-wide-panel">
         <div className="namaa-investments-section-title"><div><p>الفريق الخوارزمي</p><h2>{bank.name}</h2></div><LucideIcon name="circleUserRound" size={20}/></div>
         <div className="namaa-banks-team-list">
-          {bank.team.map((member,index)=><article key={member}><span>{index+1}</span><div><strong>{member}</strong><small>يشارك حسب الاختصاص والسياق</small></div></article>)}
+          {bank.team.map((member)=><article key={member.key}>
+            <span className="namaa-banks-persona" aria-hidden="true">
+              <Image
+                src={NAMAA_PERSONA_ASSETS[member.key] ?? '/brand/personas/central-governor.webp'}
+                alt=""
+                fill
+                unoptimized
+                sizes="72px"
+              />
+            </span>
+            <div><strong>{member.name}</strong></div>
+          </article>)}
         </div>
         <section className="namaa-banks-chat-preview" aria-label="معاينة محادثة البنك">
           <header>

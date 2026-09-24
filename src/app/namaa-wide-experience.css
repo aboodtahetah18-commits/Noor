@@ -4928,3 +4928,50 @@
     display:none!important;
   }
 }
+
+
+/* NAMA'A PERSONA PORTRAITS — approved algorithmic characters across bank teams */
+@media (min-width:768px){
+  .namaa-banks-team-list article{
+    align-items:center!important;
+    min-height:86px!important;
+  }
+
+  .namaa-banks-team-list article > .namaa-banks-persona{
+    position:relative!important;
+    width:64px!important;
+    height:64px!important;
+    flex:0 0 64px!important;
+    display:block!important;
+    overflow:hidden!important;
+    border-radius:50%!important;
+    background:#F3F4F2!important;
+    border:2px solid #D4AF6B!important;
+    box-shadow:0 4px 12px rgb(31 41 55 / 8%)!important;
+  }
+
+  .namaa-banks-team-list article > .namaa-banks-persona img{
+    object-fit:cover!important;
+    object-position:center top!important;
+  }
+
+  .namaa-banks-team-list article > div{
+    min-width:0!important;
+    display:grid!important;
+    gap:3px!important;
+  }
+
+  .namaa-banks-team-list article > div strong{
+    color:#1F2937!important;
+    line-height:1.45!important;
+  }
+
+  html[data-theme="dark"] .namaa-banks-team-list article > .namaa-banks-persona{
+    background:#31594C!important;
+    border-color:#D7BE84!important;
+  }
+
+  html[data-theme="dark"] .namaa-banks-team-list article > div strong{
+    color:#F5F1E8!important;
+  }
+}
