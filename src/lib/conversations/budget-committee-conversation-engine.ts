@@ -172,11 +172,11 @@ export async function createBudgetCommitteeConversationReply(args:{userId:string
   const threadId=threadRows[0]?.id?String(threadRows[0].id):null;
   if(!meeting||!threadId||!/ميزانية|إنفاق/.test(meeting.title))return null;
 
-  const [points,handled,lastTurn]=await Promise.all([
+  const [points,lastTurn]=await Promise.all([
     buildBudgetCommitteePoints(args.userId,args.meetingId),
-    handledPointKeys(args.userId,threadId,points),
     lastCommitteeTurn(args.userId,threadId,args.meetingId),
   ]);
+  const handled=await handledPointKeys(args.userId,threadId,points);
   const currentKey=typeof lastTurn?.data.active_committee_point_key==='string'
     ?lastTurn.data.active_committee_point_key
     :typeof lastTurn?.data.committee_point_key==='string'?lastTurn.data.committee_point_key:null;
