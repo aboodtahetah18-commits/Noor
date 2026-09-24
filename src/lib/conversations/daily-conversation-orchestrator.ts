@@ -12,6 +12,7 @@ import {
 import { shouldProactivelyOpenCase } from '@/algorithmic-systems/orchestration/proactive-bank-planning';
 import type { BankForwardNeed } from '@/algorithmic-systems/domain/interbank-planning';
 import { getGovernanceMeetingSchedule } from '@/lib/governance/governance-meeting-scheduler';
+import { buildBudgetCommitteePreMeetingBrief } from '@/lib/conversations/budget-committee-conversation-engine';
 
 export type ProactiveCandidate={
   key:string;
@@ -298,6 +299,9 @@ async function meetingCandidates(userId:string,now:Date):Promise<ProactiveCandid
             ?{key:'obligations-owner',name:'مسؤول الالتزامات'}
             :{key:'central-governor',name:'محافظ بنك نماء المركزي'};
     const urgent=days<=1;
+    const budgetBrief=/ميزانية|إنفاق/.test(meeting.title)
+      ?await buildBudgetCommitteePreMeetingBrief(userId,meeting.id).catch(()=>null)
+      :null;
     candidates.push({
       key:`meeting:${meeting.id}:${missing.length?'missing':'prep'}`,
       roomKey:'council',
@@ -308,10 +312,10 @@ async function meetingCandidates(userId:string,now:Date):Promise<ProactiveCandid
       cooldownDays:1,
       requestedFact:null,
       title:'تجهيز '+meeting.title,
-      body:missing.length
+      body:budgetBrief?.body??(missing.length
         ?`اقترب موعد ${meeting.title}. قبل أن نعتبر الملف جاهزًا، ما زالت هذه البيانات ناقصة: ${missing.join('، ')}. افتح دردشة الاجتماع وأكمل ما تعرفه الآن، وسأبقي بقية النقاط معلقة بدل أن أفترضها.`
-        :`اقترب موعد ${meeting.title}. البيانات الأساسية المتاحة لا تظهر نقصًا مانعًا حاليًا. افتح دردشة الاجتماع إذا أردت مراجعة المحاور أو إضافة نقطة قبل الموعد.`,
-      reason:missing.length?'اجتماع قريب وما زالت له بيانات ناقصة.':'اجتماع قريب ويستحق مراجعة المحاور قبل الموعد.',
+        :`اقترب موعد ${meeting.title}. البيانات الأساسية المتاحة لا تظهر نقصًا مانعًا حاليًا. افتح دردشة الاجتماع إذا أردت مراجعة المحاور أو إضافة نقطة قبل الموعد.`),
+      reason:budgetBrief?'ورقة تركيز خاصة بلجنة الميزانية والإنفاق قبل الموعد.':missing.length?'اجتماع قريب وما زالت له بيانات ناقصة.':'اجتماع قريب ويستحق مراجعة المحاور قبل الموعد.',
       scopeKind:'meeting',
       scopeKey:meeting.id,
     });
