@@ -1,3 +1,4 @@
+import type React from 'react';
 import Link from 'next/link';
 import { requireAuthenticatedUser } from '@/auth/require-authenticated-user';
 import { listGovernanceCaseContracts, type GovernanceCaseContract } from '@/repositories/governance-case-repository';
@@ -32,6 +33,10 @@ export default async function CasesPage(){
   const userActions=active.filter(item=>item.actionOwner==='USER');
   const warnings=active.filter(item=>item.highestSeverity==='WARNING'||item.highestSeverity==='CRITICAL'||item.currentStatus==='EARLY_WARNING');
   const executing=active.filter(item=>['EXECUTION_PENDING','PARTIAL_EXECUTION','MONITORING','OUTCOME_ASSESSMENT'].includes(item.currentStatus));
+  const totalCases=Math.max(1,cases.length);
+  const activeShare=Math.round((active.length/totalCases)*100);
+  const warningShare=Math.round((warnings.length/totalCases)*100);
+  const executionShare=Math.round((executing.length/totalCases)*100);
 
   return <main className="app-page p47-decision-page" dir="rtl">
     <section className="namaa-wide-only namaa-decisions-wide">
@@ -49,6 +54,21 @@ export default async function CasesPage(){
         <article><span>تحت تنبيه</span><strong>{warnings.length}</strong><small>مخاطر أو تعثر</small></article>
         <article><span>قيد التنفيذ والمتابعة</span><strong>{executing.length}</strong><small>حتى الإغلاق وقياس الأثر</small></article>
       </div>
+
+      <section className="namaa-decisions-visuals">
+        <article className="tone-gold">
+          <div><span>نسبة القضايا النشطة</span><strong>{cases.length?activeShare:0}٪</strong><small>{active.length} من {cases.length} قضية</small></div>
+          <div className="namaa-decisions-ring" style={{'--namaa-ring-share':`${cases.length?activeShare:0}%`} as React.CSSProperties}><b>{cases.length?activeShare:0}٪</b></div>
+        </article>
+        <article className="tone-rose">
+          <span>التنبيهات</span><strong>{warnings.length}</strong><small>{warningShare}٪ من إجمالي القضايا</small>
+          <div className="namaa-decisions-progress"><i style={{width:`${warningShare}%`}}/></div>
+        </article>
+        <article className="tone-green">
+          <span>التنفيذ والمتابعة</span><strong>{executing.length}</strong><small>{executionShare}٪ من إجمالي القضايا</small>
+          <div className="namaa-decisions-progress"><i style={{width:`${executionShare}%`}}/></div>
+        </article>
+      </section>
 
       <div className="namaa-decisions-layout">
         <section className="namaa-decisions-feed namaa-wide-panel">
