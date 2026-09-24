@@ -4360,3 +4360,357 @@
     border-color:#D7BE84!important;
   }
 }
+
+
+/* NAMA'A GLOBAL SURFACE HIERARCHY — all protected pages and dialogs */
+@media (min-width:768px){
+  /* الصفحات: سطح واحد أبيض، لا تلوين عشوائي للخلفيات */
+  html[data-theme="light"] .protected-app-shell :where(
+    .namaa-wide-card,
+    .namaa-wide-panel,
+    .card,
+    .panel,
+    .dashboard-card,
+    .form-card,
+    .summary-card,
+    .p47-panel,
+    .p47-resource-card,
+    .p47-command-panel,
+    .p47-analysis-card,
+    .namaa-collection-card,
+    .detail-list,
+    .empty-state,
+    .settings-card,
+    .report-card,
+    .account-card,
+    .obligation-card,
+    .budget-card,
+    .transaction-card,
+    .transfer-card,
+    .income-card,
+    .expense-card
+  ){
+    background:#FFFFFF!important;
+    border:1px solid #DCE6E0!important;
+    border-radius:18px!important;
+    color:#1F2937!important;
+    box-shadow:0 8px 24px rgb(31 41 55 / 5%)!important;
+  }
+
+  /* رؤوس البطاقات والأقسام: أغمق قليلًا من جسم البطاقة */
+  html[data-theme="light"] .protected-app-shell :where(
+    .p47-section-header,
+    .p47-section-heading,
+    .p47-resource-header,
+    .namaa-collection-head,
+    .card-header,
+    .panel-header,
+    .section-header,
+    .summary-header,
+    .form-header,
+    .dashboard-card-header,
+    .settings-card-header
+  ){
+    background:#F7F8F6!important;
+    border-bottom:1px solid #DCE6E0!important;
+    color:#1F2937!important;
+  }
+
+  html[data-theme="light"] .protected-app-shell :where(
+    .p47-section-header,
+    .p47-section-heading,
+    .p47-resource-header,
+    .namaa-collection-head,
+    .card-header,
+    .panel-header,
+    .section-header,
+    .summary-header,
+    .form-header,
+    .dashboard-card-header,
+    .settings-card-header
+  ) :where(h1,h2,h3,strong){
+    color:#0B6B4F!important;
+  }
+
+  /* المربعات الداخلية: درجة مستقلة وواضحة */
+  html[data-theme="light"] .protected-app-shell :where(
+    .p47-resource-card>article,
+    .p47-panel>article,
+    .p47-command-panel>article,
+    .p47-analysis-card>article,
+    .namaa-collection-card>article,
+    .detail-list>article,
+    .detail-list>li,
+    .settings-card>article,
+    .report-card>article,
+    .account-card>article,
+    .obligation-card>article,
+    .budget-card>article,
+    .transaction-card>article,
+    .transfer-card>article,
+    .income-card>article,
+    .expense-card>article,
+    .info-tile,
+    .data-tile,
+    .metric-tile,
+    .summary-tile,
+    .detail-tile,
+    .mini-card
+  ){
+    background:#F3F4F2!important;
+    border:1px solid #D6DED8!important;
+    color:#1F2937!important;
+    border-radius:14px!important;
+    box-shadow:none!important;
+  }
+
+  html[data-theme="light"] .protected-app-shell :where(
+    .p47-resource-card>article,
+    .p47-panel>article,
+    .p47-command-panel>article,
+    .p47-analysis-card>article,
+    .namaa-collection-card>article,
+    .detail-list>article,
+    .detail-list>li,
+    .settings-card>article,
+    .report-card>article,
+    .account-card>article,
+    .obligation-card>article,
+    .budget-card>article,
+    .transaction-card>article,
+    .transfer-card>article,
+    .income-card>article,
+    .expense-card>article,
+    .info-tile,
+    .data-tile,
+    .metric-tile,
+    .summary-tile,
+    .detail-tile,
+    .mini-card
+  ):hover{
+    background:#FFF7E6!important;
+    border-color:#D4AF6B!important;
+  }
+
+  /* النصوص داخل المربعات الداخلية */
+  html[data-theme="light"] .protected-app-shell :where(
+    .info-tile,
+    .data-tile,
+    .metric-tile,
+    .summary-tile,
+    .detail-tile,
+    .mini-card
+  ) :where(h2,h3,strong){
+    color:#0B6B4F!important;
+  }
+
+  html[data-theme="light"] .protected-app-shell :where(
+    .info-tile,
+    .data-tile,
+    .metric-tile,
+    .summary-tile,
+    .detail-tile,
+    .mini-card
+  ) :where(p,span,small){
+    color:#61758A!important;
+  }
+
+  /* النوافذ: نفس الهرمية البصرية للصفحات */
+  html[data-theme="light"] .p49-action-dialog .p49-dialog-shell{
+    background:#FFFFFF!important;
+    border:1px solid #DCE6E0!important;
+    color:#1F2937!important;
+  }
+
+  html[data-theme="light"] .p49-action-dialog .p49-dialog-header{
+    background:#F7F8F6!important;
+    border-bottom:1px solid #DCE6E0!important;
+  }
+
+  html[data-theme="light"] .p49-action-dialog .p49-dialog-body{
+    background:#FFFFFF!important;
+  }
+
+  html[data-theme="light"] .p49-action-dialog :where(
+    fieldset,
+    .form-section,
+    .dialog-section,
+    .dialog-card,
+    .form-card,
+    .summary-card,
+    .info-card,
+    .details-card
+  ){
+    background:#F3F4F2!important;
+    border:1px solid #D6DED8!important;
+    border-radius:14px!important;
+    padding:16px!important;
+  }
+
+  html[data-theme="light"] .p49-action-dialog :where(
+    fieldset,
+    .form-section,
+    .dialog-section,
+    .dialog-card,
+    .form-card,
+    .summary-card,
+    .info-card,
+    .details-card
+  ) :where(legend,h3,strong){
+    color:#0B6B4F!important;
+  }
+
+  /* صفوف البيانات والجداول: فرق واضح بين الرأس والجسم */
+  html[data-theme="light"] .protected-app-shell :where(
+    .namaa-table-wrap,
+    .transaction-table-wrap,
+    .report-table-wrap,
+    .ux-table-shell
+  ){
+    background:#FFFFFF!important;
+    border:1px solid #DCE6E0!important;
+    border-radius:14px!important;
+  }
+
+  html[data-theme="light"] .protected-app-shell :where(
+    .namaa-data-table,
+    .transaction-table,
+    .report-table,
+    .ux-table
+  ) thead th{
+    background:#F7F8F6!important;
+    color:#0B6B4F!important;
+    border-bottom:1px solid #DCE6E0!important;
+  }
+
+  html[data-theme="light"] .protected-app-shell :where(
+    .namaa-data-table,
+    .transaction-table,
+    .report-table,
+    .ux-table
+  ) tbody tr:nth-child(even) td{
+    background:#F8FAF8!important;
+  }
+
+  /* الوضع الداكن: نفس منطق الهرمية */
+  html[data-theme="dark"] .protected-app-shell :where(
+    .namaa-wide-card,
+    .namaa-wide-panel,
+    .card,
+    .panel,
+    .dashboard-card,
+    .form-card,
+    .summary-card,
+    .p47-panel,
+    .p47-resource-card,
+    .p47-command-panel,
+    .p47-analysis-card,
+    .namaa-collection-card,
+    .detail-list,
+    .empty-state,
+    .settings-card,
+    .report-card,
+    .account-card,
+    .obligation-card,
+    .budget-card,
+    .transaction-card,
+    .transfer-card,
+    .income-card,
+    .expense-card
+  ){
+    background:#23483D!important;
+    border-color:#5E776B!important;
+    color:#F5F1E8!important;
+  }
+
+  html[data-theme="dark"] .protected-app-shell :where(
+    .p47-section-header,
+    .p47-section-heading,
+    .p47-resource-header,
+    .namaa-collection-head,
+    .card-header,
+    .panel-header,
+    .section-header,
+    .summary-header,
+    .form-header,
+    .dashboard-card-header,
+    .settings-card-header
+  ){
+    background:#31594C!important;
+    border-bottom-color:#5E776B!important;
+    color:#F5F1E8!important;
+  }
+
+  html[data-theme="dark"] .protected-app-shell :where(
+    .p47-resource-card>article,
+    .p47-panel>article,
+    .p47-command-panel>article,
+    .p47-analysis-card>article,
+    .namaa-collection-card>article,
+    .detail-list>article,
+    .detail-list>li,
+    .settings-card>article,
+    .report-card>article,
+    .account-card>article,
+    .obligation-card>article,
+    .budget-card>article,
+    .transaction-card>article,
+    .transfer-card>article,
+    .income-card>article,
+    .expense-card>article,
+    .info-tile,
+    .data-tile,
+    .metric-tile,
+    .summary-tile,
+    .detail-tile,
+    .mini-card
+  ){
+    background:#31594C!important;
+    border-color:#6E8A7B!important;
+    color:#F5F1E8!important;
+  }
+
+  html[data-theme="dark"] .protected-app-shell :where(
+    .p47-resource-card>article,
+    .p47-panel>article,
+    .p47-command-panel>article,
+    .p47-analysis-card>article,
+    .namaa-collection-card>article,
+    .detail-list>article,
+    .detail-list>li,
+    .settings-card>article,
+    .report-card>article,
+    .account-card>article,
+    .obligation-card>article,
+    .budget-card>article,
+    .transaction-card>article,
+    .transfer-card>article,
+    .income-card>article,
+    .expense-card>article,
+    .info-tile,
+    .data-tile,
+    .metric-tile,
+    .summary-tile,
+    .detail-tile,
+    .mini-card
+  ):hover{
+    background:#3A6254!important;
+    border-color:#D7BE84!important;
+  }
+
+  html[data-theme="dark"] .p49-action-dialog :where(
+    fieldset,
+    .form-section,
+    .dialog-section,
+    .dialog-card,
+    .form-card,
+    .summary-card,
+    .info-card,
+    .details-card
+  ){
+    background:#31594C!important;
+    border:1px solid #6E8A7B!important;
+    border-radius:14px!important;
+    padding:16px!important;
+  }
+}
