@@ -44,20 +44,9 @@
     gap: 18px;
   }
 
-  .namaa-wide-sidebar-brand {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 88px;
-    padding: 14px 18px 8px;
-    border-bottom: 1px solid rgb(212 175 107 / 18%);
-  }
 
-  .namaa-wide-sidebar-brand img {
-    max-width: 132px;
-    max-height: 58px;
-    object-fit: contain;
-  }
+
+
 
   .namaa-wide-sidebar-nav {
     flex: 1;
@@ -161,9 +150,7 @@
 
 /* Desktop/laptop-specific refinements. */
 @media (min-width: 1024px) {
-  .namaa-wide-sidebar-brand {
-    min-height: 104px;
-  }
+
 
   .namaa-wide-sidebar-nav .mustaqbali-nav-section > a {
     min-height: 48px;
