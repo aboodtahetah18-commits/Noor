@@ -605,6 +605,12 @@ function OversightStructuredCards({
   return null;
 }
 
+function westernizeDigits(value:string){
+  return value
+    .replace(/[٠-٩]/g,digit=>String('٠١٢٣٤٥٦٧٨٩'.indexOf(digit)))
+    .replace(/[۰-۹]/g,digit=>String('۰۱۲۳۴۵۶۷۸۹'.indexOf(digit)));
+}
+
 function richMetric(label:string,value:unknown,format:'sar'|'percent'|'plain'='plain'){
   if(typeof value!=='number'&&typeof value!=='string')return null;
   let display=String(value);
@@ -656,10 +662,6 @@ function RichStructuredMessageHero({
   const metrics=buildRichMessageMetrics(data);
   const status=richMessageStatus(data);
   return <section className={styles.richMessageHero} aria-label="ملخص الرسالة المنظم">
-    <div className={styles.richMessageVisual} aria-hidden="true">
-      <Image src={room.bankLogo} alt="" fill sizes="92px"/>
-      <span className={styles.richMessageWatermark}><Image src="/brand/namaa-leaf.webp" alt="" fill sizes="72px"/></span>
-    </div>
     <div className={styles.richMessageHeroCopy}>
       <div className={styles.richMessageEyebrow}>
         <span><LucideIcon name={messageKindIcon(kind)} size={16}/></span>
@@ -806,20 +808,19 @@ function StructuredFacts({data}:{data?:Record<string,unknown>}){
   const recoveryHardStop=recoveryFollowup&&typeof recoveryFollowup.hard_stop==='boolean'?recoveryFollowup.hard_stop:null;
   const recoveryTrigger=recoveryFollowup&&typeof recoveryFollowup.trigger==='string'?recoveryFollowup.trigger:null;
   const decisionLifecycle=data.decision_lifecycle&&typeof data.decision_lifecycle==='object'?data.decision_lifecycle as Record<string,unknown>:null;
-  const decisionReference=decisionLifecycle&&typeof decisionLifecycle.decision_reference==='string'?decisionLifecycle.decision_reference:null;
   const decisionLifecycleState=decisionLifecycle&&typeof decisionLifecycle.state==='string'?decisionLifecycle.state:null;
   const governanceContext=data.governance_context&&typeof data.governance_context==='object'?data.governance_context as Record<string,unknown>:null;
   const governancePolicies=governanceContext&&Array.isArray(governanceContext.policy_refs)?governanceContext.policy_refs.filter((item):item is string=>typeof item==='string'):[];
-  const governanceAuthorities=governanceContext&&Array.isArray(governanceContext.authority_refs)?governanceContext.authority_refs.filter((item):item is string=>typeof item==='string'):[];
   const governanceOversight=governanceContext&&typeof governanceContext.oversight==='string'?governanceContext.oversight:null;
-  if(confidence===null&&!routed&&income===null&&!missing.length&&!goalName&&safeCapacity===null&&requested===null&&!financingPurpose&&!decisionState&&eligibilityScore===null&&!calibrationStatus&&!decisionReference&&!governanceOversight&&!governancePolicies.length)return null;
-  return <div className={styles.facts}>
+  if(confidence===null&&!routed&&income===null&&!missing.length&&!goalName&&safeCapacity===null&&requested===null&&!financingPurpose&&!decisionState&&eligibilityScore===null&&!calibrationStatus&&!governanceOversight&&!governancePolicies.length)return null;
+  const guided=Boolean(data.guided_intake||data.next_question);
+  return <div className={guided?`${styles.facts} ${styles.guidedFacts}`:styles.facts}>
+    {missing.length>0&&<span><small>البيانات الناقصة</small><strong>{missing.map(missingLabel).join('، ')}</strong></span>}
     {governanceOversight&&<span><small>الجهة الحاكمة</small><strong>{governanceOversight}</strong></span>}
-    {governancePolicies.length>0&&<span><small>السياسات المستخدمة</small><strong>{governancePolicies.join('، ')}</strong></span>}
-    {governanceAuthorities.length>0&&<span><small>مراجع الصلاحيات</small><strong>{governanceAuthorities.join('، ')}</strong></span>}
-    {decisionLifecycleState&&<span><small>حالة دورة القرار</small><strong>{decisionLifecycleState==='PROPOSED'?'مقترح':decisionLifecycleState==='REVIEWED'?'تحت المراجعة':decisionLifecycleState==='USER_CONFIRMED'?'أكد المستخدم':decisionLifecycleState==='EVIDENCE_REQUIRED'?'بانتظار الإثبات':decisionLifecycleState==='VERIFIED'?'تم التحقق':decisionLifecycleState==='APPLIED'?'تم التحقق من التطبيق':decisionLifecycleState==='FOLLOWUP'?'متابعة بعد القرار':decisionLifecycleState==='BLOCKED'?'متوقف بحاجز حاكم':decisionLifecycleState==='CANCELLED'?'ملغى':decisionLifecycleState}</strong></span>}
-    {confidence!==null&&<span><small>درجة الثقة</small><strong>{confidence}٪</strong></span>}
     {routed&&<span><small>الجهة المختصة</small><strong>{routed}</strong></span>}
+    {decisionLifecycleState&&<span><small>حالة دورة القرار</small><strong>{decisionLifecycleState==='PROPOSED'?'مقترح':decisionLifecycleState==='REVIEWED'?'تحت المراجعة':decisionLifecycleState==='USER_CONFIRMED'?'أكد المستخدم':decisionLifecycleState==='EVIDENCE_REQUIRED'?'بانتظار الإثبات':decisionLifecycleState==='VERIFIED'?'تم التحقق':decisionLifecycleState==='APPLIED'?'تم التحقق من التطبيق':decisionLifecycleState==='FOLLOWUP'?'متابعة بعد القرار':decisionLifecycleState==='BLOCKED'?'متوقف بحاجز حاكم':decisionLifecycleState==='CANCELLED'?'ملغى':decisionLifecycleState}</strong></span>}
+    {governancePolicies.length>0&&<span><small>السياسات المستخدمة</small><strong>{governancePolicies.map(westernizeDigits).join('، ')}</strong></span>}
+    {confidence!==null&&<span><small>درجة الثقة</small><strong>{westernizeDigits(String(confidence))}٪</strong></span>}
     {income!==null&&<span><small>الدخل المؤكد</small><strong>{formatSar(income)} ر.س</strong></span>}
     {obligations!==null&&<span><small>الالتزامات المؤكدة</small><strong>{formatSar(obligations)} ر.س</strong></span>}
     {margin!==null&&<span><small>الهامش الأولي</small><strong>{formatSar(margin)} ر.س</strong></span>}
@@ -894,7 +895,6 @@ function StructuredFacts({data}:{data?:Record<string,unknown>}){
     {eligibilityCalibrationId&&<span><small>إصدار معايرة الأهلية</small><strong>{eligibilityCalibrationId}</strong></span>}
     {eligibilityWeightVersion&&<span><small>مرجع أوزان الأهلية</small><strong>{eligibilityWeightVersion}</strong></span>}
     {eligibilityBlockers.length>0&&<span><small>متطلبات تفعيل الأهلية</small><strong>{eligibilityBlockers.map(item=>item==='HISTORICAL_VALIDATION_REQUIRED'?'التحقق التاريخي':item==='FINAL_GOVERNANCE_APPROVAL_REQUIRED'?'الاعتماد النهائي':item==='EFFECTIVE_DATE_REQUIRED'?'تاريخ النفاذ':item==='FACTOR_TO_SCORE_MAPPING_REQUIRED'?'خرائط تحويل العوامل إلى درجات':item).join('، ')}</strong></span>}
-    {missing.length>0&&<span><small>بيانات ناقصة</small><strong>{missing.map(missingLabel).join('، ')}</strong></span>}
   </div>;
 }
 
@@ -1327,7 +1327,6 @@ export function PersistentConversationWorkspace(){
         onCommand={requestOversightCommand}
         onTemplate={template=>{setPendingOversightConfirmation(null);setOversightActionFeedback({command:'',status:'idle',message:null});setDraft(template);requestAnimationFrame(()=>composerTextareaRef.current?.focus())}}
       />
-      <StructuredFacts data={message.structured_data}/>
       {message.structured_data?.handoff_target==='hilal'&&message.structured_data?.intake_owner==='budget-spending-owner'&&
         <button type="button" className={styles.inlineIntakeButton} onClick={()=>{
           setError('');
@@ -1340,8 +1339,9 @@ export function PersistentConversationWorkspace(){
         </button>}
       {message.message_kind==='request'&&typeof message.structured_data?.next_question==='string'&&message.structured_data.next_question&&message.structured_data?.handoff_target!=='hilal'&&
         <button type="button" className={styles.inlineIntakeButton} onClick={()=>{setDraft('');requestAnimationFrame(()=>composerTextareaRef.current?.focus())}}>
-          <LucideIcon name="pencil" size={16}/><span>أجب الآن</span>
+          <LucideIcon name="pencil" size={16}/><span>{Array.isArray(message.structured_data?.missing_fields)&&message.structured_data.missing_fields.length>0?'استكمال البيانات الناقصة':'استكمال الإجراءات'}</span>
         </button>}
+      <StructuredFacts data={message.structured_data}/>
       {(message.message_kind==='decision'||message.message_kind==='request')&&<small className={styles.executionBoundary}>أي تنفيذ مالي خارجي يظل بيد المستخدم، ويحتاج تأكيدًا وإثباتًا قبل الإغلاق.</small>}
     </section>}
     <footer className={styles.messageMeta}>
