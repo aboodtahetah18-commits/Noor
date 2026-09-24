@@ -11560,7 +11560,7 @@
   .extendedDataTable td{
     display:grid;
     gap:var(--ux-space-1);
-    padding:0;
+    padding:var(--ux-space-0);
     border:0
   }
   .extendedDataTable td::before{
