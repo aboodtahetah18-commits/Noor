@@ -60,7 +60,7 @@ export function GovernanceMobileSheet({
 
   return <div className={styles.mobileOverlay} role="dialog" aria-modal="true" aria-label={title}>
     <button type="button" className={styles.scrim} aria-label="إغلاق" onClick={onClose}/>
-    <aside className={styles.mobileSheet+' '+styles.governanceSheet+' ux-dialog-surface'}>
+    <aside className={styles.mobileSheet+' '+styles.governanceSheet+' ux-dialog-surface namaa-governance-dialog'}>
       <div className={styles.sheetHeader}>
         <strong>{title}</strong>
         <Button type="button" variant="ghost" size="sm" onClick={onClose} aria-label="إغلاق"><LucideIcon name="x" size={20}/></Button>
