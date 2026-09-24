@@ -33,11 +33,13 @@ function tableRowsFromFact(section:ExtendedProfileSection|null,fact?:FactEnvelop
           if(column.key==='monthly_total'&&!cell) cell=source.monthly_limit;
         }
         if(section.key==='vehicle_maintenance'){
+          if(column.key==='category'&&!cell) cell=source.name??'أخرى';
           if(column.key==='primary_amount'&&!cell) cell=source.amount;
           if(column.key==='schedule_pattern'&&!cell) cell='ثابت';
           if(column.key==='interval_unit'&&!cell&&typeof source.recurrence==='string') cell=/كيلو/.test(String(source.recurrence))?'ألف كم':'شهر';
           if(column.key==='interval_value'&&!cell&&typeof source.recurrence==='string') cell=String(source.recurrence).match(/\d+/)?.[0]??'';
         }
+        if(section.key==='vehicle_expenses'&&column.key==='category'&&!cell) cell=source.name??'أخرى';
         if(section.key==='vehicle_details'){
           if(column.key==='vehicle_name'&&!cell) cell=source.vehicle_model??source.model??source.name;
           if(column.key==='fuel_efficiency'&&!cell&&typeof source.efficiency_notes==='string'){
