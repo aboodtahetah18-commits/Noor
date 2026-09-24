@@ -10,12 +10,12 @@ import {
   approveProvisioningRequestAction,
   createBreakGlassRequestAction,
   createDelegationRequestAction,
-  createصلاحيةRequestAction,
+  createGrantRequestAction,
   createRoleAssignmentRequestAction,
   rejectProvisioningRequestAction,
   requestAssignmentStatusAction,
   requestDelegationStatusAction,
-  requestصلاحيةStatusAction,
+  requestGrantStatusAction,
   revokeBreakGlassAction,
 } from './actions';
 
@@ -136,7 +136,7 @@ export default async function AuthorizationAdminPage({searchParams}:{searchParam
         </details>
 
         <details className="decision-details namaa-authorization-details"><summary>طلب صلاحية</summary>
-          <form action={createصلاحيةRequestAction} className="ndos-form-grid namaa-authorization-form">
+          <form action={createGrantRequestAction} className="ndos-form-grid namaa-authorization-form">
             <label><span>الدور</span><select name="role" required>{ROLES.map((v)=><option key={v}>{v}</option>)}</select></label>
             <label><span>الإجراء</span><select name="action" required>{ACTIONS.map((v)=><option key={v} value={v}>{label(ACTION_LABELS,v)}</option>)}</select></label>
             <label><span>نوع الكائن</span><select name="objectType" required>{OBJECTS.map((v)=><option key={v} value={v}>{label(OBJECT_LABELS,v)}</option>)}</select></label>
@@ -195,7 +195,7 @@ export default async function AuthorizationAdminPage({searchParams}:{searchParam
       <section className="p47-analysis-card namaa-authorization-card">
         <div className="p47-section-heading"><div><span>الوصول الفعال</span><h2>الأدوار والصلاحيات والتفويضات</h2></div></div>
         <details className="decision-details namaa-authorization-details"><summary>إسنادات الأدوار ({snapshot.assignments.length})</summary>{snapshot.assignments.map((r)=><div key={text(r,'id')} className="p47-empty-state"><strong>{text(r,'display_name')} — {label(ROLE_LABELS,text(r,'role'))}</strong><span>{text(r,'status')} | البنك: {text(r,'bank_key')} | اللجنة: {text(r,'committee_id')}</span>{['ACTIVE','SUSPENDED'].includes(text(r,'status'))?<form action={requestAssignmentStatusAction} className="ndos-form-grid namaa-authorization-form"><input type="hidden" name="assignmentId" value={text(r,'id')}/><select name="status" defaultValue={text(r,'status')==='ACTIVE'?'SUSPENDED':'ACTIVE'}><option>ACTIVE</option><option>SUSPENDED</option><option>REVOKED</option><option>EXPIRED</option></select><input name="rationale" required minLength={20} placeholder="مسوغ تغيير الحالة"/><button className="secondary-button" type="submit">طلب تغيير الحالة</button></form>:null}</div>)}</details>
-        <details className="decision-details namaa-authorization-details"><summary>الصلاحيات ({snapshot.grants.length})</summary>{snapshot.grants.map((r)=><div key={text(r,'id')} className="p47-empty-state"><strong>{label(ROLE_LABELS,text(r,'role'))} — {label(ACTION_LABELS,text(r,'action'))} / {label(OBJECT_LABELS,text(r,'object_type'))}</strong><span>{r.is_active===true?'ACTIVE':'INACTIVE'} | البنك: {text(r,'bank_key')} | أقصى مخاطرة: {text(r,'max_risk')} | أقصى مبلغ: {text(r,'max_amount')}</span><form action={requestصلاحيةStatusAction} className="ndos-form-grid namaa-authorization-form"><input type="hidden" name="grantId" value={text(r,'id')}/><input type="hidden" name="isActive" value={r.is_active===true?'false':'true'}/><input name="rationale" required minLength={20} placeholder="مسوغ تغيير حالة صلاحية"/><button className="secondary-button" type="submit">طلب {r.is_active===true?'تعطيل':'تفعيل'}</button></form></div>)}</details>
+        <details className="decision-details namaa-authorization-details"><summary>الصلاحيات ({snapshot.grants.length})</summary>{snapshot.grants.map((r)=><div key={text(r,'id')} className="p47-empty-state"><strong>{label(ROLE_LABELS,text(r,'role'))} — {label(ACTION_LABELS,text(r,'action'))} / {label(OBJECT_LABELS,text(r,'object_type'))}</strong><span>{r.is_active===true?'ACTIVE':'INACTIVE'} | البنك: {text(r,'bank_key')} | أقصى مخاطرة: {text(r,'max_risk')} | أقصى مبلغ: {text(r,'max_amount')}</span><form action={requestGrantStatusAction} className="ndos-form-grid namaa-authorization-form"><input type="hidden" name="grantId" value={text(r,'id')}/><input type="hidden" name="isActive" value={r.is_active===true?'false':'true'}/><input name="rationale" required minLength={20} placeholder="مسوغ تغيير حالة صلاحية"/><button className="secondary-button" type="submit">طلب {r.is_active===true?'تعطيل':'تفعيل'}</button></form></div>)}</details>
         <details className="decision-details namaa-authorization-details"><summary>التفويضات ({snapshot.delegations.length})</summary>{snapshot.delegations.map((r)=><div key={text(r,'id')} className="p47-empty-state"><strong>{text(r,'from_name')} → {text(r,'to_name')} — {label(ROLE_LABELS,text(r,'to_role'))}</strong><span>{text(r,'status')} | {text(r,'starts_at')} → {text(r,'ends_at')}</span>{['ACTIVE','SUSPENDED'].includes(text(r,'status'))?<form action={requestDelegationStatusAction} className="ndos-form-grid namaa-authorization-form"><input type="hidden" name="delegationId" value={text(r,'id')}/><select name="status" defaultValue={text(r,'status')==='ACTIVE'?'SUSPENDED':'ACTIVE'}><option>ACTIVE</option><option>SUSPENDED</option><option>REVOKED</option><option>EXPIRED</option></select><input name="rationale" required minLength={20} placeholder="مسوغ تغيير حالة التفويض"/><button className="secondary-button" type="submit">طلب تغيير الحالة</button></form>:null}</div>)}</details>
       </section>
 
