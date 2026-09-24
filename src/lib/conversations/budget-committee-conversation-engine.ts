@@ -24,7 +24,7 @@ function pointFingerprint(point:BudgetCommitteePoint){
 function money(value:number){return new Intl.NumberFormat('ar-SA-u-nu-latn',{maximumFractionDigits:2}).format(value)+' ر.س'}
 function percent(value:number){return new Intl.NumberFormat('ar-SA-u-nu-latn',{maximumFractionDigits:1}).format(value)+'٪'}
 
-function classifyUserResponse(text:string){
+export function classifyBudgetCommitteeResponse(text:string){
   const value=text.trim();
   if(/(?:ليش|لماذا|وضح|اشرح|كيف حسبت|على أي أساس|على اي اساس)/i.test(value))return 'EXPLAIN' as const;
   if(/^(?:اعتمد|موافق|وافق|نعم|تمام|مناسب)[.!؟\s]*$/i.test(value))return 'APPROVE' as const;
@@ -181,7 +181,7 @@ export async function createBudgetCommitteeConversationReply(args:{userId:string
     ?lastTurn.data.active_committee_point_key
     :typeof lastTurn?.data.committee_point_key==='string'?lastTurn.data.committee_point_key:null;
   const currentPoint=points.find(point=>point.key===currentKey)??null;
-  const responseType=classifyUserResponse(args.userText);
+  const responseType=classifyBudgetCommitteeResponse(args.userText);
 
   let point=currentPoint;
   let resolutionStatus:string|null=null;
