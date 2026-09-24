@@ -7,6 +7,7 @@
 import Image from 'next/image';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { LucideIcon, type LucideIconName } from '@/components/ui/lucide-icon';
+import { Button } from '@/components/ui';
 import type { GovernedDocumentRef } from '@/lib/conversations/governed-room-details';
 import styles from './conversation-workspace.module.css';
 
@@ -527,7 +528,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
 
   return <div className={styles.mobileOverlay} role="dialog" aria-modal="true" aria-label={'تفاصيل '+document.title}>
     <aside className={styles.mobileSheet+' '+styles.governedDocumentSheet+' '+styles.mobileFullPageSheet+' ux-dialog-surface namaa-governed-document-dialog'}>
-      <div className={styles.sheetHeader}><strong>تفاصيل المرجع الحاكم</strong><button type="button" onClick={onClose} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button></div>
+      <div className={styles.sheetHeader}><strong>تفاصيل المرجع الحاكم</strong><Button type="button" variant="ghost" size="sm" onClick={onClose} aria-label="إغلاق"><LucideIcon name="x" size={20}/></Button></div>
       <div className={styles.governedDocumentContent}>
         <section className={styles.governedDocumentHero}>
           <span className={styles.governedLeafPattern} aria-hidden="true"><i/><i/><i/></span>
@@ -598,12 +599,12 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
         </details>
 
         <section className={styles.governedQuickActions+' namaa-governed-quick-actions'} aria-label="إجراءات المرجع">
-          <button type="button" className={styles.governedTypoButton+' ux-button ux-button--secondary'} onClick={()=>resetEditor('direct','EDIT')}>
+          <Button type="button" variant="secondary" onClick={()=>resetEditor('direct','EDIT')}>
             <LucideIcon name="pencil" size={24}/><span><strong>تحرير مباشر</strong></span>
-          </button>
-          <button type="button" className={styles.governedGovernanceButton+' ux-button ux-button--primary'} onClick={()=>resetEditor('governance','EDIT')}>
+          </Button>
+          <Button type="button" variant="primary" onClick={()=>resetEditor('governance','EDIT')}>
             <LucideIcon name="landmark" size={24}/><span><strong>تحرير حوكمي</strong></span>
-          </button>
+          </Button>
         </section>
 
         {formOpen&&<div className={styles.governedEditModal} role="dialog" aria-modal="true" aria-label={editMode==='direct'?'تحرير مباشر':'تحرير حوكمي'}>
@@ -612,7 +613,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
             <header className={styles.governedEditFormHeader+' namaa-governance-editor-header'}>
               <span className={styles.governedEditFormIcon}><LucideIcon name={editMode==='direct'?'pencil':'landmark'} size={20}/></span>
               <div><strong>{editMode==='direct'?'تحرير مباشر':'تحرير حوكمي'}</strong><small>{editMode==='direct'?'إضافة أو تعديل أو حذف مباشر خلال مرحلة ضبط المنصة.':'إضافة أو تعديل أو حذف يمر بالاجتماع والمراجعة والاعتماد قبل النفاذ.'}</small></div>
-              <button type="button" className={styles.governedEditClose+' ux-button ux-button--ghost'} onClick={()=>setFormOpen(false)} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button>
+              <Button type="button" variant="ghost" size="sm" onClick={()=>setFormOpen(false)} aria-label="إغلاق"><LucideIcon name="x" size={20}/></Button>
             </header>
 
             <label><span>نوع العملية</span><select className="ux-control" value={changeAction} onChange={e=>{
