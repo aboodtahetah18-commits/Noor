@@ -922,3 +922,49 @@
     gap:var(--ux-space-1);
   }
 }
+
+
+/* GOVERNANCE CONTRAST + BORDER CONTRACT */
+.namaa-governance-library-card,
+.namaa-policy-index,
+.namaa-policy-reader,
+.namaa-governance-portal-footer,
+.namaa-governance-portal-grid > *,
+.namaa-policy-index nav > a {
+  border-width:2px !important;
+  border-style:solid !important;
+  border-color:var(--ux-border-strong,var(--ux-border-default)) !important;
+  box-shadow:var(--ux-shadow-sm) !important;
+}
+
+.namaa-governance-library-card :where(article,li,button,a),
+.namaa-policy-reader :where(article,.ux-card),
+.namaa-policy-index :where(article,.ux-card) {
+  border-color:var(--ux-border-strong,var(--ux-border-default));
+}
+
+.namaa-governance-open-library,
+.namaa-governance-auth-actions > a {
+  min-block-size:40px;
+  border:2px solid var(--ux-brand-primary) !important;
+  background:var(--ux-brand-primary) !important;
+  color:var(--ux-action-contrast) !important;
+  border-radius:10px;
+}
+
+.namaa-governance-open-library *,
+.namaa-governance-auth-actions > a * {
+  color:var(--ux-action-contrast) !important;
+}
+
+.namaa-policy-index nav > a {
+  background:var(--ux-card-bg) !important;
+  color:var(--ux-text-primary) !important;
+}
+
+.namaa-policy-index nav > a:hover,
+.namaa-policy-index nav > a.is-active {
+  border-color:var(--ux-brand-primary) !important;
+  background:var(--ux-section-soft-teal) !important;
+  color:var(--ux-text-primary) !important;
+}
