@@ -4208,3 +4208,155 @@
     grid-column:1!important;
   }
 }
+
+
+/* NAMA'A SECTION SURFACE HIERARCHY — unified cards, darker heads, contrasted inner tiles */
+@media (min-width:768px){
+  /* البطاقة الرئيسية */
+  html[data-theme="light"] :where(
+    .namaa-governance-library-card,
+    .p47-goals-page .namaa-goals-focus,
+    .namaa-decisions-visuals>article,
+    .namaa-observatory-side>article,
+    .namaa-investments-dashboard,
+    .namaa-investments-followup,
+    .namaa-investments-chat
+  ){
+    background:#FFFFFF!important;
+    border:1px solid #DCE6E0!important;
+    border-radius:18px!important;
+    box-shadow:0 8px 24px rgb(31 41 55 / 5%)!important;
+  }
+
+  /* الجزء العلوي أغمق قليلًا من جسم البطاقة */
+  html[data-theme="light"] :where(
+    .namaa-governance-library-card>header,
+    .namaa-investments-section-title,
+    .p47-section-header,
+    .p47-section-heading,
+    .namaa-collection-head
+  ){
+    background:#F7F8F6!important;
+    border-bottom:1px solid #DCE6E0!important;
+  }
+
+  html[data-theme="light"] .namaa-governance-library-card>header{
+    margin:-18px -18px 2px!important;
+    padding:16px 18px!important;
+    border-radius:17px 17px 0 0!important;
+  }
+
+  /* المربعات الداخلية: لون مختلف وواضح عن البطاقة */
+  html[data-theme="light"] :where(
+    .namaa-governance-doc-preview>a,
+    .namaa-goals-overview>article,
+    .namaa-decisions-list>article,
+    .namaa-observatory-kpis>article,
+    .namaa-observatory-side>article>div,
+    .namaa-investments-dashboard-grid>article,
+    .namaa-investments-followup-list>article,
+    .namaa-investments-participants>span
+  ){
+    background:#F3F4F2!important;
+    border:1px solid #D6DED8!important;
+    color:#1F2937!important;
+    box-shadow:none!important;
+  }
+
+  html[data-theme="light"] :where(
+    .namaa-governance-doc-preview>a,
+    .namaa-goals-overview>article,
+    .namaa-decisions-list>article,
+    .namaa-observatory-kpis>article,
+    .namaa-investments-dashboard-grid>article,
+    .namaa-investments-followup-list>article
+  ):hover{
+    background:#FFF7E6!important;
+    border-color:#D4AF6B!important;
+  }
+
+  html[data-theme="light"] :where(
+    .namaa-governance-doc-preview>a,
+    .namaa-goals-overview>article,
+    .namaa-decisions-list>article,
+    .namaa-observatory-kpis>article,
+    .namaa-investments-dashboard-grid>article,
+    .namaa-investments-followup-list>article
+  ) strong{
+    color:#0B6B4F!important;
+  }
+
+  html[data-theme="light"] :where(
+    .namaa-governance-doc-preview>a,
+    .namaa-goals-overview>article,
+    .namaa-decisions-list>article,
+    .namaa-observatory-kpis>article,
+    .namaa-investments-dashboard-grid>article,
+    .namaa-investments-followup-list>article
+  ) :where(p,span,small){
+    color:#61758A!important;
+  }
+
+  /* الحالات تبقى دلالية ولا تُمحى بقواعد البطاقات */
+  html[data-theme="light"] .namaa-decisions-list>article.is-warning,
+  html[data-theme="light"] .namaa-observatory-side>article.is-warning{
+    background:#FFF7E6!important;
+    border-color:#F59E0B!important;
+  }
+
+  html[data-theme="light"] .namaa-decisions-list>article.is-critical{
+    background:#FFF1F2!important;
+    border-color:#EF4444!important;
+  }
+
+  /* الوضع الداكن: نفس الهرمية لكن بدرجات الداكن المعتمدة */
+  html[data-theme="dark"] :where(
+    .namaa-governance-library-card,
+    .p47-goals-page .namaa-goals-focus,
+    .namaa-decisions-visuals>article,
+    .namaa-observatory-side>article,
+    .namaa-investments-dashboard,
+    .namaa-investments-followup,
+    .namaa-investments-chat
+  ){
+    background:#23483D!important;
+    border-color:#5E776B!important;
+  }
+
+  html[data-theme="dark"] :where(
+    .namaa-governance-library-card>header,
+    .namaa-investments-section-title,
+    .p47-section-header,
+    .p47-section-heading,
+    .namaa-collection-head
+  ){
+    background:#31594C!important;
+    border-bottom-color:#5E776B!important;
+  }
+
+  html[data-theme="dark"] :where(
+    .namaa-governance-doc-preview>a,
+    .namaa-goals-overview>article,
+    .namaa-decisions-list>article,
+    .namaa-observatory-kpis>article,
+    .namaa-investments-dashboard-grid>article,
+    .namaa-investments-followup-list>article,
+    .namaa-investments-participants>span
+  ){
+    background:#31594C!important;
+    border-color:#6E8A7B!important;
+    color:#F5F1E8!important;
+  }
+
+  html[data-theme="dark"] :where(
+    .namaa-governance-doc-preview>a,
+    .namaa-goals-overview>article,
+    .namaa-decisions-list>article,
+    .namaa-observatory-kpis>article,
+    .namaa-investments-dashboard-grid>article,
+    .namaa-investments-followup-list>article
+  ):hover{
+    background:#3A6254!important;
+    border-color:#D7BE84!important;
+  }
+}
