@@ -125,18 +125,6 @@ export function GovernorOnboardingIntake({
 
   if(!intakeStep) return null;
 
-  function updateDependent(index:number,patch:Partial<Dependent>){
-    setDependents(current=>current.map((item,i)=>i===index?{...item,...patch}:item));
-  }
-  function updateAccount(index:number,patch:Partial<Account>){
-    setAccounts(current=>current.map((item,i)=>i===index?{...item,...patch}:item));
-  }
-  function updateObligation(index:number,patch:Partial<Obligation>){
-    setObligations(current=>current.map((item,i)=>i===index?{...item,...patch}:item));
-  }
-  function updateGoal(index:number,patch:Partial<Goal>){
-    setGoals(current=>current.map((item,i)=>i===index?{...item,...patch}:item));
-  }
 
   function saveMobileEditor(){
     if(!mobileEditor) return;

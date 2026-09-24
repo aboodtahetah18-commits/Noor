@@ -17,7 +17,7 @@ type Props = {
   printable?: boolean;
 };
 
-export function ActionDialog({ trigger, title, description: _description, children, size = 'md', triggerClassName, triggerAriaLabel, triggerTitle, defaultOpen = false, printable }: Props) {
+export function ActionDialog({ trigger, title, children, size = 'md', triggerClassName, triggerAriaLabel, triggerTitle, defaultOpen = false, printable }: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const titleId = useId();

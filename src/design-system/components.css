@@ -276,3 +276,43 @@ html[data-theme="dark"] .ux-dialog-actions { border-color:var(--ux-border-defaul
 @media (prefers-reduced-motion:reduce) {
   .ux-card,.ux-button,.ux-control { transition:none; }
 }
+
+
+/* NAMA'A governed no-explanation contract */
+:where(
+  .page-footnote,
+  .account-privacy-note,
+  .advisor-safety-note,
+  .auth-password-hint,
+  .auth-recovery-note,
+  .onboarding-note,
+  .onboarding-required-note,
+  .p47-analysis-note,
+  .p47-field-help,
+  .p47-funding-policy-note,
+  .p47-goal-note,
+  .report-note,
+  .workspace-intro,
+  .p4913-filter-hint,
+  .namaa-governance-auth-note,
+  .namaa-investment-dialog-intro,
+  .namaa-investments-chat-note,
+  .namaa-settings-impact-note,
+  .namaa-settings-intro,
+  .namaa-table-note
+){
+  display:none!important;
+}
+
+:where(
+  button[aria-label*="شرح"],
+  button[title*="شرح"],
+  button[aria-label*="مساعدة"],
+  button[title*="مساعدة"],
+  a[aria-label*="شرح"],
+  a[title*="شرح"],
+  a[aria-label*="مساعدة"],
+  a[title*="مساعدة"]
+){
+  display:none!important;
+}
