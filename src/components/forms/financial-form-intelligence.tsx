@@ -53,8 +53,13 @@ function recalcForm(form:HTMLFormElement){
   if(mode==='expected-difference'){
     const select=form.elements.namedItem('expectedIncomeId');
     if(!(select instanceof HTMLSelectElement)) return;
-    const expected=Number(select.selectedOptions[0]?.dataset.amount||0);
+    const option=select.selectedOptions[0];
+    const expected=Number(option?.dataset.amount||0);
     const actual=numericInput(form,'amount');
+    const source=form.elements.namedItem('sourceName');
+    if(select.value&&source instanceof HTMLInputElement&&!source.value.trim()&&option?.dataset.source){
+      source.value=option.dataset.source;
+    }
     const difference=Math.abs(expected-actual);
     const label=!select.value?'الفرق عن المتوقع':actual===expected?'مطابق للمتوقع':actual>expected?'أعلى من المتوقع':'أقل من المتوقع';
     setOutput(form,difference,label);
