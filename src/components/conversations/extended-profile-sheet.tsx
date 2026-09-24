@@ -139,8 +139,7 @@ export function ExtendedProfileSheet({
 
   return <div className={styles.mobileOverlay} role="dialog" aria-modal="true" aria-label="الملف المالي التفصيلي">
     <button type="button" className={styles.scrim} aria-label="إغلاق" onClick={onClose}/>
-    <aside className={styles.mobileSheet+' '+styles.extendedProfileSheet}>
-      <div className={styles.extendedProfileTopFrame} aria-hidden="true"/>
+    <aside className={styles.mobileSheet+' '+styles.mobileFullPageSheet+' '+styles.extendedProfileSheet}>
       <div className={styles.sheetHeader+' '+styles.extendedProfileHeader}>
         <div className={styles.extendedProfileHeaderTitle}>
           <Image className={styles.extendedProfileLogo} src="/brand/ndos/namaa-logo-color-hq.png" alt="نماء" width={96} height={38} priority/>
