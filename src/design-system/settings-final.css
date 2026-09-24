@@ -1,0 +1,287 @@
+/* NAMAA settings + more + profile completion — desktop/laptop/tablet authority. */
+
+@media (min-width:768px){
+  .namaa-settings-legacy{
+    display:none !important;
+  }
+
+  .namaa-settings-wide{
+    display:grid !important;
+    inline-size:100%;
+    max-inline-size:var(--ux-container-content);
+    margin-inline:auto;
+    gap:var(--ux-space-4);
+  }
+
+  .namaa-settings-hero,
+  .namaa-settings-nav,
+  .namaa-settings-section,
+  .namaa-more-page .more-hub-section,
+  .namaa-more-page .more-hub-card,
+  .namaa-financial-buffer-page :where(.card,.p47-flow-card){
+    border:2px solid var(--ux-border-strong,var(--ux-border-default)) !important;
+    background:var(--ux-card-bg) !important;
+    color:var(--ux-text-primary) !important;
+    box-shadow:var(--ux-shadow-sm) !important;
+  }
+
+  .namaa-settings-hero{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:var(--ux-space-4);
+    padding:var(--ux-space-5);
+    border-radius:var(--ux-radius-lg);
+  }
+
+  .namaa-settings-hero > div:first-child{
+    display:grid;
+    gap:var(--ux-space-2);
+  }
+
+  .namaa-settings-hero :where(p,h1,span){
+    margin:0;
+  }
+
+  .namaa-settings-hero p{
+    color:var(--namaa-gold-500);
+    font-weight:800;
+  }
+
+  .namaa-settings-hero h1{
+    color:var(--ux-text-primary);
+    font-size:var(--ux-type-page-title-size);
+    line-height:var(--ux-type-page-title-line);
+  }
+
+  .namaa-settings-hero > div:first-child > span{
+    color:var(--ux-text-secondary);
+  }
+
+  .namaa-settings-hero-status{
+    min-block-size:72px;
+    display:grid;
+    place-items:center;
+    gap:var(--ux-space-1);
+    padding:var(--ux-space-3);
+    border:2px solid var(--ux-border-strong,var(--ux-border-default));
+    border-radius:var(--ux-radius-md);
+    background:var(--ux-section-soft-teal);
+    color:var(--ux-brand-primary);
+    text-align:center;
+  }
+
+  .namaa-settings-layout{
+    display:grid;
+    grid-template-columns:minmax(220px,260px) minmax(0,1fr);
+    gap:var(--ux-space-4);
+    align-items:start;
+  }
+
+  .namaa-settings-nav{
+    position:sticky;
+    inset-block-start:calc(var(--ux-shell-topbar-height) + var(--ux-space-4));
+    padding:var(--ux-space-4);
+    border-radius:var(--ux-radius-lg);
+  }
+
+  .namaa-settings-nav nav{
+    display:grid;
+    gap:var(--ux-space-2);
+    margin-block-start:var(--ux-space-3);
+  }
+
+  .namaa-settings-nav nav a{
+    min-block-size:40px;
+    display:flex;
+    align-items:center;
+    padding-inline:var(--ux-space-3);
+    border:1px solid var(--ux-border-default);
+    border-radius:10px;
+    background:var(--ux-surface-default);
+    color:var(--ux-text-primary);
+    text-decoration:none;
+    font-weight:800;
+  }
+
+  .namaa-settings-nav nav a:hover{
+    border-color:var(--ux-brand-primary);
+    background:var(--ux-section-soft-teal);
+  }
+
+  .namaa-settings-main{
+    min-inline-size:0;
+    display:grid;
+    gap:var(--ux-space-4);
+  }
+
+  .namaa-settings-section{
+    display:grid;
+    gap:var(--ux-space-4);
+    padding:var(--ux-space-4);
+    border-radius:var(--ux-radius-lg);
+  }
+
+  .namaa-settings-summary-grid,
+  .namaa-settings-control-grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:var(--ux-space-3);
+  }
+
+  .namaa-settings-summary-grid > article,
+  .namaa-settings-control-grid > a{
+    min-inline-size:0;
+    display:grid;
+    gap:var(--ux-space-1);
+    padding:var(--ux-space-3);
+    border:2px solid var(--ux-border-strong,var(--ux-border-default));
+    border-radius:var(--ux-radius-md);
+    background:var(--ux-surface-default);
+    color:var(--ux-text-primary);
+    text-decoration:none;
+  }
+
+  .namaa-settings-summary-grid span,
+  .namaa-settings-control-grid span{
+    color:var(--ux-text-secondary);
+  }
+
+  .namaa-settings-control-grid > a:hover{
+    border-color:var(--ux-brand-primary);
+    background:var(--ux-section-soft-teal);
+  }
+
+  .namaa-settings-impact-note,
+  .namaa-settings-intro{
+    margin:0;
+    padding:var(--ux-space-3);
+    border-inline-start:3px solid var(--namaa-gold-500);
+    border-radius:var(--ux-radius-md);
+    background:var(--ux-section-soft-teal);
+    color:var(--ux-text-primary);
+  }
+
+  .namaa-more-page .more-hub-shell{
+    display:grid;
+    gap:var(--ux-space-4);
+  }
+
+  .namaa-more-page .more-hub-sections{
+    display:grid;
+    gap:var(--ux-space-4);
+  }
+
+  .namaa-more-page .more-hub-section{
+    padding:var(--ux-space-4) !important;
+    border-radius:var(--ux-radius-lg) !important;
+  }
+
+  .namaa-more-page .more-hub-section-head{
+    display:flex;
+    align-items:center;
+    gap:var(--ux-space-3);
+    margin-block-end:var(--ux-space-3);
+  }
+
+  .namaa-more-page .more-hub-section-head :where(h2,p){
+    margin:0;
+  }
+
+  .namaa-more-page .more-hub-section-head h2{
+    color:var(--ux-text-primary) !important;
+  }
+
+  .namaa-more-page .more-hub-section-head p{
+    color:var(--ux-text-secondary);
+    margin-block-start:var(--ux-space-1);
+  }
+
+  .namaa-more-page .more-hub-grid{
+    display:grid !important;
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:var(--ux-space-3) !important;
+  }
+
+  .namaa-more-page .more-hub-card{
+    min-block-size:88px !important;
+    display:grid !important;
+    grid-template-columns:auto minmax(0,1fr) auto !important;
+    align-items:center !important;
+    gap:var(--ux-space-3) !important;
+    padding:var(--ux-space-3) !important;
+    border-radius:var(--ux-radius-md) !important;
+    text-decoration:none !important;
+  }
+
+  .namaa-more-page .more-hub-card:hover{
+    border-color:var(--ux-brand-primary) !important;
+    background:var(--ux-section-soft-teal) !important;
+  }
+
+  .namaa-more-page .more-hub-card-icon{
+    inline-size:44px;
+    block-size:44px;
+    display:grid;
+    place-items:center;
+    border:1px solid var(--ux-border-default);
+    border-radius:10px;
+    background:var(--ux-card-bg) !important;
+    color:var(--ux-brand-primary) !important;
+  }
+
+  .namaa-more-page .more-hub-card strong{
+    color:var(--ux-text-primary) !important;
+  }
+
+  .namaa-more-page .more-hub-card span:not(.more-hub-card-icon){
+    color:var(--ux-text-secondary) !important;
+  }
+
+  .namaa-financial-buffer-page .p47-flow-page{
+    display:grid;
+    gap:var(--ux-space-4);
+  }
+
+  .namaa-financial-buffer-page .p47-flow-card{
+    padding:var(--ux-space-4);
+    border-radius:var(--ux-radius-lg);
+  }
+
+  .namaa-financial-buffer-page .form-grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:var(--ux-space-3);
+  }
+
+  .namaa-financial-buffer-page .form-grid > .full,
+  .namaa-financial-buffer-page .form-grid > button{
+    grid-column:1/-1;
+  }
+
+  .namaa-financial-buffer-page :where(input,select){
+    min-block-size:40px;
+    border:2px solid var(--ux-border-strong,var(--ux-border-default));
+    border-radius:10px;
+    background:var(--ux-control-bg);
+    color:var(--ux-control-text);
+  }
+}
+
+@media (min-width:768px) and (max-width:1023px){
+  .namaa-settings-layout{
+    grid-template-columns:minmax(190px,220px) minmax(0,1fr);
+  }
+
+  .namaa-settings-summary-grid,
+  .namaa-settings-control-grid,
+  .namaa-more-page .more-hub-grid{
+    grid-template-columns:minmax(0,1fr) !important;
+  }
+}
+
+@media (max-width:767px){
+  .namaa-settings-wide{
+    display:none !important;
+  }
+}
