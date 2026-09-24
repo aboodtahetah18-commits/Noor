@@ -12,6 +12,10 @@ export type GovernanceMeetingScheduleItem={
   minimum_annual_meetings?:number;
   periodic?:boolean;
   sensitivity?:'عادية'|'رقابية حساسة';
+  ready?:boolean;
+  missing_data?:string[];
+  editable?:boolean;
+  custom?:boolean;
 };
 
 export const governanceCommitteeCadencePolicy={
@@ -57,7 +61,32 @@ export async function getGovernanceMeetingSchedule(userId:string){
   const thirdCycle=(Math.max(1,cycleCount)%3)===0;
   const now=new Date();
 
-  const meetings:GovernanceMeetingScheduleItem[]=[
+  const readinessRows=await sql`
+    select fact_key,value_json
+    from public.user_foundation_facts
+    where user_id=${userId}::uuid
+      and status='ACTIVE'
+      and fact_key in ('accounts','extended:bills','extended:subscriptions','extended:budget_behavior','extended:vehicle_details','meeting_overrides')
+  `;
+  const readiness=new Map(readinessRows.map(row=>[String(row.fact_key),row.value_json]));
+  const hasAccounts=(()=>{
+    const value=readiness.get('accounts');
+    return Boolean(value&&typeof value==='object'&&!Array.isArray(value)&&Array.isArray((value as Record<string,unknown>).items)&&((value as Record<string,unknown>).items as unknown[]).length);
+  })();
+  const hasTable=(key:string)=>{
+    const value=readiness.get(key);
+    return Boolean(value&&typeof value==='object'&&!Array.isArray(value)&&Array.isArray((value as Record<string,unknown>).items));
+  };
+  const budgetMissing=[
+    !hasAccounts?'الحسابات':null,
+    !hasTable('extended:bills')?'الفواتير':null,
+    !hasTable('extended:subscriptions')?'الاشتراكات':null,
+    !readiness.has('extended:budget_behavior')?'سلوك المصروفات':null,
+    !readiness.has('extended:vehicle_details')?'بيانات المركبة والتنقل':null,
+  ].filter((item):item is string=>Boolean(item));
+  const budgetReady=budgetMissing.length===0;
+
+  let meetings:GovernanceMeetingScheduleItem[]=[
     {
       id:'council-foundation',
       title:'الاجتماع التأسيسي لمجلس نماء الأعلى',
@@ -66,6 +95,7 @@ export async function getGovernanceMeetingSchedule(userId:string){
       cadence:'مرة واحدة بعد 24 ساعة من اعتماد التأسيس',
       status:councilAt>now?'مجدول':'مستحق للمراجعة',
       agenda:['مراجعة فهم المجلس للمستخدم','مناقشة الأهداف والالتزامات والسيولة والأصول','معايرة أسلوب الخوارزميات وأسئلتها ومستوى الشرح','تثبيت تفضيلات الحوكمة والاجتماعات'],
+      ready:true,editable:true,
     },
     {
       id:`budget-${cycleId}`,
@@ -73,9 +103,9 @@ export async function getGovernanceMeetingSchedule(userId:string){
       kind:'لجنة دائمة',
       scheduled_at:addDays(anchor,0).toISOString(),
       cadence:'اليوم الأول من كل دورة مالية',
-      status:'دوري',
+      status:budgetReady?'دوري':'بانتظار اكتمال البيانات',
       agenda:['إغلاق الدورة السابقة','مراجعة الانحرافات','اعتماد خطة الدورة الجديدة ضمن التفويض'],
-      minimum_annual_meetings:4,periodic:true,sensitivity:'عادية',
+      minimum_annual_meetings:4,periodic:true,sensitivity:'عادية',ready:budgetReady,missing_data:budgetMissing,editable:true,
     },
     {
       id:`liquidity-${cycleId}`,
@@ -85,7 +115,7 @@ export async function getGovernanceMeetingSchedule(userId:string){
       cadence:'اليوم الثاني من كل دورة مالية',
       status:'دوري',
       agenda:['السيولة والاستقرار','مخاطر التمويل','التصعيدات المؤسسية'],
-      minimum_annual_meetings:4,periodic:true,sensitivity:'رقابية حساسة',
+      minimum_annual_meetings:4,periodic:true,sensitivity:'رقابية حساسة',ready:true,editable:true,
     },
     {
       id:`goals-${cycleId}`,
@@ -95,7 +125,7 @@ export async function getGovernanceMeetingSchedule(userId:string){
       cadence:'اليوم الرابع من كل دورة مالية',
       status:'دوري',
       agenda:['تقدم الأهداف','الالتزامات القادمة','تعارضات الأولويات'],
-      minimum_annual_meetings:4,periodic:true,sensitivity:'عادية',
+      minimum_annual_meetings:4,periodic:true,sensitivity:'عادية',ready:true,editable:true,
     },
     ...(thirdCycle?[{
       id:`assets-${cycleId}`,
@@ -105,7 +135,7 @@ export async function getGovernanceMeetingSchedule(userId:string){
       cadence:'اليوم السابع من كل ثالث دورة مالية',
       status:'دوري',
       agenda:['الأصول والسيولة المؤهلة','المخاطر والتركيز','الفرص والتسييل المرتبط بالأهداف'],
-      minimum_annual_meetings:4,periodic:true,sensitivity:'عادية' as const,
+      minimum_annual_meetings:4,periodic:true,sensitivity:'عادية' as const,ready:true,editable:true,
     }]:[]),
     ...(thirdCycle?[{
       id:`governance-${cycleId}`,
@@ -115,9 +145,42 @@ export async function getGovernanceMeetingSchedule(userId:string){
       cadence:'اليوم العاشر من كل ثالث دورة مالية',
       status:'دوري',
       agenda:['مراجعة السياسات','التدقيق وجودة القرارات','مقترحات التحسين والتصعيد'],
-      minimum_annual_meetings:4,periodic:true,sensitivity:'رقابية حساسة' as const,
+      minimum_annual_meetings:4,periodic:true,sensitivity:'رقابية حساسة' as const,ready:true,editable:true,
     }]:[]),
   ];
+
+  const overrideValue=readiness.get('meeting_overrides');
+  const overrides=overrideValue&&typeof overrideValue==='object'&&!Array.isArray(overrideValue)
+    ? overrideValue as Record<string,Record<string,unknown>>
+    : {};
+  meetings=meetings.flatMap(meeting=>{
+    const override=overrides[meeting.id];
+    if(override?.deleted===true)return [];
+    if(!override)return [meeting];
+    return [{
+      ...meeting,
+      title:typeof override.title==='string'?override.title:meeting.title,
+      scheduled_at:typeof override.scheduled_at==='string'?override.scheduled_at:meeting.scheduled_at,
+      cadence:typeof override.cadence==='string'?override.cadence:meeting.cadence,
+      status:typeof override.status==='string'?override.status:meeting.status,
+      agenda:Array.isArray(override.agenda)?override.agenda.filter((item):item is string=>typeof item==='string'):meeting.agenda,
+      editable:true,
+    }];
+  });
+  for(const [id,override] of Object.entries(overrides)){
+    if(override.deleted===true||meetings.some(meeting=>meeting.id===id)||override.custom!==true)continue;
+    const scheduled=typeof override.scheduled_at==='string'?override.scheduled_at:new Date().toISOString();
+    meetings.push({
+      id,
+      title:typeof override.title==='string'&&override.title.trim()?override.title:'اجتماع مخصص',
+      kind:override.kind==='مجلس'||override.kind==='لجنة مؤقتة'?'لجنة مؤقتة':'لجنة دائمة',
+      scheduled_at:scheduled,
+      cadence:typeof override.cadence==='string'?override.cadence:'حسب الحاجة',
+      status:typeof override.status==='string'?override.status:'مجدول',
+      agenda:Array.isArray(override.agenda)?override.agenda.filter((item):item is string=>typeof item==='string'):[],
+      ready:true,editable:true,custom:true,
+    });
+  }
 
   return {onboarding_complete:true,cycle_anchor:anchor.toISOString(),cycle_count:cycleCount,meetings};
 }

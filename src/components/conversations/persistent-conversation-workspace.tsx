@@ -25,6 +25,7 @@ type Message = { id:string; sender_type:'user'|'agent'|'system'; sender_key?:str
 type Participant = { participant_key:string; display_name:string; participant_type:string; role_label?:string };
 type OnboardingStatus = { status:string; current_step:string; complete:boolean; question?:string|null };
 type StatementAccount = { id:string; name:string; account_type:string; bank_name?:string|null };
+type ManagedAccount={id:string;name:string;account_type:string;bank_name?:string|null;opening_balance:string;balance:string;effective_date:string};
 type UserProfile = { id:string; name:string; email:string|null; image:string|null; emailVerified:boolean };
 type OnboardingReviewFact = { key:string; label:string; raw:string; verified_at?:string; confidence:number };
 type ConversationAttachment = { id:string; message_id?:string|null; file_name:string; content_type?:string|null; verification_status?:string|null; created_at?:string };
@@ -914,6 +915,9 @@ export function PersistentConversationWorkspace(){
   const [onboardingComplete,setOnboardingComplete]=useState<boolean|null>(null);
   const [onboardingStep,setOnboardingStep]=useState<string|null>(null);
   const [statementAccounts,setStatementAccounts]=useState<StatementAccount[]>([]);
+  const [managedAccounts,setManagedAccounts]=useState<ManagedAccount[]>([]);
+  const [accountEditor,setAccountEditor]=useState<{mode:'add'|'edit';id?:string;name:string;bank_name:string;opening_balance:string;effective_date:string}|null>(null);
+  const [accountSaving,setAccountSaving]=useState(false);
   const [statementAccountId,setStatementAccountId]=useState('');
   const [statementPickerOpen,setStatementPickerOpen]=useState(false);
   const [statementUploading,setStatementUploading]=useState(false);
@@ -1109,16 +1113,56 @@ export function PersistentConversationWorkspace(){
     }
   }
 
+  async function loadManagedAccounts(){
+    const response=await fetch('/api/accounts/manage',{cache:'no-store'});
+    const data=await response.json() as {accounts?:ManagedAccount[]};
+    if(!response.ok)throw new Error('accounts');
+    setManagedAccounts(Array.isArray(data.accounts)?data.accounts:[]);
+  }
+
   async function openAccountsSettings(){
     setRoomsOpen(false);
     setSettingsSection('accounts');
     setSettingsOpen(true);
+    setAccountEditor(null);
     try{
-      const response=await fetch('/api/conversations/central/statement',{cache:'no-store'});
-      const data=await response.json() as {accounts?:StatementAccount[]};
-      if(response.ok) setStatementAccounts(Array.isArray(data.accounts)?data.accounts:[]);
+      await loadManagedAccounts();
     }catch{
       setError('تعذر تحميل الحسابات الآن.');
+    }
+  }
+
+  async function saveManagedAccount(){
+    if(!accountEditor||accountSaving)return;
+    setAccountSaving(true);setError('');
+    try{
+      const response=await fetch('/api/accounts/manage',{
+        method:accountEditor.mode==='add'?'POST':'PATCH',
+        headers:{'content-type':'application/json'},
+        body:JSON.stringify(accountEditor),
+      });
+      const data=await response.json() as {ok?:boolean;message?:string};
+      if(!response.ok||!data.ok)throw new Error(data.message||'save');
+      setAccountEditor(null);
+      await loadManagedAccounts();
+    }catch{
+      setError('تعذر حفظ الحساب. تحقق من الاسم والرصيد الافتتاحي والتاريخ.');
+    }finally{
+      setAccountSaving(false);
+    }
+  }
+
+  async function deleteManagedAccount(id:string){
+    if(accountSaving)return;
+    setAccountSaving(true);setError('');
+    try{
+      const response=await fetch('/api/accounts/manage',{method:'DELETE',headers:{'content-type':'application/json'},body:JSON.stringify({id})});
+      if(!response.ok)throw new Error('delete');
+      setManagedAccounts(current=>current.filter(account=>account.id!==id));
+    }catch{
+      setError('تعذر حذف الحساب الآن.');
+    }finally{
+      setAccountSaving(false);
     }
   }
 
@@ -1447,7 +1491,11 @@ return <div className={styles.roomDetailContent}>
     {contextOpen&&<div className={styles.mobileOverlay} role="dialog" aria-modal="true" aria-label="سياق المحادثة"><button type="button" className={styles.scrim} aria-label="إغلاق" onClick={()=>setContextOpen(false)}/><aside className={`${styles.mobileSheet} ${styles.mobileFullPageSheet}`}><div className={styles.sheetHeader}><strong>سياق المحادثة</strong><button type="button" onClick={()=>setContextOpen(false)} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button></div>{contextCards}</aside></div>}
     {userMenuOpen&&!roomsOpen&&<div className={styles.mobileOverlay} role="dialog" aria-modal="true" aria-label="قائمة المستخدم"><button type="button" className={styles.scrim} aria-label="إغلاق" onClick={()=>setUserMenuOpen(false)}/><aside className={styles.userMenuCard}><div className={styles.userMenuIdentity}><button type="button" className={styles.userMenuAvatar} aria-label="صورة المستخدم">{profile?.image?<span className={styles.userImage} style={{backgroundImage:`url("${profile.image.replace(/"/g,'')}")`}}/>:<LucideIcon name="circleUserRound" size={32}/>}</button><div><strong>{profile?.name||'المستخدم'}</strong><small>{profile?.email||''}</small></div></div><button type="button" onClick={()=>{setUserMenuOpen(false);setProfileOpen(true)}}><LucideIcon name="pencil" size={20}/><span>الملف الشخصي وتعديل البيانات</span></button><button type="button" onClick={()=>{setUserMenuOpen(false);setSettingsSection('general');setSettingsOpen(true)}}><LucideIcon name="settings" size={20}/><span>الإعدادات</span></button>{onboardingComplete!==false&&<button type="button" onClick={()=>{setUserMenuOpen(false);setGovernanceMode('governance')}}><LucideIcon name="landmark" size={20}/><span>السياسات والصلاحيات والقرارات</span></button>}{onboardingComplete!==false&&<button type="button" onClick={()=>{setUserMenuOpen(false);setGovernanceMode('meetings')}}><LucideIcon name="calendarDays" size={20}/><span>الاجتماعات والمحاضر</span></button>}<button type="button" className={styles.logoutButton} onClick={()=>void logout()}><LucideIcon name="logOut" size={20}/><span>تسجيل الخروج</span></button></aside></div>}
     {profileOpen&&<div className={`${styles.mobileOverlay} ${styles.accountSurfaceOverlay}`} role="dialog" aria-modal="true" aria-label="الملف الشخصي"><button type="button" className={`${styles.scrim} ${styles.accountSurfaceScrim}`} aria-label="إغلاق" onClick={()=>setProfileOpen(false)}/><aside className={`${styles.mobileSheet} ${styles.mobileFullPageSheet} ${styles.accountSurfaceSheet}`}><div className={styles.sheetHeader}><strong>الملف الشخصي</strong><button type="button" onClick={()=>setProfileOpen(false)} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button></div><div className={styles.profileForm}><label><span>الاسم</span><input value={profileName} onChange={event=>setProfileName(event.target.value)} maxLength={120}/></label><label><span>البريد الإلكتروني</span><input value={profile?.email??''} readOnly/></label><small>تغيير البريد أو كلمة المرور يمر عبر مسار أمان الحساب ولا يُعدّل من شاشة الدردشة مباشرة.</small><button type="button" className={styles.primaryActionButton} onClick={()=>void saveProfile()} disabled={profileSaving||profileName.trim().length<2}>{profileSaving?'جارٍ الحفظ…':'حفظ التعديل'}</button></div></aside></div>}
-    {settingsOpen&&<div className={`${styles.mobileOverlay} ${styles.accountSurfaceOverlay}`} role="dialog" aria-modal="true" aria-label="الإعدادات"><button type="button" className={`${styles.scrim} ${styles.accountSurfaceScrim}`} aria-label="إغلاق" onClick={()=>setSettingsOpen(false)}/><aside className={`${styles.mobileSheet} ${styles.mobileFullPageSheet} ${styles.accountSurfaceSheet}`}><div className={styles.sheetHeader}><strong>{settingsSection==='accounts'?'الحسابات':'الإعدادات'}</strong><button type="button" onClick={()=>setSettingsOpen(false)} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button></div>{settingsSection==='accounts'?<div className={styles.accountSettings}>{statementAccounts.length?statementAccounts.map(account=><div key={account.id}><LucideIcon name="creditCard" size={20}/><span><strong>{account.name}</strong><small>{account.bank_name||account.account_type}</small></span></div>):<p>لا توجد حسابات مسجلة بعد. أضفها أثناء التأسيس مع المحافظ.</p>}</div>:<div className={styles.settingsList}>
+    {settingsOpen&&<div className={`${styles.mobileOverlay} ${styles.accountSurfaceOverlay}`} role="dialog" aria-modal="true" aria-label="الإعدادات"><button type="button" className={`${styles.scrim} ${styles.accountSurfaceScrim}`} aria-label="إغلاق" onClick={()=>setSettingsOpen(false)}/><aside className={`${styles.mobileSheet} ${styles.mobileFullPageSheet} ${styles.accountSurfaceSheet}`}><div className={styles.sheetHeader}><strong>{settingsSection==='accounts'?'الحسابات':'الإعدادات'}</strong><button type="button" onClick={()=>setSettingsOpen(false)} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button></div>{settingsSection==='accounts'?<div className={styles.accountSettings}>
+      <div className={styles.accountSettingsToolbar}><div><strong>الحسابات المسجلة</strong><small>{managedAccounts.length} حسابات نشطة</small></div><button type="button" className={styles.primaryActionButton} onClick={()=>setAccountEditor({mode:'add',name:'',bank_name:'',opening_balance:'0',effective_date:new Date().toISOString().slice(0,10)})}><LucideIcon name="plus" size={16}/><span>إضافة حساب</span></button></div>
+      {managedAccounts.length?<div className={styles.accountSettingsList}>{managedAccounts.map(account=><article key={account.id} className={styles.accountManageCard}><LucideIcon name="creditCard" size={20}/><span><strong>{account.name}</strong><small>{account.bank_name||account.account_type}</small><em>الرصيد الحالي: {formatSar(Number(account.balance||0))} ر.س</em></span><div className={styles.accountManageActions}><button type="button" onClick={()=>setAccountEditor({mode:'edit',id:account.id,name:account.name,bank_name:account.bank_name??'',opening_balance:account.opening_balance,effective_date:account.effective_date})} aria-label={'تعديل '+account.name}><LucideIcon name="pencil" size={16}/></button><button type="button" onClick={()=>void deleteManagedAccount(account.id)} aria-label={'حذف '+account.name}><LucideIcon name="trash2" size={16}/></button></div></article>)}</div>:<p>لا توجد حسابات مسجلة بعد.</p>}
+      {accountEditor&&<div className={styles.accountEditorBackdrop}><section className={styles.accountEditorModal} role="dialog" aria-modal="true" aria-label={accountEditor.mode==='add'?'إضافة حساب':'تعديل حساب'}><header><strong>{accountEditor.mode==='add'?'إضافة حساب':'تعديل الحساب'}</strong><button type="button" onClick={()=>setAccountEditor(null)} aria-label="إغلاق"><LucideIcon name="x" size={16}/></button></header><div className={styles.accountEditorGrid}><label><span>اسم الحساب</span><input value={accountEditor.name} onChange={event=>setAccountEditor(current=>current?{...current,name:event.target.value}:current)}/></label><label><span>البنك</span><input value={accountEditor.bank_name} onChange={event=>setAccountEditor(current=>current?{...current,bank_name:event.target.value}:current)}/></label><label><span>الرصيد الافتتاحي</span><input type="number" min="0" inputMode="decimal" value={accountEditor.opening_balance} onChange={event=>setAccountEditor(current=>current?{...current,opening_balance:event.target.value}:current)}/></label><label><span>تاريخ الرصيد</span><input type="date" value={accountEditor.effective_date} onChange={event=>setAccountEditor(current=>current?{...current,effective_date:event.target.value}:current)}/></label></div><footer><button type="button" className={styles.secondaryButton} onClick={()=>setAccountEditor(null)}>إلغاء</button><button type="button" className={styles.primaryActionButton} disabled={accountSaving} onClick={()=>void saveManagedAccount()}>{accountSaving?'جارٍ الحفظ…':'حفظ'}</button></footer></section></div>}
+    </div>:<div className={styles.settingsList}>
       <section className={styles.settingsSectionBlock}><div className={styles.settingsRow}><span><strong>المظهر</strong><small>التبديل بين الوضع الفاتح والداكن مع الحفاظ على هوية نماء.</small></span><ThemeToggle/></div></section>
       <section className={styles.settingsSectionBlock}><div className={styles.settingsSectionHeading}><LucideIcon name="slidersHorizontal" size={20}/><span><strong>حجم نص الدردشة</strong><small>حرّك المؤشر لتكبير أو تصغير نصوص الرسائل، ويمكنك أيضًا اختيار مستوى جاهز.</small></span></div><div className={styles.fontSizeChoices}><div className={styles.fontSizeSliderRow}><span>أصغر</span><input className={styles.fontSizeSlider} type="range" min={0} max={2} step={1} value={chatFontSize==='small'?0:chatFontSize==='medium'?1:2} onChange={event=>updateChatFontSize((['small','medium','large'] as ChatFontSize[])[Number(event.target.value)]??'medium')} aria-label="حجم نص الدردشة" aria-valuetext={chatFontSize==='small'?'صغير':chatFontSize==='medium'?'متوسط':'كبير'}/><span>أكبر</span></div>{(['small','medium','large'] as ChatFontSize[]).map(size=><button key={size} type="button" className={chatFontSize===size?styles.activeFontChoice:''} onClick={()=>updateChatFontSize(size)}>{size==='small'?'صغير':size==='medium'?'متوسط':'كبير'}</button>)}</div></section>
       <section className={styles.settingsSectionBlock}><div className={styles.settingsSectionHeading}><LucideIcon name="landmark" size={20}/><span><strong>الحوكمة والسجلات</strong><small>السياسات، مصفوفة الصلاحيات، القرارات، المحاضر والاجتماعات في مكان واحد.</small></span></div>{onboardingComplete!==false?<div className={styles.settingsActionGrid}><button type="button" onClick={()=>{setSettingsOpen(false);setGovernanceMode('governance')}}><LucideIcon name="lockKeyhole" size={16}/><span>السياسات والصلاحيات والقرارات</span></button><button type="button" onClick={()=>{setSettingsOpen(false);setGovernanceMode('meetings')}}><LucideIcon name="calendarDays" size={16}/><span>الاجتماعات والمحاضر</span></button><button type="button" onClick={()=>{setSettingsOpen(false);setGovernanceMode('documents')}}><LucideIcon name="receiptText" size={16}/><span>الوثائق والتقارير</span></button></div>:<small className={styles.settingsLockedNote}>تفتح هذه الأقسام بعد اعتماد بيانات التأسيس مع المحافظ.</small>}</section>
