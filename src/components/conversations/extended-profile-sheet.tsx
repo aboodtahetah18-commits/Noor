@@ -22,6 +22,7 @@ function tableRowsFromFact(section:ExtendedProfileSection|null,fact?:FactEnvelop
       for(const column of section.table?.columns??[]){
         let cell=source[column.key]??(column.key==='due_day'?source.due_note:undefined);
         if(section.key==='budget_behavior'){
+          if(column.key==='context'&&!cell) cell='عام';
           if(column.key==='frequency_period'&&!cell&&typeof source.frequency==='string'){
             const raw=String(source.frequency);
             cell=/يومي/.test(raw)?'يومي':/أسبوع/.test(raw)?'أسبوعي':/شهر/.test(raw)?'شهري':'';
