@@ -22,6 +22,12 @@ html[data-theme="light"] {
   --ux-action-primary:var(--namaa-green-900);
   --ux-accent-supporting:var(--namaa-green-700);
   --ux-focus-ring:var(--namaa-green-700);
+  --ux-action-contrast:#FFFFFF;
+  --ux-control-bg:var(--namaa-card);
+  --ux-control-text:var(--namaa-text);
+  --ux-control-placeholder:var(--namaa-muted);
+  --ux-control-disabled-bg:var(--namaa-surface-warm);
+  --ux-control-disabled-text:var(--namaa-muted);
 }
 
 html[data-theme="dark"] {
@@ -47,6 +53,12 @@ html[data-theme="dark"] {
   --ux-action-primary:var(--namaa-green-700);
   --ux-accent-supporting:var(--namaa-gold-500);
   --ux-focus-ring:var(--namaa-gold-500);
+  --ux-action-contrast:#FFFFFF;
+  --ux-control-bg:#1B2924;
+  --ux-control-text:#F7FAF8;
+  --ux-control-placeholder:#B9C6C0;
+  --ux-control-disabled-bg:#13201C;
+  --ux-control-disabled-text:#93A29B;
 }
 
 /* Approved Namaa semantic mappings. Light mode stays calm and clear; dark mode uses the deep navy identity. */
