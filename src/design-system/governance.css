@@ -882,3 +882,43 @@
     text-align:start;
   }
 }
+
+
+.namaa-decision-impact-details {
+  display:grid;
+  gap:var(--ux-space-2);
+  margin:0;
+  padding:var(--ux-space-3);
+}
+
+.namaa-decision-impact-details > div {
+  display:grid;
+  grid-template-columns:minmax(120px,180px) minmax(0,1fr);
+  gap:var(--ux-space-3);
+  align-items:start;
+  padding-block:var(--ux-space-2);
+  border-block-end:var(--ux-border-width-1) solid var(--ux-border-default);
+}
+
+.namaa-decision-impact-details > div:last-child {
+  border-block-end:0;
+}
+
+.namaa-decision-impact-details dt {
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  font-weight:700;
+}
+
+.namaa-decision-impact-details dd {
+  margin:0;
+  color:var(--ux-text-primary);
+  overflow-wrap:anywhere;
+}
+
+@media (max-width:767px) {
+  .namaa-decision-impact-details > div {
+    grid-template-columns:minmax(0,1fr);
+    gap:var(--ux-space-1);
+  }
+}
