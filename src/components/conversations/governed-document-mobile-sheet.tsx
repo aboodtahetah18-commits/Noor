@@ -526,7 +526,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
   }
 
   return <div className={styles.mobileOverlay} role="dialog" aria-modal="true" aria-label={'تفاصيل '+document.title}>
-    <aside className={styles.mobileSheet+' '+styles.governedDocumentSheet+' '+styles.mobileFullPageSheet+' ux-dialog-surface'}>
+    <aside className={styles.mobileSheet+' '+styles.governedDocumentSheet+' '+styles.mobileFullPageSheet+' ux-dialog-surface namaa-governed-document-dialog'}>
       <div className={styles.sheetHeader}><strong>تفاصيل المرجع الحاكم</strong><button type="button" onClick={onClose} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button></div>
       <div className={styles.governedDocumentContent}>
         <section className={styles.governedDocumentHero}>
@@ -608,7 +608,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
 
         {formOpen&&<div className={styles.governedEditModal} role="dialog" aria-modal="true" aria-label={editMode==='direct'?'تحرير مباشر':'تحرير حوكمي'}>
           <button type="button" className={styles.governedEditModalScrim} aria-label="إغلاق" onClick={()=>setFormOpen(false)}/>
-          <form className={styles.governedAmendmentForm+' '+styles.governedEditModalCard+' ux-dialog-surface '+(editMode==='direct'?styles.governedTypoForm:styles.governedGovernanceForm)} onSubmit={submit}>
+          <form className={styles.governedAmendmentForm+' '+styles.governedEditModalCard+' ux-dialog-surface namaa-governance-editor-dialog '+(editMode==='direct'?styles.governedTypoForm:styles.governedGovernanceForm)} onSubmit={submit}>
             <header className={styles.governedEditFormHeader}>
               <span className={styles.governedEditFormIcon}><LucideIcon name={editMode==='direct'?'pencil':'landmark'} size={20}/></span>
               <div><strong>{editMode==='direct'?'تحرير مباشر':'تحرير حوكمي'}</strong><small>{editMode==='direct'?'إضافة أو تعديل أو حذف مباشر خلال مرحلة ضبط المنصة.':'إضافة أو تعديل أو حذف يمر بالاجتماع والمراجعة والاعتماد قبل النفاذ.'}</small></div>
