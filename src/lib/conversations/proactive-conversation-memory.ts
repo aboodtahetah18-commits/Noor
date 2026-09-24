@@ -41,7 +41,10 @@ function readPrompt(value:unknown):ProactivePromptMemory{
     lastAnswerAt:typeof row.lastAnswerAt==='string'?row.lastAnswerAt:null,
     lastAnswerExcerpt:typeof row.lastAnswerExcerpt==='string'?row.lastAnswerExcerpt:null,
     unansweredStreak:Number.isFinite(Number(row.unansweredStreak))?Math.max(0,Number(row.unansweredStreak)):0,
-    averageResponseHours:Number.isFinite(Number(row.averageResponseHours))?Math.max(0,Number(row.averageResponseHours)):null,
+    averageResponseHours:(typeof row.averageResponseHours==='number'||(typeof row.averageResponseHours==='string'&&row.averageResponseHours.trim()!==''))
+      &&Number.isFinite(Number(row.averageResponseHours))
+      ?Math.max(0,Number(row.averageResponseHours))
+      :null,
   };
 }
 
