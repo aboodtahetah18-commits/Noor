@@ -48,6 +48,10 @@ function tableRowsFromFact(section:ExtendedProfileSection|null,fact?:FactEnvelop
         }
         row[column.key]=cell===null||cell===undefined?'':String(cell);
       }
+      if(section.table?.allowCustomCategory&&row.category&&row.category!=='أخرى'&&!section.table.categoryOptions?.includes(row.category)){
+        row.custom_category=row.custom_category||row.category;
+        row.category='أخرى';
+      }
       return [row];
     });
   }
