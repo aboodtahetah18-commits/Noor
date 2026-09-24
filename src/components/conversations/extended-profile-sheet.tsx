@@ -11,9 +11,11 @@ type FactEnvelope={value?:Record<string,unknown>;confidence?:number;verified_at?
 export function ExtendedProfileSheet({
   open,
   onClose,
+  initialSection,
 }:{
   open:boolean;
   onClose:()=>void;
+  initialSection?:string|null;
 }){
   const [sections,setSections]=useState<ExtendedProfileSection[]>([]);
   const [facts,setFacts]=useState<Record<string,FactEnvelope>>({});
@@ -37,12 +39,15 @@ export function ExtendedProfileSheet({
         const nextSections=Array.isArray(data.sections)?data.sections:[];
         setSections(nextSections);
         setFacts(data.facts&&typeof data.facts==='object'?data.facts:{});
-        setActiveKey(current=>current||nextSections[0]?.key||'');
+        setActiveKey(current=>{
+          if(initialSection&&nextSections.some(section=>section.key===initialSection)) return initialSection;
+          return current||nextSections[0]?.key||'';
+        });
       })
       .catch(()=>{if(!cancelled)setError('تعذر تحميل الملف المالي التفصيلي الآن.')})
       .finally(()=>{if(!cancelled)setLoading(false)});
     return()=>{cancelled=true};
-  },[open]);
+  },[open,initialSection]);
 
   useEffect(()=>{
     if(!active) return;
