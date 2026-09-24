@@ -9,12 +9,10 @@ import {
   writeProactiveConversationMemory,
   type ProactiveConversationMemory,
 } from './proactive-conversation-memory';
-import {
-  shouldProactivelyOpenCase,
-  type BankForwardNeed,
-} from '@/algorithmic-systems/orchestration/proactive-bank-planning';
+import { shouldProactivelyOpenCase } from '@/algorithmic-systems/orchestration/proactive-bank-planning';
+import type { BankForwardNeed } from '@/algorithmic-systems/domain/interbank-planning';
 
-type ProactiveCandidate={
+export type ProactiveCandidate={
   key:string;
   roomKey:ConversationRoomKey;
   senderKey:string;
