@@ -95,16 +95,16 @@ export function BanksWide({selected,pendingReviewCount,pendingItems,dashboardDat
         <p className="namaa-banks-subtitle">{bank.subtitle} · الأرقام أدناه مجمعة من حساب المستخدم الحالي وليست افتراضات خاصة بالبنك المختار.</p>
 
         <div className="namaa-banks-kpis namaa-banks-kpis-dashboard">
-          <article className="tone-deep"><span>إجمالي السيولة</span><strong>{formatSar(String(dashboardData.totalLiquidity))}</strong><small>{dashboardData.activeAccountCount} حساب نشط</small></article>
-          <article className="tone-gold"><span>عمليات تحتاج مراجعة</span><strong>{pendingReviewCount}</strong><small>{formatSar(String(pendingValue))} قيمة معلقة</small></article>
-          <article className="tone-green"><span>صندوق الطوارئ</span><strong>{formatSar(String(dashboardData.emergencyBalance))}</strong><small>{emergencyProgress==null?'بيانات التغطية غير مكتملة':`${emergencyProgress}٪ من الهدف`}{dashboardData.emergencyCoverageMonths!=null?` · ${dashboardData.emergencyCoverageMonths} شهر`:''}</small></article>
-          <article className="tone-action"><span>الأهداف النشطة</span><strong>{dashboardData.activeGoalCount}</strong><small>{formatSar(String(dashboardData.goalsRemaining))} متبقي</small></article>
-          <article className="tone-gold"><span>الادخار المحول</span><strong>{formatSar(String(dashboardData.savingsActual))}</strong><small>{savingsProgress==null?'لا يوجد مخصص ادخار حالي':`${savingsProgress}٪ من المخصص`}</small></article>
-          <article className="tone-deep"><span>تمويل داخلي نشط</span><strong>{dashboardData.activeFundingCount}</strong><small>{dashboardData.pendingImportsCount} كشف/دفعة تحتاج مراجعة</small></article>
+          <article className="tone-base"><span>إجمالي السيولة</span><strong>{formatSar(String(dashboardData.totalLiquidity))}</strong><small>{dashboardData.activeAccountCount} حساب نشط</small></article>
+          <article className="tone-accent"><span>عمليات تحتاج مراجعة</span><strong>{pendingReviewCount}</strong><small>{formatSar(String(pendingValue))} قيمة معلقة</small></article>
+          <article className="tone-base"><span>صندوق الطوارئ</span><strong>{formatSar(String(dashboardData.emergencyBalance))}</strong><small>{emergencyProgress==null?'بيانات التغطية غير مكتملة':`${emergencyProgress}٪ من الهدف`}{dashboardData.emergencyCoverageMonths!=null?` · ${dashboardData.emergencyCoverageMonths} شهر`:''}</small></article>
+          <article className="tone-base"><span>الأهداف النشطة</span><strong>{dashboardData.activeGoalCount}</strong><small>{formatSar(String(dashboardData.goalsRemaining))} متبقي</small></article>
+          <article className="tone-base"><span>الادخار المحول</span><strong>{formatSar(String(dashboardData.savingsActual))}</strong><small>{savingsProgress==null?'لا يوجد مخصص ادخار حالي':`${savingsProgress}٪ من المخصص`}</small></article>
+          <article className="tone-base"><span>تمويل داخلي نشط</span><strong>{dashboardData.activeFundingCount}</strong><small>{dashboardData.pendingImportsCount} كشف/دفعة تحتاج مراجعة</small></article>
         </div>
 
         <section className="namaa-banks-visual-dashboard">
-          <article className="namaa-bank-donut-card tone-deep">
+          <article className="namaa-bank-donut-card tone-base">
             <div>
               <span>اتجاه قيمة العمليات المعلقة</span>
               <strong>{debitShare==null?'لا توجد عمليات معلقة':`${debitShare}٪ مصروفات/خصم`}</strong>
@@ -113,13 +113,13 @@ export function BanksWide({selected,pendingReviewCount,pendingItems,dashboardDat
             {debitShare==null?<div className="namaa-bank-no-chart">لا بيانات</div>:<div className="namaa-bank-donut" style={{'--namaa-donut-share':`${debitShare}%`} as React.CSSProperties}><b>{debitShare}٪</b></div>}
           </article>
 
-          <article className="namaa-bank-progress-card tone-gold">
+          <article className="namaa-bank-progress-card tone-base">
             <div><span>تمويل أهداف الدورة</span><strong>{goalCycleProgress==null?'بيانات الدورة غير مكتملة':`${goalCycleProgress}٪`}</strong><small>{goalCycleProgress==null?'لا يوجد مبلغ مطلوب مسجل للدورة الحالية.':`معتمد ${formatSar(String(dashboardData.goalsApprovedThisCycle))} من ${formatSar(String(dashboardData.goalsRequiredThisCycle))}`}</small></div>
             {goalCycleProgress==null?<div className="namaa-bank-no-chart">لا يوجد مسار نسبة حالي</div>:<div className="namaa-bank-progress-track"><i style={{width:`${goalCycleProgress}%`}}/></div>}
             <div className="namaa-bank-progress-split"><span>فجوة الدورة</span><b>{formatSar(String(dashboardData.goalsGap))}</b></div>
           </article>
 
-          <article className="namaa-bank-bars-card tone-action">
+          <article className="namaa-bank-bars-card tone-base">
             <div><span>أعلى العمليات المعلقة</span><strong>{pendingItems.length?Math.min(5,pendingItems.length):0} عملية</strong><small>القيمة الفعلية لكل عملية مقارنة بأعلى عملية معلقة حاليًا.</small></div>
             <div className="namaa-bank-bars">
               {pendingItems.slice(0,5).map(item=><div key={item.rowId}><span>{item.description}</span><i style={{width:`${Math.max(6,(Math.abs(Number(item.amount)||0)/maxPending)*100)}%`}}/><b>{formatSar(item.amount)}</b></div>)}
