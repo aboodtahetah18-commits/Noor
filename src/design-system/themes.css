@@ -7,7 +7,7 @@ html[data-theme="light"] {
   --ux-shell-topbar-border:var(--namaa-border);
   --ux-shell-sidebar-bg:var(--namaa-green-900);
   --ux-shell-sidebar-hover:var(--namaa-green-700);
-  --ux-shell-sidebar-active:var(--namaa-green-700);
+  --ux-shell-sidebar-active:#0A3A38;
   --ux-shell-sidebar-active-soft:color-mix(in srgb,var(--namaa-green-700) 18%,transparent);
   --ux-border-default:var(--namaa-border);
   --ux-border-emphasis:var(--namaa-border-strong);
@@ -32,21 +32,21 @@ html[data-theme="light"] {
 
 html[data-theme="dark"] {
   color-scheme: dark;
-  --ux-page-bg:#111A17;
-  --ux-card-bg:#17231F;
-  --ux-shell-topbar-bg:#13201C;
-  --ux-shell-topbar-border:#2A3B35;
-  --ux-shell-sidebar-bg:#081B15;
-  --ux-shell-sidebar-hover:#173329;
+  --ux-page-bg:#021737;
+  --ux-card-bg:#062849;
+  --ux-shell-topbar-bg:#062849;
+  --ux-shell-topbar-border:#164566;
+  --ux-shell-sidebar-bg:#062849;
+  --ux-shell-sidebar-hover:#08345A;
   --ux-shell-sidebar-active:var(--namaa-green-700);
   --ux-shell-sidebar-active-soft:color-mix(in srgb,var(--namaa-green-700) 18%,transparent);
-  --ux-border-default:#31443D;
-  --ux-border-emphasis:#40584F;
-  --ux-text-primary:#F6F7F5;
-  --ux-text-secondary:#C5D0CB;
-  --ux-text-muted:#AAB7B1;
-  --ux-section-soft-blue:#1A2A24;
-  --ux-section-soft-teal:#173329;
+  --ux-border-default:#164566;
+  --ux-border-emphasis:#2E607E;
+  --ux-text-primary:#F4FAFF;
+  --ux-text-secondary:#B6C6D4;
+  --ux-text-muted:#B6C6D4;
+  --ux-section-soft-blue:#08345A;
+  --ux-section-soft-teal:#0A3A38;
   --ux-surface-canvas:var(--ux-page-bg);
   --ux-surface-default:var(--ux-card-bg);
   --ux-surface-inverse:var(--namaa-card);
@@ -54,11 +54,11 @@ html[data-theme="dark"] {
   --ux-accent-supporting:var(--namaa-gold-500);
   --ux-focus-ring:var(--namaa-gold-500);
   --ux-action-contrast:#FFFFFF;
-  --ux-control-bg:#1B2924;
-  --ux-control-text:#F7FAF8;
-  --ux-control-placeholder:#B9C6C0;
-  --ux-control-disabled-bg:#13201C;
-  --ux-control-disabled-text:#93A29B;
+  --ux-control-bg:#08345A;
+  --ux-control-text:#F4FAFF;
+  --ux-control-placeholder:#B6C6D4;
+  --ux-control-disabled-bg:#062849;
+  --ux-control-disabled-text:#B6C6D4;
 }
 
 /* Approved Namaa semantic mappings. Light mode stays calm and clear; dark mode uses the deep navy identity. */
