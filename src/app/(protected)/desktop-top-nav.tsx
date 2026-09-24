@@ -16,6 +16,13 @@ const pages = [
   { href: '/settings', label: 'الإعدادات', icon: 'settings' },
 ] satisfies Array<{ href: string; label: string; icon: LucideIconName }>;
 
+const financePages = [
+  { href: '/accounts', label: 'الحسابات', icon: 'creditCard' },
+  { href: '/transactions', label: 'العمليات', icon: 'repeat2' },
+  { href: '/budget', label: 'الميزانية', icon: 'chart' },
+  { href: '/more', label: 'المزيد', icon: 'ellipsis' },
+] satisfies Array<{ href: string; label: string; icon: LucideIconName }>;
+
 export function DesktopTopNav() {
   const pathname = usePathname();
   const closeSidebar=()=>{
@@ -36,6 +43,24 @@ export function DesktopTopNav() {
             <p>مساحات نماء</p>
             {pages.map((item) => {
               const active = isPrimaryNavigationItemActive(pathname, item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={closeSidebar}
+                  className={active ? 'is-active' : ''}
+                  aria-current={active ? 'page' : undefined}
+                >
+                  <span className="mustaqbali-nav-icon"><LucideIcon name={item.icon} size={20} /></span>
+                  <span className="mustaqbali-nav-label">{item.label}</span>
+                </Link>
+              );
+            })}
+          </section>
+          <section className="mustaqbali-nav-section">
+            <p>المالية</p>
+            {financePages.map((item) => {
+              const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
               return (
                 <Link
                   key={item.href}

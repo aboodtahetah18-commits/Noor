@@ -41,6 +41,7 @@ const banks = {
       {key:'central-secretary',name:'أمين السر المركزي'},
     ],
     goals:['الاستقرار المالي','سلامة السيولة','اتساق القرارات بين البنوك'],
+    building:'/brand/ndos/banks/namaa-central-bank.jpg',
   },
   hilal:{
     name:'بنك الهلال',
@@ -51,6 +52,7 @@ const banks = {
       {key:'budget-spending-owner',name:'مسؤول الميزانية والإنفاق'},
     ],
     goals:['ضبط التمويل الداخلي','خفض ضغط الالتزامات','رفع وضوح التدفقات'],
+    building:'/brand/ndos/banks/hilal-bank.jpg',
   },
   solvency:{
     name:'بنك ملاءة',
@@ -61,6 +63,7 @@ const banks = {
       {key:'obligations-owner',name:'مسؤول الالتزامات'},
     ],
     goals:['رفع هامش الأمان','حماية الاحتياطي','تخفيف مخاطر السيولة'],
+    building:'/brand/ndos/banks/malaa-bank.jpg',
   },
   assets:{
     name:'بنك الأصول الاستثمارية',
@@ -71,6 +74,7 @@ const banks = {
       {key:'goals-owner',name:'مسؤول الأهداف'},
     ],
     goals:['تحسين جودة المحافظ','ضبط المخاطر الاستثمارية','ربط الاستثمار بالأهداف'],
+    building:'/brand/ndos/banks/investment-assets-bank.jpg',
   },
 } as const;
 
@@ -114,7 +118,11 @@ export function BanksWide({selected,pendingReviewCount,pendingItems,dashboardDat
 
   return <section className="namaa-wide-only namaa-banks-wide" dir="rtl">
     <header className="namaa-banks-hero namaa-wide-card">
-      <div><p>غرفة القيادة</p><h1>البنوك</h1><span>لوحة فعلية مبنية على بيانات نماء الحالية؛ أي مؤشر غير مربوط يظهر كبيانات غير مكتملة بدل إنشاء رقم تقديري.</span></div>
+      <div className="namaa-banks-hero-copy"><p>غرفة القيادة</p><h1>{bank.name}</h1></div>
+      <span className="namaa-banks-building" aria-hidden="true">
+        <Image src={bank.building} alt="" fill priority sizes="(min-width: 1024px) 44vw, 80vw" />
+        <span className="namaa-banks-building-shade" />
+      </span>
       <div className="namaa-banks-selector">
         {Object.entries(banks).map(([key,item])=><Link key={key} href={'/bank-operations?bank='+key} className={selected===key?'is-active':''}>{item.name}</Link>)}
       </div>

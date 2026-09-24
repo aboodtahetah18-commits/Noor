@@ -1,17 +1,22 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { LucideIcon } from '@/components/ui/lucide-icon';
 import { InvestmentActionDialogs } from './investment-action-dialogs';
+import { NAMAA_PERSONA_ASSETS } from '@/components/conversations/persona-assets';
 
 export default function InvestmentsPage() {
   return (
     <main className="namaa-investments-page" dir="rtl">
       <section className="namaa-investments-shell namaa-wide-only">
         <header className="namaa-investments-header namaa-wide-card">
-          <div>
+          <div className="namaa-investments-hero-copy">
             <p>بنك الأصول الاستثمارية</p>
             <h1>الاستثمارات</h1>
-            <span>إدارة المحافظ، التقييم، المتابعة، والتحليل قبل أي توصية شراء أو خروج.</span>
           </div>
+          <span className="namaa-investments-building" aria-hidden="true">
+            <Image src="/brand/ndos/banks/investment-assets-bank.jpg" alt="" fill priority sizes="(min-width: 1024px) 42vw, 80vw" />
+            <span className="namaa-investments-building-shade" />
+          </span>
           <InvestmentActionDialogs />
         </header>
 
@@ -24,16 +29,16 @@ export default function InvestmentsPage() {
               </div>
               <LucideIcon name="messageSquareText" size={20} />
             </div>
-            <div className="namaa-investments-participants">
-              <span>مسؤول الاستثمار</span>
-              <span>مدير بنك الأصول</span>
-              <span>اللجنة المختصة عند الحاجة</span>
+            <div className="namaa-investments-chat-preview">
+              <div className="namaa-investments-chat-people">
+                <span><Image src={NAMAA_PERSONA_ASSETS['investment-owner']!} alt="" width={42} height={42} unoptimized/><strong>مسؤول الاستثمار</strong></span>
+                <span><Image src={NAMAA_PERSONA_ASSETS['assets-manager']!} alt="" width={42} height={42} unoptimized/><strong>مدير بنك الأصول</strong></span>
+              </div>
+              <div className="namaa-investments-chat-window">
+                <div className="namaa-investments-chat-placeholder"><LucideIcon name="messageSquareText" size={22}/><span>المحادثة الاستثمارية</span></div>
+                <Link href="/conversations" className="namaa-investments-chat-composer"><span>اكتب رسالة...</span><LucideIcon name="messageSquareText" size={18}/></Link>
+              </div>
             </div>
-            <div className="namaa-investments-chat-note">
-              <strong>الدردشة مرتبطة بالمحفظة المختارة.</strong>
-              <p>يمكن تحديث البيانات، طلب تقييم، أو مناقشة توصية مباشرة من هنا.</p>
-            </div>
-            <Link href="/conversations" className="namaa-wide-action">فتح الدردشة</Link>
           </aside>
 
           <section className="namaa-investments-dashboard namaa-wide-panel">
@@ -47,13 +52,12 @@ export default function InvestmentsPage() {
             <div className="namaa-investments-empty">
               <LucideIcon name="landmark" size={32} />
               <strong>اختر محفظة أو أضف محفظة جديدة</strong>
-              <p>بعد الربط ستظهر القيمة الحالية، الأداء، السيولة، توزيع الأصول، التركّز، المخاطر، والنتائج المحدثة.</p>
             </div>
             <div className="namaa-investments-dashboard-grid">
-              <article><span>الأداء</span><strong>يظهر بعد اختيار المحفظة</strong></article>
-              <article><span>المخاطر</span><strong>تقييم مستمر</strong></article>
-              <article><span>السيولة</span><strong>حسب الأصول القابلة للتسييل</strong></article>
-              <article><span>التوصيات</span><strong>تحتاج اعتماد المستخدم</strong></article>
+              <article><span className="namaa-investment-tile-icon"><LucideIcon name="chart" size={22}/></span><div><span>الأداء</span><strong>يظهر بعد اختيار المحفظة</strong></div></article>
+              <article><span className="namaa-investment-tile-icon"><LucideIcon name="triangleAlert" size={22}/></span><div><span>المخاطر</span><strong>تقييم مستمر</strong></div></article>
+              <article><span className="namaa-investment-tile-icon"><LucideIcon name="walletCards" size={22}/></span><div><span>السيولة</span><strong>حسب الأصول القابلة للتسييل</strong></div></article>
+              <article><span className="namaa-investment-tile-icon"><LucideIcon name="listChecks" size={22}/></span><div><span>التوصيات</span><strong>تحتاج اعتماد المستخدم</strong></div></article>
             </div>
           </section>
 
@@ -68,15 +72,15 @@ export default function InvestmentsPage() {
             <div className="namaa-investments-followup-list">
               <article>
                 <strong>إضافة منتج أو صندوق</strong>
-                <p>يحلله النظام قبل إدخاله للمحفظة ويعرض الملاءمة والمخاطر والسيولة.</p>
+                
               </article>
               <article>
                 <strong>مراجعة أصل ضعيف</strong>
-                <p>التوصية بالخروج لا تنفذ تلقائيًا؛ تعرض الأسباب ثم تنتظر موافقتك.</p>
+                
               </article>
               <article>
                 <strong>تحديث النتائج</strong>
-                <p>التحديث يتم من الدردشة أو من واجهة الكمبيوتر واللابتوب والتابلت.</p>
+                
               </article>
             </div>
           </aside>
