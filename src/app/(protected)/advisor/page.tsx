@@ -58,7 +58,7 @@ export default async function AdvisorPage({ searchParams }: { searchParams: Prom
           <div className="namaa-lab-version-card">
             <strong>بيئة تجريبية</strong>
             <p>أي تعديل يمر عبر نسخة تجريبية واختبارات قبل التفعيل، مع رجوع فوري للنسخة السابقة عند التراجع.</p>
-            <span>Sandbox · مقارنة نسخ · Rollback</span>
+            <span>بيئة اختبار · مقارنة نسخ · رجوع للإصدار السابق</span>
           </div>
         </aside>
 
@@ -81,7 +81,7 @@ export default async function AdvisorPage({ searchParams }: { searchParams: Prom
                 {feed.recommendations.map(r=><article key={r.id} className={`namaa-lab-item ${toneClass[r.recommendationType]??''}`}>
                   <div className="namaa-lab-item-head">
                     <div><span>{typeLabels[r.recommendationType]??r.recommendationType}</span><span>{statusLabels[r.status]??r.status}</span><span>أولوية {r.priority}</span></div>
-                    <time>{new Date(r.createdAt).toLocaleDateString('ar-SA')}</time>
+                    <time>{new Date(r.createdAt).toLocaleDateString('ar-SA-u-nu-latn')}</time>
                   </div>
                   <h3>{r.title}</h3>
                   <p>{r.message}</p>
@@ -123,7 +123,7 @@ export default async function AdvisorPage({ searchParams }: { searchParams: Prom
       <section className={`p74-focus-summary ${highPriority>0?'is-warning':''}`}><div><span>المهمة الوحيدة هنا</span><strong>{highPriority>0?`${highPriority} توصية عالية الأولوية`:`${newCount} توصية جديدة`}</strong><small>افتح توصية واحدة، افهم السبب، ثم قرر.</small></div></section>
       {q.dismissed==='1'?<section className="p47-analysis-note is-neutral"><strong>تم تجاهل التوصية.</strong><span>بقي القرار محفوظًا في سجل التوصيات.</span></section>:null}
       <section className="p47-analysis-card"><div className="p47-section-heading"><div><span>قائمة القرار</span><h2>التوصيات الحالية</h2></div><small>{feed.total} نتيجة مطابقة</small></div>
-        {feed.recommendations.length===0?<div className="p47-empty-state"><strong>لا توجد توصيات مطابقة</strong><span>عندما يكتشف محرك القواعد سببًا ماليًا واضحًا ستظهر التوصية هنا.</span></div>:<div className="p47-advisor-feed">{feed.recommendations.map(r=><article className={`p47-advisor-item ${toneClass[r.recommendationType]??''}`} key={r.id}><div className="p47-advisor-item-head"><div className="p47-chip-row"><span>{typeLabels[r.recommendationType]??r.recommendationType}</span><span>{statusLabels[r.status]??r.status}</span><span>أولوية {r.priority}</span></div><time>{new Date(r.createdAt).toLocaleDateString('ar-SA')}</time></div><div className="p47-advisor-item-body"><div><h3>{r.title}</h3><p>{r.message}</p></div><div className="p47-advisor-reason"><span>لماذا ظهرت؟</span><strong>{r.supportingSummary}</strong><small>{r.reasonCode}</small></div></div><div className="p47-advisor-item-foot">{r.status==='NEW'?<form action={viewRecommendationAction}><input type="hidden" name="recommendationId" value={r.id}/><button className="primary-button" type="submit">فتح التوصية</button></form>:<Link className="secondary-link" href={`/advisor/${r.id}`}>عرض التفاصيل</Link>}</div></article>)}</div>}
+        {feed.recommendations.length===0?<div className="p47-empty-state"><strong>لا توجد توصيات مطابقة</strong><span>عندما يكتشف محرك القواعد سببًا ماليًا واضحًا ستظهر التوصية هنا.</span></div>:<div className="p47-advisor-feed">{feed.recommendations.map(r=><article className={`p47-advisor-item ${toneClass[r.recommendationType]??''}`} key={r.id}><div className="p47-advisor-item-head"><div className="p47-chip-row"><span>{typeLabels[r.recommendationType]??r.recommendationType}</span><span>{statusLabels[r.status]??r.status}</span><span>أولوية {r.priority}</span></div><time>{new Date(r.createdAt).toLocaleDateString('ar-SA-u-nu-latn')}</time></div><div className="p47-advisor-item-body"><div><h3>{r.title}</h3><p>{r.message}</p></div><div className="p47-advisor-reason"><span>لماذا ظهرت؟</span><strong>{r.supportingSummary}</strong><small>{r.reasonCode}</small></div></div><div className="p47-advisor-item-foot">{r.status==='NEW'?<form action={viewRecommendationAction}><input type="hidden" name="recommendationId" value={r.id}/><button className="primary-button" type="submit">فتح التوصية</button></form>:<Link className="secondary-link" href={`/advisor/${r.id}`}>عرض التفاصيل</Link>}</div></article>)}</div>}
       </section>
       <nav className="p47-pagination" aria-label="صفحات التوصيات"><span>صفحة {feed.page} من {feed.totalPages} · {feed.total} توصية</span><div>{feed.page>1?<Link className="secondary-link" href={`/advisor?page=${feed.page-1}`}>السابق</Link>:null}{feed.page<feed.totalPages?<Link className="secondary-link" href={`/advisor?page=${feed.page+1}`}>التالي</Link>:null}</div></nav>
       <FocusedNextStep href="/reports" title="التالي: التقارير" description="بعد معالجة القرارات الحالية، انتقل للتقارير عندما تحتاج نظرة تحليلية أوسع."/>
