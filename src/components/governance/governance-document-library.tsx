@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { LucideIcon } from '@/components/ui/lucide-icon';
+import { Card, PageHeader } from '@/components/ui';
 
 export type GovernanceLibraryDocument={
   referenceCode:string;
@@ -45,21 +46,17 @@ export function GovernanceDocumentLibrary({
   icon?:'receiptText'|'listChecks'|'lockKeyhole';
 }){
   const selected=documents.find(item=>item.referenceCode===selectedReference)??documents[0]??null;
-  return <main className="namaa-policy-library page-shell" dir="rtl">
-    <header className="namaa-policy-library-header">
-      <div>
-        <span className="namaa-policy-eyebrow">المعرفة المؤسسية</span>
-        <h1>{title}</h1>
-        <p>{subtitle}</p>
-      </div>
-      <div className="namaa-policy-library-summary">
-        <span><strong>{documents.length}</strong> وثائق</span>
-        <Link href="/governance">العودة إلى المعرفة</Link>
-      </div>
-    </header>
+  return <main className="namaa-policy-library page-shell namaa-migrated-shell namaa-page-stack" dir="rtl">
+    <PageHeader
+      className="namaa-policy-library-header namaa-migrated-header"
+      eyebrow="المعرفة المؤسسية"
+      title={title}
+      description={subtitle}
+      actions={<div className="namaa-policy-library-summary"><span><strong>{documents.length}</strong> وثائق</span><Link className="ux-button ux-button--secondary" href="/governance">العودة إلى المعرفة</Link></div>}
+    />
 
     {selected?<section className="namaa-policy-library-layout">
-      <aside className="namaa-policy-index" aria-label={'قائمة '+title}>
+      <aside className="namaa-policy-index ux-card" data-density="compact" aria-label={'قائمة '+title}>
         <div className="namaa-policy-index-head">
           <LucideIcon name={icon} size={24}/>
           <div><strong>فهرس {title}</strong><span>اختر الوثيقة للاطلاع</span></div>
@@ -75,7 +72,7 @@ export function GovernanceDocumentLibrary({
         </nav>
       </aside>
 
-      <article className="namaa-policy-reader">
+      <article className="namaa-policy-reader ux-card">
         <header className="namaa-policy-reader-head">
           <div>
             <span>{documentLabel}</span>
@@ -90,7 +87,7 @@ export function GovernanceDocumentLibrary({
         </header>
         <section className="namaa-policy-reader-body">{renderDocumentContent(selected.content)}</section>
       </article>
-    </section>:<section className="namaa-policy-library-empty">
+    </section>:<section className="namaa-policy-library-empty ux-card">
       <LucideIcon name={icon} size={24}/>
       <div><strong>لا توجد وثائق ضمن هذا القسم</strong><p>لا توجد مادة مرجعية مرتبطة بهذا النوع في المصدر المحلي الحالي.</p></div>
     </section>}
