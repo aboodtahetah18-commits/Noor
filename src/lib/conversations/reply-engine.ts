@@ -414,6 +414,7 @@ export async function createRoutedReply(userId: string, roomKey: ConversationRoo
     const centralMetadata=centralRows[0]?.metadata&&typeof centralRows[0].metadata==='object'?centralRows[0].metadata as Record<string,unknown>:{};
     const centralBaseline=baselineFrom(centralMetadata);
     budgetHandoff=centralBaseline.post_onboarding_stage==='handoff_budget'||Boolean(metadata.budget_spending_intake);
+    if(budgetHandoff) metadata={...metadata,central_spending_baseline:centralBaseline};
   }
   let agent = agentForRoom(roomKey);
 
@@ -467,7 +468,12 @@ export async function createRoutedReply(userId: string, roomKey: ConversationRoo
     confirmed_fact: confirmedFact,
     next_question: nextQuestion,
     guided_intake: (roomKey==='central'||(roomKey==='hilal'&&budgetHandoff))&&Boolean(nextQuestion),
-    intake_owner: roomKey==='hilal'&&budgetHandoff?'budget-spending-owner':null,
+    intake_owner: roomKey==='hilal'&&budgetHandoff
+      ?'budget-spending-owner'
+      :roomKey==='central'&&routedRoom==='hilal'&&Boolean(nextQuestion)
+        ?'budget-spending-owner'
+        :null,
+    handoff_target: roomKey==='central'&&routedRoom==='hilal'&&Boolean(nextQuestion)?'hilal':null,
     requires_user_confirmation: confidence < 0.9,
     execution_boundary: 'advisory_only',
   };
