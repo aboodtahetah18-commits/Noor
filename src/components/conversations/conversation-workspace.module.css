@@ -502,7 +502,45 @@
   overflow-wrap:anywhere
 }
 
-.facts small,.facts strong,.executionBoundary{
+.facts small,.facts strong,
+.structuredProfileAction{
+  grid-column:1/-1;
+  min-height:44px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:var(--ux-space-2);
+  padding:var(--ux-space-2) var(--ux-space-4);
+  border:2px solid var(--namaa-green-900);
+  border-radius:var(--ux-radius-full);
+  background:var(--namaa-green-900);
+  color:var(--ux-text-inverse);
+  font:inherit;
+  font-size:var(--ux-type-button-size);
+  font-weight:900;
+  cursor:pointer;
+}
+.structuredProfileAction span,
+.structuredProfileAction svg{
+  color:var(--ux-text-inverse)!important;
+  stroke:currentColor!important;
+}
+.structuredProfileAction:focus-visible{
+  outline:0;
+  box-shadow:var(--ux-shadow-focus);
+}
+:global(html[data-theme="dark"]) .structuredProfileAction{
+  background:var(--namaa-gold-500);
+  border-color:var(--namaa-gold-500);
+  color:var(--namaa-green-900);
+}
+:global(html[data-theme="dark"]) .structuredProfileAction span,
+:global(html[data-theme="dark"]) .structuredProfileAction svg{
+  color:var(--namaa-green-900)!important;
+  stroke:currentColor!important;
+}
+
+.executionBoundary{
   font-size:var(--ux-type-caption-size)
 }
 
