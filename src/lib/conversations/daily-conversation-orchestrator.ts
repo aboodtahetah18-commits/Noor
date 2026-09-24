@@ -70,6 +70,24 @@ export function candidateScore(
   return score;
 }
 
+export function adaptCandidateBody(
+  candidate:ProactiveCandidate,
+  memory:ProactiveConversationMemory,
+){
+  const prompt=memory.prompts[candidate.key];
+  if(!prompt)return candidate.body;
+  if(prompt.unansweredStreak>=2){
+    return `أختصرها عليك: ${candidate.body.replace(/^.*?[.:]s*/,'')}`;
+  }
+  if(prompt.unansweredStreak===1){
+    return `أعيد هذه النقطة لأنها ما زالت تؤثر على التحليل، لكن لن أكررها يوميًا. ${candidate.body}`;
+  }
+  if(prompt.averageResponseHours!==null&&prompt.averageResponseHours<=24){
+    return `أكمل معك من نفس النمط الذي اعتدناه. ${candidate.body}`;
+  }
+  return candidate.body;
+}
+
 export function isCandidateEligible(
   candidate:ProactiveCandidate,
   memory:ProactiveConversationMemory,
@@ -388,10 +406,11 @@ export async function runDailyConversationOrchestratorForUser(
     ].filter(candidate=>isCandidateEligible(candidate,memory,facts,now))
       .sort((a,b)=>candidateScore(b,memory,now)-candidateScore(a,memory,now));
 
-    const selected=candidates[0];
-    if(!selected){
+    const selectedBase=candidates[0];
+    if(!selectedBase){
       return {userId,status:'NO_CANDIDATE',roomKey:null,promptKey:null,messageId:null,errorCode:null};
     }
+    const selected={...selectedBase,body:adaptCandidateBody(selectedBase,memory)};
 
     const sql=getRawSql();
     const threadRows=await sql`
