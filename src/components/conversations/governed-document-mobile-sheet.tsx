@@ -609,7 +609,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
         {formOpen&&<div className={styles.governedEditModal} role="dialog" aria-modal="true" aria-label={editMode==='direct'?'تحرير مباشر':'تحرير حوكمي'}>
           <button type="button" className={styles.governedEditModalScrim} aria-label="إغلاق" onClick={()=>setFormOpen(false)}/>
           <form className={styles.governedAmendmentForm+' '+styles.governedEditModalCard+' ux-dialog-surface namaa-governance-editor-dialog '+(editMode==='direct'?styles.governedTypoForm:styles.governedGovernanceForm)} onSubmit={submit}>
-            <header className={styles.governedEditFormHeader}>
+            <header className={styles.governedEditFormHeader+' namaa-governance-editor-header'}>
               <span className={styles.governedEditFormIcon}><LucideIcon name={editMode==='direct'?'pencil':'landmark'} size={20}/></span>
               <div><strong>{editMode==='direct'?'تحرير مباشر':'تحرير حوكمي'}</strong><small>{editMode==='direct'?'إضافة أو تعديل أو حذف مباشر خلال مرحلة ضبط المنصة.':'إضافة أو تعديل أو حذف يمر بالاجتماع والمراجعة والاعتماد قبل النفاذ.'}</small></div>
               <button type="button" className={styles.governedEditClose+' ux-button ux-button--ghost'} onClick={()=>setFormOpen(false)} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button>
@@ -656,7 +656,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
             <p>{editMode==='direct'
               ?'يطبق التغيير فورًا في نسخة العرض الحالية ويسجل أثره. هذا المسار مخصص لمرحلة ضبط المنصة.'
               :'المسار: المحافظ، ثم أمين السر، ثم مجلس نماء الأعلى، ثم الاعتماد أو الرفض، ثم تاريخ النفاذ والإصدار الجديد.'}</p>
-            <div className={styles.governedAmendmentActions}><button type="button" className="ux-button ux-button--secondary" onClick={()=>setFormOpen(false)}>إلغاء</button><button type="submit" className="ux-button ux-button--primary" disabled={pending||!clauseRef.trim()||(changeAction!=='DELETE'&&!proposedRule.trim())}>{pending?'جارٍ الحفظ…':changeAction==='DELETE'?(editMode==='direct'?'حذف مباشر':'طلب الحذف'):(editMode==='direct'?'حفظ مباشر':'إرسال للمحافظ')}</button></div>
+            <div className={styles.governedAmendmentActions+' namaa-governance-editor-actions'}><button type="button" className="ux-button ux-button--secondary" onClick={()=>setFormOpen(false)}>إلغاء</button><button type="submit" className="ux-button ux-button--primary" disabled={pending||!clauseRef.trim()||(changeAction!=='DELETE'&&!proposedRule.trim())}>{pending?'جارٍ الحفظ…':changeAction==='DELETE'?(editMode==='direct'?'حذف مباشر':'طلب الحذف'):(editMode==='direct'?'حفظ مباشر':'إرسال للمحافظ')}</button></div>
           </form>
         </div>}
 
