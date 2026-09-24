@@ -11921,3 +11921,201 @@
     margin-inline:calc(var(--ux-space-1) * -1)!important
   }
 }
+
+
+/* Accounts and meetings management — compact, editable, and mobile-safe. */
+.accountSettings{
+  display:grid;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-4)
+}
+.accountSettingsToolbar,
+.meetingsToolbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--ux-space-3)
+}
+.accountSettingsToolbar>div{
+  display:grid;
+  gap:var(--ux-space-1)
+}
+.accountSettingsToolbar small{
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size)
+}
+.accountSettingsList{
+  display:grid;
+  gap:var(--ux-space-2)
+}
+.accountManageCard{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-surface-warm)
+}
+.accountManageCard>span{
+  display:grid;
+  gap:var(--ux-space-1);
+  min-width:0
+}
+.accountManageCard strong{
+  color:var(--ux-text-primary)
+}
+.accountManageCard small,
+.accountManageCard em{
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  font-style:normal
+}
+.accountManageActions,
+.meetingActions{
+  display:flex;
+  gap:var(--ux-space-1)
+}
+.accountManageActions button,
+.meetingActions button{
+  width:38px;
+  height:38px;
+  display:grid;
+  place-items:center;
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-2);
+  background:var(--namaa-card);
+  color:var(--namaa-green-900)
+}
+.accountEditorBackdrop,
+.meetingEditorBackdrop{
+  position:fixed;
+  inset:0;
+  z-index:120;
+  display:grid;
+  place-items:center;
+  padding:var(--ux-space-3);
+  background:color-mix(in srgb,var(--namaa-text) 30%,transparent)
+}
+.accountEditorModal,
+.meetingEditorModal{
+  width:min(560px,100%);
+  max-height:88dvh;
+  overflow:auto;
+  display:grid;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-4);
+  border:1px solid var(--namaa-border-strong);
+  border-radius:var(--ux-radius-4);
+  background:var(--namaa-card);
+  box-shadow:var(--ux-shadow-lg)
+}
+.accountEditorModal>header,
+.meetingEditorModal>header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--ux-space-3);
+  padding-bottom:var(--ux-space-2);
+  border-bottom:1px solid var(--namaa-border)
+}
+.accountEditorModal>header>button,
+.meetingEditorModal>header>button{
+  width:40px;
+  height:40px;
+  display:grid;
+  place-items:center;
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-full);
+  background:var(--namaa-card);
+  color:var(--namaa-green-900)
+}
+.accountEditorGrid,
+.meetingEditorModal>div{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:var(--ux-space-3)
+}
+.accountEditorGrid label,
+.meetingEditorModal label{
+  display:grid;
+  gap:var(--ux-space-1)
+}
+.accountEditorGrid label>span,
+.meetingEditorModal label>span{
+  font-size:var(--ux-type-caption-size);
+  font-weight:900;
+  color:var(--ux-text-primary)
+}
+.accountEditorGrid input,
+.meetingEditorModal input{
+  width:100%;
+  min-height:44px;
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-card);
+  color:var(--ux-text-primary);
+  padding:var(--ux-space-2) var(--ux-space-3);
+  font:inherit
+}
+.accountEditorModal>footer,
+.meetingEditorModal>footer{
+  display:flex;
+  justify-content:flex-end;
+  gap:var(--ux-space-2);
+  padding-top:var(--ux-space-2);
+  border-top:1px solid var(--namaa-border)
+}
+.meetingCard{
+  grid-template-columns:minmax(0,1fr) auto!important
+}
+.meetingActions{
+  grid-column:1/-1;
+  justify-content:flex-end
+}
+.meetingMissing{
+  margin:var(--ux-space-1) 0 0;
+  padding:var(--ux-space-2);
+  border:1px solid var(--namaa-gold-500);
+  border-radius:var(--ux-radius-2);
+  background:color-mix(in srgb,var(--namaa-gold-500) 10%,var(--namaa-card));
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-caption-size);
+  line-height:1.6
+}
+.meetingsList time{
+  direction:ltr;
+  unicode-bidi:plaintext;
+  font-variant-numeric:tabular-nums
+}
+
+@media (max-width:767px){
+  .accountSettingsToolbar{
+    align-items:stretch;
+    flex-direction:column
+  }
+  .accountSettingsToolbar .primaryActionButton,
+  .meetingsToolbar .primaryActionButton{
+    width:100%
+  }
+  .accountManageCard{
+    grid-template-columns:auto minmax(0,1fr)
+  }
+  .accountManageActions{
+    grid-column:1/-1;
+    justify-content:flex-end
+  }
+  .accountEditorGrid,
+  .meetingEditorModal>div{
+    grid-template-columns:1fr
+  }
+  .meetingCard{
+    grid-template-columns:1fr!important
+  }
+  .meetingCard time,
+  .meetingCard em{
+    grid-column:1!important;
+    justify-self:start!important
+  }
+}
