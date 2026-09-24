@@ -3123,10 +3123,14 @@ textarea {
   }
 
   .mustaqbali-topbar.namaa-topbar{
+    width:100%!important;
+    max-width:none!important;
+    margin:0!important;
+    box-sizing:border-box!important;
     position:sticky!important;
     top:0!important;
     z-index:140!important;
-    min-height:74px!important;
+    min-height:64px!important;
     display:grid!important;
     grid-template-columns:minmax(230px,.8fr) minmax(360px,1.7fr) minmax(220px,.8fr)!important;
     align-items:center!important;
@@ -3243,7 +3247,7 @@ textarea {
   .desktop-top-nav-wrap.namaa-wide-sidebar{
     position:fixed!important;
     z-index:135!important;
-    top:74px!important;
+    top:64px!important;
     inset-inline-start:0!important;
     bottom:0!important;
     width:min(330px,88vw)!important;
@@ -5052,7 +5056,7 @@ textarea {
     align-self:center!important;
   }
   .namaa-investments-building{
-    min-height:220px!important;
+    min-height:160px!important;
   }
 
   /* 6) الدردشة ظاهرة تلقائيًا داخل بطاقة فريق المحفظة */
@@ -5236,6 +5240,20 @@ textarea {
 
 
 /* BANK OPERATIONS — COMPACT VIEWPORT-SAFE AUTHORITY */
+@media (min-width:1024px){
+  .protected-app-shell>#main-content{
+    margin:0!important;
+    padding:0!important;
+    min-width:0!important;
+    width:100%!important;
+  }
+
+  .protected-app-shell>#main-content>.p47-page{
+    margin:0!important;
+    padding:0!important;
+  }
+}
+
 @media (min-width:768px){
   .p47-page{
     width:100%!important;
@@ -5258,7 +5276,7 @@ textarea {
   .namaa-banks-hero{
     display:grid!important;
     grid-template-columns:minmax(0,1fr)!important;
-    grid-template-rows:220px auto!important;
+    grid-template-rows:160px auto!important;
     gap:var(--ux-space-0)!important;
     min-height:0!important;
     padding:var(--ux-space-0)!important;
@@ -5343,7 +5361,7 @@ textarea {
   .namaa-banks-layout{
     width:100%!important;
     min-width:0!important;
-    grid-template-columns:minmax(220px,.72fr) minmax(0,2.25fr) minmax(220px,.72fr)!important;
+    grid-template-columns:minmax(190px,.62fr) minmax(0,2.55fr) minmax(190px,.62fr)!important;
     gap:var(--ux-space-3)!important;
     align-items:start!important;
     box-sizing:border-box!important;
@@ -5355,7 +5373,7 @@ textarea {
     min-width:0!important;
     min-height:0!important;
     height:auto!important;
-    padding:var(--ux-space-3)!important;
+    padding:var(--ux-space-2)!important;
     box-sizing:border-box!important;
   }
 
@@ -5372,9 +5390,9 @@ textarea {
   }
 
   .namaa-banks-team-list article > .namaa-banks-persona{
-    width:48px!important;
-    height:48px!important;
-    flex-basis:48px!important;
+    width:44px!important;
+    height:44px!important;
+    flex-basis:44px!important;
   }
 
   .namaa-banks-chat-link{
@@ -5450,11 +5468,11 @@ textarea {
   }
 
   .namaa-banks-hero{
-    grid-template-rows:180px auto!important;
+    grid-template-rows:150px auto!important;
   }
 
   .namaa-banks-building{
-    min-height:180px!important;
+    min-height:150px!important;
   }
 
   .namaa-banks-hero-copy{
