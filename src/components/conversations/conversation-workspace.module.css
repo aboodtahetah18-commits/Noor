@@ -12628,23 +12628,3 @@
   color:var(--ux-text-secondary);
   font-size:var(--ux-type-caption-size)
 }
-
-@media(max-width:767px){
-  .directoryTabs{
-    position:sticky;
-    top:var(--ux-space-0);
-    z-index:4;
-    padding-block:var(--ux-space-2);
-    background:var(--namaa-card)
-  }
-  .directoryTabs button{
-    min-height:44px;
-    padding-inline:var(--ux-space-1)
-  }
-  .meetingActions{
-    justify-content:stretch!important
-  }
-  .meetingActions button{
-    flex:1 1 0
-  }
-}
