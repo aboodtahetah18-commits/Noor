@@ -38,8 +38,8 @@ export const extendedProfileSections:ExtendedProfileSection[]=[
       addLabel:'إضافة فاتورة',
       emptyLabel:'لا توجد فواتير مسجلة بعد.',
       columns:[
-        {key:'name',label:'الفاتورة'},
-        {key:'amount',label:'القيمة',kind:'number'},
+        {key:'name',label:'الفاتورة',mobileVisible:true},
+        {key:'amount',label:'القيمة',kind:'number',mobileVisible:true},
         {key:'recurrence',label:'الدورية',kind:'select',options:['شهري','كل شهرين','ربع سنوي','نصف سنوي','سنوي','حسب الاستهلاك','أخرى']},
         {key:'due_day',label:'يوم الاستحقاق',kind:'number'},
       ],
@@ -54,8 +54,8 @@ export const extendedProfileSections:ExtendedProfileSection[]=[
       addLabel:'إضافة اشتراك',
       emptyLabel:'لا توجد اشتراكات مسجلة بعد.',
       columns:[
-        {key:'name',label:'الاشتراك'},
-        {key:'amount',label:'القيمة',kind:'number'},
+        {key:'name',label:'الاشتراك',mobileVisible:true},
+        {key:'amount',label:'القيمة',kind:'number',mobileVisible:true},
         {key:'recurrence',label:'الدورية',kind:'select',options:['شهري','ربع سنوي','نصف سنوي','سنوي','أخرى']},
         {key:'due_day',label:'يوم الاستحقاق',kind:'number'},
       ],
