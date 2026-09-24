@@ -20,7 +20,7 @@ export default async function FuturePressurePage({ searchParams }: { searchParam
   const forecast = decision?.forecast ?? null;
   if (!forecast) return <main className="app-page p47-pressure-page namaa-pressure-page" dir="rtl"><div className="page-shell p47-analysis-shell namaa-migrated-shell"><section className="empty-state"><h1>التوقع المالي المستقبلي</h1><p>لا توجد دورة مالية نشطة لبناء التوقع.</p><Link className="primary-link" href="/cycles/new">بدء دورة مالية</Link></section></div></main>;
 
-  return <main className="app-page p47-pressure-page" dir="rtl"><div className="page-shell p47-analysis-shell">
+  return <main className="app-page p47-pressure-page namaa-pressure-page" dir="rtl"><div className="page-shell p47-analysis-shell namaa-migrated-shell">
     <PageHeader className="p47-analysis-header namaa-migrated-header" eyebrow="التحليل المستقبلي" title="رادار الضغط المالي القادم" description="اقرأ موضع الضغط المالي المتوقع قبل اتخاذ أي قرار، ثم قارن السيناريوهات على أساس الأثر الفعلي." actions={<Link className="ux-button ux-button--secondary" href="/reports">العودة للتقارير</Link>}/>
 
     <WorkflowStageGuide ariaLabel="مراحل قراءة الضغط المالي" stages={[
