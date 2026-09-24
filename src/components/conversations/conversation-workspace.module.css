@@ -12894,3 +12894,55 @@
     font-size:calc(var(--ux-type-caption-size) - 1px)!important
   }
 }
+
+
+.savedFocusedChats{
+  display:grid;
+  gap:var(--ux-space-2);
+  margin-block-end:var(--ux-space-3)
+}
+.savedFocusedChatsHeading{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--ux-space-2);
+  padding-inline:var(--ux-space-1)
+}
+.savedFocusedChatsHeading strong{
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-caption-size)
+}
+.savedFocusedChatsHeading small{
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size)
+}
+.savedFocusedChat{
+  width:100%;
+  min-width:0;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:var(--ux-space-2);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-lg);
+  background:var(--namaa-card);
+  color:var(--ux-text-primary);
+  text-align:start
+}
+.savedFocusedChat>span{
+  min-width:0;
+  display:grid;
+  gap:var(--ux-space-1)
+}
+.savedFocusedChat strong{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap
+}
+.savedFocusedChat small{
+  color:var(--ux-text-secondary);
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap
+}
