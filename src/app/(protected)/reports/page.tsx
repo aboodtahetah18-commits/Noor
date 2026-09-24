@@ -12,7 +12,7 @@ export default async function ReportsPage() {
 
   if (!cycle) {
     return <main dir="rtl">
-      <section className="namaa-wide-only namaa-observatory-wide">
+      <section className="namaa-wide-only namaa-observatory-wide namaa-reports-desktop">
         <header className="namaa-observatory-hero namaa-wide-card">
           <div><p>الرقابة المالية</p><h1>المرصد</h1><span>مراقبة الاستقرار المالي والسيولة والمخاطر على مستوى المنصة كاملة.</span></div>
           <LucideIcon name="target" size={32}/>
@@ -36,7 +36,7 @@ export default async function ReportsPage() {
   const savingDelta = Number(report.saving.actual) - Number(report.saving.planned);
 
   return <main dir="rtl">
-    <section className="namaa-wide-only namaa-observatory-wide">
+    <section className="namaa-wide-only namaa-observatory-wide namaa-reports-desktop">
       <header className="namaa-observatory-hero namaa-wide-card">
         <div><p>الرقابة والاستقرار المالي</p><h1>المرصد</h1><span>مؤشرات المنصة كاملة مع المقارنات والتوقعات والتنبيهات المرتبطة بالمخاطر.</span></div>
         <div className="namaa-observatory-actions">
