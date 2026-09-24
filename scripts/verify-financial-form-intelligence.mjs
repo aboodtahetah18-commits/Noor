@@ -13,7 +13,7 @@ const checks=[
   ['src/components/conversations/extended-profile-sheet.tsx',/monthlyRecurringTotal/,'budget behavior formula'],
   ['src/components/conversations/extended-profile-sheet.tsx',/maintenanceForecast/,'maintenance forecast formula'],
   ['src/components/conversations/extended-profile-sheet.tsx',/vehicleOptions/,'linked vehicle options'],
-  ['src/app/globals.css',/SYSTEM-WIDE FINANCIAL FORM AUTHORITY/,'global modal authority'],
+  ['src/design-system/interaction-components.css',/Financial interaction intelligence/,'global modal authority'],
 ];
 
 const failures=[];
