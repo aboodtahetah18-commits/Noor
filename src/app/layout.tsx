@@ -21,6 +21,7 @@ import '../design-system/shell.css';
 import '../design-system/page-architecture.css';
 import '../design-system/governance.css';
 import '../design-system/financial.css';
+import '../design-system/advisor-execution.css';
 
 const notoSansArabic = Noto_Sans_Arabic({
   subsets: ['arabic'],
