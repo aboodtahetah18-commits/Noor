@@ -31,6 +31,7 @@ import { createGovernanceOversightDashboardReply, getGovernanceOversightDashboar
 import { applyOversightQuickActionCommand, parseOversightQuickActionCommand } from '@/lib/governance/governance-oversight-actions';
 import { applyGovernanceAmendmentConversationCommand, parseGovernanceAmendmentConversationCommand } from '@/lib/governance/governance-amendments';
 import { captureProactiveConversationLearning } from '@/lib/conversations/proactive-conversation-memory';
+import { createFocusedMeetingReply, createFocusedRoleReply } from '@/lib/conversations/focused-conversation-engine';
 
 export async function GET(_request: Request, context: { params: Promise<{ roomKey: string }> }) {
   const user = await getAuthenticatedUser();
@@ -108,7 +109,7 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
   const { roomKey } = await context.params;
   if (!isConversationRoomKey(roomKey)) return NextResponse.json({ code: 'CONVERSATION_ROOM_NOT_FOUND' }, { status: 404 });
   const user = await requireAuthenticatedMutationUser('conversation-message');
-  let body: { body?: unknown };
+  let body: { body?: unknown; direct_role_key?: unknown; meeting_id?: unknown };
   try {
     body = await request.json();
   } catch {
@@ -116,7 +117,14 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
   }
   try {
     const text = String(body.body ?? '');
-    const message = await appendUserMessage(user.id, user.name || 'أنت', roomKey, text);
+    const directRoleKey=typeof body.direct_role_key==='string'?body.direct_role_key.trim():'';
+    const meetingId=typeof body.meeting_id==='string'?body.meeting_id.trim():'';
+    const scopeData:Record<string,unknown>=directRoleKey
+      ?{scope_kind:'role',role_key:directRoleKey}
+      :meetingId
+        ?{scope_kind:'meeting',meeting_id:meetingId}
+        :{};
+    const message = await appendUserMessage(user.id, user.name || 'أنت', roomKey, text, scopeData);
     await captureProactiveConversationLearning(user.id,roomKey,text);
     const capturedOperation = message?.id
       ? await routePurchaseMessageToOperations({userId:user.id,sourceRoom:roomKey,sourceMessageId:String(message.id),text})
@@ -125,6 +133,18 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
     const onboarding = await getGovernorOnboardingStatus(user.id);
     if (!onboarding.complete && roomKey !== 'central') {
       return NextResponse.json({ code: 'ONBOARDING_REQUIRED', onboarding }, { status: 423 });
+    }
+
+    if(directRoleKey){
+      const focused=await createFocusedRoleReply({userId:user.id,roomKey,roleKey:directRoleKey,userText:text});
+      if(!focused)return NextResponse.json({message,code:'FOCUSED_ROLE_CHAT_UNAVAILABLE',captured_operation:capturedOperation},{status:409});
+      return NextResponse.json({message,reply:focused,replies:[focused],captured_operation:capturedOperation},{status:201});
+    }
+    if(meetingId){
+      if(roomKey!=='council')return NextResponse.json({message,code:'MEETING_CHAT_ROOM_INVALID',captured_operation:capturedOperation},{status:409});
+      const focused=await createFocusedMeetingReply({userId:user.id,meetingId,userText:text});
+      if(!focused)return NextResponse.json({message,code:'FOCUSED_MEETING_CHAT_UNAVAILABLE',captured_operation:capturedOperation},{status:409});
+      return NextResponse.json({message,reply:focused,replies:[focused],captured_operation:capturedOperation},{status:201});
     }
 
     let reply: PersistedReply | null = null;
