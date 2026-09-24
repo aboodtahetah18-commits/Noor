@@ -387,7 +387,8 @@
   align-self:flex-end;
   margin-left:auto;
   margin-right:var(--ux-space-0);
-  width:min(820px,92%);
+  width:fit-content;
+  max-width:min(720px,88%);
   background:var(--namaa-agent-message);
   border-color:var(--namaa-border-strong)
 }
@@ -2820,7 +2821,28 @@
 }
 .oversightUserActionButtons button:disabled{opacity:.55;cursor:not-allowed}
 
-.messageCopy{white-space:pre-wrap;overflow-wrap:anywhere;font-weight:800}
+.messageCopy{
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  font-weight:750;
+  line-height:1.72
+}
+.agentMessage .messageCopy{
+  max-width:68ch
+}
+.onboardingMessageContent{
+  display:grid;
+  gap:var(--ux-space-2)
+}
+.onboardingMessageContent>p{
+  margin:0;
+  white-space:pre-wrap;
+  line-height:1.72
+}
+.onboardingPlainQuestion{
+  font-weight:850;
+  color:var(--ux-text-primary)
+}
 .messageMeta{
   display:flex;
   align-items:center;
@@ -12945,4 +12967,12 @@
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap
+}
+
+
+@media (max-width:767px){
+  .agentMessage{
+    width:fit-content;
+    max-width:92%;
+  }
 }
