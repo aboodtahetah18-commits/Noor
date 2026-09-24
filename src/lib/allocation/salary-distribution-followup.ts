@@ -75,11 +75,36 @@ export async function confirmSalaryDistributionStep(userId:string,text:string){
     return typeof d?.instruction_key==='string'?d.instruction_key:'';
   }).filter(Boolean));
   const pending=instructions.filter(item=>item.status==='READY'&&!confirmedKeys.has(item.key));
-  if(!pending.length)return {status:'ALL_CONFIRMED' as const,reply:null};
+  if(!pending.length){
+    const body='جميع تعليمات توزيع الراتب الجاهزة لهذه الدورة مسجلة كمكتملة بالفعل. سأنتقل الآن إلى متابعة الصرف الفعلي والمراجعات الدورية.';
+    const rows=await sql`
+      insert into public.conversation_messages(
+        id,thread_id,user_id,sender_type,sender_key,sender_name,message_kind,body,structured_data
+      ) values(
+        ${randomUUID()},${String(activation.thread_id)}::uuid,${userId}::uuid,'agent','budget-spending-owner','مسؤول الميزانية والإنفاق','followup',
+        ${body},${JSON.stringify({salary_distribution_confirmation:true,cycle_id:cycleId,distribution_complete:true,external_execution:false})}::jsonb
+      )
+      returning id,sender_type,sender_key,sender_name,message_kind,body,structured_data,created_at
+    `;
+    return {status:'ALL_CONFIRMED' as const,reply:rows[0]??null};
+  }
 
   const ranked=pending.map(item=>({item,score:scoreInstruction(text,item)})).sort((a,b)=>b.score-a.score);
   const selected=ranked[0]&&ranked[0].score>0?ranked[0].item:pending.length===1?pending[0]:null;
-  if(!selected)return {status:'NEEDS_CLARIFICATION' as const,reply:null,pending};
+  if(!selected){
+    const choices=pending.slice(0,5).map(item=>item.title).join('، ');
+    const body='لم أحدد أي بند تقصد بالتأكيد دون تخمين. اذكر اسم البند الذي تم تحويله، مثل: '+choices+'.';
+    const rows=await sql`
+      insert into public.conversation_messages(
+        id,thread_id,user_id,sender_type,sender_key,sender_name,message_kind,body,structured_data
+      ) values(
+        ${randomUUID()},${String(activation.thread_id)}::uuid,${userId}::uuid,'agent','budget-spending-owner','مسؤول الميزانية والإنفاق','request',
+        ${body},${JSON.stringify({salary_distribution_clarification:true,cycle_id:cycleId,pending_instructions:pending,external_execution:false})}::jsonb
+      )
+      returning id,sender_type,sender_key,sender_name,message_kind,body,structured_data,created_at
+    `;
+    return {status:'NEEDS_CLARIFICATION' as const,reply:rows[0]??null,pending};
+  }
 
   const remaining=pending.filter(item=>item.key!==selected.key);
   const next=remaining[0]??null;
