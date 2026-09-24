@@ -158,6 +158,10 @@
 
 /* Conversation owns its desktop rails; do not apply the global sidebar offset twice. */
 @media (min-width:1024px) {
+  .protected-app-shell:has(.namaa-conversation-page) .desktop-top-nav-wrap {
+    display:none !important;
+  }
+
   .main-content-focus-target:has(.namaa-conversation-page) {
     padding-inline-start:0;
   }
@@ -173,3 +177,4 @@
     margin:0;
   }
 }
+
