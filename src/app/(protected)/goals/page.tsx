@@ -15,10 +15,24 @@ export default async function Page({searchParams}:{searchParams:Promise<{error?:
   const goals=data.items;
   const totalRemaining=goals.reduce((sum,g)=>sum+Number(g.remainingAmount??0),0);
   const cycleGap=goals.reduce((sum,g)=>sum+Math.max(0,Number(g.gapThisCycle??0)),0);
+  const requiredThisCycle=goals.reduce((sum,g)=>sum+Math.max(0,Number(g.requiredContribution??0)),0);
+  const approvedThisCycle=goals.reduce((sum,g)=>sum+Math.max(0,Number(g.approvedThisCycle??0)),0);
+  const cycleFundingPercent=requiredThisCycle>0?Math.min(100,Math.round((approvedThisCycle/requiredThisCycle)*100)):(goals.length?100:0);
   const today=new Date().toISOString().slice(0,10);
 
   return <main className="page-shell p47-goals-page" dir="rtl">
     <header className="page-header p47-section-header"><div><p className="eyebrow">التخطيط المالي</p><div className="title-with-help"><h1>الأهداف والرحلات</h1></div><p className="muted">حوّل أهدافك إلى مسار تمويل واضح: الرصيد الحالي، المطلوب لهذه الدورة، الموعد، والفجوة إن وجدت.</p></div><ActionDialog title="إنشاء هدف مالي" description="أدخل بيانات الهدف دون مغادرة المحفظة." size="lg" triggerClassName="p47-primary-action" trigger="+ هدف جديد"><form action={createGoalAction} className="form-grid"><label>اسم الهدف<input name="name" required placeholder="مثال: سفر الشتاء"/></label><label>قيمة الهدف<input name="targetAmount" inputMode="decimal" required placeholder="5000"/></label><label>الرصيد الحالي<input name="openingBalance" inputMode="decimal" defaultValue="0.00"/></label><label>تاريخ البداية<input name="startDate" type="date" required defaultValue={today}/></label><label>التاريخ المستهدف<input name="targetDate" type="date"/></label><label>الأولوية<input name="priority" type="number" min="1" placeholder="1"/></label><button className="primary-button" type="submit">إنشاء الهدف</button></form></ActionDialog></header>
+    <section className="namaa-wide-only namaa-goals-overview">
+      <article className="tone-gold"><span>الأهداف النشطة</span><strong>{goals.length}</strong><small>هدف مالي جارٍ</small></article>
+      <article className="tone-green"><span>إجمالي المتبقي</span><strong>{formatSar(totalRemaining.toFixed(2))}</strong><small>حتى إكمال كل الأهداف</small></article>
+      <article className="tone-sand"><span>المطلوب لهذه الدورة</span><strong>{formatSar(requiredThisCycle.toFixed(2))}</strong><small>{formatSar(approvedThisCycle.toFixed(2))} معتمد</small></article>
+      <article className="tone-rose"><span>فجوة التمويل</span><strong>{formatSar(cycleGap.toFixed(2))}</strong><small>{cycleGap>0?'تحتاج معالجة':'لا توجد فجوة حالية'}</small></article>
+      <div className="namaa-goals-funding-visual">
+        <div><span>تمويل الدورة الحالية</span><strong>{cycleFundingPercent}٪</strong><small>نسبة المبلغ المعتمد إلى المطلوب لهذه الدورة</small></div>
+        <div className="namaa-goals-progress-track"><i style={{width:`${cycleFundingPercent}%`}}/></div>
+      </div>
+    </section>
+
     {q.error?<p className="error-banner" role="alert">{q.error}</p>:null}
     {goalResult.error?<p className="warning-banner" role="status">تعذر تحديث بيانات الأهداف الآن. يمكنك إعادة فتح الصفحة أو إنشاء هدف جديد، ولن تتوقف بقية المنصة.</p>:null}
     {q.commitment?<p className="success-banner">تم اعتماد مبلغ هذه الدورة للهدف. لم يتم تنفيذ أي تحويل مالي تلقائي.</p>:null}
