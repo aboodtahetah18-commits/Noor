@@ -27,13 +27,28 @@ const banks = {
 
 type BankKey=keyof typeof banks;
 
-export function BanksWide({selected,pendingReviewCount,pendingItems}:{selected:BankKey;pendingReviewCount:number;pendingItems:PendingItem[]}){
+type DashboardData={
+  activeAccountCount:number;
+  totalLiquidity:number;
+  activeGoalCount:number;
+  goalsRemaining:number;
+  goalsGap:number;
+  emergencyBalance:number;
+  emergencyProgress:number;
+  emergencyCoverageMonths:number|null;
+  savingsActual:number;
+  savingsPlanned:number;
+};
+
+export function BanksWide({selected,pendingReviewCount,pendingItems,dashboardData}:{selected:BankKey;pendingReviewCount:number;pendingItems:PendingItem[];dashboardData:DashboardData}){
   const bank=banks[selected];
   const pendingValue=pendingItems.reduce((sum,item)=>sum+Math.abs(Number(item.amount)||0),0);
   const debitValue=pendingItems.filter(item=>item.direction==='DEBIT').reduce((sum,item)=>sum+Math.abs(Number(item.amount)||0),0);
   const creditValue=pendingItems.filter(item=>item.direction!=='DEBIT').reduce((sum,item)=>sum+Math.abs(Number(item.amount)||0),0);
   const debitShare=pendingValue>0?Math.round((debitValue/pendingValue)*100):0;
-  const reviewedShare=pendingReviewCount===0?100:0;
+  const reviewedShare=pendingReviewCount===0?100:Math.max(0,Math.min(95,100-pendingReviewCount*10));
+  const savingsProgress=dashboardData.savingsPlanned>0?Math.min(100,Math.round((dashboardData.savingsActual/dashboardData.savingsPlanned)*100)):0;
+  const goalFundingProgress=dashboardData.goalsRemaining>0?Math.max(0,Math.min(100,Math.round((1-dashboardData.goalsGap/dashboardData.goalsRemaining)*100))):100;
   const maxPending=Math.max(1,...pendingItems.map(item=>Math.abs(Number(item.amount)||0)));
   return <section className="namaa-wide-only namaa-banks-wide" dir="rtl">
     <header className="namaa-banks-hero namaa-wide-card">
@@ -56,30 +71,31 @@ export function BanksWide({selected,pendingReviewCount,pendingItems}:{selected:B
         <div className="namaa-investments-section-title"><div><p>لوحة البنك</p><h2>{bank.name}</h2></div><LucideIcon name="chart" size={20}/></div>
         <p className="namaa-banks-subtitle">{bank.subtitle}</p>
         <div className="namaa-banks-kpis namaa-banks-kpis-dashboard">
-          <article className="tone-gold"><span>العمليات المعلقة</span><strong>{pendingReviewCount}</strong><small>{pendingReviewCount?'تحتاج مراجعة':'لا توجد عمليات معلقة'}</small></article>
-          <article className="tone-sand"><span>قيمة العمليات قيد المراجعة</span><strong>{formatSar(String(pendingValue))}</strong><small>إجمالي القيم الظاهرة في قائمة المراجعة</small></article>
-          <article className="tone-green"><span>المصروفات قيد المراجعة</span><strong>{formatSar(String(debitValue))}</strong><small>{debitShare}٪ من القيمة المعلقة</small></article>
-          <article className="tone-olive"><span>الإيرادات/الائتمانات قيد المراجعة</span><strong>{formatSar(String(creditValue))}</strong><small>العملة التشغيلية: SAR</small></article>
+          <article className="tone-gold"><span>إجمالي السيولة</span><strong>{formatSar(String(dashboardData.totalLiquidity))}</strong><small>{dashboardData.activeAccountCount} حساب نشط</small></article>
+          <article className="tone-sand"><span>الأهداف النشطة</span><strong>{dashboardData.activeGoalCount}</strong><small>{formatSar(String(dashboardData.goalsRemaining))} متبقي</small></article>
+          <article className="tone-green"><span>صندوق الطوارئ</span><strong>{formatSar(String(dashboardData.emergencyBalance))}</strong><small>{Math.round(dashboardData.emergencyProgress)}٪ من الهدف{dashboardData.emergencyCoverageMonths!=null?` · ${dashboardData.emergencyCoverageMonths} شهر تغطية`:''}</small></article>
+          <article className="tone-olive"><span>الادخار المحول</span><strong>{formatSar(String(dashboardData.savingsActual))}</strong><small>{savingsProgress}٪ من المخصص</small></article>
         </div>
 
         <section className="namaa-banks-visual-dashboard">
           <article className="namaa-bank-donut-card tone-deep">
             <div>
-              <span>توزيع القيمة المعلقة</span>
-              <strong>{debitShare}٪ مصروفات</strong>
-              <small>{pendingValue>0?'حسب العمليات الحالية':'لا توجد قيمة معلقة الآن'}</small>
+              <span>تغطية فجوة الأهداف</span>
+              <strong>{goalFundingProgress}٪ ممول</strong>
+              <small>{dashboardData.goalsGap>0?`فجوة حالية ${formatSar(String(dashboardData.goalsGap))}`:'لا توجد فجوة تمويل حالية'}</small>
             </div>
-            <div className="namaa-bank-donut" style={{'--namaa-donut-share':`${debitShare}%`} as React.CSSProperties}><b>{debitShare}٪</b></div>
+            <div className="namaa-bank-donut" style={{'--namaa-donut-share':`${goalFundingProgress}%`} as React.CSSProperties}><b>{goalFundingProgress}٪</b></div>
           </article>
           <article className="namaa-bank-progress-card tone-blue">
-            <div><span>حالة المراجعة</span><strong>{reviewedShare}٪</strong><small>{pendingReviewCount===0?'مكتملة':'بانتظار حسم العمليات المعلقة'}</small></div>
+            <div><span>جاهزية المراجعة</span><strong>{reviewedShare}٪</strong><small>{pendingReviewCount===0?'كل العمليات الحالية محسومة':`${pendingReviewCount} عملية ما زالت تحتاج مراجعة`}</small></div>
             <div className="namaa-bank-progress-track"><i style={{width:`${reviewedShare}%`}}/></div>
+            <div className="namaa-bank-progress-split"><span>القيمة المعلقة</span><b>{formatSar(String(pendingValue))}</b></div>
           </article>
           <article className="namaa-bank-bars-card tone-rose">
-            <div><span>أعلى العمليات قيمة</span><strong>{pendingItems.length?Math.min(5,pendingItems.length):0} عملية</strong><small>مقارنة بالقيمة وليس بعدد السجلات</small></div>
+            <div><span>أعلى العمليات المعلقة</span><strong>{pendingItems.length?Math.min(5,pendingItems.length):0} عملية</strong><small>القيمة المالية لكل عملية مقارنة بأعلى عملية حالية</small></div>
             <div className="namaa-bank-bars">
               {pendingItems.slice(0,5).map(item=><div key={item.rowId}><span>{item.description}</span><i style={{width:`${Math.max(6,(Math.abs(Number(item.amount)||0)/maxPending)*100)}%`}}/><b>{formatSar(item.amount)}</b></div>)}
-              {pendingItems.length===0?<p>لا توجد عمليات لعرضها.</p>:null}
+              {pendingItems.length===0?<p>لا توجد عمليات معلقة لعرضها.</p>:null}
             </div>
           </article>
         </section>
