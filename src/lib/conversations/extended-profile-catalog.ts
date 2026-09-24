@@ -19,6 +19,8 @@ export type ExtendedProfileSection={
   summary:string;
   fields:ExtendedProfileField[];
   hiddenByDefault?:boolean;
+  managedElsewhere?:boolean;
+  foundationFactKey?:string;
   table?:{
     addLabel:string;
     emptyLabel:string;
@@ -64,12 +66,20 @@ export const extendedProfileSections:ExtendedProfileSection[]=[
   {
     key:'housing_details',
     title:'السكن والمرافق',
-    summary:'تفاصيل السكن والفواتير والصيانة التي تؤثر على الميزانية والسيولة.',
-    fields:[
-      {key:'housing_type',label:'نوع السكن',kind:'select',options:['ملك','إيجار','مع العائلة','سكن جهة العمل','غير ذلك']},
-      {key:'monthly_housing_cost',label:'التكلفة الشهرية الفعلية',kind:'number'},
-      {key:'maintenance_notes',label:'صيانة أو إصلاحات معروفة قادمة',kind:'textarea'},
-    ],
+    summary:'كل سجل سكن أو مرفق يضاف مرة واحدة ثم يظهر في جدول قابل للتعديل والحذف.',
+    fields:[],
+    table:{
+      addLabel:'إضافة سجل سكن أو مرفق',
+      emptyLabel:'لا توجد بيانات سكن أو مرافق مسجلة بعد.',
+      columns:[
+        {key:'category',label:'النوع',kind:'select',options:['سكن','إيجار','مرفق','صيانة','إصلاح','أخرى'],mobileVisible:true},
+        {key:'name',label:'البيان',mobileVisible:true},
+        {key:'amount',label:'القيمة',kind:'number',mobileVisible:true},
+        {key:'recurrence',label:'الدورية',kind:'select',options:['شهري','ربع سنوي','نصف سنوي','سنوي','مرة واحدة','عند الحاجة']},
+        {key:'due_day',label:'يوم الاستحقاق',kind:'number'},
+        {key:'notes',label:'ملاحظات',kind:'textarea'},
+      ],
+    },
   },
   {
     key:'vehicle_details',
@@ -86,7 +96,9 @@ export const extendedProfileSections:ExtendedProfileSection[]=[
         {key:'ownership',label:'الملكية',kind:'select',options:['مملوكة','تمويل','إيجار','جهة العمل','أخرى']},
         {key:'monthly_distance',label:'المسافة الشهرية كم',kind:'number'},
         {key:'fuel_type',label:'نوع الطاقة',kind:'select',options:['بنزين','ديزل','كهرباء','هجين','أخرى']},
-        {key:'efficiency_notes',label:'الكفاءة أو الاستهلاك'},
+        {key:'fuel_efficiency',label:'الكفاءة كم/لتر',kind:'number'},
+        {key:'fuel_price',label:'سعر اللتر',kind:'number'},
+        {key:'estimated_fuel_cost',label:'تكلفة الوقود الشهرية التقديرية',kind:'number',mobileVisible:true},
         {key:'notes',label:'ملاحظات',kind:'textarea'},
       ],
     },
@@ -101,10 +113,13 @@ export const extendedProfileSections:ExtendedProfileSection[]=[
       emptyLabel:'لا توجد أعمال صيانة مسجلة بعد.',
       columns:[
         {key:'name',label:'الصيانة',mobileVisible:true},
-        {key:'vehicle',label:'المركبة'},
-        {key:'amount',label:'القيمة',kind:'number',mobileVisible:true},
-        {key:'recurrence',label:'الدورية',kind:'select',options:['شهري','كل 3 أشهر','كل 6 أشهر','سنوي','حسب الكيلومترات','عند الحاجة']},
-        {key:'due_day',label:'يوم الاستحقاق',kind:'number'},
+        {key:'vehicle',label:'المركبة',kind:'select',mobileVisible:true},
+        {key:'schedule_pattern',label:'نمط الجدولة',kind:'select',options:['ثابت','متناوب']},
+        {key:'interval_value',label:'كل كم',kind:'number'},
+        {key:'interval_unit',label:'الوحدة',kind:'select',options:['شهر','ألف كم']},
+        {key:'primary_amount',label:'قيمة الدورة الأولى',kind:'number',mobileVisible:true},
+        {key:'alternate_name',label:'الدورة المتناوبة'},
+        {key:'alternate_amount',label:'قيمة الدورة المتناوبة',kind:'number'},
         {key:'notes',label:'ملاحظات',kind:'textarea'},
       ],
     },
@@ -119,7 +134,7 @@ export const extendedProfileSections:ExtendedProfileSection[]=[
       emptyLabel:'لا توجد إلزامات مركبة مسجلة بعد.',
       columns:[
         {key:'name',label:'الإلزام',mobileVisible:true},
-        {key:'vehicle',label:'المركبة'},
+        {key:'vehicle',label:'المركبة',kind:'select',mobileVisible:true},
         {key:'amount',label:'القيمة',kind:'number',mobileVisible:true},
         {key:'recurrence',label:'الدورية',kind:'select',options:['شهري','ربع سنوي','نصف سنوي','سنوي','كل سنتين','عند الحاجة']},
         {key:'due_day',label:'يوم الاستحقاق',kind:'number'},
@@ -131,18 +146,23 @@ export const extendedProfileSections:ExtendedProfileSection[]=[
     key:'travel_profile',
     hiddenByDefault:true,
     title:'الرحلات والسفر',
-    summary:'نمط الرحلات والتكاليف والحجوزات والعملة دون اعتبار الخطة التزامًا قبل ثبوتها.',
-    fields:[
-      {key:'trip_purpose',label:'الغرض أو نوع الرحلة'},
-      {key:'destination',label:'الوجهة'},
-      {key:'start_date',label:'تاريخ البداية إن عرف',kind:'date'},
-      {key:'end_date',label:'تاريخ النهاية إن عرف',kind:'date'},
-      {key:'travelers',label:'عدد المسافرين الذين تتحمل تكلفتهم',kind:'number'},
-      {key:'transport',label:'وسيلة النقل'},
-      {key:'lodging_notes',label:'السكن أو الحجز',kind:'textarea'},
-      {key:'budget_notes',label:'ميزانية أو تكاليف معروفة',kind:'textarea'},
-      {key:'currency',label:'عملة الإنفاق إن كانت مختلفة'},
-    ],
+    summary:'لا يظهر هذا القسم إلا عند وجود رحلة فعلية؛ كل رحلة سجل مستقل قابل للتعديل والحذف.',
+    fields:[],
+    table:{
+      addLabel:'إضافة رحلة',
+      emptyLabel:'لا توجد رحلات مسجلة.',
+      columns:[
+        {key:'trip_purpose',label:'الغرض أو نوع الرحلة',mobileVisible:true},
+        {key:'destination',label:'الوجهة',mobileVisible:true},
+        {key:'start_date',label:'تاريخ البداية',kind:'date'},
+        {key:'end_date',label:'تاريخ النهاية',kind:'date'},
+        {key:'travelers',label:'عدد المسافرين',kind:'number'},
+        {key:'transport',label:'وسيلة النقل'},
+        {key:'budget',label:'الميزانية',kind:'number',mobileVisible:true},
+        {key:'currency',label:'العملة'},
+        {key:'notes',label:'ملاحظات',kind:'textarea'},
+      ],
+    },
   },
   {
     key:'budget_behavior',
@@ -157,9 +177,10 @@ export const extendedProfileSections:ExtendedProfileSection[]=[
       columns:[
         {key:'category',label:'البند',kind:'select',mobileVisible:true},
         {key:'custom_category',label:'اسم البند الجديد'},
-        {key:'frequency',label:'التكرار',placeholder:'مثال: 4 مرات شهريًا'},
-        {key:'average_amount',label:'متوسط العملية',kind:'number',mobileVisible:true},
-        {key:'monthly_limit',label:'الحد الشهري إن وجد',kind:'number'},
+        {key:'frequency_period',label:'التكرار',kind:'select',options:['يومي','أسبوعي','شهري'],mobileVisible:true},
+        {key:'occurrences',label:'عدد المرات',kind:'number'},
+        {key:'unit_cost',label:'تكلفة المرة الواحدة',kind:'number'},
+        {key:'monthly_total',label:'الإجمالي الشهري',kind:'number',mobileVisible:true},
         {key:'notes',label:'ملاحظات',kind:'textarea'},
       ],
     },
@@ -204,6 +225,7 @@ export const extendedProfileSections:ExtendedProfileSection[]=[
   },
   {
     key:'assets_investments',
+    managedElsewhere:true,
     title:'الأصول والاستثمارات',
     summary:'سجل الأصول العامة والأسهم المباشرة هنا. الصناديق والمحافظ الاستثمارية التفصيلية تُدار من صفحة البنك المختص.',
     fields:[],
@@ -227,6 +249,28 @@ export const extendedProfileSections:ExtendedProfileSection[]=[
         {key:'total_cost',label:'إجمالي التكلفة',kind:'number'},
         {key:'market_price',label:'سعر السهم الحالي',kind:'number'},
         {key:'market_value',label:'القيمة السوقية',kind:'number'},
+      ],
+    },
+  },
+  {
+    key:'obligations',
+    foundationFactKey:'obligations',
+    title:'الالتزامات',
+    summary:'الالتزامات المسجلة سابقًا تظهر هنا ويمكن تعديلها أو إضافة التزام جديد أو حذفه.',
+    fields:[],
+    table:{
+      addLabel:'إضافة التزام',
+      emptyLabel:'لا توجد التزامات مسجلة بعد.',
+      columns:[
+        {key:'name',label:'الالتزام',mobileVisible:true},
+        {key:'provider',label:'الجهة'},
+        {key:'amount',label:'القيمة',kind:'number',mobileVisible:true},
+        {key:'recurrence',label:'الدورية',kind:'select',options:['شهري','كل شهرين','ربع سنوي','نصف سنوي','سنوي','مرة واحدة','أخرى']},
+        {key:'due_day',label:'يوم الاستحقاق',kind:'number'},
+        {key:'remaining_balance',label:'الرصيد المتبقي',kind:'number'},
+        {key:'end_date',label:'تاريخ الانتهاء',kind:'date'},
+        {key:'finance_cost',label:'تكلفة التمويل',kind:'number'},
+        {key:'notes',label:'ملاحظات',kind:'textarea'},
       ],
     },
   },
