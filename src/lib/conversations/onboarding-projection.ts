@@ -1,4 +1,5 @@
 import { getRawSql } from '@/infrastructure/db/client';
+import { reconcileConfirmedOnboardingAccounts } from '@/lib/conversations/onboarding-account-reconciliation';
 
 type ProjectionSummary = {
   accounts_created:number;
@@ -149,6 +150,9 @@ export async function projectConfirmedOnboardingFacts(userId:string):Promise<Pro
       `;
     }
   }
+
+  const reconciliation=await reconcileConfirmedOnboardingAccounts(userId);
+  accountsCreated+=reconciliation.created;
 
   const goalFact=byKey.get('goals');
   const structuredGoals=factItems(goalFact);

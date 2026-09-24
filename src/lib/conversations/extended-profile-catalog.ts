@@ -176,20 +176,37 @@ export const extendedProfileSections:ExtendedProfileSection[]=[
   {
     key:'budget_behavior',
     title:'سلوك بنود الميزانية',
-    summary:'أضف كل بند مرة واحدة. البنود التي تم تسجيلها تختفي من قائمة الاختيار، ويمكنك إنشاء بند جديد عبر «أخرى».',
+    summary:'يمكن تسجيل البند نفسه بأكثر من سياق، مثل مطاعم أيام العمل ومطاعم نهاية الأسبوع، مع حساب كل نمط مستقلًا.',
     fields:[],
     table:{
       addLabel:'إضافة بند',
       emptyLabel:'ابدأ بأول بند من سلوكك الفعلي.',
-      categoryOptions:['المطاعم','المقاهي','البقالة','الاتصالات','الترفيه','العناية الشخصية','الهدايا والمناسبات','الملابس','التوصيل','أخرى'],
+      categoryOptions:['المطاعم','المقاهي','البقالة','الاتصالات','الترفيه','العناية الشخصية','الهدايا والمناسبات','الملابس','التوصيل','الدورات والتطوير','أخرى'],
       allowCustomCategory:true,
       columns:[
         {key:'category',label:'البند',kind:'select',mobileVisible:true},
         {key:'custom_category',label:'اسم البند الجديد'},
+        {key:'spend_context',label:'سياق المصروف',kind:'select',options:['أيام العمل','نهاية الأسبوع','جميع الأيام','موسمي أو مناسبة','حسب الحاجة'],mobileVisible:true},
+        {key:'beneficiary',label:'المستفيد',kind:'select'},
         {key:'frequency_period',label:'التكرار',kind:'select',options:['يومي','أسبوعي','شهري'],mobileVisible:true},
         {key:'occurrences',label:'عدد المرات في فترة التكرار',kind:'number'},
         {key:'unit_cost',label:'تكلفة المرة الواحدة',kind:'number'},
         {key:'monthly_total',label:'الإجمالي الشهري المحسوب',kind:'number',mobileVisible:true},
+        {key:'notes',label:'ملاحظات',kind:'textarea'},
+      ],
+    },
+  },
+  {
+    key:'beneficiaries',
+    title:'المستفيدون',
+    summary:'أضف الأشخاص الذين ترتبط بهم مصاريف أو دورات أو التزامات، ثم استخدمهم مباشرة من قوائم الاختيار في بقية النماذج.',
+    fields:[],
+    table:{
+      addLabel:'إضافة مستفيد',
+      emptyLabel:'لا توجد بيانات مستفيدين بعد.',
+      columns:[
+        {key:'name',label:'اسم المستفيد',mobileVisible:true},
+        {key:'relationship',label:'العلاقة',kind:'select',options:['أنا','زوج/زوجة','ابن/ابنة','والد/والدة','قريب','موظف أو عامل','جهة أو مؤسسة','أخرى'],mobileVisible:true},
         {key:'notes',label:'ملاحظات',kind:'textarea'},
       ],
     },
@@ -204,7 +221,7 @@ export const extendedProfileSections:ExtendedProfileSection[]=[
       emptyLabel:'لا توجد مصروفات صحية أو تعليمية أو أسرية مسجلة بعد.',
       columns:[
         {key:'category',label:'النوع',kind:'select',options:['صحة','تأمين صحي','تعليم','دورة أو تدريب','دعم الأب أو الأم','مصروف أسري','مصاريف أطفال','أخرى'],mobileVisible:true},
-        {key:'beneficiary',label:'المستفيد'},
+        {key:'beneficiary',label:'المستفيد',kind:'select'},
         {key:'amount',label:'القيمة',kind:'number',mobileVisible:true},
         {key:'recurrence',label:'الدورية',kind:'select',options:['شهري','ربع سنوي','نصف سنوي','سنوي','موسمي','مرة واحدة','عند الحاجة']},
         {key:'due_day',label:'يوم الاستحقاق',kind:'number'},

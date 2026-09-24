@@ -210,7 +210,7 @@ export function ExtendedProfileSheet({
     for(const column of section.table?.columns??[]) row[column.key]='';
     if(section.table?.columns.some(column=>column.key==='recurrence')) row.recurrence='شهري';
     if(section.key==='vehicle_maintenance') row.schedule_pattern='ثابت';
-    if(section.key==='budget_behavior') row.frequency_period='شهري';
+    if(section.key==='budget_behavior'){row.frequency_period='شهري';row.spend_context='جميع الأيام';}
     return row;
   }
 
@@ -300,7 +300,7 @@ export function ExtendedProfileSheet({
       const next={...current,[key]:value};
       if(active?.key==='budget_behavior'){
         const period=(next.frequency_period||'شهري') as 'يومي'|'أسبوعي'|'شهري';
-        next.monthly_total=String(monthlyRecurringTotal(period,Number(next.occurrences||0),Number(next.unit_cost||0)));
+        next.monthly_total=String(monthlyRecurringTotal(period,Number(next.occurrences||0),Number(next.unit_cost||0),next.spend_context));
       }
       if(active?.key==='vehicle_details'){
         next.estimated_fuel_cost=String(fuelMonthlyCost(
@@ -378,9 +378,10 @@ export function ExtendedProfileSheet({
   const isLast=activeIndex===visibleSections.length-1;
   const displayColumns=active?.table?.columns.filter(column=>column.key!=='custom_category')??[];
   const categoryOptions=active?.table?.categoryOptions??[];
-  const usedCategories=new Set(active?.key==='budget_behavior'?tableRows.map(row=>row.category).filter(Boolean):[]);
   const vehicleRows=tableRowsFromFact(sections.find(section=>section.key==='vehicle_details')??null,facts.vehicle_details);
+  const beneficiaryRows=tableRowsFromFact(sections.find(section=>section.key==='beneficiaries')??null,facts.beneficiaries);
   const vehicleOptions=vehicleRows.map(row=>row.vehicle_name).filter(Boolean);
+  const beneficiaryOptions=[...new Set(beneficiaryRows.map(row=>row.name).filter(Boolean))];
   const selectedVehicle=draftRow?.vehicle?vehicleRows.find(row=>row.vehicle_name===draftRow.vehicle):null;
 
 
@@ -443,9 +444,11 @@ export function ExtendedProfileSheet({
                         if(active.key==='vehicle_maintenance'&&['alternate_name','alternate_amount'].includes(column.key)&&draftRow.schedule_pattern!=='متناوب') return null;
                         const options=column.key==='vehicle'
                           ? vehicleOptions
-                          : column.key==='category'&&categoryOptions.length
-                            ? categoryOptions.filter(option=>active.key!=='budget_behavior'||option==='أخرى'||!usedCategories.has(option)||draftRow.category===option)
-                            : column.options??[];
+                          : column.key==='beneficiary'
+                            ? beneficiaryOptions
+                            : column.key==='category'&&categoryOptions.length
+                              ? categoryOptions
+                              : column.options??[];
                         const readOnly=(active.key==='assets_investments'&&['total_cost','market_value'].includes(column.key))
                           ||(active.key==='budget_behavior'&&column.key==='monthly_total')
                           ||(active.key==='vehicle_details'&&column.key==='estimated_fuel_cost')
