@@ -559,33 +559,33 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
               ?<p>جارٍ تحميل المرجع المعتمد داخل نماء…</p>
               :documentContent
                 ?<div className={styles.governedStructuredDocument}>
-                  {documentSections.map((section,sectionIndex)=><details className={styles.governedContentSection+' '+(isMatrixDocument?styles.governedMatrixSection:'')+' '+(isFlowDocument?styles.governedFlowSection:'')} key={section.number+'-'+sectionIndex} open={sectionIndex===0||isMatrixDocument}>
+                  {documentSections.map((section,sectionIndex)=><details className={styles.governedContentSection+' namaa-governed-article '+(isMatrixDocument?styles.governedMatrixSection:'')+' '+(isFlowDocument?styles.governedFlowSection:'')} key={section.number+'-'+sectionIndex} open={sectionIndex===0||isMatrixDocument}>
                     <summary><span><LucideIcon name={sectionIcon(section.title,displayType)} size={16}/><strong>{'المادة ('+section.number+'): '+section.title}</strong></span><small>إظهار / إخفاء</small></summary>
-                    <div className={styles.governedContentSectionBody}>
-                      <div className={styles.governedArticleAction}>
-                        <button type="button" onClick={()=>openUnitEditor('article',section.number,section.title,null)}><LucideIcon name="pencil" size={16}/>تعديل</button>
+                    <div className={styles.governedContentSectionBody+' namaa-governed-article-body'}>
+                      <div className={styles.governedArticleAction+' namaa-governed-unit-actions'}>
+                        <button type="button" onClick={()=>openUnitEditor('article',section.number,section.title,null)}><LucideIcon name="pencil" size={16}/>تعديل / حذف</button>
                       </div>
                       {section.blocks.map((block,blockIndex)=>block.kind==='paragraph'
-                        ?<article className={styles.governedParagraphRow} key={'p-'+blockIndex}>
-                          <div className={styles.governedUnitToolbar}>
+                        ?<article className={styles.governedParagraphRow+' namaa-governed-paragraph'} key={'p-'+blockIndex}>
+                          <div className={styles.governedUnitToolbar+' namaa-governed-unit-toolbar'}>
                             <strong>{block.number?'الفقرة ('+block.number+')':'فقرة'}</strong>
-                            {block.number&&<button type="button" onClick={()=>openUnitEditor('paragraph',block.number??'',block.text,(block.number??'').split('.').slice(0,-1).join('.'),block.sourceText)} aria-label="تعديل الفقرة"><LucideIcon name="pencil" size={16}/>تعديل</button>}
+                            {block.number&&<button type="button" onClick={()=>openUnitEditor('paragraph',block.number??'',block.text,(block.number??'').split('.').slice(0,-1).join('.'),block.sourceText)} aria-label="تعديل الفقرة"><LucideIcon name="pencil" size={16}/>تعديل / حذف</button>}
                           </div>
                           <p>{block.text}</p>
                         </article>
                         :block.kind==='clause'
-                          ?<article className={styles.governedClauseRow} key={'c-'+block.number+'-'+blockIndex}>
-                            <div className={styles.governedUnitToolbar}>
-                              <div className={styles.governedClauseHeading}><span>{'البند '+block.number}</span><strong>{block.title}</strong></div>
-                              <button type="button" onClick={()=>openUnitEditor('clause',block.number,block.text||block.title,section.number,block.sourceText)} aria-label={'تعديل البند '+block.number}><LucideIcon name="pencil" size={16}/>تعديل</button>
+                          ?<article className={styles.governedClauseRow+' namaa-governed-clause'} key={'c-'+block.number+'-'+blockIndex}>
+                            <div className={styles.governedUnitToolbar+' namaa-governed-unit-toolbar'}>
+                              <div className={styles.governedClauseHeading+' namaa-governed-clause-heading'}><span>{'البند '+block.number}</span><strong>{block.title}</strong></div>
+                              <button type="button" onClick={()=>openUnitEditor('clause',block.number,block.text||block.title,section.number,block.sourceText)} aria-label={'تعديل البند '+block.number}><LucideIcon name="pencil" size={16}/>تعديل / حذف</button>
                             </div>
-                            {block.text&&<div className={styles.governedClauseDetails}>
+                            {block.text&&<div className={styles.governedClauseDetails+' namaa-governed-clause-details'}>
                               <div><small>الشرح</small><p>{splitClauseContent(block.text).explanation}</p></div>
                               <div><small>مثال</small><p>{splitClauseContent(block.text).example||'لم يضف مثال لهذا البند بعد.'}</p></div>
                             </div>}
                           </article>
-                          :<div className={styles.governedTableScroll} key={'t-'+blockIndex}>
-                          <table className={styles.governedContentTable}>
+                          :<div className={styles.governedTableScroll+' namaa-governed-table-wrap'} key={'t-'+blockIndex}>
+                          <table className={styles.governedContentTable+' ux-table'}>
                             <thead><tr>{block.headers.map((header,headerIndex)=><th scope="col" key={headerIndex}>{header||'البيان'}</th>)}</tr></thead>
                             <tbody>{block.rows.map((row,rowIndex)=><tr key={rowIndex}>{block.headers.map((_,cellIndex)=><td key={cellIndex}>{row[cellIndex]||'غير محدد'}</td>)}</tr>)}</tbody>
                           </table>
@@ -597,11 +597,11 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
           </div>
         </details>
 
-        <section className={styles.governedQuickActions} aria-label="إجراءات المرجع">
-          <button type="button" className={styles.governedTypoButton} onClick={()=>resetEditor('direct','EDIT')}>
+        <section className={styles.governedQuickActions+' namaa-governed-quick-actions'} aria-label="إجراءات المرجع">
+          <button type="button" className={styles.governedTypoButton+' ux-button ux-button--secondary'} onClick={()=>resetEditor('direct','EDIT')}>
             <LucideIcon name="pencil" size={24}/><span><strong>تحرير مباشر</strong></span>
           </button>
-          <button type="button" className={styles.governedGovernanceButton} onClick={()=>resetEditor('governance','EDIT')}>
+          <button type="button" className={styles.governedGovernanceButton+' ux-button ux-button--primary'} onClick={()=>resetEditor('governance','EDIT')}>
             <LucideIcon name="landmark" size={24}/><span><strong>تحرير حوكمي</strong></span>
           </button>
         </section>
@@ -660,14 +660,14 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
           </form>
         </div>}
 
-        <section className={styles.governedHistorySection}>
-          <header className={styles.governedHistoryHeader}>
+        <section className={styles.governedHistorySection+' namaa-governed-history'}>
+          <header className={styles.governedHistoryHeader+' namaa-governed-history-header'}>
             <span className={styles.governedHistoryIcon}><LucideIcon name="calendarDays" size={20}/></span>
             <div><strong>سجل التحديثات والقرارات</strong><small>التسلسل الزمني للتصحيحات، طلبات التعديل، الاعتمادات وقرارات مجلس نماء الأعلى.</small></div>
           </header>
-          <div className={styles.governedHistoryList}>
+          <div className={styles.governedHistoryList+' namaa-governed-history-list'}>
             {!history.length&&<p className={styles.governedHistoryEmpty}>لا توجد تحديثات أو قرارات مرتبطة بهذا المرجع حتى الآن.</p>}
-            {history.map(item=><article key={item.id} className={styles.governedHistoryItem+' '+styles['governedHistory_'+item.tone]}>
+            {history.map(item=><article key={item.id} className={styles.governedHistoryItem+' namaa-governed-history-item '+styles['governedHistory_'+item.tone]}>
               <span className={styles.governedHistoryDot} aria-hidden="true"/>
               <div className={styles.governedHistoryMeta}><span>{item.type}</span><b>{item.status}</b></div>
               <strong>{item.summary}</strong>
