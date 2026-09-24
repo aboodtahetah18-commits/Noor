@@ -121,7 +121,7 @@ a,button,input,select,textarea,summary{transition-duration:var(--ux-motion-durat
 @media(prefers-reduced-motion:reduce){.functional-state-spinner{animation:none!important;}}
 
 /* Public preview is evidence-only and consumes the same governed visual language. */
-.preview-shell{background:var(--ux-surface-canvas)!important;color:var(--ux-text-primary)!important;max-width:var(--ux-container-content)!important;}.preview-hero{background:var(--ux-surface-inverse)!important;border-radius:var(--ux-radius-4)!important;box-shadow:var(--ux-shadow-xs)!important;}.preview-stat,.preview-panel{background:var(--ux-surface-default)!important;border-color:var(--ux-border-default)!important;border-radius:var(--ux-radius-4)!important;box-shadow:var(--ux-shadow-none)!important;}.preview-progress{background:var(--ux-ink-a08)!important;}.preview-progress i{background:var(--ux-action-primary)!important;}
+
 
 .ux-section-offset{margin-block-start:var(--ux-space-4)!important;}
 
