@@ -7,6 +7,7 @@ import { getRawSql } from '@/infrastructure/db/client';
 import { createAccount } from '@/features/accounts/commands/create-account';
 import { deactivateAccount } from '@/features/accounts/commands/deactivate-account';
 import { deriveAccountType } from '@/features/accounts/account-name-options';
+import { reconcileConfirmedOnboardingAccounts } from '@/lib/conversations/onboarding-projection';
 
 function cleanText(value:unknown,max=120){
   return typeof value==='string'?value.trim().slice(0,max):'';
@@ -23,6 +24,7 @@ function cleanDate(value:unknown){
 export async function GET(){
   const user=await getAuthenticatedUser();
   if(!user)return NextResponse.json({code:'AUTH_REQUIRED'},{status:401,headers:{'Cache-Control':'no-store'}});
+  await reconcileConfirmedOnboardingAccounts(user.id);
   const sql=getRawSql();
   const rows=await sql`
     select a.id,a.name,a.account_type,a.bank_name,a.is_active,
