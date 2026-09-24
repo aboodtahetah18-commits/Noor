@@ -4,6 +4,8 @@ import { fuelMonthlyCost, maintenanceForecast, monthlyRecurringTotal, remainingA
 describe('financial form calculations',()=>{
   it('calculates daily and weekly recurring spend as a monthly amount',()=>{
     expect(monthlyRecurringTotal('يومي',2,20)).toBe(1200);
+    expect(monthlyRecurringTotal('يومي',2,20,'أيام العمل')).toBe(880);
+    expect(monthlyRecurringTotal('يومي',2,20,'نهاية الأسبوع')).toBe(320);
     expect(monthlyRecurringTotal('أسبوعي',2,50)).toBe(433.33);
     expect(monthlyRecurringTotal('شهري',3,40)).toBe(120);
   });
