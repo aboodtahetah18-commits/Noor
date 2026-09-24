@@ -68,7 +68,7 @@ export function ExtendedProfileSheet({
 
   useEffect(()=>{
     if(!active) return;
-    setDraftRow(null);
+    queueMicrotask(()=>setDraftRow(null));
     if(active.table){
       queueMicrotask(()=>setTableRows(tableRowsFromFact(active,facts[active.key])));
       return;
