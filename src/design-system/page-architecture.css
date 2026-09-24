@@ -258,3 +258,31 @@ body:has(.namaa-conversation-page) .namaa-main-canvas > * {
     grid-template-columns:repeat(2,minmax(0,1fr));
   }
 }
+
+
+/* DESKTOP ACTION CONTRAST CONTRACT */
+@media (min-width:768px){
+  :where(.ux-button--primary,.primary-button,.primary-link,.namaa-wide-action){
+    border-color:var(--ux-brand-primary) !important;
+    background:var(--ux-brand-primary) !important;
+    color:var(--ux-action-contrast) !important;
+  }
+
+  :where(.ux-button--primary,.primary-button,.primary-link,.namaa-wide-action) :where(span,strong,svg){
+    color:var(--ux-action-contrast) !important;
+  }
+
+  :where(.ux-button--secondary,.secondary-button,.secondary-link,.namaa-wide-action-secondary){
+    border-color:var(--ux-brand-primary) !important;
+    background:var(--ux-card-bg) !important;
+    color:var(--ux-brand-primary) !important;
+  }
+
+  :where(.ux-button--secondary,.secondary-button,.secondary-link,.namaa-wide-action-secondary) :where(span,strong,svg){
+    color:var(--ux-brand-primary) !important;
+  }
+
+  :where(.ux-card,.card,.namaa-wide-card,.namaa-wide-panel){
+    border-color:var(--ux-border-strong,var(--ux-border-default));
+  }
+}
