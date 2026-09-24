@@ -2,6 +2,8 @@ import { randomUUID } from 'node:crypto';
 import { getRawSql } from '@/infrastructure/db/client';
 import type { ConversationMessageKind, ConversationRoomKey } from './store';
 import { governedRooms } from './store';
+import { captureFinancialJourneyAnswer } from './financial-journey-chat';
+import { syncGovernanceMeetingInvitations } from '@/lib/governance/governance-meeting-scheduler';
 
 type RoutedReply = {
   id: string;
@@ -230,8 +232,58 @@ export async function createRoutedReply(userId: string, roomKey: ConversationRoo
   let financialMetrics: ReturnType<typeof baselineMetrics> = null;
   let missingFields: string[] = [];
   let confirmedFact: string | null = null;
+  let journeyPrompt:Record<string,unknown>|null=null;
 
   if (roomKey === 'central') {
+    const journeyCapture=await captureFinancialJourneyAnswer(userId,text);
+    if(journeyCapture.before.stage==='DETAILED_PROFILE'){
+      if(journeyCapture.captured){
+        const after=journeyCapture.after;
+        const nextField=after.next_field;
+        body=after.founding_meeting_eligible
+          ?'تم حفظ '+journeyCapture.field?.label+'. اكتمل ملفك المالي بنسبة 100٪. سأجهز الآن أقرب موعد مقترح للاجتماع التأسيسي وأطلب منك تأكيد ملاءمة الوقت.'
+          :'تم حفظ '+journeyCapture.field?.label+'. اكتمال الملف الآن '+after.completion_percent+'٪. التالي: '+(nextField?nextField.label:after.next_action);
+        kind='request';
+        confidence=1;
+        routedRoom='central';
+        journeyPrompt={
+          journey_prompt:true,
+          journey_stage:after.stage,
+          journey_completion_percent:after.completion_percent,
+          next_profile_section:after.next_section,
+          next_profile_field:after.next_field,
+          founding_meeting_eligible:after.founding_meeting_eligible,
+        };
+        if(after.founding_meeting_eligible) await syncGovernanceMeetingInvitations(userId);
+      }else{
+        const nextField=journeyCapture.before.next_field;
+        body=nextField
+          ?'أحتاج هذه المعلومة أولًا حتى أكمل ملفك: '+nextField.label+'. يمكنك الإجابة هنا مباشرة أو فتح نموذج «'+nextField.section_title+'».'
+          :journeyCapture.before.next_action;
+        kind='request';
+        confidence=0.9;
+        routedRoom='central';
+        journeyPrompt={
+          journey_prompt:true,
+          journey_stage:journeyCapture.before.stage,
+          journey_completion_percent:journeyCapture.before.completion_percent,
+          next_profile_section:journeyCapture.before.next_section,
+          next_profile_field:journeyCapture.before.next_field,
+          founding_meeting_eligible:false,
+        };
+      }
+    }else{
+      const result = buildCentralReply(text, intent, amounts, metadata);
+      body = result.body;
+      kind = result.kind;
+      confidence = result.confidence;
+      routedRoom = result.routedRoom;
+      confirmedFact = result.confirmedFact;
+      financialMetrics = baselineMetrics(result.baseline);
+      missingFields = missingBaselineFields(result.baseline);
+      nextMetadata = { ...metadata, financial_baseline: result.baseline, onboarding_started:true, last_detected_intent:intent, last_confidence:confidence };
+    }
+  } else {
     const result = buildCentralReply(text, intent, amounts, metadata);
     body = result.body;
     kind = result.kind;
@@ -261,6 +313,7 @@ export async function createRoutedReply(userId: string, roomKey: ConversationRoo
     confirmed_fact: confirmedFact,
     requires_user_confirmation: confidence < 0.9,
     execution_boundary: 'advisory_only',
+    ...(journeyPrompt??{}),
   };
 
   const rows = await sql.transaction([
