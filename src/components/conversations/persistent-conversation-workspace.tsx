@@ -741,6 +741,10 @@ function profileSectionForMissing(missing:string[]){
 function StructuredFacts({data,onOpenProfile}:{data?:Record<string,unknown>;onOpenProfile?:(section:string)=>void}){
   if(!data)return null;
   const confidence=typeof data.confidence_percent==='number'?data.confidence_percent:null;
+  const journeyNextSection=data.journey_prompt===true&&data.next_profile_section&&typeof data.next_profile_section==='object'&&!Array.isArray(data.next_profile_section)
+    ?data.next_profile_section as Record<string,unknown>
+    :null;
+  const journeyNextSectionKey=journeyNextSection&&typeof journeyNextSection.key==='string'?journeyNextSection.key:null;
   const routed=roomTitle(data.routed_room);
   const metrics=data.financial_metrics&&typeof data.financial_metrics==='object'?data.financial_metrics as Record<string,unknown>:null;
   const missing=Array.isArray(data.missing_fields)?data.missing_fields.filter((item):item is string=>typeof item==='string'):[];
@@ -917,6 +921,7 @@ function StructuredFacts({data,onOpenProfile}:{data?:Record<string,unknown>;onOp
     {eligibilityBlockers.length>0&&<span><small>متطلبات تفعيل الأهلية</small><strong>{eligibilityBlockers.map(item=>item==='HISTORICAL_VALIDATION_REQUIRED'?'التحقق التاريخي':item==='FINAL_GOVERNANCE_APPROVAL_REQUIRED'?'الاعتماد النهائي':item==='EFFECTIVE_DATE_REQUIRED'?'تاريخ النفاذ':item==='FACTOR_TO_SCORE_MAPPING_REQUIRED'?'خرائط تحويل العوامل إلى درجات':item).join('، ')}</strong></span>}
     {missing.length>0&&<span><small>ما نحتاجه منك الآن</small><strong>{missing.map(missingLabel).join('، ')}</strong></span>}
     {(missing.length>0||decisionState==='NEEDS_DATA')&&onOpenProfile&&<button type="button" className={styles.structuredProfileAction} onClick={()=>onOpenProfile(profileSectionForMissing(missing))}><LucideIcon name="pencil" size={20}/><span>أجب هنا</span></button>}
+    {journeyNextSectionKey&&onOpenProfile&&<button type="button" className={styles.structuredProfileAction} onClick={()=>onOpenProfile(journeyNextSectionKey)}><LucideIcon name="listChecks" size={20}/><span>أكمل بالنموذج</span></button>}
   </div>;
 }
 
