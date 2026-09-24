@@ -1383,6 +1383,7 @@ const team=[...algorithmRolesForRoom(room.id)].sort((a,b)=>{
   const rank=(role:typeof a)=>role.kind==='central_bank_manager'||role.kind==='bank_manager'?0:role.kind==='governor'?1:2;
   return rank(a)-rank(b);
 });
+const bankRooms=rooms.filter(bank=>['central','solvency','assets','hilal'].includes(bank.id));
 return <div className={styles.roomDetailContent}>
 <section className={styles.roomDetailHero}>
 <span className={styles.roomDetailHeroShade} aria-hidden="true"/>
@@ -1390,9 +1391,17 @@ return <div className={styles.roomDetailContent}>
 <RoomPortrait room={room} size="lg"/>
 <div><strong>{detail.roleTitle}</strong><small>{detail.entityTitle}</small><em>{room.subtitle}</em></div>
 </div></section>
+{room.building&&<section className={styles.entityBankHero} aria-label={`مبنى ${room.title}`}>
+  <Image src={room.building} alt={`مبنى ${room.title}`} fill priority sizes="(min-width: 1024px) 1100px, 100vw"/>
+  <div className={styles.entityBankHeroShade}/>
+  <div className={styles.entityBankHeroTitle}><small>الجهة الحالية</small><strong>{room.title}</strong></div>
+</section>}
+<nav className={styles.entityBankSwitcher} aria-label="التنقل بين البنوك">
+  {bankRooms.map(bank=><button type="button" key={bank.id} className={bank.id===room.id?styles.activeEntityBank:''} onClick={()=>{chooseRoom(bank.id);setDetailRoomId(bank.id);setDetailTab('role')}}><Image src={bank.bankLogo} alt="" width={28} height={28}/><span>{bank.title}</span></button>)}
+</nav>
 <nav className={styles.entityDetailTabs} aria-label="أقسام ملف الجهة">
 <button type="button" className={detailTab==='role'?styles.activeEntityDetailTab:''} onClick={()=>setDetailTab('role')}>الاختصاص</button>
-<button type="button" className={detailTab==='team'?styles.activeEntityDetailTab:''} onClick={()=>setDetailTab('team')}>الفريق</button>
+<button type="button" className={detailTab==='team'?styles.activeEntityDetailTab:''} onClick={()=>setDetailTab('team')}>دردشة الفريق</button>
 <button type="button" className={detailTab==='files'?styles.activeEntityDetailTab:''} onClick={()=>setDetailTab('files')}>الملفات</button>
 <button type="button" className={detailTab==='policies'?styles.activeEntityDetailTab:''} onClick={()=>setDetailTab('policies')}>السياسات واللوائح</button>
 <button type="button" className={detailTab==='authority'?styles.activeEntityDetailTab:''} onClick={()=>setDetailTab('authority')}>مصفوفة الصلاحيات</button>
@@ -1400,7 +1409,14 @@ return <div className={styles.roomDetailContent}>
 <button type="button" className={detailTab==='records'?styles.activeEntityDetailTab:''} onClick={()=>setDetailTab('records')}>السجلات</button>
 </nav>
 {detailTab==='role'&&<div className={styles.entityDetailPanel}><section><small>المسؤولية الأساسية</small><p>{detail.responsibility}</p></section><section><small>ما الذي يراقبه؟</small><p>{detail.observes}</p></section><section><small>متى يتدخل؟</small><p>{detail.intervention}</p></section><section><small>متى لا يتدخل؟</small><p>{detail.avoids}</p></section><section><small>حدود الحوكمة والصلاحيات</small><p>{detail.governanceNote}</p></section></div>}
-{detailTab==='team'&&<div className={styles.entityDetailPanel}><section><div className={styles.entitySectionHeading}><span><small>الفريق والأدوار الفعلية</small><strong>الشخصيات المعتمدة لهذه الجهة</strong></span><LucideIcon name="circleUserRound" size={20}/></div><div className={styles.entityTeamGrid}>{team.map(role=>{const portrait=rolePortraitByKey[role.key];const spriteClass=styles['personaSprite_'+role.key]??'';return <button type="button" key={role.referenceCode} onClick={()=>{setActiveAlgorithmRole({roomId:room.id,role});setDetailRoomId(null)}}><span className={[styles.entityTeamPortrait,!portrait?styles.personaSpritePortrait:'',!portrait?spriteClass:''].filter(Boolean).join(' ')}>{portrait&&<Image src={portrait} alt="" fill unoptimized sizes="220px"/>}</span><span><strong>{role.name}</strong><small>{role.kind==='responsibility_owner'?'صاحب مسؤولية مالية':role.kind==='advisor'?'مستشار اقتصادي':role.kind==='bank_manager'||role.kind==='central_bank_manager'?'إدارة البنك':'دور حوكمي'}</small></span><LucideIcon name="chevronLeft" size={16}/></button>})}</div></section><section><small>قاعدة الأدوار</small><p>كل شخصية تعمل داخل تفويضها المعتمد وهوية بنكها. المدير يقود نطاق البنك، وصاحب المسؤولية يحاسب على مجاله، والمستشار يقدم رأيًا دون سلطة تنفيذ أو اعتماد. التنفيذ المالي الخارجي يبقى بيد المستخدم.</p></section></div>}
+{detailTab==='team'&&<div className={styles.entityDetailPanel}>
+<section className={styles.desktopTeamChat}><div className={styles.entitySectionHeading}><span><small>دردشة الفريق</small><strong>متابعة سريعة مع فريق {room.title}</strong></span><LucideIcon name="messageSquareText" size={20}/></div>
+<div className={styles.entityTeamChatFeed}>{room.id===activeRoomId&&visibleMessages.length?visibleMessages.slice(-3).map(message=><div key={message.id} className={message.sender_type==='user'?styles.entityTeamChatUser:styles.entityTeamChatAgent}><strong>{message.sender_type==='user'?'أنت':message.sender_name}</strong><p>{message.body}</p></div>):<div className={styles.entityTeamChatEmpty}>ابدأ رسالة قصيرة للفريق، وستبقى ضمن نفس سياق البنك دون مغادرة ملف الجهة.</div>}</div>
+<form className={styles.entityTeamComposer} onSubmit={send}><textarea value={draft} onChange={event=>setDraft(event.target.value)} rows={1} maxLength={8000} placeholder={`اكتب إلى فريق ${room.title}…`} aria-label="رسالة مختصرة للفريق"/><button type="submit" disabled={!draft.trim()||sending}><span>{sending?'جارٍ الإرسال…':'إرسال'}</span><LucideIcon name="send" size={18}/></button></form>
+<small className={styles.entityTeamChatNote}>هذه الدردشة تستخدم نفس محادثة البنك والشات بوت؛ لا يتم إنشاء مسار منفصل أو تنفيذ مالي تلقائي.</small>
+</section>
+<section className={styles.mobileTeamGrid}><div className={styles.entitySectionHeading}><span><small>الفريق والأدوار الفعلية</small><strong>الشخصيات المعتمدة لهذه الجهة</strong></span><LucideIcon name="circleUserRound" size={20}/></div><div className={styles.entityTeamGrid}>{team.map(role=>{const portrait=rolePortraitByKey[role.key];const spriteClass=styles['personaSprite_'+role.key]??'';return <button type="button" key={role.referenceCode} onClick={()=>{setActiveAlgorithmRole({roomId:room.id,role});setDetailRoomId(null)}}><span className={[styles.entityTeamPortrait,!portrait?styles.personaSpritePortrait:'',!portrait?spriteClass:''].filter(Boolean).join(' ')}>{portrait&&<Image src={portrait} alt="" fill unoptimized sizes="220px"/>}</span><span><strong>{role.name}</strong><small>{role.kind==='responsibility_owner'?'صاحب مسؤولية مالية':role.kind==='advisor'?'مستشار اقتصادي':role.kind==='bank_manager'||role.kind==='central_bank_manager'?'إدارة البنك':'دور حوكمي'}</small></span><LucideIcon name="chevronLeft" size={16}/></button>})}</div></section>
+</div>}
 {detailTab==='files'&&<div className={styles.entityDetailPanel}><section><small>الملفات المرتبطة بهذه الجهة</small>{roomFiles.length?<div className={styles.detailFiles}>{roomFiles.map(file=><span key={file.id}><LucideIcon name="receiptText" size={16}/><b>{file.file_name}</b><em>{attachmentStatusLabel(file.verification_status)}</em></span>)}</div>:<p>لا توجد ملفات مشتركة مسجلة في هذه المحادثة حاليًا.</p>}</section><section><small>المراجع الحاكمة</small><p>المراجع المعتمدة محفوظة داخل نماء، وتظهر في الأقسام المخصصة لها دون إظهار الرموز التقنية للمستخدم.</p></section></div>}
 {detailTab==='policies'&&<div className={styles.entityDetailPanel}><section><small>السياسات واللوائح والمواثيق</small><EntityReferenceList items={policyRefs} roomId={room.id} onOpen={value=>{setActiveGovernedDocument(value);setDetailRoomId(null)}} icon="landmark"/></section></div>}
 {detailTab==='authority'&&<div className={styles.entityDetailPanel}><section><small>مصفوفة الصلاحيات والتفويض</small><EntityReferenceList items={authorityRefs} roomId={room.id} onOpen={value=>{setActiveGovernedDocument(value);setDetailRoomId(null)}} icon="lockKeyhole"/></section></div>}
