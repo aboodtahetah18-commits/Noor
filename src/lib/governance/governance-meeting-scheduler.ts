@@ -99,7 +99,7 @@ export async function getGovernanceMeetingSchedule(userId:string){
     },
     {
       id:`budget-${cycleId}`,
-      title:'لجنة الدورة والميزانية والإنفاق',
+      title:'لجنة الميزانية والإنفاق',
       kind:'لجنة دائمة',
       scheduled_at:addDays(anchor,0).toISOString(),
       cadence:'اليوم الأول من كل دورة مالية',
