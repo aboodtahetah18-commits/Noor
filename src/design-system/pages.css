@@ -335,3 +335,42 @@ html[data-theme="dark"] .ux-table th { background:var(--ux-section-soft-blue) !i
   height:12px;
   accent-color:var(--ux-brand-primary);
 }
+
+
+/* Accounts collection — mobile readability and full registered-account visibility. */
+.p47-account-map{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:var(--ux-space-3)!important
+}
+.p47-account-tile{
+  min-width:0!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:var(--ux-space-3)!important;
+  padding:var(--ux-space-4)!important
+}
+.p47-account-tile>div:first-child{
+  min-width:0!important
+}
+.p47-account-tile h3{
+  margin:var(--ux-space-1) 0!important;
+  overflow-wrap:anywhere!important
+}
+.p47-account-tile .mx-action-rail{
+  grid-column:1/-1!important;
+  justify-content:flex-start!important
+}
+@media(max-width:767px){
+  .p47-account-map{
+    grid-template-columns:1fr!important
+  }
+  .p47-account-tile{
+    grid-template-columns:minmax(0,1fr) auto!important
+  }
+  .p47-account-tile>div:nth-child(2){
+    text-align:end!important;
+    white-space:nowrap!important
+  }
+}
