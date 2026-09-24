@@ -12272,3 +12272,153 @@
     width:100%
   }
 }
+
+
+/* FINAL DATA-ENTRY AUTHORITY — records are added in focused modals and managed in compact tables. */
+.extendedAddModal{
+  padding:var(--ux-space-0)!important;
+  overflow:auto!important
+}
+.extendedAddModal>header{
+  position:sticky!important;
+  top:var(--ux-space-0)!important;
+  z-index:5!important;
+  margin:var(--ux-space-0)!important;
+  padding:var(--ux-space-3) var(--ux-space-4)!important;
+  border-bottom:1px solid color-mix(in srgb,var(--ux-text-inverse) 22%,transparent)!important;
+  border-radius:var(--ux-radius-4) var(--ux-radius-4) var(--ux-radius-0) var(--ux-radius-0)!important;
+  background:var(--namaa-green-900)!important;
+  color:var(--ux-text-inverse)!important
+}
+.extendedAddModal>header strong,
+.extendedAddModal>header small{
+  color:var(--ux-text-inverse)!important;
+  -webkit-text-fill-color:var(--ux-text-inverse)!important
+}
+.extendedAddModal>header small{
+  opacity:.82
+}
+.extendedAddModal>header>button{
+  border-color:color-mix(in srgb,var(--ux-text-inverse) 42%,transparent)!important;
+  background:color-mix(in srgb,var(--ux-text-inverse) 8%,transparent)!important;
+  color:var(--ux-text-inverse)!important
+}
+.extendedAddForm{
+  padding:var(--ux-space-4)!important
+}
+.extendedAddModal>footer,
+.accountEditorModal>footer,
+.meetingEditorModal>footer{
+  position:sticky!important;
+  bottom:var(--ux-space-0)!important;
+  z-index:6!important;
+  margin:var(--ux-space-0)!important;
+  padding:var(--ux-space-3) var(--ux-space-4)!important;
+  border-top:1px solid var(--namaa-border)!important;
+  background:var(--namaa-card)!important
+}
+.extendedAddModal>footer{
+  justify-content:flex-start!important
+}
+.linkedRecordPreview{
+  grid-column:1/-1;
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:var(--ux-space-2);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border-strong);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-surface-warm)
+}
+.linkedRecordPreview strong{
+  width:100%;
+  color:var(--namaa-green-900);
+  font-size:var(--ux-type-caption-size)
+}
+.linkedRecordPreview span,
+.linkedRecordPreview small{
+  padding:var(--ux-space-1) var(--ux-space-2);
+  border-radius:var(--ux-radius-full);
+  background:var(--namaa-card);
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-caption-size)
+}
+.extendedAddForm input[readonly]{
+  background:var(--namaa-surface-warm)!important;
+  color:var(--namaa-green-900)!important;
+  font-weight:900!important
+}
+
+@media (max-width:767px){
+  .extendedTableToolbar{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    align-items:center!important;
+    gap:var(--ux-space-2)!important
+  }
+  .extendedTableToolbar>button{
+    width:auto!important;
+    min-width:150px!important;
+    min-height:42px!important;
+    padding-inline:var(--ux-space-3)!important
+  }
+  .extendedDataTableWrap{
+    overflow:hidden!important
+  }
+  .extendedDataTable{
+    table-layout:fixed!important
+  }
+  .extendedDataTable th,
+  .extendedDataTable td{
+    padding:var(--ux-space-2)!important;
+    line-height:1.35!important
+  }
+  .extendedDataTable tr{
+    min-height:54px!important
+  }
+  .extendedDataTable th:last-child,
+  .extendedDataTable td:last-child{
+    width:76px!important
+  }
+  .extendedRowActions{
+    display:flex!important;
+    flex-direction:row!important;
+    flex-wrap:nowrap!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:var(--ux-space-1)!important
+  }
+  .extendedRowActions>button{
+    width:30px!important;
+    height:30px!important;
+    min-width:30px!important;
+    min-height:30px!important;
+    padding:var(--ux-space-0)!important
+  }
+  .extendedAddModalBackdrop{
+    padding:var(--ux-space-0)!important
+  }
+  .extendedAddModal{
+    width:100%!important;
+    max-width:100%!important;
+    max-height:92dvh!important;
+    border-radius:var(--ux-radius-4) var(--ux-radius-4) var(--ux-radius-0) var(--ux-radius-0)!important
+  }
+  .extendedAddModal>header{
+    border-radius:var(--ux-radius-4) var(--ux-radius-4) var(--ux-radius-0) var(--ux-radius-0)!important
+  }
+  .extendedAddForm{
+    padding:var(--ux-space-3)!important
+  }
+  .extendedAddModal>footer{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:var(--ux-space-2)!important;
+    padding:var(--ux-space-3)!important
+  }
+  .extendedAddModal>footer>button{
+    width:100%!important;
+    min-width:0!important
+  }
+}
