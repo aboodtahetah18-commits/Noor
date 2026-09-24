@@ -12464,3 +12464,213 @@
 .mobileRecordEditorBody .financial-auto-result{
   grid-column:1/-1
 }
+
+
+/* Directory triage, meeting details, and beneficiary-ready interaction refinements. */
+.directoryTabs{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:var(--ux-space-1);
+  padding:var(--ux-space-1);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-surface-warm)
+}
+.directoryTabs>button{
+  min-height:38px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:var(--ux-space-1);
+  border:0;
+  border-radius:var(--ux-radius-2);
+  background:transparent;
+  color:var(--ux-text-secondary);
+  font:inherit;
+  font-size:var(--ux-type-caption-size);
+  font-weight:800
+}
+.directoryTabs>button.directoryTabActive{
+  background:var(--namaa-green-900);
+  color:var(--ux-text-inverse)
+}
+.responsibilityList,
+.meetingDirectoryList{
+  display:grid;
+  gap:var(--ux-space-1)
+}
+.responsibilityList>button,
+.meetingDirectoryList>button{
+  width:100%;
+  min-height:60px;
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:var(--ux-space-2);
+  padding:var(--ux-space-2);
+  border:1px solid transparent;
+  border-radius:var(--ux-radius-3);
+  background:transparent;
+  color:var(--ux-text-primary);
+  text-align:right;
+  font:inherit
+}
+.responsibilityList>button:hover,
+.meetingDirectoryList>button:hover{
+  background:var(--namaa-surface-warm);
+  border-color:var(--namaa-border)
+}
+.responsibilityList>button>span:nth-child(2),
+.meetingDirectoryList>button>span:nth-child(2){
+  min-width:0;
+  display:grid;
+  gap:var(--ux-space-1)
+}
+.responsibilityList strong,
+.meetingDirectoryList strong{
+  font-size:var(--ux-type-caption-size)
+}
+.responsibilityList small,
+.meetingDirectoryList small{
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  line-height:1.45
+}
+.responsibilityPortrait{
+  position:relative;
+  width:46px;
+  height:46px;
+  overflow:hidden;
+  display:grid;
+  place-items:center;
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-full);
+  background:var(--namaa-card);
+  color:var(--namaa-green-900)
+}
+.responsibilityPortrait>img{
+  object-fit:cover;
+  object-position:center 22%
+}
+
+.meetingActions{
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:center;
+  justify-content:flex-start!important;
+  gap:var(--ux-space-2)!important;
+  flex-wrap:wrap
+}
+.meetingActions button{
+  width:auto!important;
+  min-width:86px;
+  height:40px!important;
+  display:inline-flex!important;
+  align-items:center;
+  justify-content:center;
+  gap:var(--ux-space-1);
+  padding-inline:var(--ux-space-2);
+  font:inherit;
+  font-size:var(--ux-type-caption-size);
+  font-weight:800
+}
+.meetingDetailsModal{
+  width:min(720px,100%);
+  max-height:90dvh;
+  overflow:auto;
+  display:grid;
+  gap:var(--ux-space-0);
+  border:1px solid var(--namaa-border-strong);
+  border-radius:var(--ux-radius-4);
+  background:var(--namaa-card);
+  box-shadow:var(--ux-shadow-lg)
+}
+.meetingDetailsModal>header{
+  position:sticky;
+  top:0;
+  z-index:4;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-4);
+  background:var(--namaa-green-900);
+  color:var(--ux-text-inverse)
+}
+.meetingDetailsModal>header>div{
+  display:grid;
+  gap:var(--ux-space-1)
+}
+.meetingDetailsModal>header small{
+  color:var(--ux-text-inverse);
+  opacity:.82
+}
+.meetingDetailsModal>header>button{
+  width:40px;
+  height:40px;
+  display:grid;
+  place-items:center;
+  border:1px solid color-mix(in srgb,var(--ux-text-inverse) 38%,transparent);
+  border-radius:var(--ux-radius-full);
+  background:transparent;
+  color:var(--ux-text-inverse)
+}
+.meetingDetailsBody{
+  display:grid;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-4)
+}
+.meetingDetailsBody>section{
+  display:grid;
+  gap:var(--ux-space-2);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-surface-warm)
+}
+.meetingDetailsBody ul{
+  margin:0;
+  padding-inline-start:var(--ux-space-5);
+  display:grid;
+  gap:var(--ux-space-1);
+  color:var(--ux-text-secondary)
+}
+.meetingMissingBox,
+.meetingReadyBox{
+  display:grid;
+  gap:var(--ux-space-1);
+  padding:var(--ux-space-2);
+  border-radius:var(--ux-radius-2)
+}
+.meetingMissingBox{
+  border:1px solid var(--namaa-gold-500);
+  background:color-mix(in srgb,var(--namaa-gold-500) 10%,var(--namaa-card))
+}
+.meetingReadyBox{
+  border:1px solid var(--namaa-border);
+  background:var(--namaa-card);
+  color:var(--ux-text-secondary)
+}
+.meetingDetailsModal>footer{
+  position:sticky;
+  bottom:0;
+  display:flex;
+  justify-content:flex-end;
+  padding:var(--ux-space-3) var(--ux-space-4);
+  border-top:1px solid var(--namaa-border);
+  background:var(--namaa-card)
+}
+@media(max-width:767px){
+  .directoryTabs>button span{display:none}
+  .meetingActions{
+    flex-wrap:nowrap!important
+  }
+  .meetingActions button{
+    min-width:0!important;
+    flex:1 1 0
+  }
+  .meetingDetailsModal{
+    width:100%;
+    max-height:94dvh
+  }
+}
