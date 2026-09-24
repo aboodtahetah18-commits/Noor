@@ -647,7 +647,25 @@ function richMessageStatus(data?:Record<string,unknown>){
     data.calibration_status,
     data.status,
   ].find(value=>typeof value==='string'&&value.trim());
-  return typeof raw==='string'?raw:null;
+  if(typeof raw!=='string') return null;
+  const labels:Record<string,string>={
+    NEEDS_DATA:'يحتاج بيانات',
+    UNDER_REVIEW:'تحت المراجعة',
+    BLOCKED:'متوقف مؤقتًا',
+    PROPOSED:'مقترح',
+    REVIEWED:'تحت المراجعة',
+    USER_CONFIRMED:'مؤكد من المستخدم',
+    EVIDENCE_REQUIRED:'بانتظار الإثبات',
+    VERIFIED:'تم التحقق',
+    APPLIED:'مطبق',
+    FOLLOWUP:'قيد المتابعة',
+    CANCELLED:'ملغى',
+    PASSES_PROTECTION_GATE:'اجتاز فحص الحماية',
+    PROPOSAL_READY:'مقترح جاهز',
+    APPROVED_NOT_APPLIED:'معتمد ولم يطبق',
+    SCORED:'تم التقييم',
+  };
+  return labels[raw]??'قيد المعالجة';
 }
 
 function RichStructuredMessageHero({
@@ -820,7 +838,6 @@ function StructuredFacts({data,onOpenProfile}:{data?:Record<string,unknown>;onOp
   const decisionLifecycleState=decisionLifecycle&&typeof decisionLifecycle.state==='string'?decisionLifecycle.state:null;
   const governanceContext=data.governance_context&&typeof data.governance_context==='object'?data.governance_context as Record<string,unknown>:null;
   const governancePolicies=governanceContext&&Array.isArray(governanceContext.policy_refs)?governanceContext.policy_refs.filter((item):item is string=>typeof item==='string'):[];
-  const governanceAuthorities=governanceContext&&Array.isArray(governanceContext.authority_refs)?governanceContext.authority_refs.filter((item):item is string=>typeof item==='string'):[];
   const governanceOversight=governanceContext&&typeof governanceContext.oversight==='string'?governanceContext.oversight:null;
   if(confidence===null&&!routed&&income===null&&!missing.length&&!goalName&&safeCapacity===null&&requested===null&&!financingPurpose&&!decisionState&&eligibilityScore===null&&!calibrationStatus&&!decisionReference&&!governanceOversight&&!governancePolicies.length)return null;
   return <div className={styles.facts}>
@@ -828,7 +845,7 @@ function StructuredFacts({data,onOpenProfile}:{data?:Record<string,unknown>;onOp
     {governanceOversight&&<span><small>الجهة الحاكمة</small><strong>{governanceOversight}</strong></span>}
     {governancePolicies.length>0&&<span><small>السياسات المستخدمة</small><strong>{governancePolicies.length===1?'سياسة معتمدة واحدة':`${governancePolicies.length} سياسات معتمدة`}</strong></span>}
     {decisionLifecycleState&&<span><small>حالة دورة القرار</small><strong>{decisionLifecycleState==='PROPOSED'?'مقترح':decisionLifecycleState==='REVIEWED'?'تحت المراجعة':decisionLifecycleState==='USER_CONFIRMED'?'أكد المستخدم':decisionLifecycleState==='EVIDENCE_REQUIRED'?'بانتظار الإثبات':decisionLifecycleState==='VERIFIED'?'تم التحقق':decisionLifecycleState==='APPLIED'?'تم التحقق من التطبيق':decisionLifecycleState==='FOLLOWUP'?'متابعة بعد القرار':decisionLifecycleState==='BLOCKED'?'متوقف بحاجز حاكم':decisionLifecycleState==='CANCELLED'?'ملغى':decisionLifecycleState}</strong></span>}
-    {confidence!==null&&<span><small>الثقة في القيم المسجلة</small><strong>{confidence}٪</strong></span>}
+    {confidence!==null&&<span><small>الثقة في القيم المسجلة</small><strong>{missing.length>0?`${confidence}٪ للقيم المؤكدة فقط`:`${confidence}٪`}</strong></span>}
     {(missing.length>0||decisionState==='NEEDS_DATA')&&<span><small>اكتمال الملف</small><strong>يحتاج استكمال بيانات</strong></span>}
     {routed&&<span><small>الجهة المختصة</small><strong>{routed}</strong></span>}
     {income!==null&&<span><small>الدخل المؤكد</small><strong>{formatSar(income)} ر.س</strong></span>}
@@ -868,10 +885,8 @@ function StructuredFacts({data,onOpenProfile}:{data?:Record<string,unknown>;onOp
     {policyPlanned!==null&&<span><small>مخصص البند الحالي</small><strong>{formatSar(policyPlanned)} ر.س</strong></span>}
     {policyActual!==null&&<span><small>إنفاق البند الحالي</small><strong>{formatSar(policyActual)} ر.س</strong></span>}
     {policyAverage!==null&&<span><small>متوسط الإنفاق التاريخي</small><strong>{formatSar(policyAverage)} ر.س</strong></span>}
-    {policyCapStatus&&<span><small>POLICY_CAP</small><strong>{policyCapStatus==='NUMERIC_CALIBRATION_REQUIRED'?'بانتظار معايرة رقمية معتمدة':policyCapStatus}</strong></span>}
-    {policyCapCalibrationStatus&&<span><small>معايرة POLICY_CAP</small><strong>{policyCapCalibrationStatus==='CALIBRATION_NOT_GOVERNING'?'غير مفعلة حاكمًا':policyCapCalibrationStatus==='CALIBRATED'?'مفعلة ومعتمدة':policyCapCalibrationStatus}</strong></span>}
-    {policyCapCalibrationId&&<span><small>إصدار معايرة POLICY_CAP</small><strong>{policyCapCalibrationId}</strong></span>}
-    {policyCapWeightVersion&&<span><small>مرجع أوزان الهلال</small><strong>{policyCapWeightVersion}</strong></span>}
+    {policyCapStatus&&<span><small>حد السياسة</small><strong>{policyCapStatus==='NUMERIC_CALIBRATION_REQUIRED'?'بانتظار معايرة رقمية معتمدة':policyCapStatus}</strong></span>}
+    {policyCapCalibrationStatus&&<span><small>معايرة حد السياسة</small><strong>{policyCapCalibrationStatus==='CALIBRATION_NOT_GOVERNING'?'غير مفعلة حاكمًا':policyCapCalibrationStatus==='CALIBRATED'?'مفعلة ومعتمدة':policyCapCalibrationStatus}</strong></span>}
     {policyCapBlockers.length>0&&<span><small>متطلبات التفعيل الحاكم</small><strong>{policyCapBlockers.join('، ')}</strong></span>}
     {exposureCases!==null&&<span><small>عدد تمويلات البند</small><strong>{exposureCases}</strong></span>}
     {outstandingExposure!==null&&<span><small>التعرض القائم للبند</small><strong>{formatSar(outstandingExposure)} ر.س</strong></span>}
@@ -899,13 +914,12 @@ function StructuredFacts({data,onOpenProfile}:{data?:Record<string,unknown>;onOp
     {recoveryOverdueAmount!==null&&recoveryOverdueAmount>0&&<span><small>قيمة التأخر بعد إعادة الحساب</small><strong>{formatSar(recoveryOverdueAmount)} ر.س</strong></span>}
     {recoveryTrigger&&<span><small>سبب إعادة الحساب</small><strong>{recoveryTrigger==='PAYMENT_RECORDED'?'سداد مسجل':'مراجعة التأخر الدورية'}</strong></span>}
     {recoveryHardStop===true&&<span><small>تمويل جديد</small><strong>متوقف حتى معالجة التأخر</strong></span>}
-    {policyGovernanceStatus&&<span><small>حوكمة POLICY_CAP</small><strong>{policyGovernanceStatus==='HARD_STOP_OVERDUE'?'متوقف بسبب استرداد متأخر':policyGovernanceStatus==='NUMERIC_CALIBRATION_REQUIRED'?'إشارات مكتملة — المعايرة الرقمية مطلوبة':policyGovernanceStatus}</strong></span>}
+    {policyGovernanceStatus&&<span><small>حوكمة حد السياسة</small><strong>{policyGovernanceStatus==='HARD_STOP_OVERDUE'?'متوقف بسبب استرداد متأخر':policyGovernanceStatus==='NUMERIC_CALIBRATION_REQUIRED'?'إشارات مكتملة — المعايرة الرقمية مطلوبة':policyGovernanceStatus}</strong></span>}
     {policyHardStop===true&&<span><small>منع تمويل جديد</small><strong>مفعل حتى معالجة التأخر</strong></span>}
     {calibrationStatus&&<span><small>معايرة الأهلية</small><strong>{calibrationStatus==='CALIBRATION_NOT_GOVERNING'?'غير مفعلة حاكمًا':calibrationStatus==='CALIBRATION_GOVERNANCE_INCOMPLETE'?'حوكمتها غير مكتملة':calibrationStatus==='SCORED'?'مفعلة ومعتمدة':calibrationStatus}</strong></span>}
-    {eligibilityCalibrationId&&<span><small>إصدار معايرة الأهلية</small><strong>{eligibilityCalibrationId}</strong></span>}
-    {eligibilityWeightVersion&&<span><small>مرجع أوزان الأهلية</small><strong>{eligibilityWeightVersion}</strong></span>}
     {eligibilityBlockers.length>0&&<span><small>متطلبات تفعيل الأهلية</small><strong>{eligibilityBlockers.map(item=>item==='HISTORICAL_VALIDATION_REQUIRED'?'التحقق التاريخي':item==='FINAL_GOVERNANCE_APPROVAL_REQUIRED'?'الاعتماد النهائي':item==='EFFECTIVE_DATE_REQUIRED'?'تاريخ النفاذ':item==='FACTOR_TO_SCORE_MAPPING_REQUIRED'?'خرائط تحويل العوامل إلى درجات':item).join('، ')}</strong></span>}
-    {missing.length>0&&<span><small>بيانات ناقصة</small><strong>{missing.map(missingLabel).join('، ')}</strong></span>}
+    {missing.length>0&&<span><small>ما نحتاجه منك الآن</small><strong>{missing.map(missingLabel).join('، ')}</strong></span>}
+    {(missing.length>0||decisionState==='NEEDS_DATA')&&onOpenProfile&&<button type="button" className={styles.structuredProfileAction} onClick={()=>onOpenProfile(profileSectionForMissing(missing))}><LucideIcon name="pencil" size={20}/><span>أجب هنا</span></button>}
   </div>;
 }
 
