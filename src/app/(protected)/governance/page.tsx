@@ -66,7 +66,7 @@ export default function GovernancePage(){
         <header><div><span>الصلاحيات والاعتماد</span><h2>مصفوفة الصلاحيات</h2></div><LucideIcon name="lockKeyhole" size={24}/></header>
         <p>للاطلاع العام استخدم سياسة الصلاحيات والتفويض والتصعيد. أما شاشة الإدارة فهي مقيدة بالمستخدمين المخولين فقط.</p>
         <div className="namaa-governance-auth-actions">
-          <Link href="/governance/policies?ref=NMC-POL-02">قراءة سياسة الصلاحيات</Link>
+          <Link href="/governance/authorization-matrix">فتح مصفوفة الصلاحيات</Link>
           <Link href="/governance/authorization">فتح إدارة الصلاحيات</Link>
         </div>
         <small className="namaa-governance-auth-note">إذا لم تكن لديك صلاحية الإدارة فلن تفتح وحدة التحكم الإدارية، لكن وثيقة السياسة ستظل متاحة للاطلاع.</small>
