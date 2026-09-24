@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { LucideIcon } from '@/components/ui/lucide-icon';
+import { Button } from '@/components/ui';
 import { governanceCatalog } from '@/lib/governance/mobile-catalog';
 import styles from './conversation-workspace.module.css';
 
@@ -59,10 +60,10 @@ export function GovernanceMobileSheet({
 
   return <div className={styles.mobileOverlay} role="dialog" aria-modal="true" aria-label={title}>
     <button type="button" className={styles.scrim} aria-label="إغلاق" onClick={onClose}/>
-    <aside className={styles.mobileSheet+' '+styles.governanceSheet}>
+    <aside className={styles.mobileSheet+' '+styles.governanceSheet+' ux-dialog-surface'}>
       <div className={styles.sheetHeader}>
         <strong>{title}</strong>
-        <button type="button" onClick={onClose} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button>
+        <Button type="button" variant="ghost" size="sm" onClick={onClose} aria-label="إغلاق"><LucideIcon name="x" size={20}/></Button>
       </div>
 
       {mode==='governance'&&<div className={styles.governanceCards}>
@@ -89,9 +90,9 @@ export function GovernanceMobileSheet({
             <time dateTime={record.created_at}>{new Intl.DateTimeFormat('ar-SA',{dateStyle:'medium',timeStyle:'short'}).format(new Date(record.created_at))}</time>
           </article>)}
         </section>
-        <button type="button" className={styles.primaryActionButton} onClick={onOpenSecretary}>
+        <Button type="button" variant="primary" onClick={onOpenSecretary}>
           <LucideIcon name="messageSquareText" size={20}/><span>مناقشة أو طلب تعديل مع أمين السر</span>
-        </button>
+        </Button>
       </div>}
 
       {mode==='meetings'&&<div className={styles.meetingsList}>
@@ -107,9 +108,9 @@ export function GovernanceMobileSheet({
           <time dateTime={meeting.scheduled_at}>{new Intl.DateTimeFormat('ar-SA',{dateStyle:'medium',timeStyle:'short'}).format(new Date(meeting.scheduled_at))}</time>
           <em>{meeting.status}</em>
         </article>)}
-        <button type="button" className={styles.secondaryButton} onClick={onOpenSecretary}>
+        <Button type="button" variant="secondary" onClick={onOpenSecretary}>
           <LucideIcon name="messageSquareText" size={20}/><span>اطلب إضافة موضوع أو اجتماع</span>
-        </button>
+        </Button>
       </div>}
 
       {mode==='documents'&&<div className={styles.documentsList}>
