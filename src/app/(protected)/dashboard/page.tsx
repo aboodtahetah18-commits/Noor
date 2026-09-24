@@ -8,6 +8,7 @@ import { getDailyCommandCenter } from '@/features/dashboard/queries/get-daily-co
 import { CYCLE_STATUS_LABELS, OBLIGATION_STATUS_LABELS, financialStatusLabel } from '@/lib/financial-status-labels';
 import { BankMessageDialogTrigger } from '@/components/bank-message-dialog';
 import { LucideIcon } from '@/components/ui/lucide-icon';
+import { PageHeader } from '@/components/ui';
 
 function metricValue(value: string | null, blockedLabel = 'غير متاح بعد') {
   return value === null ? blockedLabel : formatSar(value);
@@ -51,18 +52,14 @@ export default async function DashboardPage() {
 
   return (
     <main className="p47-page p47-dashboard-page" dir="rtl">
-      <div className="p47-content-shell">
-        <header className="p47-page-heading">
-          <div>
-            <p className="p47-kicker">ملخص مالي سريع</p>
-            <h1>لوحة التحكم</h1>
-            <div className="p47-cycle-line"><StatusDot tone={dashboard.cycle.status === 'ACTIVE' ? 'good' : 'neutral'} /><span>{dashboard.cycle.name}</span><b>·</b><span>{financialStatusLabel(CYCLE_STATUS_LABELS, dashboard.cycle.status)}</span><b>·</b><span>{dashboard.cycle.remainingDays} يوم حتى الدخل القادم</span></div>
-          </div>
-          <div className="p47-page-actions p72-dashboard-actions">
-            <Link className="p47-primary-action" href="/expenses">+ إضافة مصروف</Link>
-            <BankMessageDialogTrigger className="p47-secondary-action">رسالة بنك</BankMessageDialogTrigger>
-          </div>
-        </header>
+      <div className="p47-content-shell namaa-migrated-shell">
+        <PageHeader
+          className="p47-page-heading namaa-migrated-header"
+          eyebrow="ملخص مالي سريع"
+          title="لوحة التحكم"
+          meta={<div className="p47-cycle-line"><StatusDot tone={dashboard.cycle.status === 'ACTIVE' ? 'good' : 'neutral'} /><span>{dashboard.cycle.name}</span><b>·</b><span>{financialStatusLabel(CYCLE_STATUS_LABELS, dashboard.cycle.status)}</span><b>·</b><span>{dashboard.cycle.remainingDays} يوم حتى الدخل القادم</span></div>}
+          actions={<><Link className="ux-button ux-button--primary" href="/expenses">+ إضافة مصروف</Link><BankMessageDialogTrigger className="ux-button ux-button--secondary">رسالة بنك</BankMessageDialogTrigger></>}
+        />
 
         {overdueCount > 0 ? <section className="p72-critical-strip" role="alert" aria-label="تنبيه مالي مهم"><div><strong>لديك {overdueCount} التزام متأخر</strong><span>معالجته تأتي قبل القرارات المالية الاختيارية لهذه الدورة.</span></div><Link href="/obligations">مراجعة الالتزامات</Link></section> : null}
 

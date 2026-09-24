@@ -1,0 +1,260 @@
+/* NAMAA — governed page architecture and reference-screen integration.
+   Purpose: unify page density, grids, action rows, and immersive workspace behavior. */
+
+.namaa-page-stack {
+  display:grid;
+  gap:var(--ux-space-5);
+  min-inline-size:0;
+}
+
+.namaa-page-header {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:var(--ux-space-4);
+  min-inline-size:0;
+}
+
+.namaa-page-header__content {
+  min-inline-size:0;
+  flex:1 1 auto;
+}
+
+.namaa-page-actions {
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  flex-wrap:wrap;
+  gap:var(--ux-space-2);
+  flex:0 0 auto;
+}
+
+.namaa-grid {
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:var(--ux-space-4);
+  min-inline-size:0;
+}
+
+.namaa-grid > * {
+  min-inline-size:0;
+  max-inline-size:100%;
+}
+
+.namaa-grid--dense {
+  gap:var(--ux-space-3);
+}
+
+.namaa-grid--metrics {
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));
+}
+
+.namaa-grid--content {
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));
+}
+
+.namaa-action-row {
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:var(--ux-space-2);
+}
+
+.namaa-action-row > :where(button,a,[role="button"]) {
+  inline-size:auto;
+  flex:0 0 auto;
+}
+
+.namaa-surface {
+  min-inline-size:0;
+  max-inline-size:100%;
+  border:var(--ux-border-width-1) solid var(--ux-border-default);
+  border-radius:var(--ux-radius-lg);
+  background:var(--ux-card-bg);
+  color:var(--ux-text-primary);
+  box-shadow:var(--ux-shadow-xs);
+}
+
+/* Dashboard reference integration. */
+.p47-dashboard-page .p47-content-shell {
+  inline-size:100%;
+  max-inline-size:var(--ux-container-content);
+  margin-inline:auto;
+  display:grid;
+  gap:var(--ux-space-5);
+}
+
+.p47-dashboard-page .p47-page-heading {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:var(--ux-space-4);
+  margin:0;
+}
+
+.p47-dashboard-page .p47-page-actions,
+.p47-dashboard-page .p47-hero-actions {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:var(--ux-space-2);
+}
+
+.p47-dashboard-page .p47-page-actions > *,
+.p47-dashboard-page .p47-hero-actions > * {
+  inline-size:auto;
+  flex:0 0 auto;
+}
+
+.p47-dashboard-page .p47-kpi-strip {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:var(--ux-space-3);
+}
+
+.p47-dashboard-page .p47-dashboard-grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:var(--ux-space-4);
+}
+
+.p47-dashboard-page .p47-progress-row,
+.p47-dashboard-page .p47-module-grid {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:var(--ux-space-3);
+}
+
+.p47-dashboard-page :where(.p47-panel,.p47-kpi-strip > article,.p47-progress-row > a,.p47-module-grid > a) {
+  min-inline-size:0;
+  max-inline-size:100%;
+}
+
+/* Entity profile sheet uses the same geometry as governed detail pages. */
+[role="dialog"][aria-label="تفاصيل الجهة"] > aside {
+  inline-size:min(960px,calc(100vw - var(--ux-space-8)));
+  max-inline-size:960px;
+  max-block-size:min(90dvh,900px);
+  overflow:auto;
+  border:var(--ux-border-width-1) solid var(--ux-border-default);
+  border-radius:var(--ux-radius-xl);
+  background:var(--ux-card-bg);
+  box-shadow:var(--ux-shadow-lg);
+}
+
+[role="dialog"][aria-label="تفاصيل الجهة"] nav {
+  display:flex;
+  align-items:center;
+  gap:var(--ux-space-2);
+  overflow-x:auto;
+  overscroll-behavior-inline:contain;
+  scrollbar-width:none;
+}
+
+[role="dialog"][aria-label="تفاصيل الجهة"] nav::-webkit-scrollbar {
+  display:none;
+}
+
+[role="dialog"][aria-label="تفاصيل الجهة"] nav > button {
+  inline-size:auto;
+  flex:0 0 auto;
+}
+
+/* Conversations are an immersive workspace and must not inherit ordinary page gutters. */
+body:has(.namaa-conversation-page) .namaa-main-canvas {
+  padding:0;
+  max-inline-size:none;
+}
+
+body:has(.namaa-conversation-page) .namaa-main-canvas > * {
+  max-inline-size:none;
+}
+
+.namaa-conversation-page {
+  inline-size:100%;
+  min-inline-size:0;
+  min-block-size:calc(100dvh - var(--ux-shell-topbar-height));
+}
+
+/* Mobile. */
+@media (max-width:767px) {
+  .namaa-page-stack { gap:var(--ux-space-4); }
+
+  .namaa-page-header,
+  .p47-dashboard-page .p47-page-heading {
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+    gap:var(--ux-space-3);
+  }
+
+  .namaa-page-actions,
+  .p47-dashboard-page .p47-page-actions,
+  .p47-dashboard-page .p47-hero-actions {
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    overscroll-behavior-inline:contain;
+    scrollbar-width:none;
+  }
+
+  .namaa-page-actions::-webkit-scrollbar,
+  .p47-dashboard-page .p47-page-actions::-webkit-scrollbar,
+  .p47-dashboard-page .p47-hero-actions::-webkit-scrollbar {
+    display:none;
+  }
+
+  .p47-dashboard-page .p47-kpi-strip,
+  .p47-dashboard-page .p47-dashboard-grid,
+  .p47-dashboard-page .p47-progress-row,
+  .p47-dashboard-page .p47-module-grid {
+    grid-template-columns:minmax(0,1fr);
+    gap:var(--ux-space-3);
+  }
+
+  body:has(.namaa-conversation-page) .main-content-focus-target {
+    padding-block-start:0;
+  }
+
+  body:has(.namaa-conversation-page) .protected-app-shell {
+    padding-block-end:0;
+  }
+
+  body:has(.namaa-conversation-page) .mobile-bottom-nav {
+    display:none !important;
+  }
+
+  [role="dialog"][aria-label="تفاصيل الجهة"] > aside {
+    inline-size:100vw;
+    max-inline-size:none;
+    block-size:100dvh;
+    max-block-size:100dvh;
+    border-radius:var(--ux-radius-0);
+  }
+}
+
+/* Tablet. */
+@media (min-width:768px) and (max-width:1023px) {
+  .p47-dashboard-page .p47-kpi-strip {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .p47-dashboard-page .p47-dashboard-grid,
+  .p47-dashboard-page .p47-progress-row,
+  .p47-dashboard-page .p47-module-grid {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  body:has(.namaa-conversation-page) .main-content-focus-target {
+    padding-block-start:0;
+  }
+}
+
+/* Wide desktop. */
+@media (min-width:1440px) {
+  .p47-dashboard-page .p47-content-shell {
+    max-inline-size:var(--ux-container-wide);
+  }
+
+  .p47-dashboard-page .p47-dashboard-grid {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}

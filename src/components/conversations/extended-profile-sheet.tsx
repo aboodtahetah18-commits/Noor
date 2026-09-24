@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { LucideIcon } from '@/components/ui/lucide-icon';
+import { Button, Input, Select, Textarea } from '@/components/ui';
 import type { ExtendedProfileSection } from '@/lib/conversations/extended-profile-catalog';
 import styles from './conversation-workspace.module.css';
 
@@ -86,10 +87,10 @@ export function ExtendedProfileSheet({
 
   return <div className={styles.mobileOverlay} role="dialog" aria-modal="true" aria-label="الملف المالي التفصيلي">
     <button type="button" className={styles.scrim} aria-label="إغلاق" onClick={onClose}/>
-    <aside className={styles.mobileSheet+' '+styles.extendedProfileSheet}>
+    <aside className={styles.mobileSheet+' '+styles.extendedProfileSheet+' ux-dialog-surface'}>
       <div className={styles.sheetHeader}>
         <strong>الملف المالي التفصيلي</strong>
-        <button type="button" onClick={onClose} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button>
+        <Button type="button" variant="ghost" size="sm" onClick={onClose} aria-label="إغلاق"><LucideIcon name="x" size={20}/></Button>
       </div>
       <div className={styles.extendedProfileIntro}>
         <LucideIcon name="listChecks" size={24}/>
@@ -110,20 +111,20 @@ export function ExtendedProfileSheet({
             {active.fields.map(field=><label key={field.key} className={field.kind==='textarea'?styles.intakeWide:undefined}>
               <span>{field.label}</span>
               {field.kind==='select'
-                ? <select value={values[field.key]??''} onChange={event=>setValues(current=>({...current,[field.key]:event.target.value}))}>
+                ? <Select value={values[field.key]??''} onChange={event=>setValues(current=>({...current,[field.key]:event.target.value}))}>
                     <option value="">اختر</option>{field.options?.map(option=><option key={option}>{option}</option>)}
-                  </select>
+                  </Select>
                 : field.kind==='textarea'
-                  ? <textarea rows={3} placeholder={field.placeholder} value={values[field.key]??''} onChange={event=>setValues(current=>({...current,[field.key]:event.target.value}))}/>
-                  : <input type={field.kind==='number'?'number':field.kind==='date'?'date':'text'} min={field.kind==='number'?'0':undefined} inputMode={field.kind==='number'?'decimal':undefined} placeholder={field.placeholder} value={values[field.key]??''} onChange={event=>setValues(current=>({...current,[field.key]:event.target.value}))}/>
+                  ? <Textarea rows={3} placeholder={field.placeholder} value={values[field.key]??''} onChange={event=>setValues(current=>({...current,[field.key]:event.target.value}))}/>
+                  : <Input type={field.kind==='number'?'number':field.kind==='date'?'date':'text'} min={field.kind==='number'?'0':undefined} inputMode={field.kind==='number'?'decimal':undefined} placeholder={field.placeholder} value={values[field.key]??''} onChange={event=>setValues(current=>({...current,[field.key]:event.target.value}))}/>
               }
             </label>)}
           </div>
           <div className={styles.extendedActions}>
             <small>الحفظ يحدّث الحقيقة المرجعية لهذا القسم؛ لا ينشئ عملية مالية أو تنفيذًا خارجيًا.</small>
-            <button type="button" className={styles.primaryActionButton} disabled={saving} onClick={()=>void save()}>
+            <Button type="button" variant="primary" disabled={saving} onClick={()=>void save()}>
               <LucideIcon name="save" size={20}/><span>{saving?'جارٍ الحفظ…':'حفظ القسم'}</span>
-            </button>
+            </Button>
           </div>
         </section>}
       </div>}

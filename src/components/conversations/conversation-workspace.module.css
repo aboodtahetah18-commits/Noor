@@ -2343,9 +2343,6 @@
 .userMessageIdentity strong{font-size:var(--ux-type-caption-size);color:var(--namaa-green-700)}
 .userMessageIdentity small{font-size:var(--ux-type-caption-size);color:var(--ux-text-secondary)}
 .entityDetailSheet{
-  width:min(calc(100% - (var(--ux-space-2) * 2)),720px);
-  max-width:100%;
-  max-height:88dvh;
   box-sizing:border-box;
   overflow-x:hidden;
   overscroll-behavior:contain

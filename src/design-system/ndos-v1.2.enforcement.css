@@ -2753,7 +2753,7 @@ textarea {
     margin-inline:auto!important;
     padding:18px 22px 28px!important;
     background:#FFFFFF!important;
-    color:#1F2937!important;
+    color:var(--namaa-text)!important;
   }
 
   .namaa-governance-catalog-hero,
@@ -4888,8 +4888,8 @@ textarea {
     display:block!important;
     overflow:hidden!important;
     border-radius:50%!important;
-    background:#F3F4F2!important;
-    border:2px solid #D4AF6B!important;
+    background:var(--namaa-surface-warm)!important;
+    border:2px solid var(--namaa-gold-500)!important;
     box-shadow:0 4px 12px rgb(31 41 55 / 8%)!important;
   }
 
@@ -4910,12 +4910,12 @@ textarea {
   }
 
   html[data-theme="dark"] .namaa-banks-team-list article > .namaa-banks-persona{
-    background:#31594C!important;
-    border-color:#D7BE84!important;
+    background:var(--ux-dark-surface-muted)!important;
+    border-color:var(--namaa-gold-500)!important;
   }
 
   html[data-theme="dark"] .namaa-banks-team-list article > div strong{
-    color:#F5F1E8!important;
+    color:var(--ux-dark-text-primary)!important;
   }
 }
 
@@ -4927,8 +4927,8 @@ textarea {
     .namaa-wide-card,.namaa-wide-panel,.p47-panel,.p47-resource-card,.namaa-collection-card,
     .dashboard-card,.form-card,.summary-card,.detail-list,.settings-card,.report-card
   ){
-    background:#FFFFFF!important;
-    border:1.5px solid #C7D5CD!important;
+    background:var(--namaa-card)!important;
+    border:1.5px solid var(--namaa-border-strong)!important;
     box-shadow:0 10px 26px rgb(31 41 55 / 5%)!important;
   }
 
@@ -4936,16 +4936,16 @@ textarea {
     .namaa-wide-card,.namaa-wide-panel,.p47-panel,.p47-resource-card,.namaa-collection-card,
     .dashboard-card,.form-card,.summary-card,.detail-list,.settings-card,.report-card
   ) :where(article,.info-tile,.data-tile,.metric-tile,.summary-tile,.detail-tile,.mini-card):not(.is-warning):not(.is-critical):not(.is-success){
-    background:#F2F5F3!important;
-    border:1.5px solid #CCD8D1!important;
+    background:var(--namaa-surface-warm)!important;
+    border:1.5px solid var(--namaa-border)!important;
   }
 
   html[data-theme="light"] .protected-app-shell :where(
     .namaa-investments-section-title,.p47-section-header,.p47-section-heading,.p47-resource-header,
     .namaa-collection-head,.card-header,.panel-header,.section-header,.summary-header
   ){
-    background:#EEF3EF!important;
-    border-bottom:1.5px solid #C7D5CD!important;
+    background:var(--namaa-surface-warm)!important;
+    border-bottom:1.5px solid var(--namaa-border-strong)!important;
   }
 
   /* 2) موازنة رموز الشريط العلوي */
@@ -5075,16 +5075,16 @@ textarea {
     align-items:center!important;
     gap:8px!important;
     padding:7px 10px!important;
-    border:1.5px solid #CCD8D1!important;
+    border:1.5px solid var(--namaa-border)!important;
     border-radius:999px!important;
-    background:#F2F5F3!important;
+    background:var(--namaa-surface-warm)!important;
   }
   .namaa-investments-chat-people img{
     width:34px!important;
     height:34px!important;
     border-radius:50%!important;
     object-fit:cover!important;
-    border:1px solid #D4AF6B!important;
+    border:1px solid var(--namaa-gold-500)!important;
   }
   .namaa-investments-chat-window{
     min-height:210px!important;
@@ -5093,9 +5093,9 @@ textarea {
     justify-content:space-between!important;
     gap:12px!important;
     padding:12px!important;
-    border:1.5px solid #C7D5CD!important;
+    border:1.5px solid var(--namaa-border-strong)!important;
     border-radius:15px!important;
-    background:#F7F9F7!important;
+    background:var(--namaa-surface-warm)!important;
   }
   .namaa-investments-chat-placeholder{
     flex:1!important;
@@ -5103,7 +5103,7 @@ textarea {
     place-items:center!important;
     align-content:center!important;
     gap:8px!important;
-    color:#0B6B4F!important;
+    color:var(--namaa-green-900)!important;
   }
   .namaa-investments-chat-composer{
     min-height:44px!important;
@@ -5112,13 +5112,13 @@ textarea {
     justify-content:space-between!important;
     gap:10px!important;
     padding:0 13px!important;
-    border:1.5px solid #C7D5CD!important;
+    border:1.5px solid var(--namaa-border-strong)!important;
     border-radius:12px!important;
-    background:#FFFFFF!important;
-    color:#61758A!important;
+    background:var(--namaa-card)!important;
+    color:var(--namaa-muted)!important;
     text-decoration:none!important;
   }
-  .namaa-investments-chat-composer svg{color:#0B6B4F!important;}
+  .namaa-investments-chat-composer svg{color:var(--namaa-green-900)!important;}
 
   /* 7) توزيع بيانات بطاقات المحفظة على كامل المساحة مع رموز ونقش */
   .namaa-investments-dashboard-grid{
@@ -5134,8 +5134,8 @@ textarea {
     align-items:center!important;
     gap:14px!important;
     padding:18px!important;
-    background:#F2F5F3!important;
-    border:1.5px solid #CCD8D1!important;
+    background:var(--namaa-surface-warm)!important;
+    border:1.5px solid var(--namaa-border)!important;
   }
   .namaa-investments-dashboard-grid>article::after{
     content:""!important;
@@ -5154,8 +5154,8 @@ textarea {
     display:grid!important;
     place-items:center!important;
     border-radius:14px!important;
-    background:#0B6B4F!important;
-    color:#FFFFFF!important;
+    background:var(--namaa-green-900)!important;
+    color:var(--namaa-card)!important;
     z-index:1!important;
   }
   .namaa-investments-dashboard-grid>article>div{
@@ -5165,11 +5165,11 @@ textarea {
     z-index:1!important;
   }
   .namaa-investments-dashboard-grid>article>div>span{
-    color:#8A6A2B!important;
+    color:var(--namaa-gold-500)!important;
     font-weight:900!important;
   }
   .namaa-investments-dashboard-grid>article>div>strong{
-    color:#1F2937!important;
+    color:var(--namaa-text)!important;
     font-size:18px!important;
     line-height:1.45!important;
   }
@@ -5181,45 +5181,45 @@ textarea {
   .namaa-banks-pending-list article,
   .namaa-investments-followup-list article{
     border-width:1.5px!important;
-    border-color:#C7D5CD!important;
-    background:#F2F5F3!important;
+    border-color:var(--namaa-border-strong)!important;
+    background:var(--namaa-surface-warm)!important;
   }
 
   html[data-theme="dark"] .protected-app-shell :where(
     .namaa-wide-card,.namaa-wide-panel,.p47-panel,.p47-resource-card,.namaa-collection-card,
     .dashboard-card,.form-card,.summary-card,.detail-list,.settings-card,.report-card
   ){
-    background:#23483D!important;
-    border-color:#6E8A7B!important;
+    background:var(--ux-dark-card-bg)!important;
+    border-color:var(--ux-dark-border)!important;
   }
   html[data-theme="dark"] .protected-app-shell :where(
     .namaa-wide-card,.namaa-wide-panel,.p47-panel,.p47-resource-card,.namaa-collection-card,
     .dashboard-card,.form-card,.summary-card,.detail-list,.settings-card,.report-card
   ) :where(article,.info-tile,.data-tile,.metric-tile,.summary-tile,.detail-tile,.mini-card):not(.is-warning):not(.is-critical):not(.is-success){
-    background:#31594C!important;
-    border-color:#789588!important;
+    background:var(--ux-dark-surface-muted)!important;
+    border-color:var(--ux-dark-soft-teal-border)!important;
   }
   html[data-theme="dark"] .namaa-investments-chat-window,
   html[data-theme="dark"] .namaa-investments-dashboard-grid>article{
-    background:#31594C!important;
-    border-color:#789588!important;
+    background:var(--ux-dark-surface-muted)!important;
+    border-color:var(--ux-dark-soft-teal-border)!important;
   }
   html[data-theme="dark"] .namaa-investments-chat-composer{
-    background:#23483D!important;
-    border-color:#789588!important;
-    color:#D9D3C5!important;
+    background:var(--ux-dark-card-bg)!important;
+    border-color:var(--ux-dark-soft-teal-border)!important;
+    color:var(--ux-dark-text-secondary)!important;
   }
   html[data-theme="dark"] .namaa-investments-chat-people>span{
-    background:#31594C!important;
-    border-color:#789588!important;
-    color:#F5F1E8!important;
+    background:var(--ux-dark-surface-muted)!important;
+    border-color:var(--ux-dark-soft-teal-border)!important;
+    color:var(--ux-dark-text-primary)!important;
   }
   html[data-theme="dark"] .namaa-investment-tile-icon{
-    background:#D7BE84!important;
-    color:#161616!important;
+    background:var(--namaa-gold-500)!important;
+    color:var(--namaa-text)!important;
   }
-  html[data-theme="dark"] .namaa-investments-dashboard-grid>article>div>span{color:#D7BE84!important;}
-  html[data-theme="dark"] .namaa-investments-dashboard-grid>article>div>strong{color:#F5F1E8!important;}
+  html[data-theme="dark"] .namaa-investments-dashboard-grid>article>div>span{color:var(--namaa-gold-500)!important;}
+  html[data-theme="dark"] .namaa-investments-dashboard-grid>article>div>strong{color:var(--ux-dark-text-primary)!important;}
 }
 
 @media (min-width:768px) and (max-width:1023px){
