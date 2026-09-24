@@ -135,7 +135,7 @@ export async function reconcileConfirmedOnboardingAccounts(userId:string):Promis
             from public.accounts
             where user_id=${userId}::uuid
               and lower(trim(name))=lower(trim(${label}))
-              and coalesce(lower(trim(bank_name)),'')=coalesce(lower(trim(${input.bankName})), '')
+              and coalesce(lower(trim(bank_name)),'')=lower(trim(${input.bankName??''}))
               and card_last4=${input.cardLast4}
             order by created_at asc
             limit 1
@@ -145,7 +145,7 @@ export async function reconcileConfirmedOnboardingAccounts(userId:string):Promis
             from public.accounts
             where user_id=${userId}::uuid
               and lower(trim(name))=lower(trim(${label}))
-              and coalesce(lower(trim(bank_name)),'')=coalesce(lower(trim(${input.bankName})), '')
+              and coalesce(lower(trim(bank_name)),'')=lower(trim(${input.bankName??''}))
             order by created_at asc
             limit 1
           `;
