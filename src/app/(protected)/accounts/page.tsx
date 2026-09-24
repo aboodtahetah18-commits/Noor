@@ -11,12 +11,14 @@ import { SmartComboInput } from '@/components/forms/smart-combo-input';
 import { deactivateAccountAction, updateAccountAction } from './actions';
 import { FocusedNextStep } from '@/components/ux/focused-next-step';
 import { EntityActionRail } from '@/components/ui/entity-actions';
+import { reconcileConfirmedOnboardingAccounts } from '@/lib/conversations/onboarding-projection';
 
 const labels = { BANK: 'حساب جاري', SAVINGS: 'ادخار', CASH: 'نقدي', OTHER: 'أخرى' } as const;
 
 export default async function AccountsPage({ searchParams }: { searchParams: Promise<Record<string,string|string[]|undefined>> }) {
   const query = await searchParams;
   const user = await requireAuthenticatedUser();
+  await reconcileConfirmedOnboardingAccounts(user.id);
   const accounts = await listAccounts(user.id, true);
   const active = accounts.filter((a) => a.isActive);
   const inactive = accounts.filter((a) => !a.isActive);
