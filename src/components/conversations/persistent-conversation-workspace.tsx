@@ -32,6 +32,15 @@ type OnboardingReviewFact = { key:string; label:string; raw:string; verified_at?
 type ConversationAttachment = { id:string; message_id?:string|null; file_name:string; content_type?:string|null; verification_status?:string|null; created_at?:string };
 type ChatFontSize='small'|'medium'|'large';
 type FocusedChat={kind:'role';key:string;title:string;roomId:RoomKey}|{kind:'meeting';key:string;title:string;roomId:'council'};
+type FocusedChatIndexItem={
+  room_key:RoomKey;
+  scope_kind:'role'|'meeting';
+  scope_key:string;
+  scope_title:string|null;
+  last_message:string|null;
+  last_message_at:string|null;
+  message_count:number;
+};
 type OversightActionFeedback={command:string;status:'idle'|'pending'|'success'|'error';message:string|null};
 type OversightPendingConfirmation={command:string;title:string;message:string;confirmLabel:string}|null;
 const CHAT_FONT_STORAGE_KEY='namaa-chat-font-size';
@@ -946,6 +955,7 @@ export function PersistentConversationWorkspace(){
   const [activeGovernedDocument,setActiveGovernedDocument]=useState<{roomId:RoomKey;document:GovernedDocumentRef}|null>(null);
   const [activeAlgorithmRole,setActiveAlgorithmRole]=useState<{roomId:RoomKey;role:AlgorithmRoleRef}|null>(null);
   const [focusedChat,setFocusedChat]=useState<FocusedChat|null>(null);
+  const [focusedChats,setFocusedChats]=useState<FocusedChatIndexItem[]>([]);
   const [entityDashboardRoom,setEntityDashboardRoom]=useState<RoomKey|null>(null);
   const [governanceMode,setGovernanceMode]=useState<'governance'|'meetings'|'documents'|null>(null);
   const [extendedProfileOpen,setExtendedProfileOpen]=useState(false);
@@ -1002,6 +1012,20 @@ export function PersistentConversationWorkspace(){
     return()=>{cancelled=true};
   },[]);
 
+  async function refreshFocusedChats(){
+    try{
+      const response=await fetch('/api/conversations/focused',{cache:'no-store'});
+      if(!response.ok)return;
+      const data=await response.json() as {chats?:FocusedChatIndexItem[]};
+      setFocusedChats(Array.isArray(data.chats)?data.chats:[]);
+    }catch{}
+  }
+
+  useEffect(()=>{
+    if(!roomsOpen)return;
+    void refreshFocusedChats();
+  },[roomsOpen]);
+
   useEffect(()=>{ let cancelled=false; fetch(`/api/conversations/${activeRoomId}`,{cache:'no-store'})
     .then(async response=>{ if(!response.ok) throw new Error('تعذر تحميل المحادثة.'); return response.json(); })
     .then(data=>{ if(!cancelled){
@@ -1033,6 +1057,18 @@ export function PersistentConversationWorkspace(){
     setError('');setGovernanceMode(null);setRoomsOpen(false);
     setFocusedChat({kind:'meeting',key:meeting.id,title:meeting.title,roomId:'council'});
     setActiveRoomId('council');
+  }
+
+  function openSavedFocusedChat(item:FocusedChatIndexItem){
+    if(onboardingComplete===false)return;
+    setError('');setRoomsOpen(false);setGovernanceMode(null);setActiveAlgorithmRole(null);
+    if(item.scope_kind==='meeting'){
+      setFocusedChat({kind:'meeting',key:item.scope_key,title:item.scope_title||'دردشة الاجتماع',roomId:'council'});
+      setActiveRoomId('council');
+      return;
+    }
+    setFocusedChat({kind:'role',key:item.scope_key,title:item.scope_title||'دردشة المسؤول',roomId:item.room_key});
+    setActiveRoomId(item.room_key);
   }
 
   async function refreshActiveRoom(){
@@ -1334,6 +1370,7 @@ export function PersistentConversationWorkspace(){
       if(!response.ok||!data.message)throw new Error('write');
       const responseMessages=Array.isArray(data.replies)&&data.replies.length?data.replies:(data.reply?[data.reply]:[]);
       setMessages(current=>[...patchLiveOversightDashboard(current,data.oversight_dashboard),data.message as Message,...responseMessages]);
+      if(focusedChat)void refreshFocusedChats();
       const lifecycleReply=data.reply??responseMessages.at(-1);
       const completed=Boolean(lifecycleReply?.structured_data?.onboarding_complete);
       const nextStep=lifecycleReply?.structured_data?.onboarding_step;
@@ -1358,11 +1395,20 @@ export function PersistentConversationWorkspace(){
     :directoryTab==='owners'
       ?ownerButtons
       :<div className={styles.directoryMeetingPanel}><LucideIcon name="calendarDays" size={24}/><strong>الاجتماعات واللجان</strong><small>اعرض المواعيد والمحاور والوثائق والبيانات المطلوبة لكل اجتماع.</small><button type="button" className={styles.primaryActionButton} onClick={()=>{setRoomsOpen(false);setGovernanceMode('meetings')}}>فتح جدول الاجتماعات</button></div>;
+  const recentOwnerChats=focusedChats.filter(item=>item.scope_kind==='role');
+  const recentMeetingChats=focusedChats.filter(item=>item.scope_kind==='meeting');
+  const savedFocusedChats=(items:FocusedChatIndexItem[])=><div className={styles.savedFocusedChats}>
+    {items.length>0&&<div className={styles.savedFocusedChatsHeading}><strong>الدردشات المحفوظة</strong><small>{items.length} محادثات</small></div>}
+    {items.map(item=><button type="button" key={item.scope_kind+':'+item.scope_key} className={styles.savedFocusedChat} onClick={()=>openSavedFocusedChat(item)}>
+      <span><strong>{item.scope_title||'محادثة محفوظة'}</strong><small>{item.last_message||'افتح المحادثة للمتابعة من آخر نقطة.'}</small></span>
+      <LucideIcon name="chevronLeft" size={16}/>
+    </button>)}
+  </div>;
   const mobileDirectoryContent=directoryTab==='entities'
     ?roomButtons
     :directoryTab==='owners'
-      ?mobileOwnerButtons
-      :<div className={styles.directoryMeetingGroups}>
+      ?<>{savedFocusedChats(recentOwnerChats)}{mobileOwnerButtons}</>
+      :<><div className={styles.directoryMeetingGroups}>
         {[
           {title:'مجلس نماء الأعلى',subtitle:'الاجتماعات العامة والتأسيسية',logo:'/brand/bank-central.webp'},
           {title:'لجنة الميزانية والإنفاق',subtitle:'الخطة الدورية والانحرافات',logo:'/brand/bank-hilal.webp'},
@@ -1374,7 +1420,7 @@ export function PersistentConversationWorkspace(){
           <span><strong>{group.title}</strong><small>{group.subtitle}</small></span>
           <LucideIcon name="chevronLeft" size={16}/>
         </button>)}
-      </div>;
+      </div>{savedFocusedChats(recentMeetingChats)}</>;
 
   const contextCards=<><section className={styles.contextCard}><small>الجهة الحالية</small><strong>{activeRoom.title}</strong><p>{activeRoom.lead} · {activeRoom.subtitle}</p></section><section className={styles.contextCard}><small>المشاركون الفعليون</small><strong>{participants.length?`${participants.length} اختصاصيين`:'اختصاصيون حسب الموضوع'}</strong><p>{participants.length?participants.map(p=>p.display_name).join('، '):activeRoom.specialists}. لا تُستدعى جميع الجهات تلقائيًا.</p></section><section className={styles.contextCard}><small>حد التنفيذ</small><strong>توصية ومتابعة فقط</strong><p>لا تحويل، لا سداد، ولا إجراء مالي خارجي يُعد منفذًا من المنصة.</p></section></>;
 
