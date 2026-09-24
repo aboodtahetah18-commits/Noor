@@ -710,7 +710,16 @@ function DirectGovernanceChangeCard({data}:{data:Record<string,unknown>}){
   </section>;
 }
 
-function StructuredFacts({data}:{data?:Record<string,unknown>}){
+function profileSectionForMissing(missing:string[]){
+  const text=missing.join(' ').toLowerCase();
+  if(/فاتورة|فواتير|اشتراك|اشتراكات|جوال|انترنت|إنترنت|كهرباء|مياه/.test(text)) return 'bills_subscriptions';
+  if(/سيارة|مركبة|وقود|بنزين|زيت|صيانة|تأمين/.test(text)) return 'vehicle_details';
+  if(/سكن|إيجار|ايجار|منزل|أسرة|اسرة/.test(text)) return 'housing_details';
+  if(/طعام|شراب|مطعم|بقالة|تسوق|عناية/.test(text)) return 'daily_living';
+  return 'bills_subscriptions';
+}
+
+function StructuredFacts({data,onOpenProfile}:{data?:Record<string,unknown>;onOpenProfile?:(section:string)=>void}){
   if(!data)return null;
   const confidence=typeof data.confidence_percent==='number'?data.confidence_percent:null;
   const routed=roomTitle(data.routed_room);
@@ -817,10 +826,10 @@ function StructuredFacts({data}:{data?:Record<string,unknown>}){
   return <div className={styles.facts}>
     {decisionReference&&<span><small>مرجع القرار</small><strong>{decisionReference}</strong></span>}
     {governanceOversight&&<span><small>الجهة الحاكمة</small><strong>{governanceOversight}</strong></span>}
-    {governancePolicies.length>0&&<span><small>السياسات المستخدمة</small><strong>{governancePolicies.join('، ')}</strong></span>}
-    {governanceAuthorities.length>0&&<span><small>مراجع الصلاحيات</small><strong>{governanceAuthorities.join('، ')}</strong></span>}
+    {governancePolicies.length>0&&<span><small>السياسات المستخدمة</small><strong>{governancePolicies.length===1?'سياسة معتمدة واحدة':`${governancePolicies.length} سياسات معتمدة`}</strong></span>}
     {decisionLifecycleState&&<span><small>حالة دورة القرار</small><strong>{decisionLifecycleState==='PROPOSED'?'مقترح':decisionLifecycleState==='REVIEWED'?'تحت المراجعة':decisionLifecycleState==='USER_CONFIRMED'?'أكد المستخدم':decisionLifecycleState==='EVIDENCE_REQUIRED'?'بانتظار الإثبات':decisionLifecycleState==='VERIFIED'?'تم التحقق':decisionLifecycleState==='APPLIED'?'تم التحقق من التطبيق':decisionLifecycleState==='FOLLOWUP'?'متابعة بعد القرار':decisionLifecycleState==='BLOCKED'?'متوقف بحاجز حاكم':decisionLifecycleState==='CANCELLED'?'ملغى':decisionLifecycleState}</strong></span>}
-    {confidence!==null&&<span><small>درجة الثقة</small><strong>{confidence}٪</strong></span>}
+    {confidence!==null&&<span><small>الثقة في القيم المسجلة</small><strong>{confidence}٪</strong></span>}
+    {(missing.length>0||decisionState==='NEEDS_DATA')&&<span><small>اكتمال الملف</small><strong>يحتاج استكمال بيانات</strong></span>}
     {routed&&<span><small>الجهة المختصة</small><strong>{routed}</strong></span>}
     {income!==null&&<span><small>الدخل المؤكد</small><strong>{formatSar(income)} ر.س</strong></span>}
     {obligations!==null&&<span><small>الالتزامات المؤكدة</small><strong>{formatSar(obligations)} ر.س</strong></span>}
@@ -941,6 +950,7 @@ export function PersistentConversationWorkspace(){
   const [entityDashboardRoom,setEntityDashboardRoom]=useState<RoomKey|null>(null);
   const [governanceMode,setGovernanceMode]=useState<'governance'|'meetings'|'documents'|null>(null);
   const [extendedProfileOpen,setExtendedProfileOpen]=useState(false);
+  const [extendedProfileSection,setExtendedProfileSection]=useState<string|null>(null);
   const [intakeDismissed,setIntakeDismissed]=useState(true);
   const [chatFontSize,setChatFontSize]=useState<ChatFontSize>('medium');
   const composerTextareaRef=useRef<HTMLTextAreaElement|null>(null);
@@ -1329,7 +1339,7 @@ export function PersistentConversationWorkspace(){
         onCommand={requestOversightCommand}
         onTemplate={template=>{setPendingOversightConfirmation(null);setOversightActionFeedback({command:'',status:'idle',message:null});setDraft(template);requestAnimationFrame(()=>composerTextareaRef.current?.focus())}}
       />
-      <StructuredFacts data={message.structured_data}/>
+      <StructuredFacts data={message.structured_data} onOpenProfile={section=>{setExtendedProfileSection(section);setExtendedProfileOpen(true)}}/>
       {(message.message_kind==='decision'||message.message_kind==='request')&&<small className={styles.executionBoundary}>أي تنفيذ مالي خارجي يظل بيد المستخدم، ويحتاج تأكيدًا وإثباتًا قبل الإغلاق.</small>}
     </section>}
     <footer className={styles.messageMeta}>
@@ -1442,7 +1452,7 @@ return <div className={styles.roomDetailContent}>
       <section className={styles.settingsSectionBlock}><div className={styles.settingsSectionHeading}><LucideIcon name="slidersHorizontal" size={20}/><span><strong>ضبط النظام</strong><small>إعدادات العرض والتنبيهات والخصوصية قابلة للتخصيص؛ أما الأوزان والحدود المحكومة فتظل تحت الحوكمة ولا تعدّل من الواجهة.</small></span></div><div className={styles.settingsStatusList}><span><b>الجهات والبنوك وأصحاب المسؤوليات</b><em>{onboardingComplete===false?'تفتح بعد اكتمال التأسيس':'مفتوحة'}</em></span><span><b>الاجتماعات</b><em>{onboardingComplete===false?'تظهر بعد اعتماد التأسيس':'متاحة'}</em></span><span><b>التنفيذ المالي</b><em>بيد المستخدم فقط</em></span></div></section>
     </div>}</aside></div>}
     <GovernanceMobileSheet mode={governanceMode} onClose={()=>setGovernanceMode(null)} onOpenSecretary={()=>{setGovernanceMode(null);chooseRoom('secretary')}}/>
-    <ExtendedProfileSheet open={extendedProfileOpen} onClose={()=>setExtendedProfileOpen(false)}/>
+    <ExtendedProfileSheet open={extendedProfileOpen} initialSection={extendedProfileSection} onClose={()=>{setExtendedProfileOpen(false);setExtendedProfileSection(null)}}/>
     {reviewOpen&&<div className={styles.mobileOverlay} role="dialog" aria-modal="true" aria-label="مراجعة بيانات التأسيس"><button type="button" className={styles.scrim} aria-label="إغلاق" onClick={()=>setReviewOpen(false)}/><aside className={styles.mobileSheet}><div className={styles.sheetHeader}><strong>مراجعة بيانات التأسيس</strong><button type="button" onClick={()=>setReviewOpen(false)} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button></div><div className={styles.reviewFacts}>{reviewFacts.map(fact=><div key={fact.key} className={styles.reviewFact}><div><small>{fact.label}</small>{reviewEditingKey===fact.key?<textarea value={reviewDraft} onChange={event=>setReviewDraft(event.target.value)} rows={3}/>:<strong>{fact.raw||'—'}</strong>}</div>{reviewEditingKey===fact.key?<div className={styles.reviewFactActions}><button type="button" onClick={()=>{setReviewEditingKey('');setReviewDraft('')}}><LucideIcon name="x" size={16}/><span>إلغاء</span></button><button type="button" onClick={()=>void saveReviewFact()} disabled={reviewSaving}><LucideIcon name="save" size={16}/><span>{reviewSaving?'جارٍ الحفظ…':'حفظ'}</span></button></div>:<button type="button" onClick={()=>{setReviewEditingKey(fact.key);setReviewDraft(fact.raw)}} aria-label={`تعديل ${fact.label}`}><LucideIcon name="pencil" size={16}/></button>}</div>)}</div><div className={styles.reviewConfirm}><small>لن يفتح التشغيل الكامل إلا بعد تأكيدك أن البيانات المجمعة صحيحة.</small><button type="button" className={styles.primaryActionButton} onClick={()=>void confirmOnboarding()} disabled={sending||reviewFacts.length===0}><LucideIcon name="circleCheck" size={20}/><span>{sending?'جارٍ التأكيد…':'تأكيد صحة البيانات'}</span></button></div></aside></div>}
   </section>;
 }
