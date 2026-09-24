@@ -1320,7 +1320,7 @@ export function PersistentConversationWorkspace(){
 
   const visibleRooms=onboardingComplete===false?rooms.filter(room=>room.id==='central'):rooms;
   const roomButtons=<div className={styles.roomList}>{visibleRooms.map(room=><div key={room.id} className={`${styles.roomItemShell} ${activeRoom.id===room.id?styles.activeRoom:''}`}><button type="button" onClick={()=>chooseRoom(room.id)} className={styles.roomItem}><RoomPortrait room={room} size="md"/><span className={styles.roomCopy}><strong>{chatRoleTitle(room)}</strong></span></button><button type="button" className={styles.roomDetailButton} aria-label={`تفاصيل ${chatRoleTitle(room)}`} onClick={()=>{setDetailRoomId(room.id);setDetailTab('role')}}><LucideIcon name="info" size={20}/></button></div>)}</div>;
-  const ownerButtons=<div className={styles.responsibilityOwnerList}>{RESPONSIBILITY_OWNERS.map(role=><button type="button" key={role.key} onClick={()=>{setRoomsOpen(false);setActiveAlgorithmRole({roomId:role.homeRoom as RoomKey,role})}}><span><strong>{role.name}</strong><small>{role.mandate}</small></span><LucideIcon name="chevronLeft" size={16}/></button>)}</div>;
+  const ownerButtons=<div className={styles.responsibilityOwnerList}>{RESPONSIBILITY_OWNERS.map(role=>{const ownerRoom=rooms.find(room=>room.id===role.homeRoom)??rooms[0];const portrait=rolePortraitByKey[role.key];return <button type="button" key={role.key} onClick={()=>{setRoomsOpen(false);setActiveAlgorithmRole({roomId:role.homeRoom as RoomKey,role})}}><span className={styles.ownerDirectoryPortrait}>{portrait&&<Image src={portrait} alt="" fill unoptimized sizes="72px"/>}</span><span className={styles.ownerDirectoryCopy}><strong>{role.name}</strong><small>{ownerRoom.title}</small></span><LucideIcon name="chevronLeft" size={16}/></button>})}</div>;
   const directoryTabs=<div className={styles.directoryTabs} role="tablist" aria-label="أقسام مركز العمل">
     <button type="button" role="tab" aria-selected={directoryTab==='entities'} className={directoryTab==='entities'?styles.directoryTabActive:''} onClick={()=>setDirectoryTab('entities')}>الإدارة والبنوك</button>
     <button type="button" role="tab" aria-selected={directoryTab==='owners'} className={directoryTab==='owners'?styles.directoryTabActive:''} onClick={()=>setDirectoryTab('owners')}>مسؤولو البنود</button>
@@ -1330,7 +1330,19 @@ export function PersistentConversationWorkspace(){
     ?roomButtons
     :directoryTab==='owners'
       ?ownerButtons
-      :<div className={styles.directoryMeetingPanel}><LucideIcon name="calendarDays" size={24}/><strong>الاجتماعات واللجان</strong><small>اعرض المواعيد والمحاور والوثائق والبيانات المطلوبة لكل اجتماع.</small><button type="button" className={styles.primaryActionButton} onClick={()=>{setRoomsOpen(false);setGovernanceMode('meetings')}}>فتح جدول الاجتماعات</button></div>;
+      :<div className={styles.directoryMeetingGroups}>
+        {[
+          {title:'مجلس نماء الأعلى',subtitle:'الاجتماعات العامة والتأسيسية',logo:'/brand/bank-central.webp'},
+          {title:'لجنة الميزانية والإنفاق',subtitle:'الخطة الدورية والانحرافات',logo:'/brand/bank-hilal.webp'},
+          {title:'لجنة الاستقرار والسيولة والتمويل',subtitle:'الحماية والسيولة والتمويل',logo:'/brand/bank-malaa.webp'},
+          {title:'لجنة الأهداف والالتزامات',subtitle:'الأهداف والاستحقاقات',logo:'/brand/bank-central.webp'},
+          {title:'لجنة الاستثمار والأصول',subtitle:'الاستثمار والأصول',logo:'/brand/bank-assets.webp'},
+        ].map(group=><button type="button" key={group.title} className={styles.directoryMeetingGroup} onClick={()=>{setRoomsOpen(false);setGovernanceMode('meetings')}}>
+          <span className={styles.directoryMeetingGroupLogo}><Image src={group.logo} alt="" fill unoptimized sizes="72px"/></span>
+          <span><strong>{group.title}</strong><small>{group.subtitle}</small></span>
+          <LucideIcon name="chevronLeft" size={16}/>
+        </button>)}
+      </div>;
 
   const contextCards=<><section className={styles.contextCard}><small>الجهة الحالية</small><strong>{activeRoom.title}</strong><p>{activeRoom.lead} · {activeRoom.subtitle}</p></section><section className={styles.contextCard}><small>المشاركون الفعليون</small><strong>{participants.length?`${participants.length} اختصاصيين`:'اختصاصيون حسب الموضوع'}</strong><p>{participants.length?participants.map(p=>p.display_name).join('، '):activeRoom.specialists}. لا تُستدعى جميع الجهات تلقائيًا.</p></section><section className={styles.contextCard}><small>حد التنفيذ</small><strong>توصية ومتابعة فقط</strong><p>لا تحويل، لا سداد، ولا إجراء مالي خارجي يُعد منفذًا من المنصة.</p></section></>;
 
