@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 import { LucideIcon } from '@/components/ui/lucide-icon';
 import type { ExtendedProfileSection, ExtendedProfileTableColumn } from '@/lib/conversations/extended-profile-catalog';
+import { fuelMonthlyCost, maintenanceForecast, monthlyRecurringTotal } from '@/lib/financial-form-calculations';
 import styles from './conversation-workspace.module.css';
 
 type FactEnvelope={value?:Record<string,unknown>;confidence?:number;verified_at?:string|null;updated_at?:string|null};
@@ -32,21 +33,45 @@ function tableRowsFromFact(section:ExtendedProfileSection|null,fact?:FactEnvelop
           if(column.key==='monthly_total'&&!cell) cell=source.monthly_limit;
         }
         if(section.key==='vehicle_maintenance'){
+          if(column.key==='category'&&!cell) cell=source.name??'أخرى';
           if(column.key==='primary_amount'&&!cell) cell=source.amount;
           if(column.key==='schedule_pattern'&&!cell) cell='ثابت';
           if(column.key==='interval_unit'&&!cell&&typeof source.recurrence==='string') cell=/كيلو/.test(String(source.recurrence))?'ألف كم':'شهر';
           if(column.key==='interval_value'&&!cell&&typeof source.recurrence==='string') cell=String(source.recurrence).match(/\d+/)?.[0]??'';
         }
-        if(section.key==='vehicle_details'&&column.key==='fuel_efficiency'&&!cell&&typeof source.efficiency_notes==='string'){
-          cell=String(source.efficiency_notes).match(/\d+(?:\.\d+)?/)?.[0]??'';
+        if(section.key==='vehicle_expenses'&&column.key==='category'&&!cell) cell=source.name??'أخرى';
+        if(section.key==='vehicle_details'){
+          if(column.key==='vehicle_name'&&!cell) cell=source.vehicle_model??source.model??source.name;
+          if(column.key==='fuel_efficiency'&&!cell&&typeof source.efficiency_notes==='string'){
+            cell=String(source.efficiency_notes).match(/\d+(?:\.\d+)?/)?.[0]??'';
+          }
         }
         row[column.key]=cell===null||cell===undefined?'':String(cell);
+      }
+      if(section.table?.allowCustomCategory&&row.category&&row.category!=='أخرى'&&!section.table.categoryOptions?.includes(row.category)){
+        row.custom_category=row.custom_category||row.category;
+        row.category='أخرى';
       }
       return [row];
     });
   }
 
   const text=(key:string)=>typeof value[key]==='string'?String(value[key]).trim():'';
+  if(section.key==='vehicle_details'&&Object.keys(value).length){
+    const row:TableRow={
+      vehicle_name:text('vehicle_name')||text('vehicle_model')||text('model'),
+      vehicle_make:text('vehicle_make'),
+      vehicle_year:value.vehicle_year===undefined?'':String(value.vehicle_year),
+      ownership:text('ownership'),
+      monthly_distance:value.monthly_distance===undefined?'':String(value.monthly_distance),
+      fuel_type:text('fuel_type'),
+      fuel_efficiency:text('fuel_efficiency')||text('efficiency_notes').match(/\d+(?:\.\d+)?/)?.[0]||'',
+      fuel_price:value.fuel_price===undefined?'':String(value.fuel_price),
+      estimated_fuel_cost:value.estimated_fuel_cost===undefined?'':String(value.estimated_fuel_cost),
+      notes:text('notes')||text('maintenance_notes'),
+    };
+    return Object.values(row).some(Boolean)?[row]:[];
+  }
   if(section.key==='housing_details'&&Object.keys(value).length){
     const amount=value.monthly_housing_cost===undefined?'':String(value.monthly_housing_cost);
     const housingType=text('housing_type');
@@ -151,7 +176,7 @@ export function ExtendedProfileSheet({
         if(cancelled) return;
         const nextSections=Array.isArray(data.sections)?data.sections:[];
         const nextFacts=data.facts&&typeof data.facts==='object'?data.facts:{};
-        const available=nextSections.filter(section=>!section.hiddenByDefault||Boolean(nextFacts[section.key]));
+        const available=nextSections.filter(section=>!section.managedElsewhere&&(!section.hiddenByDefault||Boolean(nextFacts[section.key])));
         setSections(nextSections);
         setFacts(nextFacts);
         const preferred=initialSection&&available.some(section=>section.key===initialSection)?initialSection:null;
@@ -274,25 +299,30 @@ export function ExtendedProfileSheet({
       if(!current) return current;
       const next={...current,[key]:value};
       if(active?.key==='budget_behavior'){
-        const period=next.frequency_period||'شهري';
-        const count=Number(next.occurrences||0);
-        const cost=Number(next.unit_cost||0);
-        const factor=period==='يومي'?30:period==='أسبوعي'?4.33:1;
-        if(Number.isFinite(count)&&Number.isFinite(cost)&&count>=0&&cost>=0){
-          next.monthly_total=String(Number((count*cost*factor).toFixed(2)));
-        }
+        const period=(next.frequency_period||'شهري') as 'يومي'|'أسبوعي'|'شهري';
+        next.monthly_total=String(monthlyRecurringTotal(period,Number(next.occurrences||0),Number(next.unit_cost||0)));
       }
       if(active?.key==='vehicle_details'){
-        const distance=Number(next.monthly_distance||0);
-        const efficiency=Number(next.fuel_efficiency||0);
-        const price=Number(next.fuel_price||0);
-        if(Number.isFinite(distance)&&Number.isFinite(efficiency)&&Number.isFinite(price)&&distance>=0&&efficiency>0&&price>=0){
-          next.estimated_fuel_cost=String(Number(((distance/efficiency)*price).toFixed(2)));
-        }
+        next.estimated_fuel_cost=String(fuelMonthlyCost(
+          Number(next.monthly_distance||0),
+          Number(next.fuel_efficiency||0),
+          Number(next.fuel_price||0),
+        ));
       }
-      if(active?.key==='vehicle_maintenance'&&key==='schedule_pattern'&&value!=='متناوب'){
-        next.alternate_name='';
-        next.alternate_amount='';
+      if(active?.key==='vehicle_maintenance'){
+        if(key==='schedule_pattern'&&value!=='متناوب'){
+          next.alternate_name='';
+          next.alternate_amount='';
+        }
+        const forecast=maintenanceForecast({
+          intervalValue:Number(next.interval_value||0),
+          forecastValue:Number(next.forecast_value||0),
+          primaryAmount:Number(next.primary_amount||0),
+          alternateAmount:Number(next.alternate_amount||0),
+          alternating:next.schedule_pattern==='متناوب',
+        });
+        next.forecast_occurrences=String(forecast.occurrences);
+        next.forecast_total=String(forecast.total);
       }
       return next;
     });
@@ -418,7 +448,8 @@ export function ExtendedProfileSheet({
                             : column.options??[];
                         const readOnly=(active.key==='assets_investments'&&['total_cost','market_value'].includes(column.key))
                           ||(active.key==='budget_behavior'&&column.key==='monthly_total')
-                          ||(active.key==='vehicle_details'&&column.key==='estimated_fuel_cost');
+                          ||(active.key==='vehicle_details'&&column.key==='estimated_fuel_cost')
+                          ||(active.key==='vehicle_maintenance'&&['forecast_occurrences','forecast_total'].includes(column.key));
                         return <label key={column.key} className={column.kind==='textarea'?styles.extendedAddWide:undefined}>
                           <span>{column.label}</span>
                           {column.kind==='select'

@@ -7,6 +7,7 @@ import { MobileTopBar } from './mobile-top-bar';
 import { GlobalTopBar } from './global-top-bar';
 import { BankMessageDialog } from '@/components/bank-message-dialog';
 import { MobileConversationGate } from './mobile-conversation-gate';
+import { FinancialFormIntelligence } from '@/components/forms/financial-form-intelligence';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,6 +15,7 @@ export default async function ProtectedLayout({ children }: Readonly<{ children:
   const user = await requireAuthenticatedUser();
   return (
     <div className="protected-app-shell">
+      <FinancialFormIntelligence />
       <a className="skip-link" href="#main-content">تجاوز إلى المحتوى الرئيسي</a>
       <DesktopTopNav />
       <GlobalTopBar profile={{displayName:user.name,email:user.email,timezone:'Asia/Riyadh',emailVerified:user.emailVerified,image:user.image}} />

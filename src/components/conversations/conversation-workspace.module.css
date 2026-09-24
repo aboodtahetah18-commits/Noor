@@ -12422,3 +12422,45 @@
     min-width:0!important
   }
 }
+
+
+/* SYSTEM-WIDE CONVERSATION MODAL AUTHORITY */
+.mobileRecordEditorHeader,
+.accountEditorModal>header,
+.meetingEditorModal>header{
+  position:sticky!important;
+  top:var(--ux-space-0)!important;
+  z-index:30!important;
+  background:var(--namaa-green-900)!important;
+  color:var(--ux-text-inverse)!important;
+  border-bottom:1px solid color-mix(in srgb,var(--ux-text-inverse) 24%,transparent)!important
+}
+.mobileRecordEditorHeader strong,
+.mobileRecordEditorHeader small,
+.accountEditorModal>header strong,
+.meetingEditorModal>header strong{
+  color:var(--ux-text-inverse)!important;
+  -webkit-text-fill-color:var(--ux-text-inverse)!important
+}
+.mobileRecordEditorHeader small{
+  opacity:.84
+}
+.mobileRecordEditorHeader>button,
+.accountEditorModal>header>button,
+.meetingEditorModal>header>button{
+  border-color:color-mix(in srgb,var(--ux-text-inverse) 42%,transparent)!important;
+  background:color-mix(in srgb,var(--ux-text-inverse) 8%,transparent)!important;
+  color:var(--ux-text-inverse)!important
+}
+.mobileRecordEditorFooter,
+.accountEditorModal>footer,
+.meetingEditorModal>footer{
+  position:sticky!important;
+  bottom:var(--ux-space-0)!important;
+  z-index:30!important;
+  background:var(--namaa-card)!important;
+  border-top:1px solid var(--namaa-border)!important
+}
+.mobileRecordEditorBody .financial-auto-result{
+  grid-column:1/-1
+}

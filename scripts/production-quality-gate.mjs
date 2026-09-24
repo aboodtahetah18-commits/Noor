@@ -32,6 +32,7 @@ const steps = [
   ['entity operational dashboard contract','node',['scripts/verify-entity-operational-dashboard.mjs']],
   ['mobile internal surface contract','node',['scripts/verify-mobile-internal-surface-contract.mjs']],
   ['extended profile table workflow contract','node',['scripts/verify-extended-profile-table-rule.mjs']],
+  ['financial form intelligence contract','node',['scripts/verify-financial-form-intelligence.mjs']],
   ['financial cycle allocation contract','node',['scripts/verify-financial-cycle-allocation.mjs']],
   ['financial cycle negotiation contract','node',['scripts/verify-financial-cycle-negotiation.mjs']],
   ['allocation ratification contract','node',['scripts/verify-allocation-ratification.mjs']],
