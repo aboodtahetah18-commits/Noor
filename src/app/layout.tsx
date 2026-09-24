@@ -26,7 +26,7 @@ const notoSansArabic = Noto_Sans_Arabic({
   variable: '--font-noto-sans-arabic',
 });
 
-const approvedTransparentLogo = '/brand/ndos/namaa-logo-color-transparent.png';
+const approvedTransparentLogo = '/brand/ndos/namaa-logo-color-hq.png';
 
 export const metadata: Metadata = {
   title: 'نماء',
