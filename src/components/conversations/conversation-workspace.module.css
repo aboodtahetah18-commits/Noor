@@ -8674,7 +8674,7 @@
 }
 
 /* Edit actions open above the document instead of extending it vertically. */
-.governedEditModal{
+.governedEditModal:not(:global(.namaa-governance-editor-overlay)){
   position:fixed!important;
   inset:0!important;
   z-index:260!important;
@@ -8683,7 +8683,7 @@
   padding:var(--ux-space-4)!important;
   box-sizing:border-box!important
 }
-.governedEditModalScrim{
+.governedEditModalScrim:not(:global(.namaa-governance-editor-scrim)){
   position:absolute!important;
   inset:0!important;
   border:0!important;
@@ -8739,7 +8739,7 @@
 }
 
 @media (max-width:767px){
-  .governedEditModal{
+  .governedEditModal:not(:global(.namaa-governance-editor-overlay)){
     align-items:end!important;
     padding:var(--ux-space-2)!important
   }
@@ -8791,7 +8791,7 @@
 }
 
 /* Full-screen amendment flow, matching the governed-reference page hierarchy. */
-.governedEditModal{
+.governedEditModal:not(:global(.namaa-governance-editor-overlay)){
   position:fixed!important;
   inset:0!important;
   z-index:320!important;
@@ -8799,7 +8799,7 @@
   padding:0!important;
   background:var(--namaa-card)!important
 }
-.governedEditModalScrim{
+.governedEditModalScrim:not(:global(.namaa-governance-editor-scrim)){
   display:none!important
 }
 .governedEditModalCard:not(:global(.namaa-governance-editor-dialog)){
