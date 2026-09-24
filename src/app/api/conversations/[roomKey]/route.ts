@@ -125,7 +125,12 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
         ?{scope_kind:'meeting',meeting_id:meetingId}
         :{};
     const message = await appendUserMessage(user.id, user.name || 'أنت', roomKey, text, scopeData);
-    await captureProactiveConversationLearning(user.id,roomKey,text);
+    await captureProactiveConversationLearning(
+      user.id,
+      roomKey,
+      text,
+      directRoleKey?{kind:'role',key:directRoleKey}:meetingId?{kind:'meeting',key:meetingId}:null,
+    );
     const capturedOperation = message?.id
       ? await routePurchaseMessageToOperations({userId:user.id,sourceRoom:roomKey,sourceMessageId:String(message.id),text})
       : null;
