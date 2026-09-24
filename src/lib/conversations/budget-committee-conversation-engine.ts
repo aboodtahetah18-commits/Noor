@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { getRawSql } from '@/infrastructure/db/client';
 import { getDashboardSummary } from '@/features/dashboard/queries/get-dashboard-summary';
 import { getCurrentFinancialPlanMonitoring } from '@/lib/allocation/financial-plan-monitoring';
@@ -16,6 +16,11 @@ type BudgetCommitteeReply={
 };
 
 function n(value:unknown){const parsed=typeof value==='number'?value:Number(value);return Number.isFinite(parsed)?parsed:0}
+function pointFingerprint(point:BudgetCommitteePoint){
+  return createHash('sha256').update(JSON.stringify({
+    key:point.key,kind:point.kind,summary:point.summary,evidence:point.evidence,question:point.question,
+  })).digest('hex');
+}
 function money(value:number){return new Intl.NumberFormat('ar-SA-u-nu-latn',{maximumFractionDigits:2}).format(value)+' ر.س'}
 function percent(value:number){return new Intl.NumberFormat('ar-SA-u-nu-latn',{maximumFractionDigits:1}).format(value)+'٪'}
 
@@ -30,28 +35,28 @@ function classifyUserResponse(text:string){
   return 'GENERAL' as const;
 }
 
-async function handledPointKeys(userId:string,threadId:string,meetingId:string){
+async function handledPointKeys(userId:string,threadId:string,points:BudgetCommitteePoint[]){
   const sql=getRawSql();
   const rows=await sql`
     select structured_data from public.conversation_messages
     where user_id=${userId}::uuid and thread_id=${threadId}::uuid
       and sender_type='agent'
       and structured_data->>'scope_kind'='meeting'
-      and structured_data->>'meeting_id'=${meetingId}
-      and structured_data ? 'committee_point_status'
-    order by created_at asc
+      and structured_data->>'committee_engine'='budget-v1'
+      and structured_data ? 'committee_resolution_status'
+    order by created_at desc
+    limit 120
   `;
+  const activeFingerprints=new Map(points.map(point=>[point.key,pointFingerprint(point)]));
   const handled=new Set<string>();
   for(const row of rows){
     const data=row.structured_data&&typeof row.structured_data==='object'&&!Array.isArray(row.structured_data)
       ?row.structured_data as Record<string,unknown>:{};
-    const key=typeof data.committee_resolved_point_key==='string'
-      ?data.committee_resolved_point_key
-      :typeof data.committee_point_key==='string'?data.committee_point_key:null;
-    const status=typeof data.committee_resolution_status==='string'
-      ?data.committee_resolution_status
-      :typeof data.committee_point_status==='string'?data.committee_point_status:null;
-    if(key&&['CONTEXT_RECEIVED','APPROVED','REJECTED','ANSWERED','CLOSED'].includes(String(status)))handled.add(key);
+    const key=typeof data.committee_resolved_point_key==='string'?data.committee_resolved_point_key:null;
+    const status=typeof data.committee_resolution_status==='string'?data.committee_resolution_status:null;
+    const fingerprint=typeof data.committee_resolved_point_fingerprint==='string'?data.committee_resolved_point_fingerprint:null;
+    if(!key||!fingerprint||!['CONTEXT_RECEIVED','APPROVED','REJECTED','ANSWERED','CLOSED'].includes(String(status)))continue;
+    if(activeFingerprints.get(key)===fingerprint)handled.add(key);
   }
   return handled;
 }
@@ -169,7 +174,7 @@ export async function createBudgetCommitteeConversationReply(args:{userId:string
 
   const [points,handled,lastTurn]=await Promise.all([
     buildBudgetCommitteePoints(args.userId,args.meetingId),
-    handledPointKeys(args.userId,threadId,args.meetingId),
+    handledPointKeys(args.userId,threadId,points),
     lastCommitteeTurn(args.userId,threadId,args.meetingId),
   ]);
   const currentKey=typeof lastTurn?.data.active_committee_point_key==='string'
@@ -181,6 +186,7 @@ export async function createBudgetCommitteeConversationReply(args:{userId:string
   let point=currentPoint;
   let resolutionStatus:string|null=null;
   let resolvedPointKey:string|null=null;
+  let resolvedPointFingerprint:string|null=null;
   let decision:string|null=null;
   let contextNote:string|null=null;
   let body='';
@@ -188,19 +194,19 @@ export async function createBudgetCommitteeConversationReply(args:{userId:string
   if(currentPoint&&responseType==='EXPLAIN'){
     body=explainPoint(currentPoint)+' '+(currentPoint.question??'');
   }else if(currentPoint&&responseType==='APPROVE'){
-    decision='APPROVED'; resolutionStatus='APPROVED'; resolvedPointKey=currentPoint.key; handled.add(currentPoint.key);
+    decision='APPROVED'; resolutionStatus='APPROVED'; resolvedPointKey=currentPoint.key; resolvedPointFingerprint=pointFingerprint(currentPoint); handled.add(currentPoint.key);
     const next=points.find(item=>!handled.has(item.key))??null; point=next;
     body=next
       ?'تم تسجيل موافقتك على النقطة السابقة ضمن محضر الحوار، دون تنفيذ مالي تلقائي. ننتقل للنقطة التالية: '+nextPointBody(next,Math.max(0,points.filter(item=>!handled.has(item.key)&&item.key!==next.key).length))
       :'تم تسجيل موافقتك على النقطة السابقة. لا توجد نقطة أعلى أولوية متبقية الآن.';
   }else if(currentPoint&&responseType==='REJECT'){
-    decision='REJECTED'; resolutionStatus='REJECTED'; resolvedPointKey=currentPoint.key; handled.add(currentPoint.key);
+    decision='REJECTED'; resolutionStatus='REJECTED'; resolvedPointKey=currentPoint.key; resolvedPointFingerprint=pointFingerprint(currentPoint); handled.add(currentPoint.key);
     const next=points.find(item=>!handled.has(item.key))??null; point=next;
     body=next
       ?'تم تسجيل رفضك للنقطة السابقة وسأحتفظ به حتى لا أعيد طرحها كأنها جديدة بلا سبب. ننتقل الآن إلى: '+nextPointBody(next,Math.max(0,points.filter(item=>!handled.has(item.key)&&item.key!==next.key).length))
       :'تم تسجيل رفضك. لا توجد نقطة أخرى أعلى أولوية حاليًا.';
   }else if(currentPoint&&responseType==='CONTEXT'){
-    contextNote=args.userText.trim().slice(0,400); resolutionStatus='CONTEXT_RECEIVED'; resolvedPointKey=currentPoint.key; handled.add(currentPoint.key);
+    contextNote=args.userText.trim().slice(0,400); resolutionStatus='CONTEXT_RECEIVED'; resolvedPointKey=currentPoint.key; resolvedPointFingerprint=pointFingerprint(currentPoint); handled.add(currentPoint.key);
     const next=points.find(item=>!handled.has(item.key))??null; point=next;
     body=next
       ?'سجلت تفسيرك للنقطة السابقة كسياق لهذه الدورة، لذلك لن أتعامل معها تلقائيًا كاتجاه دائم. ننتقل إلى: '+nextPointBody(next,Math.max(0,points.filter(item=>!handled.has(item.key)&&item.key!==next.key).length))
@@ -221,7 +227,9 @@ export async function createBudgetCommitteeConversationReply(args:{userId:string
     committee_point_key:point?.key??currentPoint?.key??null,committee_point_title:point?.title??currentPoint?.title??null,
     committee_point_kind:point?.kind??currentPoint?.kind??null,committee_point_status:'OPEN',
     active_committee_point_key:point?.key??null,
+    active_committee_point_fingerprint:point?pointFingerprint(point):null,
     committee_resolved_point_key:resolvedPointKey,committee_resolution_status:resolutionStatus,
+    committee_resolved_point_fingerprint:resolvedPointFingerprint,
     committee_decision:decision,committee_context_note:contextNote,response_type:responseType,
     ranked_points:points.slice(0,3).map(item=>({key:item.key,title:item.title,kind:item.kind,priority:item.priority})),
     memory_aware:true,external_execution:false,
