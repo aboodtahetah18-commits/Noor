@@ -607,8 +607,8 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
           </Button>
         </section>
 
-        {formOpen&&<div className={styles.governedEditModal} role="dialog" aria-modal="true" aria-label={editMode==='direct'?'تحرير مباشر':'تحرير حوكمي'}>
-          <button type="button" className={styles.governedEditModalScrim} aria-label="إغلاق" onClick={()=>setFormOpen(false)}/>
+        {formOpen&&<div className={styles.governedEditModal+' namaa-governance-editor-overlay'} role="dialog" aria-modal="true" aria-label={editMode==='direct'?'تحرير مباشر':'تحرير حوكمي'}>
+          <button type="button" className={styles.governedEditModalScrim+' namaa-governance-editor-scrim'} aria-label="إغلاق" onClick={()=>setFormOpen(false)}/>
           <form className={styles.governedAmendmentForm+' '+styles.governedEditModalCard+' ux-dialog-surface namaa-governance-editor-dialog '+(editMode==='direct'?styles.governedTypoForm:styles.governedGovernanceForm)} onSubmit={submit}>
             <header className={styles.governedEditFormHeader+' namaa-governance-editor-header'}>
               <span className={styles.governedEditFormIcon}><LucideIcon name={editMode==='direct'?'pencil':'landmark'} size={20}/></span>
