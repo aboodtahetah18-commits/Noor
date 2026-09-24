@@ -622,7 +622,6 @@ function buildRichMessageMetrics(data?:Record<string,unknown>){
   const exposure=data.policy_cap_evidence&&typeof data.policy_cap_evidence==='object'&&
     (data.policy_cap_evidence as Record<string,unknown>).exposure_profile&&typeof (data.policy_cap_evidence as Record<string,unknown>).exposure_profile==='object'
     ?(data.policy_cap_evidence as Record<string,unknown>).exposure_profile as Record<string,unknown>:null;
-  const hasMissing=Array.isArray(data.missing_fields)&&data.missing_fields.length>0;
   const candidates=[
     richMetric('المبلغ المطلوب',data.requested_amount,'sar'),
     richMetric('المبلغ المستهدف',data.target_amount,'sar'),
@@ -634,7 +633,7 @@ function buildRichMessageMetrics(data?:Record<string,unknown>){
     richMetric('نسبة الالتزامات',financial?.obligation_ratio,'percent'),
     richMetric('القسط المتوقع',data.expected_installment,'sar'),
     richMetric('التعرض القائم',exposure?.outstanding_exposure,'sar'),
-    hasMissing?null:richMetric('الثقة في القيم',data.confidence_percent,'plain'),
+    richMetric('الثقة',data.confidence_percent,'plain'),
   ].filter((item):item is {label:string;value:string}=>Boolean(item));
   return candidates.slice(0,3);
 }
@@ -648,25 +647,7 @@ function richMessageStatus(data?:Record<string,unknown>){
     data.calibration_status,
     data.status,
   ].find(value=>typeof value==='string'&&value.trim());
-  if(typeof raw!=='string') return null;
-  const labels:Record<string,string>={
-    NEEDS_DATA:'يحتاج بيانات',
-    UNDER_REVIEW:'تحت المراجعة',
-    BLOCKED:'متوقف مؤقتًا',
-    PROPOSED:'مقترح',
-    REVIEWED:'تحت المراجعة',
-    USER_CONFIRMED:'مؤكد من المستخدم',
-    EVIDENCE_REQUIRED:'بانتظار الإثبات',
-    VERIFIED:'تم التحقق',
-    APPLIED:'مطبق',
-    FOLLOWUP:'قيد المتابعة',
-    CANCELLED:'ملغى',
-    PASSES_PROTECTION_GATE:'اجتاز فحص الحماية',
-    PROPOSAL_READY:'مقترح جاهز',
-    APPROVED_NOT_APPLIED:'معتمد ولم يطبق',
-    SCORED:'تم التقييم',
-  };
-  return labels[raw]??'قيد المعالجة';
+  return typeof raw==='string'?raw:null;
 }
 
 function RichStructuredMessageHero({
@@ -729,22 +710,9 @@ function DirectGovernanceChangeCard({data}:{data:Record<string,unknown>}){
   </section>;
 }
 
-function profileSectionForMissing(missing:string[]){
-  const text=missing.join(' ').toLowerCase();
-  if(/فاتورة|فواتير|اشتراك|اشتراكات|جوال|انترنت|إنترنت|كهرباء|مياه/.test(text)) return 'bills_subscriptions';
-  if(/سيارة|مركبة|وقود|بنزين|زيت|صيانة|تأمين/.test(text)) return 'vehicle_details';
-  if(/سكن|إيجار|ايجار|منزل|أسرة|اسرة/.test(text)) return 'housing_details';
-  if(/طعام|شراب|مطعم|بقالة|تسوق|عناية/.test(text)) return 'daily_living';
-  return 'bills_subscriptions';
-}
-
-function StructuredFacts({data,onOpenProfile}:{data?:Record<string,unknown>;onOpenProfile?:(section:string)=>void}){
+function StructuredFacts({data}:{data?:Record<string,unknown>}){
   if(!data)return null;
   const confidence=typeof data.confidence_percent==='number'?data.confidence_percent:null;
-  const journeyNextSection=data.journey_prompt===true&&data.next_profile_section&&typeof data.next_profile_section==='object'&&!Array.isArray(data.next_profile_section)
-    ?data.next_profile_section as Record<string,unknown>
-    :null;
-  const journeyNextSectionKey=journeyNextSection&&typeof journeyNextSection.key==='string'?journeyNextSection.key:null;
   const routed=roomTitle(data.routed_room);
   const metrics=data.financial_metrics&&typeof data.financial_metrics==='object'?data.financial_metrics as Record<string,unknown>:null;
   const missing=Array.isArray(data.missing_fields)?data.missing_fields.filter((item):item is string=>typeof item==='string'):[];
@@ -781,7 +749,9 @@ function StructuredFacts({data,onOpenProfile}:{data?:Record<string,unknown>;onOp
   const missingLimit=financeLimitComponents&&Array.isArray(financeLimitComponents.missing_limit_components)?financeLimitComponents.missing_limit_components.filter((item):item is string=>typeof item==='string'):[];
   const calibrationStatus=typeof data.calibration_status==='string'?data.calibration_status:null;
   const eligibilityCalibration=data.eligibility_calibration&&typeof data.eligibility_calibration==='object'?data.eligibility_calibration as Record<string,unknown>:null;
+  const eligibilityCalibrationId=eligibilityCalibration&&typeof eligibilityCalibration.calibration_id==='string'?eligibilityCalibration.calibration_id:null;
   const eligibilityReadiness=eligibilityCalibration&&eligibilityCalibration.readiness&&typeof eligibilityCalibration.readiness==='object'?eligibilityCalibration.readiness as Record<string,unknown>:null;
+  const eligibilityWeightVersion=eligibilityReadiness&&typeof eligibilityReadiness.baseline_weights_version==='string'?eligibilityReadiness.baseline_weights_version:null;
   const eligibilityBlockers=eligibilityReadiness&&Array.isArray(eligibilityReadiness.activation_blockers)?eligibilityReadiness.activation_blockers.filter((x):x is string=>typeof x==='string'):[];
   const repaymentBand=data.repayment_installment_band&&typeof data.repayment_installment_band==='object'?data.repayment_installment_band as Record<string,unknown>:null;
   const repaymentMin=repaymentBand&&typeof repaymentBand.min_installment_from_safe_savings==='number'?repaymentBand.min_installment_from_safe_savings:null;
@@ -808,7 +778,9 @@ function StructuredFacts({data,onOpenProfile}:{data?:Record<string,unknown>;onOp
   const policyGovernanceStatus=policyGovernance&&typeof policyGovernance.status==='string'?policyGovernance.status:null;
   const policyCapCalibration=data.policy_cap_calibration&&typeof data.policy_cap_calibration==='object'?data.policy_cap_calibration as Record<string,unknown>:null;
   const policyCapCalibrationStatus=policyCapCalibration&&typeof policyCapCalibration.status==='string'?policyCapCalibration.status:null;
+  const policyCapCalibrationId=policyCapCalibration&&typeof policyCapCalibration.calibration_id==='string'?policyCapCalibration.calibration_id:null;
   const policyCapReadiness=policyCapCalibration&&policyCapCalibration.readiness&&typeof policyCapCalibration.readiness==='object'?policyCapCalibration.readiness as Record<string,unknown>:null;
+  const policyCapWeightVersion=policyCapReadiness&&typeof policyCapReadiness.baseline_weights_version==='string'?policyCapReadiness.baseline_weights_version:null;
   const policyCapBlockers=policyCapReadiness&&Array.isArray(policyCapReadiness.activation_blockers)?policyCapReadiness.activation_blockers.filter((x):x is string=>typeof x==='string'):[];
   const exposureIncomeRatio=policySignals&&typeof policySignals.exposure_to_realized_income_ratio==='number'?policySignals.exposure_to_realized_income_ratio:null;
   const utilizationRatio=policySignals&&typeof policySignals.category_utilization_ratio==='number'?policySignals.category_utilization_ratio:null;
@@ -839,15 +811,16 @@ function StructuredFacts({data,onOpenProfile}:{data?:Record<string,unknown>;onOp
   const decisionLifecycleState=decisionLifecycle&&typeof decisionLifecycle.state==='string'?decisionLifecycle.state:null;
   const governanceContext=data.governance_context&&typeof data.governance_context==='object'?data.governance_context as Record<string,unknown>:null;
   const governancePolicies=governanceContext&&Array.isArray(governanceContext.policy_refs)?governanceContext.policy_refs.filter((item):item is string=>typeof item==='string'):[];
+  const governanceAuthorities=governanceContext&&Array.isArray(governanceContext.authority_refs)?governanceContext.authority_refs.filter((item):item is string=>typeof item==='string'):[];
   const governanceOversight=governanceContext&&typeof governanceContext.oversight==='string'?governanceContext.oversight:null;
   if(confidence===null&&!routed&&income===null&&!missing.length&&!goalName&&safeCapacity===null&&requested===null&&!financingPurpose&&!decisionState&&eligibilityScore===null&&!calibrationStatus&&!decisionReference&&!governanceOversight&&!governancePolicies.length)return null;
   return <div className={styles.facts}>
     {decisionReference&&<span><small>مرجع القرار</small><strong>{decisionReference}</strong></span>}
     {governanceOversight&&<span><small>الجهة الحاكمة</small><strong>{governanceOversight}</strong></span>}
-    {governancePolicies.length>0&&<span><small>السياسات المستخدمة</small><strong>{governancePolicies.length===1?'سياسة معتمدة واحدة':`${governancePolicies.length} سياسات معتمدة`}</strong></span>}
+    {governancePolicies.length>0&&<span><small>السياسات المستخدمة</small><strong>{governancePolicies.join('، ')}</strong></span>}
+    {governanceAuthorities.length>0&&<span><small>مراجع الصلاحيات</small><strong>{governanceAuthorities.join('، ')}</strong></span>}
     {decisionLifecycleState&&<span><small>حالة دورة القرار</small><strong>{decisionLifecycleState==='PROPOSED'?'مقترح':decisionLifecycleState==='REVIEWED'?'تحت المراجعة':decisionLifecycleState==='USER_CONFIRMED'?'أكد المستخدم':decisionLifecycleState==='EVIDENCE_REQUIRED'?'بانتظار الإثبات':decisionLifecycleState==='VERIFIED'?'تم التحقق':decisionLifecycleState==='APPLIED'?'تم التحقق من التطبيق':decisionLifecycleState==='FOLLOWUP'?'متابعة بعد القرار':decisionLifecycleState==='BLOCKED'?'متوقف بحاجز حاكم':decisionLifecycleState==='CANCELLED'?'ملغى':decisionLifecycleState}</strong></span>}
-    {confidence!==null&&<span><small>الثقة في القيم المسجلة</small><strong>{missing.length>0?`${confidence}٪ للقيم المؤكدة فقط`:`${confidence}٪`}</strong></span>}
-    {(missing.length>0||decisionState==='NEEDS_DATA')&&<span><small>اكتمال الملف</small><strong>يحتاج استكمال بيانات</strong></span>}
+    {confidence!==null&&<span><small>درجة الثقة</small><strong>{confidence}٪</strong></span>}
     {routed&&<span><small>الجهة المختصة</small><strong>{routed}</strong></span>}
     {income!==null&&<span><small>الدخل المؤكد</small><strong>{formatSar(income)} ر.س</strong></span>}
     {obligations!==null&&<span><small>الالتزامات المؤكدة</small><strong>{formatSar(obligations)} ر.س</strong></span>}
@@ -886,8 +859,10 @@ function StructuredFacts({data,onOpenProfile}:{data?:Record<string,unknown>;onOp
     {policyPlanned!==null&&<span><small>مخصص البند الحالي</small><strong>{formatSar(policyPlanned)} ر.س</strong></span>}
     {policyActual!==null&&<span><small>إنفاق البند الحالي</small><strong>{formatSar(policyActual)} ر.س</strong></span>}
     {policyAverage!==null&&<span><small>متوسط الإنفاق التاريخي</small><strong>{formatSar(policyAverage)} ر.س</strong></span>}
-    {policyCapStatus&&<span><small>حد السياسة</small><strong>{policyCapStatus==='NUMERIC_CALIBRATION_REQUIRED'?'بانتظار معايرة رقمية معتمدة':policyCapStatus}</strong></span>}
-    {policyCapCalibrationStatus&&<span><small>معايرة حد السياسة</small><strong>{policyCapCalibrationStatus==='CALIBRATION_NOT_GOVERNING'?'غير مفعلة حاكمًا':policyCapCalibrationStatus==='CALIBRATED'?'مفعلة ومعتمدة':policyCapCalibrationStatus}</strong></span>}
+    {policyCapStatus&&<span><small>POLICY_CAP</small><strong>{policyCapStatus==='NUMERIC_CALIBRATION_REQUIRED'?'بانتظار معايرة رقمية معتمدة':policyCapStatus}</strong></span>}
+    {policyCapCalibrationStatus&&<span><small>معايرة POLICY_CAP</small><strong>{policyCapCalibrationStatus==='CALIBRATION_NOT_GOVERNING'?'غير مفعلة حاكمًا':policyCapCalibrationStatus==='CALIBRATED'?'مفعلة ومعتمدة':policyCapCalibrationStatus}</strong></span>}
+    {policyCapCalibrationId&&<span><small>إصدار معايرة POLICY_CAP</small><strong>{policyCapCalibrationId}</strong></span>}
+    {policyCapWeightVersion&&<span><small>مرجع أوزان الهلال</small><strong>{policyCapWeightVersion}</strong></span>}
     {policyCapBlockers.length>0&&<span><small>متطلبات التفعيل الحاكم</small><strong>{policyCapBlockers.join('، ')}</strong></span>}
     {exposureCases!==null&&<span><small>عدد تمويلات البند</small><strong>{exposureCases}</strong></span>}
     {outstandingExposure!==null&&<span><small>التعرض القائم للبند</small><strong>{formatSar(outstandingExposure)} ر.س</strong></span>}
@@ -915,13 +890,13 @@ function StructuredFacts({data,onOpenProfile}:{data?:Record<string,unknown>;onOp
     {recoveryOverdueAmount!==null&&recoveryOverdueAmount>0&&<span><small>قيمة التأخر بعد إعادة الحساب</small><strong>{formatSar(recoveryOverdueAmount)} ر.س</strong></span>}
     {recoveryTrigger&&<span><small>سبب إعادة الحساب</small><strong>{recoveryTrigger==='PAYMENT_RECORDED'?'سداد مسجل':'مراجعة التأخر الدورية'}</strong></span>}
     {recoveryHardStop===true&&<span><small>تمويل جديد</small><strong>متوقف حتى معالجة التأخر</strong></span>}
-    {policyGovernanceStatus&&<span><small>حوكمة حد السياسة</small><strong>{policyGovernanceStatus==='HARD_STOP_OVERDUE'?'متوقف بسبب استرداد متأخر':policyGovernanceStatus==='NUMERIC_CALIBRATION_REQUIRED'?'إشارات مكتملة — المعايرة الرقمية مطلوبة':policyGovernanceStatus}</strong></span>}
+    {policyGovernanceStatus&&<span><small>حوكمة POLICY_CAP</small><strong>{policyGovernanceStatus==='HARD_STOP_OVERDUE'?'متوقف بسبب استرداد متأخر':policyGovernanceStatus==='NUMERIC_CALIBRATION_REQUIRED'?'إشارات مكتملة — المعايرة الرقمية مطلوبة':policyGovernanceStatus}</strong></span>}
     {policyHardStop===true&&<span><small>منع تمويل جديد</small><strong>مفعل حتى معالجة التأخر</strong></span>}
     {calibrationStatus&&<span><small>معايرة الأهلية</small><strong>{calibrationStatus==='CALIBRATION_NOT_GOVERNING'?'غير مفعلة حاكمًا':calibrationStatus==='CALIBRATION_GOVERNANCE_INCOMPLETE'?'حوكمتها غير مكتملة':calibrationStatus==='SCORED'?'مفعلة ومعتمدة':calibrationStatus}</strong></span>}
+    {eligibilityCalibrationId&&<span><small>إصدار معايرة الأهلية</small><strong>{eligibilityCalibrationId}</strong></span>}
+    {eligibilityWeightVersion&&<span><small>مرجع أوزان الأهلية</small><strong>{eligibilityWeightVersion}</strong></span>}
     {eligibilityBlockers.length>0&&<span><small>متطلبات تفعيل الأهلية</small><strong>{eligibilityBlockers.map(item=>item==='HISTORICAL_VALIDATION_REQUIRED'?'التحقق التاريخي':item==='FINAL_GOVERNANCE_APPROVAL_REQUIRED'?'الاعتماد النهائي':item==='EFFECTIVE_DATE_REQUIRED'?'تاريخ النفاذ':item==='FACTOR_TO_SCORE_MAPPING_REQUIRED'?'خرائط تحويل العوامل إلى درجات':item).join('، ')}</strong></span>}
-    {missing.length>0&&<span><small>ما نحتاجه منك الآن</small><strong>{missing.map(missingLabel).join('، ')}</strong></span>}
-    {(missing.length>0||decisionState==='NEEDS_DATA')&&onOpenProfile&&<button type="button" className={styles.structuredProfileAction} onClick={()=>onOpenProfile(profileSectionForMissing(missing))}><LucideIcon name="pencil" size={20}/><span>أجب هنا</span></button>}
-    {journeyNextSectionKey&&onOpenProfile&&<button type="button" className={styles.structuredProfileAction} onClick={()=>onOpenProfile(journeyNextSectionKey)}><LucideIcon name="listChecks" size={20}/><span>أكمل بالنموذج</span></button>}
+    {missing.length>0&&<span><small>بيانات ناقصة</small><strong>{missing.map(missingLabel).join('، ')}</strong></span>}
   </div>;
 }
 
@@ -966,7 +941,6 @@ export function PersistentConversationWorkspace(){
   const [entityDashboardRoom,setEntityDashboardRoom]=useState<RoomKey|null>(null);
   const [governanceMode,setGovernanceMode]=useState<'governance'|'meetings'|'documents'|null>(null);
   const [extendedProfileOpen,setExtendedProfileOpen]=useState(false);
-  const [extendedProfileSection,setExtendedProfileSection]=useState<string|null>(null);
   const [intakeDismissed,setIntakeDismissed]=useState(true);
   const [chatFontSize,setChatFontSize]=useState<ChatFontSize>('medium');
   const composerTextareaRef=useRef<HTMLTextAreaElement|null>(null);
@@ -1355,7 +1329,7 @@ export function PersistentConversationWorkspace(){
         onCommand={requestOversightCommand}
         onTemplate={template=>{setPendingOversightConfirmation(null);setOversightActionFeedback({command:'',status:'idle',message:null});setDraft(template);requestAnimationFrame(()=>composerTextareaRef.current?.focus())}}
       />
-      <StructuredFacts data={message.structured_data} onOpenProfile={section=>{setExtendedProfileSection(section);setExtendedProfileOpen(true)}}/>
+      <StructuredFacts data={message.structured_data}/>
       {(message.message_kind==='decision'||message.message_kind==='request')&&<small className={styles.executionBoundary}>أي تنفيذ مالي خارجي يظل بيد المستخدم، ويحتاج تأكيدًا وإثباتًا قبل الإغلاق.</small>}
     </section>}
     <footer className={styles.messageMeta}>
@@ -1468,7 +1442,7 @@ return <div className={styles.roomDetailContent}>
       <section className={styles.settingsSectionBlock}><div className={styles.settingsSectionHeading}><LucideIcon name="slidersHorizontal" size={20}/><span><strong>ضبط النظام</strong><small>إعدادات العرض والتنبيهات والخصوصية قابلة للتخصيص؛ أما الأوزان والحدود المحكومة فتظل تحت الحوكمة ولا تعدّل من الواجهة.</small></span></div><div className={styles.settingsStatusList}><span><b>الجهات والبنوك وأصحاب المسؤوليات</b><em>{onboardingComplete===false?'تفتح بعد اكتمال التأسيس':'مفتوحة'}</em></span><span><b>الاجتماعات</b><em>{onboardingComplete===false?'تظهر بعد اعتماد التأسيس':'متاحة'}</em></span><span><b>التنفيذ المالي</b><em>بيد المستخدم فقط</em></span></div></section>
     </div>}</aside></div>}
     <GovernanceMobileSheet mode={governanceMode} onClose={()=>setGovernanceMode(null)} onOpenSecretary={()=>{setGovernanceMode(null);chooseRoom('secretary')}}/>
-    <ExtendedProfileSheet open={extendedProfileOpen} initialSection={extendedProfileSection} onClose={()=>{setExtendedProfileOpen(false);setExtendedProfileSection(null)}}/>
+    <ExtendedProfileSheet open={extendedProfileOpen} onClose={()=>setExtendedProfileOpen(false)}/>
     {reviewOpen&&<div className={styles.mobileOverlay} role="dialog" aria-modal="true" aria-label="مراجعة بيانات التأسيس"><button type="button" className={styles.scrim} aria-label="إغلاق" onClick={()=>setReviewOpen(false)}/><aside className={styles.mobileSheet}><div className={styles.sheetHeader}><strong>مراجعة بيانات التأسيس</strong><button type="button" onClick={()=>setReviewOpen(false)} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button></div><div className={styles.reviewFacts}>{reviewFacts.map(fact=><div key={fact.key} className={styles.reviewFact}><div><small>{fact.label}</small>{reviewEditingKey===fact.key?<textarea value={reviewDraft} onChange={event=>setReviewDraft(event.target.value)} rows={3}/>:<strong>{fact.raw||'—'}</strong>}</div>{reviewEditingKey===fact.key?<div className={styles.reviewFactActions}><button type="button" onClick={()=>{setReviewEditingKey('');setReviewDraft('')}}><LucideIcon name="x" size={16}/><span>إلغاء</span></button><button type="button" onClick={()=>void saveReviewFact()} disabled={reviewSaving}><LucideIcon name="save" size={16}/><span>{reviewSaving?'جارٍ الحفظ…':'حفظ'}</span></button></div>:<button type="button" onClick={()=>{setReviewEditingKey(fact.key);setReviewDraft(fact.raw)}} aria-label={`تعديل ${fact.label}`}><LucideIcon name="pencil" size={16}/></button>}</div>)}</div><div className={styles.reviewConfirm}><small>لن يفتح التشغيل الكامل إلا بعد تأكيدك أن البيانات المجمعة صحيحة.</small><button type="button" className={styles.primaryActionButton} onClick={()=>void confirmOnboarding()} disabled={sending||reviewFacts.length===0}><LucideIcon name="circleCheck" size={20}/><span>{sending?'جارٍ التأكيد…':'تأكيد صحة البيانات'}</span></button></div></aside></div>}
   </section>;
 }
