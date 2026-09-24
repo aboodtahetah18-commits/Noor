@@ -776,9 +776,7 @@ function StructuredFacts({data,onOpenProfile}:{data?:Record<string,unknown>;onOp
   const missingLimit=financeLimitComponents&&Array.isArray(financeLimitComponents.missing_limit_components)?financeLimitComponents.missing_limit_components.filter((item):item is string=>typeof item==='string'):[];
   const calibrationStatus=typeof data.calibration_status==='string'?data.calibration_status:null;
   const eligibilityCalibration=data.eligibility_calibration&&typeof data.eligibility_calibration==='object'?data.eligibility_calibration as Record<string,unknown>:null;
-  const eligibilityCalibrationId=eligibilityCalibration&&typeof eligibilityCalibration.calibration_id==='string'?eligibilityCalibration.calibration_id:null;
   const eligibilityReadiness=eligibilityCalibration&&eligibilityCalibration.readiness&&typeof eligibilityCalibration.readiness==='object'?eligibilityCalibration.readiness as Record<string,unknown>:null;
-  const eligibilityWeightVersion=eligibilityReadiness&&typeof eligibilityReadiness.baseline_weights_version==='string'?eligibilityReadiness.baseline_weights_version:null;
   const eligibilityBlockers=eligibilityReadiness&&Array.isArray(eligibilityReadiness.activation_blockers)?eligibilityReadiness.activation_blockers.filter((x):x is string=>typeof x==='string'):[];
   const repaymentBand=data.repayment_installment_band&&typeof data.repayment_installment_band==='object'?data.repayment_installment_band as Record<string,unknown>:null;
   const repaymentMin=repaymentBand&&typeof repaymentBand.min_installment_from_safe_savings==='number'?repaymentBand.min_installment_from_safe_savings:null;
@@ -805,9 +803,7 @@ function StructuredFacts({data,onOpenProfile}:{data?:Record<string,unknown>;onOp
   const policyGovernanceStatus=policyGovernance&&typeof policyGovernance.status==='string'?policyGovernance.status:null;
   const policyCapCalibration=data.policy_cap_calibration&&typeof data.policy_cap_calibration==='object'?data.policy_cap_calibration as Record<string,unknown>:null;
   const policyCapCalibrationStatus=policyCapCalibration&&typeof policyCapCalibration.status==='string'?policyCapCalibration.status:null;
-  const policyCapCalibrationId=policyCapCalibration&&typeof policyCapCalibration.calibration_id==='string'?policyCapCalibration.calibration_id:null;
   const policyCapReadiness=policyCapCalibration&&policyCapCalibration.readiness&&typeof policyCapCalibration.readiness==='object'?policyCapCalibration.readiness as Record<string,unknown>:null;
-  const policyCapWeightVersion=policyCapReadiness&&typeof policyCapReadiness.baseline_weights_version==='string'?policyCapReadiness.baseline_weights_version:null;
   const policyCapBlockers=policyCapReadiness&&Array.isArray(policyCapReadiness.activation_blockers)?policyCapReadiness.activation_blockers.filter((x):x is string=>typeof x==='string'):[];
   const exposureIncomeRatio=policySignals&&typeof policySignals.exposure_to_realized_income_ratio==='number'?policySignals.exposure_to_realized_income_ratio:null;
   const utilizationRatio=policySignals&&typeof policySignals.category_utilization_ratio==='number'?policySignals.category_utilization_ratio:null;
