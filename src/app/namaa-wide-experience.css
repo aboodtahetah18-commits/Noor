@@ -5940,3 +5940,162 @@
     min-width:0!important;
   }
 }
+
+
+/* BANK DASHBOARD — official identity palette, actual-data only */
+@media (min-width:768px){
+  .namaa-banks-kpis-dashboard{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+  .namaa-banks-kpis-dashboard article.tone-deep{
+    background:#0B6B4F!important;
+    color:#D4AF6B!important;
+    border-color:#189F7F!important;
+  }
+  .namaa-banks-kpis-dashboard article.tone-gold{
+    background:#D4AF6B!important;
+    color:#0B6B4F!important;
+    border-color:#0B6B4F!important;
+  }
+  .namaa-banks-kpis-dashboard article.tone-green{
+    background:#189F7F!important;
+    color:#0B6B4F!important;
+    border-color:#0B6B4F!important;
+  }
+  .namaa-banks-kpis-dashboard article.tone-action{
+    background:#FCAA30!important;
+    color:#0B6B4F!important;
+    border-color:#D4AF6B!important;
+  }
+  .namaa-banks-visual-dashboard .tone-deep{
+    background:#0B6B4F!important;
+    color:#D4AF6B!important;
+  }
+  .namaa-banks-visual-dashboard .tone-gold{
+    background:color-mix(in srgb,#D4AF6B 82%,#0B6B4F 18%)!important;
+    color:#0B6B4F!important;
+  }
+  .namaa-banks-visual-dashboard .tone-action{
+    background:color-mix(in srgb,#FCAA30 78%,#D4AF6B 22%)!important;
+    color:#0B6B4F!important;
+  }
+  .namaa-bank-donut{
+    background:conic-gradient(#FCAA30 0 var(--namaa-donut-share),#189F7F var(--namaa-donut-share) 100%)!important;
+  }
+  .namaa-bank-donut::after{
+    background:#0B6B4F!important;
+  }
+  .namaa-bank-progress-track{
+    background:color-mix(in srgb,#0B6B4F 72%,#D4AF6B 28%)!important;
+    border-color:#0B6B4F!important;
+  }
+  .namaa-bank-progress-track i{
+    background:#FCAA30!important;
+  }
+  .namaa-bank-bars > div > i{
+    background:#0B6B4F!important;
+  }
+  .namaa-bank-no-chart{
+    min-height:96px!important;
+    display:grid!important;
+    place-items:center!important;
+    border:1px dashed currentColor!important;
+    border-radius:14px!important;
+    font-weight:900!important;
+    opacity:.78!important;
+  }
+  .namaa-banks-health-grid{
+    display:grid!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:10px!important;
+    margin:4px 0 18px!important;
+  }
+  .namaa-banks-health-grid article{
+    min-width:0!important;
+    min-height:116px!important;
+    padding:14px!important;
+    border:1px solid color-mix(in srgb,#0B6B4F 58%,#D4AF6B 42%)!important;
+    border-radius:14px!important;
+    background:color-mix(in srgb,#189F7F 62%,#D4AF6B 38%)!important;
+    color:#0B6B4F!important;
+    display:grid!important;
+    align-content:start!important;
+    gap:5px!important;
+  }
+  .namaa-banks-health-grid article:nth-child(2){
+    background:color-mix(in srgb,#D4AF6B 70%,#189F7F 30%)!important;
+  }
+  .namaa-banks-health-grid article:nth-child(3){
+    background:color-mix(in srgb,#FCAA30 62%,#D4AF6B 38%)!important;
+  }
+  .namaa-banks-health-grid article.is-incomplete{
+    background:color-mix(in srgb,#0B6B4F 84%,#D4AF6B 16%)!important;
+    color:#D4AF6B!important;
+  }
+  .namaa-banks-health-grid span,
+  .namaa-banks-health-grid small{
+    color:inherit!important;
+  }
+  .namaa-banks-health-grid strong{
+    color:inherit!important;
+    font-size:20px!important;
+  }
+  .namaa-banks-health-grid a{
+    color:inherit!important;
+    font-weight:900!important;
+    text-underline-offset:3px!important;
+  }
+
+  html[data-theme="dark"] .namaa-banks-kpis-dashboard article.tone-deep,
+  html[data-theme="dark"] .namaa-banks-visual-dashboard .tone-deep{
+    background:color-mix(in srgb,#0B6B4F 72%,#000 28%)!important;
+    color:#D4AF6B!important;
+    border-color:#189F7F!important;
+  }
+  html[data-theme="dark"] .namaa-banks-kpis-dashboard article.tone-gold,
+  html[data-theme="dark"] .namaa-banks-visual-dashboard .tone-gold{
+    background:color-mix(in srgb,#D4AF6B 46%,#0B6B4F 54%)!important;
+    color:#D4AF6B!important;
+    border-color:#D4AF6B!important;
+  }
+  html[data-theme="dark"] .namaa-banks-kpis-dashboard article.tone-green{
+    background:color-mix(in srgb,#189F7F 55%,#0B6B4F 45%)!important;
+    color:#D4AF6B!important;
+    border-color:#189F7F!important;
+  }
+  html[data-theme="dark"] .namaa-banks-kpis-dashboard article.tone-action,
+  html[data-theme="dark"] .namaa-banks-visual-dashboard .tone-action{
+    background:color-mix(in srgb,#FCAA30 38%,#0B6B4F 62%)!important;
+    color:#D4AF6B!important;
+    border-color:#FCAA30!important;
+  }
+  html[data-theme="dark"] .namaa-bank-donut::after{
+    background:color-mix(in srgb,#0B6B4F 72%,#000 28%)!important;
+  }
+  html[data-theme="dark"] .namaa-banks-health-grid article{
+    background:color-mix(in srgb,#189F7F 34%,#0B6B4F 66%)!important;
+    color:#D4AF6B!important;
+  }
+  html[data-theme="dark"] .namaa-banks-health-grid article:nth-child(2){
+    background:color-mix(in srgb,#D4AF6B 30%,#0B6B4F 70%)!important;
+  }
+  html[data-theme="dark"] .namaa-banks-health-grid article:nth-child(3){
+    background:color-mix(in srgb,#FCAA30 28%,#0B6B4F 72%)!important;
+  }
+  html[data-theme="dark"] .namaa-banks-health-grid article.is-incomplete{
+    background:color-mix(in srgb,#0B6B4F 68%,#000 32%)!important;
+    color:#D4AF6B!important;
+  }
+}
+
+@media (min-width:768px) and (max-width:1180px){
+  .namaa-banks-kpis-dashboard{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+  .namaa-banks-visual-dashboard{
+    grid-template-columns:1fr!important;
+  }
+  .namaa-banks-health-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+}
