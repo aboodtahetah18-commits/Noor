@@ -60,6 +60,24 @@ function textMonthlyEstimate(value:unknown){
   return numbers.reduce((sum,n)=>sum+n,0);
 }
 
+function monthlyFrequency(value:unknown){
+  if(typeof value!=='string')return 0;
+  const raw=value.trim();
+  const count=firstFiniteNumber(raw)??1;
+  if(/يوم|يومي/.test(raw)) return count*30;
+  if(/أسبوع|اسبوع|أسبوعي|اسبوعي/.test(raw)) return count*(52/12);
+  if(/شهر|شهري/.test(raw)) return count;
+  if(/سنة|سنوي/.test(raw)) return count/12;
+  return firstFiniteNumber(raw)??0;
+}
+
+function firstFiniteNumber(value:string){
+  const match=value.match(/\d+(?:\.\d+)?/);
+  if(!match)return null;
+  const n=Number(match[0]);
+  return Number.isFinite(n)&&n>=0?n:null;
+}
+
 async function getExtendedFacts(userId:string){
   const sql=getRawSql();
   const rows=await sql`
@@ -100,10 +118,10 @@ function buildBudgetLines(facts:Map<string,Record<string,unknown>>,snapshot:Awai
   add('transport','المركبة والوقود والصيانة',vehicleMonthly,['المركبات والتنقل'],true);
 
   const behavior=facts.get('budget_behavior')??{};
-  add('restaurants','المطاعم',amount(behavior.restaurants_average)*textMonthlyEstimate(behavior.restaurants_frequency),['سلوك بنود الميزانية']);
-  add('cafes','المقاهي',amount(behavior.cafes_average)*textMonthlyEstimate(behavior.cafes_frequency),['سلوك بنود الميزانية']);
+  add('restaurants','المطاعم',amount(behavior.restaurants_average)*monthlyFrequency(behavior.restaurants_frequency),['سلوك بنود الميزانية']);
+  add('cafes','المقاهي',amount(behavior.cafes_average)*monthlyFrequency(behavior.cafes_frequency),['سلوك بنود الميزانية']);
   if(amount(living.monthly_groceries)===0){
-    add('groceries_behavior','البقالة',amount(behavior.groceries_average)*textMonthlyEstimate(behavior.groceries_frequency),['سلوك بنود الميزانية']);
+    add('groceries_behavior','البقالة',amount(behavior.groceries_average)*monthlyFrequency(behavior.groceries_frequency),['سلوك بنود الميزانية']);
   }
 
   const health=facts.get('health_education_family')??{};
@@ -121,7 +139,7 @@ function buildBudgetLines(facts:Map<string,Record<string,unknown>>,snapshot:Awai
   return lines;
 }
 
-function buildAccountBuckets(lines:FoundingBudgetLine[],snapshot:Awaited<ReturnType<typeof getFinancialCycleAllocationSnapshot>>):FoundingAccountBucket[]{
+function buildAccountBuckets(lines:FoundingBudgetLine[]):FoundingAccountBucket[]{
   const spendingBuckets=lines
     .filter(line=>line.key!=='goals')
     .map(line=>({
@@ -201,7 +219,7 @@ export async function buildFoundingFinancialMeetingPack(userId:string):Promise<F
       unallocated,
       complete:journey.founding_meeting_eligible&&income!==null,
     },
-    accountBuckets:buildAccountBuckets(lines,snapshot),
+    accountBuckets:buildAccountBuckets(lines),
     safeguards:{userApprovalRequired:true,noBankTransfer:true,noExternalExecution:true},
   };
 }
