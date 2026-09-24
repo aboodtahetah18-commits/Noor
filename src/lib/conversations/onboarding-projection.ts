@@ -78,6 +78,108 @@ function rawFact(value:unknown){
   return typeof raw==='string' ? raw.trim() : '';
 }
 
+
+async function readConfirmedAccountFact(userId:string){
+  const sql=getRawSql();
+  const rows=await sql`
+    select value_json
+    from public.user_foundation_facts
+    where user_id=${userId}::uuid
+      and status='ACTIVE'
+      and fact_key='accounts'
+    limit 1
+  `;
+  return rows[0]?.value_json;
+}
+
+export async function reconcileConfirmedOnboardingAccounts(userId:string):Promise<number>{
+  const sql=getRawSql();
+  const accountFact=await readConfirmedAccountFact(userId);
+  const structuredAccounts=factItems(accountFact);
+  const accountInputs=structuredAccounts.length
+    ? structuredAccounts.map(item=>({
+        label:String(item.short_identifier||item.bank_name||'حساب مالي').trim(),
+        bankName:String(item.bank_name||'').trim()||null,
+        type:String(item.account_type||'BANK').trim().toUpperCase(),
+        balance:Number(item.opening_balance??0),
+        included:item.included_in_namaa!==false,
+        iban:typeof item.iban==='string'?item.iban.replace(/\s+/g,'').toUpperCase():null,
+        cardLast4:typeof item.card_last4==='string'?item.card_last4.trim():null,
+      }))
+    : lines(rawFact(accountFact)).map(line=>({
+        label:cleanLabel(line)||'حساب مالي',
+        bankName:cleanLabel(line)||null,
+        type:accountType(line),
+        balance:extractNumbers(line).at(-1)??0,
+        included:true,
+        iban:null,
+        cardLast4:null,
+      }));
+
+  let created=0;
+  for(const input of accountInputs){
+    if(!input.included) continue;
+    const label=input.label||input.bankName||'حساب مالي';
+    const existing=input.iban
+      ? await sql`
+          select id
+          from public.accounts
+          where user_id=${userId}::uuid
+            and upper(replace(coalesce(iban,''),' ',''))=${input.iban}
+          order by created_at asc
+          limit 1
+        `
+      : input.cardLast4
+        ? await sql`
+            select id
+            from public.accounts
+            where user_id=${userId}::uuid
+              and lower(trim(name))=lower(trim(${label}))
+              and coalesce(lower(trim(bank_name)),'')=coalesce(lower(trim(${input.bankName})), '')
+              and card_last4=${input.cardLast4}
+            order by created_at asc
+            limit 1
+          `
+        : await sql`
+            select id
+            from public.accounts
+            where user_id=${userId}::uuid
+              and lower(trim(name))=lower(trim(${label}))
+              and coalesce(lower(trim(bank_name)),'')=coalesce(lower(trim(${input.bankName})), '')
+            order by created_at asc
+            limit 1
+          `;
+
+    let accountId=existing[0]?.id as string|undefined;
+    if(!accountId){
+      const inserted=await sql`
+        insert into public.accounts(user_id,name,account_type,bank_name,iban,account_number,card_last4,financial_role)
+        values(
+          ${userId}::uuid,${label},${input.type},${input.bankName},
+          ${input.iban},${input.iban?input.iban.slice(6):null},${input.cardLast4},'OPERATING'
+        )
+        returning id
+      `;
+      accountId=inserted[0]?.id as string|undefined;
+      if(accountId) created+=1;
+    }
+
+    if(accountId && Number.isFinite(input.balance) && input.balance>=0){
+      await sql`
+        insert into public.account_opening_balances(user_id,account_id,amount,effective_date)
+        select ${userId}::uuid,${accountId}::uuid,${input.balance},current_date
+        where not exists(
+          select 1
+          from public.account_opening_balances
+          where user_id=${userId}::uuid
+            and account_id=${accountId}::uuid
+        )
+      `;
+    }
+  }
+  return created;
+}
+
 export async function projectConfirmedOnboardingFacts(userId:string):Promise<ProjectionSummary>{
   const sql=getRawSql();
   const facts=await sql`
@@ -97,58 +199,7 @@ export async function projectConfirmedOnboardingFacts(userId:string):Promise<Pro
   let incomesCreated=0;
   let incomeDeferred=false;
 
-  const accountFact=byKey.get('accounts');
-  const structuredAccounts=factItems(accountFact);
-  const accountInputs=structuredAccounts.length
-    ? structuredAccounts.map(item=>({
-        label:String(item.short_identifier||item.bank_name||'حساب مالي').trim(),
-        bankName:String(item.bank_name||'').trim()||null,
-        type:String(item.account_type||'BANK').trim().toUpperCase(),
-        balance:Number(item.opening_balance??0),
-        included:item.included_in_namaa!==false,
-      }))
-    : lines(rawFact(accountFact)).map(line=>({
-        label:cleanLabel(line)||'حساب مالي',
-        bankName:cleanLabel(line)||null,
-        type:accountType(line),
-        balance:extractNumbers(line).at(-1)??0,
-        included:true,
-      }));
-
-  for(const input of accountInputs){
-    if(!input.included) continue;
-    const label=input.label||input.bankName||'حساب مالي';
-    const existing=await sql`
-      select id
-      from public.accounts
-      where user_id=${userId}::uuid
-        and lower(trim(name))=lower(trim(${label}))
-      order by created_at asc
-      limit 1
-    `;
-    let accountId=existing[0]?.id as string|undefined;
-    if(!accountId){
-      const inserted=await sql`
-        insert into public.accounts(user_id,name,account_type,bank_name,financial_role)
-        values(${userId}::uuid,${label},${input.type},${input.bankName},'OPERATING')
-        returning id
-      `;
-      accountId=inserted[0]?.id as string|undefined;
-      if(accountId) accountsCreated+=1;
-    }
-    if(accountId && Number.isFinite(input.balance) && input.balance>=0){
-      await sql`
-        insert into public.account_opening_balances(user_id,account_id,amount,effective_date)
-        select ${userId}::uuid,${accountId}::uuid,${input.balance},current_date
-        where not exists(
-          select 1
-          from public.account_opening_balances
-          where user_id=${userId}::uuid
-            and account_id=${accountId}::uuid
-        )
-      `;
-    }
-  }
+  accountsCreated=await reconcileConfirmedOnboardingAccounts(userId);
 
   const goalFact=byKey.get('goals');
   const structuredGoals=factItems(goalFact);
