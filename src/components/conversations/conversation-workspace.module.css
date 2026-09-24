@@ -4809,17 +4809,9 @@
 
   .richMessageHero{
     grid-template-columns:minmax(0,1fr);
-    min-height:0;
+    min-height:auto;
     padding:var(--ux-space-2);
     gap:var(--ux-space-2)
-  }
-  .richMessageVisual{
-    min-height:132px;
-    width:100%;
-    aspect-ratio:16/7
-  }
-  .richMessageVisual>img{
-    padding:var(--ux-space-3)
   }
   .richMessageHeroCopy{
     gap:var(--ux-space-2)
