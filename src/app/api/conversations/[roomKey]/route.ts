@@ -30,6 +30,7 @@ import { applyFollowupDeadlineCommand, parseFollowupDeadlineCommand } from '@/li
 import { createGovernanceOversightDashboardReply, getGovernanceOversightDashboard, isGovernanceOversightDashboardRequest } from '@/lib/governance/governance-oversight-dashboard';
 import { applyOversightQuickActionCommand, parseOversightQuickActionCommand } from '@/lib/governance/governance-oversight-actions';
 import { applyGovernanceAmendmentConversationCommand, parseGovernanceAmendmentConversationCommand } from '@/lib/governance/governance-amendments';
+import { captureProactiveConversationLearning } from '@/lib/conversations/proactive-conversation-memory';
 
 export async function GET(_request: Request, context: { params: Promise<{ roomKey: string }> }) {
   const user = await getAuthenticatedUser();
@@ -116,6 +117,7 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
   try {
     const text = String(body.body ?? '');
     const message = await appendUserMessage(user.id, user.name || 'أنت', roomKey, text);
+    await captureProactiveConversationLearning(user.id,roomKey,text);
     const capturedOperation = message?.id
       ? await routePurchaseMessageToOperations({userId:user.id,sourceRoom:roomKey,sourceMessageId:String(message.id),text})
       : null;
