@@ -7,6 +7,15 @@ import type { ExtendedProfileSection } from '@/lib/conversations/extended-profil
 import styles from './conversation-workspace.module.css';
 
 type FactEnvelope={value?:Record<string,unknown>;confidence?:number;verified_at?:string|null;updated_at?:string|null};
+type JourneyStatus={
+  stage:string;
+  completion_percent:number;
+  missing_sections:Array<{key:string;title:string}>;
+  next_section:{key:string;title:string}|null;
+  founding_meeting_eligible:boolean;
+  founding_meeting_proposed_at:string|null;
+  next_action:string;
+};
 
 export function ExtendedProfileSheet({
   open,
@@ -24,6 +33,7 @@ export function ExtendedProfileSheet({
   const [loading,setLoading]=useState(false);
   const [saving,setSaving]=useState(false);
   const [error,setError]=useState('');
+  const [journey,setJourney]=useState<JourneyStatus|null>(null);
 
   const active=useMemo(()=>sections.find(section=>section.key===activeKey)??null,[sections,activeKey]);
 
@@ -33,12 +43,13 @@ export function ExtendedProfileSheet({
     queueMicrotask(()=>{if(!cancelled){setLoading(true);setError('')}});
     fetch('/api/onboarding/extended-profile',{cache:'no-store'})
       .then(async response=>{
-        const data=await response.json() as {sections?:ExtendedProfileSection[];facts?:Record<string,FactEnvelope>;code?:string};
+        const data=await response.json() as {sections?:ExtendedProfileSection[];facts?:Record<string,FactEnvelope>;journey?:JourneyStatus;code?:string};
         if(!response.ok) throw new Error(data.code??'EXTENDED_PROFILE_UNAVAILABLE');
         if(cancelled) return;
         const nextSections=Array.isArray(data.sections)?data.sections:[];
         setSections(nextSections);
         setFacts(data.facts&&typeof data.facts==='object'?data.facts:{});
+        setJourney(data.journey??null);
         setActiveKey(current=>{
           if(initialSection&&nextSections.some(section=>section.key===initialSection)) return initialSection;
           return current||nextSections[0]?.key||'';
@@ -80,9 +91,15 @@ export function ExtendedProfileSheet({
         headers:{'content-type':'application/json'},
         body:JSON.stringify({section:active.key,values:payload}),
       });
-      const data=await response.json() as {ok?:boolean;section?:string;value?:Record<string,unknown>};
+      const data=await response.json() as {ok?:boolean;section?:string;value?:Record<string,unknown>;journey?:JourneyStatus};
       if(!response.ok||!data.ok) throw new Error('save');
       setFacts(current=>({...current,[active.key]:{value:data.value??payload,confidence:1,verified_at:new Date().toISOString(),updated_at:new Date().toISOString()}}));
+      if(data.journey){
+        setJourney(data.journey);
+        if(data.journey.next_section?.key&&data.journey.next_section.key!==active.key){
+          setActiveKey(data.journey.next_section.key);
+        }
+      }
     }catch{
       setError('تعذر حفظ هذه المجموعة. لم يعتمد نماء التعديل.');
     }finally{
@@ -99,8 +116,12 @@ export function ExtendedProfileSheet({
       </div>
       <div className={styles.extendedProfileIntro}>
         <LucideIcon name="listChecks" size={24}/>
-        <div><strong>تعلم ممتد بدون استبيان ثقيل</strong><small>املأ ما ينطبق عليك فقط. الحقائق الموجودة يعاد استخدامها، وهذه التفاصيل لا تمنع فتح المنصة إذا لم تكن جوهرية الآن.</small></div>
+        <div><strong>استكمال الملف المالي بالتفصيل</strong><small>يمكنك تعبئة الأقسام هنا أو الإجابة عنها في الدردشة. كلا المسارين يحدثان ملفك المالي نفسه.</small></div>
       </div>
+      {journey&&<div className={styles.extendedJourneyStatus} role="status" aria-live="polite">
+        <div><strong>اكتمال الملف: {journey.completion_percent}٪</strong><small>{journey.next_action}</small></div>
+        <span>{journey.founding_meeting_eligible?'جاهز للاجتماع التأسيسي':journey.next_section?'التالي: '+journey.next_section.title:'جارٍ التحقق'}</span>
+      </div>}
       {loading&&<p className={styles.sheetMessage}>جارٍ تحميل الأقسام…</p>}
       {error&&<p className={styles.intakeError}>{error}</p>}
       {!loading&&<div className={styles.extendedProfileLayout}>
