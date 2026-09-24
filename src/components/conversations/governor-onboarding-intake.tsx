@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { LucideIcon } from '@/components/ui/lucide-icon';
+import { BANK_OPTIONS } from '@/features/accounts/banks';
 import styles from './conversation-workspace.module.css';
 
 type IntakeStep=
@@ -498,7 +499,7 @@ export function GovernorOnboardingIntake({
             <label className={`${styles.intakeCheckbox} ${styles.mobileFieldFull}`}><input type="checkbox" checked={mobileEditor.draft.financial_dependency} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,financial_dependency:e.target.checked}})}/><span>يعتمد عليّ ماليًا</span></label>
           </>}
           {mobileEditor.kind==='accounts'&&<>
-            <label className={styles.mobileFieldFull}><span>البنك أو الجهة</span><input value={mobileEditor.draft.bank_name} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,bank_name:e.target.value}})}/></label>
+            <label className={styles.mobileFieldFull}><span>البنك أو الجهة</span><input list="namaa-bank-options" value={mobileEditor.draft.bank_name} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,bank_name:e.target.value}})}/><datalist id="namaa-bank-options">{BANK_OPTIONS.map(bank=><option key={bank.code} value={bank.name}/>)}</datalist></label>
             <label><span>نوع الحساب</span><select value={mobileEditor.draft.account_type} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,account_type:e.target.value}})}><option value="BANK">جاري/بنكي</option><option value="SAVINGS">ادخاري</option><option value="CASH">نقدي</option><option value="INVESTMENT">استثماري</option><option value="OTHER">أخرى</option></select></label>
             <label><span>اسم مختصر للحساب</span><input value={mobileEditor.draft.short_identifier} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,short_identifier:e.target.value}})}/></label>
             <label className={styles.mobileFieldFull}><span>الآيبان إن رغبت</span><input value={mobileEditor.draft.iban} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,iban:e.target.value.toUpperCase()}})}/></label>
@@ -522,9 +523,10 @@ export function GovernorOnboardingIntake({
             <label className={styles.mobileFieldFull}><span>اسم الهدف</span><input value={mobileEditor.draft.name} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,name:e.target.value}})}/></label>
             <label><span>المبلغ المستهدف</span><input type="number" min="0" inputMode="decimal" value={mobileEditor.draft.target_amount} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,target_amount:e.target.value}})}/></label>
             <label><span>الموعد المتوقع</span><input type="date" value={mobileEditor.draft.target_date} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,target_date:e.target.value}})}/></label>
-            <label><span>الأولوية</span><input value={mobileEditor.draft.priority} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,priority:e.target.value}})}/></label>
-            <label><span>مرونة الموعد</span><input value={mobileEditor.draft.flexibility} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,flexibility:e.target.value}})}/></label>
+            <label><span>الأولوية</span><select value={mobileEditor.draft.priority} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,priority:e.target.value}})}><option value="">اختر</option><option value="HIGH">عالية</option><option value="MEDIUM">متوسطة</option><option value="LOW">منخفضة</option></select></label>
+            <label><span>مرونة الموعد</span><select value={mobileEditor.draft.flexibility} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,flexibility:e.target.value}})}><option value="">اختر</option><option value="FIXED">موعد ثابت</option><option value="FLEXIBLE">مرن</option><option value="OPEN">مفتوح</option></select></label>
             <label><span>مبلغ مخصص حاليًا</span><input type="number" min="0" inputMode="decimal" value={mobileEditor.draft.allocated_amount} onChange={e=>setMobileEditor({...mobileEditor,draft:{...mobileEditor.draft,allocated_amount:e.target.value}})}/></label>
+            <div className="financial-auto-result"><span>المتبقي للهدف</span><strong>{Math.max(0,Number(mobileEditor.draft.target_amount||0)-Number(mobileEditor.draft.allocated_amount||0)).toFixed(2)} ريال</strong></div>
           </>}
         </div>
         <footer className={styles.mobileRecordEditorActions}><button type="button" onClick={()=>setMobileEditor(null)}>إلغاء</button><button type="button" onClick={saveMobileEditor}>حفظ السجل</button></footer>
