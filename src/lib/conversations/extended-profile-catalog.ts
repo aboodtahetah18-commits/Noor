@@ -111,8 +111,11 @@ export const extendedProfileSections:ExtendedProfileSection[]=[
     table:{
       addLabel:'إضافة صيانة',
       emptyLabel:'لا توجد أعمال صيانة مسجلة بعد.',
+      categoryOptions:['تغيير زيت','زيت وفلتر','فلاتر','إطارات','بطارية','فرامل','فحص دوري','صيانة عامة','أخرى'],
+      allowCustomCategory:true,
       columns:[
-        {key:'name',label:'الصيانة',mobileVisible:true},
+        {key:'category',label:'نوع الصيانة',kind:'select',mobileVisible:true},
+        {key:'custom_category',label:'اسم الصيانة الجديدة'},
         {key:'vehicle',label:'المركبة',kind:'select',mobileVisible:true},
         {key:'schedule_pattern',label:'نمط الجدولة',kind:'select',options:['ثابت','متناوب']},
         {key:'interval_value',label:'كل كم',kind:'number'},
@@ -135,8 +138,11 @@ export const extendedProfileSections:ExtendedProfileSection[]=[
     table:{
       addLabel:'إضافة إلزام للمركبة',
       emptyLabel:'لا توجد إلزامات مركبة مسجلة بعد.',
+      categoryOptions:['تأمين سنوي','تجديد استمارة','تجديد رخصة','فحص دوري','إطارات','رسوم تمويل','اشتراك مواقف','أخرى'],
+      allowCustomCategory:true,
       columns:[
-        {key:'name',label:'الإلزام',mobileVisible:true},
+        {key:'category',label:'الإلزام',kind:'select',mobileVisible:true},
+        {key:'custom_category',label:'اسم الإلزام الجديد'},
         {key:'vehicle',label:'المركبة',kind:'select',mobileVisible:true},
         {key:'amount',label:'القيمة',kind:'number',mobileVisible:true},
         {key:'recurrence',label:'الدورية',kind:'select',options:['شهري','ربع سنوي','نصف سنوي','سنوي','كل سنتين','عند الحاجة']},
