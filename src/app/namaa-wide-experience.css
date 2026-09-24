@@ -1476,48 +1476,7 @@
 
 
 @media (min-width:768px) {
-  /* Wide data-entry contract: large dialogs + repeatable data in tables. */
-  .p49-action-dialog.is-lg {
-    width:min(calc(100vw - 64px),1040px);
-  }
-
-  .p49-action-dialog.is-xl {
-    width:min(calc(100vw - 64px),1280px);
-  }
-
-  .p49-action-dialog.is-lg .p49-dialog-shell,
-  .p49-action-dialog.is-xl .p49-dialog-shell {
-    max-height:90vh;
-    border-radius:20px;
-  }
-
-  .p49-action-dialog.is-lg .p49-dialog-header,
-  .p49-action-dialog.is-xl .p49-dialog-header {
-    padding:24px 28px 20px;
-  }
-
-  .p49-action-dialog.is-lg .p49-dialog-body,
-  .p49-action-dialog.is-xl .p49-dialog-body {
-    padding:24px 28px 28px;
-  }
-
-  .p49-action-dialog.is-lg .form-grid,
-  .p49-action-dialog.is-xl .form-grid,
-  .p49-action-dialog.is-lg .p47-settings-form,
-  .p49-action-dialog.is-xl .p47-settings-form {
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:16px;
-  }
-
-  .p49-action-dialog.is-lg .form-grid > button:last-child,
-  .p49-action-dialog.is-xl .form-grid > button:last-child,
-  .p49-action-dialog.is-lg .p47-settings-form > button:last-child,
-  .p49-action-dialog.is-xl .p47-settings-form > button:last-child {
-    grid-column:1 / -1;
-    min-height:46px;
-  }
-
-  .namaa-collection-card {
+.namaa-collection-card {
     padding:18px;
   }
 
@@ -2185,21 +2144,6 @@
     color:var(--namaa-wide-text);
   }
 
-  .p49-action-dialog .p49-dialog-shell {
-    background:var(--namaa-wide-card)!important;
-    border-color:var(--namaa-wide-border)!important;
-    color:var(--namaa-wide-text)!important;
-  }
-
-  .p49-action-dialog .p49-dialog-header {
-    background:var(--namaa-wide-card-strong)!important;
-    border-color:var(--namaa-wide-border)!important;
-  }
-
-  .p49-action-dialog .p49-dialog-body {
-    background:var(--namaa-wide-card)!important;
-  }
-
   .namaa-collection-head {
     border-color:var(--namaa-wide-border)!important;
   }
@@ -2507,89 +2451,6 @@
   .namaa-settings-nav {
     position:sticky;
     top:12px!important;
-  }
-
-  .p49-action-dialog {
-    width:min(94vw,1480px)!important;
-    max-width:none!important;
-    max-height:94dvh!important;
-    padding:0!important;
-    border:0!important;
-    background:transparent!important;
-  }
-
-  .p49-action-dialog.is-sm { width:min(78vw,760px)!important; }
-  .p49-action-dialog.is-md { width:min(88vw,1040px)!important; }
-  .p49-action-dialog.is-lg { width:min(92vw,1280px)!important; }
-  .p49-action-dialog.is-xl { width:min(94vw,1480px)!important; }
-
-  .p49-action-dialog::backdrop {
-    background:rgb(7 43 33 / 48%)!important;
-    backdrop-filter:blur(5px)!important;
-  }
-
-  .p49-action-dialog .p49-dialog-shell {
-    width:100%!important;
-    height:min(90dvh,920px)!important;
-    max-height:90dvh!important;
-    display:grid!important;
-    grid-template-rows:auto minmax(0,1fr)!important;
-    overflow:hidden!important;
-    border:1px solid var(--namaa-wide-border)!important;
-    border-radius:24px!important;
-    background:var(--namaa-wide-card)!important;
-    box-shadow:0 28px 90px rgb(0 0 0 / 28%)!important;
-  }
-
-  .p49-action-dialog.is-sm .p49-dialog-shell {
-    height:auto!important;
-    max-height:78dvh!important;
-  }
-
-  .p49-action-dialog .p49-dialog-header {
-    min-height:78px!important;
-    padding:18px 22px!important;
-    display:flex!important;
-    align-items:center!important;
-    justify-content:space-between!important;
-    gap:16px!important;
-    background:var(--namaa-wide-card-strong)!important;
-    border-bottom:1px solid var(--namaa-wide-border)!important;
-  }
-
-  .p49-action-dialog .p49-dialog-body {
-    min-height:0!important;
-    overflow:auto!important;
-    overscroll-behavior:contain!important;
-    padding:22px 24px 26px!important;
-    background:var(--namaa-wide-card)!important;
-  }
-
-  .p49-action-dialog .p49-dialog-title-icon {
-    width:48px!important;
-    height:48px!important;
-    min-width:48px!important;
-    display:grid!important;
-    place-items:center!important;
-    border-radius:14px!important;
-    background:var(--namaa-wide-gold-soft)!important;
-    color:var(--namaa-wide-green-deep)!important;
-    border:1px solid color-mix(in srgb,var(--namaa-wide-gold) 55%,var(--namaa-wide-border))!important;
-  }
-
-  .p49-action-dialog .p49-dialog-title-icon .p49-ui-icon,
-  .p49-action-dialog .p49-dialog-close .p49-ui-icon,
-  .p49-action-dialog .p49-dialog-tools .p49-ui-icon {
-    width:26px!important;
-    height:26px!important;
-  }
-
-  .p49-action-dialog .p49-dialog-close,
-  .p49-action-dialog .p49-dialog-tools button {
-    width:46px!important;
-    height:46px!important;
-    min-width:46px!important;
-    min-height:46px!important;
   }
 
   .protected-app-shell :where(
@@ -3601,32 +3462,6 @@
   html[data-theme="dark"] .namaa-wide-risk-warning{
     background:#4b3d24!important;
     border-color:#8e7440!important;
-  }
-
-  html[data-theme="dark"] .p49-action-dialog .p49-dialog-shell,
-  html[data-theme="dark"] .p49-action-dialog .p49-dialog-body{
-    background:var(--namaa-wide-card)!important;
-    color:var(--namaa-wide-text)!important;
-  }
-
-  html[data-theme="dark"] .p49-action-dialog .p49-dialog-header{
-    background:var(--namaa-wide-card-strong)!important;
-    border-color:var(--namaa-wide-border)!important;
-  }
-
-  html[data-theme="dark"] .mustaqbali-topbar.namaa-topbar{
-    background:#203b32!important;
-    border-bottom-color:#567065!important;
-  }
-
-  html[data-theme="dark"] .mustaqbali-topbar-menu,
-  html[data-theme="dark"] .mustaqbali-topbar-actions > a,
-  html[data-theme="dark"] .mustaqbali-topbar-actions > button,
-  html[data-theme="dark"] .mustaqbali-profile-trigger,
-  html[data-theme="dark"] .mustaqbali-global-search{
-    background:#2e4e42!important;
-    color:#dccb9f!important;
-    border-color:#60786e!important;
   }
 }
 
@@ -4915,14 +4750,6 @@
     stroke-width:2.5!important;
   }
 
-  .p49-action-dialog .p49-dialog-header{
-    background:var(--namaa-wide-card-strong)!important;
-  }
-
-  .p49-action-dialog .p49-dialog-body{
-    background:var(--namaa-wide-card)!important;
-  }
-
   .protected-app-shell :where(
     .page-header,
     .dashboard-header,
@@ -5141,1705 +4968,241 @@
 
 
 /* ========================================================================== */
-/* POLICY DOCUMENT LIBRARY — reader-first, identity-only, no dashboard chrome */
+/* POLICY DOCUMENT LIBRARY — CANONICAL STRUCTURE + LIGHT IDENTITY              */
 /* ========================================================================== */
 @media (min-width:768px){
   .namaa-policy-library{
     width:min(100%,1500px)!important;
     margin-inline:auto!important;
     padding:18px 22px 28px!important;
-    background:var(--namaa-wide-surface)!important;
-    color:var(--namaa-wide-text)!important;
+    background:#FFFFFF!important;
+    color:#1F2937!important;
   }
-
   .namaa-policy-library-header{
     display:flex!important;
     align-items:flex-end!important;
     justify-content:space-between!important;
     gap:20px!important;
-    padding:18px 20px!important;
+    padding:20px 22px!important;
     margin-bottom:14px!important;
-    border:1px solid var(--namaa-wide-border)!important;
+    border:1px solid rgb(212 175 107 / 34%)!important;
     border-radius:18px!important;
-    background:linear-gradient(135deg,#a8baae,#c6b57f)!important;
+    background:linear-gradient(135deg,#073F31 0%,#0B6B4F 70%,#07513D 100%)!important;
+    color:#FFFFFF!important;
   }
-
-  .namaa-policy-library-header>div:first-child{
-    min-width:0!important;
-  }
-
-  .namaa-policy-eyebrow{
-    display:block!important;
-    margin-bottom:4px!important;
-    color:#6b5424!important;
-    font-size:12px!important;
-    font-weight:900!important;
-  }
-
-  .namaa-policy-library-header h1{
-    margin:0!important;
-    color:#173d32!important;
-    font-size:clamp(30px,3vw,42px)!important;
-    line-height:1.2!important;
-  }
-
-  .namaa-policy-library-header p{
-    margin:7px 0 0!important;
-    color:#43594f!important;
-    line-height:1.7!important;
-  }
-
-  .namaa-policy-library-summary{
-    display:flex!important;
-    align-items:center!important;
-    gap:10px!important;
-    flex-wrap:wrap!important;
-  }
-
+  .namaa-policy-library-header>div:first-child{min-width:0!important;}
+  .namaa-policy-eyebrow{display:block!important;color:#D4AF6B!important;font-size:12px!important;font-weight:900!important;margin-bottom:4px!important;}
+  .namaa-policy-library-header h1{margin:0!important;color:#FFFFFF!important;font-size:clamp(28px,3vw,42px)!important;line-height:1.3!important;}
+  .namaa-policy-library-header p{margin:7px 0 0!important;color:rgb(255 255 255 / 82%)!important;line-height:1.7!important;}
+  .namaa-policy-library-summary{display:flex!important;align-items:center!important;gap:10px!important;flex-wrap:wrap!important;}
   .namaa-policy-library-summary>span,
   .namaa-policy-library-summary>a{
     min-height:42px!important;
     display:inline-flex!important;
     align-items:center!important;
-    justify-content:center!important;
-    gap:5px!important;
+    gap:6px!important;
     padding:0 12px!important;
-    border:1px solid #8fa294!important;
-    border-radius:12px!important;
-    background:#b8c7bc!important;
-    color:#1d3c31!important;
-    text-decoration:none!important;
-    font-weight:800!important;
-  }
-
-  .namaa-policy-library-layout{
-    display:grid!important;
-    grid-template-columns:minmax(280px,340px) minmax(0,1fr)!important;
-    gap:14px!important;
-    align-items:start!important;
-  }
-
-  .namaa-policy-index{
-    position:sticky!important;
-    top:calc(var(--namaa-topbar-height) + 14px)!important;
-    max-height:calc(100dvh - var(--namaa-topbar-height) - 28px)!important;
-    overflow:hidden!important;
-    display:grid!important;
-    grid-template-rows:auto minmax(0,1fr)!important;
-    border:1px solid var(--namaa-wide-border)!important;
-    border-radius:16px!important;
-    background:#9fb6a8!important;
-  }
-
-  .namaa-policy-index-head{
-    display:flex!important;
-    align-items:center!important;
-    gap:10px!important;
-    padding:14px!important;
-    border-bottom:1px solid #81998a!important;
-    background:#8ea697!important;
-    color:#173d32!important;
-  }
-
-  .namaa-policy-index-head svg{
-    color:#6d5526!important;
-    flex:0 0 auto!important;
-  }
-
-  .namaa-policy-index-head>div{
-    min-width:0!important;
-    display:grid!important;
-    gap:2px!important;
-  }
-
-  .namaa-policy-index-head strong{
-    font-size:16px!important;
-  }
-
-  .namaa-policy-index-head span{
-    color:#41584e!important;
-    font-size:12px!important;
-  }
-
-  .namaa-policy-index nav{
-    min-height:0!important;
-    overflow:auto!important;
-    padding:10px!important;
-    display:grid!important;
-    gap:8px!important;
-  }
-
-  .namaa-policy-index nav>a{
-    min-width:0!important;
-    display:grid!important;
-    grid-template-columns:40px minmax(0,1fr)!important;
-    gap:10px!important;
-    align-items:center!important;
-    padding:10px 11px!important;
-    border:1px solid #879d8f!important;
-    border-radius:13px!important;
-    background:#adbeB2!important;
-    color:#1d3028!important;
-    text-decoration:none!important;
-  }
-
-  .namaa-policy-index nav>a:nth-child(3n+2){background:#c2b589!important;}
-  .namaa-policy-index nav>a:nth-child(3n+3){background:#a6ae97!important;}
-
-  .namaa-policy-index nav>a:hover,
-  .namaa-policy-index nav>a.is-active{
-    border-color:#8d7440!important;
-    background:#c8b06f!important;
-    box-shadow:0 8px 18px rgb(55 45 22 / 12%)!important;
-  }
-
-  .namaa-policy-index-number{
-    width:36px!important;
-    height:36px!important;
-    display:grid!important;
-    place-items:center!important;
+    border:1px solid rgb(212 175 107 / 45%)!important;
     border-radius:11px!important;
-    background:#315b4c!important;
-    color:#e3d3ad!important;
-    font-weight:900!important;
+    background:rgb(255 255 255 / 8%)!important;
+    color:#FFFFFF!important;
+    text-decoration:none!important;
   }
-
-  .namaa-policy-index-copy{
-    min-width:0!important;
-    display:grid!important;
-    gap:4px!important;
-  }
-
-  .namaa-policy-index-copy strong{
-    min-width:0!important;
-    color:inherit!important;
-    line-height:1.5!important;
-    overflow-wrap:anywhere!important;
-  }
-
-  .namaa-policy-index-copy small{
-    color:#52685d!important;
-    line-height:1.4!important;
-  }
-
+  .namaa-policy-library-layout{display:grid!important;grid-template-columns:320px minmax(0,1fr)!important;gap:14px!important;align-items:start!important;}
+  .namaa-policy-index,
   .namaa-policy-reader{
     min-width:0!important;
-    overflow:hidden!important;
-    border:1px solid var(--namaa-wide-border)!important;
+    border:1px solid #DCE6E0!important;
     border-radius:16px!important;
-    background:#b9c8bc!important;
+    background:#FFFFFF!important;
+    color:#1F2937!important;
   }
-
+  .namaa-policy-index{position:sticky!important;top:88px!important;overflow:hidden!important;}
+  .namaa-policy-index-head{
+    display:flex!important;align-items:center!important;gap:10px!important;
+    padding:15px!important;border-bottom:1px solid #DCE6E0!important;background:#F7F8F6!important;
+  }
+  .namaa-policy-index-head svg{color:#D4AF6B!important;}
+  .namaa-policy-index-head>div{display:grid!important;gap:2px!important;}
+  .namaa-policy-index-head strong{color:#0B6B4F!important;}
+  .namaa-policy-index-head span{color:#61758A!important;font-size:12px!important;}
+  .namaa-policy-index nav{display:grid!important;gap:7px!important;padding:10px!important;max-height:calc(100dvh - 220px)!important;overflow:auto!important;}
+  .namaa-policy-index nav>a{
+    display:grid!important;grid-template-columns:42px minmax(0,1fr)!important;gap:10px!important;align-items:center!important;
+    padding:10px!important;border:1px solid #DCE6E0!important;border-radius:12px!important;background:#FFFFFF!important;
+    color:#1F2937!important;text-decoration:none!important;
+  }
+  .namaa-policy-index nav>a:hover{border-color:#D4AF6B!important;background:#FFF7E6!important;}
+  .namaa-policy-index nav>a.is-active{border-color:#D4AF6B!important;background:#FFF7E6!important;box-shadow:inset -4px 0 0 #D4AF6B!important;}
+  .namaa-policy-index-number{
+    width:38px!important;height:38px!important;display:grid!important;place-items:center!important;border-radius:10px!important;
+    background:#0B6B4F!important;color:#FFFFFF!important;font-weight:900!important;
+  }
+  .namaa-policy-index-copy{display:grid!important;gap:3px!important;min-width:0!important;}
+  .namaa-policy-index-copy strong{color:#1F2937!important;line-height:1.45!important;}
+  .namaa-policy-index-copy small{color:#61758A!important;overflow-wrap:anywhere!important;}
+  .namaa-policy-reader{overflow:hidden!important;}
   .namaa-policy-reader-head{
-    min-width:0!important;
-    display:grid!important;
-    grid-template-columns:minmax(0,1fr) auto!important;
-    gap:16px!important;
-    align-items:start!important;
-    padding:18px 20px!important;
-    border-bottom:1px solid #91a698!important;
-    background:#aebfb3!important;
+    display:flex!important;align-items:flex-start!important;justify-content:space-between!important;gap:16px!important;
+    padding:20px!important;border-bottom:1px solid #DCE6E0!important;background:#F7F8F6!important;
   }
-
-  .namaa-policy-reader-head>div{
-    min-width:0!important;
-  }
-
-  .namaa-policy-reader-head>div>span:first-child{
-    display:block!important;
-    margin-bottom:4px!important;
-    color:#775e2b!important;
-    font-size:12px!important;
-    font-weight:900!important;
-  }
-
-  .namaa-policy-reader-head h2{
-    margin:0!important;
-    color:#18261f!important;
-    font-size:clamp(24px,2.3vw,34px)!important;
-    line-height:1.35!important;
-  }
-
-  .namaa-policy-reader-meta{
-    margin-top:12px!important;
-    display:flex!important;
-    flex-wrap:wrap!important;
-    gap:8px!important;
-  }
-
-  .namaa-policy-reader-meta>span{
-    display:inline-flex!important;
-    align-items:center!important;
-    gap:5px!important;
-    padding:7px 10px!important;
-    border:1px solid #8ea295!important;
-    border-radius:10px!important;
-    background:#9fb4a7!important;
-    color:#354c42!important;
-    font-size:12px!important;
-  }
-
-  .namaa-policy-reader-meta strong{
-    color:#173d32!important;
-  }
-
+  .namaa-policy-reader-head>div{min-width:0!important;}
+  .namaa-policy-reader-head>div>span:first-child{color:#8A6A2B!important;font-size:12px!important;font-weight:900!important;}
+  .namaa-policy-reader-head h2{margin:5px 0 10px!important;color:#0B6B4F!important;font-size:clamp(24px,2.4vw,34px)!important;line-height:1.4!important;}
+  .namaa-policy-reader-meta{display:flex!important;flex-wrap:wrap!important;gap:8px!important;}
+  .namaa-policy-reader-meta>span{padding:7px 10px!important;border:1px solid #DCE6E0!important;border-radius:10px!important;background:#FFFFFF!important;color:#61758A!important;}
+  .namaa-policy-reader-meta strong{color:#1F2937!important;}
   .namaa-policy-reader-mark{
-    width:48px!important;
-    height:48px!important;
-    display:grid!important;
-    place-items:center!important;
-    border-radius:14px!important;
-    background:#c8b06f!important;
-    color:#244438!important;
-    border:1px solid #a98949!important;
+    width:52px!important;height:52px!important;flex:0 0 auto!important;display:grid!important;place-items:center!important;
+    border-radius:14px!important;background:#D4AF6B!important;color:#17372E!important;
   }
-
-  .namaa-policy-reader-body{
-    padding:22px clamp(20px,3vw,36px) 30px!important;
-    color:#263830!important;
-    line-height:1.9!important;
-  }
-
-  .namaa-policy-reader-body h1{
-    margin:0 0 18px!important;
-    color:#173d32!important;
-    font-size:28px!important;
-    line-height:1.35!important;
-  }
-
-  .namaa-policy-reader-body h2{
-    margin:26px 0 10px!important;
-    padding:10px 12px!important;
-    border-right:4px solid #c09c54!important;
-    border-radius:8px!important;
-    background:#a9bbaE!important;
-    color:#1c392f!important;
-    font-size:21px!important;
-    line-height:1.5!important;
-  }
-
-  .namaa-policy-reader-body h3{
-    margin:20px 0 8px!important;
-    color:#284b3f!important;
-    font-size:18px!important;
-  }
-
-  .namaa-policy-reader-body p{
-    margin:8px 0!important;
-    color:#354d43!important;
-    line-height:1.95!important;
-  }
-
-  .namaa-policy-reader-bullet{
-    display:grid!important;
-    grid-template-columns:32px minmax(0,1fr)!important;
-    gap:8px!important;
-    align-items:start!important;
-    margin:8px 0!important;
-  }
-
-  .namaa-policy-reader-bullet>span{
-    width:28px!important;
-    min-height:28px!important;
-    display:grid!important;
-    place-items:center!important;
-    border-radius:9px!important;
-    background:#9aa98f!important;
-    color:#1e3c31!important;
-    font-weight:900!important;
-  }
-
-  .namaa-policy-reader-bullet p{
-    margin:0!important;
-  }
-
-  .namaa-policy-meta-line{
-    display:grid!important;
-    grid-template-columns:minmax(120px,180px) minmax(0,1fr)!important;
-    gap:10px!important;
-    align-items:start!important;
-    margin:7px 0!important;
-    padding:10px 12px!important;
-    border:1px solid #95a99b!important;
-    border-radius:10px!important;
-    background:#adbdB1!important;
-  }
-
-  .namaa-policy-meta-line strong{
-    color:#173d32!important;
-  }
-
-  .namaa-policy-meta-line span{
-    color:#465d53!important;
-  }
-
-  .namaa-policy-reader-gap{
-    height:5px!important;
-  }
-
-  html[data-theme="dark"] .namaa-policy-library{
-    background:#10211c!important;
-  }
-
-  html[data-theme="dark"] .namaa-policy-library-header{
-    background:linear-gradient(135deg,#27483c,#55492e)!important;
-    border-color:#4f6b60!important;
-  }
-
-  html[data-theme="dark"] .namaa-policy-library-header h1,
-  html[data-theme="dark"] .namaa-policy-library-header p{
-    color:#ddcfad!important;
-  }
-
-  html[data-theme="dark"] .namaa-policy-index{
-    background:#1f3b31!important;
-    border-color:#4f6b60!important;
-  }
-
-  html[data-theme="dark"] .namaa-policy-index-head{
-    background:#29483d!important;
-    color:#dfcfaa!important;
-    border-color:#4f6b60!important;
-  }
-
-  html[data-theme="dark"] .namaa-policy-index nav>a{
-    background:#29473c!important;
-    color:#d8c9a7!important;
-    border-color:#4f6b60!important;
-  }
-
-  html[data-theme="dark"] .namaa-policy-index nav>a:nth-child(3n+2){background:#4b432d!important;}
-  html[data-theme="dark"] .namaa-policy-index nav>a:nth-child(3n+3){background:#3b4537!important;}
-
-  html[data-theme="dark"] .namaa-policy-index nav>a.is-active{
-    background:#5a4a2d!important;
-    border-color:#9a7b40!important;
-  }
-
-  html[data-theme="dark"] .namaa-policy-reader{
-    background:#1d372e!important;
-    border-color:#4f6b60!important;
-  }
-
-  html[data-theme="dark"] .namaa-policy-reader-head{
-    background:#28463a!important;
-    border-color:#4f6b60!important;
-  }
-
-  html[data-theme="dark"] .namaa-policy-reader-head h2,
-  html[data-theme="dark"] .namaa-policy-reader-body h1,
-  html[data-theme="dark"] .namaa-policy-reader-body h2,
-  html[data-theme="dark"] .namaa-policy-reader-body h3{
-    color:#dfcfaa!important;
-  }
-
-  html[data-theme="dark"] .namaa-policy-reader-body{
-    color:#c6d0c6!important;
-  }
-
-  html[data-theme="dark"] .namaa-policy-reader-body p{
-    color:#b9c5bc!important;
-  }
-
-  html[data-theme="dark"] .namaa-policy-reader-body h2{
-    background:#29483d!important;
-    border-right-color:#c09c54!important;
-  }
-
-  html[data-theme="dark"] .namaa-policy-meta-line{
-    background:#29473c!important;
-    border-color:#4f6b60!important;
-  }
+  .namaa-policy-reader-body{padding:24px!important;color:#1F2937!important;line-height:1.95!important;}
+  .namaa-policy-reader-body h1{margin:0 0 18px!important;color:#0B6B4F!important;font-size:30px!important;}
+  .namaa-policy-reader-body h2{margin:24px 0 12px!important;padding:12px 14px!important;border-right:4px solid #D4AF6B!important;border-radius:10px!important;background:#F7F8F6!important;color:#0B6B4F!important;}
+  .namaa-policy-reader-body h3{margin:20px 0 8px!important;color:#0B6B4F!important;}
+  .namaa-policy-reader-body p{margin:0 0 12px!important;color:#34463E!important;}
+  .namaa-policy-reader-bullet{display:grid!important;grid-template-columns:30px minmax(0,1fr)!important;gap:8px!important;align-items:start!important;margin-bottom:8px!important;}
+  .namaa-policy-reader-bullet>span{width:28px!important;height:28px!important;display:grid!important;place-items:center!important;border-radius:9px!important;background:#FFF7E6!important;color:#765A22!important;font-weight:900!important;}
+  .namaa-policy-reader-bullet p{margin:0!important;}
+  .namaa-policy-meta-line{display:grid!important;grid-template-columns:minmax(140px,.45fr) minmax(0,1fr)!important;gap:12px!important;padding:10px 12px!important;margin-bottom:8px!important;border:1px solid #DCE6E0!important;border-radius:10px!important;background:#F8FAF8!important;}
+  .namaa-policy-meta-line strong{color:#0B6B4F!important;}
+  .namaa-policy-meta-line span{color:#4B5F56!important;}
+  .namaa-policy-reader-gap{height:8px!important;}
+  .namaa-policy-library-empty{min-height:260px!important;display:grid!important;place-items:center!important;align-content:center!important;gap:10px!important;border:1px dashed #DCE6E0!important;border-radius:16px!important;background:#FFFFFF!important;text-align:center!important;}
 }
-
 @media (min-width:768px) and (max-width:1050px){
-  .namaa-policy-library-layout{
-    grid-template-columns:260px minmax(0,1fr)!important;
-  }
-
-  .namaa-policy-library-header{
-    align-items:stretch!important;
-    flex-direction:column!important;
-  }
+  .namaa-policy-library-layout{grid-template-columns:260px minmax(0,1fr)!important;}
+  .namaa-policy-library-header{align-items:stretch!important;flex-direction:column!important;}
 }
-
 
 /* ========================================================================== */
-/* GOVERNANCE PORTAL — document-library landing, not a dashboard               */
+/* GOVERNANCE PORTAL — CANONICAL STRUCTURE + LIGHT IDENTITY                    */
 /* ========================================================================== */
 @media (min-width:768px){
   .namaa-governance-portal{
     width:min(100%,1500px)!important;
     margin-inline:auto!important;
     padding:20px 22px 30px!important;
-    background:var(--namaa-wide-surface)!important;
-    color:var(--namaa-wide-text)!important;
+    background:#FFFFFF!important;
+    color:#1F2937!important;
   }
-
   .namaa-governance-portal-hero{
-    display:flex!important;
-    align-items:center!important;
-    justify-content:space-between!important;
-    gap:18px!important;
-    padding:20px 22px!important;
-    border:1px solid var(--namaa-wide-border)!important;
-    border-radius:18px!important;
-    background:linear-gradient(135deg,#9eb5a7,#c7b477)!important;
+    display:flex!important;align-items:center!important;justify-content:space-between!important;gap:18px!important;
+    padding:22px!important;border:1px solid rgb(212 175 107 / 34%)!important;border-radius:18px!important;
+    background:linear-gradient(135deg,#073F31 0%,#0B6B4F 70%,#07513D 100%)!important;color:#FFFFFF!important;
   }
-
-  .namaa-governance-portal-hero>div:first-child{
-    min-width:0!important;
-  }
-
-  .namaa-governance-portal-hero>div:first-child>span{
-    display:block!important;
-    color:#6b5424!important;
-    font-size:12px!important;
-    font-weight:900!important;
-    margin-bottom:4px!important;
-  }
-
-  .namaa-governance-portal-hero h1{
-    margin:0!important;
-    color:#173d32!important;
-    font-size:clamp(30px,3.3vw,44px)!important;
-    line-height:1.2!important;
-  }
-
-  .namaa-governance-portal-hero p{
-    margin:8px 0 0!important;
-    color:#43584f!important;
-    line-height:1.75!important;
-  }
-
+  .namaa-governance-portal-hero>div:first-child{min-width:0!important;}
+  .namaa-governance-portal-hero>div:first-child>span{color:#D4AF6B!important;font-size:12px!important;font-weight:900!important;}
+  .namaa-governance-portal-hero h1{margin:4px 0 7px!important;color:#FFFFFF!important;font-size:clamp(28px,3vw,42px)!important;}
+  .namaa-governance-portal-hero p{margin:0!important;color:rgb(255 255 255 / 82%)!important;line-height:1.7!important;}
   .namaa-governance-portal-total{
-    flex:0 0 auto!important;
-    min-width:160px!important;
-    min-height:110px!important;
-    display:grid!important;
-    place-items:center!important;
-    align-content:center!important;
-    gap:3px!important;
-    padding:14px!important;
-    border:1px solid #8ea091!important;
-    border-radius:16px!important;
-    background:#b5c3b9!important;
+    min-width:150px!important;min-height:100px!important;display:grid!important;place-items:center!important;align-content:center!important;gap:3px!important;
+    padding:14px!important;border:1px solid rgb(212 175 107 / 38%)!important;border-radius:16px!important;background:rgb(255 255 255 / 8%)!important;
   }
-
-  .namaa-governance-portal-total strong{
-    color:#1d4034!important;
-    font-size:30px!important;
-    line-height:1!important;
-  }
-
-  .namaa-governance-portal-total span{
-    color:#51665d!important;
-    font-size:12px!important;
-    font-weight:800!important;
-  }
-
-  .namaa-governance-portal-metrics{
-    display:grid!important;
-    grid-template-columns:repeat(4,minmax(0,1fr))!important;
-    gap:12px!important;
-    margin-top:14px!important;
-  }
-
+  .namaa-governance-portal-total strong{color:#FFFFFF!important;font-size:30px!important;line-height:1!important;}
+  .namaa-governance-portal-total span{color:#D4AF6B!important;font-size:12px!important;font-weight:800!important;}
+  .namaa-governance-portal-metrics{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:12px!important;margin-top:14px!important;}
   .namaa-governance-portal-metrics article{
-    min-width:0!important;
-    min-height:112px!important;
-    padding:14px!important;
-    border:1px solid var(--namaa-wide-border)!important;
-    border-radius:15px!important;
-    display:grid!important;
-    align-content:center!important;
-    gap:3px!important;
+    min-width:0!important;min-height:112px!important;padding:14px!important;border:1px solid #DCE6E0!important;border-radius:15px!important;
+    display:grid!important;align-content:center!important;gap:3px!important;background:#FFFFFF!important;
   }
-
-  .namaa-governance-portal-metrics .tone-policy{background:#9db4a5!important;}
-  .namaa-governance-portal-metrics .tone-regulation{background:#c4b27f!important;}
-  .namaa-governance-portal-metrics .tone-procedure{background:#a4aa91!important;}
-  .namaa-governance-portal-metrics .tone-auth{background:#b79e96!important;}
-
-  .namaa-governance-portal-metrics article span{
-    color:#4c5f56!important;
-    font-size:12px!important;
-    font-weight:900!important;
-  }
-
-  .namaa-governance-portal-metrics article strong{
-    color:#18261f!important;
-    font-size:25px!important;
-    line-height:1.2!important;
-  }
-
-  .namaa-governance-portal-metrics article small{
-    color:#50645b!important;
-    line-height:1.5!important;
-  }
-
-  .namaa-governance-portal-grid{
-    display:grid!important;
-    grid-template-columns:repeat(2,minmax(0,1fr))!important;
-    gap:14px!important;
-    margin-top:14px!important;
-  }
-
+  .namaa-governance-portal-metrics article:nth-child(1){border-top:4px solid #0B6B4F!important;}
+  .namaa-governance-portal-metrics article:nth-child(2){border-top:4px solid #D4AF6B!important;}
+  .namaa-governance-portal-metrics article:nth-child(3){border-top:4px solid #189F7F!important;}
+  .namaa-governance-portal-metrics article:nth-child(4){border-top:4px solid #FCAA30!important;}
+  .namaa-governance-portal-metrics article span{color:#61758A!important;font-size:12px!important;font-weight:900!important;}
+  .namaa-governance-portal-metrics article strong{color:#0B6B4F!important;font-size:25px!important;line-height:1.2!important;}
+  .namaa-governance-portal-metrics article small{color:#61758A!important;line-height:1.5!important;}
+  .namaa-governance-portal-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px!important;margin-top:14px!important;}
   .namaa-governance-library-card{
-    min-width:0!important;
-    padding:18px!important;
-    border:1px solid var(--namaa-wide-border)!important;
-    border-radius:16px!important;
-    display:grid!important;
-    align-content:start!important;
-    gap:13px!important;
+    min-width:0!important;padding:18px!important;border:1px solid #DCE6E0!important;border-radius:16px!important;
+    display:grid!important;align-content:start!important;gap:13px!important;background:#FFFFFF!important;color:#1F2937!important;
   }
-
-  .namaa-governance-library-card.card-policy{background:#aebfb3!important;}
-  .namaa-governance-library-card.card-regulation{background:#c8b98c!important;}
-  .namaa-governance-library-card.card-procedure{background:#a8ad96!important;}
-  .namaa-governance-library-card.card-auth{background:#b89f97!important;}
-
-  .namaa-governance-library-card>header{
-    display:flex!important;
-    align-items:flex-start!important;
-    justify-content:space-between!important;
-    gap:12px!important;
-  }
-
-  .namaa-governance-library-card>header>div{
-    min-width:0!important;
-  }
-
-  .namaa-governance-library-card>header span{
-    display:block!important;
-    color:#6d5728!important;
-    font-size:12px!important;
-    font-weight:900!important;
-    margin-bottom:3px!important;
-  }
-
-  .namaa-governance-library-card h2{
-    margin:0!important;
-    color:#18261f!important;
-    font-size:24px!important;
-    line-height:1.3!important;
-  }
-
-  .namaa-governance-library-card>header svg{
-    color:#6d5728!important;
-    flex:0 0 auto!important;
-  }
-
-  .namaa-governance-library-card>p{
-    margin:0!important;
-    color:#43584f!important;
-    line-height:1.7!important;
-  }
-
-  .namaa-governance-doc-preview{
-    display:grid!important;
-    gap:8px!important;
-  }
-
+  .namaa-governance-library-card>header{display:flex!important;align-items:flex-start!important;justify-content:space-between!important;gap:12px!important;}
+  .namaa-governance-library-card>header>div{min-width:0!important;}
+  .namaa-governance-library-card>header span{display:block!important;color:#8A6A2B!important;font-size:12px!important;font-weight:900!important;margin-bottom:3px!important;}
+  .namaa-governance-library-card h2{margin:0!important;color:#0B6B4F!important;font-size:24px!important;line-height:1.3!important;}
+  .namaa-governance-library-card>header svg{color:#D4AF6B!important;flex:0 0 auto!important;}
+  .namaa-governance-library-card>p{margin:0!important;color:#4B5F56!important;line-height:1.7!important;}
+  .namaa-governance-doc-preview{display:grid!important;gap:8px!important;}
   .namaa-governance-doc-preview>a{
-    min-width:0!important;
-    padding:10px 11px!important;
-    display:grid!important;
-    gap:3px!important;
-    border:1px solid #899d90!important;
-    border-radius:12px!important;
-    background:#a4b5aa!important;
-    color:#1d3028!important;
-    text-decoration:none!important;
+    min-width:0!important;padding:10px 11px!important;display:grid!important;gap:3px!important;border:1px solid #DCE6E0!important;
+    border-radius:12px!important;background:#F8FAF8!important;color:#1F2937!important;text-decoration:none!important;
   }
-
-  .card-regulation .namaa-governance-doc-preview>a{background:#b4a77c!important;}
-  .card-procedure .namaa-governance-doc-preview>a{background:#979f87!important;}
-
-  .namaa-governance-doc-preview>a:hover{
-    border-color:#9d7d3f!important;
-    background:#c9b16f!important;
-  }
-
-  .namaa-governance-doc-preview strong{
-    color:inherit!important;
-    line-height:1.5!important;
-    overflow-wrap:anywhere!important;
-  }
-
-  .namaa-governance-doc-preview small{
-    color:#4f645a!important;
-    line-height:1.4!important;
-  }
-
+  .namaa-governance-doc-preview>a:hover{border-color:#D4AF6B!important;background:#FFF7E6!important;}
+  .namaa-governance-doc-preview strong{color:inherit!important;line-height:1.5!important;overflow-wrap:anywhere!important;}
+  .namaa-governance-doc-preview small{color:#61758A!important;line-height:1.4!important;}
   .namaa-governance-open-library{
-    min-height:44px!important;
-    display:inline-flex!important;
-    align-items:center!important;
-    justify-content:center!important;
-    padding:0 14px!important;
-    border:1px solid #285d4a!important;
-    border-radius:12px!important;
-    background:#315b4c!important;
-    color:#e3d4ad!important;
-    text-decoration:none!important;
-    font-weight:900!important;
+    min-height:44px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;padding:0 14px!important;
+    border:1px solid #0B6B4F!important;border-radius:12px!important;background:#0B6B4F!important;color:#FFFFFF!important;text-decoration:none!important;font-weight:900!important;
   }
-
-  .namaa-governance-auth-actions{
-    display:grid!important;
-    grid-template-columns:repeat(2,minmax(0,1fr))!important;
-    gap:10px!important;
-  }
-
+  .namaa-governance-auth-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;}
   .namaa-governance-auth-actions>a{
-    min-height:46px!important;
-    display:flex!important;
-    align-items:center!important;
-    justify-content:center!important;
-    padding:0 12px!important;
-    border:1px solid #8a7651!important;
-    border-radius:12px!important;
-    background:#ad9c76!important;
-    color:#2d2b20!important;
-    text-decoration:none!important;
-    font-weight:900!important;
-    text-align:center!important;
+    min-height:46px!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:0 12px!important;
+    border:1px solid #D4AF6B!important;border-radius:12px!important;background:#FFF7E6!important;color:#5E481B!important;text-decoration:none!important;font-weight:900!important;text-align:center!important;
   }
-
-  .namaa-governance-auth-actions>a:last-child{
-    background:#315b4c!important;
-    color:#e3d4ad!important;
-    border-color:#285d4a!important;
-  }
-
-  .namaa-governance-auth-note{
-    color:#5a4d47!important;
-    line-height:1.6!important;
-  }
-
+  .namaa-governance-auth-actions>a:last-child{background:#0B6B4F!important;color:#FFFFFF!important;border-color:#0B6B4F!important;}
+  .namaa-governance-auth-note{color:#61758A!important;line-height:1.6!important;}
   .namaa-governance-portal-footer{
-    margin-top:14px!important;
-    padding:16px 18px!important;
-    display:flex!important;
-    align-items:center!important;
-    justify-content:space-between!important;
-    gap:16px!important;
-    border:1px solid var(--namaa-wide-border)!important;
-    border-radius:15px!important;
-    background:#9fb3a7!important;
+    margin-top:14px!important;padding:16px 18px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:16px!important;
+    border:1px solid #DCE6E0!important;border-radius:15px!important;background:#F7F8F6!important;
   }
-
-  .namaa-governance-portal-footer>div{
-    min-width:0!important;
-    display:grid!important;
-    gap:3px!important;
-  }
-
-  .namaa-governance-portal-footer strong{
-    color:#18392f!important;
-    font-size:16px!important;
-  }
-
-  .namaa-governance-portal-footer span{
-    color:#4b6157!important;
-    line-height:1.6!important;
-  }
-
+  .namaa-governance-portal-footer>div{min-width:0!important;display:grid!important;gap:3px!important;}
+  .namaa-governance-portal-footer strong{color:#0B6B4F!important;font-size:16px!important;}
+  .namaa-governance-portal-footer span{color:#61758A!important;line-height:1.6!important;}
   .namaa-governance-portal-footer>a{
-    flex:0 0 auto!important;
-    min-height:44px!important;
-    display:inline-flex!important;
-    align-items:center!important;
-    justify-content:center!important;
-    padding:0 14px!important;
-    border-radius:12px!important;
-    background:#c7b477!important;
-    color:#352d17!important;
-    text-decoration:none!important;
-    font-weight:900!important;
-  }
-
-  html[data-theme="dark"] .namaa-governance-portal{
-    background:#10211c!important;
-  }
-
-  html[data-theme="dark"] .namaa-governance-portal-hero{
-    background:linear-gradient(135deg,#28483d,#594a2d)!important;
-    border-color:#4f6b60!important;
-  }
-
-  html[data-theme="dark"] .namaa-governance-portal-hero h1,
-  html[data-theme="dark"] .namaa-governance-portal-hero p{
-    color:#ddcfad!important;
-  }
-
-  html[data-theme="dark"] .namaa-governance-portal-total{
-    background:#29463b!important;
-    border-color:#4f6b60!important;
-  }
-
-  html[data-theme="dark"] .namaa-governance-portal-total strong,
-  html[data-theme="dark"] .namaa-governance-portal-total span{
-    color:#ddcfad!important;
-  }
-
-  html[data-theme="dark"] .namaa-governance-portal-metrics .tone-policy{background:#29483d!important;}
-  html[data-theme="dark"] .namaa-governance-portal-metrics .tone-regulation{background:#4c422b!important;}
-  html[data-theme="dark"] .namaa-governance-portal-metrics .tone-procedure{background:#394334!important;}
-  html[data-theme="dark"] .namaa-governance-portal-metrics .tone-auth{background:#493632!important;}
-
-  html[data-theme="dark"] .namaa-governance-portal-metrics article :where(span,strong,small){
-    color:#d7ccb1!important;
-  }
-
-  html[data-theme="dark"] .namaa-governance-library-card.card-policy{background:#203c32!important;}
-  html[data-theme="dark"] .namaa-governance-library-card.card-regulation{background:#4b422b!important;}
-  html[data-theme="dark"] .namaa-governance-library-card.card-procedure{background:#384235!important;}
-  html[data-theme="dark"] .namaa-governance-library-card.card-auth{background:#493733!important;}
-
-  html[data-theme="dark"] .namaa-governance-library-card h2,
-  html[data-theme="dark"] .namaa-governance-library-card>p,
-  html[data-theme="dark"] .namaa-governance-auth-note{
-    color:#d8ccb1!important;
-  }
-
-  html[data-theme="dark"] .namaa-governance-doc-preview>a{
-    background:#29473c!important;
-    color:#d9cdaF!important;
-    border-color:#4f6b60!important;
-  }
-
-  html[data-theme="dark"] .card-regulation .namaa-governance-doc-preview>a{background:#4b432d!important;}
-  html[data-theme="dark"] .card-procedure .namaa-governance-doc-preview>a{background:#3b4437!important;}
-
-  html[data-theme="dark"] .namaa-governance-portal-footer{
-    background:#29463b!important;
-    border-color:#4f6b60!important;
-  }
-
-  html[data-theme="dark"] .namaa-governance-portal-footer :where(strong,span){
-    color:#d8ccb1!important;
+    flex:0 0 auto!important;min-height:44px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;padding:0 14px!important;
+    border-radius:12px!important;background:#D4AF6B!important;color:#2B2311!important;text-decoration:none!important;font-weight:900!important;
   }
 }
-
 @media (min-width:768px) and (max-width:1100px){
-  .namaa-governance-portal-metrics,
-  .namaa-governance-portal-grid{
-    grid-template-columns:repeat(2,minmax(0,1fr))!important;
-  }
-
-  .namaa-governance-portal-hero,
-  .namaa-governance-portal-footer{
-    align-items:stretch!important;
-    flex-direction:column!important;
-  }
-
-  .namaa-governance-portal-total{
-    min-width:0!important;
-  }
+  .namaa-governance-portal-metrics,.namaa-governance-portal-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+  .namaa-governance-portal-hero,.namaa-governance-portal-footer{align-items:stretch!important;flex-direction:column!important;}
+  .namaa-governance-portal-total{min-width:0!important;}
 }
 
-
-/* BANK DASHBOARD — official identity palette, actual-data only */
+/* ========================================================================== */
+/* BANK DASHBOARD — CANONICAL LAYOUT + LIGHT IDENTITY, ACTUAL DATA ONLY        */
+/* ========================================================================== */
 @media (min-width:768px){
-  .namaa-banks-kpis-dashboard{
-    grid-template-columns:repeat(3,minmax(0,1fr))!important;
-  }
-  .namaa-banks-kpis-dashboard article.tone-deep{
-    background:#0B6B4F!important;
-    color:#D4AF6B!important;
-    border-color:#189F7F!important;
-  }
-  .namaa-banks-kpis-dashboard article.tone-gold{
-    background:#D4AF6B!important;
-    color:#0B6B4F!important;
-    border-color:#0B6B4F!important;
-  }
-  .namaa-banks-kpis-dashboard article.tone-green{
-    background:#189F7F!important;
-    color:#0B6B4F!important;
-    border-color:#0B6B4F!important;
-  }
-  .namaa-banks-kpis-dashboard article.tone-action{
-    background:#FCAA30!important;
-    color:#0B6B4F!important;
-    border-color:#D4AF6B!important;
-  }
-  .namaa-banks-visual-dashboard .tone-deep{
-    background:#0B6B4F!important;
-    color:#D4AF6B!important;
-  }
-  .namaa-banks-visual-dashboard .tone-gold{
-    background:color-mix(in srgb,#D4AF6B 82%,#0B6B4F 18%)!important;
-    color:#0B6B4F!important;
-  }
-  .namaa-banks-visual-dashboard .tone-action{
-    background:color-mix(in srgb,#FCAA30 78%,#D4AF6B 22%)!important;
-    color:#0B6B4F!important;
-  }
-  .namaa-bank-donut{
-    background:conic-gradient(#FCAA30 0 var(--namaa-donut-share),#189F7F var(--namaa-donut-share) 100%)!important;
-  }
-  .namaa-bank-donut::after{
-    background:#0B6B4F!important;
-  }
-  .namaa-bank-progress-track{
-    background:color-mix(in srgb,#0B6B4F 72%,#D4AF6B 28%)!important;
-    border-color:#0B6B4F!important;
-  }
-  .namaa-bank-progress-track i{
-    background:#FCAA30!important;
-  }
-  .namaa-bank-bars > div > i{
-    background:#0B6B4F!important;
-  }
-  .namaa-bank-no-chart{
-    min-height:96px!important;
-    display:grid!important;
-    place-items:center!important;
-    border:1px dashed currentColor!important;
-    border-radius:14px!important;
-    font-weight:900!important;
-    opacity:.78!important;
-  }
-  .namaa-banks-health-grid{
-    display:grid!important;
-    grid-template-columns:repeat(4,minmax(0,1fr))!important;
-    gap:10px!important;
-    margin:4px 0 18px!important;
-  }
-  .namaa-banks-health-grid article{
-    min-width:0!important;
-    min-height:116px!important;
-    padding:14px!important;
-    border:1px solid color-mix(in srgb,#0B6B4F 58%,#D4AF6B 42%)!important;
-    border-radius:14px!important;
-    background:color-mix(in srgb,#189F7F 62%,#D4AF6B 38%)!important;
-    color:#0B6B4F!important;
-    display:grid!important;
-    align-content:start!important;
-    gap:5px!important;
-  }
-  .namaa-banks-health-grid article:nth-child(2){
-    background:color-mix(in srgb,#D4AF6B 70%,#189F7F 30%)!important;
-  }
-  .namaa-banks-health-grid article:nth-child(3){
-    background:color-mix(in srgb,#FCAA30 62%,#D4AF6B 38%)!important;
-  }
-  .namaa-banks-health-grid article.is-incomplete{
-    background:color-mix(in srgb,#0B6B4F 84%,#D4AF6B 16%)!important;
-    color:#D4AF6B!important;
-  }
-  .namaa-banks-health-grid span,
-  .namaa-banks-health-grid small{
-    color:inherit!important;
-  }
-  .namaa-banks-health-grid strong{
-    color:inherit!important;
-    font-size:20px!important;
-  }
-  .namaa-banks-health-grid a{
-    color:inherit!important;
-    font-weight:900!important;
-    text-underline-offset:3px!important;
-  }
-
-  html[data-theme="dark"] .namaa-banks-kpis-dashboard article.tone-deep,
-  html[data-theme="dark"] .namaa-banks-visual-dashboard .tone-deep{
-    background:color-mix(in srgb,#0B6B4F 72%,#000 28%)!important;
-    color:#D4AF6B!important;
-    border-color:#189F7F!important;
-  }
-  html[data-theme="dark"] .namaa-banks-kpis-dashboard article.tone-gold,
-  html[data-theme="dark"] .namaa-banks-visual-dashboard .tone-gold{
-    background:color-mix(in srgb,#D4AF6B 46%,#0B6B4F 54%)!important;
-    color:#D4AF6B!important;
-    border-color:#D4AF6B!important;
-  }
-  html[data-theme="dark"] .namaa-banks-kpis-dashboard article.tone-green{
-    background:color-mix(in srgb,#189F7F 55%,#0B6B4F 45%)!important;
-    color:#D4AF6B!important;
-    border-color:#189F7F!important;
-  }
-  html[data-theme="dark"] .namaa-banks-kpis-dashboard article.tone-action,
-  html[data-theme="dark"] .namaa-banks-visual-dashboard .tone-action{
-    background:color-mix(in srgb,#FCAA30 38%,#0B6B4F 62%)!important;
-    color:#D4AF6B!important;
-    border-color:#FCAA30!important;
-  }
-  html[data-theme="dark"] .namaa-bank-donut::after{
-    background:color-mix(in srgb,#0B6B4F 72%,#000 28%)!important;
-  }
-  html[data-theme="dark"] .namaa-banks-health-grid article{
-    background:color-mix(in srgb,#189F7F 34%,#0B6B4F 66%)!important;
-    color:#D4AF6B!important;
-  }
-  html[data-theme="dark"] .namaa-banks-health-grid article:nth-child(2){
-    background:color-mix(in srgb,#D4AF6B 30%,#0B6B4F 70%)!important;
-  }
-  html[data-theme="dark"] .namaa-banks-health-grid article:nth-child(3){
-    background:color-mix(in srgb,#FCAA30 28%,#0B6B4F 72%)!important;
-  }
-  html[data-theme="dark"] .namaa-banks-health-grid article.is-incomplete{
-    background:color-mix(in srgb,#0B6B4F 68%,#000 32%)!important;
-    color:#D4AF6B!important;
-  }
-}
-
-@media (min-width:768px) and (max-width:1180px){
-  .namaa-banks-kpis-dashboard{
-    grid-template-columns:repeat(2,minmax(0,1fr))!important;
-  }
-  .namaa-banks-visual-dashboard{
-    grid-template-columns:1fr!important;
-  }
-  .namaa-banks-health-grid{
-    grid-template-columns:repeat(2,minmax(0,1fr))!important;
-  }
-}
-
-
-/* NAMA'A COHESIVE WIDE PALETTE — hierarchy before variety */
-@media (min-width:768px){
-  :root{
-    --namaa-wide-green:#0B6B4F!important;
-    --namaa-wide-green-2:#189F7F!important;
-    --namaa-wide-gold:#D4AF6B!important;
-    --namaa-wide-action-gold:#FCAA30!important;
-
-    /* المستخدم طلب منع الأبيض وشبه الأبيض في واجهات الكمبيوتر */
-    --namaa-wide-surface:#B8C8BD!important;
-    --namaa-wide-surface-2:#AFC0B5!important;
-    --namaa-wide-card:#C3D0C6!important;
-    --namaa-wide-card-strong:#A9BDB1!important;
-    --namaa-wide-input:#B3C3B8!important;
-    --namaa-wide-border:#819B8D!important;
-    --namaa-wide-text:#17372E!important;
-    --namaa-wide-muted:#425E53!important;
-    --namaa-wide-inverse:#E5D4A9!important;
-  }
-
-  html[data-theme="dark"]{
-    --namaa-wide-green:#79BFA8!important;
-    --namaa-wide-green-2:#4E9B83!important;
-    --namaa-wide-gold:#D8B86F!important;
-    --namaa-wide-action-gold:#E9A23B!important;
-    --namaa-wide-surface:#10221C!important;
-    --namaa-wide-surface-2:#162E26!important;
-    --namaa-wide-card:#1D382F!important;
-    --namaa-wide-card-strong:#29493D!important;
-    --namaa-wide-input:#315447!important;
-    --namaa-wide-border:#567567!important;
-    --namaa-wide-text:#E1D5B7!important;
-    --namaa-wide-muted:#B2C4B9!important;
-    --namaa-wide-inverse:#E7D8B3!important;
-  }
-
-  .protected-app-shell,
-  .namaa-wide-page,
-  .namaa-investments-page,
-  .namaa-banks-wide,
-  .namaa-policy-library,
-  .namaa-governance-portal{
-    background:var(--namaa-wide-surface)!important;
-    color:var(--namaa-wide-text)!important;
-  }
-
-  .namaa-wide-card,
-  .namaa-wide-panel,
-  .namaa-investments-chat,
-  .namaa-investments-dashboard,
-  .namaa-investments-followup,
-  .namaa-banks-team,
-  .namaa-banks-dashboard,
-  .namaa-banks-goals,
-  .namaa-policy-index,
-  .namaa-policy-reader{
-    background:var(--namaa-wide-card)!important;
-    border-color:var(--namaa-wide-border)!important;
-    color:var(--namaa-wide-text)!important;
-    box-shadow:0 8px 24px rgb(17 55 44 / 7%)!important;
-  }
-
-  .namaa-banks-hero,
-  .namaa-investments-header,
-  .namaa-policy-library-header,
-  .namaa-governance-portal-hero{
-    background:var(--namaa-wide-card-strong)!important;
-    border-color:var(--namaa-wide-border)!important;
-    color:var(--namaa-wide-text)!important;
-  }
-
-  .namaa-banks-hero h1,
-  .namaa-investments-header h1,
-  .namaa-policy-library-header h1,
-  .namaa-governance-portal-hero h1,
-  .namaa-investments-section-title h2{
-    color:var(--namaa-wide-green)!important;
-  }
-
-  html[data-theme="dark"] :where(
-    .namaa-banks-hero h1,
-    .namaa-investments-header h1,
-    .namaa-policy-library-header h1,
-    .namaa-governance-portal-hero h1,
-    .namaa-investments-section-title h2
-  ){
-    color:var(--namaa-wide-gold)!important;
-  }
-
-  .namaa-banks-hero p,
-  .namaa-investments-header p,
-  .namaa-policy-eyebrow,
-  .namaa-governance-portal-hero>div:first-child>span,
-  .namaa-investments-section-title p{
-    color:#765A22!important;
-  }
-
-  html[data-theme="dark"] :where(
-    .namaa-banks-hero p,
-    .namaa-investments-header p,
-    .namaa-policy-eyebrow,
-    .namaa-governance-portal-hero>div:first-child>span,
-    .namaa-investments-section-title p
-  ){
-    color:var(--namaa-wide-gold)!important;
-  }
-
-  /* البنوك: الخلفية موحدة؛ الذهبي يحدد الأولوية فقط */
-  .namaa-banks-kpis-dashboard article,
-  .namaa-banks-kpis-dashboard article.tone-base,
-  .namaa-banks-kpis-dashboard article.tone-deep,
-  .namaa-banks-kpis-dashboard article.tone-green,
-  .namaa-banks-kpis-dashboard article.tone-action,
-  .namaa-banks-kpis-dashboard article.tone-gold{
-    background:var(--namaa-wide-card-strong)!important;
-    color:var(--namaa-wide-text)!important;
-    border:1px solid var(--namaa-wide-border)!important;
-    box-shadow:none!important;
-  }
-
-  .namaa-banks-kpis-dashboard article.tone-accent{
-    border-inline-start:4px solid var(--namaa-wide-gold)!important;
-    background:color-mix(in srgb,var(--namaa-wide-card-strong) 90%,var(--namaa-wide-gold) 10%)!important;
-  }
-
-  .namaa-banks-kpis-dashboard article::after{
-    display:none!important;
-  }
-
-  .namaa-banks-kpis-dashboard article strong{
-    color:var(--namaa-wide-green)!important;
-  }
-
-  html[data-theme="dark"] .namaa-banks-kpis-dashboard article strong{
-    color:var(--namaa-wide-gold)!important;
-  }
-
-  .namaa-banks-visual-dashboard > article,
-  .namaa-banks-visual-dashboard .tone-base,
-  .namaa-banks-visual-dashboard .tone-deep,
-  .namaa-banks-visual-dashboard .tone-gold,
-  .namaa-banks-visual-dashboard .tone-action{
-    background:var(--namaa-wide-card-strong)!important;
-    color:var(--namaa-wide-text)!important;
-    border-color:var(--namaa-wide-border)!important;
-  }
-
-  .namaa-banks-visual-dashboard article strong,
-  .namaa-banks-visual-dashboard article b{
-    color:var(--namaa-wide-green)!important;
-  }
-
-  html[data-theme="dark"] .namaa-banks-visual-dashboard article strong,
-  html[data-theme="dark"] .namaa-banks-visual-dashboard article b{
-    color:var(--namaa-wide-gold)!important;
-  }
-
-  .namaa-bank-donut{
-    background:conic-gradient(var(--namaa-wide-gold) 0 var(--namaa-donut-share),var(--namaa-wide-green-2) var(--namaa-donut-share) 100%)!important;
-  }
-
-  .namaa-bank-donut::after{
-    background:var(--namaa-wide-card-strong)!important;
-  }
-
-  .namaa-bank-progress-track{
-    background:color-mix(in srgb,var(--namaa-wide-card) 72%,var(--namaa-wide-green) 28%)!important;
-    border-color:var(--namaa-wide-border)!important;
-  }
-
-  .namaa-bank-progress-track i{
-    background:var(--namaa-wide-gold)!important;
-  }
-
-  .namaa-bank-bars > div > i{
-    background:var(--namaa-wide-green)!important;
-  }
-
-  html[data-theme="dark"] .namaa-bank-bars > div > i{
-    background:var(--namaa-wide-green-2)!important;
-  }
-
-  .namaa-banks-health-grid article,
-  .namaa-banks-health-grid article:nth-child(2),
-  .namaa-banks-health-grid article:nth-child(3){
-    background:var(--namaa-wide-card-strong)!important;
-    color:var(--namaa-wide-text)!important;
-    border-color:var(--namaa-wide-border)!important;
-  }
-
-  .namaa-banks-health-grid article strong{
-    color:var(--namaa-wide-green)!important;
-  }
-
-  html[data-theme="dark"] .namaa-banks-health-grid article strong{
-    color:var(--namaa-wide-gold)!important;
-  }
-
-  .namaa-banks-health-grid article.is-incomplete{
-    background:var(--namaa-wide-card)!important;
-    border-style:dashed!important;
-    color:var(--namaa-wide-muted)!important;
-  }
-
-  .namaa-banks-team-list article,
-  .namaa-banks-team-list article:nth-child(1),
-  .namaa-banks-team-list article:nth-child(2),
-  .namaa-banks-team-list article:nth-child(3),
-  .namaa-banks-goals-list article,
-  .namaa-banks-goals-list article:nth-child(1),
-  .namaa-banks-goals-list article:nth-child(2),
-  .namaa-banks-goals-list article:nth-child(3){
-    background:var(--namaa-wide-card-strong)!important;
-    border-color:var(--namaa-wide-border)!important;
-    color:var(--namaa-wide-text)!important;
-  }
-
-  .namaa-banks-team-list article > span{
-    background:var(--namaa-wide-green)!important;
-    color:var(--namaa-wide-gold)!important;
-  }
-
-  .namaa-banks-goals-list svg{
-    color:var(--namaa-wide-green)!important;
-  }
-
-  html[data-theme="dark"] .namaa-banks-goals-list svg{
-    color:var(--namaa-wide-gold)!important;
-  }
-
-  /* المعرفة: لا ألوان مختلفة لكل مكتبة؛ التمييز بالرمز والعنوان فقط */
-  .namaa-governance-portal-metrics article,
-  .namaa-governance-portal-metrics .tone-policy,
-  .namaa-governance-portal-metrics .tone-regulation,
-  .namaa-governance-portal-metrics .tone-procedure,
-  .namaa-governance-portal-metrics .tone-auth,
-  .namaa-governance-library-card,
-  .namaa-governance-library-card.card-policy,
-  .namaa-governance-library-card.card-regulation,
-  .namaa-governance-library-card.card-procedure,
-  .namaa-governance-library-card.card-auth{
-    background:var(--namaa-wide-card-strong)!important;
-    color:var(--namaa-wide-text)!important;
-    border-color:var(--namaa-wide-border)!important;
-  }
-
-  .namaa-governance-library-card>header svg,
-  .namaa-governance-library-card>header span{
-    color:#765A22!important;
-  }
-
-  html[data-theme="dark"] .namaa-governance-library-card>header svg,
-  html[data-theme="dark"] .namaa-governance-library-card>header span{
-    color:var(--namaa-wide-gold)!important;
-  }
-
-  .namaa-governance-doc-preview>a,
-  .card-regulation .namaa-governance-doc-preview>a,
-  .card-procedure .namaa-governance-doc-preview>a{
-    background:var(--namaa-wide-card)!important;
-    color:var(--namaa-wide-text)!important;
-    border-color:var(--namaa-wide-border)!important;
-  }
-
-  .namaa-governance-doc-preview>a:hover{
-    background:color-mix(in srgb,var(--namaa-wide-card) 86%,var(--namaa-wide-gold) 14%)!important;
-    border-color:var(--namaa-wide-gold)!important;
-  }
-
-  .namaa-governance-portal-total,
-  .namaa-governance-portal-footer{
-    background:var(--namaa-wide-card-strong)!important;
-    color:var(--namaa-wide-text)!important;
-    border-color:var(--namaa-wide-border)!important;
-  }
-
-  /* قارئ الوثائق: إزالة التناوب اللوني من الفهرس */
-  .namaa-policy-index,
-  .namaa-policy-index-head,
-  .namaa-policy-index nav>a,
-  .namaa-policy-index nav>a:nth-child(3n+2),
-  .namaa-policy-index nav>a:nth-child(3n+3),
-  .namaa-policy-reader,
-  .namaa-policy-reader-head,
-  .namaa-policy-meta-line{
-    background:var(--namaa-wide-card-strong)!important;
-    color:var(--namaa-wide-text)!important;
-    border-color:var(--namaa-wide-border)!important;
-  }
-
-  .namaa-policy-index nav>a.is-active{
-    background:color-mix(in srgb,var(--namaa-wide-card-strong) 82%,var(--namaa-wide-gold) 18%)!important;
-    border-color:var(--namaa-wide-gold)!important;
-  }
-
-  .namaa-policy-index-number{
-    background:var(--namaa-wide-green)!important;
-    color:var(--namaa-wide-gold)!important;
-  }
-
-  .namaa-policy-reader-mark{
-    background:var(--namaa-wide-gold)!important;
-    color:#17372E!important;
-    border-color:color-mix(in srgb,var(--namaa-wide-gold) 75%,var(--namaa-wide-green) 25%)!important;
-  }
-
-  .namaa-policy-reader-body h2{
-    background:var(--namaa-wide-card)!important;
-    border-right-color:var(--namaa-wide-gold)!important;
-  }
-
-  /* الأزرار: أخضر للإجراء الرئيسي، ذهبي للإجراء الثانوي المهم فقط */
-  .namaa-wide-action,
-  .namaa-governance-open-library{
-    background:var(--namaa-wide-green)!important;
-    color:var(--namaa-wide-inverse)!important;
-    border-color:var(--namaa-wide-green)!important;
-  }
-
-  .namaa-wide-action-secondary{
-    background:var(--namaa-wide-card-strong)!important;
-    color:var(--namaa-wide-green)!important;
-    border-color:var(--namaa-wide-gold)!important;
-  }
-
-  html[data-theme="dark"] .namaa-wide-action-secondary{
-    color:var(--namaa-wide-gold)!important;
-  }
-
-  .namaa-banks-selector a{
-    background:transparent!important;
-    color:var(--namaa-wide-muted)!important;
-    border-color:transparent!important;
-  }
-
-  .namaa-banks-selector a.is-active{
-    background:var(--namaa-wide-green)!important;
-    color:var(--namaa-wide-inverse)!important;
-    border-color:var(--namaa-wide-green)!important;
-  }
-
-  /* الحالة فقط تستعمل ألوان الحالة؛ لا تتحول لخلفيات كبيرة */
-  .namaa-wide-risk-critical,
-  .namaa-wide-risk-warning{
-    background:var(--namaa-wide-card)!important;
-  }
-}
-
-
-/* NAMA'A WHITE CANVAS + FUNCTIONAL BRAND COLOR SYSTEM */
-@media (min-width:768px){
-  :root{
-    --namaa-wide-green:#0B6B4F!important;
-    --namaa-wide-green-2:#189F7F!important;
-    --namaa-wide-gold:#D4AF6B!important;
-    --namaa-wide-action-gold:#FCAA30!important;
-
-    --namaa-wide-surface:#FFFFFF!important;
-    --namaa-wide-surface-2:#F7F8F6!important;
-    --namaa-wide-card:#FFFFFF!important;
-    --namaa-wide-card-strong:#F3F5F2!important;
-    --namaa-wide-input:#FFFFFF!important;
-    --namaa-wide-border:#D7DED9!important;
-    --namaa-wide-text:#1D2A25!important;
-    --namaa-wide-muted:#617068!important;
-    --namaa-wide-inverse:#FFFFFF!important;
-    --namaa-wide-shadow:0 10px 28px rgb(22 55 44 / 8%)!important;
-  }
-
-  .protected-app-shell,
-  .namaa-wide-page,
-  .namaa-investments-page,
-  .namaa-banks-wide,
-  .namaa-policy-library,
-  .namaa-governance-portal{
-    background:#FFFFFF!important;
-    color:var(--namaa-wide-text)!important;
-  }
-
-  .namaa-wide-card,
-  .namaa-wide-panel,
-  .namaa-investments-chat,
-  .namaa-investments-dashboard,
-  .namaa-investments-followup,
-  .namaa-banks-team,
-  .namaa-banks-dashboard,
-  .namaa-banks-goals,
-  .namaa-policy-index,
-  .namaa-policy-reader{
-    background:#FFFFFF!important;
-    border-color:var(--namaa-wide-border)!important;
-    color:var(--namaa-wide-text)!important;
-    box-shadow:var(--namaa-wide-shadow)!important;
-  }
-
-  .namaa-banks-hero,
-  .namaa-investments-header,
-  .namaa-policy-library-header,
-  .namaa-governance-portal-hero{
-    background:linear-gradient(135deg,#FFFFFF 0%,#F7F8F6 72%,#F1E7D2 100%)!important;
-    border-color:var(--namaa-wide-border)!important;
-    color:var(--namaa-wide-text)!important;
-  }
-
-  .namaa-banks-hero h1,
-  .namaa-investments-header h1,
-  .namaa-policy-library-header h1,
-  .namaa-governance-portal-hero h1,
-  .namaa-investments-section-title h2{
-    color:var(--namaa-wide-green)!important;
-  }
-
-  .namaa-banks-hero p,
-  .namaa-investments-header p,
-  .namaa-policy-eyebrow,
-  .namaa-governance-portal-hero>div:first-child>span,
-  .namaa-investments-section-title p{
-    color:#8A6A2B!important;
-  }
-
-  /* Functional palette: each role has a clear brand color */
-  .namaa-wide-action,
-  .namaa-governance-open-library{
-    background:var(--namaa-wide-green)!important;
-    color:#FFFFFF!important;
-    border-color:var(--namaa-wide-green)!important;
-  }
-
-  .namaa-wide-action:hover,
-  .namaa-governance-open-library:hover{
-    background:#095B43!important;
-    border-color:#095B43!important;
-  }
-
-  .namaa-wide-action-secondary{
-    background:#FFF7E9!important;
-    color:#7A5B22!important;
-    border-color:var(--namaa-wide-gold)!important;
-  }
-
-  .namaa-banks-selector a{
-    background:#FFFFFF!important;
-    color:var(--namaa-wide-muted)!important;
-    border-color:var(--namaa-wide-border)!important;
-  }
-
-  .namaa-banks-selector a.is-active{
-    background:var(--namaa-wide-green)!important;
-    color:#FFFFFF!important;
-    border-color:var(--namaa-wide-green)!important;
-  }
-
-  /* KPI cards: variety from brand colors, not random hues */
-  .namaa-banks-kpis-dashboard article,
-  .namaa-banks-kpis-dashboard article.tone-base{
-    background:#FFFFFF!important;
-    color:var(--namaa-wide-text)!important;
-    border-color:var(--namaa-wide-border)!important;
-  }
-
-  .namaa-banks-kpis-dashboard article:nth-child(1){
-    border-top:4px solid var(--namaa-wide-green)!important;
-  }
-  .namaa-banks-kpis-dashboard article:nth-child(2){
-    border-top:4px solid var(--namaa-wide-gold)!important;
-    background:#FFF9EF!important;
-  }
-  .namaa-banks-kpis-dashboard article:nth-child(3){
-    border-top:4px solid var(--namaa-wide-green-2)!important;
-    background:#F2FBF8!important;
-  }
-  .namaa-banks-kpis-dashboard article:nth-child(4){
-    border-top:4px solid var(--namaa-wide-action-gold)!important;
-    background:#FFF7E8!important;
-  }
-  .namaa-banks-kpis-dashboard article:nth-child(5){
-    border-top:4px solid var(--namaa-wide-gold)!important;
-  }
-  .namaa-banks-kpis-dashboard article:nth-child(6){
-    border-top:4px solid var(--namaa-wide-green)!important;
-    background:#F3F8F6!important;
-  }
-
-  .namaa-banks-kpis-dashboard article strong{
-    color:var(--namaa-wide-green)!important;
-  }
-  .namaa-banks-kpis-dashboard article:nth-child(2) strong,
-  .namaa-banks-kpis-dashboard article:nth-child(5) strong{
-    color:#8A6A2B!important;
-  }
-  .namaa-banks-kpis-dashboard article:nth-child(3) strong{
-    color:#14775F!important;
-  }
-  .namaa-banks-kpis-dashboard article:nth-child(4) strong{
-    color:#A86400!important;
-  }
-
-  /* Charts: white cards, brand accents inside */
-  .namaa-banks-visual-dashboard > article,
-  .namaa-banks-visual-dashboard .tone-base,
-  .namaa-banks-visual-dashboard .tone-deep,
-  .namaa-banks-visual-dashboard .tone-gold,
-  .namaa-banks-visual-dashboard .tone-action{
-    background:#FFFFFF!important;
-    color:var(--namaa-wide-text)!important;
-    border-color:var(--namaa-wide-border)!important;
-  }
-
-  .namaa-banks-visual-dashboard > article:nth-child(1){
-    border-top:4px solid var(--namaa-wide-green)!important;
-  }
-  .namaa-banks-visual-dashboard > article:nth-child(2){
-    border-top:4px solid var(--namaa-wide-gold)!important;
-  }
-  .namaa-banks-visual-dashboard > article:nth-child(3){
-    border-top:4px solid var(--namaa-wide-action-gold)!important;
-  }
-
-  .namaa-banks-visual-dashboard article strong,
-  .namaa-banks-visual-dashboard article b{
-    color:var(--namaa-wide-green)!important;
-  }
-
-  .namaa-bank-donut{
-    background:conic-gradient(
-      var(--namaa-wide-gold) 0 var(--namaa-donut-share),
-      var(--namaa-wide-green-2) var(--namaa-donut-share) 100%
-    )!important;
-  }
+  .namaa-banks-kpis-dashboard{grid-template-columns:repeat(3,minmax(0,1fr))!important;}
+  .namaa-banks-kpis-dashboard article{background:#FFFFFF!important;color:#1F2937!important;border:1px solid #DCE6E0!important;box-shadow:none!important;}
+  .namaa-banks-kpis-dashboard article:nth-child(1){border-top:4px solid #0B6B4F!important;}
+  .namaa-banks-kpis-dashboard article:nth-child(2){border-top:4px solid #D4AF6B!important;}
+  .namaa-banks-kpis-dashboard article:nth-child(3){border-top:4px solid #189F7F!important;}
+  .namaa-banks-kpis-dashboard article:nth-child(4){border-top:4px solid #FCAA30!important;}
+  .namaa-banks-kpis-dashboard article:nth-child(5){border-top:4px solid #D4AF6B!important;}
+  .namaa-banks-kpis-dashboard article:nth-child(6){border-top:4px solid #0B6B4F!important;}
+  .namaa-banks-visual-dashboard>article{background:#FFFFFF!important;color:#1F2937!important;border:1px solid #DCE6E0!important;}
+  .namaa-bank-donut{background:conic-gradient(#D4AF6B 0 var(--namaa-donut-share),#189F7F var(--namaa-donut-share) 100%)!important;}
   .namaa-bank-donut::after{background:#FFFFFF!important;}
-  .namaa-bank-progress-track{
-    background:#E8EEEA!important;
-    border-color:#D4DDD7!important;
+  .namaa-bank-progress-track{background:#E8EEEA!important;border-color:#DCE6E0!important;}
+  .namaa-bank-progress-track i{background:#D4AF6B!important;}
+  .namaa-bank-bars>div>i{background:#0B6B4F!important;}
+  .namaa-bank-no-chart{
+    min-height:96px!important;display:grid!important;place-items:center!important;border:1px dashed #819B8D!important;border-radius:14px!important;
+    font-weight:900!important;color:#61758A!important;background:#F8FAF8!important;
   }
-  .namaa-bank-progress-track i{background:var(--namaa-wide-gold)!important;}
-  .namaa-bank-bars > div > i{background:var(--namaa-wide-green)!important;}
-
-  /* Supporting metrics use soft brand tints */
+  .namaa-banks-health-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:10px!important;margin:4px 0 18px!important;}
   .namaa-banks-health-grid article{
-    background:#FFFFFF!important;
-    color:var(--namaa-wide-text)!important;
-    border-color:var(--namaa-wide-border)!important;
+    min-width:0!important;min-height:116px!important;padding:14px!important;border:1px solid #DCE6E0!important;border-radius:14px!important;
+    background:#FFFFFF!important;color:#1F2937!important;display:grid!important;align-content:start!important;gap:5px!important;
   }
-  .namaa-banks-health-grid article:nth-child(1){
-    background:#F2FBF8!important;
-    border-top:3px solid var(--namaa-wide-green-2)!important;
-  }
-  .namaa-banks-health-grid article:nth-child(2){
-    background:#FFF9EF!important;
-    border-top:3px solid var(--namaa-wide-gold)!important;
-  }
-  .namaa-banks-health-grid article:nth-child(3){
-    background:#FFF7E8!important;
-    border-top:3px solid var(--namaa-wide-action-gold)!important;
-  }
-  .namaa-banks-health-grid article.is-incomplete{
-    background:#F7F8F6!important;
-    border-style:dashed!important;
-    border-top:3px solid #9AA8A0!important;
-  }
-
-  /* Team and goals: neutral cards with controlled brand accents */
-  .namaa-banks-team-list article,
-  .namaa-banks-goals-list article{
-    background:#FFFFFF!important;
-    border-color:var(--namaa-wide-border)!important;
-    color:var(--namaa-wide-text)!important;
-  }
-  .namaa-banks-team-list article:nth-child(1),
-  .namaa-banks-goals-list article:nth-child(1){border-inline-start:4px solid var(--namaa-wide-green)!important;}
-  .namaa-banks-team-list article:nth-child(2),
-  .namaa-banks-goals-list article:nth-child(2){border-inline-start:4px solid var(--namaa-wide-gold)!important;}
-  .namaa-banks-team-list article:nth-child(3),
-  .namaa-banks-goals-list article:nth-child(3){border-inline-start:4px solid var(--namaa-wide-green-2)!important;}
-
-  .namaa-banks-team-list article > span{
-    background:var(--namaa-wide-green)!important;
-    color:#FFFFFF!important;
-  }
-  .namaa-banks-goals-list svg{color:var(--namaa-wide-green)!important;}
-
-  /* Knowledge portal: white foundation + brand role colors */
-  .namaa-governance-portal-metrics article,
-  .namaa-governance-library-card{
-    background:#FFFFFF!important;
-    color:var(--namaa-wide-text)!important;
-    border-color:var(--namaa-wide-border)!important;
-  }
-
-  .namaa-governance-portal-metrics .tone-policy,
-  .namaa-governance-library-card.card-policy{
-    border-top:4px solid var(--namaa-wide-green)!important;
-  }
-  .namaa-governance-portal-metrics .tone-regulation,
-  .namaa-governance-library-card.card-regulation{
-    border-top:4px solid var(--namaa-wide-gold)!important;
-  }
-  .namaa-governance-portal-metrics .tone-procedure,
-  .namaa-governance-library-card.card-procedure{
-    border-top:4px solid var(--namaa-wide-green-2)!important;
-  }
-  .namaa-governance-portal-metrics .tone-auth,
-  .namaa-governance-library-card.card-auth{
-    border-top:4px solid var(--namaa-wide-action-gold)!important;
-  }
-
-  .namaa-governance-doc-preview>a{
-    background:#F8FAF8!important;
-    color:var(--namaa-wide-text)!important;
-    border-color:var(--namaa-wide-border)!important;
-  }
-  .namaa-governance-doc-preview>a:hover{
-    background:#FFF7E9!important;
-    border-color:var(--namaa-wide-gold)!important;
-  }
-
-  .namaa-governance-portal-total,
-  .namaa-governance-portal-footer{
-    background:#FFFFFF!important;
-    color:var(--namaa-wide-text)!important;
-    border-color:var(--namaa-wide-border)!important;
-  }
-
-  .namaa-governance-portal-footer>a{
-    background:var(--namaa-wide-gold)!important;
-    color:#3E3217!important;
-  }
-
-  /* Document reader */
-  .namaa-policy-index,
-  .namaa-policy-reader{
-    background:#FFFFFF!important;
-  }
-  .namaa-policy-index-head,
-  .namaa-policy-reader-head{
-    background:#F7F8F6!important;
-  }
-  .namaa-policy-index nav>a{
-    background:#FFFFFF!important;
-    color:var(--namaa-wide-text)!important;
-    border-color:var(--namaa-wide-border)!important;
-  }
-  .namaa-policy-index nav>a.is-active{
-    background:#FFF7E9!important;
-    border-color:var(--namaa-wide-gold)!important;
-  }
-  .namaa-policy-index-number{
-    background:var(--namaa-wide-green)!important;
-    color:#FFFFFF!important;
-  }
-  .namaa-policy-reader-mark{
-    background:var(--namaa-wide-gold)!important;
-    color:#0B6B4F!important;
-  }
-  .namaa-policy-reader-body h2{
-    background:#F7F8F6!important;
-    border-right-color:var(--namaa-wide-gold)!important;
-  }
-  .namaa-policy-meta-line{
-    background:#F8FAF8!important;
-    border-color:var(--namaa-wide-border)!important;
-  }
-
-  /* Form controls on wide screens */
-  input, select, textarea{
-    background:#FFFFFF;
-  }
-
-  /* Dark mode remains intentionally dark and separate */
-  html[data-theme="dark"]{
-    --namaa-wide-surface:#10221C!important;
-    --namaa-wide-surface-2:#162E26!important;
-    --namaa-wide-card:#1D382F!important;
-    --namaa-wide-card-strong:#29493D!important;
-    --namaa-wide-input:#315447!important;
-    --namaa-wide-border:#567567!important;
-    --namaa-wide-text:#E1D5B7!important;
-    --namaa-wide-muted:#B2C4B9!important;
-    --namaa-wide-inverse:#FFFFFF!important;
-  }
-
-  html[data-theme="dark"] .protected-app-shell,
-  html[data-theme="dark"] .namaa-wide-page,
-  html[data-theme="dark"] .namaa-investments-page,
-  html[data-theme="dark"] .namaa-banks-wide,
-  html[data-theme="dark"] .namaa-policy-library,
-  html[data-theme="dark"] .namaa-governance-portal{
-    background:var(--namaa-wide-surface)!important;
-    color:var(--namaa-wide-text)!important;
-  }
-
-  html[data-theme="dark"] .namaa-wide-card,
-  html[data-theme="dark"] .namaa-wide-panel,
-  html[data-theme="dark"] .namaa-investments-chat,
-  html[data-theme="dark"] .namaa-investments-dashboard,
-  html[data-theme="dark"] .namaa-investments-followup,
-  html[data-theme="dark"] .namaa-banks-team,
-  html[data-theme="dark"] .namaa-banks-dashboard,
-  html[data-theme="dark"] .namaa-banks-goals,
-  html[data-theme="dark"] .namaa-policy-index,
-  html[data-theme="dark"] .namaa-policy-reader{
-    background:var(--namaa-wide-card)!important;
-    border-color:var(--namaa-wide-border)!important;
-    color:var(--namaa-wide-text)!important;
-  }
-
-  html[data-theme="dark"] .namaa-banks-hero,
-  html[data-theme="dark"] .namaa-investments-header,
-  html[data-theme="dark"] .namaa-policy-library-header,
-  html[data-theme="dark"] .namaa-governance-portal-hero{
-    background:linear-gradient(135deg,#29493D 0%,#203D33 72%,#433821 100%)!important;
-    color:var(--namaa-wide-text)!important;
-  }
-
-  html[data-theme="dark"] .namaa-banks-kpis-dashboard article,
-  html[data-theme="dark"] .namaa-banks-visual-dashboard > article,
-  html[data-theme="dark"] .namaa-banks-health-grid article,
-  html[data-theme="dark"] .namaa-banks-team-list article,
-  html[data-theme="dark"] .namaa-banks-goals-list article,
-  html[data-theme="dark"] .namaa-governance-portal-metrics article,
-  html[data-theme="dark"] .namaa-governance-library-card,
-  html[data-theme="dark"] .namaa-policy-index nav>a,
-  html[data-theme="dark"] .namaa-policy-meta-line{
-    background:var(--namaa-wide-card)!important;
-    color:var(--namaa-wide-text)!important;
-    border-color:var(--namaa-wide-border)!important;
-  }
-
-  html[data-theme="dark"] .namaa-policy-index-head,
-  html[data-theme="dark"] .namaa-policy-reader-head,
-  html[data-theme="dark"] .namaa-policy-reader-body h2{
-    background:var(--namaa-wide-card-strong)!important;
-  }
-
-  html[data-theme="dark"] .namaa-bank-donut::after{
-    background:var(--namaa-wide-card)!important;
-  }
+  .namaa-banks-health-grid article:nth-child(1){border-top:3px solid #189F7F!important;}
+  .namaa-banks-health-grid article:nth-child(2){border-top:3px solid #D4AF6B!important;}
+  .namaa-banks-health-grid article:nth-child(3){border-top:3px solid #FCAA30!important;}
+  .namaa-banks-health-grid article.is-incomplete{background:#F7F8F6!important;border-style:dashed!important;color:#61758A!important;}
+  .namaa-banks-health-grid span,.namaa-banks-health-grid small{color:inherit!important;}
+  .namaa-banks-health-grid strong{color:#0B6B4F!important;font-size:20px!important;}
+  .namaa-banks-health-grid a{color:#0B6B4F!important;font-weight:900!important;text-underline-offset:3px!important;}
+}
+@media (min-width:768px) and (max-width:1180px){
+  .namaa-banks-kpis-dashboard{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+  .namaa-banks-visual-dashboard{grid-template-columns:1fr!important;}
+  .namaa-banks-health-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
 }
 
+/* Obsolete palette layers removed: canonical light + dark contracts only. */
 
 /* NAMA'A APPROVED SHELL — dark topbar + hidden drawer + white canvas */
 @media (min-width:1024px){
