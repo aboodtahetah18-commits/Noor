@@ -734,3 +734,151 @@
     flex:0 0 auto;
   }
 }
+
+
+/* Decision log — governance-aligned audit presentation. */
+.namaa-decision-log .p47-analysis-shell {
+  inline-size:100%;
+  max-inline-size:var(--ux-container-content);
+  margin-inline:auto;
+}
+
+.namaa-decision-metrics {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));
+  gap:var(--ux-space-3);
+}
+
+.namaa-decision-metrics > span {
+  display:grid;
+  gap:var(--ux-space-1);
+  padding:var(--ux-space-3);
+  border:var(--ux-border-width-1) solid var(--ux-border-default);
+  border-radius:var(--ux-radius-md);
+  background:var(--ux-card-bg);
+  color:var(--ux-text-secondary);
+}
+
+.namaa-decision-metrics b {
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-card-title-size);
+}
+
+.namaa-decision-card {
+  min-inline-size:0;
+  display:grid;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-4);
+  border:var(--ux-border-width-1) solid var(--ux-border-default);
+  border-radius:var(--ux-radius-lg);
+  background:var(--ux-card-bg);
+  box-shadow:var(--ux-shadow-xs);
+}
+
+.namaa-decision-card .p47-section-heading {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:var(--ux-space-3);
+  padding-block-end:var(--ux-space-3);
+  border-block-end:var(--ux-border-width-1) solid var(--ux-border-default);
+}
+
+.namaa-decision-feed {
+  display:grid;
+  gap:var(--ux-space-3);
+}
+
+.namaa-decision-item {
+  min-inline-size:0;
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  gap:var(--ux-space-4);
+  align-items:start;
+  padding:var(--ux-space-4);
+  border:var(--ux-border-width-1) solid var(--ux-border-default);
+  border-radius:var(--ux-radius-md);
+  background:var(--ux-surface-default);
+}
+
+.namaa-decision-item .p47-decision-time {
+  display:grid;
+  gap:var(--ux-space-1);
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  white-space:nowrap;
+}
+
+.namaa-decision-item .p47-decision-body {
+  min-inline-size:0;
+}
+
+.namaa-decision-item .p47-chip-row {
+  display:flex;
+  flex-wrap:wrap;
+  gap:var(--ux-space-2);
+}
+
+.namaa-decision-item .p47-chip-row > span {
+  padding:var(--ux-space-1) var(--ux-space-2);
+  border-radius:var(--ux-radius-full);
+  background:var(--ux-section-soft-teal);
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-caption-size);
+  font-weight:700;
+}
+
+.namaa-decision-item .p47-decision-impact {
+  display:grid;
+  gap:var(--ux-space-1);
+  text-align:end;
+  white-space:nowrap;
+}
+
+.namaa-decision-details {
+  margin-block-start:var(--ux-space-3);
+  overflow:hidden;
+  border:var(--ux-border-width-1) solid var(--ux-border-default);
+  border-radius:var(--ux-radius-md);
+  background:var(--ux-card-bg);
+}
+
+.namaa-decision-details > summary {
+  padding:var(--ux-space-3);
+  color:var(--ux-text-primary);
+  font-weight:700;
+  cursor:pointer;
+}
+
+.namaa-decision-details .decision-json {
+  margin:0;
+  padding:var(--ux-space-3);
+  overflow:auto;
+  direction:ltr;
+  text-align:left;
+  background:var(--ux-page-bg);
+  color:var(--ux-text-primary);
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:var(--ux-type-caption-size);
+}
+
+@media (max-width:767px) {
+  .namaa-decision-card {
+    padding:var(--ux-space-3);
+  }
+
+  .namaa-decision-card .p47-section-heading {
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+  }
+
+  .namaa-decision-item {
+    grid-template-columns:minmax(0,1fr);
+    gap:var(--ux-space-3);
+    padding:var(--ux-space-3);
+  }
+
+  .namaa-decision-item .p47-decision-impact {
+    text-align:start;
+  }
+}
