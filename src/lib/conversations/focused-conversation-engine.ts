@@ -28,7 +28,10 @@ function shortFactSummary(rows:Array<{fact_key:unknown;value_json:unknown}>){
     'extended:vehicle_details':'المركبة',
     'extended:budget_behavior':'سلوك الإنفاق',
   };
-  return rows.map(row=>labels[String(row.fact_key)]).filter(Boolean).slice(0,6);
+  return rows
+    .map(row=>labels[String(row.fact_key)])
+    .filter((label):label is string=>typeof label==='string'&&label.length>0)
+    .slice(0,6);
 }
 
 function roleIntro(role:AlgorithmRoleRef){
