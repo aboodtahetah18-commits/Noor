@@ -24,7 +24,7 @@ function cleanDate(value:unknown){
 export async function GET(){
   const user=await getAuthenticatedUser();
   if(!user)return NextResponse.json({code:'AUTH_REQUIRED'},{status:401,headers:{'Cache-Control':'no-store'}});
-  await reconcileConfirmedOnboardingAccounts(user.id);
+  const reconciliation=await reconcileConfirmedOnboardingAccounts(user.id);
   const sql=getRawSql();
   const rows=await sql`
     select a.id,a.name,a.account_type,a.bank_name,a.is_active,
@@ -37,7 +37,15 @@ export async function GET(){
     where a.user_id=${user.id}::uuid and a.is_active=true
     order by a.created_at asc
   `;
-  return NextResponse.json({accounts:rows},{headers:{'Cache-Control':'private, no-store, max-age=0'}});
+  return NextResponse.json({
+    accounts:rows,
+    reconciliation:{
+      foundation_count:reconciliation.total,
+      created_now:reconciliation.created,
+      active_count:rows.length,
+      complete:reconciliation.total===0||rows.length>=reconciliation.total,
+    },
+  },{headers:{'Cache-Control':'private, no-store, max-age=0'}});
 }
 
 export async function POST(request:Request){
