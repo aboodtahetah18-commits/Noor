@@ -142,6 +142,34 @@
   gap:var(--ux-space-4);
 }
 
+.namaa-execution-summary {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:var(--ux-space-3);
+}
+
+.namaa-execution-summary > article {
+  min-inline-size:0;
+  display:grid;
+  gap:var(--ux-space-1);
+  padding:var(--ux-space-3);
+  border:var(--ux-border-width-1) solid var(--ux-border-default);
+  border-radius:var(--ux-radius-md);
+  background:var(--ux-card-bg);
+  box-shadow:var(--ux-shadow-xs);
+}
+
+.namaa-execution-summary span {
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+}
+
+.namaa-execution-summary strong {
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-card-title-size);
+  font-variant-numeric:tabular-nums;
+}
+
 .namaa-execution-card {
   padding:var(--ux-space-4);
 }
@@ -227,6 +255,10 @@
     display:grid;
     grid-template-columns:repeat(2,minmax(0,1fr));
     gap:var(--ux-space-3);
+  }
+
+  .namaa-execution-summary {
+    grid-template-columns:repeat(2,minmax(0,1fr));
   }
 
   .namaa-execution-evidence-form {
