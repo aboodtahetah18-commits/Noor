@@ -6,13 +6,15 @@ import { CycleReportView } from '@/features/reports/components/cycle-report-view
 import { formatSar } from '@/lib/format-money';
 import { LucideIcon } from '@/components/ui/lucide-icon';
 
+const reviewStatusLabels:Record<string,string>={OPEN:'مفتوحة',IN_REVIEW:'قيد المراجعة',COMPLETED:'مكتملة',FINALIZED:'مغلقة'};
+
 export default async function ReportsPage() {
   const user = await requireAuthenticatedUser();
   const cycle = await getCurrentFinancialCycle(user.id);
 
   if (!cycle) {
     return <main dir="rtl">
-      <section className="namaa-wide-only namaa-observatory-wide">
+      <section className="namaa-wide-only namaa-observatory-wide namaa-reports-desktop">
         <header className="namaa-observatory-hero namaa-wide-card">
           <div><p>الرقابة المالية</p><h1>المرصد</h1><span>مراقبة الاستقرار المالي والسيولة والمخاطر على مستوى المنصة كاملة.</span></div>
           <LucideIcon name="target" size={32}/>
@@ -36,7 +38,7 @@ export default async function ReportsPage() {
   const savingDelta = Number(report.saving.actual) - Number(report.saving.planned);
 
   return <main dir="rtl">
-    <section className="namaa-wide-only namaa-observatory-wide">
+    <section className="namaa-wide-only namaa-observatory-wide namaa-reports-desktop">
       <header className="namaa-observatory-hero namaa-wide-card">
         <div><p>الرقابة والاستقرار المالي</p><h1>المرصد</h1><span>مؤشرات المنصة كاملة مع المقارنات والتوقعات والتنبيهات المرتبطة بالمخاطر.</span></div>
         <div className="namaa-observatory-actions">
@@ -59,7 +61,7 @@ export default async function ReportsPage() {
             <article><span>الانحراف في المصروف</span><strong className={expenseDelta>0?'is-risk':''}>{formatSar(String(expenseDelta))}</strong><small>{expenseDelta>0?'تجاوز المخطط':'ضمن المخطط'}</small></article>
             <article><span>الأموال المحمية</span><strong>{formatSar(String(Number(report.goalContributions)+Number(report.emergencyContribution)))}</strong><small>أهداف + طوارئ</small></article>
             <article><span>أكبر تجاوز</span><strong>{report.biggestOverrun?.categoryName??'لا يوجد'}</strong><small>{report.biggestOverrun?formatSar(report.biggestOverrun.actual):'الوضع مستقر'}</small></article>
-            <article><span>حالة المراجعة</span><strong>{report.reviewStatus??'تشغيلية'}</strong><small>تتحدث مع كل دورة</small></article>
+            <article><span>حالة المراجعة</span><strong>{reviewStatusLabels[report.reviewStatus??'']??'تشغيلية'}</strong><small>تتحدث مع كل دورة</small></article>
           </div>
 
           <div className="namaa-observatory-trends">

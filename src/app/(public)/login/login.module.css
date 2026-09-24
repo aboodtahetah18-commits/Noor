@@ -23,6 +23,7 @@
 
 .visual{
   grid-column:2;
+  grid-row:1;
   position:relative;
   isolation:isolate;
   display:flex;
@@ -97,10 +98,6 @@
   object-fit:contain;
 }
 
-.logoLight{display:block}
-.logoDark{display:none}
-:global(html[data-theme="dark"]) .logoLight{display:none}
-:global(html[data-theme="dark"]) .logoDark{display:block}
 
 .brandText{
   display:grid;
@@ -108,6 +105,7 @@
 }
 
 .brandText strong{
+  color:#FFFFFF;
   font-size:var(--ux-type-page-title-size);
   line-height:var(--ux-type-page-title-line);
   font-weight:var(--ux-type-page-title-weight);
@@ -186,6 +184,7 @@
 
 .panel{
   grid-column:1;
+  grid-row:1;
   position:relative;
   min-width:0;
   display:flex;
@@ -572,6 +571,7 @@
 
   .visual{
     grid-column:2;
+    grid-row:1;
     min-height:0;
     display:flex;
     flex-direction:column;
@@ -633,6 +633,7 @@
 
   .panel{
     grid-column:1;
+    grid-row:1;
     min-width:0;
     display:flex;
     flex-direction:column;

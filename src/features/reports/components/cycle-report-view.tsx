@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { formatSar } from '@/lib/format-money';
 import type { CycleReport } from '@/features/reports/types/reports';
 import { BUDGET_STATUS_LABELS, financialStatusLabel } from '@/lib/financial-status-labels';
+import { PageHeader } from '@/components/ui';
 
 function pct(value: string | null) {
   return value == null ? '—' : `${Number(value).toLocaleString('ar-SA-u-nu-latn', { maximumFractionDigits: 1 })}٪`;
@@ -9,26 +10,14 @@ function pct(value: string | null) {
 
 export function CycleReportView({ report }: { report: CycleReport }) {
   return (
-    <main className="app-page reports-page p47-analysis-page" dir="rtl">
-      <div className="page-shell dashboard-shell">
-        <header className="p47-analysis-header">
-          <div>
-            <p className="eyebrow">تقارير الدورة</p>
-            <h1>{report.cycle.name}</h1>
-            <p>{report.cycle.source === 'SNAPSHOT' ? 'تقرير تاريخي ثابت من لقطة الإغلاق' : 'مراجعة حية للدورة الحالية'}</p>
-          </div>
-          <div className="dashboard-header-actions">
-            <Link className="secondary-link" href="/reports">التقارير</Link>
-            <Link className="secondary-link" href="/reports/history">المقارنة التاريخية</Link>
-            <Link className="secondary-link" href="/reports/learning">ماذا تعلّم النظام عني؟</Link>
-            <Link className="secondary-link" href="/reports/future-pressure">الضغط المالي القادم</Link>
-          </div>
-        </header>
+    <main className="app-page reports-page p47-analysis-page namaa-cycle-report-page" dir="rtl">
+      <div className="page-shell dashboard-shell namaa-migrated-shell">
+        <PageHeader className="p47-analysis-header namaa-migrated-header" eyebrow="تقارير الدورة" title={report.cycle.name} description={report.cycle.source === 'SNAPSHOT' ? 'تقرير تاريخي ثابت من نتائج الإغلاق المحفوظة.' : 'مراجعة حية للدورة الحالية قبل الإغلاق الرسمي.'} actions={<><Link className="ux-button ux-button--secondary" href="/reports">التقارير</Link><Link className="ux-button ux-button--secondary" href="/reports/history">المقارنة التاريخية</Link><Link className="ux-button ux-button--secondary" href="/reports/learning">تعلم النظام</Link><Link className="ux-button ux-button--secondary" href="/reports/future-pressure">الضغط المالي القادم</Link></>}/>
 
         {report.cycle.source === 'LIVE' && (
           <section className="report-note">
             <strong>هذه مراجعة تشغيلية وليست نتيجة إغلاق.</strong>
-            <span>الفائض والعجز النهائيان لا يُعتمدان إلا عند إغلاق الدورة وحفظ CycleSnapshot.</span>
+            <span>الفائض والعجز النهائيان لا يُعتمدان إلا عند الإغلاق الرسمي للدورة وحفظ نتيجتها.</span>
           </section>
         )}
 
@@ -63,7 +52,7 @@ export function CycleReportView({ report }: { report: CycleReport }) {
 
         <section className="dashboard-main-grid">
           <article className="dashboard-card p47-report-card"><div className="dashboard-card-head"><div><p>أكبر تجاوز</p><h2>{report.biggestOverrun?.categoryName ?? 'لا يوجد تجاوز'}</h2></div></div>{report.biggestOverrun ? <p>{formatSar(report.biggestOverrun.actual)} فعلي مقابل {formatSar(report.biggestOverrun.planned)} مخطط.</p> : <p className="dashboard-empty">لا يوجد بند فعلي أعلى من مخصصه في البيانات المتاحة.</p>}</article>
-          <article className="dashboard-card p47-report-card"><div className="dashboard-card-head"><div><p>ملخص المستشار</p><h2>{report.reviewStatus ?? (report.cycle.source === 'LIVE' ? 'تشغيلي' : 'غير متوفر')}</h2></div></div><p>{report.advisorSummary ?? 'لا يوجد ملخص مستشار محفوظ لهذا التقرير.'}</p></article>
+          <article className="dashboard-card p47-report-card"><div className="dashboard-card-head"><div><p>ملخص المستشار</p><h2>{report.reviewStatus ? 'مراجعة محفوظة' : (report.cycle.source === 'LIVE' ? 'تشغيلي' : 'غير متوفر')}</h2></div></div><p>{report.advisorSummary ?? 'لا يوجد ملخص مستشار محفوظ لهذا التقرير.'}</p></article>
         </section>
       </div>
     </main>

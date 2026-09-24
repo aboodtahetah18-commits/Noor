@@ -10113,176 +10113,6 @@
 
 /* Wide work-center alignment — tablet/laptop/desktop only. Mobile rules remain unchanged. */
 /* ========================================================================== */
-/* CANONICAL WIDE WORKSPACE FOUNDATION                                        */
-/* One authority for tablet/laptop/desktop conversation layout.               */
-/* ========================================================================== */
-@media (min-width:768px){
-  .page{
-    min-height:calc(100dvh - 88px);
-    border-radius:var(--ux-radius-lg);
-    border:1px solid var(--namaa-border);
-    background:var(--namaa-surface-warm);
-    box-shadow:var(--ux-shadow-lg);
-  }
-
-  .workspaceHeader{
-    display:none!important;
-  }
-
-  .workspace{
-    min-height:calc(100dvh - 88px);
-    display:grid;
-    grid-template-columns:minmax(220px,264px) minmax(0,1fr) minmax(220px,280px);
-    background:var(--namaa-card);
-  }
-
-  .workspace.withoutContext{
-    grid-template-columns:minmax(220px,264px) minmax(0,1fr);
-  }
-
-  .roomsPane{
-    min-width:0;
-    padding:var(--ux-space-4);
-    border-inline-end:1px solid var(--namaa-border);
-    background:var(--namaa-card);
-  }
-
-  .contextPane{
-    min-width:0;
-    padding:var(--ux-space-4);
-    border-inline-start:1px solid var(--namaa-border);
-    background:var(--namaa-card);
-  }
-
-  .paneTitle{
-    position:sticky;
-    top:0;
-    z-index:3;
-    min-height:44px;
-    height:auto;
-    padding-bottom:var(--ux-space-2);
-    margin-bottom:var(--ux-space-3);
-    border-bottom:1px solid var(--namaa-border);
-    background:var(--namaa-card);
-  }
-
-  .paneTitle>span{
-    color:var(--namaa-green-900);
-    font-weight:900;
-  }
-
-  .roomList{
-    gap:var(--ux-space-2);
-  }
-
-  .roomItemShell{
-    border:1px solid transparent;
-    border-radius:var(--ux-radius-md);
-    transition:background-color var(--ux-motion-duration-base) ease,border-color var(--ux-motion-duration-base) ease,box-shadow var(--ux-motion-duration-base) ease;
-  }
-
-  .roomItemShell:hover{
-    border-color:var(--namaa-border);
-    background:var(--namaa-surface-warm);
-  }
-
-  .roomItem{
-    min-height:58px;
-    border-radius:var(--ux-radius-md);
-    padding:var(--ux-space-2) var(--ux-space-2);
-  }
-
-  .page .chatPane{
-    min-width:0;
-    background:var(--namaa-surface-warm);
-  }
-
-  .page .chatHeader{
-    min-height:78px;
-    padding-inline:var(--ux-space-4);
-    border-bottom:1px solid var(--namaa-border);
-    background:var(--namaa-card);
-  }
-
-  .desktopChatHeaderForeground{
-    min-height:78px;
-  }
-
-  .chatHeaderBankMark{
-    overflow:hidden;
-    border:1px solid var(--namaa-border);
-    border-radius:var(--ux-radius-md);
-    background:var(--namaa-card);
-  }
-
-  .routingNote{
-    margin:var(--ux-space-3) var(--ux-space-3) var(--ux-space-0);
-    border-color:var(--namaa-border);
-    background:color-mix(in srgb,var(--namaa-green-900) 5%,var(--namaa-surface-warm));
-    color:var(--ux-text-secondary);
-  }
-
-  .routingNote svg{
-    color:var(--namaa-gold-500);
-  }
-
-  .page .messages{
-    padding:var(--ux-space-4) var(--ux-space-5) var(--ux-space-5);
-    gap:var(--ux-space-3);
-    background:var(--namaa-surface-warm);
-    background-image:none;
-  }
-
-  .messagesBuildingBackdrop{
-    opacity:.035;
-  }
-
-  .page .message{
-    border-color:var(--namaa-border);
-    box-shadow:var(--ux-shadow-md);
-  }
-
-  .page .composer{
-    margin:var(--ux-space-0) var(--ux-space-3) var(--ux-space-3);
-    border-color:var(--namaa-border);
-    border-radius:var(--ux-radius-lg);
-    box-shadow:var(--ux-shadow-md);
-    background:var(--namaa-card);
-  }
-
-  .contextCard{
-    border-color:var(--namaa-border);
-    border-radius:var(--ux-radius-md);
-    background:var(--namaa-card);
-    box-shadow:var(--ux-shadow-md);
-  }
-
-  .contextCard small{
-    color:var(--namaa-gold-500);
-    font-weight:800;
-  }
-
-  .roomDetailButton svg,
-  .secondaryButton svg,
-  .mobileTools svg,
-  .attachButton svg,
-  .sendButton svg{
-    width:22px!important;
-    height:22px!important;
-  }
-}
-
-@media (min-width:768px) and (max-width:1023px){
-  .workspace{
-    grid-template-columns:minmax(210px,240px) minmax(0,1fr) minmax(210px,240px);
-  }
-
-  .workspace.withoutContext{
-    grid-template-columns:minmax(210px,240px) minmax(0,1fr);
-  }
-}
-
-/* ========================================================================== */
 /* CANONICAL WIDE CONVERSATION + ONBOARDING LAYER                             */
 /* Tablet/laptop/desktop only. Mobile definitions above remain untouched.      */
 /* ========================================================================== */
@@ -11370,5 +11200,327 @@
   .mobileRecordEditorActions button{
     flex:1 1 0!important;
     max-width:none!important;
+  }
+}
+
+
+/* DESKTOP CRITICAL CORRECTION — single final authority */
+@media (min-width:768px){
+  .page{
+    inline-size:100%!important;
+    max-inline-size:none!important;
+    margin-inline:0!important;
+    box-sizing:border-box!important;
+    overflow:hidden!important;
+    border:2px solid var(--namaa-border-strong)!important;
+  }
+
+  .workspace{
+    inline-size:100%!important;
+    max-inline-size:none!important;
+    margin:0!important;
+    grid-template-columns:minmax(248px,292px) minmax(0,1fr) minmax(248px,292px)!important;
+    align-items:stretch!important;
+    background:var(--namaa-card)!important;
+  }
+
+  .workspace.withoutContext{
+    grid-template-columns:minmax(248px,292px) minmax(0,1fr)!important;
+  }
+
+  .roomsPane,
+  .contextPane{
+    min-inline-size:0!important;
+    box-sizing:border-box!important;
+    border-color:var(--namaa-border-strong)!important;
+  }
+
+  .roomsPane{
+    border-inline-end:2px solid var(--namaa-border-strong)!important;
+  }
+
+  .contextPane{
+    border-inline-start:2px solid var(--namaa-border-strong)!important;
+  }
+
+  .chatPane{
+    min-inline-size:0!important;
+    inline-size:100%!important;
+  }
+
+  .page .chatHeader,
+  .routingNote,
+  .page .message,
+  .page .composer,
+  .contextCard,
+  .roomItemShell,
+  .entityDetailTabs,
+  .entityDetailPanel>section,
+  .entityReferenceList>button{
+    border-width:2px!important;
+    border-color:var(--namaa-border-strong)!important;
+  }
+
+  .contextCard,
+  .roomItemShell,
+  .entityDetailPanel>section,
+  .entityReferenceList>button{
+    box-shadow:var(--ux-shadow-sm)!important;
+  }
+
+  .entityBankHero{
+    position:relative;
+    min-block-size:260px;
+    overflow:hidden;
+    border:2px solid var(--namaa-border-strong);
+    border-radius:var(--ux-radius-lg);
+    background:var(--namaa-surface-warm);
+    box-shadow:var(--ux-shadow-md);
+  }
+
+  .entityBankHero>img{
+    object-fit:cover;
+    object-position:center 58%;
+  }
+
+  .entityBankHeroShade{
+    position:absolute;
+    inset:0;
+    background:linear-gradient(90deg,transparent 20%,color-mix(in srgb,var(--namaa-green-900) 72%,transparent) 100%);
+    pointer-events:none;
+  }
+
+  .entityBankHeroTitle{
+    position:absolute;
+    inset-inline-end:var(--ux-space-5);
+    inset-block-start:50%;
+    transform:translateY(-50%);
+    display:grid;
+    gap:var(--ux-space-1);
+    max-inline-size:min(46%,420px);
+    padding:var(--ux-space-4);
+    border:1px solid color-mix(in srgb,var(--ux-text-inverse) 42%,transparent);
+    border-radius:var(--ux-radius-lg);
+    background:color-mix(in srgb,var(--namaa-green-900) 88%,transparent);
+    color:var(--ux-text-inverse);
+    backdrop-filter:blur(8px);
+  }
+
+  .entityBankHeroTitle small{
+    color:var(--namaa-gold-500);
+    font-weight:800;
+  }
+
+  .entityBankHeroTitle strong{
+    color:var(--ux-text-inverse);
+    font-size:var(--ux-type-section-title-size);
+    line-height:1.35;
+  }
+
+  .entityBankSwitcher{
+    display:flex;
+    align-items:center;
+    gap:var(--ux-space-2);
+    overflow-x:auto;
+    padding:var(--ux-space-2);
+    border:2px solid var(--namaa-border-strong);
+    border-radius:var(--ux-radius-md);
+    background:var(--namaa-card);
+    box-shadow:var(--ux-shadow-xs);
+  }
+
+  .entityBankSwitcher button{
+    min-block-size:44px;
+    display:inline-flex;
+    align-items:center;
+    gap:var(--ux-space-2);
+    flex:0 0 auto;
+    padding-inline:var(--ux-space-3);
+    border:1px solid var(--namaa-border-strong);
+    border-radius:var(--ux-radius-md);
+    background:var(--namaa-card);
+    color:var(--ux-text-primary);
+    font:inherit;
+    font-weight:800;
+    cursor:pointer;
+  }
+
+  .entityBankSwitcher button:hover{
+    border-color:var(--namaa-green-700);
+    background:var(--namaa-surface-warm);
+  }
+
+  .entityBankSwitcher .activeEntityBank{
+    border-color:var(--namaa-green-900);
+    background:var(--namaa-green-900);
+    color:var(--ux-text-inverse);
+  }
+
+  .entityBankSwitcher img{
+    inline-size:28px;
+    block-size:28px;
+    object-fit:contain;
+    border-radius:8px;
+    background:var(--ux-text-inverse);
+  }
+
+  .desktopTeamChat{
+    display:grid!important;
+    gap:var(--ux-space-3)!important;
+  }
+
+  .mobileTeamGrid{
+    display:none!important;
+  }
+
+  .entityTeamChatFeed{
+    display:grid;
+    gap:var(--ux-space-2);
+    max-block-size:300px;
+    overflow:auto;
+    padding:var(--ux-space-2);
+    border:2px solid var(--namaa-border-strong);
+    border-radius:var(--ux-radius-md);
+    background:var(--namaa-surface-warm);
+  }
+
+  .entityTeamChatUser,
+  .entityTeamChatAgent{
+    display:grid;
+    gap:var(--ux-space-1);
+    inline-size:min(88%,680px);
+    padding:var(--ux-space-3);
+    border:1px solid var(--namaa-border-strong);
+    border-radius:var(--ux-radius-md);
+  }
+
+  .entityTeamChatUser{
+    justify-self:start;
+    background:var(--namaa-card);
+    color:var(--ux-text-primary);
+  }
+
+  .entityTeamChatAgent{
+    justify-self:end;
+    background:var(--namaa-green-900);
+    color:var(--ux-text-inverse);
+  }
+
+  .entityTeamChatAgent strong,
+  .entityTeamChatAgent p{
+    color:var(--ux-text-inverse)!important;
+  }
+
+  .entityTeamChatUser p,
+  .entityTeamChatAgent p{
+    margin:0;
+    line-height:1.7;
+  }
+
+  .entityTeamChatEmpty{
+    padding:var(--ux-space-4);
+    border:1px dashed var(--namaa-border-strong);
+    border-radius:var(--ux-radius-md);
+    background:var(--namaa-card);
+    color:var(--ux-text-secondary);
+    text-align:center;
+  }
+
+  .entityTeamComposer{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    align-items:end;
+    gap:var(--ux-space-2);
+  }
+
+  .entityTeamComposer textarea{
+    inline-size:100%;
+    min-block-size:44px;
+    max-block-size:96px;
+    resize:vertical;
+    box-sizing:border-box;
+    padding:var(--ux-space-3);
+    border:2px solid var(--namaa-border-strong)!important;
+    border-radius:var(--ux-radius-md)!important;
+    background:var(--namaa-card)!important;
+    color:var(--ux-text-primary)!important;
+    font:inherit;
+  }
+
+  .entityTeamComposer button{
+    min-block-size:44px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:var(--ux-space-2);
+    padding-inline:var(--ux-space-4);
+    border:2px solid var(--namaa-green-900);
+    border-radius:10px;
+    background:var(--namaa-green-900);
+    color:var(--ux-text-inverse);
+    font:inherit;
+    font-weight:800;
+  }
+
+  .entityTeamComposer button:disabled{
+    opacity:.55;
+  }
+
+  .entityTeamChatNote{
+    color:var(--ux-text-secondary);
+    line-height:1.6;
+  }
+
+  /* Contrast contract: never pair light-on-light or dark-on-dark in live desktop surfaces. */
+  .secondaryButton,
+  .roomDetailButton,
+  .entityDetailTabs button,
+  .entityReferenceList>button,
+  .entityBankSwitcher button:not(.activeEntityBank){
+    background:var(--namaa-card)!important;
+    color:var(--ux-text-primary)!important;
+  }
+
+  .activeEntityDetailTab,
+  .activeEntityBank,
+  .sendButton{
+    background:var(--namaa-green-900)!important;
+    color:var(--ux-text-inverse)!important;
+  }
+
+  .activeEntityDetailTab *,
+  .activeEntityBank *,
+  .sendButton *{
+    color:var(--ux-text-inverse)!important;
+  }
+}
+
+@media (min-width:768px) and (max-width:1023px){
+  .workspace{
+    grid-template-columns:minmax(200px,228px) minmax(0,1fr) minmax(200px,228px)!important;
+  }
+
+  .workspace.withoutContext{
+    grid-template-columns:minmax(200px,228px) minmax(0,1fr)!important;
+  }
+
+  .entityBankHero{
+    min-block-size:210px;
+  }
+
+  .entityBankHeroTitle{
+    max-inline-size:56%;
+  }
+}
+
+@media (max-width:767px){
+  .entityBankHero,
+  .entityBankSwitcher,
+  .desktopTeamChat{
+    display:none!important;
+  }
+
+  .mobileTeamGrid{
+    display:block!important;
   }
 }
