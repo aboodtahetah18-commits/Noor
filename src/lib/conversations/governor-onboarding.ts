@@ -483,7 +483,7 @@ export async function processGovernorOnboardingMessage(userId:string,text:string
         ? ' أبقيت الدخل في ذاكرة التأسيس إلى أن توجد دورة مالية صالحة لربطه بها.'
         : '';
       return {
-        body:`تم تثبيت ملف التأسيس الأساسي. الآن أصبحت بقية جهات نماء متاحة لك.${projectionNote}${incomeNote}`,
+        body:`تم تثبيت ملف التأسيس الأساسي. الآن أصبحت بقية جهات نماء متاحة لك.${projectionNote}${incomeNote} سأكمل معك مباشرة أسئلة التشغيل المالي المتبقية مثل المصروفات الشهرية والموسمية، ثم أبني الملخص الأولي وأعرض ما يحتاج مراجعة قبل الاجتماع المالي.`,
         completed:true,
         current_step:'complete' as OnboardingStep,
         next_question:null,

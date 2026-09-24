@@ -14,10 +14,11 @@ type RoutedReply = {
   created_at?: string;
 };
 
-type Intent = 'income' | 'obligation' | 'reserve' | 'investment' | 'financing' | 'goal' | 'general';
+type Intent = 'income' | 'obligation' | 'expense' | 'reserve' | 'investment' | 'financing' | 'goal' | 'general';
 type PendingConfirmation =
   | { type: 'monthly_net_income'; value: number; raw_text: string }
-  | { type: 'recurring_core_obligations'; values: number[]; raw_text: string };
+  | { type: 'recurring_core_obligations'; values: number[]; raw_text: string }
+  | { type: 'monthly_variable_expenses'; values: number[]; raw_text: string };
 
 type BaselineState = {
   monthly_net_income_candidate?: number;
@@ -25,6 +26,11 @@ type BaselineState = {
   recurring_core_obligations_candidates?: number[];
   recurring_core_obligations_confirmed?: number[];
   recurring_core_obligations_total?: number;
+  monthly_variable_expenses_candidates?: number[];
+  monthly_variable_expenses_confirmed?: number[];
+  monthly_variable_expenses_total?: number;
+  post_onboarding_stage?: 'variable_expenses' | 'irregular_expenses' | 'ready';
+  irregular_expenses_note?: string;
   pending_confirmation?: PendingConfirmation;
   updated_at?: string;
 };
@@ -48,6 +54,7 @@ function numbersFrom(text: string) {
 export function detectConversationIntent(text: string): Intent {
   if (/(دخل|راتب|راتبي|صافي|دخل شهري|الدخل)/i.test(text)) return 'income';
   if (/(إيجار|ايجار|قسط|أقساط|اقساط|فاتورة|فواتير|التزام|التزامات|مصروف ثابت)/i.test(text)) return 'obligation';
+  if (/(مصروف|مصاريف|إنفاق|انفاق|بقالة|غذاء|مطاعم|وقود|بنزين|اشتراك|اشتراكات|ترفيه|مصروفات إضافية|مصاريف إضافية)/i.test(text)) return 'expense';
   if (/(احتياط|طوارئ|سيولة|ملاءة|حماية)/i.test(text)) return 'reserve';
   if (/(استثمار|أسهم|اسهم|صندوق|صناديق|محفظة|عائد)/i.test(text)) return 'investment';
   if (/(تمويل|قرض|دين|سداد|تقسيط)/i.test(text)) return 'financing';
@@ -69,7 +76,7 @@ export function recommendedConversationRoom(intent: Intent, current: Conversatio
   if (intent === 'reserve') return 'solvency';
   if (intent === 'investment' || intent === 'goal') return 'assets';
   if (intent === 'financing') return 'hilal';
-  if (intent === 'income' || intent === 'obligation') return 'central';
+  if (intent === 'income' || intent === 'obligation' || intent === 'expense') return 'central';
   return current;
 }
 
@@ -91,6 +98,57 @@ function formatSar(value: number) {
 function baselineFrom(metadata: Record<string, unknown>): BaselineState {
   if (!metadata.financial_baseline || typeof metadata.financial_baseline !== 'object') return {};
   return metadata.financial_baseline as BaselineState;
+}
+
+function monthlyEquivalent(value:Record<string,unknown>){
+  const amount=Number(value.amount??0);
+  if(!Number.isFinite(amount)||amount<0)return 0;
+  const recurrence=String(value.recurrence??'MONTHLY').trim().toUpperCase();
+  if(recurrence==='WEEKLY'||/أسبوع/.test(recurrence))return amount*52/12;
+  if(recurrence==='YEARLY'||/سنوي/.test(recurrence))return amount/12;
+  return amount;
+}
+
+async function hydrateBaselineFromFoundationFacts(userId:string,metadata:Record<string,unknown>){
+  const baseline=baselineFrom(metadata);
+  if(typeof baseline.monthly_net_income_confirmed==='number'&&typeof baseline.recurring_core_obligations_total==='number')return baseline;
+  const sql=getRawSql();
+  const rows=await sql`
+    select fact_key,value_json
+    from public.user_foundation_facts
+    where user_id=${userId}::uuid
+      and status='ACTIVE'
+      and fact_key in ('income','obligations')
+  `;
+  const facts=new Map(rows.map(row=>[String(row.fact_key),row.value_json]));
+  const income=facts.get('income');
+  const obligations=facts.get('obligations');
+  const next:BaselineState={...baseline};
+  if(typeof next.monthly_net_income_confirmed!=='number'&&income&&typeof income==='object'&&!Array.isArray(income)){
+    const value=Number((income as Record<string,unknown>).actual_net);
+    if(Number.isFinite(value)&&value>=0){
+      next.monthly_net_income_confirmed=value;
+      next.monthly_net_income_candidate=value;
+    }
+  }
+  if(typeof next.recurring_core_obligations_total!=='number'&&obligations&&typeof obligations==='object'&&!Array.isArray(obligations)){
+    const items=Array.isArray((obligations as Record<string,unknown>).items)
+      ?((obligations as Record<string,unknown>).items as unknown[]).filter((item):item is Record<string,unknown>=>Boolean(item)&&typeof item==='object'&&!Array.isArray(item))
+      :[];
+    const values=items.map(monthlyEquivalent).filter(value=>Number.isFinite(value)&&value>=0);
+    next.recurring_core_obligations_confirmed=values;
+    next.recurring_core_obligations_candidates=values;
+    next.recurring_core_obligations_total=values.reduce((sum,value)=>sum+value,0);
+  }
+  return next;
+}
+
+function isNextStepRequest(text:string){
+  return /^(?:وش|ما|ماذا)\s*(?:بعد|التالي|الخطوة التالية|بعد ذلك)|(?:وش|ما)\s*نسوي\s*الحين|التالي$/i.test(text.trim().replace(/[؟?!.]+$/g,''));
+}
+
+function isNoAdditionalExpense(text:string){
+  return /^(?:لا|لا يوجد|ما عندي|مافي|ما فيه|لا توجد|لا يوجد شيء)$/i.test(text.trim().replace(/[؟?!.]+$/g,''));
 }
 
 function baselineMetrics(baseline: BaselineState) {
@@ -120,10 +178,15 @@ function confirmPending(baseline: BaselineState) {
   if (pending.type === 'monthly_net_income') {
     next.monthly_net_income_confirmed = pending.value;
     next.monthly_net_income_candidate = pending.value;
-  } else {
+  } else if (pending.type === 'recurring_core_obligations') {
     next.recurring_core_obligations_confirmed = pending.values;
     next.recurring_core_obligations_candidates = pending.values;
     next.recurring_core_obligations_total = pending.values.reduce((sum, value) => sum + value, 0);
+  } else {
+    next.monthly_variable_expenses_confirmed = pending.values;
+    next.monthly_variable_expenses_candidates = pending.values;
+    next.monthly_variable_expenses_total = pending.values.reduce((sum, value) => sum + value, 0);
+    next.post_onboarding_stage = 'irregular_expenses';
   }
   delete next.pending_confirmation;
   return { baseline: next, confirmedType: pending.type };
@@ -136,6 +199,7 @@ function buildCentralReply(text: string, intent: Intent, amounts: number[], meta
   let confidence = 0.55;
   let routedRoom: ConversationRoomKey = 'central';
   let confirmedFact: string | null = null;
+  let nextQuestion: string | null = null;
 
   if (isConfirmation(text) && baseline.pending_confirmation) {
     const confirmed = confirmPending(baseline);
@@ -143,28 +207,55 @@ function buildCentralReply(text: string, intent: Intent, amounts: number[], meta
     confirmedFact = confirmed.confirmedType;
     confidence = 1;
     const metrics = baselineMetrics(baseline);
-    if (metrics && !missingBaselineFields(baseline).length) {
-      kind = 'recommendation';
-      routedRoom = 'solvency';
-      const ratioText = typeof metrics.obligation_ratio === 'number' ? `${(metrics.obligation_ratio * 100).toFixed(1)}٪` : 'غير متاح';
-      body = `تم تثبيت خط الأساس المالي. الدخل الشهري الصافي المؤكد ${formatSar(metrics.monthly_net_income)} ريال، والالتزامات الأساسية المتكررة ${formatSar(metrics.recurring_core_obligations_total)} ريال. الهامش الحسابي الأولي ${formatSar(metrics.safety_margin)} ريال، ونسبة الالتزامات إلى الدخل ${ratioText}. الخطوة التالية تقييم الملاءة قبل أي توصية تمويل أو استثمار.`;
+    if (confirmed.confirmedType === 'monthly_variable_expenses') {
+      nextQuestion='هل لديك مصروفات غير شهرية أو موسمية مهمة خلال السنة، مثل تأمين أو دراسة أو صيانة أو سفر أو رسوم؟ اذكرها مع المبلغ والتكرار، أو اكتب «لا يوجد».';
+      body=`تم اعتماد المصروفات الشهرية الإضافية بإجمالي ${formatSar(baseline.monthly_variable_expenses_total??0)} ريال. ${nextQuestion}`;
+    } else if (metrics && !missingBaselineFields(baseline).length) {
+      kind = 'request';
+      baseline.post_onboarding_stage='variable_expenses';
+      nextQuestion='قبل أن أبني التوصيات، هل لديك مصروفات شهرية إضافية غير الالتزامات الثابتة المسجلة، مثل الغذاء أو الوقود أو الاشتراكات أو المصروف الشخصي والعائلي؟ اذكر كل بند مع متوسطه الشهري، أو اكتب «لا يوجد».';
+      body = `تم تثبيت خط الأساس المالي من بياناتك المؤكدة. ${nextQuestion}`;
     } else if (confirmed.confirmedType === 'monthly_net_income' && typeof baseline.monthly_net_income_confirmed === 'number') {
       body = `تم تثبيت الدخل الشهري الصافي عند ${formatSar(baseline.monthly_net_income_confirmed)} ريال. الآن أرسل الالتزامات الأساسية الثابتة التي تتكرر شهريًا وقيمة كل التزام.`;
     } else {
       body = `تم تثبيت الالتزامات الأساسية المتكررة بإجمالي ${formatSar(baseline.recurring_core_obligations_total ?? 0)} ريال. ${typeof baseline.monthly_net_income_confirmed === 'number' ? 'أصبح لدينا ما يكفي لحساب الهامش الأولي.' : 'باقي متوسط الدخل الشهري الصافي حتى يكتمل خط الأساس.'}`;
     }
-    return { body, kind, confidence, baseline, routedRoom, confirmedFact };
+    return { body, kind, confidence, baseline, routedRoom, confirmedFact, nextQuestion };
   }
 
   if (isRejection(text) && baseline.pending_confirmation) {
     delete baseline.pending_confirmation;
     confidence = 1;
     body = 'تم إلغاء القيمة المرشحة ولم أعتمدها. أرسل القيمة الصحيحة مع وصفها.';
-    return { body, kind, confidence, baseline, routedRoom, confirmedFact };
+    return { body, kind, confidence, baseline, routedRoom, confirmedFact, nextQuestion };
   }
 
   const amount = firstAmount(amounts);
-  if (intent === 'income' && amount !== null) {
+
+  if (baseline.post_onboarding_stage==='variable_expenses' && isNoAdditionalExpense(text)) {
+    baseline={...baseline,monthly_variable_expenses_confirmed:[],monthly_variable_expenses_total:0,post_onboarding_stage:'irregular_expenses',updated_at:new Date().toISOString()};
+    confidence=1;
+    nextQuestion='هل لديك مصروفات غير شهرية أو موسمية مهمة خلال السنة، مثل تأمين أو دراسة أو صيانة أو سفر أو رسوم؟ اذكرها مع المبلغ والتكرار، أو اكتب «لا يوجد».';
+    body='تم تسجيل أنه لا توجد مصروفات شهرية إضافية حاليًا. '+nextQuestion;
+  } else if (baseline.post_onboarding_stage==='variable_expenses' && amounts.length>0) {
+    baseline={...baseline,monthly_variable_expenses_candidates:amounts,pending_confirmation:{type:'monthly_variable_expenses',values:amounts,raw_text:text},updated_at:new Date().toISOString()};
+    confidence=0.95;
+    const total=amounts.reduce((sum,value)=>sum+value,0);
+    body=`التقطت مصروفات شهرية إضافية بإجمالي ${formatSar(total)} ريال. هل أعتمد هذه القيم؟`;
+    nextQuestion='اكتب «تأكيد» لاعتمادها، أو أرسل التصحيح.';
+  } else if (baseline.post_onboarding_stage==='irregular_expenses') {
+    confidence=1;
+    baseline={...baseline,irregular_expenses_note:isNoAdditionalExpense(text)?'لا يوجد':text,post_onboarding_stage:'ready',updated_at:new Date().toISOString()};
+    kind='recommendation';
+    routedRoom='solvency';
+    body='تم حفظ المصروفات غير الشهرية. أصبح لدي الآن خط أساس مالي أوضح للبدء في تقييم الملاءة وبناء الميزانية الأولية، وبعدها أعرض عليك ما يحتاج مراجعة قبل الاجتماع المالي.';
+  } else if (isNextStepRequest(text) && !missingBaselineFields(baseline).length) {
+    confidence=1;
+    kind='request';
+    baseline={...baseline,post_onboarding_stage:'variable_expenses',updated_at:new Date().toISOString()};
+    nextQuestion='قبل أن ننتقل للتوصيات، هل لديك مصروفات شهرية إضافية غير الالتزامات الثابتة المسجلة، مثل الغذاء أو الوقود أو الاشتراكات أو المصروف الشخصي والعائلي؟ اذكر كل بند مع متوسطه الشهري، أو اكتب «لا يوجد».';
+    body=nextQuestion;
+  } else if (intent === 'income' && amount !== null) {
     baseline = { ...baseline, monthly_net_income_candidate: amount, pending_confirmation: { type: 'monthly_net_income', value: amount, raw_text: text }, updated_at: new Date().toISOString() };
     confidence = 0.92;
     body = `التقطت دخلًا شهريًا صافيًا قدره ${formatSar(amount)} ريال. هل أعتمد هذه القيمة؟`;
@@ -185,7 +276,7 @@ function buildCentralReply(text: string, intent: Intent, amounts: number[], meta
       ? 'أحتاج تثبيت متوسط الدخل الشهري الصافي والالتزامات الأساسية المتكررة. كل قيمة ستُعرض عليك للتأكيد قبل اعتمادها.'
       : 'خط الأساس المالي مثبت. يمكنك الآن طرح موضوع الملاءة أو الاستثمار أو التمويل أو الأهداف.';
   }
-  return { body, kind, confidence, baseline, routedRoom, confirmedFact };
+  return { body, kind, confidence, baseline, routedRoom, confirmedFact, nextQuestion };
 }
 
 function buildRoomReply(roomKey: ConversationRoomKey, amounts: number[], text: string) {
@@ -219,7 +310,11 @@ export async function createRoutedReply(userId: string, roomKey: ConversationRoo
   const text = userText.trim();
   const amounts = numbersFrom(text);
   const intent = detectConversationIntent(text);
-  const metadata = threadRows[0]?.metadata && typeof threadRows[0].metadata === 'object' ? threadRows[0].metadata as Record<string, unknown> : {};
+  let metadata = threadRows[0]?.metadata && typeof threadRows[0].metadata === 'object' ? threadRows[0].metadata as Record<string, unknown> : {};
+  if(roomKey==='central'){
+    const hydratedBaseline=await hydrateBaselineFromFoundationFacts(userId,metadata);
+    metadata={...metadata,financial_baseline:hydratedBaseline};
+  }
   const agent = agentForRoom(roomKey);
 
   let body: string;
@@ -230,6 +325,7 @@ export async function createRoutedReply(userId: string, roomKey: ConversationRoo
   let financialMetrics: ReturnType<typeof baselineMetrics> = null;
   let missingFields: string[] = [];
   let confirmedFact: string | null = null;
+  let nextQuestion: string | null = null;
 
   if (roomKey === 'central') {
     const result = buildCentralReply(text, intent, amounts, metadata);
@@ -238,6 +334,7 @@ export async function createRoutedReply(userId: string, roomKey: ConversationRoo
     confidence = result.confidence;
     routedRoom = result.routedRoom;
     confirmedFact = result.confirmedFact;
+    nextQuestion = result.nextQuestion;
     financialMetrics = baselineMetrics(result.baseline);
     missingFields = missingBaselineFields(result.baseline);
     nextMetadata = { ...metadata, financial_baseline: result.baseline, onboarding_started:true, last_detected_intent:intent, last_confidence:confidence };
@@ -259,6 +356,8 @@ export async function createRoutedReply(userId: string, roomKey: ConversationRoo
     financial_metrics: financialMetrics,
     missing_fields: missingFields,
     confirmed_fact: confirmedFact,
+    next_question: nextQuestion,
+    guided_intake: roomKey==='central'&&Boolean(nextQuestion),
     requires_user_confirmation: confidence < 0.9,
     execution_boundary: 'advisory_only',
   };

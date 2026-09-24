@@ -45,7 +45,7 @@ const rooms: [Room, ...Room[]] = [
   { id:'secretary', title:'أمين السر المركزي', subtitle:'المحاضر والسياسات والاجتماعات', lead:'أمين السر المركزي', specialists:'أمين السر المركزي مع الجهة المختصة عند الحاجة', avatar:'/brand/personas/central-secretary.webp', bankLogo:'/brand/bank-central.webp', building:'/brand/ndos/banks/namaa-central-bank.jpg' },
   { id:'council', title:'مجلس نماء الأعلى', subtitle:'القرارات واللجان', lead:'محافظ بنك نماء المركزي بصفته رئيس المجلس', specialists:'أعضاء اللجنة ذات الصلة فقط، وليس جميع الشخصيات', avatar:'/brand/personas/central-governor.webp', bankLogo:'/brand/bank-central.webp', building:'/brand/ndos/banks/namaa-central-bank.jpg' },
 ];
-const labels:Record<MessageKind,string>={message:'',risk:'تقييم مخاطر',decision:'قرار / اعتماد',recommendation:'توصية',followup:'متابعة',request:'طلب إجراء'};
+const labels:Record<MessageKind,string>={message:'',risk:'تقييم مخاطر',decision:'قرار / اعتماد',recommendation:'توصية',followup:'متابعة',request:'استكمال مطلوب'};
 const councilSpeakerClass=(senderKey?:string)=>{
   if(senderKey==='central-governor') return styles.councilGovernor;
   if(senderKey==='solvency-manager') return styles.councilSolvency;
@@ -633,7 +633,6 @@ function buildRichMessageMetrics(data?:Record<string,unknown>){
     richMetric('نسبة الالتزامات',financial?.obligation_ratio,'percent'),
     richMetric('القسط المتوقع',data.expected_installment,'sar'),
     richMetric('التعرض القائم',exposure?.outstanding_exposure,'sar'),
-    richMetric('الثقة',data.confidence_percent,'plain'),
   ].filter((item):item is {label:string;value:string}=>Boolean(item));
   return candidates.slice(0,3);
 }
@@ -815,7 +814,6 @@ function StructuredFacts({data}:{data?:Record<string,unknown>}){
   const governanceOversight=governanceContext&&typeof governanceContext.oversight==='string'?governanceContext.oversight:null;
   if(confidence===null&&!routed&&income===null&&!missing.length&&!goalName&&safeCapacity===null&&requested===null&&!financingPurpose&&!decisionState&&eligibilityScore===null&&!calibrationStatus&&!decisionReference&&!governanceOversight&&!governancePolicies.length)return null;
   return <div className={styles.facts}>
-    {decisionReference&&<span><small>مرجع القرار</small><strong>{decisionReference}</strong></span>}
     {governanceOversight&&<span><small>الجهة الحاكمة</small><strong>{governanceOversight}</strong></span>}
     {governancePolicies.length>0&&<span><small>السياسات المستخدمة</small><strong>{governancePolicies.join('، ')}</strong></span>}
     {governanceAuthorities.length>0&&<span><small>مراجع الصلاحيات</small><strong>{governanceAuthorities.join('، ')}</strong></span>}
@@ -1330,6 +1328,10 @@ export function PersistentConversationWorkspace(){
         onTemplate={template=>{setPendingOversightConfirmation(null);setOversightActionFeedback({command:'',status:'idle',message:null});setDraft(template);requestAnimationFrame(()=>composerTextareaRef.current?.focus())}}
       />
       <StructuredFacts data={message.structured_data}/>
+      {message.message_kind==='request'&&typeof message.structured_data?.next_question==='string'&&message.structured_data.next_question&&
+        <button type="button" className={styles.inlineIntakeButton} onClick={()=>{setDraft('');requestAnimationFrame(()=>composerTextareaRef.current?.focus())}}>
+          <LucideIcon name="pencil" size={16}/><span>أجب الآن</span>
+        </button>}
       {(message.message_kind==='decision'||message.message_kind==='request')&&<small className={styles.executionBoundary}>أي تنفيذ مالي خارجي يظل بيد المستخدم، ويحتاج تأكيدًا وإثباتًا قبل الإغلاق.</small>}
     </section>}
     <footer className={styles.messageMeta}>
