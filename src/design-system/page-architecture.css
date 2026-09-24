@@ -227,7 +227,7 @@ body:has(.namaa-conversation-page) .namaa-main-canvas > * {
     max-inline-size:none;
     block-size:100dvh;
     max-block-size:100dvh;
-    border-radius:0;
+    border-radius:var(--ux-radius-0);
   }
 }
 
