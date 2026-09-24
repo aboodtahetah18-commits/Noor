@@ -4975,3 +4975,166 @@
     grid-template-columns:1fr!important;
   }
 }
+
+
+/* ========================================================================== */
+/* SPEC BATCH 4 — goals screenshot fixes: no white, balanced hero, no artifacts */
+/* ========================================================================== */
+@media (min-width:768px){
+  .p47-goals-page{
+    width:min(100%,1480px)!important;
+    max-width:1480px!important;
+    margin-inline:auto!important;
+    padding:18px!important;
+    background:var(--namaa-wide-surface)!important;
+    color:var(--namaa-wide-text)!important;
+  }
+
+  .p47-goals-page .namaa-goals-hero{
+    min-height:0!important;
+    margin:0 0 14px!important;
+    padding:18px 20px!important;
+    align-items:center!important;
+    border:1px solid #8ea394!important;
+    border-radius:18px!important;
+    background:linear-gradient(135deg,#9eb4a7 0%,#b8ad82 100%)!important;
+    box-shadow:0 10px 26px rgb(25 52 43 / 10%)!important;
+  }
+
+  .p47-goals-page .namaa-goals-hero h1{
+    color:#18362c!important;
+    font-size:clamp(30px,3vw,42px)!important;
+    line-height:1.25!important;
+  }
+
+  .p47-goals-page .namaa-goals-hero .eyebrow{
+    color:#6b5525!important;
+    font-weight:900!important;
+  }
+
+  .p47-goals-page .namaa-goals-hero .muted{
+    color:#40564d!important;
+  }
+
+  .p47-goals-page .namaa-goals-focus{
+    margin:0 0 12px!important;
+    padding:16px!important;
+    border-radius:16px!important;
+    background:#aabcb0!important;
+    border:1px solid #8ea497!important;
+  }
+
+  .p47-goals-page .namaa-goals-focus.is-warning{
+    background:#c5b27d!important;
+    border-color:#a58a4d!important;
+    color:#433718!important;
+  }
+
+  .p47-goals-page .namaa-goals-empty{
+    min-height:230px!important;
+    padding:28px 22px!important;
+    border-radius:18px!important;
+    background:#aebfb3!important;
+    border:1px solid #8fa497!important;
+    overflow:hidden!important;
+    position:relative!important;
+  }
+
+  .p47-goals-page .namaa-goals-empty::before,
+  .p47-goals-page .namaa-goals-empty::after{
+    display:none!important;
+    content:none!important;
+  }
+
+  .p47-goals-page .namaa-goals-empty > span{
+    width:54px!important;
+    height:54px!important;
+    border-radius:14px!important;
+    background:#8ea79a!important;
+    color:#174f3d!important;
+  }
+
+  .p47-goals-page .namaa-goals-empty h2{
+    color:#1d2d26!important;
+  }
+
+  .p47-goals-page .namaa-goals-empty p{
+    color:#52685e!important;
+  }
+
+  .p47-goals-page .p47-resource-card,
+  .p47-goals-page .namaa-collection-card,
+  .p47-goals-page .detail-list{
+    background:#b6c5ba!important;
+    border-color:#8ea497!important;
+  }
+
+  .p47-goals-page .namaa-data-table thead th{
+    background:#96aa9e!important;
+    color:#173d32!important;
+  }
+
+  .p47-goals-page .namaa-data-table tbody td{
+    background:#b5c4b9!important;
+  }
+
+  .p47-goals-page .namaa-data-table tbody tr:nth-child(even) td{
+    background:#aebdb2!important;
+  }
+
+  .p47-goals-page :where(
+    .primary-button,
+    .primary-link,
+    .p47-primary-action,
+    .p49-modal-trigger
+  ){
+    min-height:46px!important;
+    border-radius:13px!important;
+  }
+
+  html[data-theme="dark"] .p47-goals-page{
+    background:#10211c!important;
+  }
+
+  html[data-theme="dark"] .p47-goals-page .namaa-goals-hero{
+    background:linear-gradient(135deg,#29483d 0%,#55492e 100%)!important;
+    border-color:#567065!important;
+  }
+
+  html[data-theme="dark"] .p47-goals-page .namaa-goals-hero h1,
+  html[data-theme="dark"] .p47-goals-page .namaa-goals-hero .muted{
+    color:#ddcfad!important;
+  }
+
+  html[data-theme="dark"] .p47-goals-page .namaa-goals-focus{
+    background:#29483d!important;
+    border-color:#4f6e61!important;
+    color:#d9dfd7!important;
+  }
+
+  html[data-theme="dark"] .p47-goals-page .namaa-goals-focus.is-warning{
+    background:#51452b!important;
+    color:#ddc995!important;
+    border-color:#8e7440!important;
+  }
+
+  html[data-theme="dark"] .p47-goals-page .namaa-goals-empty{
+    background:#243f35!important;
+    border-color:#4e6d60!important;
+  }
+
+  html[data-theme="dark"] .p47-goals-page .namaa-goals-empty h2{
+    color:#decfae!important;
+  }
+
+  html[data-theme="dark"] .p47-goals-page .namaa-goals-empty p{
+    color:#adbaa9!important;
+  }
+
+  html[data-theme="dark"] .p47-goals-page .p47-resource-card,
+  html[data-theme="dark"] .p47-goals-page .namaa-collection-card,
+  html[data-theme="dark"] .p47-goals-page .detail-list{
+    background:#1f382f!important;
+    border-color:#526f63!important;
+  }
+}
