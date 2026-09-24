@@ -23,6 +23,7 @@ import '../design-system/governance.css';
 import '../design-system/financial.css';
 import '../design-system/advisor-execution.css';
 import '../design-system/reports-emergency.css';
+import '../design-system/settings-final.css';
 
 const notoSansArabic = Noto_Sans_Arabic({
   subsets: ['arabic'],
