@@ -4714,3 +4714,205 @@
     padding:16px!important;
   }
 }
+
+
+/* NAMA'A IDENTITY CORRECTIONS — single logo, embedded bank chat, strict button contrast */
+@media (min-width:768px){
+  /* لا تكرار للشعار داخل الدرج الجانبي */
+  .namaa-wide-sidebar-head{
+    min-height:66px!important;
+  }
+
+  .namaa-wide-sidebar-title{
+    color:#F5F1E8!important;
+    font-size:18px!important;
+    font-weight:900!important;
+    letter-spacing:0!important;
+  }
+
+  /* معاينة دردشة مصغرة داخل بطاقة الفريق بدل زر كبير */
+  .namaa-banks-chat-preview{
+    margin-top:16px!important;
+    border:1px solid #DCE6E0!important;
+    border-radius:16px!important;
+    overflow:hidden!important;
+    background:#FFFFFF!important;
+  }
+
+  .namaa-banks-chat-preview>header{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:12px!important;
+    padding:12px 14px!important;
+    background:#F7F8F6!important;
+    border-bottom:1px solid #DCE6E0!important;
+  }
+
+  .namaa-banks-chat-preview>header>div{
+    display:grid!important;
+    gap:2px!important;
+    min-width:0!important;
+  }
+
+  .namaa-banks-chat-preview>header span{
+    color:#8A6A2B!important;
+    font-size:11px!important;
+    font-weight:900!important;
+  }
+
+  .namaa-banks-chat-preview>header strong{
+    color:#0B6B4F!important;
+    font-size:14px!important;
+    line-height:1.45!important;
+  }
+
+  .namaa-banks-chat-preview>header svg{
+    color:#D4AF6B!important;
+    flex:0 0 auto!important;
+  }
+
+  .namaa-banks-chat-preview-body{
+    padding:12px!important;
+    background:#FFFFFF!important;
+  }
+
+  .namaa-banks-chat-empty{
+    min-height:92px!important;
+    display:flex!important;
+    align-items:center!important;
+    gap:10px!important;
+    padding:12px!important;
+    border:1px dashed #C9D8D1!important;
+    border-radius:12px!important;
+    background:#F3F4F2!important;
+    color:#61758A!important;
+  }
+
+  .namaa-banks-chat-empty svg{
+    color:#0B6B4F!important;
+    flex:0 0 auto!important;
+  }
+
+  .namaa-banks-chat-empty p{
+    margin:0!important;
+    color:#61758A!important;
+    line-height:1.65!important;
+    font-size:12px!important;
+  }
+
+  .namaa-banks-chat-preview>footer{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:10px!important;
+    padding:10px 12px!important;
+    border-top:1px solid #DCE6E0!important;
+    background:#FFFFFF!important;
+  }
+
+  .namaa-banks-chat-preview>footer span{
+    color:#61758A!important;
+    font-size:11px!important;
+  }
+
+  .namaa-banks-chat-preview>footer a{
+    display:inline-flex!important;
+    align-items:center!important;
+    min-height:auto!important;
+    width:auto!important;
+    padding:0!important;
+    background:transparent!important;
+    border:0!important;
+    color:#0B6B4F!important;
+    font-size:12px!important;
+    font-weight:900!important;
+    text-decoration:underline!important;
+    text-underline-offset:3px!important;
+  }
+
+  /* قاعدة تباين صارمة لأزرار الاستثمار */
+  html[data-theme="light"] .namaa-investments-actions>.p49-modal-trigger{
+    background:#FFF7E6!important;
+    color:#5E481B!important;
+    border:1px solid #D4AF6B!important;
+  }
+
+  html[data-theme="light"] .namaa-investments-actions>.p49-modal-trigger :where(span,svg){
+    color:#5E481B!important;
+    stroke:#8A6A2B!important;
+  }
+
+  html[data-theme="light"] .namaa-investments-actions>.p49-modal-trigger:hover,
+  html[data-theme="light"] .namaa-investments-actions>.p49-modal-trigger:focus-visible{
+    background:#F3E6C4!important;
+    color:#3D321A!important;
+    border-color:#B89145!important;
+  }
+
+  html[data-theme="dark"] .namaa-investments-actions>.p49-modal-trigger{
+    background:#D7BE84!important;
+    color:#161616!important;
+    border:1px solid #D7BE84!important;
+  }
+
+  html[data-theme="dark"] .namaa-investments-actions>.p49-modal-trigger :where(span,svg){
+    color:#161616!important;
+    stroke:#161616!important;
+  }
+
+  html[data-theme="dark"] .namaa-investments-actions>.p49-modal-trigger:hover,
+  html[data-theme="dark"] .namaa-investments-actions>.p49-modal-trigger:focus-visible{
+    background:#E1CA93!important;
+    color:#161616!important;
+    border-color:#E1CA93!important;
+  }
+
+  html[data-theme="dark"] .namaa-banks-chat-preview{
+    background:#23483D!important;
+    border-color:#5E776B!important;
+  }
+
+  html[data-theme="dark"] .namaa-banks-chat-preview>header{
+    background:#31594C!important;
+    border-bottom-color:#5E776B!important;
+  }
+
+  html[data-theme="dark"] .namaa-banks-chat-preview>header strong{
+    color:#F5F1E8!important;
+  }
+
+  html[data-theme="dark"] .namaa-banks-chat-preview-body,
+  html[data-theme="dark"] .namaa-banks-chat-preview>footer{
+    background:#23483D!important;
+  }
+
+  html[data-theme="dark"] .namaa-banks-chat-empty{
+    background:#31594C!important;
+    border-color:#6E8A7B!important;
+    color:#F5F1E8!important;
+  }
+
+  html[data-theme="dark"] .namaa-banks-chat-empty p,
+  html[data-theme="dark"] .namaa-banks-chat-preview>footer span{
+    color:#D9D3C5!important;
+  }
+
+  html[data-theme="dark"] .namaa-banks-chat-preview>footer a{
+    color:#D7BE84!important;
+  }
+}
+
+@media (max-width:767px){
+  .mustaqbali-mobile-drawer>header{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+  }
+
+  .mustaqbali-drawer-title{
+    color:inherit!important;
+    font-size:18px!important;
+    font-weight:900!important;
+  }
+}

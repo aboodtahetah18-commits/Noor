@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BrandLogo } from '@/components/brand/brand-logo';
 import { isPrimaryNavigationItemActive } from './navigation';
 import { LucideIcon, type LucideIconName } from '@/components/ui/lucide-icon';
 
@@ -28,9 +27,7 @@ export function DesktopTopNav() {
     <aside id="namaa-desktop-sidebar" data-namaa-side="right" className="desktop-top-nav-wrap mustaqbali-sidebar namaa-wide-sidebar" dir="rtl">
       <div className="mustaqbali-sidebar-inner namaa-wide-sidebar-inner">
         <div className="namaa-wide-sidebar-head">
-          <Link href="/conversations" className="namaa-wide-sidebar-brand" aria-label="نماء — مركز العمل" onClick={closeSidebar}>
-            <BrandLogo surface="dark" priority />
-          </Link>
+          <span className="namaa-wide-sidebar-title">القائمة</span>
           <button type="button" className="namaa-wide-sidebar-close" onClick={closeSidebar} aria-label="إغلاق القائمة الجانبية"><LucideIcon name="x" size={24}/></button>
         </div>
 

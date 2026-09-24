@@ -28,7 +28,7 @@ export function GlobalTopBar({profile}:{profile:HeaderProfile}){
   return <header className="mustaqbali-topbar namaa-topbar" dir="rtl">
     <div className="mustaqbali-topbar-brand-zone">
       <button type="button" className="mustaqbali-topbar-menu" onClick={toggleSidebar} aria-label={collapsed?'توسيع القائمة الجانبية':'طي القائمة الجانبية'}><LucideIcon name="menu" size={20}/></button>
-      <Link href="/dashboard" className="mustaqbali-topbar-logo" aria-label="نماء — الرئيسية"><BrandLogo surface="dark" priority /></Link>
+      <Link href="/dashboard" className="mustaqbali-topbar-logo" aria-label="نماء — الرئيسية"><BrandLogo surface="auto" priority /></Link>
     </div>
     <form action="/transactions" method="get" className="mustaqbali-global-search" role="search">
       <LucideIcon name="search" size={20}/>

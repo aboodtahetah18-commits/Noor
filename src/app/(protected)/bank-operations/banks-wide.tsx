@@ -87,7 +87,22 @@ export function BanksWide({selected,pendingReviewCount,pendingItems,dashboardDat
         <div className="namaa-banks-team-list">
           {bank.team.map((member,index)=><article key={member}><span>{index+1}</span><div><strong>{member}</strong><small>يشارك حسب الاختصاص والسياق</small></div></article>)}
         </div>
-        <Link href="/conversations" className="namaa-wide-action"><LucideIcon name="messageSquareText" size={20}/>فتح محادثة البنك</Link>
+        <section className="namaa-banks-chat-preview" aria-label="معاينة محادثة البنك">
+          <header>
+            <div><span>موجز المحادثة</span><strong>{bank.name}</strong></div>
+            <LucideIcon name="messageSquareText" size={20}/>
+          </header>
+          <div className="namaa-banks-chat-preview-body">
+            <div className="namaa-banks-chat-empty">
+              <LucideIcon name="messageSquareText" size={20}/>
+              <p>لا توجد رسائل مرتبطة بهذا البنك للعرض هنا حاليًا.</p>
+            </div>
+          </div>
+          <footer>
+            <span>ستظهر آخر الرسائل هنا عند توفرها.</span>
+            <Link href="/conversations">عرض المحادثة الكاملة</Link>
+          </footer>
+        </section>
       </aside>
 
       <section className="namaa-banks-dashboard namaa-wide-panel">
