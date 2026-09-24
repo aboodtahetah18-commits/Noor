@@ -11,6 +11,7 @@ import {
 } from './proactive-conversation-memory';
 import { shouldProactivelyOpenCase } from '@/algorithmic-systems/orchestration/proactive-bank-planning';
 import type { BankForwardNeed } from '@/algorithmic-systems/domain/interbank-planning';
+import { getGovernanceMeetingSchedule } from '@/lib/governance/governance-meeting-scheduler';
 
 export type ProactiveCandidate={
   key:string;
@@ -25,6 +26,8 @@ export type ProactiveCandidate={
   body:string;
   reason:string;
   interbankNeed?:BankForwardNeed|null;
+  scopeKind?:'role'|'meeting'|null;
+  scopeKey?:string|null;
 };
 
 type ProactiveRunResult={
@@ -58,6 +61,11 @@ export function candidateScore(
   let score=candidate.basePriority;
   if(prompt?.lastAnswerAt) score+=6;
   if(prompt?.lastPromptAt&&!prompt.lastAnswerAt&&daysBetween(now,prompt.lastPromptAt)>=7) score-=12;
+  if(prompt?.unansweredStreak) score-=Math.min(24,prompt.unansweredStreak*6);
+  if(prompt?.averageResponseHours!==null&&prompt?.averageResponseHours!==undefined){
+    if(prompt.averageResponseHours<=24)score+=4;
+    else if(prompt.averageResponseHours>=72)score-=4;
+  }
   if(room?.userTurns) score+=Math.min(6,Math.floor(room.userTurns/4));
   return score;
 }
@@ -72,7 +80,8 @@ export function isCandidateEligible(
   const prompt=memory.prompts[candidate.key];
   if(!prompt)return true;
   if(prompt.lastAnswerAt&&daysBetween(now,prompt.lastAnswerAt)<30)return false;
-  if(prompt.lastPromptAt&&daysBetween(now,prompt.lastPromptAt)<candidate.cooldownDays)return false;
+  const adaptiveCooldown=candidate.cooldownDays*Math.min(3,1+prompt.unansweredStreak*0.75);
+  if(prompt.lastPromptAt&&daysBetween(now,prompt.lastPromptAt)<adaptiveCooldown)return false;
   return true;
 }
 
@@ -84,6 +93,7 @@ function dataCompletionCandidates(presentFacts:Set<string>):ProactiveCandidate[]
       roomKey:'hilal',
       senderKey:'budget-spending-owner',
       senderName:'مسؤول الميزانية والإنفاق',
+      scopeKind:'role',scopeKey:'budget-spending-owner',
       kind:'request',
       basePriority:96,
       cooldownDays:10,
@@ -99,6 +109,7 @@ function dataCompletionCandidates(presentFacts:Set<string>):ProactiveCandidate[]
       roomKey:'hilal',
       senderKey:'budget-spending-owner',
       senderName:'مسؤول الميزانية والإنفاق',
+      scopeKind:'role',scopeKey:'budget-spending-owner',
       kind:'request',
       basePriority:91,
       cooldownDays:12,
@@ -114,6 +125,7 @@ function dataCompletionCandidates(presentFacts:Set<string>):ProactiveCandidate[]
       roomKey:'hilal',
       senderKey:'budget-spending-owner',
       senderName:'مسؤول الميزانية والإنفاق',
+      scopeKind:'role',scopeKey:'budget-spending-owner',
       kind:'request',
       basePriority:84,
       cooldownDays:14,
@@ -129,6 +141,7 @@ function dataCompletionCandidates(presentFacts:Set<string>):ProactiveCandidate[]
       roomKey:'assets',
       senderKey:'goals-owner',
       senderName:'مسؤول الأهداف',
+      scopeKind:'role',scopeKey:'goals-owner',
       kind:'request',
       basePriority:80,
       cooldownDays:14,
@@ -153,6 +166,7 @@ function operationalCandidates(
       roomKey:'hilal',
       senderKey:'obligations-owner',
       senderName:'مسؤول الالتزامات',
+      scopeKind:'role',scopeKey:'obligations-owner',
       kind:'risk',
       basePriority:140,
       cooldownDays:3,
@@ -188,6 +202,7 @@ function operationalCandidates(
         roomKey:'solvency',
         senderKey:'liquidity-protection-owner',
         senderName:'مسؤول السيولة والحماية',
+        scopeKind:'role',scopeKey:'liquidity-protection-owner',
         kind:'risk',
         basePriority:132,
         cooldownDays:4,
@@ -229,6 +244,7 @@ function operationalCandidates(
           roomKey:'solvency',
           senderKey:'liquidity-protection-owner',
           senderName:'مسؤول السيولة والحماية',
+        scopeKind:'role',scopeKey:'liquidity-protection-owner',
           kind:'followup',
           basePriority:112,
           cooldownDays:7,
@@ -240,6 +256,47 @@ function operationalCandidates(
         });
       }
     }
+  }
+  return candidates;
+}
+
+async function meetingCandidates(userId:string,now:Date):Promise<ProactiveCandidate[]>{
+  const schedule=await getGovernanceMeetingSchedule(userId).catch(()=>null);
+  if(!schedule?.onboarding_complete)return [];
+  const candidates:ProactiveCandidate[]=[];
+  for(const meeting of schedule.meetings){
+    const at=new Date(meeting.scheduled_at);
+    if(Number.isNaN(at.getTime()))continue;
+    const days=(at.getTime()-now.getTime())/(24*60*60*1000);
+    if(days<0||days>3)continue;
+    const missing=meeting.missing_data??[];
+    const owner=/ميزانية|إنفاق/.test(meeting.title)
+      ?{key:'budget-spending-owner',name:'مسؤول الميزانية والإنفاق'}
+      :/استقرار|سيولة|تمويل/.test(meeting.title)
+        ?{key:'liquidity-protection-owner',name:'مسؤول السيولة والحماية'}
+        :/استثمار|أصول/.test(meeting.title)
+          ?{key:'investment-owner',name:'مسؤول الاستثمار'}
+          :/أهداف|التزامات/.test(meeting.title)
+            ?{key:'obligations-owner',name:'مسؤول الالتزامات'}
+            :{key:'central-governor',name:'محافظ بنك نماء المركزي'};
+    const urgent=days<=1;
+    candidates.push({
+      key:`meeting:${meeting.id}:${missing.length?'missing':'prep'}`,
+      roomKey:'council',
+      senderKey:owner.key,
+      senderName:owner.name,
+      kind:missing.length?'request':'followup',
+      basePriority:missing.length?(urgent?136:118):(urgent?104:92),
+      cooldownDays:1,
+      requestedFact:null,
+      title:'تجهيز '+meeting.title,
+      body:missing.length
+        ?`اقترب موعد ${meeting.title}. قبل أن نعتبر الملف جاهزًا، ما زالت هذه البيانات ناقصة: ${missing.join('، ')}. افتح دردشة الاجتماع وأكمل ما تعرفه الآن، وسأبقي بقية النقاط معلقة بدل أن أفترضها.`
+        :`اقترب موعد ${meeting.title}. البيانات الأساسية المتاحة لا تظهر نقصًا مانعًا حاليًا. افتح دردشة الاجتماع إذا أردت مراجعة المحاور أو إضافة نقطة قبل الموعد.`,
+      reason:missing.length?'اجتماع قريب وما زالت له بيانات ناقصة.':'اجتماع قريب ويستحق مراجعة المحاور قبل الموعد.',
+      scopeKind:'meeting',
+      scopeKey:meeting.id,
+    });
   }
   return candidates;
 }
@@ -317,14 +374,16 @@ export async function runDailyConversationOrchestratorForUser(
       return {userId,status:'ALREADY_SENT',roomKey:null,promptKey:null,messageId:null,errorCode:null};
     }
 
-    const [facts,memory,dashboard]=await Promise.all([
+    const [facts,memory,dashboard,meetings]=await Promise.all([
       activeFactKeys(userId),
       readProactiveConversationMemory(userId),
       getDashboardSummary(userId).catch(()=>null),
+      meetingCandidates(userId,now),
     ]);
 
     const candidates=[
       ...operationalCandidates(dashboard),
+      ...meetings,
       ...dataCompletionCandidates(facts),
     ].filter(candidate=>isCandidateEligible(candidate,memory,facts,now))
       .sort((a,b)=>candidateScore(b,memory,now)-candidateScore(a,memory,now));
@@ -361,6 +420,9 @@ export async function runDailyConversationOrchestratorForUser(
           operational_date:operationalDate,
           requested_fact:selected.requestedFact,
           interbank_need:selected.interbankNeed??null,
+          scope_kind:selected.scopeKind??null,
+          role_key:selected.scopeKind==='role'?selected.scopeKey??selected.senderKey:null,
+          meeting_id:selected.scopeKind==='meeting'?selected.scopeKey:null,
           user_action_required:true,
           external_execution:false,
           execution_boundary:'طلب بيانات أو متابعة فقط؛ لا تنفيذ مالي خارجي تلقائي',
