@@ -11518,7 +11518,7 @@
   min-width:128px
 }
 
-@media (max-width:760px){
+@media (max-width:767px){
   .extendedProfileSheet{
     inset-inline:var(--ux-space-1);
     bottom:var(--ux-space-1);
