@@ -316,10 +316,15 @@ function buildBudgetSpendingReply(text:string,amounts:number[],metadata:Record<s
   let nextQuestion:string|null=null;
 
   if(current.stage==='vehicle'){
-    next.vehicle=text;
-    next.stage='fuel';
-    nextQuestion='ما نوع الوقود الذي تستخدمه المركبة؟ بنزين 91 أو 95 أو ديزل أو كهرباء أو غير ذلك؟';
-    body='تم حفظ بيانات المركبة. '+nextQuestion;
+    if(/^(?:ابدأ|نبدأ|ابدأ الاستكمال|ما المطلوب|وش المطلوب|استكمال|متابعة)$/i.test(text.trim().replace(/[؟?!.]+$/g,''))){
+      nextQuestion='نبدأ بالمركبة: ما نوع السيارة وموديلها وسنة الصنع؟ إذا لديك أكثر من سيارة، اذكر السيارة التي تستخدمها غالبًا أولًا.';
+      body='أهلًا، أنا مسؤول الميزانية والإنفاق. سأكمل معك بيانات الإنفاق التشغيلي خطوة بخطوة. '+nextQuestion;
+    }else{
+      next.vehicle=text;
+      next.stage='fuel';
+      nextQuestion='ما نوع الوقود الذي تستخدمه المركبة؟ بنزين 91 أو 95 أو ديزل أو كهرباء أو غير ذلك؟';
+      body='تم حفظ بيانات المركبة. '+nextQuestion;
+    }
   }else if(current.stage==='fuel'){
     next.fuel_type=text;
     next.stage='daily_distance';
