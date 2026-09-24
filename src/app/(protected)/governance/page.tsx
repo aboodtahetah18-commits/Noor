@@ -1,80 +1,81 @@
 import Link from 'next/link';
 import { LucideIcon } from '@/components/ui/lucide-icon';
+import { CENTRAL_ACTIVE_POLICIES } from '@/content/governance/central-active-policies';
+import { CENTRAL_ACTIVE_REGULATIONS } from '@/content/governance/central-active-regulations';
+import { CENTRAL_ACTIVE_PROCEDURES } from '@/content/governance/central-active-procedures';
 
-const sections = [
-  { href: '/governance/authorization', title: 'مصفوفة الصلاحيات', description: 'الصلاحيات، التفويض، ومسارات الاعتماد.' },
-  { href: '/cases', title: 'القرارات والقضايا', description: 'ربط المعرفة بمسارات القرار والتنفيذ.' },
-  { href: '/reports/learning', title: 'مراجعة المعرفة', description: 'ملاحظات الخوارزميات والتعلم والمراجعات.' },
-  { href: '/conversations', title: 'مناقشة المعرفة', description: 'فتح نقاش مع أمين السر والجهة المختصة.' },
-];
+const preview=(items:readonly {referenceCode:string;title:string;version:string|null}[])=>items.slice(0,3);
 
-export default function GovernancePage() {
-  return (
-    <main className="namaa-knowledge-page" dir="rtl">
-      <section className="namaa-knowledge-shell">
-        <header className="namaa-knowledge-hero namaa-wide-card">
-          <div>
-            <p>المرجع المؤسسي</p>
-            <h1>المعرفة</h1>
-            <span>المصدر المعتمد للسياسات واللوائح والإجراءات ومصفوفة الصلاحيات.</span>
-          </div>
-          <LucideIcon name="receiptText" size={32} />
-        </header>
+export default function GovernancePage(){
+  const total=CENTRAL_ACTIVE_POLICIES.length+CENTRAL_ACTIVE_REGULATIONS.length+CENTRAL_ACTIVE_PROCEDURES.length;
+  return <main className="namaa-governance-portal page-shell" dir="rtl">
+    <header className="namaa-governance-portal-hero">
+      <div>
+        <span>المرجع المؤسسي</span>
+        <h1>مكتبة المعرفة والحوكمة</h1>
+        <p>الوصول المباشر إلى السياسات واللوائح والإجراءات النافذة، مع فصل واضح بين القراءة وإدارة الصلاحيات.</p>
+      </div>
+      <div className="namaa-governance-portal-total">
+        <strong>{total}</strong>
+        <span>وثيقة متاحة للاطلاع</span>
+      </div>
+    </header>
 
-        <div className="namaa-knowledge-grid">
-          <aside className="namaa-knowledge-nav namaa-wide-panel">
-            <div className="namaa-investments-section-title">
-              <div><p>مكتبة المعرفة</p><h2>الأقسام</h2></div>
-              <LucideIcon name="search" size={20} />
-            </div>
-            <nav>
-              <Link href="/governance/policies">السياسات</Link>
-              <Link href="/governance/regulations">اللوائح</Link>
-              <Link href="/governance/procedures">الإجراءات</Link>
-              <Link href="/governance/authorization">مصفوفة الصلاحيات</Link>
-            </nav>
-          </aside>
+    <section className="namaa-governance-portal-metrics" aria-label="ملخص مكتبة المعرفة">
+      <article className="tone-policy"><span>السياسات</span><strong>{CENTRAL_ACTIVE_POLICIES.length}</strong><small>وثائق السياسة المركزية</small></article>
+      <article className="tone-regulation"><span>اللوائح</span><strong>{CENTRAL_ACTIVE_REGULATIONS.length}</strong><small>لوائح التشغيل والرقابة</small></article>
+      <article className="tone-procedure"><span>الإجراءات</span><strong>{CENTRAL_ACTIVE_PROCEDURES.length}</strong><small>حزم الإجراءات التشغيلية</small></article>
+      <article className="tone-auth"><span>الصلاحيات</span><strong>محكومة</strong><small>القراءة منفصلة عن الإدارة</small></article>
+    </section>
 
-          <section className="namaa-knowledge-main namaa-wide-panel">
-            <div className="namaa-investments-section-title">
-              <div><p>المصدر النافذ</p><h2>إدارة المعرفة المؤسسية</h2></div>
-              <LucideIcon name="receiptText" size={20} />
-            </div>
-            <div className="namaa-knowledge-summary">
-              <strong>المعرفة هنا مرجع تشغيلي، وليست مكتبة ملفات فقط.</strong>
-              <p>تستخدمها الخوارزميات للتحقق من السياسات واللوائح والإجراءات والصلاحيات قبل إصدار التوصيات أو تمرير القرارات.</p>
-            </div>
-            <div className="namaa-knowledge-cards">
-              {sections.map(section => (
-                <Link key={section.title} href={section.href}>
-                  <strong>{section.title}</strong>
-                  <span>{section.description}</span>
-                  <LucideIcon name="chevronLeft" size={20} />
-                </Link>
-              ))}
-            </div>
-          </section>
-
-          <aside className="namaa-knowledge-review namaa-wide-panel">
-            <div className="namaa-investments-section-title">
-              <div><p>مراجعة الخوارزميات</p><h2>ما يحتاج انتباهًا</h2></div>
-              <LucideIcon name="triangleAlert" size={20} />
-            </div>
-            <article>
-              <strong>تعارض بين مرجعين</strong>
-              <p>يُرفع للمراجعة البشرية ولا يُحسم تلقائيًا.</p>
-            </article>
-            <article>
-              <strong>تصحيح تحريري</strong>
-              <p>يمكن معالجة الأخطاء التقنية الواضحة مع تسجيل الأثر.</p>
-            </article>
-            <article>
-              <strong>تحليل أثر قبل التعديل</strong>
-              <p>أي تعديل جوهري يوضح البنوك والقرارات والأهداف المتأثرة قبل الحفظ.</p>
-            </article>
-          </aside>
+    <section className="namaa-governance-portal-grid">
+      <article className="namaa-governance-library-card card-policy">
+        <header><div><span>المكتبة الأولى</span><h2>السياسات</h2></div><LucideIcon name="receiptText" size={24}/></header>
+        <p>السياسات الحاكمة للقرار والتشغيل والصلاحيات والمتابعة.</p>
+        <div className="namaa-governance-doc-preview">
+          {preview(CENTRAL_ACTIVE_POLICIES).map(item=><Link key={item.referenceCode} href={'/governance/policies?ref='+encodeURIComponent(item.referenceCode)}>
+            <strong>{item.title}</strong><small>{item.referenceCode} · {item.version??'المعتمد'}</small>
+          </Link>)}
         </div>
-      </section>
-    </main>
-  );
+        <Link className="namaa-governance-open-library" href="/governance/policies">فتح مكتبة السياسات</Link>
+      </article>
+
+      <article className="namaa-governance-library-card card-regulation">
+        <header><div><span>المكتبة الثانية</span><h2>اللوائح</h2></div><LucideIcon name="receiptText" size={24}/></header>
+        <p>اللوائح التنظيمية التي تفصل التطبيق والرقابة وسجل الأثر.</p>
+        <div className="namaa-governance-doc-preview">
+          {preview(CENTRAL_ACTIVE_REGULATIONS).map(item=><Link key={item.referenceCode} href={'/governance/regulations?ref='+encodeURIComponent(item.referenceCode)}>
+            <strong>{item.title}</strong><small>{item.referenceCode} · {item.version??'المعتمد'}</small>
+          </Link>)}
+        </div>
+        <Link className="namaa-governance-open-library" href="/governance/regulations">فتح مكتبة اللوائح</Link>
+      </article>
+
+      <article className="namaa-governance-library-card card-procedure">
+        <header><div><span>المكتبة الثالثة</span><h2>الإجراءات</h2></div><LucideIcon name="listChecks" size={24}/></header>
+        <p>المسارات التنفيذية التي تحدد كيف تنتقل الحالة من التحليل إلى المتابعة.</p>
+        <div className="namaa-governance-doc-preview">
+          {preview(CENTRAL_ACTIVE_PROCEDURES).map(item=><Link key={item.referenceCode} href={'/governance/procedures?ref='+encodeURIComponent(item.referenceCode)}>
+            <strong>{item.title}</strong><small>{item.referenceCode} · {item.version??'المعتمد'}</small>
+          </Link>)}
+        </div>
+        <Link className="namaa-governance-open-library" href="/governance/procedures">فتح مكتبة الإجراءات</Link>
+      </article>
+
+      <article className="namaa-governance-library-card card-auth">
+        <header><div><span>الصلاحيات والاعتماد</span><h2>مصفوفة الصلاحيات</h2></div><LucideIcon name="lockKeyhole" size={24}/></header>
+        <p>للاطلاع العام استخدم سياسة الصلاحيات والتفويض والتصعيد. أما شاشة الإدارة فهي مقيدة بالمستخدمين المخولين فقط.</p>
+        <div className="namaa-governance-auth-actions">
+          <Link href="/governance/policies?ref=NMC-POL-02">قراءة سياسة الصلاحيات</Link>
+          <Link href="/governance/authorization">فتح إدارة الصلاحيات</Link>
+        </div>
+        <small className="namaa-governance-auth-note">إذا لم تكن لديك صلاحية الإدارة فلن تفتح وحدة التحكم الإدارية، لكن وثيقة السياسة ستظل متاحة للاطلاع.</small>
+      </article>
+    </section>
+
+    <section className="namaa-governance-portal-footer">
+      <div><strong>الوثائق للقراءة أولًا</strong><span>هذه الصفحة ليست لوحة تحكم ولا صفحة إعدادات؛ هي بوابة الوصول إلى المرجع المؤسسي المعتمد.</span></div>
+      <Link href="/conversations">مناقشة وثيقة مع الجهة المختصة</Link>
+    </section>
+  </main>;
 }
