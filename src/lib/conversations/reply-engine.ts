@@ -284,16 +284,6 @@ export async function createRoutedReply(userId: string, roomKey: ConversationRoo
       nextMetadata = { ...metadata, financial_baseline: result.baseline, onboarding_started:true, last_detected_intent:intent, last_confidence:confidence };
     }
   } else {
-    const result = buildCentralReply(text, intent, amounts, metadata);
-    body = result.body;
-    kind = result.kind;
-    confidence = result.confidence;
-    routedRoom = result.routedRoom;
-    confirmedFact = result.confirmedFact;
-    financialMetrics = baselineMetrics(result.baseline);
-    missingFields = missingBaselineFields(result.baseline);
-    nextMetadata = { ...metadata, financial_baseline: result.baseline, onboarding_started:true, last_detected_intent:intent, last_confidence:confidence };
-  } else {
     const result = buildRoomReply(roomKey, amounts, text);
     body = result.body;
     kind = result.kind;
