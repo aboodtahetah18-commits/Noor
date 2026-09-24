@@ -78,7 +78,7 @@ export function adaptCandidateBody(
   const prompt=memory.prompts[candidate.key];
   if(!prompt)return candidate.body;
   if(prompt.unansweredStreak>=2){
-    return `أختصرها عليك: ${candidate.body.replace(/^.*?[.:]s*/,'')}`;
+    return `أختصرها عليك: ${candidate.body.replace(/^.*?[.:]\s*/,'')}`;
   }
   if(prompt.unansweredStreak===1){
     return `أعيد هذه النقطة لأنها ما زالت تؤثر على التحليل، لكن لن أكررها يوميًا. ${candidate.body}`;
@@ -370,17 +370,16 @@ async function onboardingComplete(userId:string){
   return rows[0]?.status==='COMPLETED'||rows[0]?.current_step==='complete';
 }
 
-async function alreadySentToday(userId:string,operationalDate:string){
+async function proactiveCountToday(userId:string,operationalDate:string){
   const sql=getRawSql();
   const rows=await sql`
-    select id
+    select count(*)::int as count
     from public.conversation_messages
     where user_id=${userId}::uuid
       and coalesce(structured_data->>'proactive_prompt','false')='true'
       and structured_data->>'operational_date'=${operationalDate}
-    limit 1
   `;
-  return Boolean(rows[0]?.id);
+  return Number(rows[0]?.count??0);
 }
 
 export async function runDailyConversationOrchestratorForUser(
@@ -392,11 +391,8 @@ export async function runDailyConversationOrchestratorForUser(
       return {userId,status:'ONBOARDING_INCOMPLETE',roomKey:null,promptKey:null,messageId:null,errorCode:null};
     }
     const operationalDate=await getUserOperationalDate(userId,now);
-    if(await alreadySentToday(userId,operationalDate)){
-      return {userId,status:'ALREADY_SENT',roomKey:null,promptKey:null,messageId:null,errorCode:null};
-    }
-
-    const [facts,memory,dashboard,meetings]=await Promise.all([
+    const [dailyPromptCount,facts,memory,dashboard,meetings]=await Promise.all([
+      proactiveCountToday(userId,operationalDate),
       activeFactKeys(userId),
       readProactiveConversationMemory(userId),
       getDashboardSummary(userId).catch(()=>null),
@@ -413,6 +409,9 @@ export async function runDailyConversationOrchestratorForUser(
     const selectedBase=candidates[0];
     if(!selectedBase){
       return {userId,status:'NO_CANDIDATE',roomKey:null,promptKey:null,messageId:null,errorCode:null};
+    }
+    if(dailyPromptCount>=2||(dailyPromptCount>=1&&selectedBase.basePriority<130)){
+      return {userId,status:'ALREADY_SENT',roomKey:selectedBase.roomKey,promptKey:selectedBase.key,messageId:null,errorCode:null};
     }
     const selected={...selectedBase,body:adaptCandidateBody(selectedBase,memory)};
 
