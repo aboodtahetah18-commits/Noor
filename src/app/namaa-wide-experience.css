@@ -667,13 +667,13 @@
   }
 
   .namaa-decisions-list article.is-warning {
-    border-color:#f5c56b;
-    background:#d8ccb4;
+    border-color:#F59E0B;
+    background:#FFF7E6;
   }
 
   .namaa-decisions-list article.is-critical {
-    border-color:#ef4444;
-    background:#d8c0bd;
+    border-color:#EF4444;
+    background:#FFF1F2;
   }
 
   .namaa-decisions-status span,
@@ -834,8 +834,8 @@
   }
 
   .namaa-observatory-side > article.is-warning {
-    border-color:#f5c56b;
-    background:#d8ccb4;
+    border-color:#F59E0B;
+    background:#FFF7E6;
   }
 
   .namaa-observatory-empty {
@@ -1021,8 +1021,8 @@
   }
 
   .namaa-lab-item.is-warning {
-    border-color:#f5c56b;
-    background:#d8ccb4;
+    border-color:#F59E0B;
+    background:#FFF7E6;
   }
 
   .namaa-lab-item-head {
@@ -1198,8 +1198,8 @@
     align-items:flex-start;
     padding:14px;
     border-radius:14px;
-    background:#d8ccb4;
-    border:1px solid #f5c56b;
+    background:#FFF7E6;
+    border:1px solid #F59E0B;
   }
 
   .namaa-settings-impact-note svg {
@@ -1605,13 +1605,13 @@
 
   .namaa-table-status.is-overdue,
   .namaa-table-status.is-warning {
-    background:#d8b8b5;
-    color:#991b1b;
+    background:#FFF1F2;
+    color:#991B1B;
   }
 
   .namaa-table-status.is-due {
-    background:#d7c4a3;
-    color:#92400e;
+    background:#FFF7E6;
+    color:#92400E;
   }
 
   .namaa-table-status.is-paid,
@@ -1622,8 +1622,8 @@
 
   .namaa-table-status.is-inactive,
   .namaa-table-status.is-cancelled {
-    background:#aebfb3;
-    color:#41574d;
+    background:#F3F4F2;
+    color:#61758A;
   }
 
   .namaa-data-table .p49-resource-actions {
@@ -2045,28 +2045,6 @@
     background:var(--namaa-wide-input)!important;
     color:var(--namaa-wide-text)!important;
     border-color:var(--namaa-wide-border)!important;
-  }
-
-  html[data-theme="dark"] .protected-app-shell :where(
-    .primary-button,
-    .primary-link,
-    .namaa-wide-action
-  ) {
-    background:#0f5b46!important;
-    color:#f2f7f4!important;
-    border-color:#2d8067!important;
-  }
-
-  html[data-theme="dark"] .protected-app-shell :where(
-    .secondary-button,
-    .secondary-link,
-    .button-link,
-    .p49-modal-trigger,
-    .namaa-wide-action-secondary
-  ) {
-    background:#3a3223!important;
-    color:#f5e6bd!important;
-    border-color:#8a6d38!important;
   }
 }
 
@@ -3799,6 +3777,11 @@
 
   /* 3) الأزرار الأساسية في الداكن = ذهبي فاتح + خط/أيقونة داكنة */
   html[data-theme="dark"] :where(
+    .primary,
+    .primary-button,
+    .primary-link,
+    .p47-primary-action,
+    .auth-submit,
     .namaa-governance-open-library,
     .namaa-governance-portal-footer>a,
     .namaa-wide-action,
@@ -3813,6 +3796,11 @@
   }
 
   html[data-theme="dark"] :where(
+    .primary,
+    .primary-button,
+    .primary-link,
+    .p47-primary-action,
+    .auth-submit,
     .namaa-governance-open-library,
     .namaa-governance-portal-footer>a,
     .namaa-wide-action,
@@ -3824,6 +3812,11 @@
   }
 
   html[data-theme="dark"] :where(
+    .primary,
+    .primary-button,
+    .primary-link,
+    .p47-primary-action,
+    .auth-submit,
     .namaa-governance-open-library,
     .namaa-governance-portal-footer>a,
     .namaa-wide-action,
@@ -3837,6 +3830,11 @@
 
   /* 4) الأزرار الثانوية */
   html[data-theme="dark"] :where(
+    .secondary-button,
+    .secondary-link,
+    .button-link,
+    .p47-secondary-action,
+    .p49-modal-trigger,
     .namaa-wide-action-secondary,
     .p49-action-dialog .secondary-button,
     .p49-action-dialog .button-link,
@@ -3848,6 +3846,11 @@
   }
 
   html[data-theme="dark"] :where(
+    .secondary-button,
+    .secondary-link,
+    .button-link,
+    .p47-secondary-action,
+    .p49-modal-trigger,
     .namaa-wide-action-secondary,
     .p49-action-dialog .secondary-button,
     .p49-action-dialog .button-link,
