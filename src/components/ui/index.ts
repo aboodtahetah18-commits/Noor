@@ -9,3 +9,4 @@ export { StatusBadge } from './StatusBadge';
 export { Table, TableShell } from './TableShell';
 export { EntityActionRail } from './entity-actions';
 export { PrintButton } from './print-button';
+export { PageHeader } from './PageHeader';
