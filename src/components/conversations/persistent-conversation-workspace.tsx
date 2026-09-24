@@ -622,6 +622,7 @@ function buildRichMessageMetrics(data?:Record<string,unknown>){
   const exposure=data.policy_cap_evidence&&typeof data.policy_cap_evidence==='object'&&
     (data.policy_cap_evidence as Record<string,unknown>).exposure_profile&&typeof (data.policy_cap_evidence as Record<string,unknown>).exposure_profile==='object'
     ?(data.policy_cap_evidence as Record<string,unknown>).exposure_profile as Record<string,unknown>:null;
+  const hasMissing=Array.isArray(data.missing_fields)&&data.missing_fields.length>0;
   const candidates=[
     richMetric('المبلغ المطلوب',data.requested_amount,'sar'),
     richMetric('المبلغ المستهدف',data.target_amount,'sar'),
@@ -633,7 +634,7 @@ function buildRichMessageMetrics(data?:Record<string,unknown>){
     richMetric('نسبة الالتزامات',financial?.obligation_ratio,'percent'),
     richMetric('القسط المتوقع',data.expected_installment,'sar'),
     richMetric('التعرض القائم',exposure?.outstanding_exposure,'sar'),
-    richMetric('الثقة',data.confidence_percent,'plain'),
+    hasMissing?null:richMetric('الثقة في القيم',data.confidence_percent,'plain'),
   ].filter((item):item is {label:string;value:string}=>Boolean(item));
   return candidates.slice(0,3);
 }
