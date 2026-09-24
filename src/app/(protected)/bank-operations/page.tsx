@@ -32,7 +32,7 @@ export default async function BankOperationsPage({searchParams}:{searchParams:Pr
     goalsGap,
     emergencyBalance:Number(emergency?.currentBalance??0),
     emergencyProgress:Number(emergency?.progressPercent??0),
-    emergencyCoverageMonths:emergency?.coverageMonths??null,
+    emergencyCoverageMonths:emergency?.coverageMonths==null?null:Number(emergency.coverageMonths),
     savingsActual:Number(savings?.actualTransferredAmount??0),
     savingsPlanned:Number(savings?.allocatedAmount??0),
   };
