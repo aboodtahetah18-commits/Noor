@@ -198,6 +198,7 @@ body { font-family:var(--ux-font-family-base); }
   border-color:var(--ux-shell-topbar-border) !important;
   box-shadow:var(--ux-shadow-xs) !important;
 }
+.mustaqbali-sidebar,
 .mustaqbali-mobile-drawer {
   background:var(--ux-shell-sidebar-bg) !important;
   color:var(--ux-text-inverse) !important;
