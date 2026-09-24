@@ -12049,7 +12049,8 @@
   color:var(--ux-text-primary)
 }
 .accountEditorGrid input,
-.meetingEditorModal input{
+.meetingEditorModal input,
+.meetingEditorModal select{
   width:100%;
   min-height:44px;
   border:1px solid var(--namaa-border);
