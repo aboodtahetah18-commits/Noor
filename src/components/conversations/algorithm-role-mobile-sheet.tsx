@@ -52,7 +52,7 @@ function applyRoleEdits(value:string,corrections:RoleCorrection[],amendments:Rol
   return next;
 }
 
-export function AlgorithmRoleMobileSheet({role,onClose}:{role:AlgorithmRoleRef;onClose:()=>void}){
+export function AlgorithmRoleMobileSheet({role,onClose,onOpenChat}:{role:AlgorithmRoleRef;onClose:()=>void;onOpenChat?:()=>void}){
   const [corrections,setCorrections]=useState<RoleCorrection[]>([]);
   const [amendments,setAmendments]=useState<RoleAmendment[]>([]);
   const [editMode,setEditMode]=useState<'typo'|'governance'|null>(null);
@@ -155,6 +155,8 @@ export function AlgorithmRoleMobileSheet({role,onClose}:{role:AlgorithmRoleRef;o
           <header><small>المادة 1</small><strong>الغرض من الدور والمهمة الأساسية</strong></header>
           <div className={styles.algorithmRoleItem}><span>1.1</span><p>{editText(role.mandate)}</p></div>
         </section>
+
+        {onOpenChat&&<button type="button" className={styles.primaryActionButton} onClick={onOpenChat}><LucideIcon name="messageSquareText" size={20}/><span>فتح دردشة مباشرة مع {role.name}</span></button>}
 
         <section className={styles.governedQuickActions+' '+styles.algorithmRoleEditActions} aria-label="تعديل الوصف الوظيفي">
           <button type="button" className={styles.governedTypoButton} onClick={()=>{setEditMode('typo');setFeedback('')}}><LucideIcon name="pencil" size={24}/><span><strong>تعديل إملائي</strong></span></button>
