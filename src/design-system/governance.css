@@ -568,3 +568,169 @@
     display:none;
   }
 }
+
+
+/* Authorization administration — visually aligned with governance while preserving restricted logic. */
+.namaa-authorization-admin .p47-analysis-shell {
+  inline-size:100%;
+  max-inline-size:var(--ux-container-content);
+  margin-inline:auto;
+}
+
+.namaa-authorization-admin .namaa-authorization-metrics {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));
+  gap:var(--ux-space-3);
+}
+
+.namaa-authorization-admin .namaa-authorization-metrics > span {
+  min-inline-size:0;
+  display:grid;
+  gap:var(--ux-space-1);
+  padding:var(--ux-space-3);
+  border:var(--ux-border-width-1) solid var(--ux-border-default);
+  border-radius:var(--ux-radius-md);
+  background:var(--ux-card-bg);
+  color:var(--ux-text-secondary);
+}
+
+.namaa-authorization-admin .namaa-authorization-metrics b {
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-card-title-size);
+}
+
+.namaa-authorization-card {
+  min-inline-size:0;
+  display:grid;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-4);
+  border:var(--ux-border-width-1) solid var(--ux-border-default);
+  border-radius:var(--ux-radius-lg);
+  background:var(--ux-card-bg);
+  color:var(--ux-text-primary);
+  box-shadow:var(--ux-shadow-xs);
+}
+
+.namaa-authorization-card .p47-section-heading {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:var(--ux-space-3);
+  padding-block-end:var(--ux-space-3);
+  border-block-end:var(--ux-border-width-1) solid var(--ux-border-default);
+}
+
+.namaa-authorization-details {
+  min-inline-size:0;
+  overflow:hidden;
+  border:var(--ux-border-width-1) solid var(--ux-border-default);
+  border-radius:var(--ux-radius-md);
+  background:var(--ux-surface-default);
+}
+
+.namaa-authorization-details > summary {
+  min-block-size:var(--ux-size-12);
+  display:flex;
+  align-items:center;
+  padding:var(--ux-space-3) var(--ux-space-4);
+  color:var(--ux-text-primary);
+  font-weight:700;
+  cursor:pointer;
+  background:var(--ux-section-soft-teal);
+}
+
+.namaa-authorization-details > :not(summary) {
+  margin-inline:var(--ux-space-4);
+}
+
+.namaa-authorization-form {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:var(--ux-space-3);
+  padding-block:var(--ux-space-3);
+}
+
+.namaa-authorization-form > label {
+  min-inline-size:0;
+  display:grid;
+  gap:var(--ux-space-2);
+}
+
+.namaa-authorization-form > label > span {
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-label-size);
+  font-weight:var(--ux-type-label-weight);
+}
+
+.namaa-authorization-form :where(input,select,textarea) {
+  inline-size:100%;
+  min-inline-size:0;
+  min-block-size:var(--ux-size-10);
+  box-sizing:border-box;
+  padding-inline:var(--ux-space-3);
+  border:var(--ux-border-width-1) solid var(--ux-border-default);
+  border-radius:var(--ux-radius-md);
+  background:var(--ux-control-bg);
+  color:var(--ux-control-text);
+  font:inherit;
+}
+
+.namaa-authorization-form textarea {
+  min-block-size:104px;
+  padding-block:var(--ux-space-3);
+  resize:vertical;
+}
+
+.namaa-authorization-actions {
+  grid-column:1/-1;
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:var(--ux-space-2);
+}
+
+.namaa-authorization-actions :where(button) {
+  inline-size:auto;
+  min-block-size:var(--ux-size-10);
+  padding-inline:var(--ux-space-4);
+  border-radius:10px;
+}
+
+@media (max-width:767px) {
+  .namaa-authorization-admin .namaa-authorization-metrics,
+  .namaa-authorization-form {
+    grid-template-columns:minmax(0,1fr);
+  }
+
+  .namaa-authorization-card {
+    padding:var(--ux-space-3);
+  }
+
+  .namaa-authorization-card .p47-section-heading {
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+  }
+
+  .namaa-authorization-details > summary {
+    padding-inline:var(--ux-space-3);
+  }
+
+  .namaa-authorization-details > :not(summary) {
+    margin-inline:var(--ux-space-3);
+  }
+
+  .namaa-authorization-actions {
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    scrollbar-width:none;
+  }
+
+  .namaa-authorization-actions::-webkit-scrollbar {
+    display:none;
+  }
+
+  .namaa-authorization-actions :where(button) {
+    min-block-size:var(--ux-size-12);
+    flex:0 0 auto;
+  }
+}
