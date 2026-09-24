@@ -48,13 +48,31 @@ export async function GET(){
       order by updated_at desc,created_at desc
     `;
     const facts:Record<string,unknown>={};
+    let dependentSeed:Array<Record<string,unknown>>=[];
     for(const row of rows){
       const factKey=String(row.fact_key);
+      if(factKey==='dependents'&&row.value_json&&typeof row.value_json==='object'&&!Array.isArray(row.value_json)){
+        const items=(row.value_json as Record<string,unknown>).items;
+        if(Array.isArray(items)){
+          dependentSeed=items.flatMap(item=>item&&typeof item==='object'&&!Array.isArray(item)?[item as Record<string,unknown>]:[]);
+        }
+      }
       const sectionKey=factKey.startsWith('extended:')
         ? factKey.replace(/^extended:/,'')
         : sourceKeyToSection.get(factKey);
       if(!sectionKey||!sectionMap.has(sectionKey)||facts[sectionKey]) continue;
       facts[sectionKey]={value:row.value_json,confidence:Number(row.confidence??1),verified_at:row.verified_at,updated_at:row.updated_at};
+    }
+    if(!facts.beneficiaries&&dependentSeed.length){
+      facts.beneficiaries={
+        value:{items:dependentSeed.map(item=>({
+          name:String(item.name??'').trim(),
+          relationship:String(item.relationship??'').trim(),
+        })).filter(item=>item.name)},
+        confidence:1,
+        verified_at:null,
+        updated_at:null,
+      };
     }
     return NextResponse.json({sections:extendedProfileSections,facts});
   }catch(error){
