@@ -5562,3 +5562,381 @@
     flex-direction:column!important;
   }
 }
+
+
+/* ========================================================================== */
+/* GOVERNANCE PORTAL — document-library landing, not a dashboard               */
+/* ========================================================================== */
+@media (min-width:768px){
+  .namaa-governance-portal{
+    width:min(100%,1500px)!important;
+    margin-inline:auto!important;
+    padding:20px 22px 30px!important;
+    background:var(--namaa-wide-surface)!important;
+    color:var(--namaa-wide-text)!important;
+  }
+
+  .namaa-governance-portal-hero{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:18px!important;
+    padding:20px 22px!important;
+    border:1px solid var(--namaa-wide-border)!important;
+    border-radius:18px!important;
+    background:linear-gradient(135deg,#9eb5a7,#c7b477)!important;
+  }
+
+  .namaa-governance-portal-hero>div:first-child{
+    min-width:0!important;
+  }
+
+  .namaa-governance-portal-hero>div:first-child>span{
+    display:block!important;
+    color:#6b5424!important;
+    font-size:12px!important;
+    font-weight:900!important;
+    margin-bottom:4px!important;
+  }
+
+  .namaa-governance-portal-hero h1{
+    margin:0!important;
+    color:#173d32!important;
+    font-size:clamp(30px,3.3vw,44px)!important;
+    line-height:1.2!important;
+  }
+
+  .namaa-governance-portal-hero p{
+    margin:8px 0 0!important;
+    color:#43584f!important;
+    line-height:1.75!important;
+  }
+
+  .namaa-governance-portal-total{
+    flex:0 0 auto!important;
+    min-width:160px!important;
+    min-height:110px!important;
+    display:grid!important;
+    place-items:center!important;
+    align-content:center!important;
+    gap:3px!important;
+    padding:14px!important;
+    border:1px solid #8ea091!important;
+    border-radius:16px!important;
+    background:#b5c3b9!important;
+  }
+
+  .namaa-governance-portal-total strong{
+    color:#1d4034!important;
+    font-size:30px!important;
+    line-height:1!important;
+  }
+
+  .namaa-governance-portal-total span{
+    color:#51665d!important;
+    font-size:12px!important;
+    font-weight:800!important;
+  }
+
+  .namaa-governance-portal-metrics{
+    display:grid!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:12px!important;
+    margin-top:14px!important;
+  }
+
+  .namaa-governance-portal-metrics article{
+    min-width:0!important;
+    min-height:112px!important;
+    padding:14px!important;
+    border:1px solid var(--namaa-wide-border)!important;
+    border-radius:15px!important;
+    display:grid!important;
+    align-content:center!important;
+    gap:3px!important;
+  }
+
+  .namaa-governance-portal-metrics .tone-policy{background:#9db4a5!important;}
+  .namaa-governance-portal-metrics .tone-regulation{background:#c4b27f!important;}
+  .namaa-governance-portal-metrics .tone-procedure{background:#a4aa91!important;}
+  .namaa-governance-portal-metrics .tone-auth{background:#b79e96!important;}
+
+  .namaa-governance-portal-metrics article span{
+    color:#4c5f56!important;
+    font-size:12px!important;
+    font-weight:900!important;
+  }
+
+  .namaa-governance-portal-metrics article strong{
+    color:#18261f!important;
+    font-size:25px!important;
+    line-height:1.2!important;
+  }
+
+  .namaa-governance-portal-metrics article small{
+    color:#50645b!important;
+    line-height:1.5!important;
+  }
+
+  .namaa-governance-portal-grid{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:14px!important;
+    margin-top:14px!important;
+  }
+
+  .namaa-governance-library-card{
+    min-width:0!important;
+    padding:18px!important;
+    border:1px solid var(--namaa-wide-border)!important;
+    border-radius:16px!important;
+    display:grid!important;
+    align-content:start!important;
+    gap:13px!important;
+  }
+
+  .namaa-governance-library-card.card-policy{background:#aebfb3!important;}
+  .namaa-governance-library-card.card-regulation{background:#c8b98c!important;}
+  .namaa-governance-library-card.card-procedure{background:#a8ad96!important;}
+  .namaa-governance-library-card.card-auth{background:#b89f97!important;}
+
+  .namaa-governance-library-card>header{
+    display:flex!important;
+    align-items:flex-start!important;
+    justify-content:space-between!important;
+    gap:12px!important;
+  }
+
+  .namaa-governance-library-card>header>div{
+    min-width:0!important;
+  }
+
+  .namaa-governance-library-card>header span{
+    display:block!important;
+    color:#6d5728!important;
+    font-size:12px!important;
+    font-weight:900!important;
+    margin-bottom:3px!important;
+  }
+
+  .namaa-governance-library-card h2{
+    margin:0!important;
+    color:#18261f!important;
+    font-size:24px!important;
+    line-height:1.3!important;
+  }
+
+  .namaa-governance-library-card>header svg{
+    color:#6d5728!important;
+    flex:0 0 auto!important;
+  }
+
+  .namaa-governance-library-card>p{
+    margin:0!important;
+    color:#43584f!important;
+    line-height:1.7!important;
+  }
+
+  .namaa-governance-doc-preview{
+    display:grid!important;
+    gap:8px!important;
+  }
+
+  .namaa-governance-doc-preview>a{
+    min-width:0!important;
+    padding:10px 11px!important;
+    display:grid!important;
+    gap:3px!important;
+    border:1px solid #899d90!important;
+    border-radius:12px!important;
+    background:#a4b5aa!important;
+    color:#1d3028!important;
+    text-decoration:none!important;
+  }
+
+  .card-regulation .namaa-governance-doc-preview>a{background:#b4a77c!important;}
+  .card-procedure .namaa-governance-doc-preview>a{background:#979f87!important;}
+
+  .namaa-governance-doc-preview>a:hover{
+    border-color:#9d7d3f!important;
+    background:#c9b16f!important;
+  }
+
+  .namaa-governance-doc-preview strong{
+    color:inherit!important;
+    line-height:1.5!important;
+    overflow-wrap:anywhere!important;
+  }
+
+  .namaa-governance-doc-preview small{
+    color:#4f645a!important;
+    line-height:1.4!important;
+  }
+
+  .namaa-governance-open-library{
+    min-height:44px!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    padding:0 14px!important;
+    border:1px solid #285d4a!important;
+    border-radius:12px!important;
+    background:#315b4c!important;
+    color:#e3d4ad!important;
+    text-decoration:none!important;
+    font-weight:900!important;
+  }
+
+  .namaa-governance-auth-actions{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:10px!important;
+  }
+
+  .namaa-governance-auth-actions>a{
+    min-height:46px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    padding:0 12px!important;
+    border:1px solid #8a7651!important;
+    border-radius:12px!important;
+    background:#ad9c76!important;
+    color:#2d2b20!important;
+    text-decoration:none!important;
+    font-weight:900!important;
+    text-align:center!important;
+  }
+
+  .namaa-governance-auth-actions>a:last-child{
+    background:#315b4c!important;
+    color:#e3d4ad!important;
+    border-color:#285d4a!important;
+  }
+
+  .namaa-governance-auth-note{
+    color:#5a4d47!important;
+    line-height:1.6!important;
+  }
+
+  .namaa-governance-portal-footer{
+    margin-top:14px!important;
+    padding:16px 18px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:16px!important;
+    border:1px solid var(--namaa-wide-border)!important;
+    border-radius:15px!important;
+    background:#9fb3a7!important;
+  }
+
+  .namaa-governance-portal-footer>div{
+    min-width:0!important;
+    display:grid!important;
+    gap:3px!important;
+  }
+
+  .namaa-governance-portal-footer strong{
+    color:#18392f!important;
+    font-size:16px!important;
+  }
+
+  .namaa-governance-portal-footer span{
+    color:#4b6157!important;
+    line-height:1.6!important;
+  }
+
+  .namaa-governance-portal-footer>a{
+    flex:0 0 auto!important;
+    min-height:44px!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    padding:0 14px!important;
+    border-radius:12px!important;
+    background:#c7b477!important;
+    color:#352d17!important;
+    text-decoration:none!important;
+    font-weight:900!important;
+  }
+
+  html[data-theme="dark"] .namaa-governance-portal{
+    background:#10211c!important;
+  }
+
+  html[data-theme="dark"] .namaa-governance-portal-hero{
+    background:linear-gradient(135deg,#28483d,#594a2d)!important;
+    border-color:#4f6b60!important;
+  }
+
+  html[data-theme="dark"] .namaa-governance-portal-hero h1,
+  html[data-theme="dark"] .namaa-governance-portal-hero p{
+    color:#ddcfad!important;
+  }
+
+  html[data-theme="dark"] .namaa-governance-portal-total{
+    background:#29463b!important;
+    border-color:#4f6b60!important;
+  }
+
+  html[data-theme="dark"] .namaa-governance-portal-total strong,
+  html[data-theme="dark"] .namaa-governance-portal-total span{
+    color:#ddcfad!important;
+  }
+
+  html[data-theme="dark"] .namaa-governance-portal-metrics .tone-policy{background:#29483d!important;}
+  html[data-theme="dark"] .namaa-governance-portal-metrics .tone-regulation{background:#4c422b!important;}
+  html[data-theme="dark"] .namaa-governance-portal-metrics .tone-procedure{background:#394334!important;}
+  html[data-theme="dark"] .namaa-governance-portal-metrics .tone-auth{background:#493632!important;}
+
+  html[data-theme="dark"] .namaa-governance-portal-metrics article :where(span,strong,small){
+    color:#d7ccb1!important;
+  }
+
+  html[data-theme="dark"] .namaa-governance-library-card.card-policy{background:#203c32!important;}
+  html[data-theme="dark"] .namaa-governance-library-card.card-regulation{background:#4b422b!important;}
+  html[data-theme="dark"] .namaa-governance-library-card.card-procedure{background:#384235!important;}
+  html[data-theme="dark"] .namaa-governance-library-card.card-auth{background:#493733!important;}
+
+  html[data-theme="dark"] .namaa-governance-library-card h2,
+  html[data-theme="dark"] .namaa-governance-library-card>p,
+  html[data-theme="dark"] .namaa-governance-auth-note{
+    color:#d8ccb1!important;
+  }
+
+  html[data-theme="dark"] .namaa-governance-doc-preview>a{
+    background:#29473c!important;
+    color:#d9cdaF!important;
+    border-color:#4f6b60!important;
+  }
+
+  html[data-theme="dark"] .card-regulation .namaa-governance-doc-preview>a{background:#4b432d!important;}
+  html[data-theme="dark"] .card-procedure .namaa-governance-doc-preview>a{background:#3b4437!important;}
+
+  html[data-theme="dark"] .namaa-governance-portal-footer{
+    background:#29463b!important;
+    border-color:#4f6b60!important;
+  }
+
+  html[data-theme="dark"] .namaa-governance-portal-footer :where(strong,span){
+    color:#d8ccb1!important;
+  }
+}
+
+@media (min-width:768px) and (max-width:1100px){
+  .namaa-governance-portal-metrics,
+  .namaa-governance-portal-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+
+  .namaa-governance-portal-hero,
+  .namaa-governance-portal-footer{
+    align-items:stretch!important;
+    flex-direction:column!important;
+  }
+
+  .namaa-governance-portal-total{
+    min-width:0!important;
+  }
+}
