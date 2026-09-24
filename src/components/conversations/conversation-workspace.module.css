@@ -12464,3 +12464,186 @@
 .mobileRecordEditorBody .financial-auto-result{
   grid-column:1/-1
 }
+
+
+/* Work-directory tabs and meeting detail polish. */
+.directoryTabs{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:var(--ux-space-1);
+  margin-bottom:var(--ux-space-3)
+}
+.directoryTabs button{
+  min-height:40px;
+  padding:var(--ux-space-1) var(--ux-space-2);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-card);
+  color:var(--ux-text-secondary);
+  font:inherit;
+  font-size:var(--ux-type-caption-size);
+  font-weight:800;
+  cursor:pointer
+}
+.directoryTabs .directoryTabActive{
+  border-color:var(--namaa-gold-500);
+  background:var(--namaa-cream);
+  color:var(--namaa-green-900)
+}
+.responsibilityOwnerList{
+  display:grid;
+  gap:var(--ux-space-2)
+}
+.responsibilityOwnerList>button{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:var(--ux-space-2);
+  width:100%;
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-card);
+  color:var(--ux-text-primary);
+  text-align:right;
+  font:inherit;
+  cursor:pointer
+}
+.responsibilityOwnerList>button>span{
+  min-width:0;
+  display:grid;
+  gap:var(--ux-space-1)
+}
+.responsibilityOwnerList strong{
+  font-size:var(--ux-type-caption-size);
+  color:var(--namaa-green-900)
+}
+.responsibilityOwnerList small{
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  line-height:1.5
+}
+.directoryMeetingPanel{
+  display:grid;
+  gap:var(--ux-space-2);
+  padding:var(--ux-space-4);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-4);
+  background:var(--namaa-surface-warm);
+  text-align:center
+}
+.directoryMeetingPanel>svg{
+  margin-inline:auto;
+  color:var(--namaa-green-900)
+}
+.directoryMeetingPanel small{
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  line-height:1.6
+}
+.meetingActions{
+  display:flex!important;
+  flex-direction:row!important;
+  flex-wrap:nowrap!important;
+  align-items:center;
+  justify-content:flex-end;
+  gap:var(--ux-space-2)!important;
+  overflow-x:auto
+}
+.meetingActions button{
+  width:auto!important;
+  min-width:0;
+  height:38px;
+  padding-inline:var(--ux-space-3);
+  display:inline-flex!important;
+  grid-template-columns:none!important;
+  align-items:center;
+  justify-content:center;
+  gap:var(--ux-space-1);
+  white-space:nowrap
+}
+.meetingActions button span{
+  font-size:var(--ux-type-caption-size);
+  font-weight:800
+}
+.meetingActions button:last-child{
+  color:var(--ux-state-error)
+}
+.meetingDetailsModal{
+  width:min(680px,100%)
+}
+.meetingDetailsBody{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:var(--ux-space-3)!important
+}
+.meetingDetailsBody>section{
+  display:grid;
+  gap:var(--ux-space-2);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-surface-warm)
+}
+.meetingDetailsHeading{
+  display:flex;
+  align-items:center;
+  gap:var(--ux-space-2)
+}
+.meetingDetailsHeading svg{
+  color:var(--namaa-green-900)
+}
+.meetingDetailsBody ul{
+  margin:var(--ux-space-0);
+  padding-inline-start:var(--ux-space-5);
+  display:grid;
+  gap:var(--ux-space-1)
+}
+.meetingDetailsBody li,
+.meetingDetailsBody p{
+  margin:var(--ux-space-0);
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  line-height:1.65
+}
+.meetingDocumentList{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:var(--ux-space-2)!important
+}
+.meetingDocumentList>span{
+  display:grid;
+  gap:var(--ux-space-1);
+  padding:var(--ux-space-2);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-2);
+  background:var(--namaa-card)
+}
+.meetingDocumentList small{
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size)
+}
+
+@media(max-width:767px){
+  .directoryTabs{
+    position:sticky;
+    top:var(--ux-space-0);
+    z-index:4;
+    padding-block:var(--ux-space-2);
+    background:var(--namaa-card)
+  }
+  .directoryTabs button{
+    min-height:44px;
+    padding-inline:var(--ux-space-1)
+  }
+  .meetingActions{
+    justify-content:stretch!important
+  }
+  .meetingActions button{
+    flex:1 1 0
+  }
+}
