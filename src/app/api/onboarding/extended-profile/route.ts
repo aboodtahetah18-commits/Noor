@@ -5,6 +5,8 @@ import { NextResponse } from 'next/server';
 import { getAuthenticatedUser, requireAuthenticatedMutationUser } from '@/auth/require-authenticated-user';
 import { getRawSql } from '@/infrastructure/db/client';
 import { extendedProfileSections } from '@/lib/conversations/extended-profile-catalog';
+import { getFinancialJourneyStatus } from '@/lib/conversations/financial-journey-orchestrator';
+import { syncGovernanceMeetingInvitations } from '@/lib/governance/governance-meeting-scheduler';
 
 const allowed=new Map(extendedProfileSections.map(section=>[section.key,new Set(section.fields.map(field=>field.key))]));
 
@@ -31,7 +33,8 @@ export async function GET(){
       String(row.fact_key).replace(/^extended:/,''),
       {value:row.value_json,confidence:Number(row.confidence??1),verified_at:row.verified_at,updated_at:row.updated_at},
     ]));
-    return NextResponse.json({sections:extendedProfileSections,facts});
+    const journey=await getFinancialJourneyStatus(user.id);
+    return NextResponse.json({sections:extendedProfileSections,facts,journey});
   }catch(error){
     console.error('[extended-profile-read]',{name:error instanceof Error?error.name:'UnknownError'});
     return NextResponse.json({code:'EXTENDED_PROFILE_UNAVAILABLE'},{status:503});
@@ -65,7 +68,17 @@ export async function PUT(request:Request){
         value_json=excluded.value_json,source=excluded.source,confidence=1,verified_at=now(),
         uses=excluded.uses,requires_confirmation=false,status='ACTIVE',updated_at=now()
     `;
-    return NextResponse.json({ok:true,section,value:values});
+    const journey=await getFinancialJourneyStatus(user.id);
+    const meetingSchedule=journey.founding_meeting_eligible
+      ?await syncGovernanceMeetingInvitations(user.id)
+      :null;
+    return NextResponse.json({
+      ok:true,
+      section,
+      value:values,
+      journey,
+      meeting_schedule:meetingSchedule,
+    });
   }catch(error){
     console.error('[extended-profile-write]',{name:error instanceof Error?error.name:'UnknownError'});
     return NextResponse.json({code:'EXTENDED_PROFILE_WRITE_FAILED'},{status:503});

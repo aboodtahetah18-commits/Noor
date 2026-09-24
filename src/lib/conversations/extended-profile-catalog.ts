@@ -14,6 +14,32 @@ export type ExtendedProfileSection={
 
 export const extendedProfileSections:ExtendedProfileSection[]=[
   {
+    key:'bills_subscriptions',
+    title:'الفواتير والاشتراكات',
+    summary:'سجّل الفواتير والاشتراكات المتكررة ومبالغها التقريبية حتى لا يعتمد نماء على التخمين.',
+    fields:[
+      {key:'electricity_bill',label:'متوسط فاتورة الكهرباء شهريًا',kind:'number'},
+      {key:'water_bill',label:'متوسط فاتورة المياه شهريًا',kind:'number'},
+      {key:'mobile_bill',label:'متوسط فاتورة الجوال شهريًا',kind:'number'},
+      {key:'home_internet_bill',label:'متوسط الإنترنت المنزلي شهريًا',kind:'number'},
+      {key:'other_bills',label:'فواتير أخرى متكررة',kind:'textarea',placeholder:'اذكر اسم الفاتورة ومتوسط مبلغها وتكرارها.'},
+      {key:'subscriptions',label:'الاشتراكات المدفوعة',kind:'textarea',placeholder:'مثل المنصات الرقمية، التطبيقات، الأندية، التخزين السحابي وغيرها مع المبلغ والتكرار.'},
+    ],
+  },
+  {
+    key:'daily_living',
+    title:'المعيشة اليومية',
+    summary:'الطعام والشراب والتسوق والعناية الشخصية والمساهمات المنزلية حسب صرفك الفعلي.',
+    fields:[
+      {key:'daily_food_average',label:'متوسط الطعام والشراب يوميًا',kind:'number'},
+      {key:'monthly_groceries',label:'متوسط البقالة شهريًا',kind:'number'},
+      {key:'monthly_shopping',label:'متوسط التسوق شهريًا',kind:'number'},
+      {key:'personal_care',label:'متوسط العناية الشخصية شهريًا',kind:'number'},
+      {key:'family_household_support',label:'مساهمتك الشهرية مع الأسرة أو المنزل',kind:'number'},
+      {key:'other_household_costs',label:'مصاريف منزلية أخرى',kind:'textarea'},
+    ],
+  },
+  {
     key:'housing_details',
     title:'السكن والمرافق',
     summary:'تفاصيل السكن والفواتير والصيانة التي تؤثر على الميزانية والسيولة.',
@@ -36,8 +62,14 @@ export const extendedProfileSections:ExtendedProfileSection[]=[
       {key:'vehicle_year',label:'سنة الصنع',kind:'number'},
       {key:'ownership',label:'الملكية',kind:'select',options:['مملوكة','تمويل','إيجار','جهة العمل','أخرى']},
       {key:'monthly_distance',label:'المسافة الشهرية التقريبية بالكيلومتر',kind:'number'},
+      {key:'daily_distance',label:'المسافة اليومية التقريبية بالكيلومتر',kind:'number'},
+      {key:'monthly_fuel_cost',label:'متوسط تكلفة الوقود شهريًا',kind:'number'},
       {key:'fuel_type',label:'نوع الطاقة',kind:'select',options:['بنزين','ديزل','كهرباء','هجين','أخرى']},
-      {key:'efficiency_notes',label:'الكفاءة أو الاستهلاك إن كان معروفًا'},
+      {key:'efficiency_notes',label:'استهلاك المركبة أو كفاءتها إن كان معروفًا'},
+      {key:'oil_change_cost',label:'متوسط تكلفة تغيير الزيت',kind:'number'},
+      {key:'oil_change_interval',label:'كل كم كيلومتر أو شهر تغيّر الزيت؟'},
+      {key:'annual_maintenance_cost',label:'متوسط الصيانة السنوية',kind:'number'},
+      {key:'insurance_cost',label:'تكلفة التأمين السنوية',kind:'number'},
       {key:'maintenance_notes',label:'صيانة أو إصلاح معروف قادم',kind:'textarea'},
     ],
   },

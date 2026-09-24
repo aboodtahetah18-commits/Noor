@@ -59,3 +59,149 @@
     width:100%;
   }
 }
+
+
+/* NAMAA desktop modal fixed-frame contract */
+@media (min-width:768px) {
+  dialog.p49-action-dialog {
+    position:fixed !important;
+    inset:0 !important;
+    z-index:2147483000 !important;
+    margin:auto !important;
+    inline-size:min(calc(100vw - 48px), 920px);
+    block-size:min(calc(100dvh - 48px), 860px);
+    max-inline-size:calc(100vw - 48px) !important;
+    max-block-size:calc(100dvh - 48px) !important;
+    padding:0 !important;
+    overflow:hidden !important;
+    border:2px solid var(--ux-border-strong) !important;
+    border-radius:24px !important;
+    background:var(--ux-card-bg) !important;
+    color:var(--ux-text-primary) !important;
+    box-shadow:var(--ux-shadow-lg) !important;
+  }
+
+  dialog.p49-action-dialog.is-sm {
+    inline-size:min(calc(100vw - 48px), 520px);
+  }
+
+  dialog.p49-action-dialog.is-lg {
+    inline-size:min(calc(100vw - 48px), 1120px);
+  }
+
+  dialog.p49-action-dialog.is-xl {
+    inline-size:min(calc(100vw - 48px), 1360px);
+  }
+
+  dialog.p49-action-dialog::backdrop {
+    background:rgba(2,23,55,.46) !important;
+    backdrop-filter:blur(2px);
+  }
+
+  .p49-dialog-shell {
+    inline-size:100% !important;
+    block-size:100% !important;
+    min-block-size:0 !important;
+    display:grid !important;
+    grid-template-rows:auto minmax(0,1fr) !important;
+    overflow:hidden !important;
+    border-radius:inherit !important;
+    background:var(--ux-card-bg) !important;
+  }
+
+  .p49-dialog-header {
+    position:relative !important;
+    z-index:20 !important;
+    min-block-size:88px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:space-between !important;
+    gap:var(--ux-space-4) !important;
+    padding:var(--ux-space-4) var(--ux-space-5) !important;
+    border-block-end:2px solid var(--ux-border-strong) !important;
+    background:var(--ux-section-soft-teal) !important;
+    color:var(--ux-text-primary) !important;
+    box-shadow:0 2px 8px rgba(2,23,55,.06) !important;
+  }
+
+  .p49-dialog-title-block {
+    min-inline-size:0 !important;
+  }
+
+  .p49-dialog-title-block h2 {
+    color:var(--ux-text-primary) !important;
+  }
+
+  .p49-dialog-title-block p {
+    color:var(--ux-text-secondary) !important;
+  }
+
+  .p49-dialog-tools {
+    flex:0 0 auto !important;
+  }
+
+  .p49-dialog-close {
+    inline-size:44px !important;
+    block-size:44px !important;
+    min-inline-size:44px !important;
+    min-block-size:44px !important;
+    display:grid !important;
+    place-items:center !important;
+    border:2px solid var(--ux-border-strong) !important;
+    border-radius:12px !important;
+    background:var(--ux-card-bg) !important;
+    color:var(--ux-text-primary) !important;
+  }
+
+  .p49-dialog-body {
+    position:relative !important;
+    min-block-size:0 !important;
+    max-block-size:none !important;
+    overflow-y:auto !important;
+    overflow-x:hidden !important;
+    overscroll-behavior:contain !important;
+    padding:var(--ux-space-5) var(--ux-space-5) 0 !important;
+    background:var(--ux-page-bg) !important;
+    scrollbar-gutter:stable;
+  }
+
+  .p49-dialog-body > :first-child {
+    margin-block-start:0 !important;
+  }
+
+  .p49-dialog-body :where(.p49-dialog-actions,.account-form-actions) {
+    position:sticky !important;
+    inset-block-end:0 !important;
+    z-index:15 !important;
+    min-block-size:76px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    gap:var(--ux-space-3) !important;
+    margin-inline:calc(var(--ux-space-5) * -1) !important;
+    margin-block-start:var(--ux-space-5) !important;
+    padding:var(--ux-space-3) var(--ux-space-5) !important;
+    border-block-start:2px solid var(--ux-border-strong) !important;
+    background:var(--ux-surface-default) !important;
+    box-shadow:0 -6px 18px rgba(2,23,55,.06) !important;
+  }
+
+  .p49-dialog-body :where(.p49-dialog-actions,.account-form-actions) > :where(button,a) {
+    min-block-size:44px !important;
+  }
+
+  .p49-dialog-body :where(.p49-dialog-actions,.account-form-actions) .primary-button,
+  .p49-dialog-body :where(.p49-dialog-actions,.account-form-actions) .primary,
+  .p49-dialog-body :where(.p49-dialog-actions,.account-form-actions) .primary-link {
+    background:var(--ux-brand-primary) !important;
+    border-color:var(--ux-brand-primary) !important;
+    color:var(--ux-text-inverse) !important;
+  }
+
+  .p49-dialog-body :where(.p49-dialog-actions,.account-form-actions) .primary-button :where(span,strong,svg),
+  .p49-dialog-body :where(.p49-dialog-actions,.account-form-actions) .primary :where(span,strong,svg),
+  .p49-dialog-body :where(.p49-dialog-actions,.account-form-actions) .primary-link :where(span,strong,svg) {
+    color:var(--ux-text-inverse) !important;
+    stroke:currentColor !important;
+  }
+}

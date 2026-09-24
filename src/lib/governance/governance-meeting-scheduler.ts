@@ -1,5 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { getRawSql } from '@/infrastructure/db/client';
+import { getFinancialJourneyStatus } from '@/lib/conversations/financial-journey-orchestrator';
+import { buildFoundingFinancialMeetingPack } from '@/lib/allocation/founding-financial-meeting';
 
 export type GovernanceMeetingScheduleItem={
   id:string;
@@ -12,6 +14,7 @@ export type GovernanceMeetingScheduleItem={
   minimum_annual_meetings?:number;
   periodic?:boolean;
   sensitivity?:'عادية'|'رقابية حساسة';
+  attendees?:Array<{key:string;name:string;role:string}>;
 };
 
 export const governanceCommitteeCadencePolicy={
@@ -25,6 +28,17 @@ function addDays(date:Date,days:number){return new Date(date.getTime()+days*24*6
 
 export async function getGovernanceMeetingSchedule(userId:string){
   const sql=getRawSql();
+  const journey=await getFinancialJourneyStatus(userId);
+  if(!journey.founding_meeting_eligible){
+    return {
+      onboarding_complete:journey.foundation_complete,
+      journey_complete:false,
+      completion_percent:journey.completion_percent,
+      cycle_anchor:null,
+      cycle_count:0,
+      meetings:[] as GovernanceMeetingScheduleItem[],
+    };
+  }
   const onboardingRows=await sql`
     select m.created_at
     from public.conversation_messages m
@@ -36,8 +50,17 @@ export async function getGovernanceMeetingSchedule(userId:string){
     order by m.created_at desc
     limit 1
   `;
-  const completedAt=onboardingRows[0]?.created_at?new Date(String(onboardingRows[0].created_at)):null;
-  if(!completedAt) return {onboarding_complete:false,cycle_anchor:null,cycle_count:0,meetings:[] as GovernanceMeetingScheduleItem[]};
+  const detailReadyRows=await sql`
+    select max(updated_at) as ready_at
+    from public.user_foundation_facts
+    where user_id=${userId}::uuid and status='ACTIVE' and fact_key like 'extended:%'
+  `;
+  const completedAt=detailReadyRows[0]?.ready_at
+    ?new Date(String(detailReadyRows[0].ready_at))
+    :onboardingRows[0]?.created_at
+      ?new Date(String(onboardingRows[0].created_at))
+      :null;
+  if(!completedAt) return {onboarding_complete:true,journey_complete:false,cycle_anchor:null,cycle_count:0,meetings:[] as GovernanceMeetingScheduleItem[]};
 
   const [cycleRows,cycleCountRows]=await Promise.all([
     sql`
@@ -52,10 +75,9 @@ export async function getGovernanceMeetingSchedule(userId:string){
 
   const cycleCount=Number(cycleCountRows[0]?.count??0);
   const cycleId=cycleRows[0]?.id?String(cycleRows[0].id):'foundation';
-  const councilAt=addHours(completedAt,24);
+  const councilAt=addHours(completedAt,1);
   const anchor=cycleRows[0]?.start_date?new Date(String(cycleRows[0].start_date)+'T00:00:00Z'):new Date(completedAt);
   const thirdCycle=(Math.max(1,cycleCount)%3)===0;
-  const now=new Date();
 
   const meetings:GovernanceMeetingScheduleItem[]=[
     {
@@ -63,9 +85,19 @@ export async function getGovernanceMeetingSchedule(userId:string){
       title:'الاجتماع التأسيسي لمجلس نماء الأعلى',
       kind:'مجلس',
       scheduled_at:councilAt.toISOString(),
-      cadence:'مرة واحدة بعد 24 ساعة من اعتماد التأسيس',
-      status:councilAt>now?'مجدول':'مستحق للمراجعة',
-      agenda:['مراجعة فهم المجلس للمستخدم','مناقشة الأهداف والالتزامات والسيولة والأصول','معايرة أسلوب الخوارزميات وأسئلتها ومستوى الشرح','تثبيت تفضيلات الحوكمة والاجتماعات'],
+      cadence:'أقرب موعد مقترح بعد اكتمال الملف، ويؤكد المستخدم ملاءمته قبل تثبيته',
+      status:'مقترح للتأكيد',
+      agenda:['مراجعة الصورة المالية الكاملة','مناقشة الميزانية الأولية والالتزامات والسيولة والأهداف','مراجعة توزيع البنود على الحسابات','تثبيت قواعد المتابعة الشهرية والأسبوعية'],
+      attendees:[
+        {key:'central-governor',name:'محافظ بنك نماء المركزي',role:'رئيس الاجتماع'},
+        {key:'budget-spending-owner',name:'مسؤول الميزانية والإنفاق',role:'الميزانية والإنفاق'},
+        {key:'obligations-owner',name:'مسؤول الالتزامات',role:'الالتزامات والاستحقاقات'},
+        {key:'goals-owner',name:'مسؤول الأهداف',role:'الأهداف والادخار'},
+        {key:'liquidity-protection-owner',name:'مسؤول السيولة والحماية',role:'الاحتياطي والحماية'},
+        {key:'investment-owner',name:'مسؤول الاستثمار',role:'الأصول والاستثمار'},
+        {key:'economic-advisor',name:'المستشار الاقتصادي',role:'تحليل الصورة الكلية'},
+        {key:'central-secretary',name:'أمين السر المركزي',role:'المحضر والمتابعة'},
+      ],
     },
     {
       id:`budget-${cycleId}`,
@@ -119,7 +151,7 @@ export async function getGovernanceMeetingSchedule(userId:string){
     }]:[]),
   ];
 
-  return {onboarding_complete:true,cycle_anchor:anchor.toISOString(),cycle_count:cycleCount,meetings};
+  return {onboarding_complete:true,journey_complete:true,completion_percent:100,cycle_anchor:anchor.toISOString(),cycle_count:cycleCount,meetings};
 }
 
 export async function syncGovernanceMeetingInvitations(userId:string){
@@ -134,6 +166,7 @@ export async function syncGovernanceMeetingInvitations(userId:string){
   const threadId=secretaryThreads[0]?.id?String(secretaryThreads[0].id):null;
   if(!threadId) return schedule;
 
+  const foundingPack=await buildFoundingFinancialMeetingPack(userId);
   for(const meeting of schedule.meetings){
     const exists=await sql`
       select id from public.conversation_messages
@@ -146,7 +179,7 @@ export async function syncGovernanceMeetingInvitations(userId:string){
       ? new Intl.DateTimeFormat('ar-SA',{dateStyle:'medium',timeStyle:'short'}).format(new Date(meeting.scheduled_at))
       : new Intl.DateTimeFormat('ar-SA',{dateStyle:'medium'}).format(new Date(meeting.scheduled_at));
     const body=meeting.kind==='مجلس'
-      ? `تمت جدولة ${meeting.title} في ${when}. سأجهز قبلها ملف التأسيس والصورة المالية والخوارزميات النشطة ونقاط النقاش معك.`
+      ? `اكتمل ملفك المالي بنسبة 100٪. أقرب موعد مقترح لـ${meeting.title} هو ${when}. هل هذا الوقت مناسب لك؟ إذا لم يكن مناسبًا، اذكر الوقت الذي تفضله وسأعيد ترتيبه. سأجهز قبل الاجتماع الصورة المالية والميزانية الأولية والأهداف والالتزامات ونقاط النقاش لكل الجهات المشاركة.`
       : meeting.kind==='لجنة دائمة'
         ? `تمت إضافة ${meeting.title} إلى تقويمك الحوكمي في ${when}. اللجنة الدائمة لها أربعة اجتماعات سنوية على الأقل، وأي طارئ يفتح جلسة إضافية ولا يلغي الموعد الدوري.`
         : `تمت إضافة ${meeting.title} في ${when} بسبب حاجة محددة. هذه لجنة مؤقتة ولا تنشأ لها دورية تلقائية ما لم يعتمد المجلس استثناءً رقابيًا مبررًا.`;
@@ -165,6 +198,8 @@ export async function syncGovernanceMeetingInvitations(userId:string){
           minimum_annual_meetings:meeting.minimum_annual_meetings??null,
           periodic:meeting.periodic??false,
           sensitivity:meeting.sensitivity??null,
+          attendees:meeting.attendees??null,
+          founding_financial_pack:meeting.id==='council-foundation'?foundingPack:null,
           execution_boundary:'لا تنفيذ مالي من الاجتماع ذاته',
         })}::jsonb
       )

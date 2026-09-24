@@ -30,6 +30,8 @@ import { applyFollowupDeadlineCommand, parseFollowupDeadlineCommand } from '@/li
 import { createGovernanceOversightDashboardReply, getGovernanceOversightDashboard, isGovernanceOversightDashboardRequest } from '@/lib/governance/governance-oversight-dashboard';
 import { applyOversightQuickActionCommand, parseOversightQuickActionCommand } from '@/lib/governance/governance-oversight-actions';
 import { applyGovernanceAmendmentConversationCommand, parseGovernanceAmendmentConversationCommand } from '@/lib/governance/governance-amendments';
+import { createSalaryCycleActivationReply, isSalaryReceivedCommand } from '@/lib/allocation/salary-cycle-activation';
+import { confirmSalaryDistributionStep, isSalaryDistributionConfirmation } from '@/lib/allocation/salary-distribution-followup';
 
 export async function GET(_request: Request, context: { params: Promise<{ roomKey: string }> }) {
   const user = await getAuthenticatedUser();
@@ -163,6 +165,33 @@ export async function POST(request: Request, context: { params: Promise<{ roomKe
       } else {
         reply = await createRoutedReply(user.id, roomKey, text);
       }
+    } else if (roomKey === 'central' && onboarding.complete && isSalaryReceivedCommand(text)) {
+      const activation=await createSalaryCycleActivationReply(user.id);
+      if(!activation.reply) return NextResponse.json({message,code:'SALARY_CYCLE_ACTIVATION_UNAVAILABLE',captured_operation:capturedOperation},{status:409});
+      return NextResponse.json({
+        message,
+        reply:activation.reply,
+        replies:[activation.reply],
+        salary_cycle_activation:activation.result,
+        captured_operation:capturedOperation,
+      },{status:201});
+    } else if (roomKey === 'central' && onboarding.complete && isSalaryDistributionConfirmation(text)) {
+      const confirmation=await confirmSalaryDistributionStep(user.id,text);
+      if(!confirmation.reply){
+        return NextResponse.json({
+          message,
+          code:'SALARY_DISTRIBUTION_CONFIRMATION_UNAVAILABLE',
+          salary_distribution_confirmation:confirmation,
+          captured_operation:capturedOperation,
+        },{status:409});
+      }
+      return NextResponse.json({
+        message,
+        reply:confirmation.reply,
+        replies:[confirmation.reply],
+        salary_distribution_confirmation:confirmation,
+        captured_operation:capturedOperation,
+      },{status:201});
     } else if (roomKey === 'central' && onboarding.complete && parseGovernanceAmendmentConversationCommand('central',text)) {
       const command=parseGovernanceAmendmentConversationCommand('central',text)!;
       const amendmentResult=await applyGovernanceAmendmentConversationCommand({userId:user.id,roomKey:'central',command});
