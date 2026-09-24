@@ -35,8 +35,8 @@ export default function InvestmentsPage() {
                 <span><Image src={NAMAA_PERSONA_ASSETS['assets-manager']!} alt="" width={42} height={42} unoptimized/><strong>مدير بنك الأصول</strong></span>
               </div>
               <div className="namaa-investments-chat-window">
-                <div className="namaa-investments-chat-placeholder"><LucideIcon name="messageSquareText" size={22}/><span>المحادثة الاستثمارية</span></div>
-                <Link href="/conversations" className="namaa-investments-chat-composer"><span>اكتب رسالة...</span><LucideIcon name="messageSquareText" size={18}/></Link>
+                <div className="namaa-investments-chat-placeholder"><LucideIcon name="messageSquareText" size={24}/><span>المحادثة الاستثمارية</span></div>
+                <Link href="/conversations" className="namaa-investments-chat-composer"><span>اكتب رسالة...</span><LucideIcon name="messageSquareText" size={20}/></Link>
               </div>
             </div>
           </aside>
@@ -54,10 +54,10 @@ export default function InvestmentsPage() {
               <strong>اختر محفظة أو أضف محفظة جديدة</strong>
             </div>
             <div className="namaa-investments-dashboard-grid">
-              <article><span className="namaa-investment-tile-icon"><LucideIcon name="chart" size={22}/></span><div><span>الأداء</span><strong>يظهر بعد اختيار المحفظة</strong></div></article>
-              <article><span className="namaa-investment-tile-icon"><LucideIcon name="triangleAlert" size={22}/></span><div><span>المخاطر</span><strong>تقييم مستمر</strong></div></article>
-              <article><span className="namaa-investment-tile-icon"><LucideIcon name="walletCards" size={22}/></span><div><span>السيولة</span><strong>حسب الأصول القابلة للتسييل</strong></div></article>
-              <article><span className="namaa-investment-tile-icon"><LucideIcon name="listChecks" size={22}/></span><div><span>التوصيات</span><strong>تحتاج اعتماد المستخدم</strong></div></article>
+              <article><span className="namaa-investment-tile-icon"><LucideIcon name="chart" size={24}/></span><div><span>الأداء</span><strong>يظهر بعد اختيار المحفظة</strong></div></article>
+              <article><span className="namaa-investment-tile-icon"><LucideIcon name="triangleAlert" size={24}/></span><div><span>المخاطر</span><strong>تقييم مستمر</strong></div></article>
+              <article><span className="namaa-investment-tile-icon"><LucideIcon name="walletCards" size={24}/></span><div><span>السيولة</span><strong>حسب الأصول القابلة للتسييل</strong></div></article>
+              <article><span className="namaa-investment-tile-icon"><LucideIcon name="listChecks" size={24}/></span><div><span>التوصيات</span><strong>تحتاج اعتماد المستخدم</strong></div></article>
             </div>
           </section>
 
