@@ -205,6 +205,14 @@ function formatConversationMessageTime(value?:string){
   if(!Number.isFinite(date.getTime()))return 'الآن';
   return new Intl.DateTimeFormat('ar-SA-u-nu-latn',{hour:'numeric',minute:'2-digit'}).format(date);
 }
+function shouldRenderStructuredConversationPanel(message:Message){
+  const data=message.structured_data??{};
+  return data.governance_oversight_dashboard===true
+    ||data.governance_oversight_followup_detail===true
+    ||data.governance_oversight_decision_context===true
+    ||data.governance_direct_change===true;
+}
+
 function messageKindIcon(kind:MessageKind):LucideIconName{
   if(kind==='risk')return 'triangleAlert';
   if(kind==='decision')return 'circleCheck';
@@ -290,58 +298,13 @@ const onboardingStepMeta:Record<string,{title:string;reason:string;icon:LucideIc
 function OnboardingMessageContent({message,showStructuredAction,onOpenStructuredIntake}:{message:Message;showStructuredAction?:boolean;onOpenStructuredIntake?:()=>void}){
   const data=message.structured_data&&typeof message.structured_data==='object'?message.structured_data:{};
   const question=typeof data.next_question==='string'?data.next_question.trim():'';
-  const step=typeof data.onboarding_step==='string'?data.onboarding_step:'';
-  const stepNumber=onboardingStepNumber[step];
-  const stepMeta=onboardingStepMeta[step];
-  const totalSteps=Object.keys(onboardingStepNumber).length;
-  const progressPercent=stepNumber?Math.round((stepNumber/totalSteps)*100):0;
   const body=message.body.trim();
-  const goalAnalysis=Array.isArray(data.goal_analysis)
-    ? data.goal_analysis.filter((item):item is Record<string,unknown>=>Boolean(item)&&typeof item==='object'&&!Array.isArray(item))
-    : [];
   const intro=question&&body.endsWith(question)?body.slice(0,Math.max(0,body.length-question.length)).trim():body;
   return <div className={styles.onboardingMessageContent}>
     {intro&&intro!==question&&<p>{intro}</p>}
-    {question&&<section className={styles.onboardingQuestionCard} aria-label={stepMeta?.title??'سؤال التأسيس'}>
-      <header className={styles.onboardingQuestionHeader}>
-        <span className={styles.onboardingQuestionIcon} aria-hidden="true"><LucideIcon name={stepMeta?.icon??'listChecks'} size={20}/></span>
-        <div>
-          <strong>{stepMeta?.title??'استكمال بيانات التأسيس'}</strong>
-          {stepNumber&&<small>المرحلة {stepNumber} من {totalSteps}</small>}
-        </div>
-        {stepNumber&&<b>{progressPercent}٪</b>}
-      </header>
-      {stepNumber&&<div className={styles.onboardingProgressTrack} aria-label={'تقدم التأسيس '+progressPercent+'٪'}><span style={{width:progressPercent+'%'}}/></div>}
-      {stepMeta?.reason&&<p className={styles.onboardingQuestionReason}><LucideIcon name="info" size={16}/><span>{stepMeta.reason}</span></p>}
-      <div className={styles.onboardingQuestionBox}>
-        {stepNumber&&<span>السؤال {stepNumber}</span>}
-        <strong>{question}</strong>
-      </div>
-      {showStructuredAction&&onOpenStructuredIntake&&<button type="button" className={styles.inlineIntakeButton} onClick={onOpenStructuredIntake}><LucideIcon name="listChecks" size={16}/><span>متابعة استكمال البيانات</span></button>}
-    </section>}
+    {question&&<p className={styles.onboardingPlainQuestion}>{question}</p>}
     {!question&&<p>{body}</p>}
-    {goalAnalysis.length>0&&<div className={styles.goalAnalysisList}>
-      {goalAnalysis.map((goal,index)=>{
-        const name=String(goal.name??`هدف ${index+1}`);
-        const status=String(goal.status??'لا توجد بيانات كافية');
-        const required=typeof goal.required_monthly==='number'?goal.required_monthly:null;
-        const capacity=typeof goal.sustainable_capacity==='number'?goal.sustainable_capacity:null;
-        const remaining=typeof goal.remaining_amount==='number'?goal.remaining_amount:null;
-        const reasons=Array.isArray(goal.reasons)?goal.reasons.filter((x):x is string=>typeof x==='string'):[];
-        const alternatives=Array.isArray(goal.alternatives)?goal.alternatives.filter((x):x is string=>typeof x==='string'):[];
-        return <section key={name+index} className={styles.goalAnalysisCard}>
-          <header><strong>{name}</strong><span>{status}</span></header>
-          <div>
-            {remaining!==null&&<span><small>المتبقي للهدف</small><strong>{formatSar(remaining)} ر.س</strong></span>}
-            {required!==null&&<span><small>المساهمة الشهرية المطلوبة</small><strong>{formatSar(required)} ر.س</strong></span>}
-            {capacity!==null&&<span><small>السعة المبدئية الحالية</small><strong>{formatSar(capacity)} ر.س</strong></span>}
-          </div>
-          {reasons.length>0&&<p>{reasons.join(' ')}</p>}
-          {alternatives.length>0&&<ul>{alternatives.map(item=><li key={item}>{item}</li>)}</ul>}
-          <small>هذه خطة مقترحة للمراجعة وليست تنفيذًا أو تخصيصًا تلقائيًا.</small>
-        </section>;
-      })}
-    </div>}
+    {showStructuredAction&&onOpenStructuredIntake&&<button type="button" className={styles.inlineIntakeButton} onClick={onOpenStructuredIntake}><LucideIcon name="listChecks" size={16}/><span>استكمال البيانات</span></button>}
   </div>;
 }
 
@@ -1464,7 +1427,7 @@ export function PersistentConversationWorkspace(){
     {message.sender_type==='user'&&<UserMessageExtras message={message} attachments={attachments}/>}
     {message.structured_data?.governance_direct_change===true
       ?<DirectGovernanceChangeCard data={message.structured_data}/>
-      :message.message_kind!=='message'&&message.structured_data?.onboarding!==true&&<section className={`${styles.structuredCard} ${styles[`kind_${message.message_kind}`]}`}>
+      :shouldRenderStructuredConversationPanel(message)&&message.structured_data?.onboarding!==true&&<section className={`${styles.structuredCard} ${styles[`kind_${message.message_kind}`]}`}>
       {!groupedWithPrevious&&<RichStructuredMessageHero room={activeRoom} kind={message.message_kind} data={message.structured_data} senderName={activeRoom.id==='central'?'محافظ بنك نماء المركزي':message.sender_name}/>} 
       <header className={styles.structuredCardHeader}><span aria-hidden="true"><LucideIcon name={messageKindIcon(message.message_kind)} size={16}/></span><strong>التفاصيل</strong></header>
       <OversightStructuredCards
