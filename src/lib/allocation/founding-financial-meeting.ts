@@ -102,7 +102,9 @@ function buildBudgetLines(facts:Map<string,Record<string,unknown>>,snapshot:Awai
   const behavior=facts.get('budget_behavior')??{};
   add('restaurants','المطاعم',amount(behavior.restaurants_average)*textMonthlyEstimate(behavior.restaurants_frequency),['سلوك بنود الميزانية']);
   add('cafes','المقاهي',amount(behavior.cafes_average)*textMonthlyEstimate(behavior.cafes_frequency),['سلوك بنود الميزانية']);
-  add('groceries_behavior','البقالة الإضافية',amount(behavior.groceries_average)*textMonthlyEstimate(behavior.groceries_frequency),['سلوك بنود الميزانية']);
+  if(amount(living.monthly_groceries)===0){
+    add('groceries_behavior','البقالة',amount(behavior.groceries_average)*textMonthlyEstimate(behavior.groceries_frequency),['سلوك بنود الميزانية']);
+  }
 
   const health=facts.get('health_education_family')??{};
   add('health_education_family','الصحة والتعليم والأسرة',textMonthlyEstimate(health.health_recurring)+textMonthlyEstimate(health.education_costs)+textMonthlyEstimate(health.family_nonmonthly),['الصحة والتعليم والأسرة'],true);
@@ -120,13 +122,43 @@ function buildBudgetLines(facts:Map<string,Record<string,unknown>>,snapshot:Awai
 }
 
 function buildAccountBuckets(lines:FoundingBudgetLine[],snapshot:Awaited<ReturnType<typeof getFinancialCycleAllocationSnapshot>>):FoundingAccountBucket[]{
-  const spend=lines.filter(line=>!['goals'].includes(line.key)).reduce((sum,line)=>sum+line.monthlyAmount,0);
+  const spendingBuckets=lines
+    .filter(line=>line.key!=='goals')
+    .map(line=>({
+      key:'spend:'+line.key,
+      title:'بند '+line.title,
+      purpose:'تخصيص مستقل لبند '+line.title+' ضمن دورة الراتب.',
+      preferredGrouping:'SEPARATE_ACCOUNT' as const,
+      amount:line.monthlyAmount,
+      owner:line.key==='obligations'?'مسؤول الالتزامات':'مسؤول الميزانية والإنفاق',
+    }));
   const goals=lines.find(line=>line.key==='goals')?.monthlyAmount??0;
   return [
-    {key:'operating',title:'حساب المصروفات التشغيلية',purpose:'الفواتير والمعيشة والتنقل والمصروفات الشهرية',preferredGrouping:'EXISTING_ACCOUNT_OK',amount:spend||null,owner:'مسؤول الميزانية والإنفاق'},
-    {key:'savings',title:'حساب الادخار',purpose:'الادخار المرتبط بالأهداف والخطط',preferredGrouping:'SHARED_BANK_SEPARATE_ACCOUNT',amount:goals||null,owner:'مسؤول الأهداف'},
-    {key:'reserve',title:'حساب الاحتياطي',purpose:'حماية السيولة والاحتياجات الطارئة',preferredGrouping:'SHARED_BANK_SEPARATE_ACCOUNT',amount:null,owner:'مسؤول السيولة والحماية'},
-    {key:'additional_reserve',title:'حساب الاحتياطي الإضافي',purpose:'فائض حماية إضافي بعد اكتمال الاحتياطي الأساسي',preferredGrouping:'SHARED_BANK_SEPARATE_ACCOUNT',amount:null,owner:'مسؤول السيولة والحماية'},
+    ...spendingBuckets,
+    {
+      key:'savings',
+      title:'حساب الادخار',
+      purpose:'الادخار المرتبط بالأهداف والخطط.',
+      preferredGrouping:'SHARED_BANK_SEPARATE_ACCOUNT',
+      amount:goals||null,
+      owner:'مسؤول الأهداف',
+    },
+    {
+      key:'reserve',
+      title:'حساب الاحتياطي',
+      purpose:'حماية السيولة والاحتياجات الطارئة.',
+      preferredGrouping:'SHARED_BANK_SEPARATE_ACCOUNT',
+      amount:null,
+      owner:'مسؤول السيولة والحماية',
+    },
+    {
+      key:'additional_reserve',
+      title:'حساب الاحتياطي الإضافي',
+      purpose:'فائض حماية إضافي بعد اكتمال الاحتياطي الأساسي.',
+      preferredGrouping:'SHARED_BANK_SEPARATE_ACCOUNT',
+      amount:null,
+      owner:'مسؤول السيولة والحماية',
+    },
   ];
 }
 
