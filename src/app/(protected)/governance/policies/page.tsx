@@ -5,7 +5,7 @@ export default function Page(){
   return <main className="namaa-governance-catalog page-shell" dir="rtl">
     <header className="namaa-governance-catalog-hero">
       <div><p>المعرفة المؤسسية</p><h1>السياسات الحاكمة</h1><span>مرجع السياسات المعتمدة التي تضبط القرارات والتشغيل.</span></div>
-      <LucideIcon name="shieldCheck" size={24}/>
+      <LucideIcon name="lockKeyhole" size={24}/>
     </header>
     <section className="namaa-governance-catalog-grid">
       <article><span>المرجع</span><strong>السياسات</strong><p>يعرض هذا القسم المواد المعتمدة المرتبطة بهذا النوع من المعرفة.</p></article>
