@@ -39,7 +39,7 @@
   padding-inline:var(--ux-space-4);
   padding-block:0;
   border:var(--ux-border-width-1) var(--ux-border-style-default) transparent;
-  border-radius:var(--ux-radius-sm);
+  border-radius:10px;
   font:inherit;
   font-size:var(--ux-type-button-size);
   line-height:var(--ux-type-button-line);
@@ -73,7 +73,7 @@
 .ux-button--secondary {
   background:var(--ux-card-bg);
   color:var(--ux-brand-primary);
-  border-color:var(--ux-border-emphasis);
+  border-color:var(--ux-brand-primary);
 }
 
 .ux-button--secondary:hover:not(:disabled) {
@@ -83,13 +83,13 @@
 
 .ux-button--ghost {
   background:transparent;
-  color:var(--ux-brand-primary);
+  color:var(--ux-text-primary);
   border-color:transparent;
 }
 
 .ux-button--danger {
-  background:var(--ux-soft-red);
-  color:var(--ux-error);
+  background:var(--ux-error);
+  color:var(--ux-action-contrast);
   border-color:var(--ux-error);
 }
 
@@ -101,7 +101,7 @@
 }
 
 .ux-button:active:not(:disabled) { transform:translateY(1px); }
-.ux-button:disabled { opacity:.5; cursor:not-allowed; box-shadow:none; }
+.ux-button:disabled { opacity:.45; cursor:not-allowed; box-shadow:none; }
 
 .ux-field {
   display:grid;
@@ -128,7 +128,7 @@
   height:var(--ux-size-10);
   padding-inline:var(--ux-space-3);
   border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);
-  border-radius:var(--ux-radius-sm);
+  border-radius:var(--ux-radius-md);
   background:var(--ux-card-bg);
   color:var(--ux-text-primary);
   font:inherit;
