@@ -45,8 +45,12 @@ async function handledPointKeys(userId:string,threadId:string,meetingId:string){
   for(const row of rows){
     const data=row.structured_data&&typeof row.structured_data==='object'&&!Array.isArray(row.structured_data)
       ?row.structured_data as Record<string,unknown>:{};
-    const key=typeof data.committee_point_key==='string'?data.committee_point_key:null;
-    const status=typeof data.committee_point_status==='string'?data.committee_point_status:null;
+    const key=typeof data.committee_resolved_point_key==='string'
+      ?data.committee_resolved_point_key
+      :typeof data.committee_point_key==='string'?data.committee_point_key:null;
+    const status=typeof data.committee_resolution_status==='string'
+      ?data.committee_resolution_status
+      :typeof data.committee_point_status==='string'?data.committee_point_status:null;
     if(key&&['CONTEXT_RECEIVED','APPROVED','REJECTED','ANSWERED','CLOSED'].includes(String(status)))handled.add(key);
   }
   return handled;
@@ -168,12 +172,15 @@ export async function createBudgetCommitteeConversationReply(args:{userId:string
     handledPointKeys(args.userId,threadId,args.meetingId),
     lastCommitteeTurn(args.userId,threadId,args.meetingId),
   ]);
-  const currentKey=typeof lastTurn?.data.committee_point_key==='string'?lastTurn.data.committee_point_key:null;
+  const currentKey=typeof lastTurn?.data.active_committee_point_key==='string'
+    ?lastTurn.data.active_committee_point_key
+    :typeof lastTurn?.data.committee_point_key==='string'?lastTurn.data.committee_point_key:null;
   const currentPoint=points.find(point=>point.key===currentKey)??null;
   const responseType=classifyUserResponse(args.userText);
 
   let point=currentPoint;
-  let pointStatus='OPEN';
+  let resolutionStatus:string|null=null;
+  let resolvedPointKey:string|null=null;
   let decision:string|null=null;
   let contextNote:string|null=null;
   let body='';
@@ -181,19 +188,19 @@ export async function createBudgetCommitteeConversationReply(args:{userId:string
   if(currentPoint&&responseType==='EXPLAIN'){
     body=explainPoint(currentPoint)+' '+(currentPoint.question??'');
   }else if(currentPoint&&responseType==='APPROVE'){
-    decision='APPROVED'; pointStatus='APPROVED'; handled.add(currentPoint.key);
+    decision='APPROVED'; resolutionStatus='APPROVED'; resolvedPointKey=currentPoint.key; handled.add(currentPoint.key);
     const next=points.find(item=>!handled.has(item.key))??null; point=next;
     body=next
       ?'تم تسجيل موافقتك على النقطة السابقة ضمن محضر الحوار، دون تنفيذ مالي تلقائي. ننتقل للنقطة التالية: '+nextPointBody(next,Math.max(0,points.filter(item=>!handled.has(item.key)&&item.key!==next.key).length))
       :'تم تسجيل موافقتك على النقطة السابقة. لا توجد نقطة أعلى أولوية متبقية الآن.';
   }else if(currentPoint&&responseType==='REJECT'){
-    decision='REJECTED'; pointStatus='REJECTED'; handled.add(currentPoint.key);
+    decision='REJECTED'; resolutionStatus='REJECTED'; resolvedPointKey=currentPoint.key; handled.add(currentPoint.key);
     const next=points.find(item=>!handled.has(item.key))??null; point=next;
     body=next
       ?'تم تسجيل رفضك للنقطة السابقة وسأحتفظ به حتى لا أعيد طرحها كأنها جديدة بلا سبب. ننتقل الآن إلى: '+nextPointBody(next,Math.max(0,points.filter(item=>!handled.has(item.key)&&item.key!==next.key).length))
       :'تم تسجيل رفضك. لا توجد نقطة أخرى أعلى أولوية حاليًا.';
   }else if(currentPoint&&responseType==='CONTEXT'){
-    contextNote=args.userText.trim().slice(0,400); pointStatus='CONTEXT_RECEIVED'; handled.add(currentPoint.key);
+    contextNote=args.userText.trim().slice(0,400); resolutionStatus='CONTEXT_RECEIVED'; resolvedPointKey=currentPoint.key; handled.add(currentPoint.key);
     const next=points.find(item=>!handled.has(item.key))??null; point=next;
     body=next
       ?'سجلت تفسيرك للنقطة السابقة كسياق لهذه الدورة، لذلك لن أتعامل معها تلقائيًا كاتجاه دائم. ننتقل إلى: '+nextPointBody(next,Math.max(0,points.filter(item=>!handled.has(item.key)&&item.key!==next.key).length))
@@ -212,7 +219,9 @@ export async function createBudgetCommitteeConversationReply(args:{userId:string
   const structuredData={
     scope_kind:'meeting',meeting_id:meeting.id,meeting_title:meeting.title,committee_engine:'budget-v1',
     committee_point_key:point?.key??currentPoint?.key??null,committee_point_title:point?.title??currentPoint?.title??null,
-    committee_point_kind:point?.kind??currentPoint?.kind??null,committee_point_status:pointStatus,
+    committee_point_kind:point?.kind??currentPoint?.kind??null,committee_point_status:'OPEN',
+    active_committee_point_key:point?.key??null,
+    committee_resolved_point_key:resolvedPointKey,committee_resolution_status:resolutionStatus,
     committee_decision:decision,committee_context_note:contextNote,response_type:responseType,
     ranked_points:points.slice(0,3).map(item=>({key:item.key,title:item.title,kind:item.kind,priority:item.priority})),
     memory_aware:true,external_execution:false,
