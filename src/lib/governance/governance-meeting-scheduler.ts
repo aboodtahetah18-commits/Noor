@@ -76,7 +76,6 @@ export async function getGovernanceMeetingSchedule(userId:string){
   const councilAt=addHours(completedAt,1);
   const anchor=cycleRows[0]?.start_date?new Date(String(cycleRows[0].start_date)+'T00:00:00Z'):new Date(completedAt);
   const thirdCycle=(Math.max(1,cycleCount)%3)===0;
-  const now=new Date();
 
   const meetings:GovernanceMeetingScheduleItem[]=[
     {
