@@ -30,16 +30,16 @@
   --ux-soft-orange:var(--namaa-cream);
   --ux-soft-purple:var(--namaa-surface-warm);
 
-  --ux-dark-page-bg:#111A17;
-  --ux-dark-card-bg:#17231F;
-  --ux-dark-shell-topbar-bg:#13201C;
-  --ux-dark-shell-sidebar-bg:#081B15;
-  --ux-dark-surface-muted:#1A2A24;
-  --ux-dark-border:#31443D;
-  --ux-dark-text-primary:#F6F7F5;
-  --ux-dark-text-secondary:#C5D0CB;
-  --ux-dark-soft-teal:#173329;
-  --ux-dark-soft-teal-border:#40584F;
+  --ux-dark-page-bg:#021737;
+  --ux-dark-card-bg:#062849;
+  --ux-dark-shell-topbar-bg:#062849;
+  --ux-dark-shell-sidebar-bg:#062849;
+  --ux-dark-surface-muted:#08345A;
+  --ux-dark-border:#164566;
+  --ux-dark-text-primary:#F4FAFF;
+  --ux-dark-text-secondary:#B6C6D4;
+  --ux-dark-soft-teal:#0A3A38;
+  --ux-dark-soft-teal-border:#2E607E;
 
   --ux-font-family-base:var(--namaa-font);
   --ux-type-page-title-size:30px; --ux-type-page-title-line:42px; --ux-type-page-title-weight:700;
@@ -102,8 +102,8 @@
   --ux-brand-green-bright:var(--namaa-green-700);
   --ux-brand-gold:var(--namaa-gold-action);
   --ux-brand-deep:var(--namaa-green-900);
-  --ux-brand-night:#081B15;
-  --ux-brand-night-soft:#173329;
+  --ux-brand-night:#021737;
+  --ux-brand-night-soft:#062849;
   --ux-brand-sky-soft:var(--namaa-surface-warm);
   --ux-brand-mint-soft:var(--namaa-cream);
   --ux-alpha-cyan-10:color-mix(in srgb,var(--namaa-green-700) 10%,transparent);
