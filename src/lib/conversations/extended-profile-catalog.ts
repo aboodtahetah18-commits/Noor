@@ -186,10 +186,26 @@ export const extendedProfileSections:ExtendedProfileSection[]=[
       columns:[
         {key:'category',label:'البند',kind:'select',mobileVisible:true},
         {key:'custom_category',label:'اسم البند الجديد'},
+        {key:'context',label:'وقت أو سياق الصرف',kind:'select',options:['عام','أيام العمل','نهاية الأسبوع'],mobileVisible:true},
         {key:'frequency_period',label:'التكرار',kind:'select',options:['يومي','أسبوعي','شهري'],mobileVisible:true},
         {key:'occurrences',label:'عدد المرات في فترة التكرار',kind:'number'},
         {key:'unit_cost',label:'تكلفة المرة الواحدة',kind:'number'},
         {key:'monthly_total',label:'الإجمالي الشهري المحسوب',kind:'number',mobileVisible:true},
+        {key:'notes',label:'ملاحظات',kind:'textarea'},
+      ],
+    },
+  },
+  {
+    key:'beneficiaries',
+    title:'المستفيدون',
+    summary:'سجل الأشخاص الذين تتكرر لهم مصروفات أو التزامات حتى يظهروا مباشرة في قوائم المستفيد داخل النماذج.',
+    fields:[],
+    table:{
+      addLabel:'إضافة مستفيد',
+      emptyLabel:'لا توجد أسماء مستفيدين محفوظة بعد.',
+      columns:[
+        {key:'name',label:'اسم المستفيد',mobileVisible:true},
+        {key:'relationship',label:'العلاقة',kind:'select',options:['أنا','زوج/زوجة','ابن/ابنة','والد/والدة','قريب','موظف','جهة','أخرى'],mobileVisible:true},
         {key:'notes',label:'ملاحظات',kind:'textarea'},
       ],
     },
@@ -204,7 +220,7 @@ export const extendedProfileSections:ExtendedProfileSection[]=[
       emptyLabel:'لا توجد مصروفات صحية أو تعليمية أو أسرية مسجلة بعد.',
       columns:[
         {key:'category',label:'النوع',kind:'select',options:['صحة','تأمين صحي','تعليم','دورة أو تدريب','دعم الأب أو الأم','مصروف أسري','مصاريف أطفال','أخرى'],mobileVisible:true},
-        {key:'beneficiary',label:'المستفيد'},
+        {key:'beneficiary',label:'المستفيد',kind:'select',mobileVisible:true},
         {key:'amount',label:'القيمة',kind:'number',mobileVisible:true},
         {key:'recurrence',label:'الدورية',kind:'select',options:['شهري','ربع سنوي','نصف سنوي','سنوي','موسمي','مرة واحدة','عند الحاجة']},
         {key:'due_day',label:'يوم الاستحقاق',kind:'number'},
