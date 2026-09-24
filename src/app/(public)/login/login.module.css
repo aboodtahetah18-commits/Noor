@@ -623,7 +623,7 @@
   }
 }
 
-@media(max-width:560px){
+@media(max-width:767px){
   .visual{
     min-height:220px;
     padding-inline:18px;

@@ -540,7 +540,7 @@
   }
 }
 
-@media(max-width:560px){
+@media(max-width:767px){
   .mobileHero{
     min-height:218px;
     padding-inline:18px;
