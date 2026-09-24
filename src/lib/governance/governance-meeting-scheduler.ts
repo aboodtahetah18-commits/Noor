@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { getRawSql } from '@/infrastructure/db/client';
 import { getFinancialJourneyStatus } from '@/lib/conversations/financial-journey-orchestrator';
+import { buildFoundingFinancialMeetingPack } from '@/lib/allocation/founding-financial-meeting';
 
 export type GovernanceMeetingScheduleItem={
   id:string;
@@ -13,6 +14,7 @@ export type GovernanceMeetingScheduleItem={
   minimum_annual_meetings?:number;
   periodic?:boolean;
   sensitivity?:'عادية'|'رقابية حساسة';
+  attendees?:Array<{key:string;name:string;role:string}>;
 };
 
 export const governanceCommitteeCadencePolicy={
@@ -85,7 +87,17 @@ export async function getGovernanceMeetingSchedule(userId:string){
       scheduled_at:councilAt.toISOString(),
       cadence:'أقرب موعد مقترح بعد اكتمال الملف، ويؤكد المستخدم ملاءمته قبل تثبيته',
       status:'مقترح للتأكيد',
-      agenda:['مراجعة فهم المجلس للمستخدم','مناقشة الأهداف والالتزامات والسيولة والأصول','معايرة أسلوب الخوارزميات وأسئلتها ومستوى الشرح','تثبيت تفضيلات الحوكمة والاجتماعات'],
+      agenda:['مراجعة الصورة المالية الكاملة','مناقشة الميزانية الأولية والالتزامات والسيولة والأهداف','مراجعة توزيع البنود على الحسابات','تثبيت قواعد المتابعة الشهرية والأسبوعية'],
+      attendees:[
+        {key:'central-governor',name:'محافظ بنك نماء المركزي',role:'رئيس الاجتماع'},
+        {key:'budget-spending-owner',name:'مسؤول الميزانية والإنفاق',role:'الميزانية والإنفاق'},
+        {key:'obligations-owner',name:'مسؤول الالتزامات',role:'الالتزامات والاستحقاقات'},
+        {key:'goals-owner',name:'مسؤول الأهداف',role:'الأهداف والادخار'},
+        {key:'liquidity-protection-owner',name:'مسؤول السيولة والحماية',role:'الاحتياطي والحماية'},
+        {key:'investment-owner',name:'مسؤول الاستثمار',role:'الأصول والاستثمار'},
+        {key:'economic-advisor',name:'المستشار الاقتصادي',role:'تحليل الصورة الكلية'},
+        {key:'central-secretary',name:'أمين السر المركزي',role:'المحضر والمتابعة'},
+      ],
     },
     {
       id:`budget-${cycleId}`,
@@ -154,6 +166,7 @@ export async function syncGovernanceMeetingInvitations(userId:string){
   const threadId=secretaryThreads[0]?.id?String(secretaryThreads[0].id):null;
   if(!threadId) return schedule;
 
+  const foundingPack=await buildFoundingFinancialMeetingPack(userId);
   for(const meeting of schedule.meetings){
     const exists=await sql`
       select id from public.conversation_messages
@@ -185,6 +198,8 @@ export async function syncGovernanceMeetingInvitations(userId:string){
           minimum_annual_meetings:meeting.minimum_annual_meetings??null,
           periodic:meeting.periodic??false,
           sensitivity:meeting.sensitivity??null,
+          attendees:meeting.attendees??null,
+          founding_financial_pack:meeting.id==='council-foundation'?foundingPack:null,
           execution_boundary:'لا تنفيذ مالي من الاجتماع ذاته',
         })}::jsonb
       )
