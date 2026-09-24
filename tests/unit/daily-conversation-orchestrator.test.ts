@@ -53,4 +53,22 @@ describe('ذاكرة المبادرة اليومية في نماء',()=>{
     const risk={...candidate,key:'risk',basePriority:140,roomKey:'solvency' as const};
     expect(candidateScore(risk,base,new Date('2026-09-24T08:00:00Z'))).toBeGreaterThan(candidateScore(candidate,base,new Date('2026-09-24T08:00:00Z')));
   });
+
+  it('يوسع مهلة السؤال تلقائيًا عندما يتجاهل المستخدم نفس الطلب',()=>{
+    let memory=normalizeProactiveConversationMemory(null);
+    memory=registerPrompt(memory,candidate.key,'2026-09-01T08:00:00Z');
+    memory=registerPrompt(memory,candidate.key,'2026-09-12T08:00:00Z');
+    expect(memory.prompts[candidate.key]?.unansweredStreak).toBe(1);
+    expect(isCandidateEligible(candidate,memory,new Set(),new Date('2026-09-25T08:00:00Z'))).toBe(false);
+    expect(isCandidateEligible(candidate,memory,new Set(),new Date('2026-10-01T08:00:00Z'))).toBe(true);
+  });
+
+  it('يتعلم سرعة الاستجابة ويعيد تصفير تجاهل السؤال بعد الرد',()=>{
+    let memory=normalizeProactiveConversationMemory(null);
+    memory=registerPrompt(memory,candidate.key,'2026-09-20T08:00:00Z');
+    memory=registerUserLearning(memory,'hilal','تم، الفاتورة 75 ريال','2026-09-20T10:00:00Z',candidate.key);
+    expect(memory.prompts[candidate.key]?.unansweredStreak).toBe(0);
+    expect(memory.prompts[candidate.key]?.averageResponseHours).toBe(2);
+    expect(candidateScore(candidate,memory,new Date('2026-10-25T08:00:00Z'))).toBeGreaterThan(candidate.basePriority);
+  });
 });
