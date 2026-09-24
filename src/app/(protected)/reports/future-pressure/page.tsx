@@ -7,9 +7,10 @@ import { WorkflowStageGuide } from '@/components/ux/workflow-stage-guide';
 import { getPressureDecisionPackages } from '@/features/future-pressure/queries/get-pressure-decision-packages';
 import { getPressureDecisionLearning } from '@/features/future-pressure/queries/get-pressure-decision-learning';
 import { approveCompositePressurePackageAction, cancelCompositePressurePackageAction, createCompositePressurePackageAction, evaluateCompositePressurePackageOutcomeAction, refreshCompositePressurePackageExecutionAction } from './actions';
+import { PageHeader } from '@/components/ui';
 
 function money(value: string | number) { return formatSar(typeof value === 'number' ? value.toFixed(2) : value); }
-function date(value: string) { return new Date(`${value}T00:00:00Z`).toLocaleDateString('ar-SA-u-ca-gregory', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' }); }
+function date(value: string) { return new Date(`${value}T00:00:00Z`).toLocaleDateString('ar-SA-u-ca-gregory-nu-latn', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' }); }
 function outcomeLabel(value: string | null) { return value === 'RESOLVED' ? 'تم حل الضغط فعليًا' : value === 'REDUCED' ? 'انخفض الضغط فعليًا' : value === 'SHIFTED' ? 'انتقل الضغط إلى دورة لاحقة' : value === 'UNCHANGED' ? 'لم يتغير الضغط' : value === 'WORSENED' ? 'زاد الضغط بعد التنفيذ' : value === 'MIXED' ? 'نتيجة مختلطة' : 'لم تُقيّم النتيجة بعد'; }
 
 export default async function FuturePressurePage({ searchParams }: { searchParams?: Promise<Record<string,string|string[]|undefined>> }) {
@@ -17,10 +18,10 @@ export default async function FuturePressurePage({ searchParams }: { searchParam
   const params = searchParams ? await searchParams : {};
   const [decision, packages, decisionLearning] = await Promise.all([getPressureDecisionScenarios(user.id, 6), getPressureDecisionPackages(user.id, 8), getPressureDecisionLearning(user.id)]);
   const forecast = decision?.forecast ?? null;
-  if (!forecast) return <main className="app-page p47-pressure-page" dir="rtl"><div className="page-shell p47-analysis-shell"><section className="empty-state"><h1>التوقع المالي المستقبلي</h1><p>لا توجد دورة مالية نشطة لبناء التوقع.</p><Link className="primary-link" href="/cycles/new">بدء دورة مالية</Link></section></div></main>;
+  if (!forecast) return <main className="app-page p47-pressure-page namaa-pressure-page" dir="rtl"><div className="page-shell p47-analysis-shell namaa-migrated-shell"><section className="empty-state"><h1>التوقع المالي المستقبلي</h1><p>لا توجد دورة مالية نشطة لبناء التوقع.</p><Link className="primary-link" href="/cycles/new">بدء دورة مالية</Link></section></div></main>;
 
   return <main className="app-page p47-pressure-page" dir="rtl"><div className="page-shell p47-analysis-shell">
-    <header className="p47-analysis-header"><div><p className="eyebrow">التحليل المستقبلي</p><div className="title-with-help"><h1>رادار الضغط المالي القادم</h1></div></div><Link className="secondary-link" href="/reports">العودة للتقارير</Link></header>
+    <PageHeader className="p47-analysis-header namaa-migrated-header" eyebrow="التحليل المستقبلي" title="رادار الضغط المالي القادم" description="اقرأ موضع الضغط المالي المتوقع قبل اتخاذ أي قرار، ثم قارن السيناريوهات على أساس الأثر الفعلي." actions={<Link className="ux-button ux-button--secondary" href="/reports">العودة للتقارير</Link>}/>
 
     <WorkflowStageGuide ariaLabel="مراحل قراءة الضغط المالي" stages={[
       {label:'1. قراءة الضغط',description:'افهم موضع العجز والفجوات أولًا',state:'current'},
@@ -49,7 +50,7 @@ export default async function FuturePressurePage({ searchParams }: { searchParam
       </div>)}</div>
     </section></div></details>
 
-    {typeof params.error === 'string' ? <section className="p47-analysis-card"><strong>تعذر تنفيذ الإجراء</strong><p className="muted">{params.error}</p></section> : null}
+    {typeof params.error === 'string' ? <section className="p47-analysis-card"><strong>تعذر تنفيذ الإجراء</strong><p className="muted">راجع البيانات الحالية ثم أعد المحاولة.</p></section> : null}
     {typeof params.packageCreated === 'string' ? <section className="p47-analysis-card"><strong>تم إنشاء حزمة قرار مركبة كمسودة.</strong><p className="muted">راجع أثر الحزمة أدناه قبل اعتمادها.</p></section> : null}
     {typeof params.packageApproved === 'string' ? <section className="p47-analysis-card"><strong>تم اعتماد حزمة القرار.</strong><p className="muted">الاعتماد لا ينفذ التغييرات المالية مباشرة؛ أصبح كل إجراء جاهزًا لمساره التنفيذي الصحيح.</p></section> : null}{typeof params.packageSynced === 'string' ? <section className="p47-analysis-card"><strong>تم التحقق من التنفيذ الفعلي.</strong><p className="muted">العناصر المتحققة فعليًا: {params.packageSynced}. تتغير حالة الحزمة وفق الواقع، لا وفق الضغط على الزر.</p></section> : null}{typeof params.packageEvaluated === 'string' ? <section className="p47-analysis-card"><strong>تمت إعادة قراءة الضغط بعد التنفيذ.</strong><p className="muted">حُفظت نتيجة ما تحقق فعليًا ومقارنتها مع الأثر المتوقع للحزمة.</p></section> : null}
 
@@ -80,7 +81,7 @@ export default async function FuturePressurePage({ searchParams }: { searchParam
         {pkg.status === 'DRAFT' ? <div className="button-row"><form action={approveCompositePressurePackageAction}><input type="hidden" name="packageId" value={pkg.id}/><button className="primary-button" type="submit">اعتماد الحزمة</button></form><form action={cancelCompositePressurePackageAction}><input type="hidden" name="packageId" value={pkg.id}/><button className="secondary-button" type="submit">إلغاء الحزمة</button></form></div> : null}
         {['APPROVED','IN_PROGRESS'].includes(pkg.status) ? <><p className="muted">الاعتماد لا ينفذ الإجراءات تلقائيًا. كل عنصر يحتفظ بمساره المحاسبي/التشغيلي الصحيح، ولا يكتمل إلا بعد تحقق التغيير الفعلي.</p><form action={refreshCompositePressurePackageExecutionAction}><input type="hidden" name="packageId" value={pkg.id}/><button className="secondary-button" type="submit">التحقق من التنفيذ الآن</button></form></> : null}
         {pkg.status === 'COMPLETED' ? <div><p><strong>اكتملت الحزمة بعد تحقق جميع التغييرات فعليًا.</strong></p>
-          {pkg.outcomeStatus === 'EVALUATED' ? <><div className="section-title-row"><div><strong>{outcomeLabel(pkg.outcomeClass)}</strong><span>مقارنة النتيجة الفعلية بما توقعته الحزمة عند اعتمادها.</span></div>{pkg.outcomeEvaluatedAt ? <small>{new Date(pkg.outcomeEvaluatedAt).toLocaleString('ar-SA')}</small> : null}</div>
+          {pkg.outcomeStatus === 'EVALUATED' ? <><div className="section-title-row"><div><strong>{outcomeLabel(pkg.outcomeClass)}</strong><span>مقارنة النتيجة الفعلية بما توقعته الحزمة عند اعتمادها.</span></div>{pkg.outcomeEvaluatedAt ? <small>{new Date(pkg.outcomeEvaluatedAt).toLocaleString('ar-SA-u-nu-latn')}</small> : null}</div>
             <section className="statement-kpis"><div><span>العجز المتوقع بعد الحزمة</span><strong>{money(pkg.committedDeficitAfter)}</strong></div><div><span>العجز الفعلي بعد التنفيذ</span><strong>{money(pkg.actualCommittedDeficitAfter ?? 0)}</strong><small>فرق {money(pkg.committedOutcomeVariance ?? 0)}</small></div><div><span>فجوة الرحلة المتوقعة بعد الحزمة</span><strong>{money(pkg.tripGapAfter)}</strong></div><div><span>فجوة الرحلة الفعلية عند الموعد</span><strong>{money(pkg.actualTripGapAfter ?? 0)}</strong><small>فرق {money(pkg.tripGapOutcomeVariance ?? 0)}</small></div><div><span>ضغط انتقل زمنيًا</span><strong>{money(pkg.actualShiftedTripGap ?? 0)}</strong></div></section>
             <p className="muted">الفرق = الفعلي − المتوقع. القيمة الموجبة تعني أن النتيجة أسوأ من المتوقع بهذا المقدار، والسالبة تعني نتيجة أفضل من المتوقع. لا تُستخدم نسبة سماح اعتباطية.</p></> : <form action={evaluateCompositePressurePackageOutcomeAction}><input type="hidden" name="packageId" value={pkg.id}/><button className="secondary-button" type="submit">إعادة حساب النتيجة بعد التنفيذ</button></form>}
         </div> : null}
