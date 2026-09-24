@@ -154,3 +154,22 @@
     max-inline-size:var(--ux-container-wide);
   }
 }
+
+
+/* Conversation owns its desktop rails; do not apply the global sidebar offset twice. */
+@media (min-width:1024px) {
+  .main-content-focus-target:has(.namaa-conversation-page) {
+    padding-inline-start:0;
+  }
+
+  .namaa-main-canvas:has(.namaa-conversation-page) {
+    padding-inline:0;
+    padding-block:0;
+  }
+
+  .namaa-conversation-page {
+    inline-size:100%;
+    max-inline-size:none;
+    margin:0;
+  }
+}
