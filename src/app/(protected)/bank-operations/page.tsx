@@ -4,11 +4,39 @@ import { getDailyBankOperationsCenter } from '@/features/bank-operations/queries
 import { formatSar } from '@/lib/format-money';
 import { FocusedNextStep } from '@/components/ux/focused-next-step';
 import { BanksWide } from './banks-wide';
+import { listAccounts } from '@/features/accounts/queries/list-accounts';
+import { getGoalCycleReadiness } from '@/features/goals/queries/get-goal-cycle-readiness';
+import { getEmergencySummary } from '@/features/emergency/queries/get-emergency-summary';
+import { getSavingsSummary } from '@/features/savings/queries/get-savings-summary';
 const KIND:Record<string,string>={EXPENSE:'مصروف',INCOME:'دخل',TRANSFER:'تحويل',REFUND:'استرداد',FEE:'رسوم',UNKNOWN:'غير معروف'};
 export default async function BankOperationsPage({searchParams}:{searchParams:Promise<{error?:string;bank?:string}>}){
-  const user=await requireAuthenticatedUser();const [center,q]=await Promise.all([getDailyBankOperationsCenter(user.id),searchParams]);
+  const user=await requireAuthenticatedUser();
+  const [center,q,accounts,goals,emergency,savings]=await Promise.all([
+    getDailyBankOperationsCenter(user.id),
+    searchParams,
+    listAccounts(user.id).catch(()=>[]),
+    getGoalCycleReadiness(user.id).catch(()=>({cycle:null,items:[]})),
+    getEmergencySummary(user.id).catch(()=>null),
+    getSavingsSummary(user.id).catch(()=>null),
+  ]);
   const selected=(q.bank==='hilal'||q.bank==='solvency'||q.bank==='assets')?q.bank:'central';
-  return <main className="p47-page" dir="rtl"><BanksWide selected={selected} pendingReviewCount={center.pendingReviewCount} pendingItems={center.pendingItems}/><section className="p47-content-shell namaa-mobile-only">
+  const activeAccounts=accounts.filter(account=>account.isActive);
+  const totalLiquidity=activeAccounts.reduce((sum,account)=>sum+(Number(account.balance)||0),0);
+  const goalsRemaining=goals.items.reduce((sum,goal)=>sum+(Number(goal.remainingAmount)||0),0);
+  const goalsGap=goals.items.reduce((sum,goal)=>sum+Math.max(0,Number(goal.gapThisCycle)||0),0);
+  const dashboardData={
+    activeAccountCount:activeAccounts.length,
+    totalLiquidity,
+    activeGoalCount:goals.items.length,
+    goalsRemaining,
+    goalsGap,
+    emergencyBalance:Number(emergency?.currentBalance??0),
+    emergencyProgress:Number(emergency?.progressPercent??0),
+    emergencyCoverageMonths:emergency?.coverageMonths??null,
+    savingsActual:Number(savings?.actualTransferredAmount??0),
+    savingsPlanned:Number(savings?.allocatedAmount??0),
+  };
+  return <main className="p47-page" dir="rtl"><BanksWide selected={selected} pendingReviewCount={center.pendingReviewCount} pendingItems={center.pendingItems} dashboardData={dashboardData}/><section className="p47-content-shell namaa-mobile-only">
     <header className="p47-page-heading"><div><p className="p47-kicker">التشغيل اليومي</p><div className="title-with-help"><h1>مركز العمليات البنكية</h1></div><div className="p47-cycle-line"><span className={`p47-status-dot ${center.pendingReviewCount?'is-warn':'is-good'}`}/><span>{center.pendingReviewCount?`${center.pendingReviewCount} تحتاج قرارك`:'لا توجد عمليات معلقة'}</span></div></div></header>
     {q.error?<section className="p47-panel p47-danger-panel"><strong>{q.error}</strong></section>:null}
     <section className="p47-bank-journey"><div className="is-current"><b>1</b><span>ألصق الرسالة</span></div><div><b>2</b><span>تحقق من التكرار</span></div><div><b>3</b><span>التاجر والبند</span></div><div><b>4</b><span>المراجعة</span></div><div><b>5</b><span>السجل والخطة</span></div></section>
