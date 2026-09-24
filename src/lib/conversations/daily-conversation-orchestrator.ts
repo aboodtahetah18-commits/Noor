@@ -246,12 +246,38 @@ function operationalCandidates(
 
 async function activeFactKeys(userId:string){
   const sql=getRawSql();
-  const rows=await sql`
-    select fact_key
-    from public.user_foundation_facts
-    where user_id=${userId}::uuid and status='ACTIVE'
-  `;
-  return new Set(rows.map(row=>String(row.fact_key)));
+  const [rows,threadRows]=await Promise.all([
+    sql`
+      select fact_key
+      from public.user_foundation_facts
+      where user_id=${userId}::uuid and status='ACTIVE'
+    `,
+    sql`
+      select room_key,metadata
+      from public.conversation_threads
+      where user_id=${userId}::uuid and room_key in ('central','hilal')
+    `,
+  ]);
+  const facts=new Set(rows.map(row=>String(row.fact_key)));
+  for(const row of threadRows){
+    const metadata=row.metadata&&typeof row.metadata==='object'&&!Array.isArray(row.metadata)
+      ? row.metadata as Record<string,unknown>
+      : {};
+    if(String(row.room_key)==='central'){
+      const baseline=metadata.financial_baseline&&typeof metadata.financial_baseline==='object'&&!Array.isArray(metadata.financial_baseline)
+        ? metadata.financial_baseline as Record<string,unknown>
+        : {};
+      if(typeof baseline.bills_note==='string') facts.add('extended:bills');
+      if(typeof baseline.subscriptions_note==='string') facts.add('extended:subscriptions');
+    }
+    if(String(row.room_key)==='hilal'){
+      const intake=metadata.budget_spending_intake&&typeof metadata.budget_spending_intake==='object'&&!Array.isArray(metadata.budget_spending_intake)
+        ? metadata.budget_spending_intake as Record<string,unknown>
+        : {};
+      if(typeof intake.vehicle==='string'&&intake.vehicle.trim()) facts.add('extended:vehicle_details');
+    }
+  }
+  return facts;
 }
 
 async function onboardingComplete(userId:string){
