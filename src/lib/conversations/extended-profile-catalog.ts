@@ -5,14 +5,57 @@ export type ExtendedProfileField={
   kind?:'text'|'number'|'date'|'textarea'|'select';
   options?:string[];
 };
+export type ExtendedProfileTableColumn={
+  key:string;
+  label:string;
+  kind?:'text'|'number'|'select';
+  options?:string[];
+};
 export type ExtendedProfileSection={
   key:string;
   title:string;
   summary:string;
   fields:ExtendedProfileField[];
+  table?:{
+    addLabel:string;
+    emptyLabel:string;
+    columns:ExtendedProfileTableColumn[];
+  };
 };
 
 export const extendedProfileSections:ExtendedProfileSection[]=[
+  {
+    key:'bills',
+    title:'الفواتير',
+    summary:'سجل الفواتير التي تسددها فعليًا. أدخل قيمة الفاتورة نفسها ودورية الاستحقاق، وليس متوسطًا تقديريًا.',
+    fields:[],
+    table:{
+      addLabel:'إضافة فاتورة',
+      emptyLabel:'لا توجد فواتير مسجلة بعد.',
+      columns:[
+        {key:'name',label:'الفاتورة'},
+        {key:'amount',label:'القيمة',kind:'number'},
+        {key:'recurrence',label:'الدورية',kind:'select',options:['شهري','كل شهرين','ربع سنوي','نصف سنوي','سنوي','حسب الاستهلاك','أخرى']},
+        {key:'due_note',label:'موعد/ملاحظة'},
+      ],
+    },
+  },
+  {
+    key:'subscriptions',
+    title:'الاشتراكات',
+    summary:'سجل كل اشتراك متكرر كمبلغ مستقل، مع دورية السداد.',
+    fields:[],
+    table:{
+      addLabel:'إضافة اشتراك',
+      emptyLabel:'لا توجد اشتراكات مسجلة بعد.',
+      columns:[
+        {key:'name',label:'الاشتراك'},
+        {key:'amount',label:'القيمة',kind:'number'},
+        {key:'recurrence',label:'الدورية',kind:'select',options:['شهري','ربع سنوي','نصف سنوي','سنوي','أخرى']},
+        {key:'due_note',label:'موعد/ملاحظة'},
+      ],
+    },
+  },
   {
     key:'housing_details',
     title:'السكن والمرافق',
@@ -20,9 +63,6 @@ export const extendedProfileSections:ExtendedProfileSection[]=[
     fields:[
       {key:'housing_type',label:'نوع السكن',kind:'select',options:['ملك','إيجار','مع العائلة','سكن جهة العمل','غير ذلك']},
       {key:'monthly_housing_cost',label:'التكلفة الشهرية الفعلية',kind:'number'},
-      {key:'electricity_average',label:'متوسط الكهرباء',kind:'number'},
-      {key:'water_average',label:'متوسط المياه',kind:'number'},
-      {key:'internet_average',label:'الإنترنت المنزلي',kind:'number'},
       {key:'maintenance_notes',label:'صيانة أو إصلاحات معروفة قادمة',kind:'textarea'},
     ],
   },
@@ -69,7 +109,6 @@ export const extendedProfileSections:ExtendedProfileSection[]=[
       {key:'groceries_frequency',label:'تكرار البقالة'},
       {key:'groceries_average',label:'متوسط سلة البقالة',kind:'number'},
       {key:'telecom_notes',label:'خدمات الاتصالات الأساسية',kind:'textarea'},
-      {key:'subscriptions_notes',label:'الاشتراكات المتكررة',kind:'textarea'},
       {key:'leisure_notes',label:'الترفيه والهوايات والعناية الشخصية',kind:'textarea'},
     ],
   },
