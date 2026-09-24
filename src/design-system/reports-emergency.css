@@ -215,3 +215,191 @@
 @media (max-width:767px) {
   /* Mobile keeps its existing composition. */
 }
+
+
+/* Historical reports + learning + cycle detail */
+.namaa-history-page .dashboard-shell,
+.namaa-learning-page .dashboard-shell,
+.namaa-cycle-report-page .dashboard-shell {
+  display:grid;
+  gap:var(--ux-space-4);
+}
+
+.namaa-history-page :where(.dashboard-card,.report-note,.empty-state),
+.namaa-learning-page :where(.dashboard-card,.empty-state),
+.namaa-cycle-report-page :where(.dashboard-card,.report-note,.p47-analysis-kpis > article) {
+  border:2px solid var(--ux-border-strong,var(--ux-border-default));
+  border-radius:var(--ux-radius-lg);
+  background:var(--ux-card-bg);
+  color:var(--ux-text-primary);
+  box-shadow:var(--ux-shadow-sm);
+}
+
+.namaa-history-page .report-note,
+.namaa-cycle-report-page .report-note {
+  display:grid;
+  gap:var(--ux-space-1);
+  padding:var(--ux-space-3) var(--ux-space-4);
+}
+
+.namaa-history-page .dashboard-grid.kpi-grid,
+.namaa-cycle-report-page .p47-analysis-kpis {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:var(--ux-space-3);
+}
+
+.namaa-history-page .dashboard-grid.kpi-grid > article,
+.namaa-cycle-report-page .p47-analysis-kpis > article {
+  min-inline-size:0;
+  display:grid;
+  gap:var(--ux-space-1);
+  padding:var(--ux-space-3);
+}
+
+.namaa-history-page .dashboard-grid.kpi-grid span,
+.namaa-cycle-report-page .p47-analysis-kpis span {
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+}
+
+.namaa-history-page .dashboard-grid.kpi-grid strong,
+.namaa-cycle-report-page .p47-analysis-kpis strong {
+  font-size:var(--ux-type-card-title-size);
+  font-variant-numeric:tabular-nums;
+}
+
+.namaa-history-page .report-table-wrap,
+.namaa-learning-page .report-table-wrap,
+.namaa-cycle-report-page .report-table-wrap {
+  overflow:auto;
+  border:2px solid var(--ux-border-strong,var(--ux-border-default));
+  border-radius:var(--ux-radius-md);
+}
+
+.namaa-history-page .report-table,
+.namaa-learning-page .report-table,
+.namaa-cycle-report-page .report-table {
+  inline-size:100%;
+  min-inline-size:780px;
+  border-collapse:collapse;
+  background:var(--ux-card-bg);
+}
+
+.namaa-history-page .report-table :where(th,td),
+.namaa-learning-page .report-table :where(th,td),
+.namaa-cycle-report-page .report-table :where(th,td) {
+  padding:var(--ux-space-3);
+  border-block-end:1px solid var(--ux-border-default);
+  text-align:start;
+  vertical-align:top;
+}
+
+.namaa-history-page .report-table th,
+.namaa-learning-page .report-table th,
+.namaa-cycle-report-page .report-table th {
+  background:var(--ux-page-bg);
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  font-weight:800;
+}
+
+.namaa-history-page .report-table td small,
+.namaa-learning-page .report-table td small,
+.namaa-cycle-report-page .report-table td small {
+  display:block;
+  margin-block-start:var(--ux-space-1);
+  color:var(--ux-text-secondary);
+}
+
+.namaa-learning-page .dashboard-list {
+  display:grid;
+  gap:var(--ux-space-3);
+}
+
+.namaa-learning-page .dashboard-list > div {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:start;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-3);
+  border:2px solid var(--ux-border-strong,var(--ux-border-default));
+  border-radius:var(--ux-radius-md);
+  background:var(--ux-surface-default);
+}
+
+.namaa-learning-page .actions-row {
+  display:flex;
+  flex-wrap:wrap;
+  gap:var(--ux-space-2);
+  align-items:center;
+}
+
+.namaa-learning-page .actions-row form {
+  display:flex;
+  flex-wrap:wrap;
+  gap:var(--ux-space-2);
+  align-items:center;
+}
+
+.namaa-learning-page .actions-row :where(a,button) {
+  min-block-size:40px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding-inline:var(--ux-space-3);
+  border:2px solid var(--ux-brand-primary);
+  border-radius:10px;
+  background:var(--ux-brand-primary);
+  color:var(--ux-action-contrast);
+  text-decoration:none;
+  font:inherit;
+  font-weight:800;
+}
+
+.namaa-learning-page .actions-row select {
+  min-block-size:40px;
+  border:2px solid var(--ux-border-strong,var(--ux-border-default));
+  border-radius:10px;
+  background:var(--ux-card-bg);
+  color:var(--ux-text-primary);
+}
+
+.namaa-cycle-report-page .dashboard-main-grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:var(--ux-space-3);
+}
+
+.namaa-cycle-report-page .p47-report-card {
+  padding:var(--ux-space-4);
+}
+
+.namaa-cycle-report-page .dashboard-dl {
+  display:grid;
+  gap:var(--ux-space-2);
+}
+
+.namaa-cycle-report-page .dashboard-dl > div {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--ux-space-3);
+  padding-block:var(--ux-space-2);
+  border-block-end:1px solid var(--ux-border-default);
+}
+
+@media (min-width:768px) and (max-width:1023px) {
+  .namaa-history-page .dashboard-grid.kpi-grid,
+  .namaa-cycle-report-page .p47-analysis-kpis {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .namaa-cycle-report-page .dashboard-main-grid {
+    grid-template-columns:minmax(0,1fr);
+  }
+
+  .namaa-learning-page .dashboard-list > div {
+    grid-template-columns:minmax(0,1fr);
+  }
+}
