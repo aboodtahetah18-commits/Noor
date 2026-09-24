@@ -12848,3 +12848,49 @@
     border-radius:var(--ux-radius-3) var(--ux-radius-3) 0 0!important
   }
 }
+
+
+/* Focused chats for responsibility owners and meetings. */
+.focusedChatBanner{
+  display:grid!important;
+  grid-template-columns:auto minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:var(--ux-space-2)!important
+}
+.focusedChatBanner>span{
+  min-width:0;
+  display:grid;
+  gap:var(--ux-space-1)
+}
+.focusedChatBanner>span strong{
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-caption-size)
+}
+.focusedChatBanner>span small{
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  line-height:1.45
+}
+.focusedChatBanner>button{
+  width:36px;
+  height:36px;
+  display:grid;
+  place-items:center;
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-full);
+  background:var(--namaa-card);
+  color:var(--ux-text-primary)
+}
+
+@media (max-width:767px){
+  .meetingActions{
+    gap:var(--ux-space-1)!important
+  }
+  .meetingActions button{
+    min-width:0!important;
+    padding-inline:var(--ux-space-1)!important
+  }
+  .meetingActions button span{
+    font-size:calc(var(--ux-type-caption-size) - 1px)!important
+  }
+}
