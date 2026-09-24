@@ -11,6 +11,7 @@ import { SmartComboInput } from '@/components/forms/smart-combo-input';
 import { deactivateAccountAction, updateAccountAction } from './actions';
 import { FocusedNextStep } from '@/components/ux/focused-next-step';
 import { EntityActionRail } from '@/components/ui/entity-actions';
+import { PageHeader } from '@/components/ui';
 
 const labels = { BANK: 'حساب جاري', SAVINGS: 'ادخار', CASH: 'نقدي', OTHER: 'أخرى' } as const;
 
@@ -26,8 +27,8 @@ export default async function AccountsPage({ searchParams }: { searchParams: Pro
   const bankNames = [...new Set([...BANK_OPTIONS.map((b) => b.name), ...accounts.map((a) => a.bankName).filter((v): v is string => Boolean(v))])];
   const total = sumMoney(active.map((a) => Money.parse(a.balance)));
 
-  return <main className="page-shell p47-resource-page" dir="rtl">
-    <header className="p47-resource-header"><div><p className="eyebrow">إدارة السيولة</p><div className="title-with-help"><h1>الحسابات</h1></div><p>رصيدك الفعلي موزع بوضوح بين الحسابات والمحافظ.</p></div><ActionDialog title="إضافة حساب" description="أدخل بيانات الحساب دون مغادرة الصفحة." size="lg" triggerClassName="primary-link" trigger="إضافة حساب" defaultOpen={query.action==='add'}><AccountForm accountNames={accountNames} bankNames={bankNames}/></ActionDialog></header>
+  return <main className="page-shell p47-resource-page namaa-financial-page namaa-accounts-page namaa-migrated-shell" dir="rtl">
+    <PageHeader className="p47-resource-header namaa-financial-header namaa-migrated-header" eyebrow="إدارة السيولة" title="الحسابات" description="رصيدك الفعلي موزع بوضوح بين الحسابات والمحافظ." actions={<ActionDialog title="إضافة حساب" description="أدخل بيانات الحساب دون مغادرة الصفحة." size="lg" triggerClassName="ux-button ux-button--primary" trigger="إضافة حساب" defaultOpen={query.action==='add'}><AccountForm accountNames={accountNames} bankNames={bankNames}/></ActionDialog>}/>
 
     <section className="p74-focus-summary"><div><span>إجمالي السيولة الفعلية</span><strong>{formatSar(total)}</strong><small>{active.length} حساب نشط</small></div></section>
 
