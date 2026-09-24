@@ -19,12 +19,20 @@ const pages = [
 
 export function DesktopTopNav() {
   const pathname = usePathname();
+  const closeSidebar=()=>{
+    window.localStorage.setItem('sidebarState','collapsed');
+    document.documentElement.dataset.sidebar='collapsed';
+    window.dispatchEvent(new Event('mustaqbali:sidebar-state'));
+  };
   return (
     <aside id="namaa-desktop-sidebar" data-namaa-side="right" className="desktop-top-nav-wrap mustaqbali-sidebar namaa-wide-sidebar" dir="rtl">
       <div className="mustaqbali-sidebar-inner namaa-wide-sidebar-inner">
-        <Link href="/conversations" className="namaa-wide-sidebar-brand" aria-label="نماء — مركز العمل">
-          <BrandLogo surface="auto" priority />
-        </Link>
+        <div className="namaa-wide-sidebar-head">
+          <Link href="/conversations" className="namaa-wide-sidebar-brand" aria-label="نماء — مركز العمل" onClick={closeSidebar}>
+            <BrandLogo surface="dark" priority />
+          </Link>
+          <button type="button" className="namaa-wide-sidebar-close" onClick={closeSidebar} aria-label="إغلاق القائمة الجانبية"><LucideIcon name="x" size={24}/></button>
+        </div>
 
         <nav className="mustaqbali-sidebar-nav namaa-wide-sidebar-nav" aria-label="التنقل الرئيسي للكمبيوتر">
           <section className="mustaqbali-nav-section">
@@ -35,6 +43,7 @@ export function DesktopTopNav() {
                 <Link
                   key={item.href}
                   href={item.href}
+                  onClick={closeSidebar}
                   className={active ? 'is-active' : ''}
                   aria-current={active ? 'page' : undefined}
                 >

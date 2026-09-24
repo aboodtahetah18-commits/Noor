@@ -13,8 +13,8 @@ function subscribeSidebar(callback:()=>void){
   window.addEventListener('mustaqbali:sidebar-state',callback);
   return()=>{window.removeEventListener('storage',onStorage);window.removeEventListener('mustaqbali:sidebar-state',callback);};
 }
-function sidebarSnapshot(){return window.localStorage.getItem('sidebarState')==='collapsed';}
-function sidebarServerSnapshot(){return false;}
+function sidebarSnapshot(){return window.localStorage.getItem('sidebarState')!=='expanded';}
+function sidebarServerSnapshot(){return true;}
 
 export function GlobalTopBar({profile}:{profile:HeaderProfile}){
   const collapsed=useSyncExternalStore(subscribeSidebar,sidebarSnapshot,sidebarServerSnapshot);
@@ -28,7 +28,7 @@ export function GlobalTopBar({profile}:{profile:HeaderProfile}){
   return <header className="mustaqbali-topbar namaa-topbar" dir="rtl">
     <div className="mustaqbali-topbar-brand-zone">
       <button type="button" className="mustaqbali-topbar-menu" onClick={toggleSidebar} aria-label={collapsed?'توسيع القائمة الجانبية':'طي القائمة الجانبية'}><LucideIcon name="menu" size={20}/></button>
-      <Link href="/dashboard" className="mustaqbali-topbar-logo" aria-label="نماء — الرئيسية"><BrandLogo surface="auto" priority /></Link>
+      <Link href="/dashboard" className="mustaqbali-topbar-logo" aria-label="نماء — الرئيسية"><BrandLogo surface="dark" priority /></Link>
     </div>
     <form action="/transactions" method="get" className="mustaqbali-global-search" role="search">
       <LucideIcon name="search" size={20}/>
@@ -36,8 +36,8 @@ export function GlobalTopBar({profile}:{profile:HeaderProfile}){
     </form>
     <div className="mustaqbali-topbar-actions">
       <ProfileTrigger profile={profile} className="mustaqbali-profile-trigger" />
+      <Link href="/conversations" aria-label="الدردشة"><LucideIcon name="messageSquareText" size={20}/></Link>
       <Link href="/alerts" aria-label="التنبيهات"><LucideIcon name="bell" size={20}/></Link>
-      <Link href="/settings" aria-label="الإعدادات"><LucideIcon name="settings" size={20}/></Link>
       <ThemeToggle />
     </div>
   </header>;

@@ -6839,3 +6839,311 @@
     background:var(--namaa-wide-card)!important;
   }
 }
+
+
+/* NAMA'A APPROVED SHELL — dark topbar + hidden drawer + white canvas */
+@media (min-width:1024px){
+  .protected-app-shell{
+    background:#FFFFFF!important;
+  }
+
+  .mustaqbali-topbar.namaa-topbar{
+    position:sticky!important;
+    top:0!important;
+    z-index:140!important;
+    min-height:74px!important;
+    display:grid!important;
+    grid-template-columns:minmax(230px,.8fr) minmax(360px,1.7fr) minmax(220px,.8fr)!important;
+    align-items:center!important;
+    gap:22px!important;
+    padding:10px 24px!important;
+    background:linear-gradient(135deg,#073F31 0%,#0B6B4F 62%,#07513D 100%)!important;
+    border-bottom:1px solid rgb(212 175 107 / 35%)!important;
+    box-shadow:0 10px 30px rgb(7 63 49 / 16%)!important;
+    color:#FFFFFF!important;
+  }
+
+  .mustaqbali-topbar-brand-zone{
+    display:flex!important;
+    align-items:center!important;
+    gap:14px!important;
+    min-width:0!important;
+  }
+
+  .mustaqbali-topbar-menu{
+    width:46px!important;
+    height:46px!important;
+    min-width:46px!important;
+    display:grid!important;
+    place-items:center!important;
+    border:1px solid rgb(212 175 107 / 55%)!important;
+    border-radius:13px!important;
+    background:rgb(255 255 255 / 7%)!important;
+    color:#FFFFFF!important;
+    cursor:pointer!important;
+  }
+
+  .mustaqbali-topbar-menu:hover,
+  .mustaqbali-topbar-menu:focus-visible{
+    background:rgb(212 175 107 / 18%)!important;
+    border-color:#D4AF6B!important;
+  }
+
+  .mustaqbali-topbar-logo{
+    display:flex!important;
+    align-items:center!important;
+    min-width:0!important;
+  }
+
+  .mustaqbali-topbar-logo .namaa-brand-logo{
+    width:auto!important;
+    height:50px!important;
+    max-width:122px!important;
+    object-fit:contain!important;
+  }
+
+  .mustaqbali-global-search{
+    width:min(100%,680px)!important;
+    justify-self:center!important;
+    min-height:46px!important;
+    display:flex!important;
+    align-items:center!important;
+    gap:10px!important;
+    padding:0 15px!important;
+    border:1px solid rgb(255 255 255 / 18%)!important;
+    border-radius:14px!important;
+    background:rgb(255 255 255 / 9%)!important;
+    color:#FFFFFF!important;
+  }
+
+  .mustaqbali-global-search:focus-within{
+    border-color:#D4AF6B!important;
+    background:rgb(255 255 255 / 13%)!important;
+  }
+
+  .mustaqbali-global-search input{
+    width:100%!important;
+    border:0!important;
+    outline:0!important;
+    background:transparent!important;
+    color:#FFFFFF!important;
+  }
+
+  .mustaqbali-global-search input::placeholder{
+    color:rgb(255 255 255 / 70%)!important;
+  }
+
+  .mustaqbali-topbar-actions{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-end!important;
+    gap:9px!important;
+    min-width:0!important;
+  }
+
+  .mustaqbali-topbar-actions>a,
+  .mustaqbali-topbar-actions>button,
+  .mustaqbali-profile-trigger{
+    width:44px!important;
+    height:44px!important;
+    min-width:44px!important;
+    min-height:44px!important;
+    display:grid!important;
+    place-items:center!important;
+    padding:0!important;
+    border:1px solid rgb(255 255 255 / 16%)!important;
+    border-radius:12px!important;
+    background:rgb(255 255 255 / 7%)!important;
+    color:#FFFFFF!important;
+  }
+
+  .mustaqbali-topbar-actions>a:hover,
+  .mustaqbali-topbar-actions>button:hover,
+  .mustaqbali-profile-trigger:hover{
+    background:rgb(212 175 107 / 18%)!important;
+    border-color:#D4AF6B!important;
+    color:#FFFFFF!important;
+  }
+
+  .desktop-top-nav-wrap.namaa-wide-sidebar{
+    position:fixed!important;
+    z-index:135!important;
+    top:74px!important;
+    right:0!important;
+    bottom:0!important;
+    width:min(330px,88vw)!important;
+    max-width:330px!important;
+    display:block!important;
+    padding:0!important;
+    background:
+      radial-gradient(circle at 88% 8%,rgb(212 175 107 / 12%),transparent 18rem),
+      linear-gradient(180deg,#073F31 0%,#052F26 100%)!important;
+    border-inline-start:1px solid rgb(212 175 107 / 30%)!important;
+    box-shadow:-18px 0 44px rgb(7 35 29 / 22%)!important;
+    transition:transform .24s ease,opacity .18s ease!important;
+    overflow-y:auto!important;
+  }
+
+  html[data-sidebar="collapsed"] .desktop-top-nav-wrap.namaa-wide-sidebar{
+    transform:translateX(105%)!important;
+    opacity:0!important;
+    pointer-events:none!important;
+  }
+
+  html[data-sidebar="expanded"] .desktop-top-nav-wrap.namaa-wide-sidebar{
+    transform:translateX(0)!important;
+    opacity:1!important;
+    pointer-events:auto!important;
+  }
+
+  .namaa-wide-sidebar-inner{
+    min-height:100%!important;
+    padding:14px!important;
+    gap:12px!important;
+  }
+
+  .namaa-wide-sidebar-head{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:12px!important;
+    padding:4px 4px 14px!important;
+    border-bottom:1px solid rgb(212 175 107 / 22%)!important;
+  }
+
+  .namaa-wide-sidebar-brand{
+    min-height:62px!important;
+    flex:1!important;
+    justify-content:flex-start!important;
+    padding:0!important;
+    border:0!important;
+  }
+
+  .namaa-wide-sidebar-brand .namaa-brand-logo{
+    width:auto!important;
+    height:58px!important;
+    max-width:140px!important;
+    object-fit:contain!important;
+  }
+
+  .namaa-wide-sidebar-close{
+    width:46px!important;
+    height:46px!important;
+    min-width:46px!important;
+    display:grid!important;
+    place-items:center!important;
+    border:1px solid rgb(212 175 107 / 40%)!important;
+    border-radius:13px!important;
+    background:rgb(255 255 255 / 6%)!important;
+    color:#FFFFFF!important;
+    cursor:pointer!important;
+  }
+
+  .namaa-wide-sidebar-close:hover,
+  .namaa-wide-sidebar-close:focus-visible{
+    border-color:#D4AF6B!important;
+    background:rgb(212 175 107 / 16%)!important;
+  }
+
+  .namaa-wide-sidebar-nav .mustaqbali-nav-section>p{
+    padding:8px 10px 4px!important;
+    color:#D4AF6B!important;
+  }
+
+  .namaa-wide-sidebar-nav .mustaqbali-nav-section>a{
+    min-height:50px!important;
+    display:flex!important;
+    align-items:center!important;
+    gap:12px!important;
+    padding:0 14px!important;
+    margin-bottom:5px!important;
+    border:1px solid transparent!important;
+    border-radius:13px!important;
+    color:rgb(255 255 255 / 86%)!important;
+    background:transparent!important;
+  }
+
+  .namaa-wide-sidebar-nav .mustaqbali-nav-section>a:hover{
+    background:rgb(255 255 255 / 7%)!important;
+    border-color:rgb(212 175 107 / 18%)!important;
+  }
+
+  .namaa-wide-sidebar-nav .mustaqbali-nav-section>a.is-active{
+    background:#0B6B4F!important;
+    border-color:#189F7F!important;
+    color:#FFFFFF!important;
+    box-shadow:inset -4px 0 0 #D4AF6B!important;
+  }
+
+  .namaa-wide-sidebar-nav .mustaqbali-nav-icon{
+    color:#D4AF6B!important;
+  }
+
+  #main-content{
+    width:100%!important;
+    margin-inline:0!important;
+    background:#FFFFFF!important;
+  }
+}
+
+/* الصفحة البيضاء مع مربع علوي أخضر داكن كما في التصميم المعتمد */
+@media (min-width:768px){
+  .namaa-banks-hero,
+  .namaa-investments-header,
+  .namaa-knowledge-hero,
+  .namaa-decisions-hero,
+  .namaa-observatory-hero,
+  .namaa-lab-hero,
+  .namaa-settings-hero,
+  .namaa-governance-portal-hero{
+    position:relative!important;
+    overflow:hidden!important;
+    background:
+      radial-gradient(circle at 12% 20%,rgb(212 175 107 / 13%),transparent 18rem),
+      linear-gradient(135deg,#073F31 0%,#0B6B4F 66%,#07513D 100%)!important;
+    border:1px solid rgb(212 175 107 / 32%)!important;
+    box-shadow:0 14px 34px rgb(7 63 49 / 12%)!important;
+    color:#FFFFFF!important;
+  }
+
+  .namaa-banks-hero::after,
+  .namaa-investments-header::after,
+  .namaa-knowledge-hero::after,
+  .namaa-decisions-hero::after,
+  .namaa-observatory-hero::after,
+  .namaa-lab-hero::after,
+  .namaa-settings-hero::after,
+  .namaa-governance-portal-hero::after{
+    content:""!important;
+    position:absolute!important;
+    inset-inline-start:-50px!important;
+    bottom:-78px!important;
+    width:260px!important;
+    height:150px!important;
+    border:1px solid rgb(212 175 107 / 30%)!important;
+    border-radius:50%!important;
+    pointer-events:none!important;
+  }
+
+  .namaa-banks-hero :where(h1,h2,strong),
+  .namaa-investments-header :where(h1,h2,strong),
+  .namaa-knowledge-hero :where(h1,h2,strong),
+  .namaa-decisions-hero :where(h1,h2,strong),
+  .namaa-observatory-hero :where(h1,h2,strong),
+  .namaa-lab-hero :where(h1,h2,strong),
+  .namaa-settings-hero :where(h1,h2,strong),
+  .namaa-governance-portal-hero :where(h1,h2,strong){
+    color:#FFFFFF!important;
+  }
+
+  .namaa-banks-hero :where(p,span,small),
+  .namaa-investments-header :where(p,span,small),
+  .namaa-knowledge-hero :where(p,span,small),
+  .namaa-decisions-hero :where(p,span,small),
+  .namaa-observatory-hero :where(p,span,small),
+  .namaa-lab-hero :where(p,span,small),
+  .namaa-settings-hero :where(p,span,small),
+  .namaa-governance-portal-hero :where(p,span,small){
+    color:rgb(255 255 255 / 82%)!important;
+  }
+}
