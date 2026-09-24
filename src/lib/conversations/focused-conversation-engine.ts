@@ -1,0 +1,157 @@
+import { randomUUID } from 'node:crypto';
+import { getRawSql } from '@/infrastructure/db/client';
+import { algorithmRoleByKey, type AlgorithmRoleRef } from '@/lib/governance/algorithm-role-registry';
+import { getEntityOperationalDashboard } from '@/lib/conversations/entity-operational-dashboard';
+import { getGovernanceMeetingSchedule } from '@/lib/governance/governance-meeting-scheduler';
+import type { ConversationMessageKind, ConversationRoomKey } from '@/lib/conversations/store';
+
+type FocusedReply={
+  id:string;
+  sender_type:'agent';
+  sender_key:string;
+  sender_name:string;
+  message_kind:ConversationMessageKind;
+  body:string;
+  structured_data:Record<string,unknown>;
+  created_at?:string;
+};
+
+function shortFactSummary(rows:Array<{fact_key:unknown;value_json:unknown}>){
+  const labels:Record<string,string>={
+    income:'الدخل',
+    accounts:'الحسابات',
+    obligations:'الالتزامات',
+    goals:'الأهداف',
+    'extended:bills':'الفواتير',
+    'extended:subscriptions':'الاشتراكات',
+    'extended:vehicle_details':'المركبة',
+    'extended:budget_behavior':'سلوك الإنفاق',
+  };
+  return rows.map(row=>labels[String(row.fact_key)]).filter(Boolean).slice(0,6);
+}
+
+function roleIntro(role:AlgorithmRoleRef){
+  const protectedItems=role.accountableFor.slice(0,3).join('، ');
+  return `أنا ${role.name}. أتعامل مع هذا الحوار ضمن نطاقي المباشر: ${protectedItems}. أقرأ البيانات المؤكدة المشتركة مع بقية نماء قبل أن أطلب منك معلومة جديدة، ولا أعيد السؤال عن معلومة صالحة إلا إذا تغيرت أو احتجت تأكيدًا جديدًا.`;
+}
+
+function roleQuestion(role:AlgorithmRoleRef,text:string,known:string[],planNextAction:string|null){
+  if(/ماذا تعرف|وش تعرف|إيش تعرف|ايش تعرف|تتذكر|ذاكرة|معلوماتي/i.test(text)){
+    return known.length
+      ? `المعلومات المشتركة المتاحة لي حاليًا تشمل: ${known.join('، ')}. سأستخدمها داخل اختصاصي ولن أعيد طلبها منك ما دامت صالحة.`
+      : 'لا توجد لدي الآن بيانات مشتركة كافية أستطيع الاعتماد عليها بأمان، لذلك سأطلب فقط المعلومة اللازمة للخطوة الحالية.';
+  }
+  if(/وش المطلوب|ما المطلوب|التالي|ابدأ|نبدأ|وش الخطوة|ما الخطوة/i.test(text)){
+    return planNextAction
+      ? `الخطوة التالية عندي: ${planNextAction}`
+      : `الخطوة التالية هي أن ترسل لي الموضوع الذي تريد متابعته ضمن نطاق ${role.name}، وسأحدد من الذاكرة ما هو مكتمل وما الذي ينقص فقط.`;
+  }
+  if(planNextAction){
+    return `استلمت رسالتك وسأربطها ببياناتك المؤكدة. حسب وضعك الحالي، أهم خطوة لدي الآن: ${planNextAction}`;
+  }
+  return 'استلمت رسالتك. سأتعامل معها ضمن صلاحياتي فقط، وأستخدم الذاكرة المشتركة قبل أن أطلب أي معلومة إضافية.';
+}
+
+export async function createFocusedRoleReply(args:{
+  userId:string;
+  roomKey:ConversationRoomKey;
+  roleKey:string;
+  userText:string;
+}):Promise<FocusedReply|null>{
+  const role=algorithmRoleByKey(args.roleKey);
+  if(!role||role.kind!=='responsibility_owner'||role.homeRoom!==args.roomKey)return null;
+  const sql=getRawSql();
+  const [threadRows,factRows,dashboard]=await Promise.all([
+    sql`select id from public.conversation_threads where user_id=${args.userId}::uuid and room_key=${args.roomKey} limit 1`,
+    sql`
+      select fact_key,value_json
+      from public.user_foundation_facts
+      where user_id=${args.userId}::uuid and status='ACTIVE'
+        and fact_key in ('income','accounts','obligations','goals','extended:bills','extended:subscriptions','extended:vehicle_details','extended:budget_behavior')
+      order by updated_at desc
+    `,
+    getEntityOperationalDashboard(args.userId,args.roomKey).catch(()=>null),
+  ]);
+  const threadId=threadRows[0]?.id?String(threadRows[0].id):null;
+  if(!threadId)return null;
+  const known=shortFactSummary(factRows as Array<{fact_key:unknown;value_json:unknown}>);
+  const plan=dashboard?.plans.find(item=>item.ownerName===role.name)??null;
+  const body=`${roleIntro(role)} ${roleQuestion(role,args.userText,known,plan?.nextAction??null)}`.trim();
+  const structuredData={
+    scope_kind:'role',
+    role_key:role.key,
+    role_name:role.name,
+    room_key:args.roomKey,
+    known_fact_groups:known,
+    next_action:plan?.nextAction??null,
+    memory_aware:true,
+    external_execution:false,
+    execution_boundary:'إرشاد وتحليل ومتابعة فقط؛ لا تنفيذ مالي خارجي',
+  };
+  const rows=await sql`
+    insert into public.conversation_messages(
+      id,thread_id,user_id,sender_type,sender_key,sender_name,message_kind,body,structured_data
+    ) values(
+      ${randomUUID()},${threadId}::uuid,${args.userId}::uuid,'agent',
+      ${role.key},${role.name},'message',${body},${JSON.stringify(structuredData)}::jsonb
+    )
+    returning id,sender_type,sender_key,sender_name,message_kind,body,structured_data,created_at
+  `;
+  await sql`update public.conversation_threads set updated_at=now() where id=${threadId}::uuid`;
+  return (rows[0]??null) as FocusedReply|null;
+}
+
+function meetingOwner(title:string){
+  if(/ميزانية|إنفاق/.test(title))return {key:'budget-spending-owner',name:'مسؤول الميزانية والإنفاق'};
+  if(/استقرار|سيولة|تمويل/.test(title))return {key:'liquidity-protection-owner',name:'مسؤول السيولة والحماية'};
+  if(/أهداف|التزامات/.test(title))return {key:'obligations-owner',name:'مسؤول الالتزامات'};
+  if(/استثمار|أصول/.test(title))return {key:'investment-owner',name:'مسؤول الاستثمار'};
+  return {key:'central-governor',name:'محافظ بنك نماء المركزي'};
+}
+
+export async function createFocusedMeetingReply(args:{
+  userId:string;
+  meetingId:string;
+  userText:string;
+}):Promise<FocusedReply|null>{
+  const sql=getRawSql();
+  const [schedule,threadRows]=await Promise.all([
+    getGovernanceMeetingSchedule(args.userId),
+    sql`select id from public.conversation_threads where user_id=${args.userId}::uuid and room_key='council' limit 1`,
+  ]);
+  const meeting=schedule.meetings.find(item=>item.id===args.meetingId);
+  const threadId=threadRows[0]?.id?String(threadRows[0].id):null;
+  if(!meeting||!threadId)return null;
+  const owner=meetingOwner(meeting.title);
+  const missing=meeting.missing_data??[];
+  const asksStatus=/جاهز|جاهزة|ناقص|ينقص|وش نحتاج|ما نحتاج/i.test(args.userText);
+  const body=asksStatus
+    ? missing.length
+      ? `بالنسبة إلى ${meeting.title}: الاجتماع غير مكتمل بعد. البيانات الناقصة هي: ${missing.join('، ')}. سأناقش معك هذه النقاط داخل هذه الدردشة نفسها حتى يكتمل الملف.`
+      : `بالنسبة إلى ${meeting.title}: البيانات الأساسية المسجلة متاحة حاليًا. محاور الاجتماع هي: ${meeting.agenda.join('، ')||'لا توجد محاور مثبتة بعد'}.`
+    : `هذه دردشة ${meeting.title}. سأحتفظ بالنقاش مرتبطًا بهذا الاجتماع، وأستخدم بياناتك المشتركة ومحاوره الحالية بدل خلطه ببقية المحادثات. رسالتك سأسجلها كسياق للاجتماع، وأي نقطة تحتاج قرارًا ستبقى منفصلة عن التنفيذ المالي الفعلي.`;
+  const structuredData={
+    scope_kind:'meeting',
+    meeting_id:meeting.id,
+    meeting_title:meeting.title,
+    meeting_kind:meeting.kind,
+    meeting_status:meeting.status,
+    meeting_ready:meeting.ready??true,
+    missing_data:missing,
+    agenda:meeting.agenda,
+    memory_aware:true,
+    external_execution:false,
+    execution_boundary:'نقاش وتجهيز اجتماع فقط؛ لا تنفيذ مالي خارجي',
+  };
+  const rows=await sql`
+    insert into public.conversation_messages(
+      id,thread_id,user_id,sender_type,sender_key,sender_name,message_kind,body,structured_data
+    ) values(
+      ${randomUUID()},${threadId}::uuid,${args.userId}::uuid,'agent',
+      ${owner.key},${owner.name},'message',${body},${JSON.stringify(structuredData)}::jsonb
+    )
+    returning id,sender_type,sender_key,sender_name,message_kind,body,structured_data,created_at
+  `;
+  await sql`update public.conversation_threads set updated_at=now() where id=${threadId}::uuid`;
+  return (rows[0]??null) as FocusedReply|null;
+}
