@@ -531,3 +531,40 @@
     min-block-size:var(--ux-size-12);
   }
 }
+
+
+.namaa-governance-editor-overlay {
+  position:fixed;
+  inset:0;
+  z-index:var(--ux-z-modal);
+  display:grid;
+  place-items:center;
+  padding:var(--ux-space-6);
+}
+
+.namaa-governance-editor-scrim {
+  position:absolute;
+  inset:0;
+  inline-size:100%;
+  block-size:100%;
+  border:0;
+  padding:0;
+  margin:0;
+  background:var(--ux-alpha-overlay);
+}
+
+.namaa-governance-editor-dialog {
+  position:relative;
+  z-index:1;
+}
+
+@media (max-width:767px) {
+  .namaa-governance-editor-overlay {
+    place-items:stretch;
+    padding:0;
+  }
+
+  .namaa-governance-editor-scrim {
+    display:none;
+  }
+}
