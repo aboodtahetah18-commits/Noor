@@ -190,9 +190,18 @@ export async function captureProactiveConversationLearning(
   const promptData=asRecord(promptRows[0]?.structured_data);
   const promptKey=typeof promptData.proactive_key==='string'?promptData.proactive_key:null;
   const promptAt=promptRows[0]?.created_at?new Date(String(promptRows[0].created_at)):null;
-  const recentPrompt=promptAt&&!Number.isNaN(promptAt.getTime())&&(Date.now()-promptAt.getTime())<=14*24*60*60*1000
-    ?promptKey
-    :null;
+  let recentPrompt:string|null=null;
+  if(promptKey&&promptAt&&!Number.isNaN(promptAt.getTime())&&(Date.now()-promptAt.getTime())<=14*24*60*60*1000){
+    const userRows=await sql`
+      select count(*)::int as count
+      from public.conversation_messages
+      where user_id=${userId}::uuid
+        and thread_id=${threadId}::uuid
+        and sender_type='user'
+        and created_at>${promptAt.toISOString()}::timestamptz
+    `;
+    if(Number(userRows[0]?.count??0)===1) recentPrompt=promptKey;
+  }
 
   const memory=await readProactiveConversationMemory(userId);
   const now=new Date().toISOString();
