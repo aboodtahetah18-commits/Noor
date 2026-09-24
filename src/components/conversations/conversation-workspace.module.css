@@ -12185,7 +12185,7 @@
   bottom:var(--ux-space-0);
   z-index:20;
   padding-block:var(--ux-space-3);
-  background:linear-gradient(to top,var(--namaa-card) 72%,transparent)
+  background:var(--namaa-card)
 }
 
 @media (max-width:767px){
