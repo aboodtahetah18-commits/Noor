@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { LucideIcon, type LucideIconName } from '@/components/ui/lucide-icon';
 import { requireAuthenticatedUser } from '@/auth/require-authenticated-user';
 import { authorizationRepository } from '@/repositories/authorization-repository';
+import { PageHeader } from '@/components/ui';
 
 type NavItem=[string,string,string,LucideIconName];
 type NavGroup={id:string;title:string;hint:string;icon:LucideIconName;items:NavItem[]};
@@ -40,20 +41,14 @@ export default async function MorePage(){
   const groups=baseGroups.map((group)=>group.id==='admin' && authorizationAdmin.decision==='ALLOW'
     ? {...group,items:[
         ...group.items,
-        ['/governance/authorization','إدارة الصلاحيات','الأدوار والـGrants والتفويضات وBreak Glass','lockKeyhole'] as NavItem,
-        ['/governance/authorization/templates','قوالب الصلاحيات','قوالب Grants رسمية تخضع لنفس دورة الاعتماد والتطبيق','listChecks'] as NavItem,
+        ['/governance/authorization','إدارة الصلاحيات','الأدوار والمنح والتفويضات والوصول الطارئ','lockKeyhole'] as NavItem,
+        ['/governance/authorization/templates','قوالب الصلاحيات','قوالب منح رسمية تخضع لنفس دورة الاعتماد والتطبيق','listChecks'] as NavItem,
       ]}
     : group);
 
-  return <main className="app-page more-hub-page p47-shell p47-closure-page" data-p47-shell="true" dir="rtl">
+  return <main className="app-page more-hub-page p47-shell p47-closure-page namaa-more-page" data-p47-shell="true" dir="rtl">
     <div className="page-shell more-hub-shell">
-      <header className="page-header more-hub-header">
-        <div>
-          <p className="eyebrow">المزيد</p>
-          <h1>كل وحدات النظام</h1>
-          <p className="muted">اختر القسم ثم انتقل مباشرة إلى الوحدة المطلوبة.</p>
-        </div>
-      </header>
+      <PageHeader className="page-header more-hub-header namaa-migrated-header" eyebrow="المزيد" title="كل وحدات النظام" description="اختر القسم ثم انتقل مباشرة إلى الوحدة المطلوبة."/>
 
       <div className="more-hub-sections">
         {groups.map(group=><section className="more-hub-section" key={group.id} aria-labelledby={`more-${group.id}`}>
