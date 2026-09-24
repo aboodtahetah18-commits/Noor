@@ -12587,7 +12587,7 @@
 }
 .meetingDetailsModal>header{
   position:sticky;
-  top:0;
+  top:var(--ux-space-0);
   z-index:4;
   display:flex;
   align-items:flex-start;
@@ -12629,7 +12629,7 @@
   background:var(--namaa-surface-warm)
 }
 .meetingDetailsBody ul{
-  margin:0;
+  margin:var(--ux-space-0);
   padding-inline-start:var(--ux-space-5);
   display:grid;
   gap:var(--ux-space-1);
@@ -12653,7 +12653,7 @@
 }
 .meetingDetailsModal>footer{
   position:sticky;
-  bottom:0;
+  bottom:var(--ux-space-0);
   display:flex;
   justify-content:flex-end;
   padding:var(--ux-space-3) var(--ux-space-4);
