@@ -7,6 +7,7 @@ import { getRawSql } from '@/infrastructure/db/client';
 import { extendedProfileSections } from '@/lib/conversations/extended-profile-catalog';
 
 const sectionMap=new Map(extendedProfileSections.map(section=>[section.key,section]));
+const sourceKeyToSection=new Map(extendedProfileSections.flatMap(section=>section.foundationFactKey?[[section.foundationFactKey,section.key] as const]:[]));
 const allowed=new Map(extendedProfileSections.map(section=>[section.key,new Set(section.fields.map(field=>field.key))]));
 
 function cleanValue(value:unknown){
@@ -44,13 +45,17 @@ export async function GET(){
       from public.user_foundation_facts
       where user_id=${user.id}::uuid
         and status='ACTIVE'
-        and fact_key like 'extended:%'
       order by updated_at desc,created_at desc
     `;
-    const facts:Record<string,unknown>=Object.fromEntries(rows.map(row=>[
-      String(row.fact_key).replace(/^extended:/,''),
-      {value:row.value_json,confidence:Number(row.confidence??1),verified_at:row.verified_at,updated_at:row.updated_at},
-    ]));
+    const facts:Record<string,unknown>={};
+    for(const row of rows){
+      const factKey=String(row.fact_key);
+      const sectionKey=factKey.startsWith('extended:')
+        ? factKey.replace(/^extended:/,'')
+        : sourceKeyToSection.get(factKey);
+      if(!sectionKey||!sectionMap.has(sectionKey)||facts[sectionKey]) continue;
+      facts[sectionKey]={value:row.value_json,confidence:Number(row.confidence??1),verified_at:row.verified_at,updated_at:row.updated_at};
+    }
     return NextResponse.json({sections:extendedProfileSections,facts});
   }catch(error){
     console.error('[extended-profile-read]',{name:error instanceof Error?error.name:'UnknownError'});
@@ -80,11 +85,12 @@ export async function PUT(request:Request){
       if(cleaned!==null&&cleaned!=='') values[key]=cleaned;
     }
     const sql=getRawSql();
+    const factKey=sectionDefinition.foundationFactKey??'extended:'+section;
     await sql`
       insert into public.user_foundation_facts(
         user_id,fact_key,category,value_json,source,confidence,verified_at,uses,requires_confirmation,status
       ) values(
-        ${user.id}::uuid,${'extended:'+section},${section},${JSON.stringify(values)}::jsonb,
+        ${user.id}::uuid,${factKey},${section},${JSON.stringify(values)}::jsonb,
         'USER_STATEMENT',1,now(),ARRAY['budget','liquidity','life_memory','advisory'],false,'ACTIVE'
       )
       on conflict(user_id,fact_key) do update set
