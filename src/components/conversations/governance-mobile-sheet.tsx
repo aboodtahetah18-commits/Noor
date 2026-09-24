@@ -7,6 +7,30 @@ import styles from './conversation-workspace.module.css';
 
 type SheetMode='governance'|'meetings'|'documents'|null;
 type Meeting={id:string;title:string;kind:string;scheduled_at:string;cadence:string;status:string;ready?:boolean;missing_data?:string[];editable?:boolean;custom?:boolean};
+
+function meetingBrief(meeting:Meeting){
+  const title=meeting.title+' '+meeting.kind;
+  if(/الدورة|الميزانية|الإنفاق/.test(title)){
+    return {
+      agenda:['مراجعة دخل الدورة والسيولة المتاحة','مراجعة الالتزامات والحجوزات قبل الصرف','مراجعة بنود الميزانية وسلوك الإنفاق','تحليل الانحرافات وما يحتاج قرارًا','تثبيت الإجراءات والمتابعات قبل إغلاق الاجتماع'],
+      documents:['خطة الدورة المالية المعتمدة','كشف الحساب أو ملخص المطابقة البنكية','قائمة الالتزامات والاستحقاقات','تقرير البنود والمصروفات والانحرافات'],
+      data:['الدخل الصافي الفعلي للدورة','الاشتراكات والبنود المتكررة','المصروفات الفعلية حتى تاريخ الاجتماع','الأرصدة الحالية للحسابات','أي بيانات ناقصة مرتبطة بالبند أو القرار'],
+    };
+  }
+  if(/مجلس|الأعلى|تأسيسي/.test(title)){
+    return {
+      agenda:['مراجعة حالة التأسيس والبيانات الأساسية','مراجعة القرارات المفتوحة والتعارضات','مراجعة السياسات أو الصلاحيات التي تحتاج اعتمادًا','تحديد التوصيات والمتابعات والجهات المالكة'],
+      documents:['ملخص ملف التأسيس','القرارات المفتوحة','السياسات واللوائح ذات الصلة','مصفوفة الصلاحيات والمحاضر السابقة إن وجدت'],
+      data:['البيانات الأساسية المؤكدة للمستخدم','الحسابات والالتزامات والأهداف','المسائل التي تحتاج اعتمادًا أو تصعيدًا'],
+    };
+  }
+  return {
+    agenda:['تأكيد هدف الاجتماع ونطاقه','مراجعة البيانات المرتبطة بالموضوع','مراجعة الوثائق المرجعية','حصر القرارات والمتابعات المطلوبة'],
+    documents:['المراجع والسياسات ذات الصلة','أي كشف أو تقرير أو مستند داعم','محضر الاجتماع السابق إن وجد'],
+    data:['البيانات الأساسية المرتبطة بالموضوع','البيانات الناقصة التي تمنع الجاهزية','الأرقام أو الأدلة التي سيبنى عليها القرار'],
+  };
+}
+
 type DocumentRow={id:string;file_name:string;content_type?:string|null;verification_status?:string|null;created_at?:string;room_title?:string|null};
 type GovernanceRecord={id:string;sender_name:string;message_kind:string;body:string;created_at:string;room_title?:string|null};
 
@@ -24,6 +48,7 @@ export function GovernanceMobileSheet({
   const [error,setError]=useState('');
   const [meetingEditor,setMeetingEditor]=useState<{mode:'add'|'edit';id?:string;title:string;scheduled_at:string;cadence:string}|null>(null);
   const [meetingSaving,setMeetingSaving]=useState(false);
+  const [meetingDetailsId,setMeetingDetailsId]=useState<string|null>(null);
   const title=mode==='governance'
     ?'مركز الحوكمة والسياسات'
     :mode==='meetings'
@@ -143,8 +168,13 @@ export function GovernanceMobileSheet({
           <div><span>{meeting.kind}</span><strong>{meeting.title}</strong><small>{meeting.cadence}</small>{meeting.ready===false&&meeting.missing_data?.length?<p className={styles.meetingMissing}>البيانات الناقصة: {meeting.missing_data.join('، ')}</p>:null}</div>
           <time dateTime={meeting.scheduled_at}>{meeting.ready===false?'لم يحدد كاجتماع جاهز':meetingDate(meeting.scheduled_at)}</time>
           <em>{meeting.status}</em>
-          <div className={styles.meetingActions}><button type="button" onClick={()=>setMeetingEditor({mode:'edit',id:meeting.id,title:meeting.title,scheduled_at:new Date(meeting.scheduled_at).toISOString().slice(0,16),cadence:meeting.cadence})} aria-label={'تعديل '+meeting.title}><LucideIcon name="pencil" size={16}/></button><button type="button" onClick={()=>void deleteMeeting(meeting.id)} aria-label={'حذف '+meeting.title}><LucideIcon name="trash2" size={16}/></button></div>
+          <div className={styles.meetingActions}>
+            <button type="button" onClick={()=>setMeetingDetailsId(meeting.id)} aria-label={'عرض تفاصيل '+meeting.title}><LucideIcon name="info" size={16}/><span>التفاصيل</span></button>
+            <button type="button" onClick={()=>setMeetingEditor({mode:'edit',id:meeting.id,title:meeting.title,scheduled_at:new Date(meeting.scheduled_at).toISOString().slice(0,16),cadence:meeting.cadence})} aria-label={'تعديل '+meeting.title}><LucideIcon name="pencil" size={16}/><span>تعديل</span></button>
+            <button type="button" onClick={()=>void deleteMeeting(meeting.id)} aria-label={'حذف '+meeting.title}><LucideIcon name="trash2" size={16}/><span>حذف</span></button>
+          </div>
         </article>)}
+        {meetingDetailsId&&(()=>{const meeting=meetings.find(item=>item.id===meetingDetailsId);if(!meeting)return null;const brief=meetingBrief(meeting);const missing=meeting.missing_data??[];return <div className={styles.meetingEditorBackdrop}><section className={styles.meetingDetailsModal} role="dialog" aria-modal="true" aria-label={'تفاصيل '+meeting.title}><header><div><strong>{meeting.title}</strong><small>{meeting.kind} · {meeting.cadence}</small></div><button type="button" onClick={()=>setMeetingDetailsId(null)} aria-label="إغلاق"><LucideIcon name="x" size={18}/></button></header><div className={styles.meetingDetailsBody}><section><strong>المحاور</strong><ul>{brief.agenda.map(item=><li key={item}>{item}</li>)}</ul></section><section><strong>الوثائق المطلوبة</strong><ul>{brief.documents.map(item=><li key={item}>{item}</li>)}</ul></section><section><strong>البيانات المطلوبة</strong><ul>{brief.data.map(item=><li key={item}>{item}</li>)}</ul>{missing.length?<div className={styles.meetingMissingBox}><strong>الناقص حاليًا</strong><span>{missing.join('، ')}</span></div>:<div className={styles.meetingReadyBox}>لا توجد بيانات ناقصة مسجلة على الاجتماع حاليًا.</div>}</section></div><footer><button type="button" className={styles.primaryActionButton} onClick={()=>setMeetingDetailsId(null)}>إغلاق التفاصيل</button></footer></section></div>})()}
         {meetingEditor&&<div className={styles.meetingEditorBackdrop}><section className={styles.meetingEditorModal} role="dialog" aria-modal="true"><header><strong>{meetingEditor.mode==='add'?'إضافة اجتماع':'تعديل الاجتماع'}</strong><button type="button" onClick={()=>setMeetingEditor(null)} aria-label="إغلاق"><LucideIcon name="x" size={16}/></button></header><div><label><span>اسم الاجتماع أو اللجنة</span><input value={meetingEditor.title} onChange={event=>setMeetingEditor(current=>current?{...current,title:event.target.value}:current)}/></label><label><span>الموعد</span><input type="datetime-local" value={meetingEditor.scheduled_at} onChange={event=>setMeetingEditor(current=>current?{...current,scheduled_at:event.target.value}:current)}/></label><label><span>الدورية</span><select value={meetingEditor.cadence} onChange={event=>setMeetingEditor(current=>current?{...current,cadence:event.target.value}:current)}><option value="">اختر الدورية</option><option>مرة واحدة</option><option>أسبوعي</option><option>شهري</option><option>كل شهرين</option><option>ربع سنوي</option><option>نصف سنوي</option><option>سنوي</option><option>حسب الحاجة</option></select></label></div><footer><button type="button" className={styles.secondaryButton} onClick={()=>setMeetingEditor(null)}>إلغاء</button><button type="button" className={styles.primaryActionButton} disabled={meetingSaving} onClick={()=>void saveMeeting()}>{meetingSaving?'جارٍ الحفظ…':'حفظ'}</button></footer></section></div>}
         <button type="button" className={styles.secondaryButton} onClick={onOpenSecretary}>
           <LucideIcon name="messageSquareText" size={20}/><span>مناقشة جدول الاجتماعات مع أمين السر</span>
