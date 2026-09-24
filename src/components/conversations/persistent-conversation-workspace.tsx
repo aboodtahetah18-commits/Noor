@@ -31,6 +31,7 @@ type UserProfile = { id:string; name:string; email:string|null; image:string|nul
 type OnboardingReviewFact = { key:string; label:string; raw:string; verified_at?:string; confidence:number };
 type ConversationAttachment = { id:string; message_id?:string|null; file_name:string; content_type?:string|null; verification_status?:string|null; created_at?:string };
 type ChatFontSize='small'|'medium'|'large';
+type FocusedChat={kind:'role';key:string;title:string;roomId:RoomKey}|{kind:'meeting';key:string;title:string;roomId:'council'};
 type OversightActionFeedback={command:string;status:'idle'|'pending'|'success'|'error';message:string|null};
 type OversightPendingConfirmation={command:string;title:string;message:string;confirmLabel:string}|null;
 const CHAT_FONT_STORAGE_KEY='namaa-chat-font-size';
@@ -944,6 +945,7 @@ export function PersistentConversationWorkspace(){
   const [detailTab,setDetailTab]=useState<'role'|'team'|'files'|'policies'|'authority'|'procedures'|'records'>('role');
   const [activeGovernedDocument,setActiveGovernedDocument]=useState<{roomId:RoomKey;document:GovernedDocumentRef}|null>(null);
   const [activeAlgorithmRole,setActiveAlgorithmRole]=useState<{roomId:RoomKey;role:AlgorithmRoleRef}|null>(null);
+  const [focusedChat,setFocusedChat]=useState<FocusedChat|null>(null);
   const [entityDashboardRoom,setEntityDashboardRoom]=useState<RoomKey|null>(null);
   const [governanceMode,setGovernanceMode]=useState<'governance'|'meetings'|'documents'|null>(null);
   const [extendedProfileOpen,setExtendedProfileOpen]=useState(false);
@@ -955,7 +957,16 @@ export function PersistentConversationWorkspace(){
   const [desktopContextVisible,setDesktopContextVisible]=useState(true);
   const activeRoom=useMemo(()=>rooms.find(r=>r.id===activeRoomId)??rooms[0],[activeRoomId]);
   const loading=loadedRoomId!==activeRoomId;
-  const visibleMessages=useMemo(()=>dedupeGovernanceDirectMessages(messages),[messages]);
+  const visibleMessages=useMemo(()=>{
+    const scoped=messages.filter(message=>{
+      const data=message.structured_data??{};
+      const scopeKind=typeof data.scope_kind==='string'?data.scope_kind:null;
+      if(focusedChat?.kind==='role')return scopeKind==='role'&&data.role_key===focusedChat.key;
+      if(focusedChat?.kind==='meeting')return scopeKind==='meeting'&&data.meeting_id===focusedChat.key;
+      return scopeKind!=='role'&&scopeKind!=='meeting';
+    });
+    return dedupeGovernanceDirectMessages(scoped);
+  },[messages,focusedChat]);
 
   useEffect(()=>{
     queueMicrotask(()=>{
@@ -1007,7 +1018,22 @@ export function PersistentConversationWorkspace(){
     } })
     .catch(()=>{ if(!cancelled){ setError('تعذر تحميل المحادثة الآن. حاول مرة أخرى.'); setLoadedRoomId(activeRoomId); } }); return()=>{cancelled=true}; },[activeRoomId]);
 
-  function chooseRoom(id:RoomKey){if(onboardingComplete===false&&id!=='central')return;setError('');setActiveRoomId(id);setRoomsOpen(false)}
+  function chooseRoom(id:RoomKey){if(onboardingComplete===false&&id!=='central')return;setError('');setFocusedChat(null);setActiveRoomId(id);setRoomsOpen(false)}
+
+  function openRoleChat(role:AlgorithmRoleRef){
+    const roomId=role.homeRoom as RoomKey;
+    if(onboardingComplete===false)return;
+    setError('');setActiveAlgorithmRole(null);setDetailRoomId(null);setRoomsOpen(false);
+    setFocusedChat({kind:'role',key:role.key,title:role.name,roomId});
+    setActiveRoomId(roomId);
+  }
+
+  function openMeetingChat(meeting:{id:string;title:string}){
+    if(onboardingComplete===false)return;
+    setError('');setGovernanceMode(null);setRoomsOpen(false);
+    setFocusedChat({kind:'meeting',key:meeting.id,title:meeting.title,roomId:'council'});
+    setActiveRoomId('council');
+  }
 
   async function refreshActiveRoom(){
     const response=await fetch(`/api/conversations/${activeRoomId}`,{cache:'no-store'});
@@ -1303,7 +1329,7 @@ export function PersistentConversationWorkspace(){
 
   async function send(event:FormEvent){ event.preventDefault(); const body=draft.trim(); if(!body||sending)return; setSending(true); setError('');
     try{
-      const response=await fetch(`/api/conversations/${activeRoomId}`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({body})});
+      const response=await fetch(`/api/conversations/${activeRoomId}`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({body,direct_role_key:focusedChat?.kind==='role'?focusedChat.key:undefined,meeting_id:focusedChat?.kind==='meeting'?focusedChat.key:undefined})});
       const data=await response.json() as {message?:Message;reply?:Message;replies?:Message[];oversight_dashboard?:Record<string,unknown>};
       if(!response.ok||!data.message)throw new Error('write');
       const responseMessages=Array.isArray(data.replies)&&data.replies.length?data.replies:(data.reply?[data.reply]:[]);
@@ -1321,7 +1347,7 @@ export function PersistentConversationWorkspace(){
   const visibleRooms=onboardingComplete===false?rooms.filter(room=>room.id==='central'):rooms;
   const roomButtons=<div className={styles.roomList}>{visibleRooms.map(room=><div key={room.id} className={`${styles.roomItemShell} ${activeRoom.id===room.id?styles.activeRoom:''}`}><button type="button" onClick={()=>chooseRoom(room.id)} className={styles.roomItem}><RoomPortrait room={room} size="md"/><span className={styles.roomCopy}><strong>{chatRoleTitle(room)}</strong></span></button><button type="button" className={styles.roomDetailButton} aria-label={`تفاصيل ${chatRoleTitle(room)}`} onClick={()=>{setDetailRoomId(room.id);setDetailTab('role')}}><LucideIcon name="info" size={20}/></button></div>)}</div>;
   const ownerButtons=<div className={styles.responsibilityOwnerList}>{RESPONSIBILITY_OWNERS.map(role=><button type="button" key={role.key} onClick={()=>{setRoomsOpen(false);setActiveAlgorithmRole({roomId:role.homeRoom as RoomKey,role})}}><span><strong>{role.name}</strong><small>{role.mandate}</small></span><LucideIcon name="chevronLeft" size={16}/></button>)}</div>;
-  const mobileOwnerButtons=<div className={styles.responsibilityOwnerList+' '+styles.mobileResponsibilityOwnerList}>{RESPONSIBILITY_OWNERS.map(role=>{const ownerRoom=rooms.find(room=>room.id===role.homeRoom)??rooms[0];const portrait=rolePortraitByKey[role.key];return <button type="button" key={role.key} onClick={()=>{setRoomsOpen(false);setActiveAlgorithmRole({roomId:role.homeRoom as RoomKey,role})}}><span className={styles.ownerDirectoryPortrait}>{portrait&&<Image src={portrait} alt="" fill unoptimized sizes="72px"/>}</span><span className={styles.ownerDirectoryCopy}><strong>{role.name}</strong><small>{ownerRoom.title}</small></span><LucideIcon name="chevronLeft" size={16}/></button>})}</div>;
+  const mobileOwnerButtons=<div className={styles.responsibilityOwnerList+' '+styles.mobileResponsibilityOwnerList}>{RESPONSIBILITY_OWNERS.map(role=>{const ownerRoom=rooms.find(room=>room.id===role.homeRoom)??rooms[0];const portrait=rolePortraitByKey[role.key];return <button type="button" key={role.key} onClick={()=>openRoleChat(role)}><span className={styles.ownerDirectoryPortrait}>{portrait&&<Image src={portrait} alt="" fill unoptimized sizes="72px"/>}</span><span className={styles.ownerDirectoryCopy}><strong>{role.name}</strong><small>{ownerRoom.title}</small></span><LucideIcon name="chevronLeft" size={16}/></button>})}</div>;
   const directoryTabs=<div className={styles.directoryTabs} role="tablist" aria-label="أقسام مركز العمل">
     <button type="button" role="tab" aria-selected={directoryTab==='entities'} className={directoryTab==='entities'?styles.directoryTabActive:''} onClick={()=>setDirectoryTab('entities')}>الإدارة والبنوك</button>
     <button type="button" role="tab" aria-selected={directoryTab==='owners'} className={directoryTab==='owners'?styles.directoryTabActive:''} onClick={()=>setDirectoryTab('owners')}>مسؤولو البنود</button>
@@ -1374,7 +1400,7 @@ export function PersistentConversationWorkspace(){
     <div className={`${styles.workspace} ${desktopContextVisible?'':styles.withoutContext}`}>
       <aside className={styles.roomsPane} aria-label="الجهات والمحادثات"><div className={styles.paneTitle}><span>مركز العمل</span><small>3 أقسام</small></div>{onboardingComplete!==false?directoryTabs:null}{directoryContent}</aside>
       <main className={styles.chatPane}><header className={`${styles.chatHeader} ${activeRoom.id==='central'?styles.centralChatHeader:''}`}><div className={styles.chatHeaderShade} aria-hidden="true"/><div className={styles.desktopChatHeaderForeground}><div className={styles.chatIdentity}><RoomPortrait room={activeRoom} size={activeRoom.id==='central'?'lg':'md'}/><div><div className={styles.entityTitle}><strong>{chatRoleTitle(activeRoom)}</strong></div><small>{chatEntityTitle(activeRoom)}</small></div></div><span className={styles.chatHeaderBankMark} aria-hidden="true"><Image src={activeRoom.bankLogo} alt="" fill sizes="56px"/></span></div><div className={styles.chatHeaderForeground}><button type="button" className={styles.compactMenuButton} aria-label="فتح القائمة الجانبية" onClick={()=>setRoomsOpen(true)}><LucideIcon name="menu" size={20}/></button><RoomPortrait room={activeRoom} size="md"/><div className={styles.compactRoleTitle}><strong>{compactChatRoleTitle(activeRoom)}</strong></div><div className={styles.mobileTools}><button type="button" aria-label="لوحة الجهة" onClick={()=>setEntityDashboardRoom(activeRoomId)}><LucideIcon name="chart" size={20}/></button><button type="button" aria-label="معلومات الجهة" onClick={()=>{setDetailRoomId(activeRoomId);setDetailTab('role')}}><LucideIcon name="info" size={20}/></button></div></div></header>
-        <div className={`${styles.routingNote} ${styles.specialistRoutingNote}`}><LucideIcon name="sparkles" size={16}/><span>{activeRoom.specialists}</span></div>
+        {focusedChat?<div className={`${styles.routingNote} ${styles.specialistRoutingNote} ${styles.focusedChatBanner}`}><LucideIcon name={focusedChat.kind==='meeting'?'calendarDays':'messageSquareText'} size={16}/><span><strong>{focusedChat.title}</strong><small>{focusedChat.kind==='meeting'?'دردشة الاجتماع — محفوظة بشكل مستقل عن دردشة المجلس العامة':'دردشة مباشرة — تستخدم الذاكرة المشتركة دون خلطها بدردشة البنك العامة'}</small></span><button type="button" onClick={()=>setFocusedChat(null)} aria-label="العودة إلى دردشة الجهة"><LucideIcon name="x" size={16}/></button></div>:<div className={`${styles.routingNote} ${styles.specialistRoutingNote}`}><LucideIcon name="sparkles" size={16}/><span>{activeRoom.specialists}</span></div>}
         <div ref={messagesScrollRef} className={styles.messages} aria-live="polite">{activeRoom.building&&<span className={styles.messagesBuildingBackdrop} aria-hidden="true"><Image src={activeRoom.building} alt="" fill sizes="100vw"/></span>}{loading&&<p>جارٍ تحميل سجل المحادثة…</p>}{!loading&&!visibleMessages.length&&<article className={`${styles.message} ${styles.agentMessage}`}><p>{onboardingComplete===false?'أنا محافظ بنك نماء المركزي. سأبدأ معك بسؤال واحد في كل مرة حتى أبني ملفك من معلوماتك أنت، دون افتراضات.':'هذه بداية محادثتك مع '+activeRoom.title+'. اكتب سؤالك أو القرار الذي تريد دراسته.'}</p></article>}{visibleMessages.map((message,messageIndex)=>{
   const previous=visibleMessages[messageIndex-1];
   const next=visibleMessages[messageIndex+1];
@@ -1520,6 +1546,7 @@ return <div className={styles.roomDetailContent}>
     />}
     {activeAlgorithmRole&&<AlgorithmRoleMobileSheet
       role={activeAlgorithmRole.role}
+      onOpenChat={()=>openRoleChat(activeAlgorithmRole.role)}
       onClose={()=>{const roomId=activeAlgorithmRole.roomId;setActiveAlgorithmRole(null);setDetailRoomId(roomId);setDetailTab('team')}}
     />}
     {contextOpen&&<div className={styles.mobileOverlay} role="dialog" aria-modal="true" aria-label="سياق المحادثة"><button type="button" className={styles.scrim} aria-label="إغلاق" onClick={()=>setContextOpen(false)}/><aside className={`${styles.mobileSheet} ${styles.mobileFullPageSheet}`}><div className={styles.sheetHeader}><strong>سياق المحادثة</strong><button type="button" onClick={()=>setContextOpen(false)} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button></div>{contextCards}</aside></div>}
@@ -1546,7 +1573,7 @@ return <div className={styles.roomDetailContent}>
       <section className={styles.settingsSectionBlock}><div className={styles.settingsSectionHeading}><LucideIcon name="landmark" size={20}/><span><strong>الحوكمة والسجلات</strong><small>السياسات، مصفوفة الصلاحيات، القرارات، المحاضر والاجتماعات في مكان واحد.</small></span></div>{onboardingComplete!==false?<div className={styles.settingsActionGrid}><button type="button" onClick={()=>{setSettingsOpen(false);setGovernanceMode('governance')}}><LucideIcon name="lockKeyhole" size={16}/><span>السياسات والصلاحيات والقرارات</span></button><button type="button" onClick={()=>{setSettingsOpen(false);setGovernanceMode('meetings')}}><LucideIcon name="calendarDays" size={16}/><span>الاجتماعات والمحاضر</span></button><button type="button" onClick={()=>{setSettingsOpen(false);setGovernanceMode('documents')}}><LucideIcon name="receiptText" size={16}/><span>الوثائق والتقارير</span></button></div>:<small className={styles.settingsLockedNote}>تفتح هذه الأقسام بعد اعتماد بيانات التأسيس مع المحافظ.</small>}</section>
       <section className={styles.settingsSectionBlock}><div className={styles.settingsSectionHeading}><LucideIcon name="slidersHorizontal" size={20}/><span><strong>ضبط النظام</strong><small>إعدادات العرض والتنبيهات والخصوصية قابلة للتخصيص؛ أما الأوزان والحدود المحكومة فتظل تحت الحوكمة ولا تعدّل من الواجهة.</small></span></div><div className={styles.settingsStatusList}><span><b>الجهات والبنوك وأصحاب المسؤوليات</b><em>{onboardingComplete===false?'تفتح بعد اكتمال التأسيس':'مفتوحة'}</em></span><span><b>الاجتماعات</b><em>{onboardingComplete===false?'تظهر بعد اعتماد التأسيس':'متاحة'}</em></span><span><b>التنفيذ المالي</b><em>بيد المستخدم فقط</em></span></div></section>
     </div>}</aside></div>}
-    <GovernanceMobileSheet mode={governanceMode} onClose={()=>setGovernanceMode(null)} onOpenSecretary={()=>{setGovernanceMode(null);chooseRoom('secretary')}}/>
+    <GovernanceMobileSheet mode={governanceMode} onClose={()=>setGovernanceMode(null)} onOpenSecretary={()=>{setGovernanceMode(null);chooseRoom('secretary')}} onOpenMeetingChat={openMeetingChat}/>
     <ExtendedProfileSheet open={extendedProfileOpen} initialSection={extendedProfileInitialSection} onClose={()=>{setExtendedProfileOpen(false);setExtendedProfileInitialSection(null)}}/>
     {reviewOpen&&<div className={styles.mobileOverlay} role="dialog" aria-modal="true" aria-label="مراجعة بيانات التأسيس"><button type="button" className={styles.scrim} aria-label="إغلاق" onClick={()=>setReviewOpen(false)}/><aside className={`${styles.mobileSheet} ${styles.mobileFullPageSheet}`}><div className={styles.sheetHeader}><strong>مراجعة بيانات التأسيس</strong><button type="button" onClick={()=>setReviewOpen(false)} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button></div><div className={styles.reviewFacts}>{reviewFacts.map(fact=><div key={fact.key} className={styles.reviewFact}><div><small>{fact.label}</small>{reviewEditingKey===fact.key?<textarea value={reviewDraft} onChange={event=>setReviewDraft(event.target.value)} rows={3}/>:<strong>{fact.raw||'—'}</strong>}</div>{reviewEditingKey===fact.key?<div className={styles.reviewFactActions}><button type="button" onClick={()=>{setReviewEditingKey('');setReviewDraft('')}}><LucideIcon name="x" size={16}/><span>إلغاء</span></button><button type="button" onClick={()=>void saveReviewFact()} disabled={reviewSaving}><LucideIcon name="save" size={16}/><span>{reviewSaving?'جارٍ الحفظ…':'حفظ'}</span></button></div>:<button type="button" onClick={()=>{setReviewEditingKey(fact.key);setReviewDraft(fact.raw)}} aria-label={`تعديل ${fact.label}`}><LucideIcon name="pencil" size={16}/></button>}</div>)}</div><div className={styles.reviewConfirm}><small>لن يفتح التشغيل الكامل إلا بعد تأكيدك أن البيانات المجمعة صحيحة.</small><button type="button" className={styles.primaryActionButton} onClick={()=>void confirmOnboarding()} disabled={sending||reviewFacts.length===0}><LucideIcon name="circleCheck" size={20}/><span>{sending?'جارٍ التأكيد…':'تأكيد صحة البيانات'}</span></button></div></aside></div>}
   </section>;
