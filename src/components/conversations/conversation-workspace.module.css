@@ -10738,11 +10738,11 @@
   }
 
   .page .userMessage{
-    background:var(--ux-border-default)!important;
+    background:var(--ux-border-default);
   }
 
   html[data-theme="dark"] .userMessage{
-    background:var(--ux-shell-sidebar-bg)!important;
+    background:var(--ux-shell-sidebar-bg);
   }
 
   .activeRoom{
@@ -10850,9 +10850,9 @@
   :global(html[data-theme="dark"]) .roomItemShell,
   :global(html[data-theme="dark"]) .roomItem,
   :global(html[data-theme="dark"]) .agentMessage{
-    background:var(--namaa-wide-card)!important;
-    color:var(--namaa-wide-text)!important;
-    border-color:var(--namaa-wide-border)!important;
+    background:var(--namaa-wide-card);
+    color:var(--namaa-wide-text);
+    border-color:var(--namaa-wide-border);
   }
 
   :global(html[data-theme="dark"]) .chatHeader{
@@ -10860,9 +10860,9 @@
   }
 
   :global(html[data-theme="dark"]) .userMessage{
-    background:var(--ux-shell-sidebar-bg)!important;
-    color:var(--namaa-gold-500)!important;
-    border-color:var(--namaa-green-700)!important;
+    background:var(--ux-shell-sidebar-bg);
+    color:var(--namaa-gold-500);
+    border-color:var(--namaa-green-700);
   }
 
   :global(html[data-theme="dark"]) .routingNote{
