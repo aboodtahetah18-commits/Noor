@@ -3967,3 +3967,244 @@
     border-color:#4E8B77!important;
   }
 }
+
+
+/* NAMA'A UI ACCEPTANCE FIXES — section hierarchy, action placement, dialog fill, chip contrast */
+@media (min-width:768px){
+  /* 1) إبراز التقسيمات: العنوان والفاصل جزء واضح من الهيكل */
+  .namaa-policy-reader-body > :where(h2,h3),
+  .namaa-investments-section-title,
+  .p47-section-header,
+  .p47-section-heading,
+  .namaa-collection-head{
+    position:relative!important;
+  }
+
+  .namaa-policy-reader-body h2{
+    margin:28px 0 14px!important;
+    padding:14px 16px!important;
+    border:1px solid #DCE6E0!important;
+    border-inline-start:5px solid #D4AF6B!important;
+    border-radius:12px!important;
+    background:#F7F8F6!important;
+    color:#0B6B4F!important;
+    box-shadow:0 4px 14px rgb(31 41 55 / 4%)!important;
+  }
+
+  .namaa-policy-reader-body h3{
+    margin:22px 0 10px!important;
+    padding:10px 12px!important;
+    border-inline-start:4px solid #189F7F!important;
+    background:#EDF8F4!important;
+    border-radius:9px!important;
+    color:#0B6B4F!important;
+  }
+
+  .namaa-investments-section-title,
+  .p47-section-header,
+  .p47-section-heading,
+  .namaa-collection-head{
+    padding-bottom:12px!important;
+    margin-bottom:14px!important;
+    border-bottom:1px solid #DCE6E0!important;
+  }
+
+  .namaa-investments-section-title::after,
+  .p47-section-header::after,
+  .p47-section-heading::after,
+  .namaa-collection-head::after{
+    content:""!important;
+    position:absolute!important;
+    inset-inline-start:0!important;
+    bottom:-1px!important;
+    width:56px!important;
+    height:3px!important;
+    border-radius:999px!important;
+    background:#D4AF6B!important;
+  }
+
+  /* 2) مجموعات الأزرار تبقى في موضعها الطبيعي داخل الرأس، لا أسفل الصفحة */
+  .protected-app-shell :where(
+    .p49-resource-actions,
+    .p49-dialog-actions,
+    .namaa-investments-actions,
+    .namaa-settings-actions,
+    .namaa-lab-actions,
+    .namaa-lab-item-actions,
+    .actions-row
+  ){
+    position:static!important;
+    inset:auto!important;
+    top:auto!important;
+    right:auto!important;
+    bottom:auto!important;
+    left:auto!important;
+    margin-top:0!important;
+    align-self:center!important;
+  }
+
+  .namaa-investments-header{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) minmax(420px,760px)!important;
+    align-items:center!important;
+    gap:18px!important;
+  }
+
+  .namaa-investments-header > div:first-child{
+    max-width:none!important;
+  }
+
+  .namaa-investments-actions{
+    width:100%!important;
+    max-width:760px!important;
+    justify-self:end!important;
+    align-self:center!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+
+  /* 3) النوافذ الكبيرة تستفيد من العرض كاملًا — لا حقول في ربع النافذة */
+  .p49-action-dialog .p49-dialog-body{
+    padding:22px 24px!important;
+  }
+
+  .p49-action-dialog .namaa-investment-dialog-content,
+  .p49-action-dialog .namaa-investment-dialog-content > form,
+  .p49-action-dialog form.form-grid,
+  .p49-action-dialog .p47-settings-form{
+    width:100%!important;
+    max-width:none!important;
+    min-width:0!important;
+    box-sizing:border-box!important;
+  }
+
+  .p49-action-dialog form.form-grid,
+  .p49-action-dialog .p47-settings-form{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:16px 18px!important;
+    align-items:start!important;
+  }
+
+  .p49-action-dialog form.form-grid > label,
+  .p49-action-dialog .p47-settings-form > label{
+    width:100%!important;
+    max-width:none!important;
+    min-width:0!important;
+  }
+
+  .p49-action-dialog :where(
+    .namaa-investment-dialog-full,
+    .full,
+    [data-full-width],
+    fieldset,
+    .p49-dialog-actions,
+    .form-actions
+  ){
+    grid-column:1 / -1!important;
+  }
+
+  .p49-action-dialog :where(input,select,textarea){
+    width:100%!important;
+    max-width:none!important;
+  }
+
+  /* 4) المربعات النصية الصغيرة تختلف عن خلفية البطاقة */
+  html[data-theme="light"] :where(
+    .namaa-investments-participants span,
+    .namaa-policy-reader-meta>span,
+    .namaa-decisions-status span,
+    .namaa-decisions-meta span,
+    .status-pill,
+    .p47-status-pill,
+    .p47-count-badge
+  ){
+    background:#FFF7E6!important;
+    border:1px solid #D4AF6B!important;
+    color:#5E481B!important;
+  }
+
+  html[data-theme="light"] :where(
+    .namaa-investments-participants span,
+    .namaa-policy-reader-meta>span,
+    .namaa-decisions-status span,
+    .namaa-decisions-meta span
+  ) strong{
+    color:#3D321A!important;
+  }
+
+  html[data-theme="dark"] :where(
+    .namaa-investments-participants span,
+    .namaa-policy-reader-meta>span,
+    .namaa-decisions-status span,
+    .namaa-decisions-meta span,
+    .status-pill,
+    .p47-status-pill,
+    .p47-count-badge
+  ){
+    background:#31594C!important;
+    border:1px solid #D7BE84!important;
+    color:#F5F1E8!important;
+  }
+
+  html[data-theme="dark"] :where(
+    .namaa-investments-participants span,
+    .namaa-policy-reader-meta>span,
+    .namaa-decisions-status span,
+    .namaa-decisions-meta span
+  ) strong{
+    color:#FFFFFF!important;
+  }
+
+  html[data-theme="dark"] .namaa-policy-reader-body h2{
+    background:#31594C!important;
+    border-color:#5E776B!important;
+    border-inline-start-color:#D7BE84!important;
+    color:#F5F1E8!important;
+  }
+
+  html[data-theme="dark"] .namaa-policy-reader-body h3{
+    background:#2E6B58!important;
+    border-inline-start-color:#D7BE84!important;
+    color:#F5F1E8!important;
+  }
+}
+
+@media (min-width:1024px) and (max-width:1320px){
+  .namaa-investments-header{
+    grid-template-columns:minmax(0,1fr) minmax(360px,560px)!important;
+    align-items:center!important;
+  }
+
+  .namaa-investments-actions{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+}
+
+@media (min-width:768px) and (max-width:1023px){
+  .namaa-investments-header{
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+  }
+
+  .namaa-investments-actions{
+    max-width:none!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+
+  .p49-action-dialog form.form-grid,
+  .p49-action-dialog .p47-settings-form{
+    grid-template-columns:1fr!important;
+  }
+
+  .p49-action-dialog :where(
+    .namaa-investment-dialog-full,
+    .full,
+    [data-full-width],
+    fieldset,
+    .p49-dialog-actions,
+    .form-actions
+  ){
+    grid-column:1!important;
+  }
+}
