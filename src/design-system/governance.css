@@ -479,7 +479,7 @@
   line-height:var(--ux-type-body-sm-line);
 }
 
-.namaa-governance-editor-dialog .governedAmendmentActions {
+.namaa-governance-editor-dialog .namaa-governance-editor-actions {
   position:sticky;
   inset-block-end:0;
   z-index:2;
@@ -492,7 +492,7 @@
   border-block-start:var(--ux-border-width-1) solid var(--ux-border-default);
 }
 
-.namaa-governance-editor-dialog .governedAmendmentActions > button {
+.namaa-governance-editor-dialog .namaa-governance-editor-actions > button {
   inline-size:auto;
   flex:0 0 auto;
 }
@@ -508,7 +508,7 @@
     margin-inline:var(--ux-space-4);
   }
 
-  .namaa-governance-editor-dialog > .governedEditFormHeader {
+  .namaa-governance-editor-dialog > .namaa-governance-editor-header {
     position:sticky;
     inset-block-start:0;
     z-index:3;
@@ -518,7 +518,7 @@
     border-block-end:var(--ux-border-width-1) solid var(--ux-border-default);
   }
 
-  .namaa-governance-editor-dialog .governedAmendmentActions {
+  .namaa-governance-editor-dialog .namaa-governance-editor-actions {
     position:sticky;
     inset-block-end:0;
     z-index:3;
@@ -527,7 +527,7 @@
     background:var(--ux-card-bg);
   }
 
-  .namaa-governance-editor-dialog .governedAmendmentActions > button {
+  .namaa-governance-editor-dialog .namaa-governance-editor-actions > button {
     min-block-size:var(--ux-size-12);
   }
 }
