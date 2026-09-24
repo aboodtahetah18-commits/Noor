@@ -35,7 +35,7 @@ function roleIntro(role:AlgorithmRoleRef){
   return `أنا ${role.name}. أتعامل مع هذا الحوار ضمن نطاقي المباشر: ${protectedItems}. أقرأ البيانات المؤكدة المشتركة مع بقية نماء قبل أن أطلب منك معلومة جديدة، ولا أعيد السؤال عن معلومة صالحة إلا إذا تغيرت أو احتجت تأكيدًا جديدًا.`;
 }
 
-function roleQuestion(role:AlgorithmRoleRef,text:string,known:string[],planNextAction:string|null){
+function roleQuestion(role:AlgorithmRoleRef,text:string,known:string[],planNextAction:string|null,previousUserMessage:string|null){
   if(/ماذا تعرف|وش تعرف|إيش تعرف|ايش تعرف|تتذكر|ذاكرة|معلوماتي/i.test(text)){
     return known.length
       ? `المعلومات المشتركة المتاحة لي حاليًا تشمل: ${known.join('، ')}. سأستخدمها داخل اختصاصي ولن أعيد طلبها منك ما دامت صالحة.`
@@ -47,9 +47,12 @@ function roleQuestion(role:AlgorithmRoleRef,text:string,known:string[],planNextA
       : `الخطوة التالية هي أن ترسل لي الموضوع الذي تريد متابعته ضمن نطاق ${role.name}، وسأحدد من الذاكرة ما هو مكتمل وما الذي ينقص فقط.`;
   }
   if(planNextAction){
-    return `استلمت رسالتك وسأربطها ببياناتك المؤكدة. حسب وضعك الحالي، أهم خطوة لدي الآن: ${planNextAction}`;
+    const continuity=previousUserMessage?` وأتذكر أن آخر نقطة ناقشناها هنا كانت: «${previousUserMessage}».`:'';
+    return `استلمت رسالتك وسأربطها ببياناتك المؤكدة.${continuity} حسب وضعك الحالي، أهم خطوة لدي الآن: ${planNextAction}`;
   }
-  return 'استلمت رسالتك. سأتعامل معها ضمن صلاحياتي فقط، وأستخدم الذاكرة المشتركة قبل أن أطلب أي معلومة إضافية.';
+  return previousUserMessage
+    ?`أكمل معك من نفس السياق. آخر نقطة ناقشناها هنا كانت: «${previousUserMessage}». سأتعامل مع رسالتك الجديدة ضمن صلاحياتي وأستخدم الذاكرة المشتركة قبل أن أطلب أي معلومة إضافية.`
+    :'استلمت رسالتك. سأتعامل معها ضمن صلاحياتي فقط، وأستخدم الذاكرة المشتركة قبل أن أطلب أي معلومة إضافية.';
 }
 
 export async function createFocusedRoleReply(args:{
@@ -74,9 +77,21 @@ export async function createFocusedRoleReply(args:{
   ]);
   const threadId=threadRows[0]?.id?String(threadRows[0].id):null;
   if(!threadId)return null;
+  const historyRows=await sql`
+    select body
+    from public.conversation_messages
+    where user_id=${args.userId}::uuid
+      and thread_id=${threadId}::uuid
+      and sender_type='user'
+      and structured_data->>'scope_kind'='role'
+      and structured_data->>'role_key'=${role.key}
+    order by created_at desc
+    limit 2
+  `;
+  const previousUserMessage=historyRows[1]?.body?String(historyRows[1].body).trim().slice(0,180):null;
   const known=shortFactSummary(factRows as Array<{fact_key:unknown;value_json:unknown}>);
   const plan=dashboard?.plans.find(item=>item.ownerName===role.name)??null;
-  const body=`${roleIntro(role)} ${roleQuestion(role,args.userText,known,plan?.nextAction??null)}`.trim();
+  const body=`${roleIntro(role)} ${roleQuestion(role,args.userText,known,plan?.nextAction??null,previousUserMessage)}`.trim();
   const structuredData={
     scope_kind:'role',
     role_key:role.key,
@@ -124,12 +139,25 @@ export async function createFocusedMeetingReply(args:{
   if(!meeting||!threadId)return null;
   const owner=meetingOwner(meeting.title);
   const missing=meeting.missing_data??[];
+  const historyRows=await sql`
+    select body
+    from public.conversation_messages
+    where user_id=${args.userId}::uuid
+      and thread_id=${threadId}::uuid
+      and sender_type='user'
+      and structured_data->>'scope_kind'='meeting'
+      and structured_data->>'meeting_id'=${meeting.id}
+    order by created_at desc
+    limit 2
+  `;
+  const previousUserMessage=historyRows[1]?.body?String(historyRows[1].body).trim().slice(0,180):null;
   const asksStatus=/جاهز|جاهزة|ناقص|ينقص|وش نحتاج|ما نحتاج/i.test(args.userText);
+  const continuity=previousUserMessage?` وآخر نقطة ناقشناها في هذه الدردشة كانت: «${previousUserMessage}».`:'';
   const body=asksStatus
     ? missing.length
       ? `بالنسبة إلى ${meeting.title}: الاجتماع غير مكتمل بعد. البيانات الناقصة هي: ${missing.join('، ')}. سأناقش معك هذه النقاط داخل هذه الدردشة نفسها حتى يكتمل الملف.`
       : `بالنسبة إلى ${meeting.title}: البيانات الأساسية المسجلة متاحة حاليًا. محاور الاجتماع هي: ${meeting.agenda.join('، ')||'لا توجد محاور مثبتة بعد'}.`
-    : `هذه دردشة ${meeting.title}. سأحتفظ بالنقاش مرتبطًا بهذا الاجتماع، وأستخدم بياناتك المشتركة ومحاوره الحالية بدل خلطه ببقية المحادثات. رسالتك سأسجلها كسياق للاجتماع، وأي نقطة تحتاج قرارًا ستبقى منفصلة عن التنفيذ المالي الفعلي.`;
+    : `هذه دردشة ${meeting.title}. سأحتفظ بالنقاش مرتبطًا بهذا الاجتماع، وأستخدم بياناتك المشتركة ومحاوره الحالية بدل خلطه ببقية المحادثات.${continuity} رسالتك سأسجلها كسياق للاجتماع، وأي نقطة تحتاج قرارًا ستبقى منفصلة عن التنفيذ المالي الفعلي.`;
   const structuredData={
     scope_kind:'meeting',
     meeting_id:meeting.id,
