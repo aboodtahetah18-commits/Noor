@@ -57,7 +57,7 @@ export function ActionDialog({ trigger, title, description, children, size = 'md
     <button ref={triggerRef} type="button" className={triggerClassName ?? 'p49-modal-trigger'} aria-haspopup="dialog" aria-label={triggerAriaLabel} title={triggerTitle} onClick={() => setOpen(true)}>{textTrigger ? <span className="p49-trigger-content"><ActionIcon name={icon} /><span>{trigger}</span></span> : trigger}</button>
     <dialog
       ref={dialogRef}
-      className={`p49-action-dialog is-${size} ux-dialog-surface`}
+      className={`p49-action-dialog is-${size}`}
       aria-modal="true"
       aria-labelledby={titleId}
       onClick={handleBackdropClick}
