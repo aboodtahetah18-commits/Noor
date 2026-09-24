@@ -6,12 +6,32 @@ import { getAuthenticatedUser, requireAuthenticatedMutationUser } from '@/auth/r
 import { getRawSql } from '@/infrastructure/db/client';
 import { extendedProfileSections } from '@/lib/conversations/extended-profile-catalog';
 
+const sectionMap=new Map(extendedProfileSections.map(section=>[section.key,section]));
 const allowed=new Map(extendedProfileSections.map(section=>[section.key,new Set(section.fields.map(field=>field.key))]));
 
 function cleanValue(value:unknown){
   if(typeof value==='number'&&Number.isFinite(value)) return value;
   if(typeof value==='string') return value.trim().slice(0,2000);
   return null;
+}
+
+function cleanTableItems(sectionKey:string,value:unknown){
+  const section=sectionMap.get(sectionKey);
+  const columns=section?.table?.columns??[];
+  if(!columns.length||!Array.isArray(value)) return null;
+  const allowedColumns=new Set(columns.map(column=>column.key));
+  const rows=value.slice(0,100).flatMap(item=>{
+    if(!item||typeof item!=='object'||Array.isArray(item)) return [];
+    const row:Record<string,unknown>={};
+    for(const [key,raw] of Object.entries(item as Record<string,unknown>)){
+      if(!allowedColumns.has(key)) continue;
+      const cleaned=cleanValue(raw);
+      if(cleaned!==null&&cleaned!=='') row[key]=cleaned;
+    }
+    if(!Object.keys(row).length) return [];
+    return [row];
+  });
+  return rows;
 }
 
 export async function GET(){
@@ -44,11 +64,17 @@ export async function PUT(request:Request){
     const payload=await request.json() as {section?:unknown;values?:unknown};
     const section=typeof payload.section==='string'?payload.section:'';
     const fieldSet=allowed.get(section);
-    if(!fieldSet||!payload.values||typeof payload.values!=='object'||Array.isArray(payload.values)){
+    const sectionDefinition=sectionMap.get(section);
+    if(!fieldSet||!sectionDefinition||!payload.values||typeof payload.values!=='object'||Array.isArray(payload.values)){
       return NextResponse.json({code:'EXTENDED_PROFILE_INVALID'},{status:400});
     }
     const values:Record<string,unknown>={};
     for(const [key,value] of Object.entries(payload.values as Record<string,unknown>)){
+      if(key==='items'&&sectionDefinition.table){
+        const items=cleanTableItems(section,value);
+        if(items) values.items=items;
+        continue;
+      }
       if(!fieldSet.has(key)) continue;
       const cleaned=cleanValue(value);
       if(cleaned!==null&&cleaned!=='') values[key]=cleaned;
