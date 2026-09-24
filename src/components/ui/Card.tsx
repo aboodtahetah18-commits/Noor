@@ -1,5 +1,22 @@
 import type { HTMLAttributes } from 'react';
 
-export function Card({ className = '', ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={`ux-surface ${className}`.trim()} {...props} />;
+type CardProps = HTMLAttributes<HTMLDivElement> & {
+  density?: 'compact' | 'comfortable';
+  interactive?: boolean;
+};
+
+export function Card({
+  density = 'comfortable',
+  interactive = false,
+  className = '',
+  ...props
+}: CardProps) {
+  return (
+    <div
+      className={`ux-card ${className}`.trim()}
+      data-density={density}
+      data-interactive={interactive ? 'true' : 'false'}
+      {...props}
+    />
+  );
 }
