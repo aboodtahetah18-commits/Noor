@@ -29,7 +29,9 @@ type BaselineState = {
   monthly_variable_expenses_candidates?: number[];
   monthly_variable_expenses_confirmed?: number[];
   monthly_variable_expenses_total?: number;
-  post_onboarding_stage?: 'variable_expenses' | 'irregular_expenses' | 'ready';
+  post_onboarding_stage?: 'bills' | 'subscriptions' | 'variable_expenses' | 'irregular_expenses' | 'handoff_budget';
+  bills_note?: string;
+  subscriptions_note?: string;
   irregular_expenses_note?: string;
   pending_confirmation?: PendingConfirmation;
   updated_at?: string;
@@ -212,8 +214,8 @@ function buildCentralReply(text: string, intent: Intent, amounts: number[], meta
       body=`تم اعتماد المصروفات الشهرية الإضافية بإجمالي ${formatSar(baseline.monthly_variable_expenses_total??0)} ريال. ${nextQuestion}`;
     } else if (metrics && !missingBaselineFields(baseline).length) {
       kind = 'request';
-      baseline.post_onboarding_stage='variable_expenses';
-      nextQuestion='قبل أن أبني التوصيات، هل لديك مصروفات شهرية إضافية غير الالتزامات الثابتة المسجلة، مثل الغذاء أو الوقود أو الاشتراكات أو المصروف الشخصي والعائلي؟ اذكر كل بند مع متوسطه الشهري، أو اكتب «لا يوجد».';
+      baseline.post_onboarding_stage='bills';
+      nextQuestion='نبدأ بالفواتير: ما الفواتير التي تسددها حاليًا؟ اذكر كل فاتورة ومتوسط مبلغها وتكرارها، مثل الكهرباء أو الماء أو الجوال أو الإنترنت أو أي فاتورة خاصة، أو اكتب «لا يوجد».';
       body = `تم تثبيت خط الأساس المالي من بياناتك المؤكدة. ${nextQuestion}`;
     } else if (confirmed.confirmedType === 'monthly_net_income' && typeof baseline.monthly_net_income_confirmed === 'number') {
       body = `تم تثبيت الدخل الشهري الصافي عند ${formatSar(baseline.monthly_net_income_confirmed)} ريال. الآن أرسل الالتزامات الأساسية الثابتة التي تتكرر شهريًا وقيمة كل التزام.`;
@@ -232,7 +234,17 @@ function buildCentralReply(text: string, intent: Intent, amounts: number[], meta
 
   const amount = firstAmount(amounts);
 
-  if (baseline.post_onboarding_stage==='variable_expenses' && isNoAdditionalExpense(text)) {
+  if (baseline.post_onboarding_stage==='bills') {
+    baseline={...baseline,bills_note:isNoAdditionalExpense(text)?'لا يوجد':text,post_onboarding_stage:'subscriptions',updated_at:new Date().toISOString()};
+    confidence=1;
+    nextQuestion='ما الاشتراكات التي تدفعها بشكل متكرر؟ مثل الاتصالات، الإنترنت، المنصات، التطبيقات، النادي أو أي اشتراك آخر. اذكر اسم الاشتراك ومبلغه ودوريته، أو اكتب «لا يوجد».';
+    body='تم حفظ بيانات الفواتير. '+nextQuestion;
+  } else if (baseline.post_onboarding_stage==='subscriptions') {
+    baseline={...baseline,subscriptions_note:isNoAdditionalExpense(text)?'لا يوجد':text,post_onboarding_stage:'variable_expenses',updated_at:new Date().toISOString()};
+    confidence=1;
+    nextQuestion='الآن ما المصروفات الشهرية المتغيرة غير الفواتير والالتزامات، مثل الغذاء والمطاعم والمصروف الشخصي والعائلي؟ اذكر كل بند مع متوسطه الشهري، أو اكتب «لا يوجد».';
+    body='تم حفظ بيانات الاشتراكات. '+nextQuestion;
+  } else if (baseline.post_onboarding_stage==='variable_expenses' && isNoAdditionalExpense(text)) {
     baseline={...baseline,monthly_variable_expenses_confirmed:[],monthly_variable_expenses_total:0,post_onboarding_stage:'irregular_expenses',updated_at:new Date().toISOString()};
     confidence=1;
     nextQuestion='هل لديك مصروفات غير شهرية أو موسمية مهمة خلال السنة، مثل تأمين أو دراسة أو صيانة أو سفر أو رسوم؟ اذكرها مع المبلغ والتكرار، أو اكتب «لا يوجد».';
@@ -245,15 +257,16 @@ function buildCentralReply(text: string, intent: Intent, amounts: number[], meta
     nextQuestion='اكتب «تأكيد» لاعتمادها، أو أرسل التصحيح.';
   } else if (baseline.post_onboarding_stage==='irregular_expenses') {
     confidence=1;
-    baseline={...baseline,irregular_expenses_note:isNoAdditionalExpense(text)?'لا يوجد':text,post_onboarding_stage:'ready',updated_at:new Date().toISOString()};
-    kind='recommendation';
-    routedRoom='solvency';
-    body='تم حفظ المصروفات غير الشهرية. أصبح لدي الآن خط أساس مالي أوضح للبدء في تقييم الملاءة وبناء الميزانية الأولية، وبعدها أعرض عليك ما يحتاج مراجعة قبل الاجتماع المالي.';
+    baseline={...baseline,irregular_expenses_note:isNoAdditionalExpense(text)?'لا يوجد':text,post_onboarding_stage:'handoff_budget',updated_at:new Date().toISOString()};
+    kind='request';
+    routedRoom='hilal';
+    nextQuestion='الرجاء الانتقال إلى بنك الهلال ومتابعة الاستكمال مع مسؤول الميزانية والإنفاق. سيبدأ معك ببيانات المركبة والوقود والاستهلاك اليومي ثم تكاليف التشغيل والصيانة.';
+    body='تم حفظ المصروفات غير الشهرية واكتملت بيانات المصروفات الأساسية لدى المحافظ. '+nextQuestion;
   } else if (isNextStepRequest(text) && !missingBaselineFields(baseline).length) {
     confidence=1;
     kind='request';
-    baseline={...baseline,post_onboarding_stage:'variable_expenses',updated_at:new Date().toISOString()};
-    nextQuestion='قبل أن ننتقل للتوصيات، هل لديك مصروفات شهرية إضافية غير الالتزامات الثابتة المسجلة، مثل الغذاء أو الوقود أو الاشتراكات أو المصروف الشخصي والعائلي؟ اذكر كل بند مع متوسطه الشهري، أو اكتب «لا يوجد».';
+    baseline={...baseline,post_onboarding_stage:'bills',updated_at:new Date().toISOString()};
+    nextQuestion='نبدأ بالفواتير: ما الفواتير التي تسددها حاليًا؟ اذكر كل فاتورة ومتوسط مبلغها وتكرارها، مثل الكهرباء أو الماء أو الجوال أو الإنترنت أو أي فاتورة خاصة، أو اكتب «لا يوجد».';
     body=nextQuestion;
   } else if (intent === 'income' && amount !== null) {
     baseline = { ...baseline, monthly_net_income_candidate: amount, pending_confirmation: { type: 'monthly_net_income', value: amount, raw_text: text }, updated_at: new Date().toISOString() };
@@ -277,6 +290,81 @@ function buildCentralReply(text: string, intent: Intent, amounts: number[], meta
       : 'خط الأساس المالي مثبت. يمكنك الآن طرح موضوع الملاءة أو الاستثمار أو التمويل أو الأهداف.';
   }
   return { body, kind, confidence, baseline, routedRoom, confirmedFact, nextQuestion };
+}
+
+type BudgetSpendingIntake = {
+  stage:'vehicle'|'fuel'|'daily_distance'|'fuel_efficiency'|'refuel_pattern'|'maintenance'|'complete';
+  vehicle?:string;
+  fuel_type?:string;
+  daily_distance_km?:number|null;
+  fuel_efficiency_km_per_liter?:number|null;
+  refuel_pattern?:string;
+  maintenance_note?:string;
+  updated_at?:string;
+};
+
+function budgetIntakeFrom(metadata:Record<string,unknown>):BudgetSpendingIntake{
+  const value=metadata.budget_spending_intake;
+  if(value&&typeof value==='object'&&!Array.isArray(value))return value as BudgetSpendingIntake;
+  return {stage:'vehicle'};
+}
+
+function buildBudgetSpendingReply(text:string,amounts:number[],metadata:Record<string,unknown>){
+  const current=budgetIntakeFrom(metadata);
+  const next:BudgetSpendingIntake={...current,updated_at:new Date().toISOString()};
+  let body='';
+  let nextQuestion:string|null=null;
+
+  if(current.stage==='vehicle'){
+    next.vehicle=text;
+    next.stage='fuel';
+    nextQuestion='ما نوع الوقود الذي تستخدمه المركبة؟ بنزين 91 أو 95 أو ديزل أو كهرباء أو غير ذلك؟';
+    body='تم حفظ بيانات المركبة. '+nextQuestion;
+  }else if(current.stage==='fuel'){
+    next.fuel_type=text;
+    next.stage='daily_distance';
+    nextQuestion='في المتوسط، كم كيلومتر تقطع يوميًا بالسيارة في أيامك المعتادة؟';
+    body='تم حفظ نوع الوقود. '+nextQuestion;
+  }else if(current.stage==='daily_distance'){
+    const value=firstAmount(amounts);
+    next.daily_distance_km=value;
+    if(value===null){
+      nextQuestion='أحتاج رقمًا تقريبيًا للمسافة اليومية بالكيلومتر، مثل 40 كم.';
+      body=nextQuestion;
+    }else{
+      next.stage='fuel_efficiency';
+      nextQuestion='كم متوسط استهلاك السيارة للوقود بالكيلومتر لكل لتر؟ إذا لم تعرف، اكتب موديل السيارة وسنة الصنع وسأحتفظ بها للمراجعة بدل التخمين.';
+      body=`تم تسجيل متوسط السير اليومي عند ${formatSar(value)} كم. ${nextQuestion}`;
+    }
+  }else if(current.stage==='fuel_efficiency'){
+    const value=firstAmount(amounts);
+    next.fuel_efficiency_km_per_liter=value;
+    next.stage='refuel_pattern';
+    nextQuestion='عادةً كم تدفع عند تعبئة الوقود وكم مرة تعبئ خلال الأسبوع أو الشهر؟';
+    body=value!==null
+      ?`تم تسجيل كفاءة استهلاك تقريبية عند ${formatSar(value)} كم/لتر. ${nextQuestion}`
+      :'سأحتفظ بمعلومة المركبة للمراجعة دون افتراض كفاءة استهلاك. '+nextQuestion;
+  }else if(current.stage==='refuel_pattern'){
+    next.refuel_pattern=text;
+    next.stage='maintenance';
+    nextQuestion='ما تكاليف التشغيل الأخرى التي تتكرر على السيارة؟ مثل تغيير الزيت والفلاتر والصيانة والإطارات والتأمين والفحص. اذكر ما تعرفه مع المبلغ ودورية الدفع.';
+    body='تم حفظ نمط تعبئة الوقود. '+nextQuestion;
+  }else if(current.stage==='maintenance'){
+    next.maintenance_note=isNoAdditionalExpense(text)?'لا يوجد':text;
+    next.stage='complete';
+    body='اكتملت بيانات المركبة والوقود والتشغيل المبدئية. سأستخدمها مع الفواتير والاشتراكات والمصروفات المسجلة لبناء ميزانية إنفاق واقعية، وأي رقم غير مؤكد سيبقى للمراجعة قبل اعتماده.';
+  }else{
+    body='بيانات الميزانية والإنفاق الأساسية مكتملة حاليًا. يمكنك إرسال أي فاتورة أو اشتراك أو مصروف جديد وسأضيفه للمراجعة.';
+  }
+
+  return {
+    kind:(next.stage==='complete'?'recommendation':'request') as ConversationMessageKind,
+    body,
+    confidence:1,
+    nextQuestion,
+    nextMetadata:{...metadata,budget_spending_intake:next},
+    sender:{key:'budget-spending-owner',name:'مسؤول الميزانية والإنفاق'},
+  };
 }
 
 function buildRoomReply(roomKey: ConversationRoomKey, amounts: number[], text: string) {
@@ -315,7 +403,14 @@ export async function createRoutedReply(userId: string, roomKey: ConversationRoo
     const hydratedBaseline=await hydrateBaselineFromFoundationFacts(userId,metadata);
     metadata={...metadata,financial_baseline:hydratedBaseline};
   }
-  const agent = agentForRoom(roomKey);
+  let budgetHandoff=false;
+  if(roomKey==='hilal'){
+    const centralRows=await sql`select metadata from public.conversation_threads where user_id=${userId} and room_key='central' limit 1`;
+    const centralMetadata=centralRows[0]?.metadata&&typeof centralRows[0].metadata==='object'?centralRows[0].metadata as Record<string,unknown>:{};
+    const centralBaseline=baselineFrom(centralMetadata);
+    budgetHandoff=centralBaseline.post_onboarding_stage==='handoff_budget'||Boolean(metadata.budget_spending_intake);
+  }
+  let agent = agentForRoom(roomKey);
 
   let body: string;
   let kind: ConversationMessageKind;
@@ -338,6 +433,15 @@ export async function createRoutedReply(userId: string, roomKey: ConversationRoo
     financialMetrics = baselineMetrics(result.baseline);
     missingFields = missingBaselineFields(result.baseline);
     nextMetadata = { ...metadata, financial_baseline: result.baseline, onboarding_started:true, last_detected_intent:intent, last_confidence:confidence };
+  } else if(roomKey==='hilal'&&budgetHandoff) {
+    const result=buildBudgetSpendingReply(text,amounts,metadata);
+    body=result.body;
+    kind=result.kind;
+    confidence=result.confidence;
+    nextQuestion=result.nextQuestion;
+    nextMetadata={...result.nextMetadata,last_detected_intent:'expense',last_confidence:confidence};
+    agent=result.sender;
+    routedRoom='hilal';
   } else {
     const result = buildRoomReply(roomKey, amounts, text);
     body = result.body;
@@ -357,7 +461,8 @@ export async function createRoutedReply(userId: string, roomKey: ConversationRoo
     missing_fields: missingFields,
     confirmed_fact: confirmedFact,
     next_question: nextQuestion,
-    guided_intake: roomKey==='central'&&Boolean(nextQuestion),
+    guided_intake: (roomKey==='central'||(roomKey==='hilal'&&budgetHandoff))&&Boolean(nextQuestion),
+    intake_owner: roomKey==='hilal'&&budgetHandoff?'budget-spending-owner':null,
     requires_user_confirmation: confidence < 0.9,
     execution_boundary: 'advisory_only',
   };
