@@ -7,6 +7,7 @@
 import Image from 'next/image';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { LucideIcon, type LucideIconName } from '@/components/ui/lucide-icon';
+import { Button } from '@/components/ui';
 import type { GovernedDocumentRef } from '@/lib/conversations/governed-room-details';
 import styles from './conversation-workspace.module.css';
 
@@ -526,8 +527,8 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
   }
 
   return <div className={styles.mobileOverlay} role="dialog" aria-modal="true" aria-label={'تفاصيل '+document.title}>
-    <aside className={styles.mobileSheet+' '+styles.governedDocumentSheet+' '+styles.mobileFullPageSheet}>
-      <div className={styles.sheetHeader}><strong>تفاصيل المرجع الحاكم</strong><button type="button" onClick={onClose} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button></div>
+    <aside className={styles.mobileSheet+' '+styles.governedDocumentSheet+' '+styles.mobileFullPageSheet+' ux-dialog-surface namaa-governed-document-dialog'}>
+      <div className={styles.sheetHeader}><strong>تفاصيل المرجع الحاكم</strong><Button type="button" variant="ghost" size="sm" onClick={onClose} aria-label="إغلاق"><LucideIcon name="x" size={20}/></Button></div>
       <div className={styles.governedDocumentContent}>
         <section className={styles.governedDocumentHero}>
           <span className={styles.governedLeafPattern} aria-hidden="true"><i/><i/><i/></span>
@@ -559,33 +560,33 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
               ?<p>جارٍ تحميل المرجع المعتمد داخل نماء…</p>
               :documentContent
                 ?<div className={styles.governedStructuredDocument}>
-                  {documentSections.map((section,sectionIndex)=><details className={styles.governedContentSection+' '+(isMatrixDocument?styles.governedMatrixSection:'')+' '+(isFlowDocument?styles.governedFlowSection:'')} key={section.number+'-'+sectionIndex} open={sectionIndex===0||isMatrixDocument}>
+                  {documentSections.map((section,sectionIndex)=><details className={styles.governedContentSection+' namaa-governed-article '+(isMatrixDocument?styles.governedMatrixSection:'')+' '+(isFlowDocument?styles.governedFlowSection:'')} key={section.number+'-'+sectionIndex} open={sectionIndex===0||isMatrixDocument}>
                     <summary><span><LucideIcon name={sectionIcon(section.title,displayType)} size={16}/><strong>{'المادة ('+section.number+'): '+section.title}</strong></span><small>إظهار / إخفاء</small></summary>
-                    <div className={styles.governedContentSectionBody}>
-                      <div className={styles.governedArticleAction}>
-                        <button type="button" onClick={()=>openUnitEditor('article',section.number,section.title,null)}><LucideIcon name="pencil" size={16}/>تعديل</button>
+                    <div className={styles.governedContentSectionBody+' namaa-governed-article-body'}>
+                      <div className={styles.governedArticleAction+' namaa-governed-unit-actions'}>
+                        <button type="button" onClick={()=>openUnitEditor('article',section.number,section.title,null)}><LucideIcon name="pencil" size={16}/>تعديل / حذف</button>
                       </div>
                       {section.blocks.map((block,blockIndex)=>block.kind==='paragraph'
-                        ?<article className={styles.governedParagraphRow} key={'p-'+blockIndex}>
-                          <div className={styles.governedUnitToolbar}>
+                        ?<article className={styles.governedParagraphRow+' namaa-governed-paragraph'} key={'p-'+blockIndex}>
+                          <div className={styles.governedUnitToolbar+' namaa-governed-unit-toolbar'}>
                             <strong>{block.number?'الفقرة ('+block.number+')':'فقرة'}</strong>
-                            {block.number&&<button type="button" onClick={()=>openUnitEditor('paragraph',block.number??'',block.text,(block.number??'').split('.').slice(0,-1).join('.'),block.sourceText)} aria-label="تعديل الفقرة"><LucideIcon name="pencil" size={16}/>تعديل</button>}
+                            {block.number&&<button type="button" onClick={()=>openUnitEditor('paragraph',block.number??'',block.text,(block.number??'').split('.').slice(0,-1).join('.'),block.sourceText)} aria-label="تعديل الفقرة"><LucideIcon name="pencil" size={16}/>تعديل / حذف</button>}
                           </div>
                           <p>{block.text}</p>
                         </article>
                         :block.kind==='clause'
-                          ?<article className={styles.governedClauseRow} key={'c-'+block.number+'-'+blockIndex}>
-                            <div className={styles.governedUnitToolbar}>
-                              <div className={styles.governedClauseHeading}><span>{'البند '+block.number}</span><strong>{block.title}</strong></div>
-                              <button type="button" onClick={()=>openUnitEditor('clause',block.number,block.text||block.title,section.number,block.sourceText)} aria-label={'تعديل البند '+block.number}><LucideIcon name="pencil" size={16}/>تعديل</button>
+                          ?<article className={styles.governedClauseRow+' namaa-governed-clause'} key={'c-'+block.number+'-'+blockIndex}>
+                            <div className={styles.governedUnitToolbar+' namaa-governed-unit-toolbar'}>
+                              <div className={styles.governedClauseHeading+' namaa-governed-clause-heading'}><span>{'البند '+block.number}</span><strong>{block.title}</strong></div>
+                              <button type="button" onClick={()=>openUnitEditor('clause',block.number,block.text||block.title,section.number,block.sourceText)} aria-label={'تعديل البند '+block.number}><LucideIcon name="pencil" size={16}/>تعديل / حذف</button>
                             </div>
-                            {block.text&&<div className={styles.governedClauseDetails}>
+                            {block.text&&<div className={styles.governedClauseDetails+' namaa-governed-clause-details'}>
                               <div><small>الشرح</small><p>{splitClauseContent(block.text).explanation}</p></div>
                               <div><small>مثال</small><p>{splitClauseContent(block.text).example||'لم يضف مثال لهذا البند بعد.'}</p></div>
                             </div>}
                           </article>
-                          :<div className={styles.governedTableScroll} key={'t-'+blockIndex}>
-                          <table className={styles.governedContentTable}>
+                          :<div className={styles.governedTableScroll+' namaa-governed-table-wrap'} key={'t-'+blockIndex}>
+                          <table className={styles.governedContentTable+' ux-table'}>
                             <thead><tr>{block.headers.map((header,headerIndex)=><th scope="col" key={headerIndex}>{header||'البيان'}</th>)}</tr></thead>
                             <tbody>{block.rows.map((row,rowIndex)=><tr key={rowIndex}>{block.headers.map((_,cellIndex)=><td key={cellIndex}>{row[cellIndex]||'غير محدد'}</td>)}</tr>)}</tbody>
                           </table>
@@ -597,25 +598,25 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
           </div>
         </details>
 
-        <section className={styles.governedQuickActions} aria-label="إجراءات المرجع">
-          <button type="button" className={styles.governedTypoButton} onClick={()=>resetEditor('direct','EDIT')}>
+        <section className={styles.governedQuickActions+' namaa-governed-quick-actions'} aria-label="إجراءات المرجع">
+          <Button type="button" variant="secondary" onClick={()=>resetEditor('direct','EDIT')}>
             <LucideIcon name="pencil" size={24}/><span><strong>تحرير مباشر</strong></span>
-          </button>
-          <button type="button" className={styles.governedGovernanceButton} onClick={()=>resetEditor('governance','EDIT')}>
+          </Button>
+          <Button type="button" variant="primary" onClick={()=>resetEditor('governance','EDIT')}>
             <LucideIcon name="landmark" size={24}/><span><strong>تحرير حوكمي</strong></span>
-          </button>
+          </Button>
         </section>
 
-        {formOpen&&<div className={styles.governedEditModal} role="dialog" aria-modal="true" aria-label={editMode==='direct'?'تحرير مباشر':'تحرير حوكمي'}>
-          <button type="button" className={styles.governedEditModalScrim} aria-label="إغلاق" onClick={()=>setFormOpen(false)}/>
-          <form className={styles.governedAmendmentForm+' '+styles.governedEditModalCard+' '+(editMode==='direct'?styles.governedTypoForm:styles.governedGovernanceForm)} onSubmit={submit}>
-            <header className={styles.governedEditFormHeader}>
+        {formOpen&&<div className={styles.governedEditModal+' namaa-governance-editor-overlay'} role="dialog" aria-modal="true" aria-label={editMode==='direct'?'تحرير مباشر':'تحرير حوكمي'}>
+          <button type="button" className={styles.governedEditModalScrim+' namaa-governance-editor-scrim'} aria-label="إغلاق" onClick={()=>setFormOpen(false)}/>
+          <form className={styles.governedAmendmentForm+' '+styles.governedEditModalCard+' ux-dialog-surface namaa-governance-editor-dialog '+(editMode==='direct'?styles.governedTypoForm:styles.governedGovernanceForm)} onSubmit={submit}>
+            <header className={styles.governedEditFormHeader+' namaa-governance-editor-header'}>
               <span className={styles.governedEditFormIcon}><LucideIcon name={editMode==='direct'?'pencil':'landmark'} size={20}/></span>
               <div><strong>{editMode==='direct'?'تحرير مباشر':'تحرير حوكمي'}</strong><small>{editMode==='direct'?'إضافة أو تعديل أو حذف مباشر خلال مرحلة ضبط المنصة.':'إضافة أو تعديل أو حذف يمر بالاجتماع والمراجعة والاعتماد قبل النفاذ.'}</small></div>
-              <button type="button" className={styles.governedEditClose} onClick={()=>setFormOpen(false)} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button>
+              <Button type="button" variant="ghost" size="sm" onClick={()=>setFormOpen(false)} aria-label="إغلاق"><LucideIcon name="x" size={20}/></Button>
             </header>
 
-            <label><span>نوع العملية</span><select value={changeAction} onChange={e=>{
+            <label><span>نوع العملية</span><select className="ux-control" value={changeAction} onChange={e=>{
               const action=e.target.value as typeof changeAction;
               const previous=changeAction;
               setChangeAction(action);
@@ -629,45 +630,45 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
 
             {changeAction==='ADD'
               ?<>
-                <label><span>نوع الإضافة</span><select value={unitType} onChange={e=>updateAddTarget(e.target.value as typeof unitType,'')}>
+                <label><span>نوع الإضافة</span><select className="ux-control" value={unitType} onChange={e=>updateAddTarget(e.target.value as typeof unitType,'')}>
                   <option value="article">مادة</option><option value="clause">بند</option><option value="paragraph">فقرة</option>
                 </select></label>
-                {unitType==='clause'&&<label><span>تحت المادة</span><select value={parentRef} onChange={e=>updateAddTarget('clause',e.target.value)}>
+                {unitType==='clause'&&<label><span>تحت المادة</span><select className="ux-control" value={parentRef} onChange={e=>updateAddTarget('clause',e.target.value)}>
                   <option value="">اختر المادة</option>{articleOptions.map(item=><option key={item.ref} value={item.ref}>{item.label}</option>)}
                 </select></label>}
-                {unitType==='paragraph'&&<label><span>تحت البند</span><select value={parentRef} onChange={e=>updateAddTarget('paragraph',e.target.value)}>
+                {unitType==='paragraph'&&<label><span>تحت البند</span><select className="ux-control" value={parentRef} onChange={e=>updateAddTarget('paragraph',e.target.value)}>
                   <option value="">اختر البند</option>{clauseOptions.map(item=><option key={item.ref} value={item.ref}>{item.label}</option>)}
                 </select></label>}
-                <label><span>الترقيم</span><input value={clauseRef} readOnly placeholder="يُنشأ تلقائيًا"/></label>
+                <label><span>الترقيم</span><input className="ux-control" value={clauseRef} readOnly placeholder="يُنشأ تلقائيًا"/></label>
               </>
-              :<label><span>العنصر</span><select value={clauseRef?unitType+':'+clauseRef:''} onChange={e=>chooseExistingUnit(e.target.value)}>
+              :<label><span>العنصر</span><select className="ux-control" value={clauseRef?unitType+':'+clauseRef:''} onChange={e=>chooseExistingUnit(e.target.value)}>
                 <option value="">اختر المادة أو البند أو الفقرة</option>{unitOptions.map(item=><option key={item.type+'-'+item.ref} value={item.type+':'+item.ref}>{item.label}</option>)}
               </select></label>}
 
-            {changeAction!=='ADD'&&<label><span>النص الحالي</span><textarea value={currentRule} readOnly/></label>}
+            {changeAction!=='ADD'&&<label><span>النص الحالي</span><textarea className="ux-control" value={currentRule} readOnly/></label>}
             {changeAction!=='DELETE'&&unitType==='clause'&&<>
-              <label><span>شرح البند</span><textarea required value={proposedRule} onChange={e=>setProposedRule(e.target.value)} placeholder="اكتب شرح البند بوضوح"/></label>
-              <label><span>مثال</span><textarea value={exampleText} onChange={e=>setExampleText(e.target.value)} placeholder="أضف مثالًا عمليًا يوضح البند"/></label>
+              <label><span>شرح البند</span><textarea className="ux-control" required value={proposedRule} onChange={e=>setProposedRule(e.target.value)} placeholder="اكتب شرح البند بوضوح"/></label>
+              <label><span>مثال</span><textarea className="ux-control" value={exampleText} onChange={e=>setExampleText(e.target.value)} placeholder="أضف مثالًا عمليًا يوضح البند"/></label>
             </>}
-            {changeAction!=='DELETE'&&unitType!=='clause'&&<label><span>{changeAction==='ADD'?'النص الجديد':'النص المعدل'}</span><textarea required value={proposedRule} onChange={e=>setProposedRule(e.target.value)} placeholder={changeAction==='ADD'?'اكتب محتوى العنصر الجديد':'عدّل النص المطلوب'}/></label>}
+            {changeAction!=='DELETE'&&unitType!=='clause'&&<label><span>{changeAction==='ADD'?'النص الجديد':'النص المعدل'}</span><textarea className="ux-control" required value={proposedRule} onChange={e=>setProposedRule(e.target.value)} placeholder={changeAction==='ADD'?'اكتب محتوى العنصر الجديد':'عدّل النص المطلوب'}/></label>}
             {changeAction==='DELETE'&&<p className={styles.governedDeleteNotice}>سيتم حذف {unitType==='article'?'المادة وما يندرج تحتها':unitType==='clause'?'البند وما يندرج تحته':'الفقرة المحددة'} من نسخة العرض. في المسار الحوكمي لا يصبح الحذف نافذًا إلا بعد الاعتماد.</p>}
-            <label><span>{editMode==='direct'?'ملاحظة':'مبرر التغيير'}</span><textarea required={editMode==='governance'} value={rationale} onChange={e=>setRationale(e.target.value)} placeholder={editMode==='direct'?'اختياري خلال مرحلة التأسيس':'اشرح سبب الإضافة أو التعديل أو الحذف وأثره'}/></label>
-            {editMode==='governance'&&<label><span>الأولوية</span><select value={priority} onChange={e=>setPriority(e.target.value as typeof priority)}><option value="NORMAL">عادي</option><option value="NEXT_MEETING">للاجتماع القادم</option><option value="URGENT">عاجل، اجتماع فوري</option></select></label>}
+            <label><span>{editMode==='direct'?'ملاحظة':'مبرر التغيير'}</span><textarea className="ux-control" required={editMode==='governance'} value={rationale} onChange={e=>setRationale(e.target.value)} placeholder={editMode==='direct'?'اختياري خلال مرحلة التأسيس':'اشرح سبب الإضافة أو التعديل أو الحذف وأثره'}/></label>
+            {editMode==='governance'&&<label><span>الأولوية</span><select className="ux-control" value={priority} onChange={e=>setPriority(e.target.value as typeof priority)}><option value="NORMAL">عادي</option><option value="NEXT_MEETING">للاجتماع القادم</option><option value="URGENT">عاجل، اجتماع فوري</option></select></label>}
             <p>{editMode==='direct'
               ?'يطبق التغيير فورًا في نسخة العرض الحالية ويسجل أثره. هذا المسار مخصص لمرحلة ضبط المنصة.'
               :'المسار: المحافظ، ثم أمين السر، ثم مجلس نماء الأعلى، ثم الاعتماد أو الرفض، ثم تاريخ النفاذ والإصدار الجديد.'}</p>
-            <div className={styles.governedAmendmentActions}><button type="button" onClick={()=>setFormOpen(false)}>إلغاء</button><button type="submit" disabled={pending||!clauseRef.trim()||(changeAction!=='DELETE'&&!proposedRule.trim())}>{pending?'جارٍ الحفظ…':changeAction==='DELETE'?(editMode==='direct'?'حذف مباشر':'طلب الحذف'):(editMode==='direct'?'حفظ مباشر':'إرسال للمحافظ')}</button></div>
+            <div className={styles.governedAmendmentActions+' namaa-governance-editor-actions'}><button type="button" className="ux-button ux-button--secondary" onClick={()=>setFormOpen(false)}>إلغاء</button><button type="submit" className="ux-button ux-button--primary" disabled={pending||!clauseRef.trim()||(changeAction!=='DELETE'&&!proposedRule.trim())}>{pending?'جارٍ الحفظ…':changeAction==='DELETE'?(editMode==='direct'?'حذف مباشر':'طلب الحذف'):(editMode==='direct'?'حفظ مباشر':'إرسال للمحافظ')}</button></div>
           </form>
         </div>}
 
-        <section className={styles.governedHistorySection}>
-          <header className={styles.governedHistoryHeader}>
+        <section className={styles.governedHistorySection+' namaa-governed-history'}>
+          <header className={styles.governedHistoryHeader+' namaa-governed-history-header'}>
             <span className={styles.governedHistoryIcon}><LucideIcon name="calendarDays" size={20}/></span>
             <div><strong>سجل التحديثات والقرارات</strong><small>التسلسل الزمني للتصحيحات، طلبات التعديل، الاعتمادات وقرارات مجلس نماء الأعلى.</small></div>
           </header>
-          <div className={styles.governedHistoryList}>
+          <div className={styles.governedHistoryList+' namaa-governed-history-list'}>
             {!history.length&&<p className={styles.governedHistoryEmpty}>لا توجد تحديثات أو قرارات مرتبطة بهذا المرجع حتى الآن.</p>}
-            {history.map(item=><article key={item.id} className={styles.governedHistoryItem+' '+styles['governedHistory_'+item.tone]}>
+            {history.map(item=><article key={item.id} className={styles.governedHistoryItem+' namaa-governed-history-item '+styles['governedHistory_'+item.tone]}>
               <span className={styles.governedHistoryDot} aria-hidden="true"/>
               <div className={styles.governedHistoryMeta}><span>{item.type}</span><b>{item.status}</b></div>
               <strong>{item.summary}</strong>
