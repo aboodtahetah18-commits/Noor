@@ -53,9 +53,9 @@ export default async function BankOperationsPage({searchParams}:{searchParams:Pr
 
   return <main className="p47-page" dir="rtl">
     <BanksWide selected={selected} pendingReviewCount={center.pendingReviewCount} pendingItems={center.pendingItems} dashboardData={dashboardData}/>
-    <section className="p47-content-shell namaa-mobile-only">
+    <section className="p47-content-shell namaa-mobile-only namaa-migrated-shell">
       <PageHeader
-        className="p47-page-heading"
+        className="p47-page-heading namaa-migrated-header"
         eyebrow="التشغيل اليومي"
         title="مركز العمليات البنكية"
         meta={<div className="p47-cycle-line"><span className={`p47-status-dot ${center.pendingReviewCount?'is-warn':'is-good'}`}/><span>{center.pendingReviewCount?`${center.pendingReviewCount} تحتاج قرارك`:'لا توجد عمليات معلقة'}</span></div>}
