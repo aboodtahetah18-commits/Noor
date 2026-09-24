@@ -939,6 +939,7 @@ export function PersistentConversationWorkspace(){
   const [entityDashboardRoom,setEntityDashboardRoom]=useState<RoomKey|null>(null);
   const [governanceMode,setGovernanceMode]=useState<'governance'|'meetings'|'documents'|null>(null);
   const [extendedProfileOpen,setExtendedProfileOpen]=useState(false);
+  const [extendedProfileInitialSection,setExtendedProfileInitialSection]=useState<string|null>(null);
   const [intakeDismissed,setIntakeDismissed]=useState(true);
   const [chatFontSize,setChatFontSize]=useState<ChatFontSize>('medium');
   const composerTextareaRef=useRef<HTMLTextAreaElement|null>(null);
@@ -1338,8 +1339,17 @@ export function PersistentConversationWorkspace(){
           <LucideIcon name="arrowUpDown" size={16}/><span>الانتقال إلى مسؤول الميزانية والإنفاق</span>
         </button>}
       {message.message_kind==='request'&&typeof message.structured_data?.next_question==='string'&&message.structured_data.next_question&&message.structured_data?.handoff_target!=='hilal'&&
-        <button type="button" className={styles.inlineIntakeButton} onClick={()=>{setDraft('');requestAnimationFrame(()=>composerTextareaRef.current?.focus())}}>
-          <LucideIcon name="pencil" size={16}/><span>{Array.isArray(message.structured_data?.missing_fields)&&message.structured_data.missing_fields.length>0?'استكمال البيانات الناقصة':'استكمال الإجراءات'}</span>
+        <button type="button" className={styles.inlineIntakeButton} onClick={()=>{
+          if(message.structured_data?.guided_intake===true){
+            const question=String(message.structured_data.next_question??'');
+            setExtendedProfileInitialSection(/اشتراك/.test(question)?'subscriptions':'bills');
+            setExtendedProfileOpen(true);
+            return;
+          }
+          setDraft('');
+          requestAnimationFrame(()=>composerTextareaRef.current?.focus());
+        }}>
+          <LucideIcon name="listChecks" size={16}/><span>{message.structured_data?.guided_intake===true?'إكمال الإجراءات المتبقية':Array.isArray(message.structured_data?.missing_fields)&&message.structured_data.missing_fields.length>0?'استكمال البيانات الناقصة':'استكمال الإجراءات'}</span>
         </button>}
       <StructuredFacts data={message.structured_data}/>
       {(message.message_kind==='decision'||message.message_kind==='request')&&<small className={styles.executionBoundary}>أي تنفيذ مالي خارجي يظل بيد المستخدم، ويحتاج تأكيدًا وإثباتًا قبل الإغلاق.</small>}
@@ -1384,7 +1394,7 @@ export function PersistentConversationWorkspace(){
       <div className={styles.sideSection}><small>جهات الاتصال</small>{roomButtons}</div>
       <div className={styles.sideSection}>
         <small>الصفحات</small>
-        <div className={styles.sideUtilityList}>{onboardingComplete!==false&&<button type="button" onClick={()=>void openAccountsSettings()}><LucideIcon name="walletCards" size={20}/><span>الحسابات</span></button>}{onboardingComplete!==false&&<button type="button" onClick={()=>{setRoomsOpen(false);setExtendedProfileOpen(true)}}><LucideIcon name="listChecks" size={20}/><span>الملف المالي التفصيلي</span></button>}{onboardingComplete!==false&&<button type="button" onClick={()=>{setRoomsOpen(false);setGovernanceMode('meetings')}}><LucideIcon name="calendarDays" size={20}/><span>الاجتماعات</span></button>}{onboardingComplete!==false&&<button type="button" onClick={()=>{setRoomsOpen(false);setGovernanceMode('governance')}}><LucideIcon name="landmark" size={20}/><span>الحوكمة والسياسات</span></button>}{onboardingComplete!==false&&<button type="button" onClick={()=>{setRoomsOpen(false);setGovernanceMode('documents')}}><LucideIcon name="receiptText" size={20}/><span>الوثائق</span></button>}<button type="button" onClick={()=>{setRoomsOpen(false);setSettingsSection('general');setSettingsOpen(true)}}><LucideIcon name="settings" size={20}/><span>الإعدادات</span></button><button type="button" onClick={()=>{setRoomsOpen(false);setContextOpen(true)}}><LucideIcon name="info" size={20}/><span>المساعدة والسياق</span></button></div>
+        <div className={styles.sideUtilityList}>{onboardingComplete!==false&&<button type="button" onClick={()=>void openAccountsSettings()}><LucideIcon name="walletCards" size={20}/><span>الحسابات</span></button>}{onboardingComplete!==false&&<button type="button" onClick={()=>{setRoomsOpen(false);setExtendedProfileInitialSection(null);setExtendedProfileOpen(true)}}><LucideIcon name="listChecks" size={20}/><span>الملف المالي التفصيلي</span></button>}{onboardingComplete!==false&&<button type="button" onClick={()=>{setRoomsOpen(false);setGovernanceMode('meetings')}}><LucideIcon name="calendarDays" size={20}/><span>الاجتماعات</span></button>}{onboardingComplete!==false&&<button type="button" onClick={()=>{setRoomsOpen(false);setGovernanceMode('governance')}}><LucideIcon name="landmark" size={20}/><span>الحوكمة والسياسات</span></button>}{onboardingComplete!==false&&<button type="button" onClick={()=>{setRoomsOpen(false);setGovernanceMode('documents')}}><LucideIcon name="receiptText" size={20}/><span>الوثائق</span></button>}<button type="button" onClick={()=>{setRoomsOpen(false);setSettingsSection('general');setSettingsOpen(true)}}><LucideIcon name="settings" size={20}/><span>الإعدادات</span></button><button type="button" onClick={()=>{setRoomsOpen(false);setContextOpen(true)}}><LucideIcon name="info" size={20}/><span>المساعدة والسياق</span></button></div>
       </div>
     </aside></div>}
     {entityDashboardRoom&&<EntityDashboardMobilePage roomKey={entityDashboardRoom} onClose={()=>setEntityDashboardRoom(null)}/>}
@@ -1444,7 +1454,7 @@ return <div className={styles.roomDetailContent}>
       <section className={styles.settingsSectionBlock}><div className={styles.settingsSectionHeading}><LucideIcon name="slidersHorizontal" size={20}/><span><strong>ضبط النظام</strong><small>إعدادات العرض والتنبيهات والخصوصية قابلة للتخصيص؛ أما الأوزان والحدود المحكومة فتظل تحت الحوكمة ولا تعدّل من الواجهة.</small></span></div><div className={styles.settingsStatusList}><span><b>الجهات والبنوك وأصحاب المسؤوليات</b><em>{onboardingComplete===false?'تفتح بعد اكتمال التأسيس':'مفتوحة'}</em></span><span><b>الاجتماعات</b><em>{onboardingComplete===false?'تظهر بعد اعتماد التأسيس':'متاحة'}</em></span><span><b>التنفيذ المالي</b><em>بيد المستخدم فقط</em></span></div></section>
     </div>}</aside></div>}
     <GovernanceMobileSheet mode={governanceMode} onClose={()=>setGovernanceMode(null)} onOpenSecretary={()=>{setGovernanceMode(null);chooseRoom('secretary')}}/>
-    <ExtendedProfileSheet open={extendedProfileOpen} onClose={()=>setExtendedProfileOpen(false)}/>
+    <ExtendedProfileSheet open={extendedProfileOpen} initialSection={extendedProfileInitialSection} onClose={()=>{setExtendedProfileOpen(false);setExtendedProfileInitialSection(null)}}/>
     {reviewOpen&&<div className={styles.mobileOverlay} role="dialog" aria-modal="true" aria-label="مراجعة بيانات التأسيس"><button type="button" className={styles.scrim} aria-label="إغلاق" onClick={()=>setReviewOpen(false)}/><aside className={`${styles.mobileSheet} ${styles.mobileFullPageSheet}`}><div className={styles.sheetHeader}><strong>مراجعة بيانات التأسيس</strong><button type="button" onClick={()=>setReviewOpen(false)} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button></div><div className={styles.reviewFacts}>{reviewFacts.map(fact=><div key={fact.key} className={styles.reviewFact}><div><small>{fact.label}</small>{reviewEditingKey===fact.key?<textarea value={reviewDraft} onChange={event=>setReviewDraft(event.target.value)} rows={3}/>:<strong>{fact.raw||'—'}</strong>}</div>{reviewEditingKey===fact.key?<div className={styles.reviewFactActions}><button type="button" onClick={()=>{setReviewEditingKey('');setReviewDraft('')}}><LucideIcon name="x" size={16}/><span>إلغاء</span></button><button type="button" onClick={()=>void saveReviewFact()} disabled={reviewSaving}><LucideIcon name="save" size={16}/><span>{reviewSaving?'جارٍ الحفظ…':'حفظ'}</span></button></div>:<button type="button" onClick={()=>{setReviewEditingKey(fact.key);setReviewDraft(fact.raw)}} aria-label={`تعديل ${fact.label}`}><LucideIcon name="pencil" size={16}/></button>}</div>)}</div><div className={styles.reviewConfirm}><small>لن يفتح التشغيل الكامل إلا بعد تأكيدك أن البيانات المجمعة صحيحة.</small><button type="button" className={styles.primaryActionButton} onClick={()=>void confirmOnboarding()} disabled={sending||reviewFacts.length===0}><LucideIcon name="circleCheck" size={20}/><span>{sending?'جارٍ التأكيد…':'تأكيد صحة البيانات'}</span></button></div></aside></div>}
   </section>;
 }
