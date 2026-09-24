@@ -27,9 +27,7 @@
   }
 
   .protected-app-shell {
-    background:
-      radial-gradient(circle at 12% 8%, rgb(212 175 107 / 8%), transparent 28rem),
-      var(--namaa-wide-surface);
+    background:var(--namaa-wide-surface);
   }
 
   .namaa-wide-sidebar {
@@ -97,7 +95,7 @@
 
   .namaa-wide-tablet {
     border-bottom: 1px solid var(--namaa-wide-border);
-    background:rgb(199 212 200 / 96%);
+    background:rgb(255 255 255 / 96%);
     backdrop-filter: blur(16px);
   }
 
@@ -136,7 +134,7 @@
 
   .namaa-wide-action {
     background: var(--namaa-wide-green);
-    color:#ece3c8;
+    color:#FFFFFF;
     border: 1px solid var(--namaa-wide-green);
     border-radius: 12px;
   }
@@ -150,14 +148,14 @@
 
   .namaa-wide-risk-critical {
     border-color: #ef4444;
-    background:#d8c0bd;
-    color: #991b1b;
+    background:#FFF1F2;
+    color:#991B1B;
   }
 
   .namaa-wide-risk-warning {
     border-color: #f59e0b;
-    background:#d8ccb4;
-    color: #92400e;
+    background:#FFF7E6;
+    color:#92400E;
   }
 }
 
@@ -3822,6 +3820,217 @@
   .namaa-settings-hero :where(p,span,small),
   .namaa-governance-portal-hero :where(p,span,small){
     color:rgb(255 255 255 / 82%)!important;
+  }
+}
+
+
+
+/* NAMA'A VISUAL DISTRIBUTION AUTHORITY — white canvas + functional identity accents */
+@media (min-width:768px){
+  :root{
+    --namaa-light-page:#FFFFFF;
+    --namaa-light-card:#FFFFFF;
+    --namaa-light-card-soft:#F7F8F6;
+    --namaa-light-green-soft:#EDF8F4;
+    --namaa-light-gold-soft:#FFF7E6;
+    --namaa-light-border:#DCE6E0;
+    --namaa-light-text:#1F2937;
+    --namaa-light-muted:#61758A;
+  }
+
+  html[data-theme="light"] :where(body,.protected-app-shell,.protected-app-shell>#main-content,.app-page,.page-shell,.dashboard-shell,.p47-content-shell){
+    background:var(--namaa-light-page)!important;
+    color:var(--namaa-light-text)!important;
+  }
+
+  html[data-theme="light"] :where(
+    .namaa-wide-card,.namaa-wide-panel,.card,.panel,.dashboard-card,.form-card,.summary-card,
+    .p47-panel,.p47-resource-card,.p47-command-panel,.p47-analysis-card,.detail-list,.empty-state,
+    .namaa-investments-chat,.namaa-investments-dashboard,.namaa-investments-followup,
+    .namaa-banks-team,.namaa-banks-dashboard,.namaa-banks-goals,.namaa-policy-index,.namaa-policy-reader
+  ){
+    background:var(--namaa-light-card)!important;
+    color:var(--namaa-light-text)!important;
+    border-color:var(--namaa-light-border)!important;
+    box-shadow:0 8px 24px rgb(31 41 55 / 6%)!important;
+  }
+
+  html[data-theme="light"] :where(
+    .page-header,.dashboard-header,.p47-page-heading,.p47-resource-header,.p47-section-header,
+    .namaa-collection-head
+  ){
+    background:transparent!important;
+    color:var(--namaa-light-text)!important;
+    border-color:var(--namaa-light-border)!important;
+  }
+
+  /* المربع العلوي: هو العنصر اللوني الكبير الوحيد في الصفحة */
+  html[data-theme="light"] :where(
+    .namaa-banks-hero,.namaa-investments-header,.namaa-knowledge-hero,.namaa-decisions-hero,
+    .namaa-observatory-hero,.namaa-lab-hero,.namaa-settings-hero,.namaa-governance-portal-hero,
+    .namaa-policy-library-header,.p47-goals-page .namaa-goals-hero,.namaa-governance-catalog-hero
+  ){
+    background:
+      radial-gradient(circle at 12% 20%,rgb(212 175 107 / 13%),transparent 18rem),
+      linear-gradient(135deg,#073F31 0%,#0B6B4F 68%,#07513D 100%)!important;
+    color:#FFFFFF!important;
+    border-color:rgb(212 175 107 / 34%)!important;
+  }
+
+  html[data-theme="light"] :where(
+    .namaa-banks-hero,.namaa-investments-header,.namaa-knowledge-hero,.namaa-decisions-hero,
+    .namaa-observatory-hero,.namaa-lab-hero,.namaa-settings-hero,.namaa-governance-portal-hero,
+    .namaa-policy-library-header,.p47-goals-page .namaa-goals-hero,.namaa-governance-catalog-hero
+  ) :where(h1,h2,h3,strong){
+    color:#FFFFFF!important;
+  }
+
+  html[data-theme="light"] :where(
+    .namaa-banks-hero,.namaa-investments-header,.namaa-knowledge-hero,.namaa-decisions-hero,
+    .namaa-observatory-hero,.namaa-lab-hero,.namaa-settings-hero,.namaa-governance-portal-hero,
+    .namaa-policy-library-header,.p47-goals-page .namaa-goals-hero,.namaa-governance-catalog-hero
+  ) :where(p,span,small,.eyebrow,.muted){
+    color:rgb(255 255 255 / 84%)!important;
+  }
+
+  /* الأزرار: وظيفة واضحة لكل لون */
+  html[data-theme="light"] :where(
+    .primary,.primary-button,.primary-link,.p47-primary-action,.namaa-wide-action,.auth-submit
+  ){
+    background:#0B6B4F!important;
+    color:#FFFFFF!important;
+    border-color:#0B6B4F!important;
+    box-shadow:none!important;
+  }
+
+  html[data-theme="light"] :where(
+    .primary,.primary-button,.primary-link,.p47-primary-action,.namaa-wide-action,.auth-submit
+  ) svg{color:#FFFFFF!important;}
+
+  html[data-theme="light"] :where(
+    .secondary-button,.secondary-link,.button-link,.p47-secondary-action,.p49-modal-trigger,.namaa-wide-action-secondary
+  ){
+    background:#FFF7E6!important;
+    color:#5E481B!important;
+    border-color:#D4AF6B!important;
+    box-shadow:none!important;
+  }
+
+  html[data-theme="light"] :where(
+    .secondary-button,.secondary-link,.button-link,.p47-secondary-action,.p49-modal-trigger,.namaa-wide-action-secondary
+  ) svg{color:#8A6A2B!important;}
+
+  html[data-theme="light"] :where(.danger-button,.is-destructive){
+    background:#FFFFFF!important;
+    color:#B42318!important;
+    border-color:#EF4444!important;
+  }
+
+  /* الحقول: أبيض، والهوية تظهر عند التركيز فقط */
+  html[data-theme="light"] .protected-app-shell :where(input,select,textarea){
+    background:#FFFFFF!important;
+    color:#1F2937!important;
+    border-color:#C9D8D1!important;
+  }
+
+  html[data-theme="light"] .protected-app-shell :where(input,select,textarea)::placeholder{
+    color:#7A8B82!important;
+    opacity:1!important;
+  }
+
+  html[data-theme="light"] .protected-app-shell :where(input,select,textarea):focus{
+    border-color:#0B6B4F!important;
+    box-shadow:0 0 0 3px rgb(212 175 107 / 20%)!important;
+    outline:none!important;
+  }
+
+  /* مؤشرات الأرقام: لا نلوّن كامل البطاقة؛ التنوع في الحافة والقيمة */
+  html[data-theme="light"] :where(
+    .namaa-banks-kpis,.namaa-decisions-kpis,.namaa-observatory-kpis,.namaa-lab-kpis,
+    .namaa-goals-overview,.namaa-settings-summary-grid,.statement-kpis,.dashboard-kpis
+  ) > *{
+    background:#FFFFFF!important;
+    color:#1F2937!important;
+    border-color:#DCE6E0!important;
+  }
+
+  html[data-theme="light"] :where(
+    .namaa-banks-kpis,.namaa-decisions-kpis,.namaa-observatory-kpis,.namaa-lab-kpis,
+    .namaa-goals-overview,.namaa-settings-summary-grid,.statement-kpis,.dashboard-kpis
+  ) > :nth-child(4n+1){border-top:4px solid #0B6B4F!important;}
+
+  html[data-theme="light"] :where(
+    .namaa-banks-kpis,.namaa-decisions-kpis,.namaa-observatory-kpis,.namaa-lab-kpis,
+    .namaa-goals-overview,.namaa-settings-summary-grid,.statement-kpis,.dashboard-kpis
+  ) > :nth-child(4n+2){border-top:4px solid #D4AF6B!important;}
+
+  html[data-theme="light"] :where(
+    .namaa-banks-kpis,.namaa-decisions-kpis,.namaa-observatory-kpis,.namaa-lab-kpis,
+    .namaa-goals-overview,.namaa-settings-summary-grid,.statement-kpis,.dashboard-kpis
+  ) > :nth-child(4n+3){border-top:4px solid #189F7F!important;}
+
+  html[data-theme="light"] :where(
+    .namaa-banks-kpis,.namaa-decisions-kpis,.namaa-observatory-kpis,.namaa-lab-kpis,
+    .namaa-goals-overview,.namaa-settings-summary-grid,.statement-kpis,.dashboard-kpis
+  ) > :nth-child(4n+4){border-top:4px solid #FCAA30!important;}
+
+  html[data-theme="light"] :where(
+    .namaa-banks-kpis,.namaa-decisions-kpis,.namaa-observatory-kpis,.namaa-lab-kpis,
+    .namaa-goals-overview,.namaa-settings-summary-grid,.statement-kpis,.dashboard-kpis
+  ) > * :where(span,small,p){color:#61758A!important;}
+
+  html[data-theme="light"] :where(
+    .namaa-banks-kpis,.namaa-decisions-kpis,.namaa-observatory-kpis,.namaa-lab-kpis,
+    .namaa-goals-overview,.namaa-settings-summary-grid,.statement-kpis,.dashboard-kpis
+  ) > * strong{color:#0B6B4F!important;}
+
+  /* الحالة فقط تملك خلفية لونية */
+  html[data-theme="light"] :where(.success-banner,.is-success){
+    background:#EDF8F4!important;
+    color:#0B6B4F!important;
+    border-color:#189F7F!important;
+  }
+
+  html[data-theme="light"] :where(.warning-banner,.namaa-wide-risk-warning,.is-warning){
+    background:#FFF7E6!important;
+    color:#7A4D00!important;
+    border-color:#F59E0B!important;
+  }
+
+  html[data-theme="light"] :where(.error-banner,.namaa-wide-risk-critical,.is-critical){
+    background:#FFF1F2!important;
+    color:#991B1B!important;
+    border-color:#EF4444!important;
+  }
+
+  /* الرموز على الأبيض تستخدم الهوية، لا نفس درجة الخلفية */
+  html[data-theme="light"] :where(
+    .namaa-investments-section-title svg,.namaa-policy-index-head svg,.namaa-policy-reader-head svg,
+    .namaa-governance-library-card>header svg,.namaa-banks-team svg,.namaa-banks-goals svg
+  ){
+    color:#D4AF6B!important;
+  }
+
+  /* الجداول محايدة؛ العنوان فقط أخضر */
+  html[data-theme="light"] :where(.namaa-data-table,.transaction-table,.report-table,.ux-table){
+    background:#FFFFFF!important;
+    color:#1F2937!important;
+  }
+
+  html[data-theme="light"] :where(.namaa-data-table,.transaction-table,.report-table,.ux-table) th{
+    background:#F7F8F6!important;
+    color:#0B6B4F!important;
+    border-color:#DCE6E0!important;
+  }
+
+  html[data-theme="light"] :where(.namaa-data-table,.transaction-table,.report-table,.ux-table) td{
+    background:#FFFFFF!important;
+    color:#1F2937!important;
+    border-color:#DCE6E0!important;
+  }
+
+  html[data-theme="light"] :where(.namaa-data-table,.transaction-table,.report-table,.ux-table) tbody tr:hover td{
+    background:#F3F8F5!important;
   }
 }
 
