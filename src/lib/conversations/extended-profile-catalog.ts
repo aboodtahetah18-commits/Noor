@@ -23,7 +23,7 @@ export type ExtendedProfileSection={
   };
 };
 
-export const extendedProfileSections:ExtendedProfileSection[
+export const extendedProfileSections:ExtendedProfileSection[]=[
   {
     key:'bills',
     title:'الفواتير',
@@ -56,7 +56,6 @@ export const extendedProfileSections:ExtendedProfileSection[
       ],
     },
   },
-]=[
   {
     key:'housing_details',
     title:'السكن والمرافق',
