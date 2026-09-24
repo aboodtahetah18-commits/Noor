@@ -53,12 +53,12 @@ function tableRowsFromFact(section:ExtendedProfileSection|null,fact?:FactEnvelop
     return rows;
   }
   if(section.key==='routine_events'){
-    return [
-      text('routine_places')?{category:'مكان متكرر',name:text('routine_places')}:null,
-      text('routine_times')?{category:'وقت متكرر',name:text('routine_times')}:null,
-      text('recurring_events')?{category:'مناسبة',name:text('recurring_events')}:null,
-      text('change_notes')?{category:'تغير في الروتين',name:text('change_notes')}:null,
-    ].filter((row):row is TableRow=>Boolean(row));
+    const rows:TableRow[]=[];
+    if(text('routine_places')) rows.push({category:'مكان متكرر',name:text('routine_places')});
+    if(text('routine_times')) rows.push({category:'وقت متكرر',name:text('routine_times')});
+    if(text('recurring_events')) rows.push({category:'مناسبة',name:text('recurring_events')});
+    if(text('change_notes')) rows.push({category:'تغير في الروتين',name:text('change_notes')});
+    return rows;
   }
   return [];
 }
