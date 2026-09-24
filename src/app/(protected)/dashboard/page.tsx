@@ -52,9 +52,9 @@ export default async function DashboardPage() {
 
   return (
     <main className="p47-page p47-dashboard-page" dir="rtl">
-      <div className="p47-content-shell">
+      <div className="p47-content-shell namaa-migrated-shell">
         <PageHeader
-          className="p47-page-heading"
+          className="p47-page-heading namaa-migrated-header"
           eyebrow="ملخص مالي سريع"
           title="لوحة التحكم"
           meta={<div className="p47-cycle-line"><StatusDot tone={dashboard.cycle.status === 'ACTIVE' ? 'good' : 'neutral'} /><span>{dashboard.cycle.name}</span><b>·</b><span>{financialStatusLabel(CYCLE_STATUS_LABELS, dashboard.cycle.status)}</span><b>·</b><span>{dashboard.cycle.remainingDays} يوم حتى الدخل القادم</span></div>}
