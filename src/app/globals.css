@@ -1573,3 +1573,43 @@ label:has(input),label:has(select),label:has(textarea){color:var(--ux-color-ink)
   .p47-funding-sources{gap:calc(var(--ux-space-1) + var(--ux-border-width-2))!important;}
   .p47-funding-sources span{font-size:calc(var(--ux-type-caption-size) - var(--ux-border-width-1))!important;padding:calc(var(--ux-space-2) - var(--ux-border-width-1))!important;}
 }
+
+
+/* NAMA'A NO-EXPLANATION CONTRACT — remove helper/explanatory UI, keep data/status/errors */
+:where(
+  .page-footnote,
+  .account-privacy-note,
+  .advisor-safety-note,
+  .auth-password-hint,
+  .auth-recovery-note,
+  .onboarding-note,
+  .onboarding-required-note,
+  .p47-analysis-note,
+  .p47-field-help,
+  .p47-funding-policy-note,
+  .p47-goal-note,
+  .report-note,
+  .workspace-intro,
+  .p4913-filter-hint,
+  .namaa-governance-auth-note,
+  .namaa-investment-dialog-intro,
+  .namaa-investments-chat-note,
+  .namaa-settings-impact-note,
+  .namaa-settings-intro,
+  .namaa-table-note
+){
+  display:none!important;
+}
+
+:where(
+  button[aria-label*="شرح"],
+  button[title*="شرح"],
+  button[aria-label*="مساعدة"],
+  button[title*="مساعدة"],
+  a[aria-label*="شرح"],
+  a[title*="شرح"],
+  a[aria-label*="مساعدة"],
+  a[title*="مساعدة"]
+){
+  display:none!important;
+}

@@ -4916,3 +4916,15 @@
     font-weight:900!important;
   }
 }
+
+
+/* NAMA'A NO-EXPLANATION WIDE CLEANUP */
+@media (min-width:768px){
+  .p49-action-dialog .p49-dialog-title-block p,
+  .section-heading>p,
+  .page-header>div>p:not(.eyebrow),
+  .dashboard-header>div>p:not(.eyebrow),
+  .p47-page-heading>div>p:not(.eyebrow){
+    display:none!important;
+  }
+}

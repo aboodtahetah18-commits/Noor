@@ -17,11 +17,10 @@ type Props = {
   printable?: boolean;
 };
 
-export function ActionDialog({ trigger, title, description, children, size = 'md', triggerClassName, triggerAriaLabel, triggerTitle, defaultOpen = false, printable }: Props) {
+export function ActionDialog({ trigger, title, description: _description, children, size = 'md', triggerClassName, triggerAriaLabel, triggerTitle, defaultOpen = false, printable }: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const titleId = useId();
-  const descriptionId = useId();
   const [open, setOpen] = useState(defaultOpen);
 
   useEffect(() => {
@@ -61,14 +60,13 @@ export function ActionDialog({ trigger, title, description, children, size = 'md
       className={`p49-action-dialog is-${size}`}
       aria-modal="true"
       aria-labelledby={titleId}
-      aria-describedby={description ? descriptionId : undefined}
       onClick={handleBackdropClick}
       onClose={() => setOpen(false)}
       onCancel={(event) => { event.preventDefault(); closeDialog(); }}
     >
       <div className="p49-dialog-shell" dir="rtl">
         <header className="p49-dialog-header">
-          <div className="p49-dialog-title-block"><span className="p49-dialog-title-icon"><ActionIcon name={icon} /></span><div><h2 id={titleId}>{title}</h2>{description ? <p id={descriptionId}>{description}</p> : null}</div></div>
+          <div className="p49-dialog-title-block"><span className="p49-dialog-title-icon"><ActionIcon name={icon} /></span><div><h2 id={titleId}>{title}</h2></div></div>
           <div className="p49-dialog-tools">{shouldPrint ? <PrintButton/> : null}<button type="button" className="p49-dialog-close" aria-label="إغلاق النافذة" title="إغلاق" onClick={closeDialog}><ActionIcon name="close" /></button></div>
         </header>
         <div className="p49-dialog-body">{children}</div>

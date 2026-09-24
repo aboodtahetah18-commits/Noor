@@ -792,3 +792,10 @@ html[data-theme="dark"] .p4913-filter-toggle,html[data-theme="dark"] .p4913-filt
 
 
 /* Legacy desktop shell visual builds 17–20 removed. Wide shell is owned by namaa-wide-experience.css. */
+
+
+/* NAMA'A NO-EXPLANATION UIUX CLEANUP */
+.p4913-filter-hint,
+.page-footnote{
+  display:none!important;
+}

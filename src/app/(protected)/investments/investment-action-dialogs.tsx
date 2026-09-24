@@ -9,10 +9,6 @@ export function InvestmentActionDialogs() {
     <div className="namaa-investments-actions" aria-label="إجراءات الاستثمار">
       <ActionDialog title="إضافة محفظة استثمارية" description="أدخل تعريف المحفظة وبياناتها الأساسية دون مغادرة صفحة الاستثمارات." size="xl" triggerClassName="namaa-wide-action-secondary" trigger={<span className="namaa-top-action-content"><LucideIcon name="plus" size={20}/><span>إضافة محفظة</span></span>}>
         <div className="namaa-investment-dialog-content">
-          <section className="namaa-investment-dialog-intro">
-            <div><span>تعريف المحفظة</span><strong>بيانات المحفظة الأساسية</strong><p>هذه النافذة مخصصة لإضافة المحفظة نفسها، وليس للانتقال إلى مختبر الخوارزميات.</p></div>
-            <LucideIcon name="plus" size={24} />
-          </section>
           <form className="form-grid" onSubmit={(event)=>event.preventDefault()}>
             <label>اسم المحفظة<input name="portfolioName" placeholder="مثال: محفظة النمو طويلة الأجل" /></label>
             <label>الجهة أو المنصة<input name="provider" placeholder="اسم البنك أو المنصة المرخصة" /></label>
@@ -30,10 +26,6 @@ export function InvestmentActionDialogs() {
 
       <ActionDialog title="طلب تحليل استثماري" description="حدد ما تريد تحليله قبل إرسال الطلب إلى فريق التحليل." size="lg" triggerClassName="namaa-wide-action-secondary" trigger={<span className="namaa-top-action-content"><LucideIcon name="chart" size={20}/><span>طلب تحليل</span></span>}>
         <div className="namaa-investment-dialog-content">
-          <section className="namaa-investment-dialog-intro">
-            <div><span>تحليل موجه</span><strong>حدد نطاق التحليل أولًا</strong><p>يمكن طلب تحليل محفظة كاملة أو أصل محدد، مع توضيح الأفق والمخاطر المطلوب التركيز عليها.</p></div>
-            <LucideIcon name="chart" size={24} />
-          </section>
           <form className="form-grid" onSubmit={(event)=>event.preventDefault()}>
             <label>المحفظة أو الأصل<input name="target" placeholder="اسم المحفظة أو الأصل" /></label>
             <label>نوع التحليل<select name="analysisType" defaultValue="FULL"><option value="FULL">تحليل شامل</option><option value="RISK">مخاطر</option><option value="LIQUIDITY">سيولة</option><option value="PERFORMANCE">أداء</option><option value="EXIT">جدوى الخروج</option><option value="ENTRY">جدوى الدخول</option></select></label>
@@ -47,10 +39,6 @@ export function InvestmentActionDialogs() {
 
       <ActionDialog title="تحديث المحفظة عبر الدردشة" description="اختر سياق التحديث ثم افتح محادثة الفريق المرتبطة بالمحفظة." size="lg" triggerClassName="namaa-wide-action-secondary" trigger={<span className="namaa-top-action-content"><LucideIcon name="messageSquareText" size={20}/><span>التحديث عبر الدردشة</span></span>}>
         <div className="namaa-investment-dialog-content">
-          <section className="namaa-investment-dialog-intro">
-            <div><span>محادثة مرتبطة بالمحفظة</span><strong>تحديث البيانات مع الفريق المختص</strong><p>يشارك مسؤول الاستثمار ومدير بنك الأصول واللجنة المختصة عند الحاجة.</p></div>
-            <LucideIcon name="messageSquareText" size={24} />
-          </section>
           <div className="namaa-investment-dialog-grid">
             <article><span>نوع التحديث</span><strong>قيمة أو رصيد أو أصل جديد</strong><p>استخدم الدردشة لإرسال التغيير مع الإثباتات أو الملاحظات.</p></article>
             <article><span>قرار استثماري</span><strong>مراجعة توصية أو مخاطرة</strong><p>المناقشة لا تنفذ أي شراء أو بيع تلقائيًا.</p></article>
@@ -62,10 +50,6 @@ export function InvestmentActionDialogs() {
 
       <ActionDialog title="متابعة المحافظ والاستثمارات" description="راجع ما يحتاج انتباهًا قبل الانتقال إلى التقارير التفصيلية." size="lg" triggerClassName="namaa-wide-action-secondary" trigger={<span className="namaa-top-action-content"><LucideIcon name="listChecks" size={20}/><span>عرض المتابعة</span></span>}>
         <div className="namaa-investment-dialog-content">
-          <section className="namaa-investment-dialog-intro">
-            <div><span>المتابعة</span><strong>حالة المحافظ والتوصيات</strong><p>تعرض هذه النافذة نقاط المتابعة التشغيلية، ثم يمكنك فتح المرصد للتفاصيل التاريخية.</p></div>
-            <LucideIcon name="listChecks" size={24} />
-          </section>
           <div className="namaa-investment-dialog-grid">
             <article><span>المحافظ</span><strong>تظهر بعد الربط</strong><p>عدد المحافظ النشطة وقيمتها المجمعة.</p></article>
             <article><span>تنبيهات المخاطر</span><strong>تظهر عند وجود حالة</strong><p>أي أصل أو محفظة تجاوزت حدود المتابعة.</p></article>
