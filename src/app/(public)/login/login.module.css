@@ -488,7 +488,19 @@
 :global(html[data-theme="dark"]) .logoLight{display:block}
 :global(html[data-theme="dark"]) .logoDark{display:none}
 
-@media(max-width:767px){
+
+
+
+
+@media(prefers-reduced-motion:reduce){
+  .submit,
+  .inputShell{
+    transition:none;
+  }
+}
+
+
+@media(max-width:1023px){
   .page{
     min-height:100dvh;
     display:block;
@@ -621,9 +633,8 @@
     margin-top:auto;
     padding-top:20px;
   }
-}
 
-@media(max-width:767px){
+
   .visual{
     min-height:220px;
     padding-inline:18px;
@@ -655,11 +666,11 @@
     align-items:flex-start;
     gap:4px;
   }
-}
 
-@media(prefers-reduced-motion:reduce){
-  .submit,
-  .inputShell{
-    transition:none;
+
+  :global(html[data-theme="dark"]) .page,
+  :global(html[data-theme="dark"]) .visual,
+  :global(html[data-theme="dark"]) .panel{
+    background:var(--ux-page-bg);
   }
 }
