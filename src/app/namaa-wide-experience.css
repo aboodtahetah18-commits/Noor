@@ -2435,12 +2435,6 @@
 
 
 /* ========================================================================== */
-/* Removed obsolete anti-white hard guard. */
-
-/* Removed obsolete legacy-surface override. */
-
-/* Removed obsolete chrome and old dark-mode authority; approved shell + final dark contract own these concerns. */
-
 /* WIDE DIALOG + TABLE + FORM FINAL CONTRACT                                  */
 /* One scroll owner, no clipped controls, no action bar covering content.     */
 /* ========================================================================== */
@@ -2703,7 +2697,7 @@
   }
 
   .namaa-data-table tbody tr:hover td{
-    background:#b7c7bb!important;
+    background:#F3F8F5!important;
   }
 
   html[data-theme="dark"] .namaa-data-table tbody tr:hover td{
