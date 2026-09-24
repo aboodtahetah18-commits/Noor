@@ -12628,3 +12628,106 @@
   color:var(--ux-text-secondary);
   font-size:var(--ux-type-caption-size)
 }
+
+
+/* Final polish for accounts and meeting actions — NDOS tokens only. */
+.accountSyncStatus{
+  display:flex;
+  align-items:center;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-surface-warm)
+}
+.accountSyncStatus>svg{
+  flex:0 0 auto;
+  color:var(--namaa-green-900)
+}
+.accountSyncStatus>span{
+  min-width:0;
+  display:grid;
+  gap:var(--ux-space-1)
+}
+.accountSyncStatus strong{
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-body-sm-size)
+}
+.accountSyncStatus small{
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  line-height:1.55
+}
+.accountSettingsList{
+  grid-template-columns:minmax(0,1fr)
+}
+.accountManageCard{
+  grid-template-columns:auto minmax(0,1fr);
+  align-items:start
+}
+.accountManageIcon{
+  width:44px;
+  height:44px;
+  display:grid;
+  place-items:center;
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-card);
+  color:var(--namaa-green-900)
+}
+.accountManageCopy{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--ux-space-3)
+}
+.accountManageCopy>div:first-child{
+  min-width:0;
+  display:grid;
+  gap:var(--ux-space-1)
+}
+.accountManageCopy strong{
+  overflow-wrap:anywhere
+}
+.accountBalanceBlock{
+  min-width:max-content;
+  display:grid;
+  gap:var(--ux-space-1);
+  text-align:end
+}
+.accountBalanceBlock strong{
+  color:var(--namaa-green-900);
+  font-size:var(--ux-type-body-sm-size)
+}
+.accountManageActions{
+  grid-column:1/-1;
+  justify-content:flex-end;
+  padding-top:var(--ux-space-2);
+  border-top:1px solid var(--namaa-border)
+}
+.accountManageActions button{
+  width:auto!important;
+  min-width:92px;
+  padding-inline:var(--ux-space-3);
+  display:inline-flex!important;
+  align-items:center;
+  justify-content:center;
+  gap:var(--ux-space-1)
+}
+.accountManageActions button span{
+  font-size:var(--ux-type-caption-size);
+  font-weight:800
+}
+.meetingActions button{
+  flex:1 1 0
+}
+.meetingCard{
+  overflow:hidden
+}
+.meetingCard>div:first-child{
+  min-width:0
+}
+.meetingCard>div:first-child>strong{
+  line-height:1.55
+}
