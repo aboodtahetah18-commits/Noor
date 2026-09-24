@@ -10195,12 +10195,12 @@
     padding:var(--ux-space-2) var(--ux-space-2);
   }
 
-  .chatPane{
+  .page .chatPane{
     min-width:0;
     background:var(--namaa-surface-warm);
   }
 
-  .chatHeader{
+  .page .chatHeader{
     min-height:78px;
     padding-inline:var(--ux-space-4);
     border-bottom:1px solid var(--namaa-border);
@@ -10229,7 +10229,7 @@
     color:var(--namaa-gold-500);
   }
 
-  .messages{
+  .page .messages{
     padding:var(--ux-space-4) var(--ux-space-5) var(--ux-space-5);
     gap:var(--ux-space-3);
     background:var(--namaa-surface-warm);
@@ -10240,12 +10240,12 @@
     opacity:.035;
   }
 
-  .message{
+  .page .message{
     border-color:var(--namaa-border);
     box-shadow:var(--ux-shadow-md);
   }
 
-  .composer{
+  .page .composer{
     margin:var(--ux-space-0) var(--ux-space-3) var(--ux-space-3);
     border-color:var(--namaa-border);
     border-radius:var(--ux-radius-lg);
@@ -10727,17 +10727,17 @@
     background:var(--namaa-wide-surface)!important;
   }
 
-  .chatHeader{
+  .page .chatHeader{
     background:var(--namaa-wide-card-strong)!important;
   }
 
-  .message{
+  .page .message{
     background:var(--namaa-wide-card)!important;
     color:var(--namaa-wide-text)!important;
     border-color:var(--namaa-wide-border)!important;
   }
 
-  .userMessage{
+  .page .userMessage{
     background:var(--ux-border-default)!important;
   }
 
@@ -10825,7 +10825,7 @@
 
   .roomItem,
   .contextCard,
-  .message{
+  .page .message{
     overflow:hidden!important;
   }
 }
@@ -11287,7 +11287,7 @@
     background:var(--ux-border-default)!important;
   }
 
-  .composer{
+  .page .composer{
     background:var(--ux-shell-sidebar-bg)!important;
     border-color:var(--namaa-green-700)!important;
     padding:var(--ux-space-2)!important;
