@@ -23,7 +23,7 @@ export function AccountForm({ accountNames, bankNames }: { accountNames: string[
       <details className="onboarding-optional-details onboarding-optional-details-v2 account-form-matching">
         <summary>بيانات المطابقة البنكية <small>اختياري</small></summary>
         <div className="form-grid smart-account-form onboarding-optional-grid">
-          <label><span className="field-title">IBAN</span><input name="iban" dir="ltr" autoCapitalize="characters" autoComplete="off" placeholder="SA00 0000 0000 0000 0000 0000" /></label>
+          <label><span className="field-title">الآيبان</span><input name="iban" dir="ltr" autoCapitalize="characters" autoComplete="off" placeholder="SA00 0000 0000 0000 0000 0000" /></label>
           <label><span className="field-title">آخر 4 أرقام</span><input name="cardLast4" inputMode="numeric" maxLength={4} autoComplete="off" placeholder="1234" /></label>
         </div>
       </details>
