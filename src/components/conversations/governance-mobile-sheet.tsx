@@ -12,11 +12,12 @@ type DocumentRow={id:string;file_name:string;content_type?:string|null;verificat
 type GovernanceRecord={id:string;sender_name:string;message_kind:string;body:string;created_at:string;room_title?:string|null};
 
 export function GovernanceMobileSheet({
-  mode,onClose,onOpenSecretary,
+  mode,onClose,onOpenSecretary,onOpenMeetingChat,
 }:{
   mode:SheetMode;
   onClose:()=>void;
   onOpenSecretary:()=>void;
+  onOpenMeetingChat?:(meeting:{id:string;title:string})=>void;
 }){
   const [meetings,setMeetings]=useState<Meeting[]>([]);
   const [documents,setDocuments]=useState<DocumentRow[]>([]);
@@ -175,6 +176,7 @@ export function GovernanceMobileSheet({
               <time dateTime={meeting.scheduled_at}>{meeting.ready===false?'لم يحدد كاجتماع جاهز':meetingDate(meeting.scheduled_at)}</time>
               <em>{meeting.status}</em>
               <div className={styles.meetingActions}>
+                {onOpenMeetingChat&&<button type="button" onClick={()=>onOpenMeetingChat({id:meeting.id,title:meeting.title})}><LucideIcon name="messageSquareText" size={16}/><span>الدردشة</span></button>}
                 <button type="button" onClick={()=>setMeetingDetails(meeting)}><LucideIcon name="info" size={16}/><span>التفاصيل</span></button>
                 <button type="button" onClick={()=>setMeetingEditor({mode:'edit',id:meeting.id,title:meeting.title,scheduled_at:new Date(meeting.scheduled_at).toISOString().slice(0,16),cadence:meeting.cadence})} aria-label={'تعديل '+meeting.title}><LucideIcon name="pencil" size={16}/><span>تعديل</span></button>
                 <button type="button" onClick={()=>void deleteMeeting(meeting.id)} aria-label={'حذف '+meeting.title}><LucideIcon name="trash2" size={16}/><span>حذف</span></button>
@@ -189,7 +191,7 @@ export function GovernanceMobileSheet({
             <section><div className={styles.meetingDetailsHeading}><LucideIcon name="receiptText" size={20}/><strong>الوثائق المتاحة</strong></div>{documents.length?<div className={styles.meetingDocumentList}>{documents.slice(0,12).map(file=><span key={file.id}><b>{file.file_name}</b><small>{file.room_title||'نماء'} · {file.verification_status||'قيد المراجعة'}</small></span>)}</div>:<p>لا توجد وثائق مرفوعة بعد.</p>}</section>
             <section><div className={styles.meetingDetailsHeading}><LucideIcon name="circleCheck" size={20}/><strong>البيانات المطلوبة قبل الاجتماع</strong></div>{meetingDetails.missing_data?.length?<ul>{meetingDetails.missing_data.map(item=><li key={item}>{item}</li>)}</ul>:<p>البيانات الأساسية متوفرة لهذا الاجتماع.</p>}</section>
           </div>
-          <footer><button type="button" className={styles.secondaryButton} onClick={()=>setMeetingDetails(null)}>إغلاق</button></footer>
+          <footer>{onOpenMeetingChat&&<button type="button" className={styles.primaryActionButton} onClick={()=>{const current=meetingDetails;setMeetingDetails(null);if(current)onOpenMeetingChat({id:current.id,title:current.title})}}><LucideIcon name="messageSquareText" size={16}/><span>فتح دردشة الاجتماع</span></button>}<button type="button" className={styles.secondaryButton} onClick={()=>setMeetingDetails(null)}>إغلاق</button></footer>
         </section></div>}
         {meetingEditor&&<div className={styles.meetingEditorBackdrop}><section className={styles.meetingEditorModal} role="dialog" aria-modal="true"><header><strong>{meetingEditor.mode==='add'?'إضافة اجتماع':'تعديل الاجتماع'}</strong><button type="button" onClick={()=>setMeetingEditor(null)} aria-label="إغلاق"><LucideIcon name="x" size={16}/></button></header><div><label><span>اسم الاجتماع أو اللجنة</span><input value={meetingEditor.title} onChange={event=>setMeetingEditor(current=>current?{...current,title:event.target.value}:current)}/></label><label><span>الموعد</span><input type="datetime-local" value={meetingEditor.scheduled_at} onChange={event=>setMeetingEditor(current=>current?{...current,scheduled_at:event.target.value}:current)}/></label><label><span>الدورية</span><select value={meetingEditor.cadence} onChange={event=>setMeetingEditor(current=>current?{...current,cadence:event.target.value}:current)}><option value="">اختر الدورية</option><option>مرة واحدة</option><option>أسبوعي</option><option>شهري</option><option>كل شهرين</option><option>ربع سنوي</option><option>نصف سنوي</option><option>سنوي</option><option>حسب الحاجة</option></select></label></div><footer><button type="button" className={styles.secondaryButton} onClick={()=>setMeetingEditor(null)}>إلغاء</button><button type="button" className={styles.primaryActionButton} disabled={meetingSaving} onClick={()=>void saveMeeting()}>{meetingSaving?'جارٍ الحفظ…':'حفظ'}</button></footer></section></div>}
         <button type="button" className={styles.secondaryButton} onClick={onOpenSecretary}>
