@@ -5246,7 +5246,7 @@
   .governedMetaStrip,
   .governedDocumentSection,
   .governedContentSection,
-  .governedClauseRow{
+  .governedClauseRow:not(:global(.namaa-governed-clause)){
     max-width:100%;
     min-width:0;
     box-sizing:border-box
@@ -5553,10 +5553,10 @@
     min-height:90px!important
   }
 
-  .governedQuickActions{
+  .governedQuickActions:not(:global(.namaa-governed-quick-actions)){
     grid-template-columns:1fr!important
   }
-  .governedQuickActions>button{
+  .governedQuickActions:not(:global(.namaa-governed-quick-actions))>button{
     min-height:64px!important
   }
   .governedLeafPattern{
@@ -5564,7 +5564,7 @@
     width:150px!important;
     opacity:.11!important
   }
-  .governedHistorySection{
+  .governedHistorySection:not(:global(.namaa-governed-history)){
     padding:var(--ux-space-3)!important
   }
 
@@ -5648,7 +5648,7 @@
   display:grid;
   gap:var(--ux-space-2)
 }
-.governedContentSection{
+.governedContentSection:not(:global(.namaa-governed-article)){
   width:100%;
   max-width:100%;
   min-width:0;
@@ -5658,7 +5658,7 @@
   overflow:hidden;
   box-sizing:border-box
 }
-.governedContentSection>summary{
+.governedContentSection:not(:global(.namaa-governed-article))>summary{
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -5668,22 +5668,22 @@
   color:var(--ux-text-primary);
   background:color-mix(in srgb,var(--namaa-green-700) 10%,var(--namaa-surface-warm))
 }
-.governedContentSection>summary>span{
+.governedContentSection:not(:global(.namaa-governed-article))>summary>span{
   min-width:0;
   display:flex;
   align-items:center;
   gap:var(--ux-space-2)
 }
-.governedContentSection>summary>small{
+.governedContentSection:not(:global(.namaa-governed-article))>summary>small{
   flex:0 0 auto;
   color:var(--namaa-green-900);
   font-size:var(--ux-type-caption-size);
   font-weight:800
 }
-.governedContentSection>summary strong{
+.governedContentSection:not(:global(.namaa-governed-article))>summary strong{
   font-size:var(--ux-type-body-sm-size)
 }
-.governedContentSectionBody{
+.governedContentSectionBody:not(:global(.namaa-governed-article-body)){
   width:100%;
   max-width:100%;
   min-width:0;
@@ -5692,13 +5692,13 @@
   padding:var(--ux-space-3);
   box-sizing:border-box
 }
-.governedContentSectionBody p{
+.governedContentSectionBody:not(:global(.namaa-governed-article-body)) p{
   margin:var(--ux-space-0);
   color:var(--ux-text-secondary);
   font-size:var(--ux-type-body-sm-size);
   line-height:1.85
 }
-.governedClauseRow{
+.governedClauseRow:not(:global(.namaa-governed-clause)){
   display:grid;
   gap:var(--ux-space-2);
   padding:var(--ux-space-3);
@@ -5800,7 +5800,7 @@
   flex:1 1 auto;
   min-width:0
 }
-.governedParagraphRow{
+.governedParagraphRow:not(:global(.namaa-governed-paragraph)){
   display:grid;
   gap:var(--ux-space-2);
   padding:var(--ux-space-3);
@@ -6098,7 +6098,7 @@
   font-size:var(--ux-type-caption-size);
   line-height:1.6
 }
-.governedContentSection>summary>span{
+.governedContentSection:not(:global(.namaa-governed-article))>summary>span{
   display:flex;
   align-items:center;
   gap:var(--ux-space-2)
@@ -6472,11 +6472,11 @@
   background:color-mix(in srgb,var(--namaa-card) 58%,var(--namaa-surface-warm))
 }
 
-.governedContentSection{
+.governedContentSection:not(:global(.namaa-governed-article)){
   background:color-mix(in srgb,var(--namaa-surface-warm) 82%,var(--namaa-cream))
 }
 
-.governedClauseRow{
+.governedClauseRow:not(:global(.namaa-governed-clause)){
   background:color-mix(in srgb,var(--namaa-card) 78%,var(--namaa-cream))
 }
 
@@ -6709,19 +6709,19 @@
   background:color-mix(in srgb,var(--namaa-green-700) 10%,var(--namaa-surface-warm))!important;
   border-bottom-color:var(--namaa-border-strong)!important
 }
-.governedContentSection{
+.governedContentSection:not(:global(.namaa-governed-article)){
   border:1px solid var(--namaa-border)!important;
   border-radius:var(--ux-radius-4)!important;
   background:var(--namaa-card)!important;
   box-shadow:var(--ux-shadow-xs)!important
 }
-.governedContentSection>summary{
+.governedContentSection:not(:global(.namaa-governed-article))>summary{
   min-height:52px!important;
   padding:var(--ux-space-3)!important;
   color:var(--ux-text-primary)!important;
   font-weight:900!important
 }
-.governedClauseRow{
+.governedClauseRow:not(:global(.namaa-governed-clause)){
   border:1px solid var(--namaa-border)!important;
   border-inline-start:4px solid var(--namaa-green-700)!important;
   border-radius:var(--ux-radius-3)!important;
@@ -6969,12 +6969,12 @@
   z-index:2
 }
 
-.governedQuickActions{
+.governedQuickActions:not(:global(.namaa-governed-quick-actions)){
   display:grid;
   grid-template-columns:repeat(3,minmax(0,1fr));
   gap:var(--ux-space-2)
 }
-.governedQuickActions>button{
+.governedQuickActions:not(:global(.namaa-governed-quick-actions))>button{
   min-width:0;
   min-height:74px;
   display:flex;
@@ -7073,12 +7073,12 @@
 
 /* Document sections: compact, colorful, and clean — no decorative scratches or excess arrows. */
 .governedDocumentSection,
-.governedContentSection{
+.governedContentSection:not(:global(.namaa-governed-article)){
   border-radius:var(--ux-radius-4)!important;
   overflow:hidden!important
 }
 .governedDocumentSection>summary,
-.governedContentSection>summary{
+.governedContentSection:not(:global(.namaa-governed-article))>summary{
   min-height:54px!important;
   padding:var(--ux-space-3) var(--ux-space-4)!important
 }
@@ -7094,13 +7094,13 @@
 .governedContentSection:nth-child(4n)>summary{
   background:color-mix(in srgb,var(--namaa-green-700) 5%,var(--namaa-cream))!important
 }
-.governedContentSection>summary>span{
+.governedContentSection:not(:global(.namaa-governed-article))>summary>span{
   min-width:0;
   display:flex;
   align-items:center;
   gap:var(--ux-space-2)
 }
-.governedContentSection>summary strong{
+.governedContentSection:not(:global(.namaa-governed-article))>summary strong{
   color:var(--ux-text-primary)!important;
   font-weight:900!important;
   overflow-wrap:anywhere
@@ -7109,7 +7109,7 @@
   flex:0 0 auto;
   color:var(--namaa-green-900)
 }
-.governedClauseRow{
+.governedClauseRow:not(:global(.namaa-governed-clause)){
   border-inline-start:0!important;
   background:var(--namaa-card)!important;
   box-shadow:var(--ux-shadow-xs)!important
@@ -7138,7 +7138,7 @@
   overflow-wrap:anywhere
 }
 
-.governedHistorySection{
+.governedHistorySection:not(:global(.namaa-governed-history)){
   display:grid;
   gap:var(--ux-space-3);
   padding:var(--ux-space-4);
@@ -7179,7 +7179,7 @@
   font-size:var(--ux-type-caption-size);
   line-height:1.5
 }
-.governedHistoryList{
+.governedHistoryList:not(:global(.namaa-governed-history-list)){
   position:relative;
   display:grid;
   gap:var(--ux-space-2);
@@ -7193,7 +7193,7 @@
   width:2px;
   background:color-mix(in srgb,var(--namaa-green-700) 34%,var(--namaa-border))
 }
-.governedHistoryItem{
+.governedHistoryItem:not(:global(.namaa-governed-history-item)){
   position:relative;
   display:grid;
   grid-template-columns:minmax(0,1fr) auto;
@@ -7269,7 +7269,7 @@
 :global(html[data-theme="dark"]) .governedGovernanceButton,
 :global(html[data-theme="dark"]) .governedPdfButton,
 :global(html[data-theme="dark"]) .governedHistorySection,
-:global(html[data-theme="dark"]) .governedHistoryItem{
+:global(html[data-theme="dark"]) .governedHistoryItem:not(:global(.namaa-governed-history-item)){
   background:var(--ux-card-bg)!important;
   border-color:var(--ux-border-emphasis)!important
 }
@@ -7750,7 +7750,7 @@
 
 /* Block 3 — governed document cleanup */
 .governedDocumentSection>summary,
-.governedContentSection>summary{
+.governedContentSection:not(:global(.namaa-governed-article))>summary{
   list-style:none!important;
   cursor:pointer
 }
@@ -7763,7 +7763,7 @@
   content:""!important
 }
 .governedDocumentSection>summary>span,
-.governedContentSection>summary>span{
+.governedContentSection:not(:global(.namaa-governed-article))>summary>span{
   width:100%!important;
   min-width:0!important
 }
@@ -7782,7 +7782,7 @@
 .governedQuickActions>button span,
 .governedEditFormHeader>div,
 .governedHistoryHeader>div,
-.governedHistoryItem{
+.governedHistoryItem:not(:global(.namaa-governed-history-item)){
   max-width:100%!important;
   min-width:0!important;
   box-sizing:border-box!important
@@ -7821,12 +7821,12 @@
 .algorithmRoleSection,
 .algorithmRoleHero,
 .governedQuickActions,
-.governedQuickActions>button{
+.governedQuickActions:not(:global(.namaa-governed-quick-actions))>button{
   min-width:0!important;
   max-width:100%!important;
   box-sizing:border-box!important
 }
-.governedQuickActions>button{
+.governedQuickActions:not(:global(.namaa-governed-quick-actions))>button{
   min-height:72px!important;
   justify-content:center!important;
   overflow:hidden!important
@@ -8196,11 +8196,11 @@
 }
 
 /* Governed actions stay compact and fit on one mobile row. */
-.governedQuickActions{
+.governedQuickActions:not(:global(.namaa-governed-quick-actions)){
   grid-template-columns:repeat(3,minmax(0,1fr))!important;
   gap:var(--ux-space-1)!important
 }
-.governedQuickActions>button{
+.governedQuickActions:not(:global(.namaa-governed-quick-actions))>button{
   min-width:0!important;
   min-height:52px!important;
   padding:var(--ux-space-2)!important;
@@ -8289,7 +8289,7 @@
 }
 
 @media (max-width:767px){
-  .governedQuickActions>button{
+  .governedQuickActions:not(:global(.namaa-governed-quick-actions))>button{
     min-height:48px!important;
     padding-inline:var(--ux-space-1)!important
   }
@@ -8691,7 +8691,7 @@
   backdrop-filter:none!important;
   -webkit-backdrop-filter:none!important
 }
-.governedEditModalCard{
+.governedEditModalCard:not(:global(.namaa-governance-editor-dialog)){
   position:relative!important;
   z-index:1!important;
   width:min(100%,560px)!important;
@@ -8720,7 +8720,7 @@
   color:var(--namaa-green-900)!important;
   padding:0!important
 }
-.governedEditModalCard textarea{
+.governedEditModalCard:not(:global(.namaa-governance-editor-dialog)) textarea{
   min-height:92px!important;
   resize:vertical!important
 }
@@ -8734,7 +8734,7 @@
   background:var(--ux-card-bg);
   background-image:none
 }
-:global(html[data-theme="dark"]) .governedEditModalCard{
+:global(html[data-theme="dark"]) .governedEditModalCard:not(:global(.namaa-governance-editor-dialog)){
   background:var(--ux-card-bg)!important
 }
 
@@ -8743,7 +8743,7 @@
     align-items:end!important;
     padding:var(--ux-space-2)!important
   }
-  .governedEditModalCard{
+  .governedEditModalCard:not(:global(.namaa-governance-editor-dialog)){
     width:100%!important;
     max-height:86dvh!important;
     border-radius:var(--ux-radius-4) var(--ux-radius-4) var(--ux-radius-2) var(--ux-radius-2)!important;
@@ -8802,7 +8802,7 @@
 .governedEditModalScrim{
   display:none!important
 }
-.governedEditModalCard{
+.governedEditModalCard:not(:global(.namaa-governance-editor-dialog)){
   position:fixed!important;
   inset:0!important;
   z-index:321!important;
@@ -8821,7 +8821,7 @@
   display:flex!important;
   flex-direction:column!important
 }
-.governedEditModalCard>.governedEditFormHeader{
+.governedEditModalCard:not(:global(.namaa-governance-editor-dialog))>.governedEditFormHeader{
   position:sticky!important;
   top:0!important;
   z-index:6!important;
@@ -8838,7 +8838,7 @@
   border-bottom:1px solid color-mix(in srgb,var(--ux-text-inverse) 18%,transparent)!important;
   border-radius:0!important
 }
-.governedEditModalCard>.governedEditFormHeader::before{
+.governedEditModalCard:not(:global(.namaa-governance-editor-dialog))>.governedEditFormHeader::before{
   content:""!important;
   position:absolute!important;
   inset:0!important;
@@ -8850,18 +8850,18 @@
   
   opacity:.08!important
 }
-.governedEditModalCard>.governedEditFormHeader>*{
+.governedEditModalCard:not(:global(.namaa-governance-editor-dialog))>.governedEditFormHeader>*{
   position:relative!important;
   z-index:1!important
 }
-.governedEditModalCard>.governedEditFormHeader>div{
+.governedEditModalCard:not(:global(.namaa-governance-editor-dialog))>.governedEditFormHeader>div{
   min-width:0!important
 }
-.governedEditModalCard>.governedEditFormHeader strong{
+.governedEditModalCard:not(:global(.namaa-governance-editor-dialog))>.governedEditFormHeader strong{
   color:var(--ux-text-inverse)!important;
   font-size:var(--ux-type-body-size)!important
 }
-.governedEditModalCard>.governedEditFormHeader small{
+.governedEditModalCard:not(:global(.namaa-governance-editor-dialog))>.governedEditFormHeader small{
   color:color-mix(in srgb,var(--ux-text-inverse) 78%,transparent)!important
 }
 .governedEditModalCard>.governedEditFormHeader .governedEditFormIcon,
@@ -8884,7 +8884,7 @@
 .governedEditModalCard>label:first-of-type{
   margin-top:var(--ux-space-4)!important
 }
-.governedEditModalCard textarea{
+.governedEditModalCard:not(:global(.namaa-governance-editor-dialog)) textarea{
   min-height:128px!important
 }
 .governedEditModalCard>.governedAmendmentActions{
@@ -8903,7 +8903,7 @@
 
 /* Dark mode: full-screen amendment workspace becomes deep Namaa gold with white typography. */
 :global(html[data-theme="dark"]) .governedEditModal,
-:global(html[data-theme="dark"]) .governedEditModalCard{
+:global(html[data-theme="dark"]) .governedEditModalCard:not(:global(.namaa-governance-editor-dialog)){
   background:color-mix(in srgb,var(--namaa-gold-action) 54%,var(--namaa-text))!important;
   color:var(--ux-text-inverse)!important
 }
@@ -8945,7 +8945,7 @@
 }
 
 @media (max-width:767px){
-  .governedEditModalCard>.governedEditFormHeader{
+  .governedEditModalCard:not(:global(.namaa-governance-editor-dialog))>.governedEditFormHeader{
     min-height:76px!important;
     padding:var(--ux-space-2) var(--ux-space-3)!important
   }
