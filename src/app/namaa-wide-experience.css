@@ -5138,3 +5138,427 @@
     border-color:#526f63!important;
   }
 }
+
+
+/* ========================================================================== */
+/* POLICY DOCUMENT LIBRARY — reader-first, identity-only, no dashboard chrome */
+/* ========================================================================== */
+@media (min-width:768px){
+  .namaa-policy-library{
+    width:min(100%,1500px)!important;
+    margin-inline:auto!important;
+    padding:18px 22px 28px!important;
+    background:var(--namaa-wide-surface)!important;
+    color:var(--namaa-wide-text)!important;
+  }
+
+  .namaa-policy-library-header{
+    display:flex!important;
+    align-items:flex-end!important;
+    justify-content:space-between!important;
+    gap:20px!important;
+    padding:18px 20px!important;
+    margin-bottom:14px!important;
+    border:1px solid var(--namaa-wide-border)!important;
+    border-radius:18px!important;
+    background:linear-gradient(135deg,#a8baae,#c6b57f)!important;
+  }
+
+  .namaa-policy-library-header>div:first-child{
+    min-width:0!important;
+  }
+
+  .namaa-policy-eyebrow{
+    display:block!important;
+    margin-bottom:4px!important;
+    color:#6b5424!important;
+    font-size:12px!important;
+    font-weight:900!important;
+  }
+
+  .namaa-policy-library-header h1{
+    margin:0!important;
+    color:#173d32!important;
+    font-size:clamp(30px,3vw,42px)!important;
+    line-height:1.2!important;
+  }
+
+  .namaa-policy-library-header p{
+    margin:7px 0 0!important;
+    color:#43594f!important;
+    line-height:1.7!important;
+  }
+
+  .namaa-policy-library-summary{
+    display:flex!important;
+    align-items:center!important;
+    gap:10px!important;
+    flex-wrap:wrap!important;
+  }
+
+  .namaa-policy-library-summary>span,
+  .namaa-policy-library-summary>a{
+    min-height:42px!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:5px!important;
+    padding:0 12px!important;
+    border:1px solid #8fa294!important;
+    border-radius:12px!important;
+    background:#b8c7bc!important;
+    color:#1d3c31!important;
+    text-decoration:none!important;
+    font-weight:800!important;
+  }
+
+  .namaa-policy-library-layout{
+    display:grid!important;
+    grid-template-columns:minmax(280px,340px) minmax(0,1fr)!important;
+    gap:14px!important;
+    align-items:start!important;
+  }
+
+  .namaa-policy-index{
+    position:sticky!important;
+    top:calc(var(--namaa-topbar-height) + 14px)!important;
+    max-height:calc(100dvh - var(--namaa-topbar-height) - 28px)!important;
+    overflow:hidden!important;
+    display:grid!important;
+    grid-template-rows:auto minmax(0,1fr)!important;
+    border:1px solid var(--namaa-wide-border)!important;
+    border-radius:16px!important;
+    background:#9fb6a8!important;
+  }
+
+  .namaa-policy-index-head{
+    display:flex!important;
+    align-items:center!important;
+    gap:10px!important;
+    padding:14px!important;
+    border-bottom:1px solid #81998a!important;
+    background:#8ea697!important;
+    color:#173d32!important;
+  }
+
+  .namaa-policy-index-head svg{
+    color:#6d5526!important;
+    flex:0 0 auto!important;
+  }
+
+  .namaa-policy-index-head>div{
+    min-width:0!important;
+    display:grid!important;
+    gap:2px!important;
+  }
+
+  .namaa-policy-index-head strong{
+    font-size:16px!important;
+  }
+
+  .namaa-policy-index-head span{
+    color:#41584e!important;
+    font-size:12px!important;
+  }
+
+  .namaa-policy-index nav{
+    min-height:0!important;
+    overflow:auto!important;
+    padding:10px!important;
+    display:grid!important;
+    gap:8px!important;
+  }
+
+  .namaa-policy-index nav>a{
+    min-width:0!important;
+    display:grid!important;
+    grid-template-columns:40px minmax(0,1fr)!important;
+    gap:10px!important;
+    align-items:center!important;
+    padding:10px 11px!important;
+    border:1px solid #879d8f!important;
+    border-radius:13px!important;
+    background:#adbeB2!important;
+    color:#1d3028!important;
+    text-decoration:none!important;
+  }
+
+  .namaa-policy-index nav>a:nth-child(3n+2){background:#c2b589!important;}
+  .namaa-policy-index nav>a:nth-child(3n+3){background:#a6ae97!important;}
+
+  .namaa-policy-index nav>a:hover,
+  .namaa-policy-index nav>a.is-active{
+    border-color:#8d7440!important;
+    background:#c8b06f!important;
+    box-shadow:0 8px 18px rgb(55 45 22 / 12%)!important;
+  }
+
+  .namaa-policy-index-number{
+    width:36px!important;
+    height:36px!important;
+    display:grid!important;
+    place-items:center!important;
+    border-radius:11px!important;
+    background:#315b4c!important;
+    color:#e3d3ad!important;
+    font-weight:900!important;
+  }
+
+  .namaa-policy-index-copy{
+    min-width:0!important;
+    display:grid!important;
+    gap:4px!important;
+  }
+
+  .namaa-policy-index-copy strong{
+    min-width:0!important;
+    color:inherit!important;
+    line-height:1.5!important;
+    overflow-wrap:anywhere!important;
+  }
+
+  .namaa-policy-index-copy small{
+    color:#52685d!important;
+    line-height:1.4!important;
+  }
+
+  .namaa-policy-reader{
+    min-width:0!important;
+    overflow:hidden!important;
+    border:1px solid var(--namaa-wide-border)!important;
+    border-radius:16px!important;
+    background:#b9c8bc!important;
+  }
+
+  .namaa-policy-reader-head{
+    min-width:0!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    gap:16px!important;
+    align-items:start!important;
+    padding:18px 20px!important;
+    border-bottom:1px solid #91a698!important;
+    background:#aebfb3!important;
+  }
+
+  .namaa-policy-reader-head>div{
+    min-width:0!important;
+  }
+
+  .namaa-policy-reader-head>div>span:first-child{
+    display:block!important;
+    margin-bottom:4px!important;
+    color:#775e2b!important;
+    font-size:12px!important;
+    font-weight:900!important;
+  }
+
+  .namaa-policy-reader-head h2{
+    margin:0!important;
+    color:#18261f!important;
+    font-size:clamp(24px,2.3vw,34px)!important;
+    line-height:1.35!important;
+  }
+
+  .namaa-policy-reader-meta{
+    margin-top:12px!important;
+    display:flex!important;
+    flex-wrap:wrap!important;
+    gap:8px!important;
+  }
+
+  .namaa-policy-reader-meta>span{
+    display:inline-flex!important;
+    align-items:center!important;
+    gap:5px!important;
+    padding:7px 10px!important;
+    border:1px solid #8ea295!important;
+    border-radius:10px!important;
+    background:#9fb4a7!important;
+    color:#354c42!important;
+    font-size:12px!important;
+  }
+
+  .namaa-policy-reader-meta strong{
+    color:#173d32!important;
+  }
+
+  .namaa-policy-reader-mark{
+    width:48px!important;
+    height:48px!important;
+    display:grid!important;
+    place-items:center!important;
+    border-radius:14px!important;
+    background:#c8b06f!important;
+    color:#244438!important;
+    border:1px solid #a98949!important;
+  }
+
+  .namaa-policy-reader-body{
+    padding:22px clamp(20px,3vw,36px) 30px!important;
+    color:#263830!important;
+    line-height:1.9!important;
+  }
+
+  .namaa-policy-reader-body h1{
+    margin:0 0 18px!important;
+    color:#173d32!important;
+    font-size:28px!important;
+    line-height:1.35!important;
+  }
+
+  .namaa-policy-reader-body h2{
+    margin:26px 0 10px!important;
+    padding:10px 12px!important;
+    border-right:4px solid #c09c54!important;
+    border-radius:8px!important;
+    background:#a9bbaE!important;
+    color:#1c392f!important;
+    font-size:21px!important;
+    line-height:1.5!important;
+  }
+
+  .namaa-policy-reader-body h3{
+    margin:20px 0 8px!important;
+    color:#284b3f!important;
+    font-size:18px!important;
+  }
+
+  .namaa-policy-reader-body p{
+    margin:8px 0!important;
+    color:#354d43!important;
+    line-height:1.95!important;
+  }
+
+  .namaa-policy-reader-bullet{
+    display:grid!important;
+    grid-template-columns:32px minmax(0,1fr)!important;
+    gap:8px!important;
+    align-items:start!important;
+    margin:8px 0!important;
+  }
+
+  .namaa-policy-reader-bullet>span{
+    width:28px!important;
+    min-height:28px!important;
+    display:grid!important;
+    place-items:center!important;
+    border-radius:9px!important;
+    background:#9aa98f!important;
+    color:#1e3c31!important;
+    font-weight:900!important;
+  }
+
+  .namaa-policy-reader-bullet p{
+    margin:0!important;
+  }
+
+  .namaa-policy-meta-line{
+    display:grid!important;
+    grid-template-columns:minmax(120px,180px) minmax(0,1fr)!important;
+    gap:10px!important;
+    align-items:start!important;
+    margin:7px 0!important;
+    padding:10px 12px!important;
+    border:1px solid #95a99b!important;
+    border-radius:10px!important;
+    background:#adbdB1!important;
+  }
+
+  .namaa-policy-meta-line strong{
+    color:#173d32!important;
+  }
+
+  .namaa-policy-meta-line span{
+    color:#465d53!important;
+  }
+
+  .namaa-policy-reader-gap{
+    height:5px!important;
+  }
+
+  html[data-theme="dark"] .namaa-policy-library{
+    background:#10211c!important;
+  }
+
+  html[data-theme="dark"] .namaa-policy-library-header{
+    background:linear-gradient(135deg,#27483c,#55492e)!important;
+    border-color:#4f6b60!important;
+  }
+
+  html[data-theme="dark"] .namaa-policy-library-header h1,
+  html[data-theme="dark"] .namaa-policy-library-header p{
+    color:#ddcfad!important;
+  }
+
+  html[data-theme="dark"] .namaa-policy-index{
+    background:#1f3b31!important;
+    border-color:#4f6b60!important;
+  }
+
+  html[data-theme="dark"] .namaa-policy-index-head{
+    background:#29483d!important;
+    color:#dfcfaa!important;
+    border-color:#4f6b60!important;
+  }
+
+  html[data-theme="dark"] .namaa-policy-index nav>a{
+    background:#29473c!important;
+    color:#d8c9a7!important;
+    border-color:#4f6b60!important;
+  }
+
+  html[data-theme="dark"] .namaa-policy-index nav>a:nth-child(3n+2){background:#4b432d!important;}
+  html[data-theme="dark"] .namaa-policy-index nav>a:nth-child(3n+3){background:#3b4537!important;}
+
+  html[data-theme="dark"] .namaa-policy-index nav>a.is-active{
+    background:#5a4a2d!important;
+    border-color:#9a7b40!important;
+  }
+
+  html[data-theme="dark"] .namaa-policy-reader{
+    background:#1d372e!important;
+    border-color:#4f6b60!important;
+  }
+
+  html[data-theme="dark"] .namaa-policy-reader-head{
+    background:#28463a!important;
+    border-color:#4f6b60!important;
+  }
+
+  html[data-theme="dark"] .namaa-policy-reader-head h2,
+  html[data-theme="dark"] .namaa-policy-reader-body h1,
+  html[data-theme="dark"] .namaa-policy-reader-body h2,
+  html[data-theme="dark"] .namaa-policy-reader-body h3{
+    color:#dfcfaa!important;
+  }
+
+  html[data-theme="dark"] .namaa-policy-reader-body{
+    color:#c6d0c6!important;
+  }
+
+  html[data-theme="dark"] .namaa-policy-reader-body p{
+    color:#b9c5bc!important;
+  }
+
+  html[data-theme="dark"] .namaa-policy-reader-body h2{
+    background:#29483d!important;
+    border-right-color:#c09c54!important;
+  }
+
+  html[data-theme="dark"] .namaa-policy-meta-line{
+    background:#29473c!important;
+    border-color:#4f6b60!important;
+  }
+}
+
+@media (min-width:768px) and (max-width:1050px){
+  .namaa-policy-library-layout{
+    grid-template-columns:260px minmax(0,1fr)!important;
+  }
+
+  .namaa-policy-library-header{
+    align-items:stretch!important;
+    flex-direction:column!important;
+  }
+}
