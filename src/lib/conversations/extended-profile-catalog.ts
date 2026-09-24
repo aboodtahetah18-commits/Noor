@@ -120,7 +120,7 @@ export const extendedProfileSections:ExtendedProfileSection[]=[
         {key:'primary_amount',label:'قيمة الدورة الأولى',kind:'number',mobileVisible:true},
         {key:'alternate_name',label:'الدورة المتناوبة'},
         {key:'alternate_amount',label:'قيمة الدورة المتناوبة',kind:'number'},
-        {key:'forecast_value',label:'أحسب التكلفة حتى',kind:'number'},
+        {key:'forecast_value',label:'أحسب التكلفة حتى (بنفس وحدة الجدولة)',kind:'number'},
         {key:'forecast_occurrences',label:'عدد الدورات المحسوب',kind:'number'},
         {key:'forecast_total',label:'إجمالي التكلفة المحسوب',kind:'number',mobileVisible:true},
         {key:'notes',label:'ملاحظات',kind:'textarea'},
