@@ -59,3 +59,73 @@
     width:100%;
   }
 }
+
+
+/* Financial interaction intelligence — governed modal and live calculation contract. */
+.p49-dialog-header{
+  position:sticky!important;
+  top:0!important;
+  z-index:20!important;
+  background:var(--ux-brand-primary)!important;
+  color:var(--ux-text-inverse)!important;
+  border-bottom:var(--ux-border-width-1) var(--ux-border-style-default) color-mix(in srgb,var(--ux-text-inverse) 24%,transparent)!important;
+}
+.p49-dialog-header::after{display:none!important}
+.p49-dialog-header h2,
+.p49-dialog-header p,
+.p49-dialog-title-icon{
+  color:var(--ux-text-inverse)!important;
+  -webkit-text-fill-color:var(--ux-text-inverse)!important;
+}
+.p49-dialog-header p{opacity:.84}
+.p49-dialog-close,
+.p49-dialog-tools button{
+  border-color:color-mix(in srgb,var(--ux-text-inverse) 42%,transparent)!important;
+  background:color-mix(in srgb,var(--ux-text-inverse) 8%,transparent)!important;
+  color:var(--ux-text-inverse)!important;
+}
+.p49-dialog-body form{display:grid}
+.p49-dialog-body form>button[type="submit"]:last-child,
+.p49-dialog-body form>button:not([type]):last-child{
+  position:sticky;
+  bottom:0;
+  z-index:15;
+  margin-top:var(--ux-space-3)!important;
+}
+.financial-auto-result{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  min-height:var(--ux-size-11);
+  margin-top:var(--ux-space-2);
+  padding:var(--ux-space-2) var(--ux-space-3);
+  border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);
+  border-radius:var(--ux-radius-md);
+  background:var(--ux-page-bg);
+  color:var(--ux-brand-primary);
+  font-weight:700;
+  font-variant-numeric:tabular-nums;
+}
+@media(max-width:767px){
+  .p49-action-dialog{
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+    max-height:100dvh!important;
+  }
+  .p49-dialog-shell{
+    max-height:100dvh!important;
+    border-radius:0!important;
+  }
+  .p49-dialog-header{padding:var(--ux-space-4)!important}
+  .p49-dialog-body{
+    padding:var(--ux-space-3)!important;
+    padding-bottom:calc(var(--ux-space-8) + env(safe-area-inset-bottom))!important;
+  }
+  .p49-dialog-body form>button[type="submit"]:last-child,
+  .p49-dialog-body form>button:not([type]):last-child{
+    width:100%!important;
+    min-height:var(--ux-size-12)!important;
+    bottom:calc(var(--ux-space-2) + env(safe-area-inset-bottom))!important;
+  }
+}
