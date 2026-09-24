@@ -6,6 +6,8 @@ export type ProactivePromptMemory={
   lastPromptAt:string|null;
   lastAnswerAt:string|null;
   lastAnswerExcerpt:string|null;
+  unansweredStreak:number;
+  averageResponseHours:number|null;
 };
 
 export type RoomLearningMemory={
@@ -38,6 +40,8 @@ function readPrompt(value:unknown):ProactivePromptMemory{
     lastPromptAt:typeof row.lastPromptAt==='string'?row.lastPromptAt:null,
     lastAnswerAt:typeof row.lastAnswerAt==='string'?row.lastAnswerAt:null,
     lastAnswerExcerpt:typeof row.lastAnswerExcerpt==='string'?row.lastAnswerExcerpt:null,
+    unansweredStreak:Number.isFinite(Number(row.unansweredStreak))?Math.max(0,Number(row.unansweredStreak)):0,
+    averageResponseHours:Number.isFinite(Number(row.averageResponseHours))?Math.max(0,Number(row.averageResponseHours)):null,
   };
 }
 
@@ -111,7 +115,8 @@ export function registerPrompt(
   promptKey:string,
   at:string,
 ):ProactiveConversationMemory{
-  const current=memory.prompts[promptKey]??{promptCount:0,lastPromptAt:null,lastAnswerAt:null,lastAnswerExcerpt:null};
+  const current=memory.prompts[promptKey]??{promptCount:0,lastPromptAt:null,lastAnswerAt:null,lastAnswerExcerpt:null,unansweredStreak:0,averageResponseHours:null};
+  const priorPromptUnanswered=Boolean(current.lastPromptAt)&&(!current.lastAnswerAt||new Date(current.lastAnswerAt).getTime()<new Date(current.lastPromptAt??0).getTime());
   return {
     ...memory,
     prompts:{
@@ -120,6 +125,7 @@ export function registerPrompt(
         ...current,
         promptCount:current.promptCount+1,
         lastPromptAt:at,
+        unansweredStreak:priorPromptUnanswered?current.unansweredStreak+1:current.unansweredStreak,
       },
     },
   };
@@ -146,7 +152,17 @@ export function registerUserLearning(
     },
   };
   if(!promptKey)return next;
-  const current=next.prompts[promptKey]??{promptCount:0,lastPromptAt:null,lastAnswerAt:null,lastAnswerExcerpt:null};
+  const current=next.prompts[promptKey]??{promptCount:0,lastPromptAt:null,lastAnswerAt:null,lastAnswerExcerpt:null,unansweredStreak:0,averageResponseHours:null};
+  const promptAt=current.lastPromptAt?new Date(current.lastPromptAt):null;
+  const answeredAt=new Date(at);
+  const responseHours=promptAt&&!Number.isNaN(promptAt.getTime())&&!Number.isNaN(answeredAt.getTime())
+    ?Math.max(0,(answeredAt.getTime()-promptAt.getTime())/(60*60*1000))
+    :null;
+  const averageResponseHours=responseHours===null
+    ?current.averageResponseHours
+    :current.averageResponseHours===null
+      ?responseHours
+      :(current.averageResponseHours*0.7)+(responseHours*0.3);
   return {
     ...next,
     prompts:{
@@ -155,6 +171,8 @@ export function registerUserLearning(
         ...current,
         lastAnswerAt:at,
         lastAnswerExcerpt:userText.trim().slice(0,280)||null,
+        unansweredStreak:0,
+        averageResponseHours,
       },
     },
   };
@@ -164,6 +182,7 @@ export async function captureProactiveConversationLearning(
   userId:string,
   roomKey:ConversationRoomKey,
   userText:string,
+  scope?:{kind:'role'|'meeting';key:string}|null,
 ){
   const text=userText.trim();
   if(!text)return;
@@ -177,29 +196,61 @@ export async function captureProactiveConversationLearning(
   const threadId=threadRows[0]?.id?String(threadRows[0].id):null;
   if(!threadId)return;
 
-  const promptRows=await sql`
-    select structured_data,created_at
-    from public.conversation_messages
-    where user_id=${userId}::uuid
-      and thread_id=${threadId}::uuid
-      and sender_type='agent'
-      and coalesce(structured_data->>'proactive_prompt','false')='true'
-    order by created_at desc
-    limit 1
-  `;
+  const promptRows=scope
+    ?await sql`
+      select structured_data,created_at
+      from public.conversation_messages
+      where user_id=${userId}::uuid
+        and thread_id=${threadId}::uuid
+        and sender_type='agent'
+        and coalesce(structured_data->>'proactive_prompt','false')='true'
+        and structured_data->>'scope_kind'=${scope.kind}
+        and (
+          (${scope.kind}='role' and structured_data->>'role_key'=${scope.key})
+          or (${scope.kind}='meeting' and structured_data->>'meeting_id'=${scope.key})
+        )
+      order by created_at desc
+      limit 1
+    `
+    :await sql`
+      select structured_data,created_at
+      from public.conversation_messages
+      where user_id=${userId}::uuid
+        and thread_id=${threadId}::uuid
+        and sender_type='agent'
+        and coalesce(structured_data->>'proactive_prompt','false')='true'
+        and structured_data->>'scope_kind' is null
+      order by created_at desc
+      limit 1
+    `;
   const promptData=asRecord(promptRows[0]?.structured_data);
   const promptKey=typeof promptData.proactive_key==='string'?promptData.proactive_key:null;
   const promptAt=promptRows[0]?.created_at?new Date(String(promptRows[0].created_at)):null;
   let recentPrompt:string|null=null;
   if(promptKey&&promptAt&&!Number.isNaN(promptAt.getTime())&&(Date.now()-promptAt.getTime())<=14*24*60*60*1000){
-    const userRows=await sql`
-      select count(*)::int as count
-      from public.conversation_messages
-      where user_id=${userId}::uuid
-        and thread_id=${threadId}::uuid
-        and sender_type='user'
-        and created_at>${promptAt.toISOString()}::timestamptz
-    `;
+    const userRows=scope
+      ?await sql`
+        select count(*)::int as count
+        from public.conversation_messages
+        where user_id=${userId}::uuid
+          and thread_id=${threadId}::uuid
+          and sender_type='user'
+          and created_at>${promptAt.toISOString()}::timestamptz
+          and structured_data->>'scope_kind'=${scope.kind}
+          and (
+            (${scope.kind}='role' and structured_data->>'role_key'=${scope.key})
+            or (${scope.kind}='meeting' and structured_data->>'meeting_id'=${scope.key})
+          )
+      `
+      :await sql`
+        select count(*)::int as count
+        from public.conversation_messages
+        where user_id=${userId}::uuid
+          and thread_id=${threadId}::uuid
+          and sender_type='user'
+          and created_at>${promptAt.toISOString()}::timestamptz
+          and structured_data->>'scope_kind' is null
+      `;
     if(Number(userRows[0]?.count??0)===1) recentPrompt=promptKey;
   }
 
