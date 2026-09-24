@@ -11524,3 +11524,169 @@
     display:block!important;
   }
 }
+
+
+/* EXTENDED PROFILE DESKTOP DIALOG AUTHORITY */
+@media (min-width:768px){
+  .mobileOverlay:has(.extendedProfileSheet){
+    display:grid!important;
+    place-items:center!important;
+    padding:var(--ux-space-6)!important;
+  }
+
+  .extendedProfileSheet{
+    position:relative!important;
+    inset:auto!important;
+    inline-size:min(1120px,calc(100vw - var(--ux-space-12)))!important;
+    max-inline-size:1120px!important;
+    block-size:auto!important;
+    max-block-size:88dvh!important;
+    margin:auto!important;
+    padding:0!important;
+    overflow:hidden!important;
+    border:2px solid var(--namaa-border-strong)!important;
+    border-radius:var(--ux-radius-xl)!important;
+    background:var(--namaa-card)!important;
+    box-shadow:var(--ux-shadow-lg)!important;
+  }
+
+  .extendedProfileSheet>.sheetHeader{
+    position:sticky!important;
+    inset-block-start:0!important;
+    z-index:4!important;
+    min-block-size:56px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:var(--ux-space-3)!important;
+    padding:var(--ux-space-3) var(--ux-space-4)!important;
+    border-block-end:2px solid var(--namaa-border-strong)!important;
+    background:var(--namaa-card)!important;
+    color:var(--ux-text-primary)!important;
+  }
+
+  .extendedProfileSheet>.sheetHeader strong{
+    color:var(--ux-text-primary)!important;
+    font-size:var(--ux-type-card-title-size)!important;
+  }
+
+  .extendedProfileIntro{
+    margin:var(--ux-space-4)!important;
+    margin-block-end:0!important;
+    padding:var(--ux-space-3)!important;
+    border:2px solid var(--namaa-border-strong)!important;
+    border-radius:var(--ux-radius-md)!important;
+    background:var(--namaa-surface-warm)!important;
+  }
+
+  .extendedProfileLayout{
+    grid-template-columns:minmax(220px,260px) minmax(0,1fr)!important;
+    gap:var(--ux-space-4)!important;
+    padding:var(--ux-space-4)!important;
+    max-block-size:calc(88dvh - 170px)!important;
+    overflow:auto!important;
+  }
+
+  .extendedSectionTabs{
+    position:sticky!important;
+    inset-block-start:0!important;
+    display:grid!important;
+    gap:var(--ux-space-2)!important;
+    align-content:start!important;
+    max-block-size:calc(88dvh - 200px)!important;
+    overflow:auto!important;
+    padding-block-end:var(--ux-space-2)!important;
+  }
+
+  .extendedSectionTabs button{
+    min-inline-size:0!important;
+    min-block-size:56px!important;
+    display:grid!important;
+    gap:var(--ux-space-1)!important;
+    padding:var(--ux-space-3)!important;
+    border:2px solid var(--namaa-border-strong)!important;
+    border-radius:var(--ux-radius-md)!important;
+    background:var(--namaa-card)!important;
+    color:var(--ux-text-primary)!important;
+    text-align:start!important;
+    cursor:pointer!important;
+  }
+
+  .extendedSectionTabs button:hover{
+    border-color:var(--namaa-green-700)!important;
+    background:var(--namaa-surface-warm)!important;
+  }
+
+  .extendedSectionTabs .extendedTabActive{
+    border-color:var(--namaa-green-900)!important;
+    background:var(--namaa-green-900)!important;
+    color:var(--ux-text-inverse)!important;
+  }
+
+  .extendedSectionTabs .extendedTabActive strong,
+  .extendedSectionTabs .extendedTabActive small{
+    color:var(--ux-text-inverse)!important;
+  }
+
+  .extendedEditor{
+    min-inline-size:0!important;
+    display:grid!important;
+    gap:var(--ux-space-4)!important;
+    padding:var(--ux-space-4)!important;
+    border:2px solid var(--namaa-border-strong)!important;
+    border-radius:var(--ux-radius-lg)!important;
+    background:var(--namaa-card)!important;
+  }
+
+  .extendedEditor .intakeGrid{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:var(--ux-space-3)!important;
+  }
+
+  .extendedEditor .intakeWide{
+    grid-column:1/-1!important;
+  }
+
+  .extendedEditor :where(input,select,textarea){
+    inline-size:100%!important;
+    min-block-size:40px!important;
+    box-sizing:border-box!important;
+    border:2px solid var(--namaa-border-strong)!important;
+    border-radius:10px!important;
+    background:var(--namaa-card)!important;
+    color:var(--ux-text-primary)!important;
+  }
+
+  .extendedActions{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:var(--ux-space-3)!important;
+    padding-block-start:var(--ux-space-3)!important;
+    border-block-start:2px solid var(--namaa-border-strong)!important;
+  }
+
+  .extendedActions small{
+    max-inline-size:68ch!important;
+  }
+}
+
+@media (min-width:768px) and (max-width:1023px){
+  .extendedProfileSheet{
+    inline-size:min(940px,calc(100vw - var(--ux-space-8)))!important;
+  }
+
+  .extendedProfileLayout{
+    grid-template-columns:minmax(190px,220px) minmax(0,1fr)!important;
+    gap:var(--ux-space-3)!important;
+  }
+
+  .extendedEditor .intakeGrid{
+    grid-template-columns:minmax(0,1fr)!important;
+  }
+
+  .extendedEditor .intakeWide{
+    grid-column:1!important;
+  }
+}
