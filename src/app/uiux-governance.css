@@ -444,44 +444,7 @@ label>span,.field-label{font-weight:500!important;color:var(--ux-text-primary)!i
   .auth-panel{padding:var(--ux-space-6) var(--ux-space-4)!important;min-height:calc(100dvh - 190px)!important;}
 }
 
-/* More: clear sections rather than horizontally distorted tabs. */
-.more-hub-shell{display:grid;gap:var(--ux-space-4)!important;}
-.more-hub-header{margin-bottom:0!important;}
-.more-hub-sections{display:grid;gap:var(--ux-space-4);}
-.more-hub-section{
-  padding:var(--ux-space-5);
-  border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);
-  border-radius:var(--ux-radius-lg);
-  background:var(--ux-card-bg);
-  box-shadow:var(--ux-shadow-s);
-}
-.more-hub-section-head{display:flex;align-items:center;gap:var(--ux-space-3);margin-bottom:var(--ux-space-4);}
-.more-hub-section-head>.p49-ui-icon,.more-hub-section-head>.action-icon{
-  width:var(--ux-size-11);height:var(--ux-size-11);display:grid;place-items:center;
-  border-radius:var(--ux-radius-md);background:var(--ux-section-soft-teal);color:var(--ux-brand-secondary);
-}
-.more-hub-section-head h2{margin:var(--ux-space-0)!important;color:var(--ux-brand-primary)!important;}
-.more-hub-section-head p{margin-block-start:var(--ux-space-1);margin-block-end:var(--ux-space-0);color:var(--ux-text-secondary);}
-.more-hub-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:var(--ux-space-3)!important;}
-.more-hub-card{
-  display:grid!important;
-  grid-template-columns:auto minmax(0,1fr) auto!important;
-  align-items:center!important;
-  min-height:84px!important;
-  padding:var(--ux-space-3)!important;
-  border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default)!important;
-  border-radius:var(--ux-radius-md)!important;
-  background:var(--ux-white)!important;
-  color:var(--ux-brand-primary)!important;
-  text-decoration:none!important;
-}
-.more-hub-card-icon{
-  width:var(--ux-size-10);height:var(--ux-size-10);display:grid;place-items:center;
-  border-radius:var(--ux-radius-sm);background:var(--ux-section-soft-blue);color:var(--ux-brand-secondary);
-}
-.more-hub-card>div{display:grid;gap:var(--ux-space-1);}
-.more-hub-card strong{color:var(--ux-brand-primary)!important;font-size:var(--ux-type-card-title-size)!important;}
-.more-hub-card span:not(.more-hub-card-icon){color:var(--ux-text-secondary)!important;font-size:var(--ux-type-body-sm-size)!important;}
+/* More — mobile compatibility only. Desktop authority moved to design-system/settings-final.css. */
 @media(max-width:767px){
   .more-hub-page{padding-top:var(--ux-space-3)!important;}
   .more-hub-section{padding:var(--ux-space-4)!important;}
