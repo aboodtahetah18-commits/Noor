@@ -33,7 +33,7 @@ export default async function AdvisorPage({ searchParams }: { searchParams: Prom
   const warningCount=feed.recommendations.filter(r=>r.recommendationType==='WARNING').length;
 
   return <main className="app-page p47-advisor-page" dir="rtl">
-    <section className="namaa-wide-only namaa-lab-wide">
+    <section className="namaa-wide-only namaa-lab-wide namaa-advisor-desktop">
       <header className="namaa-lab-hero namaa-wide-card">
         <div>
           <p>التطوير والاختبار</p>
