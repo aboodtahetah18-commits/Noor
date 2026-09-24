@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  adaptCandidateBody,
   candidateScore,
   isCandidateEligible,
   type ProactiveCandidate,
@@ -70,5 +71,14 @@ describe('ذاكرة المبادرة اليومية في نماء',()=>{
     expect(memory.prompts[candidate.key]?.unansweredStreak).toBe(0);
     expect(memory.prompts[candidate.key]?.averageResponseHours).toBe(2);
     expect(candidateScore(candidate,memory,new Date('2026-10-25T08:00:00Z'))).toBeGreaterThan(candidate.basePriority);
+  });
+
+  it('يغير صياغة المبادرة بعد تجاهل المستخدم بدل تكرار النص نفسه',()=>{
+    let memory=normalizeProactiveConversationMemory(null);
+    memory=registerPrompt(memory,candidate.key,'2026-09-01T08:00:00Z');
+    memory=registerPrompt(memory,candidate.key,'2026-09-12T08:00:00Z');
+    expect(adaptCandidateBody(candidate,memory)).toContain('أعيد هذه النقطة');
+    memory=registerPrompt(memory,candidate.key,'2026-10-01T08:00:00Z');
+    expect(adaptCandidateBody(candidate,memory)).toContain('أختصرها عليك');
   });
 });
