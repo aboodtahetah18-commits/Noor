@@ -1328,7 +1328,7 @@ export function PersistentConversationWorkspace(){
         onTemplate={template=>{setPendingOversightConfirmation(null);setOversightActionFeedback({command:'',status:'idle',message:null});setDraft(template);requestAnimationFrame(()=>composerTextareaRef.current?.focus())}}
       />
       <StructuredFacts data={message.structured_data}/>
-      {message.structured_data?.intake_owner==='budget-spending-owner'&&
+      {message.structured_data?.handoff_target==='hilal'&&message.structured_data?.intake_owner==='budget-spending-owner'&&
         <button type="button" className={styles.inlineIntakeButton} onClick={()=>{
           setError('');
           setActiveRoomId('hilal');
@@ -1338,7 +1338,7 @@ export function PersistentConversationWorkspace(){
         }}>
           <LucideIcon name="arrowUpDown" size={16}/><span>الانتقال إلى مسؤول الميزانية والإنفاق</span>
         </button>}
-      {message.message_kind==='request'&&typeof message.structured_data?.next_question==='string'&&message.structured_data.next_question&&message.structured_data?.intake_owner!=='budget-spending-owner'&&
+      {message.message_kind==='request'&&typeof message.structured_data?.next_question==='string'&&message.structured_data.next_question&&message.structured_data?.handoff_target!=='hilal'&&
         <button type="button" className={styles.inlineIntakeButton} onClick={()=>{setDraft('');requestAnimationFrame(()=>composerTextareaRef.current?.focus())}}>
           <LucideIcon name="pencil" size={16}/><span>أجب الآن</span>
         </button>}
