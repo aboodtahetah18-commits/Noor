@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 import { LucideIcon } from '@/components/ui/lucide-icon';
 import { governanceCatalog } from '@/lib/governance/mobile-catalog';
@@ -64,6 +65,23 @@ export function GovernanceMobileSheet({
   },[mode]);
 
   const orderedMeetings=useMemo(()=>[...meetings].sort((a,b)=>new Date(a.scheduled_at).getTime()-new Date(b.scheduled_at).getTime()),[meetings]);
+  const meetingGroupMeta=(meeting:Meeting)=>{
+    const title=meeting.title;
+    if(/استثمار|الأصول/.test(title)) return {key:'assets',title:'بنك الأصول الاستثماري',logo:'/brand/bank-assets.webp'};
+    if(/استقرار|سيولة|تمويل/.test(title)) return {key:'solvency',title:'بنك ملاءة',logo:'/brand/bank-malaa.webp'};
+    if(/ميزانية|إنفاق/.test(title)) return {key:'hilal',title:'بنك الهلال',logo:'/brand/bank-hilal.webp'};
+    return {key:'central',title:'بنك نماء المركزي',logo:'/brand/bank-central.webp'};
+  };
+  const meetingGroups=useMemo(()=>{
+    const groups=new Map<string,{key:string;title:string;logo:string;meetings:Meeting[]}>();
+    for(const meeting of orderedMeetings){
+      const meta=meetingGroupMeta(meeting);
+      const current=groups.get(meta.key)??{...meta,meetings:[]};
+      current.meetings.push(meeting);
+      groups.set(meta.key,current);
+    }
+    return [...groups.values()];
+  },[orderedMeetings]);
   const meetingDate=(value:string)=>new Intl.DateTimeFormat('ar-SA-u-ca-gregory-nu-latn',{dateStyle:'medium',timeStyle:'short'}).format(new Date(value));
   async function refreshMeetings(){
     const response=await fetch('/api/governance/meetings',{cache:'no-store'});
@@ -146,16 +164,24 @@ export function GovernanceMobileSheet({
         {loading&&<p className={styles.sheetMessage}>جارٍ تحميل الاجتماعات…</p>}
         {error&&<p className={styles.sheetMessage}>{error}</p>}
         {!loading&&!error&&!orderedMeetings.length&&<p className={styles.sheetMessage}>سيظهر الجدول بعد اعتماد التأسيس الأولي.</p>}
-        {orderedMeetings.map(meeting=><article key={meeting.id} className={styles.meetingCard}>
-          <div><span>{meeting.kind}</span><strong>{meeting.title}</strong><small>{meeting.cadence}</small>{meeting.ready===false&&meeting.missing_data?.length?<p className={styles.meetingMissing}>البيانات الناقصة: {meeting.missing_data.join('، ')}</p>:null}</div>
-          <time dateTime={meeting.scheduled_at}>{meeting.ready===false?'لم يحدد كاجتماع جاهز':meetingDate(meeting.scheduled_at)}</time>
-          <em>{meeting.status}</em>
-          <div className={styles.meetingActions}>
-            <button type="button" onClick={()=>setMeetingDetails(meeting)}><LucideIcon name="info" size={16}/><span>التفاصيل</span></button>
-            <button type="button" onClick={()=>setMeetingEditor({mode:'edit',id:meeting.id,title:meeting.title,scheduled_at:new Date(meeting.scheduled_at).toISOString().slice(0,16),cadence:meeting.cadence})} aria-label={'تعديل '+meeting.title}><LucideIcon name="pencil" size={16}/><span>تعديل</span></button>
-            <button type="button" onClick={()=>void deleteMeeting(meeting.id)} aria-label={'حذف '+meeting.title}><LucideIcon name="trash2" size={16}/><span>حذف</span></button>
+        {meetingGroups.map(group=><section key={group.key} className={styles.meetingGroup}>
+          <header className={styles.meetingGroupHeader}>
+            <span className={styles.meetingGroupLogo}><Image src={group.logo} alt="" fill unoptimized sizes="72px"/></span>
+            <span><strong>{group.title}</strong><small>{group.meetings.length} اجتماعات</small></span>
+          </header>
+          <div className={styles.meetingGroupList}>
+            {group.meetings.map(meeting=><article key={meeting.id} className={styles.meetingCard}>
+              <div><span>{meeting.kind}</span><strong>{meeting.title}</strong><small>{meeting.cadence}</small>{meeting.ready===false&&meeting.missing_data?.length?<p className={styles.meetingMissing}>البيانات الناقصة: {meeting.missing_data.join('، ')}</p>:null}</div>
+              <time dateTime={meeting.scheduled_at}>{meeting.ready===false?'لم يحدد كاجتماع جاهز':meetingDate(meeting.scheduled_at)}</time>
+              <em>{meeting.status}</em>
+              <div className={styles.meetingActions}>
+                <button type="button" onClick={()=>setMeetingDetails(meeting)}><LucideIcon name="info" size={16}/><span>التفاصيل</span></button>
+                <button type="button" onClick={()=>setMeetingEditor({mode:'edit',id:meeting.id,title:meeting.title,scheduled_at:new Date(meeting.scheduled_at).toISOString().slice(0,16),cadence:meeting.cadence})} aria-label={'تعديل '+meeting.title}><LucideIcon name="pencil" size={16}/><span>تعديل</span></button>
+                <button type="button" onClick={()=>void deleteMeeting(meeting.id)} aria-label={'حذف '+meeting.title}><LucideIcon name="trash2" size={16}/><span>حذف</span></button>
+              </div>
+            </article>)}
           </div>
-        </article>)}
+        </section>)}
         {meetingDetails&&<div className={styles.meetingEditorBackdrop}><section className={styles.meetingEditorModal+' '+styles.meetingDetailsModal} role="dialog" aria-modal="true" aria-label={'تفاصيل '+meetingDetails.title}>
           <header><strong>{meetingDetails.title}</strong><button type="button" onClick={()=>setMeetingDetails(null)} aria-label="إغلاق"><LucideIcon name="x" size={16}/></button></header>
           <div className={styles.meetingDetailsBody}>
