@@ -218,6 +218,10 @@ body:has(.namaa-conversation-page) .namaa-main-canvas > * {
     padding-block-end:0;
   }
 
+  body:has(.namaa-conversation-page) .mobile-bottom-nav {
+    display:none !important;
+  }
+
   [role="dialog"][aria-label="تفاصيل الجهة"] > aside {
     inline-size:100vw;
     max-inline-size:none;
