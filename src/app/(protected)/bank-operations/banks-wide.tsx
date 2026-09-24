@@ -120,7 +120,7 @@ export function BanksWide({selected,pendingReviewCount,pendingItems,dashboardDat
     <header className="namaa-banks-hero namaa-wide-card">
       <div className="namaa-banks-hero-copy"><p>غرفة القيادة</p><h1>{bank.name}</h1></div>
       <span className="namaa-banks-building" aria-hidden="true">
-        <Image src={bank.building} alt="" fill priority sizes="(min-width: 1024px) 44vw, 80vw" />
+        <Image src={bank.building} alt="" fill priority quality={92} unoptimized sizes="(min-width: 1024px) 72vw, 100vw" />
         <span className="namaa-banks-building-shade" />
       </span>
       <div className="namaa-banks-selector">
@@ -145,22 +145,10 @@ export function BanksWide({selected,pendingReviewCount,pendingItems,dashboardDat
             <div><strong>{member.name}</strong></div>
           </article>)}
         </div>
-        <section className="namaa-banks-chat-preview" aria-label="معاينة محادثة البنك">
-          <header>
-            <div><span>موجز المحادثة</span><strong>{bank.name}</strong></div>
-            <LucideIcon name="messageSquareText" size={20}/>
-          </header>
-          <div className="namaa-banks-chat-preview-body">
-            <div className="namaa-banks-chat-empty">
-              <LucideIcon name="messageSquareText" size={20}/>
-              <p>لا توجد رسائل مرتبطة بهذا البنك للعرض هنا حاليًا.</p>
-            </div>
-          </div>
-          <footer>
-            <span>ستظهر آخر الرسائل هنا عند توفرها.</span>
-            <Link href="/conversations">عرض المحادثة الكاملة</Link>
-          </footer>
-        </section>
+        <Link href="/conversations" className="namaa-banks-chat-link">
+          <LucideIcon name="messageSquareText" size={20}/>
+          <span>فتح محادثة {bank.name}</span>
+        </Link>
       </aside>
 
       <section className="namaa-banks-dashboard namaa-wide-panel">
