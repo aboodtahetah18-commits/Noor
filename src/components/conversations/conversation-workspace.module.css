@@ -11557,3 +11557,231 @@
     align-items:stretch
   }
 }
+
+
+/* FINAL MOBILE NAV + PAGE AUTHORITY — grouped drawer and full-page inner screens. */
+@media (max-width:767px){
+  .mobileSideSheet{
+    display:block!important;
+    overflow-y:auto!important;
+    overscroll-behavior:contain!important
+  }
+  .mobileSideSheet .sideSection{
+    display:grid!important;
+    gap:var(--ux-space-2)!important;
+    padding-block:var(--ux-space-3)!important;
+    border-top:1px solid var(--namaa-border)!important
+  }
+  .mobileSideSheet .sideSection>small{
+    display:block!important;
+    padding-inline:var(--ux-space-2)!important;
+    color:var(--ux-text-secondary)!important;
+    font-size:var(--ux-type-caption-size)!important;
+    font-weight:900!important
+  }
+  .mobileSideSheet .roomList{
+    display:grid!important;
+    gap:var(--ux-space-1)!important
+  }
+  .mobileSideSheet .roomItemShell{
+    width:100%!important;
+    min-height:72px!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) 44px!important;
+    align-items:center!important;
+    gap:var(--ux-space-2)!important;
+    margin:0!important;
+    padding:var(--ux-space-1)!important;
+    border:1px solid transparent!important;
+    border-radius:var(--ux-radius-4)!important;
+    background:transparent!important
+  }
+  .mobileSideSheet .roomItemShell.activeRoom{
+    background:var(--namaa-cream)!important;
+    border-color:var(--namaa-gold-500)!important
+  }
+  .mobileSideSheet .roomItem{
+    min-width:0!important;
+    width:100%!important;
+    min-height:64px!important;
+    display:grid!important;
+    grid-template-columns:56px minmax(0,1fr)!important;
+    align-items:center!important;
+    gap:var(--ux-space-3)!important;
+    padding:var(--ux-space-1)!important;
+    text-align:right!important;
+    background:transparent!important
+  }
+  .mobileSideSheet .roomItem .personaAvatar{
+    width:56px!important;
+    height:56px!important;
+    min-width:56px!important;
+    flex-basis:56px!important;
+    justify-self:start!important
+  }
+  .mobileSideSheet .roomCopy{
+    min-width:0!important;
+    width:100%!important;
+    display:grid!important;
+    align-items:center!important
+  }
+  .mobileSideSheet .roomCopy strong{
+    display:block!important;
+    width:100%!important;
+    margin:0!important;
+    color:var(--ux-text-primary)!important;
+    font-size:var(--ux-type-body-sm-size)!important;
+    line-height:1.4!important;
+    text-align:right!important;
+    white-space:normal!important;
+    overflow:visible!important;
+    text-overflow:clip!important
+  }
+  .mobileSideSheet .roomDetailButton{
+    width:40px!important;
+    height:40px!important;
+    margin:0!important;
+    justify-self:center!important;
+    align-self:center!important
+  }
+  .mobileSideSheet .sideUtilityList{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:var(--ux-space-1)!important
+  }
+  .mobileSideSheet .sideUtilityList>button{
+    min-height:52px!important;
+    width:100%!important;
+    display:grid!important;
+    grid-template-columns:28px minmax(0,1fr)!important;
+    align-items:center!important;
+    gap:var(--ux-space-3)!important;
+    padding:var(--ux-space-2) var(--ux-space-3)!important;
+    border:0!important;
+    border-radius:var(--ux-radius-3)!important;
+    background:transparent!important;
+    color:var(--ux-text-primary)!important;
+    font:inherit!important;
+    text-align:right!important
+  }
+
+  .mobileFullPageSheet,
+  .extendedProfileSheet,
+  .governanceSheet,
+  .accountSurfaceSheet{
+    position:fixed!important;
+    inset:0!important;
+    top:0!important;
+    right:0!important;
+    bottom:0!important;
+    left:0!important;
+    width:100%!important;
+    max-width:none!important;
+    height:100dvh!important;
+    max-height:100dvh!important;
+    margin:0!important;
+    padding:0!important;
+    border:0!important;
+    border-radius:0!important;
+    box-shadow:var(--ux-shadow-none)!important;
+    overflow:auto!important;
+    background:var(--namaa-card)!important
+  }
+  .mobileFullPageSheet .sheetHeader,
+  .extendedProfileHeader,
+  .governanceSheet .sheetHeader,
+  .accountSurfaceSheet .sheetHeader{
+    position:sticky!important;
+    top:0!important;
+    z-index:40!important;
+    min-height:72px!important;
+    margin:0!important;
+    padding:var(--ux-space-3) var(--ux-space-4)!important;
+    border:0!important;
+    border-bottom:1px solid color-mix(in srgb,var(--ux-text-inverse) 18%,transparent)!important;
+    border-radius:0!important;
+    background:var(--namaa-green-900)!important;
+    color:var(--ux-text-inverse)!important;
+    box-shadow:var(--ux-shadow-xs)!important
+  }
+  .mobileFullPageSheet .sheetHeader>strong,
+  .extendedProfileHeaderTitle>strong,
+  .governanceSheet .sheetHeader>strong,
+  .accountSurfaceSheet .sheetHeader>strong{
+    color:var(--ux-text-inverse)!important;
+    -webkit-text-fill-color:var(--ux-text-inverse)!important
+  }
+  .mobileFullPageSheet .sheetHeader>button,
+  .extendedProfileHeader>button,
+  .governanceSheet .sheetHeader>button,
+  .accountSurfaceSheet .sheetHeader>button{
+    width:44px!important;
+    height:44px!important;
+    display:grid!important;
+    place-items:center!important;
+    border:1px solid color-mix(in srgb,var(--ux-text-inverse) 42%,transparent)!important;
+    border-radius:var(--ux-radius-full)!important;
+    background:color-mix(in srgb,var(--ux-text-inverse) 8%,transparent)!important;
+    color:var(--ux-text-inverse)!important
+  }
+  .extendedProfileHeaderTitle{
+    flex:1!important
+  }
+  .extendedProfileLogo{
+    width:92px!important;
+    filter:none!important
+  }
+  .extendedProfileLayout{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:var(--ux-space-4)!important;
+    padding:var(--ux-space-4)!important
+  }
+  .extendedSectionTabs{
+    display:flex!important;
+    gap:var(--ux-space-2)!important;
+    overflow-x:auto!important;
+    padding-top:var(--ux-space-2)!important;
+    padding-bottom:var(--ux-space-2)!important;
+    margin-top:var(--ux-space-2)!important;
+    border-top:0!important;
+    scrollbar-width:none!important
+  }
+  .extendedSectionTabs::-webkit-scrollbar{
+    display:none!important
+  }
+  .extendedSectionTabs button{
+    min-width:148px!important;
+    min-height:52px!important;
+    flex:0 0 auto!important
+  }
+  .extendedEditor{
+    gap:var(--ux-space-4)!important
+  }
+  .governanceCards,
+  .meetingsList,
+  .documentsList,
+  .accountSettings,
+  .settingsList,
+  .profileForm,
+  .reviewFacts{
+    padding:var(--ux-space-4)!important
+  }
+}
+
+:global(html[data-theme="dark"]) .mobileSideSheet .sideSection>small{
+  color:color-mix(in srgb,var(--ux-text-inverse) 76%,transparent)!important
+}
+:global(html[data-theme="dark"]) .mobileSideSheet .roomItemShell{
+  background:transparent!important;
+  border-color:transparent!important
+}
+:global(html[data-theme="dark"]) .mobileSideSheet .roomItemShell.activeRoom{
+  background:color-mix(in srgb,var(--namaa-gold-500) 16%,var(--namaa-green-900))!important;
+  border-color:var(--namaa-gold-500)!important
+}
+:global(html[data-theme="dark"]) .mobileSideSheet .roomItemShell .roomCopy strong,
+:global(html[data-theme="dark"]) .mobileSideSheet .sideUtilityList>button{
+  color:var(--ux-text-inverse)!important;
+  -webkit-text-fill-color:var(--ux-text-inverse)!important
+}
