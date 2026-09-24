@@ -19,7 +19,11 @@ export default async function ProtectedLayout({ children }: Readonly<{ children:
       <GlobalTopBar profile={{displayName:user.name,email:user.email,timezone:'Asia/Riyadh',emailVerified:user.emailVerified,image:user.image}} />
       <TabletTopNav />
       <MobileTopBar profile={{displayName:user.name,email:user.email,timezone:'Asia/Riyadh',emailVerified:user.emailVerified,image:user.image}} />
-      <div id="main-content" tabIndex={-1} className="main-content-focus-target"><MobileConversationGate>{children}</MobileConversationGate></div>
+      <div id="main-content" tabIndex={-1} className="main-content-focus-target">
+        <div className="namaa-main-canvas">
+          <MobileConversationGate>{children}</MobileConversationGate>
+        </div>
+      </div>
       <MobileBottomNav />
       <BankMessageDialog />
     </div>
