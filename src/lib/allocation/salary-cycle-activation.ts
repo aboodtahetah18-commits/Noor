@@ -86,7 +86,10 @@ export async function activateSalaryCycle(userId:string,receivedAt=new Date()):P
   if(cycleId){
     const cycleRows=await sql`select id,status,expected_next_income_date::text from public.financial_cycles where id=${cycleId}::uuid and user_id=${userId}::uuid limit 1`;
     const cycle=cycleRows[0];
-    if(cycle?.expected_next_income_date){expectedNext=String(cycle.expected_next_income_date);provisional=false;}
+    if(cycle?.expected_next_income_date){
+      const candidate=String(cycle.expected_next_income_date);
+      if(candidate>=startDate){expectedNext=candidate;provisional=false;}
+    }
     if(cycle?.id){
       await sql`update public.financial_cycles set status='ACTIVE',start_date=${startDate}::date,activated_at=now(),updated_at=now() where id=${cycleId}::uuid and user_id=${userId}::uuid and status='DRAFT'`;
     }
@@ -138,4 +141,59 @@ export async function activateSalaryCycle(userId:string,receivedAt=new Date()):P
   const unmatchedBuckets=instructions.filter(item=>item.status==='NEEDS_ACCOUNT_MAPPING').map(item=>item.title);
 
   return {status:'ACTIVATED',cycleId,planId:String(approved.plan_id),salaryAmount:salaryAmount??null,receivedOn:startDate,expectedNextSalaryDate:expectedNext,expectedNextSalaryDateProvisional:provisional,instructions,unmatchedBuckets,externalExecution:false};
+}
+
+export async function createSalaryCycleActivationReply(userId:string){
+  const result=await activateSalaryCycle(userId);
+  const sql=getRawSql();
+  const roomRows=await sql`
+    select id from public.conversation_threads
+    where user_id=${userId}::uuid and room_key='central'
+    limit 1
+  `;
+  const threadId=roomRows[0]?.id?String(roomRows[0].id):null;
+  if(!threadId) return {result,reply:null};
+
+  let body='';
+  let kind='followup';
+  if(result.status==='NOT_READY'){
+    body='وصلني تأكيد نزول الراتب، لكن الملف المالي لم يكتمل 100٪ بعد. لن أبدأ توزيعًا مبنيًا على بيانات ناقصة. سأكمل معك البيانات المطلوبة أولًا.';
+    kind='request';
+  }else if(result.status==='NEEDS_APPROVED_PLAN'){
+    body='تم تسجيل أن الراتب نزل، لكن لا توجد بعد ميزانية معتمدة من الاجتماع التأسيسي. لن أوزع المبلغ قبل اعتماد الخطة. الخطوة التالية هي اعتماد مشروع الميزانية والتوزيع.';
+    kind='request';
+  }else if(result.status==='ALREADY_ACTIVE'){
+    body='الدورة المالية الحالية مفعلة بالفعل. سأستمر في متابعة الصرف والمطابقة والانحرافات على الخطة النشطة.';
+  }else{
+    const ready=result.instructions.filter(item=>item.status==='READY');
+    const total=ready.reduce((sum,item)=>sum+item.amount,0);
+    const unmatched=result.unmatchedBuckets.length;
+    body=`تم تفعيل دورة الراتب من تاريخ ${result.receivedOn}. جهزت ${ready.length} تعليمات توزيع داخلية بإجمالي ${new Intl.NumberFormat('ar-SA-u-nu-latn',{maximumFractionDigits:2}).format(total)} ر.س. ${unmatched? `بقي ${unmatched} بند/بنود تحتاج ربط حساب وجهة قبل التنفيذ.`:'جميع البنود ذات المبالغ أصبحت مرتبطة بوجهات معروفة.'} لا أنفذ أي تحويل بنكي خارجي تلقائيًا.`;
+  }
+
+  const rows=await sql`
+    insert into public.conversation_messages(
+      id,thread_id,user_id,sender_type,sender_key,sender_name,message_kind,body,structured_data
+    ) values(
+      ${randomUUID()},${threadId}::uuid,${userId}::uuid,'agent','budget-spending-owner','مسؤول الميزانية والإنفاق',
+      ${kind},${body},
+      ${JSON.stringify({
+        salary_cycle_activation:true,
+        activation_status:result.status,
+        cycle_id:result.cycleId,
+        plan_id:result.planId,
+        salary_amount:result.salaryAmount,
+        received_on:result.receivedOn,
+        expected_next_salary_date:result.expectedNextSalaryDate,
+        expected_next_salary_date_provisional:result.expectedNextSalaryDateProvisional,
+        distribution_instructions:result.instructions,
+        unmatched_buckets:result.unmatchedBuckets,
+        external_execution:false,
+        execution_boundary:'تفعيل داخلي للدورة وتعليمات توزيع فقط؛ لا تحويل بنكي خارجي تلقائي',
+      })}::jsonb
+    )
+    returning id,sender_type,sender_key,sender_name,message_kind,body,structured_data,created_at
+  `;
+  await sql`update public.conversation_threads set updated_at=now() where id=${threadId}::uuid`;
+  return {result,reply:rows[0]??null};
 }
