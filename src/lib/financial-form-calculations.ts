@@ -8,10 +8,11 @@ export function roundMoney(value:number){
   return Number(finite(value).toFixed(2));
 }
 
-export function monthlyRecurringTotal(period:RecurrencePeriod,occurrences:number,unitCost:number){
+export function monthlyRecurringTotal(period:RecurrencePeriod,occurrences:number,unitCost:number,context?:string){
   const count=Math.max(0,finite(occurrences));
   const cost=Math.max(0,finite(unitCost));
-  const factor=period==='يومي'?30:period==='أسبوعي'?52/12:1;
+  const dailyFactor=context==='أيام العمل'?22:context==='نهاية الأسبوع'?8:30;
+  const factor=period==='يومي'?dailyFactor:period==='أسبوعي'?52/12:1;
   return roundMoney(count*cost*factor);
 }
 
