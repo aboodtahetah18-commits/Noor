@@ -11375,3 +11375,209 @@
     max-width:none!important;
   }
 }
+
+
+/* Financial profile — compact institutional layout with dedicated bill/subscription tables. */
+.extendedProfileSheet{
+  border-top:calc(var(--ux-space-1) / 2) solid var(--namaa-green-900)
+}
+.extendedProfileTopFrame{
+  height:var(--ux-space-1);
+  background:var(--namaa-green-900)
+}
+.extendedProfileHeader{
+  border-bottom:1px solid color-mix(in srgb,var(--namaa-green-900) 26%,var(--namaa-border))
+}
+.extendedProfileHeaderTitle{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:var(--ux-space-3)
+}
+.extendedProfileHeaderTitle>strong{
+  color:var(--ux-text-primary)
+}
+.extendedProfileLogo{
+  width:96px;
+  height:auto;
+  object-fit:contain;
+  flex:0 0 auto
+}
+.extendedSectionTabs button{
+  min-height:var(--ux-size-12);
+  align-items:center
+}
+.extendedSectionTabs button strong{
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-body-sm-size)
+}
+.extendedSectionTabs .extendedTabActive strong{
+  color:var(--namaa-green-900)
+}
+.extendedTableSection{
+  display:grid;
+  gap:var(--ux-space-3)
+}
+.extendedTableToolbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--ux-space-2)
+}
+.extendedTableToolbar>span{
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size)
+}
+.extendedTableToolbar>button{
+  min-height:var(--ux-size-10);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:var(--ux-space-2);
+  padding-inline:var(--ux-space-3);
+  border:1px solid var(--namaa-green-700);
+  border-radius:var(--ux-radius-full);
+  background:var(--namaa-green-900);
+  color:var(--ux-text-inverse);
+  font:inherit;
+  font-size:var(--ux-type-button-size);
+  font-weight:900;
+  cursor:pointer
+}
+.extendedTableEmpty{
+  min-height:var(--ux-size-24);
+  display:grid;
+  place-items:center;
+  align-content:center;
+  gap:var(--ux-space-2);
+  padding:var(--ux-space-4);
+  border:1px dashed var(--namaa-border-strong);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-surface-warm);
+  color:var(--ux-text-secondary);
+  text-align:center
+}
+.extendedDataTableWrap{
+  width:100%;
+  overflow-x:auto;
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-card)
+}
+.extendedDataTable{
+  width:100%;
+  border-collapse:collapse;
+  min-width:640px
+}
+.extendedDataTable th,
+.extendedDataTable td{
+  padding:var(--ux-space-2);
+  border-bottom:1px solid var(--namaa-border);
+  text-align:right;
+  vertical-align:middle
+}
+.extendedDataTable th{
+  background:color-mix(in srgb,var(--namaa-green-700) 9%,var(--namaa-card));
+  color:var(--namaa-green-900);
+  font-size:var(--ux-type-caption-size);
+  font-weight:900;
+  white-space:nowrap
+}
+.extendedDataTable tbody tr:last-child td{
+  border-bottom:0
+}
+.extendedDataTable input,
+.extendedDataTable select{
+  width:100%;
+  min-height:var(--ux-size-10);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-2);
+  background:var(--namaa-surface-warm);
+  color:var(--ux-text-primary);
+  padding:var(--ux-space-2);
+  font:inherit
+}
+.extendedRowActions{
+  width:var(--ux-size-12)
+}
+.extendedRowActions>button{
+  width:var(--ux-size-10);
+  height:var(--ux-size-10);
+  display:grid;
+  place-items:center;
+  border:1px solid color-mix(in srgb,var(--namaa-gold-500) 58%,var(--namaa-border));
+  border-radius:var(--ux-radius-2);
+  background:color-mix(in srgb,var(--namaa-gold-500) 18%,var(--namaa-card));
+  color:var(--namaa-green-900);
+  cursor:pointer
+}
+.extendedActions{
+  justify-items:end
+}
+.extendedActions .primaryActionButton{
+  min-width:128px
+}
+
+@media (max-width:760px){
+  .extendedProfileSheet{
+    inset-inline:var(--ux-space-1);
+    bottom:var(--ux-space-1);
+    max-height:94dvh
+  }
+  .extendedProfileHeaderTitle{
+    flex:1;
+    justify-content:space-between
+  }
+  .extendedProfileLogo{
+    width:82px
+  }
+  .extendedDataTableWrap{
+    overflow:visible;
+    border:0;
+    background:transparent
+  }
+  .extendedDataTable{
+    min-width:0;
+    display:block
+  }
+  .extendedDataTable thead{
+    display:none
+  }
+  .extendedDataTable tbody{
+    display:grid;
+    gap:var(--ux-space-2)
+  }
+  .extendedDataTable tr{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:var(--ux-space-2);
+    padding:var(--ux-space-3);
+    border:1px solid var(--namaa-border);
+    border-radius:var(--ux-radius-3);
+    background:var(--namaa-card);
+    box-shadow:var(--ux-shadow-xs)
+  }
+  .extendedDataTable td{
+    display:grid;
+    gap:var(--ux-space-1);
+    padding:0;
+    border:0
+  }
+  .extendedDataTable td::before{
+    content:attr(data-label);
+    color:var(--ux-text-secondary);
+    font-size:var(--ux-type-caption-size);
+    font-weight:800
+  }
+  .extendedRowActions{
+    width:auto;
+    grid-column:1 / -1;
+    justify-items:end
+  }
+  .extendedRowActions::before{
+    display:none
+  }
+  .extendedTableToolbar{
+    align-items:stretch
+  }
+}
