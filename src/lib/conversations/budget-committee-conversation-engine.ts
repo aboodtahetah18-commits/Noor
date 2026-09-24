@@ -1,0 +1,245 @@
+import { randomUUID } from 'node:crypto';
+import { getRawSql } from '@/infrastructure/db/client';
+import { getDashboardSummary } from '@/features/dashboard/queries/get-dashboard-summary';
+import { getCurrentFinancialPlanMonitoring } from '@/lib/allocation/financial-plan-monitoring';
+import { getGovernanceMeetingSchedule } from '@/lib/governance/governance-meeting-scheduler';
+import type { ConversationMessageKind } from '@/lib/conversations/store';
+
+export type BudgetCommitteePointKind='RISK'|'DEVIATION'|'DATA_GAP'|'IMPROVEMENT'|'INFO';
+export type BudgetCommitteePoint={
+  key:string; kind:BudgetCommitteePointKind; priority:number; title:string;
+  summary:string; evidence:string[]; question:string|null; requiresResponse:boolean;
+};
+type BudgetCommitteeReply={
+  id:string; sender_type:'agent'; sender_key:string; sender_name:string;
+  message_kind:ConversationMessageKind; body:string; structured_data:Record<string,unknown>; created_at?:string;
+};
+
+function n(value:unknown){const parsed=typeof value==='number'?value:Number(value);return Number.isFinite(parsed)?parsed:0}
+function money(value:number){return new Intl.NumberFormat('ar-SA-u-nu-latn',{maximumFractionDigits:2}).format(value)+' ر.س'}
+function percent(value:number){return new Intl.NumberFormat('ar-SA-u-nu-latn',{maximumFractionDigits:1}).format(value)+'٪'}
+
+function classifyUserResponse(text:string){
+  const value=text.trim();
+  if(/(?:ليش|لماذا|وضح|اشرح|كيف حسبت|على أي أساس|على اي اساس)/i.test(value))return 'EXPLAIN' as const;
+  if(/^(?:اعتمد|موافق|وافق|نعم|تمام|مناسب)[.!؟\s]*$/i.test(value))return 'APPROVE' as const;
+  if(/^(?:لا|ارفض|أرفض|رفض|غير مناسب|ما أوافق|لا أوافق)[.!؟\s]*$/i.test(value))return 'REJECT' as const;
+  if(/(?:مؤقت|استثنائي|مرة واحدة|هذا الشهر فقط|بسبب|لأن|لان|دوام|سفر|مناسبة|طارئ)/i.test(value))return 'CONTEXT' as const;
+  if(/(?:التالي|النقطة التالية|كمل|اكمل|أكمل)/i.test(value))return 'NEXT' as const;
+  if(/(?:وش المهم|ما المهم|ركز|الأهم|الاهم|ملخص)/i.test(value))return 'FOCUS' as const;
+  return 'GENERAL' as const;
+}
+
+async function handledPointKeys(userId:string,threadId:string,meetingId:string){
+  const sql=getRawSql();
+  const rows=await sql`
+    select structured_data from public.conversation_messages
+    where user_id=${userId}::uuid and thread_id=${threadId}::uuid
+      and sender_type='agent'
+      and structured_data->>'scope_kind'='meeting'
+      and structured_data->>'meeting_id'=${meetingId}
+      and structured_data ? 'committee_point_status'
+    order by created_at asc
+  `;
+  const handled=new Set<string>();
+  for(const row of rows){
+    const data=row.structured_data&&typeof row.structured_data==='object'&&!Array.isArray(row.structured_data)
+      ?row.structured_data as Record<string,unknown>:{};
+    const key=typeof data.committee_point_key==='string'?data.committee_point_key:null;
+    const status=typeof data.committee_point_status==='string'?data.committee_point_status:null;
+    if(key&&['CONTEXT_RECEIVED','APPROVED','REJECTED','ANSWERED','CLOSED'].includes(String(status)))handled.add(key);
+  }
+  return handled;
+}
+
+async function lastCommitteeTurn(userId:string,threadId:string,meetingId:string){
+  const sql=getRawSql();
+  const rows=await sql`
+    select body,structured_data from public.conversation_messages
+    where user_id=${userId}::uuid and thread_id=${threadId}::uuid
+      and sender_type='agent'
+      and structured_data->>'scope_kind'='meeting'
+      and structured_data->>'meeting_id'=${meetingId}
+      and structured_data->>'committee_engine'='budget-v1'
+    order by created_at desc limit 1
+  `;
+  const row=rows[0];
+  if(!row)return null;
+  const data=row.structured_data&&typeof row.structured_data==='object'&&!Array.isArray(row.structured_data)
+    ?row.structured_data as Record<string,unknown>:{};
+  return {body:String(row.body??''),data};
+}
+
+export async function buildBudgetCommitteePoints(userId:string,meetingId:string):Promise<BudgetCommitteePoint[]>{
+  const [dashboard,monitoring,schedule]=await Promise.all([
+    getDashboardSummary(userId).catch(()=>null),
+    getCurrentFinancialPlanMonitoring(userId).catch(()=>null),
+    getGovernanceMeetingSchedule(userId).catch(()=>null),
+  ]);
+  const meeting=schedule?.meetings.find(item=>item.id===meetingId);
+  const points:BudgetCommitteePoint[]=[];
+
+  if(meeting?.missing_data?.length){
+    points.push({
+      key:'meeting-data-gap',kind:'DATA_GAP',priority:130,title:'بيانات تمنع اكتمال قراءة اللجنة',
+      summary:'هناك بيانات أساسية ناقصة قبل أن أعطيك حكمًا نهائيًا على بعض البنود.',
+      evidence:meeting.missing_data.map(item=>'البيان الناقص: '+item),
+      question:'نبدأ بأهم نقص: '+meeting.missing_data[0]+'. هل تستطيع تزويدي به الآن؟',requiresResponse:true,
+    });
+  }
+
+  if(dashboard){
+    const overdue=dashboard.upcomingObligations.filter(item=>item.status==='OVERDUE');
+    if(overdue.length){
+      points.push({
+        key:'overdue-obligations',kind:'RISK',priority:150,title:'استحقاق متأخر يؤثر على خطة الإنفاق',
+        summary:'يوجد '+overdue.length+' استحقاق متأخر، لذلك أي توسيع للإنفاق المرن يجب أن ينتظر التحقق من حالته.',
+        evidence:overdue.slice(0,3).map(item=>item.name+': '+item.amount+' ر.س — '+item.status),
+        question:'هل تم سداد هذه الاستحقاقات خارج نماء، أم ما زالت قائمة؟',requiresResponse:true,
+      });
+    }
+
+    const deficit=n(dashboard.forecast.expectedDeficit);
+    if(deficit>0){
+      points.push({
+        key:'forecast-deficit',kind:'RISK',priority:145,title:'فجوة متوقعة قبل نهاية الدورة',
+        summary:'التوقع الحالي يشير إلى عجز يقارب '+money(deficit)+' إذا استمر المسار الحالي.',
+        evidence:['رصيد نهاية الدورة المتوقع: '+String(dashboard.forecast.projectedEndBalance)+' ر.س','العجز المتوقع: '+money(deficit)],
+        question:'قبل أن أقترح خفضًا: هل يوجد دخل قريب أو مبلغ متوقع لم يُسجل بعد؟',requiresResponse:true,
+      });
+    }
+
+    const util=n(dashboard.budget.utilizationPercent);
+    const remaining=n(dashboard.budget.remaining);
+    if(util>=85){
+      points.push({
+        key:'budget-utilization',kind:util>=100?'DEVIATION':'IMPROVEMENT',priority:util>=100?132:104,
+        title:util>=100?'تجاوز في استخدام الميزانية':'اقتراب من حد الميزانية',
+        summary:'استخدام الميزانية وصل إلى '+percent(util)+' والمتبقي '+money(remaining)+'.',
+        evidence:['نسبة الاستخدام: '+percent(util),'المتبقي: '+money(remaining)],
+        question:'هل الارتفاع هذا مؤقت بسبب ظرف محدد، أم أصبح نمطًا متكررًا؟',requiresResponse:true,
+      });
+    }
+  }
+
+  if(monitoring){
+    for(const item of monitoring.items.filter(item=>item.status==='EXCEEDED').slice(0,4)){
+      points.push({
+        key:'plan-exceeded:'+item.ownerKey,kind:'DEVIATION',priority:138,title:'تجاوز مثبت على '+item.ownerName,
+        summary:'المنفذ الموثق تجاوز المخطط بمقدار '+money(item.varianceAmount)+'.',
+        evidence:['المخطط: '+money(item.plannedAmount),'المنفذ: '+money(item.realizedAmount),'عدد الأدلة/الحركات: '+String(item.evidenceCount)],
+        question:'هل هذا التجاوز سببه حالة مؤقتة يمكن استثناؤها، أم يحتاج تعديلًا في الخطة؟',requiresResponse:true,
+      });
+    }
+  }
+
+  if(!points.length){
+    points.push({
+      key:'stable-cycle',kind:'INFO',priority:30,title:'لا توجد نقطة حرجة ظاهرة الآن',
+      summary:'المؤشرات المتاحة لا تظهر تجاوزًا أو عجزًا مثبتًا يحتاج قرارًا فوريًا.',
+      evidence:['سأستمر في مراقبة الخطة والانحرافات والالتزامات خلال الدورة.'],question:null,requiresResponse:false,
+    });
+  }
+  return points.sort((a,b)=>b.priority-a.priority);
+}
+
+function explainPoint(point:BudgetCommitteePoint){
+  const evidence=point.evidence.length?point.evidence.map((item,index)=>(index+1)+') '+item).join(' '):'لا يوجد دليل رقمي إضافي مسجل.';
+  return 'سبب تركيزي على «'+point.title+'» هو أن أثرها أعلى من بقية النقاط الحالية. الأدلة: '+evidence+' هذا تفسير تحليلي وليس تنفيذًا أو قرارًا ماليًا تلقائيًا.';
+}
+
+function nextPointBody(point:BudgetCommitteePoint,remaining:number){
+  const tail=remaining>0?' وبعد هذه النقطة عندي '+remaining+' نقطة أخرى مرتبة حسب الأثر.':' وهذه آخر نقطة ذات أولوية حاليًا.';
+  return (point.summary+' '+(point.question??'')+tail).trim();
+}
+
+export async function createBudgetCommitteeConversationReply(args:{userId:string;meetingId:string;userText:string;}):Promise<BudgetCommitteeReply|null>{
+  const sql=getRawSql();
+  const [schedule,threadRows]=await Promise.all([
+    getGovernanceMeetingSchedule(args.userId),
+    sql`select id from public.conversation_threads where user_id=${args.userId}::uuid and room_key='council' limit 1`,
+  ]);
+  const meeting=schedule.meetings.find(item=>item.id===args.meetingId);
+  const threadId=threadRows[0]?.id?String(threadRows[0].id):null;
+  if(!meeting||!threadId||!/ميزانية|إنفاق/.test(meeting.title))return null;
+
+  const [points,handled,lastTurn]=await Promise.all([
+    buildBudgetCommitteePoints(args.userId,args.meetingId),
+    handledPointKeys(args.userId,threadId,args.meetingId),
+    lastCommitteeTurn(args.userId,threadId,args.meetingId),
+  ]);
+  const currentKey=typeof lastTurn?.data.committee_point_key==='string'?lastTurn.data.committee_point_key:null;
+  const currentPoint=points.find(point=>point.key===currentKey)??null;
+  const responseType=classifyUserResponse(args.userText);
+
+  let point=currentPoint;
+  let pointStatus='OPEN';
+  let decision:string|null=null;
+  let contextNote:string|null=null;
+  let body='';
+
+  if(currentPoint&&responseType==='EXPLAIN'){
+    body=explainPoint(currentPoint)+' '+(currentPoint.question??'');
+  }else if(currentPoint&&responseType==='APPROVE'){
+    decision='APPROVED'; pointStatus='APPROVED'; handled.add(currentPoint.key);
+    const next=points.find(item=>!handled.has(item.key))??null; point=next;
+    body=next
+      ?'تم تسجيل موافقتك على النقطة السابقة ضمن محضر الحوار، دون تنفيذ مالي تلقائي. ننتقل للنقطة التالية: '+nextPointBody(next,Math.max(0,points.filter(item=>!handled.has(item.key)&&item.key!==next.key).length))
+      :'تم تسجيل موافقتك على النقطة السابقة. لا توجد نقطة أعلى أولوية متبقية الآن.';
+  }else if(currentPoint&&responseType==='REJECT'){
+    decision='REJECTED'; pointStatus='REJECTED'; handled.add(currentPoint.key);
+    const next=points.find(item=>!handled.has(item.key))??null; point=next;
+    body=next
+      ?'تم تسجيل رفضك للنقطة السابقة وسأحتفظ به حتى لا أعيد طرحها كأنها جديدة بلا سبب. ننتقل الآن إلى: '+nextPointBody(next,Math.max(0,points.filter(item=>!handled.has(item.key)&&item.key!==next.key).length))
+      :'تم تسجيل رفضك. لا توجد نقطة أخرى أعلى أولوية حاليًا.';
+  }else if(currentPoint&&responseType==='CONTEXT'){
+    contextNote=args.userText.trim().slice(0,400); pointStatus='CONTEXT_RECEIVED'; handled.add(currentPoint.key);
+    const next=points.find(item=>!handled.has(item.key))??null; point=next;
+    body=next
+      ?'سجلت تفسيرك للنقطة السابقة كسياق لهذه الدورة، لذلك لن أتعامل معها تلقائيًا كاتجاه دائم. ننتقل إلى: '+nextPointBody(next,Math.max(0,points.filter(item=>!handled.has(item.key)&&item.key!==next.key).length))
+      :'سجلت تفسيرك كسياق للدورة الحالية. لا توجد نقطة أخرى أعلى أولوية الآن.';
+  }else{
+    const next=points.find(item=>!handled.has(item.key))??points[0]??null; point=next;
+    if(!next)return null;
+    const preview=points.filter(item=>!handled.has(item.key)&&item.key!==next.key).slice(0,2).map(item=>item.title);
+    const previewText=preview.length?' وبعدها: '+preview.join('، ')+'.':'';
+    body=responseType==='FOCUS'||responseType==='NEXT'
+      ?'أهم نقطة الآن: '+next.title+'. '+nextPointBody(next,Math.max(0,points.filter(item=>!handled.has(item.key)&&item.key!==next.key).length))
+      :'أبدأ معك بأعلى نقطة أثرًا بدل عرض كل شيء دفعة واحدة. '+next.title+': '+nextPointBody(next,Math.max(0,points.filter(item=>!handled.has(item.key)&&item.key!==next.key).length))+previewText;
+  }
+
+  const messageKind:ConversationMessageKind=point?.kind==='RISK'?'risk':point?.kind==='DEVIATION'?'followup':point?.requiresResponse?'request':'message';
+  const structuredData={
+    scope_kind:'meeting',meeting_id:meeting.id,meeting_title:meeting.title,committee_engine:'budget-v1',
+    committee_point_key:point?.key??currentPoint?.key??null,committee_point_title:point?.title??currentPoint?.title??null,
+    committee_point_kind:point?.kind??currentPoint?.kind??null,committee_point_status:pointStatus,
+    committee_decision:decision,committee_context_note:contextNote,response_type:responseType,
+    ranked_points:points.slice(0,3).map(item=>({key:item.key,title:item.title,kind:item.kind,priority:item.priority})),
+    memory_aware:true,external_execution:false,
+    execution_boundary:'حوار لجنة وتحليل وقرارات مسجلة فقط؛ لا تنفيذ مالي خارجي تلقائي',
+  };
+
+  const rows=await sql`
+    insert into public.conversation_messages(
+      id,thread_id,user_id,sender_type,sender_key,sender_name,message_kind,body,structured_data
+    ) values(
+      ${randomUUID()},${threadId}::uuid,${args.userId}::uuid,'agent',
+      'budget-spending-owner','مسؤول الميزانية والإنفاق',${messageKind},${body},${JSON.stringify(structuredData)}::jsonb
+    )
+    returning id,sender_type,sender_key,sender_name,message_kind,body,structured_data,created_at
+  `;
+  await sql`update public.conversation_threads set updated_at=now() where id=${threadId}::uuid`;
+  return (rows[0]??null) as BudgetCommitteeReply|null;
+}
+
+export async function buildBudgetCommitteePreMeetingBrief(userId:string,meetingId:string){
+  const points=await buildBudgetCommitteePoints(userId,meetingId);
+  const top=points.slice(0,3);
+  return {
+    title:'ورقة تركيز لجنة الميزانية والإنفاق',
+    points:top,
+    body:top.length
+      ?'قبل اجتماع لجنة الميزانية والإنفاق، عندي '+top.length+' نقاط تستحق تركيزك: '+top.map((item,index)=>(index+1)+') '+item.title).join('، ')+'. سأناقشها معك واحدة واحدة داخل دردشة الاجتماع، ولن أطلب قرارًا على أكثر من نقطة في الرسالة الواحدة.'
+      :'لا توجد نقطة ذات أولوية مرتفعة قبل الاجتماع حاليًا.',
+  };
+}
