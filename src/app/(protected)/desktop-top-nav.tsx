@@ -10,7 +10,7 @@ const pages = [
   { href: '/bank-operations', label: 'البنوك', icon: 'landmark' },
   { href: '/investments', label: 'الاستثمارات', icon: 'chart' },
   { href: '/governance', label: 'المعرفة', icon: 'receiptText' },
-  { href: '/cases', label: 'القرارات', icon: 'listChecks' },
+  { href: '/cases', label: 'القضايا والقرارات', icon: 'listChecks' },
   { href: '/reports', label: 'المرصد', icon: 'target' },
   { href: '/advisor', label: 'مختبر الخوارزميات', icon: 'sparkles' },
   { href: '/settings', label: 'الإعدادات', icon: 'settings' },

@@ -314,3 +314,23 @@ html[data-theme="dark"] .ux-table th { background:var(--ux-section-soft-blue) !i
   .primary-link,
   .primary-button { transition:none !important; }
 }
+
+
+/* Governed desktop shell surfaces required by the page identity contract. */
+.mustaqbali-topbar {
+  background:var(--ux-shell-topbar-bg) !important;
+  color:var(--ux-text-inverse) !important;
+  border-color:var(--ux-shell-topbar-border) !important;
+}
+.mustaqbali-sidebar,
+.namaa-wide-sidebar {
+  background:var(--ux-shell-sidebar-bg) !important;
+  color:var(--ux-text-inverse) !important;
+  border-color:var(--ux-shell-topbar-border) !important;
+}
+
+.namaa-decisions-progress-native {
+  width:100%;
+  height:12px;
+  accent-color:var(--ux-brand-primary);
+}

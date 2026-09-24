@@ -6,8 +6,8 @@ import { useSyncExternalStore } from 'react';
 type LogoSurface = 'light' | 'dark' | 'auto';
 
 const THEME_KEY = 'namaa-theme';
-const LIGHT_LOGO = '/brand/ndos/namaa-logo-color-hq.png';
-const DARK_LOGO = '/brand/ndos/namaa-logo-white-hq.png';
+const LIGHT_LOGO = '/brand/ndos/namaa-logo-color-transparent.png';
+const DARK_LOGO = '/brand/ndos/namaa-logo-white-transparent.png';
 
 function subscribe(callback: () => void) {
   const onStorage = (event: StorageEvent) => {

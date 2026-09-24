@@ -16,7 +16,7 @@ import './namaa-responsive-polish.css';
 import '../design-system/ndos-v1.2.acceptance.css';
 import '../design-system/ndos-v1.2.css';
 import '../design-system/ndos-v1.2.enforcement.css';
-import './namaa-wide-experience.css';
+import '../design-system/namaa-wide-authority.css';
 import './namaa-shell-visibility.css';
 
 const notoSansArabic = Noto_Sans_Arabic({
@@ -26,7 +26,7 @@ const notoSansArabic = Noto_Sans_Arabic({
   variable: '--font-noto-sans-arabic',
 });
 
-const approvedTransparentLogo = '/brand/ndos/namaa-logo-color-hq.png';
+const approvedTransparentLogo = '/brand/ndos/namaa-logo-color-transparent.png';
 
 export const metadata: Metadata = {
   title: 'نماء',

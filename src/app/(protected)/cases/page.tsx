@@ -1,4 +1,3 @@
-import type React from 'react';
 import Link from 'next/link';
 import { requireAuthenticatedUser } from '@/auth/require-authenticated-user';
 import { listGovernanceCaseContracts, type GovernanceCaseContract } from '@/repositories/governance-case-repository';
@@ -58,15 +57,15 @@ export default async function CasesPage(){
       <section className="namaa-decisions-visuals">
         <article className="tone-gold">
           <div><span>نسبة القضايا النشطة</span><strong>{cases.length?activeShare:0}٪</strong><small>{active.length} من {cases.length} قضية</small></div>
-          <div className="namaa-decisions-ring" style={{'--namaa-ring-share':`${cases.length?activeShare:0}%`} as React.CSSProperties}><b>{cases.length?activeShare:0}٪</b></div>
+          <progress className="namaa-decisions-progress-native" value={cases.length?activeShare:0} max={100} aria-label="نسبة القضايا النشطة">{cases.length?activeShare:0}٪</progress>
         </article>
         <article className="tone-rose">
           <span>التنبيهات</span><strong>{warnings.length}</strong><small>{warningShare}٪ من إجمالي القضايا</small>
-          <div className="namaa-decisions-progress"><i style={{width:`${warningShare}%`}}/></div>
+          <progress className="namaa-decisions-progress-native" value={warningShare} max={100} aria-label="نسبة التنبيهات">{warningShare}٪</progress>
         </article>
         <article className="tone-green">
           <span>التنفيذ والمتابعة</span><strong>{executing.length}</strong><small>{executionShare}٪ من إجمالي القضايا</small>
-          <div className="namaa-decisions-progress"><i style={{width:`${executionShare}%`}}/></div>
+          <progress className="namaa-decisions-progress-native" value={executionShare} max={100} aria-label="نسبة التنفيذ والمتابعة">{executionShare}٪</progress>
         </article>
       </section>
 
