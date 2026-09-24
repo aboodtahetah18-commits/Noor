@@ -2753,7 +2753,7 @@ textarea {
     margin-inline:auto!important;
     padding:18px 22px 28px!important;
     background:#FFFFFF!important;
-    color:#1F2937!important;
+    color:var(--namaa-text)!important;
   }
 
   .namaa-governance-catalog-hero,
