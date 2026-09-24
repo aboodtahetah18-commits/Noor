@@ -28,9 +28,9 @@ export default function GovernancePage() {
               <LucideIcon name="search" size={20} />
             </div>
             <nav>
-              <Link href="/governance">السياسات</Link>
-              <Link href="/governance">اللوائح</Link>
-              <Link href="/governance">الإجراءات</Link>
+              <Link href="/governance/policies">السياسات</Link>
+              <Link href="/governance/regulations">اللوائح</Link>
+              <Link href="/governance/procedures">الإجراءات</Link>
               <Link href="/governance/authorization">مصفوفة الصلاحيات</Link>
             </nav>
           </aside>
