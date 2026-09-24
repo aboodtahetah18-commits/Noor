@@ -8,18 +8,23 @@ export type ExtendedProfileField={
 export type ExtendedProfileTableColumn={
   key:string;
   label:string;
-  kind?:'text'|'number'|'select';
+  kind?:'text'|'number'|'select'|'date'|'textarea';
   options?:string[];
+  mobileVisible?:boolean;
+  placeholder?:string;
 };
 export type ExtendedProfileSection={
   key:string;
   title:string;
   summary:string;
   fields:ExtendedProfileField[];
+  hiddenByDefault?:boolean;
   table?:{
     addLabel:string;
     emptyLabel:string;
     columns:ExtendedProfileTableColumn[];
+    categoryOptions?:string[];
+    allowCustomCategory?:boolean;
   };
 };
 
@@ -33,8 +38,8 @@ export const extendedProfileSections:ExtendedProfileSection[]=[
       addLabel:'إضافة فاتورة',
       emptyLabel:'لا توجد فواتير مسجلة بعد.',
       columns:[
-        {key:'name',label:'الفاتورة'},
-        {key:'amount',label:'القيمة',kind:'number'},
+        {key:'name',label:'الفاتورة',mobileVisible:true},
+        {key:'amount',label:'القيمة',kind:'number',mobileVisible:true},
         {key:'recurrence',label:'الدورية',kind:'select',options:['شهري','كل شهرين','ربع سنوي','نصف سنوي','سنوي','حسب الاستهلاك','أخرى']},
         {key:'due_day',label:'يوم الاستحقاق',kind:'number'},
       ],
@@ -49,8 +54,8 @@ export const extendedProfileSections:ExtendedProfileSection[]=[
       addLabel:'إضافة اشتراك',
       emptyLabel:'لا توجد اشتراكات مسجلة بعد.',
       columns:[
-        {key:'name',label:'الاشتراك'},
-        {key:'amount',label:'القيمة',kind:'number'},
+        {key:'name',label:'الاشتراك',mobileVisible:true},
+        {key:'amount',label:'القيمة',kind:'number',mobileVisible:true},
         {key:'recurrence',label:'الدورية',kind:'select',options:['شهري','ربع سنوي','نصف سنوي','سنوي','أخرى']},
         {key:'due_day',label:'يوم الاستحقاق',kind:'number'},
       ],
@@ -68,21 +73,63 @@ export const extendedProfileSections:ExtendedProfileSection[]=[
   },
   {
     key:'vehicle_details',
-    title:'المركبات والتنقل',
-    summary:'الموديل والاستخدام والوقود والتأمين والصيانة لتقدير تكلفة التنقل بواقعية.',
-    fields:[
-      {key:'vehicle_make',label:'الشركة'},
-      {key:'vehicle_model',label:'الموديل'},
-      {key:'vehicle_year',label:'سنة الصنع',kind:'number'},
-      {key:'ownership',label:'الملكية',kind:'select',options:['مملوكة','تمويل','إيجار','جهة العمل','أخرى']},
-      {key:'monthly_distance',label:'المسافة الشهرية التقريبية بالكيلومتر',kind:'number'},
-      {key:'fuel_type',label:'نوع الطاقة',kind:'select',options:['بنزين','ديزل','كهرباء','هجين','أخرى']},
-      {key:'efficiency_notes',label:'الكفاءة أو الاستهلاك إن كان معروفًا'},
-      {key:'maintenance_notes',label:'صيانة أو إصلاح معروف قادم',kind:'textarea'},
-    ],
+    title:'بيانات المركبات',
+    summary:'أضف كل مركبة مرة واحدة، ثم عدّلها أو احذفها من الجدول عند الحاجة.',
+    fields:[],
+    table:{
+      addLabel:'إضافة مركبة',
+      emptyLabel:'لا توجد مركبات مسجلة بعد.',
+      columns:[
+        {key:'vehicle_name',label:'اسم السيارة',mobileVisible:true},
+        {key:'vehicle_make',label:'الشركة'},
+        {key:'vehicle_year',label:'سنة الصنع',kind:'number',mobileVisible:true},
+        {key:'ownership',label:'الملكية',kind:'select',options:['مملوكة','تمويل','إيجار','جهة العمل','أخرى']},
+        {key:'monthly_distance',label:'المسافة الشهرية كم',kind:'number'},
+        {key:'fuel_type',label:'نوع الطاقة',kind:'select',options:['بنزين','ديزل','كهرباء','هجين','أخرى']},
+        {key:'efficiency_notes',label:'الكفاءة أو الاستهلاك'},
+        {key:'notes',label:'ملاحظات',kind:'textarea'},
+      ],
+    },
+  },
+  {
+    key:'vehicle_maintenance',
+    title:'الصيانة الدورية',
+    summary:'سجل الزيت والفلاتر والإطارات وأي صيانة دورية أو قادمة على المركبات.',
+    fields:[],
+    table:{
+      addLabel:'إضافة صيانة',
+      emptyLabel:'لا توجد أعمال صيانة مسجلة بعد.',
+      columns:[
+        {key:'name',label:'الصيانة',mobileVisible:true},
+        {key:'vehicle',label:'المركبة'},
+        {key:'amount',label:'القيمة',kind:'number',mobileVisible:true},
+        {key:'recurrence',label:'الدورية',kind:'select',options:['شهري','كل 3 أشهر','كل 6 أشهر','سنوي','حسب الكيلومترات','عند الحاجة']},
+        {key:'due_day',label:'يوم الاستحقاق',kind:'number'},
+        {key:'notes',label:'ملاحظات',kind:'textarea'},
+      ],
+    },
+  },
+  {
+    key:'vehicle_expenses',
+    title:'إلزامات ومصاريف المركبة',
+    summary:'التأمين، الاستمارة، الرخصة، الإطارات، والفحوصات أو أي التزام معروف للمركبة.',
+    fields:[],
+    table:{
+      addLabel:'إضافة إلزام للمركبة',
+      emptyLabel:'لا توجد إلزامات مركبة مسجلة بعد.',
+      columns:[
+        {key:'name',label:'الإلزام',mobileVisible:true},
+        {key:'vehicle',label:'المركبة'},
+        {key:'amount',label:'القيمة',kind:'number',mobileVisible:true},
+        {key:'recurrence',label:'الدورية',kind:'select',options:['شهري','ربع سنوي','نصف سنوي','سنوي','كل سنتين','عند الحاجة']},
+        {key:'due_day',label:'يوم الاستحقاق',kind:'number'},
+        {key:'notes',label:'ملاحظات',kind:'textarea'},
+      ],
+    },
   },
   {
     key:'travel_profile',
+    hiddenByDefault:true,
     title:'الرحلات والسفر',
     summary:'نمط الرحلات والتكاليف والحجوزات والعملة دون اعتبار الخطة التزامًا قبل ثبوتها.',
     fields:[
@@ -100,29 +147,40 @@ export const extendedProfileSections:ExtendedProfileSection[]=[
   {
     key:'budget_behavior',
     title:'سلوك بنود الميزانية',
-    summary:'المطاعم والمقاهي والبقالة والاتصالات والاشتراكات والترفيه والعناية حسب السلوك الفعلي.',
-    fields:[
-      {key:'restaurants_frequency',label:'تكرار المطاعم'},
-      {key:'restaurants_average',label:'متوسط وجبة خارج المنزل',kind:'number'},
-      {key:'cafes_frequency',label:'تكرار المقاهي'},
-      {key:'cafes_average',label:'متوسط الطلب في المقهى',kind:'number'},
-      {key:'groceries_frequency',label:'تكرار البقالة'},
-      {key:'groceries_average',label:'متوسط سلة البقالة',kind:'number'},
-      {key:'telecom_notes',label:'خدمات الاتصالات الأساسية',kind:'textarea'},
-      {key:'leisure_notes',label:'الترفيه والهوايات والعناية الشخصية',kind:'textarea'},
-    ],
+    summary:'أضف كل بند مرة واحدة. البنود التي تم تسجيلها تختفي من قائمة الاختيار، ويمكنك إنشاء بند جديد عبر «أخرى».',
+    fields:[],
+    table:{
+      addLabel:'إضافة بند',
+      emptyLabel:'ابدأ بأول بند من سلوكك الفعلي.',
+      categoryOptions:['المطاعم','المقاهي','البقالة','الاتصالات','الترفيه','العناية الشخصية','الهدايا والمناسبات','الملابس','التوصيل','أخرى'],
+      allowCustomCategory:true,
+      columns:[
+        {key:'category',label:'البند',kind:'select',mobileVisible:true},
+        {key:'custom_category',label:'اسم البند الجديد'},
+        {key:'frequency',label:'التكرار',placeholder:'مثال: 4 مرات شهريًا'},
+        {key:'average_amount',label:'متوسط العملية',kind:'number',mobileVisible:true},
+        {key:'monthly_limit',label:'الحد الشهري إن وجد',kind:'number'},
+        {key:'notes',label:'ملاحظات',kind:'textarea'},
+      ],
+    },
   },
   {
     key:'health_education_family',
     title:'الصحة والتعليم والأسرة',
-    summary:'المصاريف المؤثرة والضرورية والموسمية لكل مستفيد دون جمع تفاصيل طبية غير لازمة.',
-    fields:[
-      {key:'health_recurring',label:'مصروف صحي دوري أو علاج معروف',kind:'textarea'},
-      {key:'insurance_coverage',label:'التغطية التأمينية والتحمل المعروف',kind:'textarea'},
-      {key:'education_costs',label:'تعليم أو تدريب قائم وتكاليفه',kind:'textarea'},
-      {key:'family_nonmonthly',label:'مصروفات أسرية غير شهرية معروفة',kind:'textarea'},
-      {key:'shared_costs',label:'مساهمات طرف آخر في المصروفات المشتركة',kind:'textarea'},
-    ],
+    summary:'أضف المصروفات الصحية والتعليمية والتدريبية ودعم الأسرة كمصروفات مستقلة قابلة للتعديل.',
+    fields:[],
+    table:{
+      addLabel:'إضافة مصروف',
+      emptyLabel:'لا توجد مصروفات صحية أو تعليمية أو أسرية مسجلة بعد.',
+      columns:[
+        {key:'category',label:'النوع',kind:'select',options:['صحة','تأمين صحي','تعليم','دورة أو تدريب','دعم الأب أو الأم','مصروف أسري','مصاريف أطفال','أخرى'],mobileVisible:true},
+        {key:'beneficiary',label:'المستفيد'},
+        {key:'amount',label:'القيمة',kind:'number',mobileVisible:true},
+        {key:'recurrence',label:'الدورية',kind:'select',options:['شهري','ربع سنوي','نصف سنوي','سنوي','موسمي','مرة واحدة','عند الحاجة']},
+        {key:'due_day',label:'يوم الاستحقاق',kind:'number'},
+        {key:'notes',label:'ملاحظات',kind:'textarea'},
+      ],
+    },
   },
   {
     key:'renewals_insurance',

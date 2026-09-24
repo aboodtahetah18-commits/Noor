@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 import { LucideIcon } from '@/components/ui/lucide-icon';
-import type { ExtendedProfileSection } from '@/lib/conversations/extended-profile-catalog';
+import type { ExtendedProfileSection, ExtendedProfileTableColumn } from '@/lib/conversations/extended-profile-catalog';
 import styles from './conversation-workspace.module.css';
 
 type FactEnvelope={value?:Record<string,unknown>;confidence?:number;verified_at?:string|null;updated_at?:string|null};
@@ -25,6 +25,16 @@ function tableRowsFromFact(section:ExtendedProfileSection|null,fact?:FactEnvelop
   });
 }
 
+function rowLabel(section:ExtendedProfileSection,row:TableRow){
+  if(section.key==='budget_behavior') return row.category==='أخرى'?(row.custom_category||'بند جديد'):(row.category||'بند');
+  return row.vehicle_name||row.name||row.category||row.beneficiary||'العنصر';
+}
+
+function displayCell(section:ExtendedProfileSection,row:TableRow,column:ExtendedProfileTableColumn){
+  if(section.key==='budget_behavior'&&column.key==='category'&&row.category==='أخرى'&&row.custom_category) return row.custom_category;
+  return row[column.key]||'—';
+}
+
 export function ExtendedProfileSheet({
   open,
   onClose,
@@ -40,11 +50,16 @@ export function ExtendedProfileSheet({
   const [values,setValues]=useState<Record<string,string>>({});
   const [tableRows,setTableRows]=useState<TableRow[]>([]);
   const [draftRow,setDraftRow]=useState<TableRow|null>(null);
+  const [draftIndex,setDraftIndex]=useState<number|null>(null);
   const [loading,setLoading]=useState(false);
   const [saving,setSaving]=useState(false);
   const [error,setError]=useState('');
 
-  const active=useMemo(()=>sections.find(section=>section.key===activeKey)??null,[sections,activeKey]);
+  const visibleSections=useMemo(
+    ()=>sections.filter(section=>!section.hiddenByDefault||Boolean(facts[section.key])),
+    [sections,facts],
+  );
+  const active=useMemo(()=>visibleSections.find(section=>section.key===activeKey)??null,[visibleSections,activeKey]);
 
   useEffect(()=>{
     if(!open) return;
@@ -56,10 +71,12 @@ export function ExtendedProfileSheet({
         if(!response.ok) throw new Error(data.code??'EXTENDED_PROFILE_UNAVAILABLE');
         if(cancelled) return;
         const nextSections=Array.isArray(data.sections)?data.sections:[];
+        const nextFacts=data.facts&&typeof data.facts==='object'?data.facts:{};
+        const available=nextSections.filter(section=>!section.hiddenByDefault||Boolean(nextFacts[section.key]));
         setSections(nextSections);
-        setFacts(data.facts&&typeof data.facts==='object'?data.facts:{});
-        const preferred=initialSection&&nextSections.some(section=>section.key===initialSection)?initialSection:null;
-        setActiveKey(preferred??nextSections[0]?.key??'');
+        setFacts(nextFacts);
+        const preferred=initialSection&&available.some(section=>section.key===initialSection)?initialSection:null;
+        setActiveKey(preferred??available[0]?.key??'');
       })
       .catch(()=>{if(!cancelled)setError('تعذر تحميل الملف المالي التفصيلي الآن.')})
       .finally(()=>{if(!cancelled)setLoading(false)});
@@ -68,7 +85,7 @@ export function ExtendedProfileSheet({
 
   useEffect(()=>{
     if(!active) return;
-    queueMicrotask(()=>setDraftRow(null));
+    queueMicrotask(()=>{setDraftRow(null);setDraftIndex(null)});
     if(active.table){
       queueMicrotask(()=>setTableRows(tableRowsFromFact(active,facts[active.key])));
       return;
@@ -84,79 +101,132 @@ export function ExtendedProfileSheet({
 
   if(!open) return null;
 
+  function blankRow(section:ExtendedProfileSection){
+    const row:TableRow={};
+    for(const column of section.table?.columns??[]) row[column.key]='';
+    if(section.table?.columns.some(column=>column.key==='recurrence')) row.recurrence='شهري';
+    return row;
+  }
+
   function openAddModal(){
     if(!active?.table) return;
-    const row:TableRow={};
-    for(const column of active.table.columns) row[column.key]='';
-    row.recurrence='شهري';
-    setDraftRow(row);
+    setError('');
+    setDraftIndex(null);
+    setDraftRow(blankRow(active));
   }
 
-  function addDraftRow(){
-    if(!active?.table||!draftRow) return;
-    const name=(draftRow.name??'').trim();
-    const amount=Number(draftRow.amount??'');
-    const dueDay=(draftRow.due_day??'').trim();
-    if(!name){
-      setError(active.key==='subscriptions'?'اكتب اسم الاشتراك قبل الإضافة.':'اكتب اسم الفاتورة قبل الإضافة.');
-      return;
-    }
-    if(!Number.isFinite(amount)||amount<0){
-      setError('أدخل قيمة صحيحة.');
-      return;
-    }
-    if(dueDay){
-      const day=Number(dueDay);
-      if(!Number.isInteger(day)||day<1||day>31){
-        setError('يوم الاستحقاق يجب أن يكون رقمًا من 1 إلى 31.');
-        return;
+  function openEditModal(index:number){
+    if(!active?.table) return;
+    setError('');
+    setDraftIndex(index);
+    setDraftRow({...tableRows[index]});
+  }
+
+  function serializeRows(section:ExtendedProfileSection,rows:TableRow[]){
+    return rows.map(row=>{
+      const item:Record<string,unknown>={};
+      for(const column of section.table?.columns??[]){
+        const raw=(row[column.key]??'').trim();
+        if(!raw) continue;
+        if(column.kind==='number'){
+          const n=Number(raw);
+          if(Number.isFinite(n)&&n>=0) item[column.key]=n;
+        }else item[column.key]=raw;
+      }
+      return item;
+    }).filter(item=>Object.keys(item).length>0);
+  }
+
+  async function persist(section:ExtendedProfileSection,rows=tableRows,nextValues=values){
+    const payload:Record<string,unknown>={};
+    if(section.table){
+      payload.items=serializeRows(section,rows);
+    }else{
+      for(const field of section.fields){
+        const raw=(nextValues[field.key]??'').trim();
+        if(!raw) continue;
+        if(field.kind==='number'){
+          const n=Number(raw);
+          if(Number.isFinite(n)&&n>=0) payload[field.key]=n;
+        }else payload[field.key]=raw;
       }
     }
-    setError('');
-    setTableRows(current=>[...current,{...draftRow,name,amount:String(amount)}]);
-    setDraftRow(null);
+    const response=await fetch('/api/onboarding/extended-profile',{
+      method:'PUT',
+      headers:{'content-type':'application/json'},
+      body:JSON.stringify({section:section.key,values:payload}),
+    });
+    const data=await response.json() as {ok?:boolean;value?:Record<string,unknown>};
+    if(!response.ok||!data.ok) throw new Error('save');
+    setFacts(current=>({...current,[section.key]:{value:data.value??payload,confidence:1,verified_at:new Date().toISOString(),updated_at:new Date().toISOString()}}));
   }
 
-  function removeTableRow(index:number){
-    setTableRows(current=>current.filter((_,rowIndex)=>rowIndex!==index));
+  function validateDraft(){
+    if(!active?.table||!draftRow) return false;
+    const first=active.table.columns.find(column=>column.key!=='custom_category');
+    if(first&&!(draftRow[first.key]??'').trim()){
+      setError('أكمل الحقل الأساسي قبل الإضافة.');
+      return false;
+    }
+    if(active.key==='budget_behavior'&&draftRow.category==='أخرى'&&!(draftRow.custom_category??'').trim()){
+      setError('اكتب اسم البند الجديد.');
+      return false;
+    }
+    for(const column of active.table.columns){
+      const raw=(draftRow[column.key]??'').trim();
+      if(!raw||column.kind!=='number') continue;
+      const n=Number(raw);
+      if(!Number.isFinite(n)||n<0){
+        setError('تحقق من القيم الرقمية المدخلة.');
+        return false;
+      }
+      if(column.key==='due_day'&&(!Number.isInteger(n)||n<1||n>31)){
+        setError('يوم الاستحقاق يجب أن يكون من 1 إلى 31.');
+        return false;
+      }
+    }
+    return true;
   }
 
-  async function save(){
+  async function commitDraftRow(){
+    if(!active?.table||!draftRow||saving||!validateDraft()) return;
+    const nextRows=draftIndex===null
+      ? [...tableRows,{...draftRow}]
+      : tableRows.map((row,index)=>index===draftIndex?{...draftRow}:row);
+    setSaving(true);setError('');
+    try{
+      await persist(active,nextRows);
+      setTableRows(nextRows);
+      setDraftRow(null);setDraftIndex(null);
+    }catch{
+      setError('تعذر حفظ العنصر. لم يعتمد نماء التعديل.');
+    }finally{
+      setSaving(false);
+    }
+  }
+
+  async function removeTableRow(index:number){
+    if(!active?.table||saving) return;
+    const nextRows=tableRows.filter((_,rowIndex)=>rowIndex!==index);
+    setSaving(true);setError('');
+    try{
+      await persist(active,nextRows);
+      setTableRows(nextRows);
+    }catch{
+      setError('تعذر حذف العنصر الآن.');
+    }finally{
+      setSaving(false);
+    }
+  }
+
+  async function saveAndAdvance(){
     if(!active||saving) return;
     setSaving(true);setError('');
     try{
-      const payload:Record<string,unknown>={};
-      if(active.table){
-        payload.items=tableRows.map(row=>{
-          const item:Record<string,unknown>={};
-          for(const column of active.table?.columns??[]){
-            const raw=(row[column.key]??'').trim();
-            if(!raw) continue;
-            if(column.kind==='number'){
-              const n=Number(raw);
-              if(Number.isFinite(n)&&n>=0) item[column.key]=n;
-            }else item[column.key]=raw;
-          }
-          return item;
-        }).filter(item=>Object.keys(item).length>0);
-      }else{
-        for(const field of active.fields){
-          const raw=(values[field.key]??'').trim();
-          if(!raw) continue;
-          if(field.kind==='number'){
-            const n=Number(raw);
-            if(Number.isFinite(n)&&n>=0) payload[field.key]=n;
-          }else payload[field.key]=raw;
-        }
-      }
-      const response=await fetch('/api/onboarding/extended-profile',{
-        method:'PUT',
-        headers:{'content-type':'application/json'},
-        body:JSON.stringify({section:active.key,values:payload}),
-      });
-      const data=await response.json() as {ok?:boolean;section?:string;value?:Record<string,unknown>};
-      if(!response.ok||!data.ok) throw new Error('save');
-      setFacts(current=>({...current,[active.key]:{value:data.value??payload,confidence:1,verified_at:new Date().toISOString(),updated_at:new Date().toISOString()}}));
+      await persist(active);
+      const index=visibleSections.findIndex(section=>section.key===active.key);
+      const next=visibleSections[index+1];
+      if(next) setActiveKey(next.key);
     }catch{
       setError('تعذر حفظ هذه المجموعة. لم يعتمد نماء التعديل.');
     }finally{
@@ -164,21 +234,29 @@ export function ExtendedProfileSheet({
     }
   }
 
+  const activeIndex=active?visibleSections.findIndex(section=>section.key===active.key):-1;
+  const isLast=activeIndex===visibleSections.length-1;
+  const displayColumns=active?.table?.columns.filter(column=>column.key!=='custom_category')??[];
+  const categoryOptions=active?.table?.categoryOptions??[];
+  const usedCategories=new Set(tableRows.map(row=>row.category).filter(Boolean));
+
   return <div className={styles.mobileOverlay} role="dialog" aria-modal="true" aria-label="الملف المالي التفصيلي">
     <button type="button" className={styles.scrim} aria-label="إغلاق" onClick={onClose}/>
     <aside className={styles.mobileSheet+' '+styles.mobileFullPageSheet+' '+styles.extendedProfileSheet}>
       <div className={styles.sheetHeader+' '+styles.extendedProfileHeader}>
         <div className={styles.extendedProfileHeaderTitle}>
-          <Image className={styles.extendedProfileLogo} src="/brand/ndos/namaa-logo-color-hq.png" alt="نماء" width={96} height={38} priority/>
+          <span className={styles.extendedProfileBrand} aria-label="نماء"><b>نماء</b><Image src="/brand/namaa-leaf.webp" alt="" width={38} height={38} priority/></span>
           <strong>الملف المالي التفصيلي</strong>
         </div>
         <button type="button" onClick={onClose} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button>
       </div>
+
       {loading&&<p className={styles.sheetMessage}>جارٍ تحميل الأقسام…</p>}
       {error&&<p className={styles.intakeError}>{error}</p>}
+
       {!loading&&<div className={styles.extendedProfileLayout}>
         <nav className={styles.extendedSectionTabs} aria-label="أقسام الملف">
-          {sections.map(section=><button key={section.key} type="button" className={activeKey===section.key?styles.extendedTabActive:''} onClick={()=>setActiveKey(section.key)}>
+          {visibleSections.map(section=><button key={section.key} type="button" className={activeKey===section.key?styles.extendedTabActive:''} onClick={()=>setActiveKey(section.key)}>
             <strong>{section.title}</strong>
           </button>)}
         </nav>
@@ -197,10 +275,13 @@ export function ExtendedProfileSheet({
                   ? <div className={styles.extendedTableEmpty}><LucideIcon name="receiptText" size={24}/><span>{active.table.emptyLabel}</span></div>
                   : <div className={styles.extendedDataTableWrap}>
                       <table className={styles.extendedDataTable}>
-                        <thead><tr>{active.table.columns.map(column=><th key={column.key}>{column.label}</th>)}<th>الإجراء</th></tr></thead>
+                        <thead><tr>{displayColumns.map(column=><th key={column.key} className={column.mobileVisible?styles.mobileKeepColumn:styles.mobileOptionalColumn}>{column.label}</th>)}<th>الإجراء</th></tr></thead>
                         <tbody>{tableRows.map((row,rowIndex)=><tr key={rowIndex}>
-                          {active.table?.columns.map(column=><td key={column.key}>{row[column.key]||'—'}</td>)}
-                          <td className={styles.extendedRowActions}><button type="button" onClick={()=>removeTableRow(rowIndex)} aria-label="حذف السطر"><LucideIcon name="trash2" size={16}/></button></td>
+                          {displayColumns.map(column=><td key={column.key} className={column.mobileVisible?styles.mobileKeepColumn:styles.mobileOptionalColumn} data-label={column.label}>{displayCell(active,row,column)}</td>)}
+                          <td className={styles.extendedRowActions}>
+                            <button type="button" onClick={()=>openEditModal(rowIndex)} aria-label={'تعديل '+rowLabel(active,row)}><LucideIcon name="pencil" size={16}/></button>
+                            <button type="button" onClick={()=>void removeTableRow(rowIndex)} aria-label={'حذف '+rowLabel(active,row)}><LucideIcon name="trash2" size={16}/></button>
+                          </td>
                         </tr>)}</tbody>
                       </table>
                     </div>}
@@ -208,31 +289,39 @@ export function ExtendedProfileSheet({
                 {draftRow&&<div className={styles.extendedAddModalBackdrop} role="presentation">
                   <section className={styles.extendedAddModal} role="dialog" aria-modal="true" aria-label={active.table.addLabel}>
                     <header>
-                      <div><strong>{active.table.addLabel}</strong><small>{active.key==='subscriptions'?'أدخل الاشتراك وقيمته ودورية السداد ويوم الاستحقاق.':'أدخل الفاتورة وقيمتها ودورية السداد ويوم الاستحقاق المتوقع.'}</small></div>
-                      <button type="button" onClick={()=>setDraftRow(null)} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button>
+                      <div><strong>{draftIndex===null?active.table.addLabel:'تعديل '+rowLabel(active,draftRow)}</strong><small>أدخل البيانات الأساسية فقط، ويمكنك تعديلها لاحقًا من الجدول.</small></div>
+                      <button type="button" onClick={()=>{setDraftRow(null);setDraftIndex(null)}} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button>
                     </header>
                     <div className={styles.extendedAddForm}>
-                      {active.table.columns.map(column=><label key={column.key}>
-                        <span>{column.label}</span>
-                        {column.kind==='select'
-                          ? <select value={draftRow[column.key]??''} onChange={event=>setDraftRow(current=>current?{...current,[column.key]:event.target.value}:current)}>
-                              <option value="">اختر</option>
-                              {column.options?.map(option=><option key={option} value={option}>{option}</option>)}
-                            </select>
-                          : <input
-                              type={column.kind==='number'?'number':'text'}
-                              min={column.key==='due_day'?'1':column.kind==='number'?'0':undefined}
-                              max={column.key==='due_day'?'31':undefined}
-                              inputMode={column.kind==='number'?'decimal':undefined}
-                              placeholder={column.key==='due_day'?'مثال: 25':undefined}
-                              value={draftRow[column.key]??''}
-                              onChange={event=>setDraftRow(current=>current?{...current,[column.key]:event.target.value}:current)}
-                            />}
-                      </label>)}
+                      {active.table.columns.map(column=>{
+                        if(column.key==='custom_category'&&draftRow.category!=='أخرى') return null;
+                        const options=column.key==='category'&&categoryOptions.length
+                          ? categoryOptions.filter(option=>option==='أخرى'||!usedCategories.has(option)||draftRow.category===option)
+                          : column.options??[];
+                        return <label key={column.key} className={column.kind==='textarea'?styles.extendedAddWide:undefined}>
+                          <span>{column.label}</span>
+                          {column.kind==='select'
+                            ? <select value={draftRow[column.key]??''} onChange={event=>setDraftRow(current=>current?{...current,[column.key]:event.target.value}:current)}>
+                                <option value="">اختر</option>
+                                {options.map(option=><option key={option} value={option}>{option}</option>)}
+                              </select>
+                            : column.kind==='textarea'
+                              ? <textarea rows={3} value={draftRow[column.key]??''} onChange={event=>setDraftRow(current=>current?{...current,[column.key]:event.target.value}:current)}/>
+                              : <input
+                                  type={column.kind==='number'?'number':column.kind==='date'?'date':'text'}
+                                  min={column.key==='due_day'?'1':column.kind==='number'?'0':undefined}
+                                  max={column.key==='due_day'?'31':undefined}
+                                  inputMode={column.kind==='number'?'decimal':undefined}
+                                  placeholder={column.placeholder??(column.key==='due_day'?'مثال: 25':undefined)}
+                                  value={draftRow[column.key]??''}
+                                  onChange={event=>setDraftRow(current=>current?{...current,[column.key]:event.target.value}:current)}
+                                />}
+                        </label>;
+                      })}
                     </div>
                     <footer>
-                      <button type="button" className={styles.secondaryButton} onClick={()=>setDraftRow(null)}>إلغاء</button>
-                      <button type="button" className={styles.primaryActionButton} onClick={addDraftRow}><LucideIcon name="plus" size={16}/><span>إضافة إلى الجدول</span></button>
+                      <button type="button" className={styles.secondaryButton} onClick={()=>{setDraftRow(null);setDraftIndex(null)}}>إلغاء</button>
+                      <button type="button" className={styles.primaryActionButton} disabled={saving} onClick={()=>void commitDraftRow()}><LucideIcon name="save" size={16}/><span>{saving?'جارٍ الحفظ…':draftIndex===null?'إضافة وحفظ':'حفظ التعديل'}</span></button>
                     </footer>
                   </section>
                 </div>}
@@ -252,8 +341,8 @@ export function ExtendedProfileSheet({
               </div>}
 
           <div className={styles.extendedActions}>
-            <button type="button" className={styles.primaryActionButton} disabled={saving} onClick={()=>void save()}>
-              <LucideIcon name="save" size={20}/><span>{saving?'جارٍ الحفظ…':'حفظ'}</span>
+            <button type="button" className={styles.primaryActionButton} disabled={saving} onClick={()=>void saveAndAdvance()}>
+              <LucideIcon name={isLast?'circleCheck':'chevronLeft'} size={20}/><span>{saving?'جارٍ الحفظ…':isLast?'حفظ وتأكيد':'التالي'}</span>
             </button>
           </div>
         </section>}
