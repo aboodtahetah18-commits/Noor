@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { getRawSql } from '@/infrastructure/db/client';
+import { getLivePersonalBudgetCalculation } from '@/lib/finance/live-personal-budget-calculation';
 
 export type GovernanceMeetingScheduleItem={
   id:string;
@@ -19,9 +20,9 @@ export type GovernanceMeetingScheduleItem={
 };
 
 export const governanceCommitteeCadencePolicy={
-  permanent:{minimum_annual_meetings:4,periodic:true,rule:'أربع اجتماعات سنويًا على الأقل، مع إمكانية زيادة الدورية حسب الدورة والمخاطر.'},
-  temporary:{minimum_annual_meetings:0,periodic:false,rule:'تجتمع عند الحاجة فقط ولا تُنشأ لها دورية تلقائية.'},
-  sensitiveOversight:{minimum_annual_meetings:4,periodic:true,rule:'يجوز اعتماد دورية أعلى للرقابة والتدقيق والمخاطر عندما تتطلب الحساسية متابعة منتظمة.'},
+  permanent:{minimum_annual_meetings:2,periodic:true,rule:'اللجان الدائمة محدودة العدد، وتجتمع دوريًا عند نقاط المراجعة أو عند وجود حدث جوهري؛ لا ينشأ اجتماع لمجرد مرور الوقت.'},
+  temporary:{minimum_annual_meetings:0,periodic:false,rule:'اللجنة المؤقتة لا تنشأ إلا لسبب محدد لا يغطيه المسار التشغيلي أو إحدى اللجنتين الدائمتين، وتنتهي بإغلاق السبب.'},
+  sensitiveOversight:{minimum_annual_meetings:2,periodic:true,rule:'المراجعة الرقابية والتعلم تتم نصف سنويًا مبدئيًا، مع جلسة إضافية فقط عند تغير جوهري أو خلل يتطلب قرارًا.'},
 } as const;
 
 function addHours(date:Date,hours:number){return new Date(date.getTime()+hours*60*60*1000)}
@@ -43,7 +44,7 @@ export async function getGovernanceMeetingSchedule(userId:string){
   const completedAt=onboardingRows[0]?.created_at?new Date(String(onboardingRows[0].created_at)):null;
   if(!completedAt) return {onboarding_complete:false,cycle_anchor:null,cycle_count:0,meetings:[] as GovernanceMeetingScheduleItem[]};
 
-  const [cycleRows,cycleCountRows]=await Promise.all([
+  const [cycleRows,cycleCountRows,liveCalculation]=await Promise.all([
     sql`
       select id,start_date::text,expected_next_income_date::text,status,created_at
       from public.financial_cycles
@@ -52,6 +53,7 @@ export async function getGovernanceMeetingSchedule(userId:string){
       limit 1
     `,
     sql`select count(*)::int as count from public.financial_cycles where user_id=${userId}::uuid`,
+    getLivePersonalBudgetCalculation(userId).catch(()=>null),
   ]);
 
   const cycleCount=Number(cycleCountRows[0]?.count??0);
@@ -59,6 +61,13 @@ export async function getGovernanceMeetingSchedule(userId:string){
   const councilAt=addHours(completedAt,24);
   const anchor=cycleRows[0]?.start_date?new Date(String(cycleRows[0].start_date)+'T00:00:00Z'):new Date(completedAt);
   const thirdCycle=(Math.max(1,cycleCount)%3)===0;
+  const sixthCycle=(Math.max(1,cycleCount)%6)===0;
+  const calculationValues=liveCalculation?.calculation.values??null;
+  const utilization=calculationValues?.utilizationPercent===null||calculationValues?.utilizationPercent===undefined
+    ?0:Number(calculationValues.utilizationPercent);
+  const operatingDeficit=calculationValues?Number(calculationValues.operatingDeficit):0;
+  const financialBalanceTrigger=cycleCount<=1||thirdCycle||operatingDeficit>0||utilization>=90;
+  const oversightTrigger=sixthCycle;
   const now=new Date();
 
   const readinessRows=await sql`
@@ -97,55 +106,46 @@ export async function getGovernanceMeetingSchedule(userId:string){
       agenda:['مراجعة فهم المجلس للمستخدم','مناقشة الأهداف والالتزامات والسيولة والأصول','معايرة أسلوب الخوارزميات وأسئلتها ومستوى الشرح','تثبيت تفضيلات الحوكمة والاجتماعات'],
       ready:true,editable:true,
     },
-    {
-      id:`budget-${cycleId}`,
-      title:'لجنة الميزانية والإنفاق',
-      kind:'لجنة دائمة',
+    ...(financialBalanceTrigger?[{
+      id:`financial-balance-${cycleId}`,
+      title:'لجنة الدورة المالية والتوازن',
+      kind:'لجنة دائمة' as const,
       scheduled_at:addDays(anchor,0).toISOString(),
-      cadence:'اليوم الأول من كل دورة مالية',
-      status:budgetReady?'دوري':'بانتظار اكتمال البيانات',
-      agenda:['إغلاق الدورة السابقة','مراجعة الانحرافات','اعتماد خطة الدورة الجديدة ضمن التفويض'],
-      minimum_annual_meetings:4,periodic:true,sensitivity:'عادية',ready:budgetReady,missing_data:budgetMissing,editable:true,
-    },
-    {
-      id:`liquidity-${cycleId}`,
-      title:'لجنة الاستقرار والسيولة والتمويل',
-      kind:'لجنة دائمة',
-      scheduled_at:addDays(anchor,1).toISOString(),
-      cadence:'اليوم الثاني من كل دورة مالية',
-      status:'دوري',
-      agenda:['السيولة والاستقرار','مخاطر التمويل','التصعيدات المؤسسية'],
-      minimum_annual_meetings:4,periodic:true,sensitivity:'رقابية حساسة',ready:true,editable:true,
-    },
-    {
-      id:`goals-${cycleId}`,
-      title:'لجنة الأهداف والالتزامات',
-      kind:'لجنة دائمة',
-      scheduled_at:addDays(anchor,3).toISOString(),
-      cadence:'اليوم الرابع من كل دورة مالية',
-      status:'دوري',
-      agenda:['تقدم الأهداف','الالتزامات القادمة','تعارضات الأولويات'],
-      minimum_annual_meetings:4,periodic:true,sensitivity:'عادية',ready:true,editable:true,
-    },
-    ...(thirdCycle?[{
-      id:`assets-${cycleId}`,
-      title:'لجنة الاستثمار والأصول',
-      kind:'لجنة دائمة' as const,
-      scheduled_at:addDays(anchor,6).toISOString(),
-      cadence:'اليوم السابع من كل ثالث دورة مالية',
-      status:'دوري',
-      agenda:['الأصول والسيولة المؤهلة','المخاطر والتركيز','الفرص والتسييل المرتبط بالأهداف'],
-      minimum_annual_meetings:4,periodic:true,sensitivity:'عادية' as const,ready:true,editable:true,
+      cadence:'عند أول دورة، ثم كل ثالث دورة، أو فور ظهور عجز أو انحراف جوهري',
+      status:budgetReady?'مطلوبة للمراجعة':'بانتظار اكتمال البيانات',
+      agenda:[
+        'الميزانية والإنفاق والانحرافات',
+        'الالتزامات والاستحقاقات',
+        'السيولة والحماية',
+        'الأهداف والتخصيصات',
+        'التعارضات التي لا تستطيع الخوارزميات حسمها تشغيليًا',
+      ],
+      minimum_annual_meetings:2,
+      periodic:true,
+      sensitivity:'عادية' as const,
+      ready:budgetReady,
+      missing_data:budgetMissing,
+      editable:true,
     }]:[]),
-    ...(thirdCycle?[{
-      id:`governance-${cycleId}`,
-      title:'لجنة السياسات والمخاطر والتدقيق',
+    ...(oversightTrigger?[{
+      id:`oversight-learning-${cycleId}`,
+      title:'لجنة المراجعة والمخاطر والتعلم',
       kind:'لجنة دائمة' as const,
-      scheduled_at:addDays(anchor,9).toISOString(),
-      cadence:'اليوم العاشر من كل ثالث دورة مالية',
-      status:'دوري',
-      agenda:['مراجعة السياسات','التدقيق وجودة القرارات','مقترحات التحسين والتصعيد'],
-      minimum_annual_meetings:4,periodic:true,sensitivity:'رقابية حساسة' as const,ready:true,editable:true,
+      scheduled_at:addDays(anchor,5).toISOString(),
+      cadence:'كل سادس دورة مالية، مع جلسة إضافية فقط عند خلل أو تغيير جوهري',
+      status:'مطلوبة للمراجعة',
+      agenda:[
+        'جودة الحسابات ومصدر الحقيقة',
+        'المخاطر والحدود الصارمة',
+        'أداء الخوارزميات ودقة التوقع',
+        'التعلم المستمر والتغييرات المقترحة',
+        'التعديلات الحوكمية التي تحتاج اعتمادًا',
+      ],
+      minimum_annual_meetings:2,
+      periodic:true,
+      sensitivity:'رقابية حساسة' as const,
+      ready:true,
+      editable:true,
     }]:[]),
   ];
 
@@ -173,9 +173,9 @@ export async function getGovernanceMeetingSchedule(userId:string){
     meetings.push({
       id,
       title:typeof override.title==='string'&&override.title.trim()?override.title:'اجتماع مخصص',
-      kind:override.kind==='مجلس'||override.kind==='لجنة مؤقتة'?'لجنة مؤقتة':'لجنة دائمة',
+      kind:override.kind==='مجلس'?'مجلس':override.kind==='لجنة دائمة'?'لجنة دائمة':'لجنة مؤقتة',
       scheduled_at:scheduled,
-      cadence:typeof override.cadence==='string'?override.cadence:'حسب الحاجة',
+      cadence:typeof override.cadence==='string'?override.cadence:'حسب الحاجة فقط',
       status:typeof override.status==='string'?override.status:'مجدول',
       agenda:Array.isArray(override.agenda)?override.agenda.filter((item):item is string=>typeof item==='string'):[],
       ready:true,editable:true,custom:true,
