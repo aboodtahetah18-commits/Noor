@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { getRawSql } from '@/infrastructure/db/client';
-import { algorithmRoleByKey, type AlgorithmRoleRef } from '@/lib/governance/algorithm-role-registry';
+import { algorithmRoleByKey, assertRoleCompactAuthority, compactAuthoritiesForRole, type AlgorithmRoleRef } from '@/lib/governance/algorithm-role-registry';
 import { getEntityOperationalDashboard } from '@/lib/conversations/entity-operational-dashboard';
 import { getGovernanceMeetingSchedule } from '@/lib/governance/governance-meeting-scheduler';
 import type { ConversationMessageKind, ConversationRoomKey } from '@/lib/conversations/store';
@@ -101,6 +101,8 @@ export async function createFocusedRoleReply(args:{
 }):Promise<FocusedReply|null>{
   const role=algorithmRoleByKey(args.roleKey);
   if(!role||role.kind!=='responsibility_owner'||role.homeRoom!==args.roomKey)return null;
+  assertRoleCompactAuthority(role.key,'READ_CONFIRMED_DATA');
+  assertRoleCompactAuthority(role.key,'RECORD_INTERNAL_CONTEXT');
   const sql=getRawSql();
   const [threadRows,factRows,dashboard,liveCalculation]=await Promise.all([
     sql`select id from public.conversation_threads where user_id=${args.userId}::uuid and room_key=${args.roomKey} limit 1`,
@@ -131,7 +133,7 @@ export async function createFocusedRoleReply(args:{
   const known=shortFactSummary(factRows as Array<{fact_key:unknown;value_json:unknown}>);
   const plan=dashboard?.plans.find(item=>item.ownerName===role.name)??null;
   const calculationSummary=shouldShowCalculationSummary(args.userText)
-    ?roleCalculationSummary(role.key,liveCalculation)
+    ?(assertRoleCompactAuthority(role.key,'CALCULATE_AND_ANALYZE'),roleCalculationSummary(role.key,liveCalculation))
     :null;
   const body=`${roleIntro(role)} ${calculationSummary??''} ${roleQuestion(role,args.userText,known,plan?.nextAction??null,previousUserMessage)}`.trim();
   const structuredData={
@@ -141,6 +143,7 @@ export async function createFocusedRoleReply(args:{
     room_key:args.roomKey,
     known_fact_groups:known,
     next_action:plan?.nextAction??null,
+    allowed_authorities:compactAuthoritiesForRole(role.key),
     calculation_engine:liveCalculation?liveCalculation.calculation.engineVersion:null,
     calculation_snapshot:liveCalculation?{
       true_available:liveCalculation.calculation.values.trueAvailable,
@@ -195,6 +198,7 @@ export async function createFocusedMeetingReply(args:{
     if(budgetReply)return budgetReply;
   }
   const owner=meetingOwner(meeting.title);
+  assertRoleCompactAuthority(owner.key,'RECORD_INTERNAL_CONTEXT');
   const missing=meeting.missing_data??[];
   const historyRows=await sql`
     select body
@@ -224,6 +228,7 @@ export async function createFocusedMeetingReply(args:{
     meeting_ready:meeting.ready??true,
     missing_data:missing,
     agenda:meeting.agenda,
+    allowed_authorities:compactAuthoritiesForRole(owner.key),
     memory_aware:true,
     external_execution:false,
     execution_boundary:'نقاش وتجهيز اجتماع فقط؛ لا تنفيذ مالي خارجي',
