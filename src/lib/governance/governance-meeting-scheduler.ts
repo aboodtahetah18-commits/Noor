@@ -28,6 +28,22 @@ export const governanceCommitteeCadencePolicy={
 function addHours(date:Date,hours:number){return new Date(date.getTime()+hours*60*60*1000)}
 function addDays(date:Date,days:number){return new Date(date.getTime()+days*24*60*60*1000)}
 
+export function compactCommitteeTriggers(args:{
+  cycleCount:number;
+  operatingDeficit:number;
+  utilizationPercent:number;
+}){
+  const normalizedCycle=Math.max(1,args.cycleCount);
+  const thirdCycle=normalizedCycle%3===0;
+  const sixthCycle=normalizedCycle%6===0;
+  return {
+    financialBalance:args.cycleCount<=1||thirdCycle||args.operatingDeficit>0||args.utilizationPercent>=90,
+    oversightLearning:sixthCycle,
+    thirdCycle,
+    sixthCycle,
+  };
+}
+
 export async function getGovernanceMeetingSchedule(userId:string){
   const sql=getRawSql();
   const onboardingRows=await sql`
@@ -60,14 +76,17 @@ export async function getGovernanceMeetingSchedule(userId:string){
   const cycleId=cycleRows[0]?.id?String(cycleRows[0].id):'foundation';
   const councilAt=addHours(completedAt,24);
   const anchor=cycleRows[0]?.start_date?new Date(String(cycleRows[0].start_date)+'T00:00:00Z'):new Date(completedAt);
-  const thirdCycle=(Math.max(1,cycleCount)%3)===0;
-  const sixthCycle=(Math.max(1,cycleCount)%6)===0;
   const calculationValues=liveCalculation?.calculation.values??null;
   const utilization=calculationValues?.utilizationPercent===null||calculationValues?.utilizationPercent===undefined
     ?0:Number(calculationValues.utilizationPercent);
   const operatingDeficit=calculationValues?Number(calculationValues.operatingDeficit):0;
-  const financialBalanceTrigger=cycleCount<=1||thirdCycle||operatingDeficit>0||utilization>=90;
-  const oversightTrigger=sixthCycle;
+  const committeeTriggers=compactCommitteeTriggers({
+    cycleCount,
+    operatingDeficit:Number.isFinite(operatingDeficit)?operatingDeficit:0,
+    utilizationPercent:Number.isFinite(utilization)?utilization:0,
+  });
+  const financialBalanceTrigger=committeeTriggers.financialBalance;
+  const oversightTrigger=committeeTriggers.oversightLearning;
   const now=new Date();
 
   const readinessRows=await sql`
