@@ -1,4 +1,5 @@
 import { getRawSql } from '@/infrastructure/db/client';
+import { backtestFinancialLearningAdjustment, type FinancialLearningBacktestResult } from '@/lib/finance/financial-learning-backtest';
 
 const LEARNING_FACT_KEY='financial_continuous_learning_profile';
 const MIN_SAMPLE_SIZE=3;
@@ -15,6 +16,7 @@ export type FinancialLearningProposal={
   proposedAdjustment:number|null;
   unit:'RATIO'|'PERCENT';
   evidence:string[];
+  backtest:FinancialLearningBacktestResult;
   status:'PROPOSED';
   autoApply:false;
 };
@@ -100,6 +102,7 @@ function makeProposal(args:{
   proposedAdjustment:number|null;
   unit:'RATIO'|'PERCENT';
   evidence:string[];
+  backtest:FinancialLearningBacktestResult;
 }):FinancialLearningProposal|null{
   if(args.values.length<MIN_SAMPLE_SIZE)return null;
   const center=median(args.values);
@@ -117,6 +120,7 @@ function makeProposal(args:{
     proposedAdjustment:args.proposedAdjustment,
     unit:args.unit,
     evidence:args.evidence,
+    backtest:args.backtest,
     status:'PROPOSED',
     autoApply:false,
   };
@@ -186,6 +190,7 @@ export function buildFinancialLearningProfile(rows:CycleLearningRow[]):Financial
       proposedAdjustment:bounded(expenseCenter,0.75,1.35),
       unit:'RATIO',
       evidence:rows.filter(row=>row.plannedExpense>0).map(row=>evidenceLine('المصروف للدورة',row,row.actualExpense,row.plannedExpense)),
+      backtest:backtestFinancialLearningAdjustment(rows,'EXPENSE_BASELINE'),
     });
     if(item)proposals.push(item);
   }
@@ -203,6 +208,7 @@ export function buildFinancialLearningProfile(rows:CycleLearningRow[]):Financial
       proposedAdjustment:bounded(savingCenter,0.7,1.3),
       unit:'RATIO',
       evidence:rows.filter(row=>row.plannedSaving>0).map(row=>evidenceLine('الادخار للدورة',row,row.actualSaving,row.plannedSaving)),
+      backtest:backtestFinancialLearningAdjustment(rows,'SAVING_EXPECTATION'),
     });
     if(item)proposals.push(item);
   }
@@ -220,6 +226,7 @@ export function buildFinancialLearningProfile(rows:CycleLearningRow[]):Financial
       proposedAdjustment:bounded(incomeCenter,0.75,1.25),
       unit:'RATIO',
       evidence:rows.filter(row=>row.expectedIncome>0).map(row=>evidenceLine('الدخل للدورة',row,row.actualIncome,row.expectedIncome)),
+      backtest:backtestFinancialLearningAdjustment(rows,'INCOME_REALIZATION'),
     });
     if(item)proposals.push(item);
   }
@@ -237,6 +244,7 @@ export function buildFinancialLearningProfile(rows:CycleLearningRow[]):Financial
       evidence:rows
         .filter(row=>row.projectedEndBalance!==null&&row.actualEndBalance!==null)
         .map(row=>evidenceLine('رصيد نهاية الدورة',row,row.actualEndBalance??0,row.projectedEndBalance??0)),
+      backtest:backtestFinancialLearningAdjustment(rows,'FORECAST_CALIBRATION'),
     });
     if(item)proposals.push(item);
   }
@@ -278,10 +286,21 @@ export async function buildFinancialLearningBrief(userId:string){
   }
   const top=profile.proposals
     .slice()
-    .sort((a,b)=>b.confidence-a.confidence)
+    .sort((a,b)=>{
+      const aPass=a.backtest.passed?1:0;
+      const bPass=b.backtest.passed?1:0;
+      return bPass-aPass||b.confidence-a.confidence;
+    })
     .slice(0,3);
   return {
-    body:'نتائج التعلم المستمر تقترح مراجعة '+top.length+' نقطة دون تطبيق تلقائي: '+top.map(item=>item.title+' ('+item.confidence+'٪ ثقة)').join('، ')+'.',
+    body:'نتائج التعلم المستمر تقترح مراجعة '+top.length+' نقطة دون تطبيق تلقائي: '+top.map(item=>{
+      const test=item.backtest.status==='PASSED'
+        ?'نجح الاختبار الخلفي'
+        :item.backtest.status==='FAILED'
+          ?'لم ينجح الاختبار الخلفي'
+          :'يحتاج مراجعة نوعية';
+      return item.title+' ('+item.confidence+'٪ ثقة، '+test+')';
+    }).join('، ')+'.',
     profile,
   };
 }
