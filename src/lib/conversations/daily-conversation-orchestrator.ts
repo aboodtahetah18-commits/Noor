@@ -19,7 +19,11 @@ import { buildFinancialLearningBrief } from '@/lib/finance/financial-continuous-
 import { monitorActiveFinancialLearning } from '@/lib/finance/financial-learning-monitor';
 import { financialLearningDomainForRole, getFinancialDecisionLearningContext } from '@/lib/finance/financial-learning-decision-context';
 import { getFinancialDecisionExplanation } from '@/lib/finance/financial-decision-explanation';
-import { getDecisionOutcomeLearningContext, type DecisionOutcomeLearningContext } from '@/lib/finance/decision-outcome-learning-engine';
+import {
+  decisionOutcomeLearningContextFromProfile,
+  refreshDecisionOutcomeLearning,
+  type DecisionOutcomeLearningContext,
+} from '@/lib/finance/decision-outcome-learning-engine';
 
 export type ProactiveCandidate={
   key:string;
@@ -508,17 +512,18 @@ export async function runDailyConversationOrchestratorForUser(
       ...dataCompletionCandidates(facts),
     ].filter(candidate=>candidateHasAuthority(candidate)&&isCandidateEligible(candidate,memory,facts,now));
 
-    const candidates=await Promise.all(eligibleCandidates.map(async candidate=>{
+    const outcomeLearningProfile=await refreshDecisionOutcomeLearning(userId).catch(()=>null);
+    const candidates=eligibleCandidates.map(candidate=>{
       const domain=financialLearningDomainForRole(candidate.senderKey);
-      const outcomeLearning=domain&&candidate.kind!=='request'
-        ?await getDecisionOutcomeLearningContext(userId,domain).catch(()=>null)
+      const outcomeLearning=domain&&candidate.kind!=='request'&&outcomeLearningProfile
+        ?decisionOutcomeLearningContextFromProfile(outcomeLearningProfile,domain)
         :null;
       return {
         ...candidate,
         outcomePriorityAdjustment:outcomeLearningPriorityAdjustment(candidate,outcomeLearning),
         outcomeLearningStance:outcomeLearning?.stance??null,
       };
-    }));
+    });
     candidates.sort((a,b)=>candidateScore(b,memory,now)-candidateScore(a,memory,now));
 
     const selectedBase=candidates[0];
