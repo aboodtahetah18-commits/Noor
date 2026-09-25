@@ -39,7 +39,7 @@ export type FinancialLearningProfile={
   };
 };
 
-type CycleLearningRow={
+export type CycleLearningRow={
   cycleId:string;
   expectedIncome:number;
   actualIncome:number;
@@ -263,7 +263,7 @@ export function buildFinancialLearningProfile(rows:CycleLearningRow[]):Financial
 }
 
 export async function buildFinancialLearningBrief(userId:string){
-  const profile=await calculateFinancialContinuousLearning(userId);
+  const profile=await refreshFinancialContinuousLearning(userId);
   if(profile.cyclesAnalyzed<MIN_SAMPLE_SIZE){
     return {
       body:'لا توجد دورات مالية مغلقة كافية للتعلم المستمر بعد. أحتاج إلى ثلاث دورات مكتملة على الأقل قبل اقتراح أي معايرة.',
