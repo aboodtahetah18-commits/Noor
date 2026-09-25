@@ -48,6 +48,10 @@ export type FinancialLearningLifecycleItem={
   rejectedAt:string|null;
   rolledBackAt:string|null;
   previousActiveValue:number|null;
+  sourceCycleIds?:string[];
+  learningSummary?:string;
+  learningEvidence?:string[];
+  backtestSampleSize?:number;
   monitoring?:{
     state:'INSUFFICIENT_DATA'|'STABLE'|'IMPROVED'|'ROLLBACK_REVIEW_REQUIRED';
     sampleSize:number;
@@ -166,12 +170,34 @@ function lifecycleCandidate(candidate:FinancialLearningChangeCandidate){
 export async function syncFinancialLearningLifecycle(userId:string,profile?:FinancialLearningProfile){
   const currentProfile=profile??await refreshFinancialContinuousLearning(userId);
   const candidates=buildFinancialLearningChangeCandidates(currentProfile);
+  const proposalsByKey=new Map(currentProfile.proposals.map(proposal=>[proposal.key,proposal]));
   const store=await readFinancialLearningLifecycle(userId);
   const now=new Date().toISOString();
   let changed=false;
 
   for(const candidate of candidates){
-    if(!lifecycleCandidate(candidate)||store.items[candidate.key])continue;
+    if(!lifecycleCandidate(candidate))continue;
+    const proposal=proposalsByKey.get(candidate.key)??null;
+    const existing=store.items[candidate.key];
+    if(existing){
+      if((!existing.sourceCycleIds||!existing.sourceCycleIds.length)&&currentProfile.cycleIds.length){
+        existing.sourceCycleIds=[...currentProfile.cycleIds];
+        changed=true;
+      }
+      if(!existing.learningSummary&&proposal?.summary){
+        existing.learningSummary=proposal.summary;
+        changed=true;
+      }
+      if((!existing.learningEvidence||!existing.learningEvidence.length)&&proposal?.evidence?.length){
+        existing.learningEvidence=[...proposal.evidence];
+        changed=true;
+      }
+      if(existing.backtestSampleSize===undefined&&proposal){
+        existing.backtestSampleSize=proposal.backtest.sampleSize;
+        changed=true;
+      }
+      continue;
+    }
     store.items[candidate.key]={
       key:candidate.key,
       title:candidate.title,
@@ -191,6 +217,10 @@ export async function syncFinancialLearningLifecycle(userId:string,profile?:Fina
       rejectedAt:null,
       rolledBackAt:null,
       previousActiveValue:null,
+      sourceCycleIds:[...currentProfile.cycleIds],
+      learningSummary:proposal?.summary??candidate.title,
+      learningEvidence:proposal?.evidence?[...proposal.evidence]:[...candidate.evidence],
+      backtestSampleSize:proposal?.backtest.sampleSize??0,
       monitoring:null,
       history:[{
         at:now,action:'SYNC',actorRole:'financial-learning-engine',
