@@ -111,15 +111,9 @@ export function AlgorithmRoleMobileSheet({role,onClose,onOpenChat}:{role:Algorit
 
   const editText=(value:string)=>applyRoleEdits(value,corrections,amendments);
   const policyTitles=role.policyRefs.map(ref=>policyTitle(ref)).filter((title):title is string=>Boolean(title)).map(editText);
-  const capabilityItems=capabilities.length
-    ?capabilities.map(item=>item.arabicName+' — '+item.description)
-    :capabilitiesLoading
-      ?[]
-      :role.authorities;
   const procedureItems=procedures.map(item=>item.arabicName+' — '+item.purpose);
   const sections=[
     {title:'المسؤوليات الرئيسية',items:role.accountableFor},
-    {title:'الصلاحيات الفعلية داخل النظام',items:capabilityItems},
     {title:'الإجراءات التشغيلية المسموحة',items:procedureItems},
     {title:'القرارات التي يملكها أو يرفعها',items:role.decisions??[]},
     {title:'المدخلات والبيانات التي يعتمد عليها',items:role.inputs??[]},
