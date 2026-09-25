@@ -8,6 +8,7 @@ export type PersonalBudgetCalculationInputs={
   openingAvailableBalance?:string;
   verifiedOperatingInflows?:string;
   excludedOperatingFunds?:string;
+  operatingResourcesOverride?:string;
   protectedObligations:string;
   reservedEssentials:string;
   requiredProtection:string;
@@ -139,7 +140,10 @@ export function calculatePersonalBudget(input:PersonalBudgetCalculationInputs):P
     verifiedIncome,
     verifiedOperatingInflows,
   ]);
-  const operatingResources=nonNegative(grossOperatingResources.subtract(excludedOperatingFunds));
+  const calculatedOperatingResources=nonNegative(grossOperatingResources.subtract(excludedOperatingFunds));
+  const operatingResources=input.operatingResourcesOverride!==undefined
+    ?nonNegativeInput(input.operatingResourcesOverride,'operatingResourcesOverride')
+    :calculatedOperatingResources;
 
   const protectedAndReserved=sumMoney([
     protectedObligations,
@@ -204,12 +208,21 @@ export function calculatePersonalBudget(input:PersonalBudgetCalculationInputs):P
   const trace:PersonalBudgetCalculationTraceItem[]=[
     traceItem('verifiedIncome','verifiedIncome = مجموع الدخل المتحقق المؤهل',verifiedIncome.toString(),{verifiedIncome:input.verifiedIncome}),
     traceItem('expectedIncome','expectedIncome = دخل تنبؤي مستقل عن المتاح',expectedIncome.toString(),{expectedIncome:input.expectedIncome??'0.00'}),
-    traceItem('operatingResources','openingAvailableBalance + verifiedIncome + verifiedOperatingInflows - excludedOperatingFunds',operatingResources.toString(),{
-      openingAvailableBalance:openingAvailableBalance.toString(),
-      verifiedIncome:verifiedIncome.toString(),
-      verifiedOperatingInflows:verifiedOperatingInflows.toString(),
-      excludedOperatingFunds:excludedOperatingFunds.toString(),
-    }),
+    traceItem(
+      'operatingResources',
+      input.operatingResourcesOverride!==undefined
+        ?'operatingResources = قيمة السيولة التشغيلية الحالية المعتمدة من مصدر الحقيقة'
+        :'openingAvailableBalance + verifiedIncome + verifiedOperatingInflows - excludedOperatingFunds',
+      operatingResources.toString(),
+      input.operatingResourcesOverride!==undefined
+        ?{operatingResourcesOverride:operatingResources.toString()}
+        :{
+          openingAvailableBalance:openingAvailableBalance.toString(),
+          verifiedIncome:verifiedIncome.toString(),
+          verifiedOperatingInflows:verifiedOperatingInflows.toString(),
+          excludedOperatingFunds:excludedOperatingFunds.toString(),
+        },
+    ),
     traceItem('protectedObligations','protectedObligations = مجموع الالتزامات المحمية النشطة',protectedObligations.toString(),{protectedObligations:protectedObligations.toString()}),
     traceItem('reservedEssentials','reservedEssentials = المتبقي المحجوز للأساسيات',reservedEssentials.toString(),{reservedEssentials:reservedEssentials.toString()}),
     traceItem('requiredProtection','requiredProtection = حد الحماية الصادر من بنك ملاءة',requiredProtection.toString(),{requiredProtection:requiredProtection.toString()}),
