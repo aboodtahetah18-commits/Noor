@@ -7,6 +7,7 @@ import type { ConversationMessageKind, ConversationRoomKey } from '@/lib/convers
 import { createBudgetCommitteeConversationReply } from '@/lib/conversations/budget-committee-conversation-engine';
 import { getLivePersonalBudgetCalculation } from '@/lib/finance/live-personal-budget-calculation';
 import { createLearningCommitteeConversationReply } from '@/lib/conversations/learning-committee-conversation-engine';
+import { financialLearningDomainForRole, getFinancialDecisionLearningContext } from '@/lib/finance/financial-learning-decision-context';
 
 type FocusedReply={
   id:string;
@@ -69,6 +70,10 @@ function shouldShowCalculationSummary(text:string){
   return /(?:كم|الحالي|الوضع|الحساب|احسب|ميزاني|المتاح|العجز|الفائض|الالتزام|الهدف|الإنفاق|الصرف|الادخار|الاستثمار)/i.test(text);
 }
 
+function shouldShowLearningDecisionContext(text:string){
+  return /(?:ليش|لماذا|وش تقترح|ماذا تقترح|تنصح|التوصية|القرار|الأفضل|النمط|متكرر|عادة|تعلم|سابق|قبل|توقع)/i.test(text);
+}
+
 function roleIntro(role:AlgorithmRoleRef){
   const protectedItems=role.accountableFor.slice(0,3).join('، ');
   return `أنا ${role.name}. أتعامل مع هذا الحوار ضمن نطاقي المباشر: ${protectedItems}. أقرأ البيانات المؤكدة المشتركة مع بقية نماء قبل أن أطلب منك معلومة جديدة، ولا أعيد السؤال عن معلومة صالحة إلا إذا تغيرت أو احتجت تأكيدًا جديدًا.`;
@@ -105,7 +110,8 @@ export async function createFocusedRoleReply(args:{
   assertRoleCompactAuthority(role.key,'READ_CONFIRMED_DATA');
   assertRoleCompactAuthority(role.key,'RECORD_INTERNAL_CONTEXT');
   const sql=getRawSql();
-  const [threadRows,factRows,dashboard,liveCalculation]=await Promise.all([
+  const learningDomain=financialLearningDomainForRole(role.key);
+  const [threadRows,factRows,dashboard,liveCalculation,learningContext]=await Promise.all([
     sql`select id from public.conversation_threads where user_id=${args.userId}::uuid and room_key=${args.roomKey} limit 1`,
     sql`
       select fact_key,value_json
@@ -116,6 +122,7 @@ export async function createFocusedRoleReply(args:{
     `,
     getEntityOperationalDashboard(args.userId,args.roomKey).catch(()=>null),
     getLivePersonalBudgetCalculation(args.userId).catch(()=>null),
+    learningDomain?getFinancialDecisionLearningContext(args.userId,learningDomain).catch(()=>null):Promise.resolve(null),
   ]);
   const threadId=threadRows[0]?.id?String(threadRows[0].id):null;
   if(!threadId)return null;
@@ -136,7 +143,10 @@ export async function createFocusedRoleReply(args:{
   const calculationSummary=shouldShowCalculationSummary(args.userText)
     ?(assertRoleCompactAuthority(role.key,'CALCULATE_AND_ANALYZE'),roleCalculationSummary(role.key,liveCalculation))
     :null;
-  const body=`${roleIntro(role)} ${calculationSummary??''} ${roleQuestion(role,args.userText,known,plan?.nextAction??null,previousUserMessage)}`.trim();
+  const learningSummary=learningContext&&shouldShowLearningDecisionContext(args.userText)
+    ?learningContext.shortText
+    :null;
+  const body=`${roleIntro(role)} ${calculationSummary??''} ${learningSummary??''} ${roleQuestion(role,args.userText,known,plan?.nextAction??null,previousUserMessage)}`.trim();
   const structuredData={
     scope_kind:'role',
     role_key:role.key,
@@ -146,6 +156,16 @@ export async function createFocusedRoleReply(args:{
     next_action:plan?.nextAction??null,
     allowed_authorities:compactAuthoritiesForRole(role.key),
     calculation_engine:liveCalculation?liveCalculation.calculation.engineVersion:null,
+    learning_decision_context:learningContext?{
+      domain:learningContext.domain,
+      algorithm_key:learningContext.algorithmKey,
+      algorithm_name:learningContext.algorithmName,
+      outcome:learningContext.outcome,
+      decision_use:learningContext.decisionUse,
+      source_cycle_ids:learningContext.sourceCycleIds,
+      confidence:learningContext.confidence,
+      last_event_at:learningContext.lastEventAt,
+    }:null,
     calculation_snapshot:liveCalculation?{
       true_available:liveCalculation.calculation.values.trueAvailable,
       operating_deficit:liveCalculation.calculation.values.operatingDeficit,
