@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { getRawSql } from '@/infrastructure/db/client';
 import { getLivePersonalBudgetCalculation } from '@/lib/finance/live-personal-budget-calculation';
 import { syncFinancialLearningLifecycle } from '@/lib/finance/financial-learning-lifecycle';
+import { monitorActiveFinancialLearning } from '@/lib/finance/financial-learning-monitor';
 
 export type GovernanceMeetingScheduleItem={
   id:string;
@@ -75,6 +76,8 @@ export async function getGovernanceMeetingSchedule(userId:string){
     syncFinancialLearningLifecycle(userId).catch(()=>null),
   ]);
 
+  const learningMonitoring=await monitorActiveFinancialLearning(userId).catch(()=>null);
+
   const cycleCount=Number(cycleCountRows[0]?.count??0);
   const cycleId=cycleRows[0]?.id?String(cycleRows[0].id):'foundation';
   const councilAt=addHours(completedAt,24);
@@ -91,7 +94,8 @@ export async function getGovernanceMeetingSchedule(userId:string){
   const financialBalanceTrigger=committeeTriggers.financialBalance;
   const learningItems=learningLifecycle?Object.values(learningLifecycle.store.items):[];
   const learningReviewItems=learningItems.filter(item=>['BACKTEST_PASSED','IN_REVIEW','APPROVED'].includes(item.status));
-  const oversightTrigger=committeeTriggers.oversightLearning||learningReviewItems.length>0;
+  const rollbackReviewItems=learningMonitoring?.rollbackReviewRequired??[];
+  const oversightTrigger=committeeTriggers.oversightLearning||learningReviewItems.length>0||rollbackReviewItems.length>0;
   const now=new Date();
 
   const readinessRows=await sql`
@@ -163,10 +167,14 @@ export async function getGovernanceMeetingSchedule(userId:string){
         'جودة الحسابات ومصدر الحقيقة',
         'المخاطر والحدود الصارمة',
         'أداء الخوارزميات ودقة التوقع',
-        learningReviewItems.length
-          ?'مراجعة '+learningReviewItems.length+' مقترح تعلم اجتاز الاختبار الخلفي'
-          :'التعلم المستمر والتغييرات المقترحة',
-        'قرار قبول أو رفض المعايرة دون تغيير القواعد الصارمة',
+        rollbackReviewItems.length
+          ?'مراجعة تراجع مطلوبة لـ '+rollbackReviewItems.length+' معايرة نشطة تدهورت بعد التفعيل'
+          :learningReviewItems.length
+            ?'مراجعة '+learningReviewItems.length+' مقترح تعلم اجتاز الاختبار الخلفي'
+            :'التعلم المستمر والتغييرات المقترحة',
+        rollbackReviewItems.length
+          ?'قرار الإبقاء على المعايرة أو التراجع عنها بناءً على نتائج الدورات الجديدة'
+          :'قرار قبول أو رفض المعايرة دون تغيير القواعد الصارمة',
       ],
       minimum_annual_meetings:2,
       periodic:true,
