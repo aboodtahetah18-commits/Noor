@@ -211,8 +211,8 @@ export async function syncGovernanceMeetingInvitations(userId:string){
     const body=meeting.kind==='مجلس'
       ? `تمت جدولة ${meeting.title} في ${when}. سأجهز قبلها ملف التأسيس والصورة المالية والخوارزميات النشطة ونقاط النقاش معك.`
       : meeting.kind==='لجنة دائمة'
-        ? `تمت إضافة ${meeting.title} إلى تقويمك الحوكمي في ${when}. اللجنة الدائمة لها أربعة اجتماعات سنوية على الأقل، وأي طارئ يفتح جلسة إضافية ولا يلغي الموعد الدوري.`
-        : `تمت إضافة ${meeting.title} في ${when} بسبب حاجة محددة. هذه لجنة مؤقتة ولا تنشأ لها دورية تلقائية ما لم يعتمد المجلس استثناءً رقابيًا مبررًا.`;
+        ? `تمت إضافة ${meeting.title} إلى تقويمك الحوكمي في ${when}. اللجان الدائمة في الهيكل المبسط محدودة العدد، وتجتمع عند نقطة مراجعة مقررة أو عند وجود سبب جوهري يستدعي قرارًا؛ المتابعة التشغيلية اليومية تبقى للخوارزميات والبنوك ولا تحتاج اجتماعًا مستقلًا.`
+        : `تمت إضافة ${meeting.title} في ${when} بسبب حاجة محددة. هذه لجنة مؤقتة تنتهي بإغلاق سببها ولا تتحول إلى لجنة دائمة تلقائيًا.`;
     await sql`
       insert into public.conversation_messages(
         id,thread_id,user_id,sender_type,sender_key,sender_name,message_kind,body,structured_data
