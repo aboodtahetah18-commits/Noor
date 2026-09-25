@@ -5,7 +5,7 @@ import { listCycleRecommendations } from '@/features/financial-engine/queries/li
 import { FinancialPlatformError } from '@/features/financial-engine/services/financial-platform-error';
 import { getLivePersonalBudgetCalculation } from '@/lib/finance/live-personal-budget-calculation';
 
-export async function getDashboardSummary(userId: string, cycleId?: string): Promise<DashboardSummary | null> {
+export async function getDashboardSummary(userId: string, cycleId?: string) {
   const dashboard = await dashboardRepository.get(userId, cycleId);
   if (!dashboard || dashboard.cycle.source !== 'LIVE') return dashboard;
 
@@ -31,7 +31,7 @@ export async function getDashboardSummary(userId: string, cycleId?: string): Pro
       .max(Money.parse(engine.projectedDeficit))
       .toString();
 
-    const nextDashboard: DashboardSummary = {
+    const nextDashboard = {
       ...dashboard,
       liquidity: { total: engine.actualLiquidity },
       safeToSpend: {
@@ -75,7 +75,7 @@ export async function getDashboardSummary(userId: string, cycleId?: string): Pro
         status: top.status,
       } : null,
       recommendationEngineStatus: 'AVAILABLE',
-    };
+    } satisfies DashboardSummary;
     return nextDashboard;
   } catch (error) {
     if (error instanceof FinancialPlatformError && ['FINANCIAL_STATE_NOT_AVAILABLE','FINANCIAL_CYCLE_NOT_FOUND'].includes(error.code)) {
