@@ -6,11 +6,13 @@ import { getGovernanceMeetingSchedule } from '@/lib/governance/governance-meetin
 import { getLivePersonalBudgetCalculation } from '@/lib/finance/live-personal-budget-calculation';
 import type { ConversationMessageKind } from '@/lib/conversations/store';
 import { assertRoleCompactAuthority, compactAuthoritiesForRole } from '@/lib/governance/algorithm-role-registry';
+import { getFinancialDecisionLearningContext, type FinancialDecisionLearningContext } from '@/lib/finance/financial-learning-decision-context';
 
 export type BudgetCommitteePointKind='RISK'|'DEVIATION'|'DATA_GAP'|'IMPROVEMENT'|'INFO';
 export type BudgetCommitteePoint={
   key:string; kind:BudgetCommitteePointKind; priority:number; title:string;
   summary:string; evidence:string[]; question:string|null; requiresResponse:boolean;
+  learningContext?:FinancialDecisionLearningContext|null;
 };
 type BudgetCommitteeReply={
   id:string; sender_type:'agent'; sender_key:string; sender_name:string;
@@ -82,11 +84,13 @@ async function lastCommitteeTurn(userId:string,threadId:string,meetingId:string)
 }
 
 export async function buildBudgetCommitteePoints(userId:string,meetingId:string):Promise<BudgetCommitteePoint[]>{
-  const [dashboard,monitoring,schedule,liveCalculation]=await Promise.all([
+  const [dashboard,monitoring,schedule,liveCalculation,budgetLearning,forecastLearning]=await Promise.all([
     getDashboardSummary(userId).catch(()=>null),
     getCurrentFinancialPlanMonitoring(userId).catch(()=>null),
     getGovernanceMeetingSchedule(userId).catch(()=>null),
     getLivePersonalBudgetCalculation(userId).catch(()=>null),
+    getFinancialDecisionLearningContext(userId,'budget_spending').catch(()=>null),
+    getFinancialDecisionLearningContext(userId,'forecast').catch(()=>null),
   ]);
   const meeting=schedule?.meetings.find(item=>item.id===meetingId);
   const points:BudgetCommitteePoint[]=[];
@@ -116,7 +120,9 @@ export async function buildBudgetCommitteePoints(userId:string,meetingId:string)
           'الأساسيات المحجوزة: '+money(n(values.reservedEssentials)),
           'الحماية المطلوبة: '+money(n(values.requiredProtection)),
           'مخصصات الأهداف الواجبة: '+money(n(values.requiredGoalAllocations)),
+          ...(forecastLearning?['ذاكرة التعلم: '+forecastLearning.shortText]:[]),
         ],
+        learningContext:forecastLearning,
         question:'هل يوجد مبلغ متحقق أو سداد أو تغيير فعلي لم يدخل السجل بعد قبل أن نعيد توزيع الخطة؟',
         requiresResponse:true,
       });
@@ -135,7 +141,9 @@ export async function buildBudgetCommitteePoints(userId:string,meetingId:string)
           'المنفذ الفعلي: '+money(n(values.realizedAmount)),
           'الانحراف: '+money(n(values.varianceAmount)),
           'المتاح الحقيقي الحالي: '+money(n(values.trueAvailable)),
+          ...(budgetLearning?['ذاكرة التعلم: '+budgetLearning.shortText]:[]),
         ],
+        learningContext:budgetLearning,
         question:'هل هذا الارتفاع مؤقت لهذه الدورة، أم يعكس مستوى إنفاق يتكرر معك؟',
         requiresResponse:true,
       });
@@ -158,7 +166,12 @@ export async function buildBudgetCommitteePoints(userId:string,meetingId:string)
       points.push({
         key:'forecast-deficit',kind:'RISK',priority:145,title:'فجوة متوقعة قبل نهاية الدورة',
         summary:'التوقع الحالي يشير إلى عجز يقارب '+money(deficit)+' إذا استمر المسار الحالي.',
-        evidence:['رصيد نهاية الدورة المتوقع: '+String(dashboard.forecast.projectedEndBalance)+' ر.س','العجز المتوقع: '+money(deficit)],
+        evidence:[
+          'رصيد نهاية الدورة المتوقع: '+String(dashboard.forecast.projectedEndBalance)+' ر.س',
+          'العجز المتوقع: '+money(deficit),
+          ...(forecastLearning?['ذاكرة التعلم: '+forecastLearning.shortText]:[]),
+        ],
+        learningContext:forecastLearning,
         question:'قبل أن أقترح خفضًا: هل يوجد دخل قريب أو مبلغ متوقع لم يُسجل بعد؟',requiresResponse:true,
       });
     }
@@ -170,7 +183,12 @@ export async function buildBudgetCommitteePoints(userId:string,meetingId:string)
         key:'budget-utilization',kind:util>=100?'DEVIATION':'IMPROVEMENT',priority:util>=100?132:104,
         title:util>=100?'تجاوز في استخدام الميزانية':'اقتراب من حد الميزانية',
         summary:'استخدام الميزانية وصل إلى '+percent(util)+' والمتبقي '+money(remaining)+'.',
-        evidence:['نسبة الاستخدام: '+percent(util),'المتبقي: '+money(remaining)],
+        evidence:[
+          'نسبة الاستخدام: '+percent(util),
+          'المتبقي: '+money(remaining),
+          ...(budgetLearning?['ذاكرة التعلم: '+budgetLearning.shortText]:[]),
+        ],
+        learningContext:budgetLearning,
         question:'هل الارتفاع هذا مؤقت بسبب ظرف محدد، أم أصبح نمطًا متكررًا؟',requiresResponse:true,
       });
     }
@@ -181,7 +199,13 @@ export async function buildBudgetCommitteePoints(userId:string,meetingId:string)
       points.push({
         key:'plan-exceeded:'+item.ownerKey,kind:'DEVIATION',priority:138,title:'تجاوز مثبت على '+item.ownerName,
         summary:'المنفذ الموثق تجاوز المخطط بمقدار '+money(item.varianceAmount)+'.',
-        evidence:['المخطط: '+money(item.plannedAmount),'المنفذ: '+money(item.realizedAmount),'عدد الأدلة/الحركات: '+String(item.evidenceCount)],
+        evidence:[
+          'المخطط: '+money(item.plannedAmount),
+          'المنفذ: '+money(item.realizedAmount),
+          'عدد الأدلة/الحركات: '+String(item.evidenceCount),
+          ...(budgetLearning?['ذاكرة التعلم: '+budgetLearning.shortText]:[]),
+        ],
+        learningContext:budgetLearning,
         question:'هل هذا التجاوز سببه حالة مؤقتة يمكن استثناؤها، أم يحتاج تعديلًا في الخطة؟',requiresResponse:true,
       });
     }
@@ -199,12 +223,16 @@ export async function buildBudgetCommitteePoints(userId:string,meetingId:string)
 
 function explainPoint(point:BudgetCommitteePoint){
   const evidence=point.evidence.length?point.evidence.map((item,index)=>(index+1)+') '+item).join(' '):'لا يوجد دليل رقمي إضافي مسجل.';
-  return 'سبب تركيزي على «'+point.title+'» هو أن أثرها أعلى من بقية النقاط الحالية. الأدلة: '+evidence+' هذا تفسير تحليلي وليس تنفيذًا أو قرارًا ماليًا تلقائيًا.';
+  const learning=point.learningContext?' ومن سجل التعلم: '+point.learningContext.shortText:'';
+  return 'سبب تركيزي على «'+point.title+'» هو أن أثرها أعلى من بقية النقاط الحالية. الأدلة: '+evidence+learning+' هذا تفسير تحليلي وليس تنفيذًا أو قرارًا ماليًا تلقائيًا.';
 }
 
 function nextPointBody(point:BudgetCommitteePoint,remaining:number){
   const tail=remaining>0?' وبعد هذه النقطة عندي '+remaining+' نقطة أخرى مرتبة حسب الأثر.':' وهذه آخر نقطة ذات أولوية حاليًا.';
-  return (point.summary+' '+(point.question??'')+tail).trim();
+  const learning=point.learningContext&&point.learningContext.decisionUse!=='HISTORICAL_ONLY'
+    ?' '+point.learningContext.shortText
+    :'';
+  return (point.summary+learning+' '+(point.question??'')+tail).trim();
 }
 
 export async function createBudgetCommitteeConversationReply(args:{userId:string;meetingId:string;userText:string;}):Promise<BudgetCommitteeReply|null>{
@@ -279,6 +307,15 @@ export async function createBudgetCommitteeConversationReply(args:{userId:string
     committee_resolved_point_fingerprint:resolvedPointFingerprint,
     committee_decision:decision,committee_context_note:contextNote,response_type:responseType,
     ranked_points:points.slice(0,3).map(item=>({key:item.key,title:item.title,kind:item.kind,priority:item.priority})),
+    learning_decision_context:point?.learningContext?{
+      algorithm_key:point.learningContext.algorithmKey,
+      algorithm_name:point.learningContext.algorithmName,
+      outcome:point.learningContext.outcome,
+      decision_use:point.learningContext.decisionUse,
+      source_cycle_ids:point.learningContext.sourceCycleIds,
+      confidence:point.learningContext.confidence,
+      last_event_at:point.learningContext.lastEventAt,
+    }:null,
     allowed_authorities:compactAuthoritiesForRole('budget-spending-owner'),
     memory_aware:true,external_execution:false,
     execution_boundary:'حوار لجنة وتحليل وقرارات مسجلة فقط؛ لا تنفيذ مالي خارجي تلقائي',
