@@ -262,6 +262,30 @@ export function buildFinancialLearningProfile(rows:CycleLearningRow[]):Financial
   };
 }
 
+export async function buildFinancialLearningBrief(userId:string){
+  const profile=await calculateFinancialContinuousLearning(userId);
+  if(profile.cyclesAnalyzed<MIN_SAMPLE_SIZE){
+    return {
+      body:'لا توجد دورات مالية مغلقة كافية للتعلم المستمر بعد. أحتاج إلى ثلاث دورات مكتملة على الأقل قبل اقتراح أي معايرة.',
+      profile,
+    };
+  }
+  if(!profile.proposals.length){
+    return {
+      body:'راجعت نتائج الدورات السابقة ولم يظهر نمط متكرر يستحق تعديل التوقعات حاليًا. سأبقي القواعد الحالية كما هي وأواصل القياس.',
+      profile,
+    };
+  }
+  const top=profile.proposals
+    .slice()
+    .sort((a,b)=>b.confidence-a.confidence)
+    .slice(0,3);
+  return {
+    body:'نتائج التعلم المستمر تقترح مراجعة '+top.length+' نقطة دون تطبيق تلقائي: '+top.map(item=>item.title+' ('+item.confidence+'٪ ثقة)').join('، ')+'.',
+    profile,
+  };
+}
+
 export async function calculateFinancialContinuousLearning(userId:string){
   return buildFinancialLearningProfile(await readClosedCycles(userId));
 }
