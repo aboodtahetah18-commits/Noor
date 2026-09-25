@@ -38,9 +38,7 @@ export type FinancialLearningTimelineEntry={
   baselineErrorPercent:number|null;
   candidateErrorPercent:number|null;
   improvementPercent:number|null;
-  monitoringState:FinancialLearningLifecycleItem['monitoring'] extends infer M
-    ? M extends {state:infer S}?S|null:null
-    :null;
+  monitoringState:'INSUFFICIENT_DATA'|'STABLE'|'IMPROVED'|'ROLLBACK_REVIEW_REQUIRED'|null;
   outcome:'PENDING'|'PASSED'|'APPROVED'|'ACTIVE'|'IMPROVED'|'STABLE'|'REJECTED'|'ROLLED_BACK'|'REVIEW_REQUIRED';
 };
 
