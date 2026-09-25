@@ -14,6 +14,7 @@ import type { BankForwardNeed } from '@/algorithmic-systems/domain/interbank-pla
 import { getGovernanceMeetingSchedule } from '@/lib/governance/governance-meeting-scheduler';
 import { buildBudgetCommitteePreMeetingBrief } from '@/lib/conversations/budget-committee-conversation-engine';
 import { getLivePersonalBudgetCalculation } from '@/lib/finance/live-personal-budget-calculation';
+import { roleHasCompactAuthority, compactAuthoritiesForRole } from '@/lib/governance/algorithm-role-registry';
 
 export type ProactiveCandidate={
   key:string;
@@ -399,6 +400,15 @@ async function activeFactKeys(userId:string){
   return facts;
 }
 
+function proactiveAuthorityAction(candidate:ProactiveCandidate){
+  if(candidate.kind==='request')return 'REQUEST_MISSING_DATA' as const;
+  return 'RECOMMEND_WITHIN_DOMAIN' as const;
+}
+
+function candidateHasAuthority(candidate:ProactiveCandidate){
+  return roleHasCompactAuthority(candidate.senderKey,proactiveAuthorityAction(candidate));
+}
+
 async function onboardingComplete(userId:string){
   const sql=getRawSql();
   const rows=await sql`
@@ -444,7 +454,7 @@ export async function runDailyConversationOrchestratorForUser(
       ...operationalCandidates(dashboard,liveCalculation),
       ...meetings,
       ...dataCompletionCandidates(facts),
-    ].filter(candidate=>isCandidateEligible(candidate,memory,facts,now))
+    ].filter(candidate=>candidateHasAuthority(candidate)&&isCandidateEligible(candidate,memory,facts,now))
       .sort((a,b)=>candidateScore(b,memory,now)-candidateScore(a,memory,now));
 
     const selectedBase=candidates[0];
@@ -483,6 +493,8 @@ export async function runDailyConversationOrchestratorForUser(
           operational_date:operationalDate,
           requested_fact:selected.requestedFact,
           interbank_need:selected.interbankNeed??null,
+          authority_action:proactiveAuthorityAction(selected),
+          allowed_authorities:compactAuthoritiesForRole(selected.senderKey),
           scope_kind:selected.scopeKind??null,
           role_key:selected.scopeKind==='role'?selected.scopeKey??selected.senderKey:null,
           meeting_id:selected.scopeKind==='meeting'?selected.scopeKey:null,
