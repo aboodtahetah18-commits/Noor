@@ -1,6 +1,7 @@
 import { getRawSql } from '@/infrastructure/db/client';
 import { listBankDecisions } from '@/features/bank-decisions/queries/list-bank-decisions';
 import { getFinancialLearningTimeline } from '@/lib/finance/financial-learning-timeline';
+import { syncDecisionOutcomeRegistry, type DecisionOutcomeRecord } from '@/lib/finance/decision-outcome-registry';
 
 export type UnifiedDecisionSource='BANK_OPERATION'|'CONVERSATION'|'COMMITTEE'|'LEARNING';
 export type UnifiedDecisionActorType='USER'|'SYSTEM'|'ROLE'|'COMMITTEE';
@@ -41,6 +42,7 @@ export type UnifiedDecisionLogItem={
   };
   confidence:number|null;
   why:string|null;
+  outcome:DecisionOutcomeRecord|null;
   externalExecution:boolean;
   createdAt:string;
   rawImpact:unknown;
@@ -105,6 +107,7 @@ export function mapBankDecisionToUnified(row:Awaited<ReturnType<typeof listBankD
     learning:{algorithmName:null,outcome:null,decisionUse:null,confidence:null,sourceCycleIds:[]},
     confidence:null,
     why:row.reason,
+    outcome:null,
     externalExecution:true,
     createdAt:row.createdAt,
     rawImpact:row.impactSummary,
@@ -184,6 +187,7 @@ export function mapConversationDecisionToUnified(row:{
     },
     confidence,
     why:text(explanation?.why)??text(data.committee_context_note)??text(row.body),
+    outcome:null,
     externalExecution:data.external_execution===true,
     createdAt:String(row.created_at),
     rawImpact:data,
@@ -260,13 +264,28 @@ export async function listUnifiedDecisionLog(userId:string,limit=200):Promise<Un
         },
         confidence:entry.confidence,
         why:entry.why,
+        outcome:null,
         externalExecution:false,
         createdAt:entry.at,
         rawImpact:entry,
       }))
     :[];
 
-  return [...bank,...conversations,...learning]
+  const combined=[...bank,...conversations,...learning]
     .sort((a,b)=>Date.parse(b.createdAt)-Date.parse(a.createdAt))
     .slice(0,safeLimit);
+  const registry=await syncDecisionOutcomeRegistry(userId,combined.map(item=>({
+    id:item.id,
+    source:item.source,
+    externalExecution:item.externalExecution,
+    createdAt:item.createdAt,
+    learning:{
+      outcome:item.learning.outcome,
+      algorithmName:item.learning.algorithmName,
+    },
+  })));
+  return combined.map(item=>({
+    ...item,
+    outcome:registry.outcomes[item.id]??null,
+  }));
 }
