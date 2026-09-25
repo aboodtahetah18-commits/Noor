@@ -329,9 +329,9 @@ async function meetingCandidates(userId:string,now:Date):Promise<ProactiveCandid
     const days=(at.getTime()-now.getTime())/(24*60*60*1000);
     if(days<0||days>3)continue;
     const missing=meeting.missing_data??[];
-    const owner=/ميزانية|إنفاق/.test(meeting.title)
+    const owner=/ميزانية|إنفاق|دورة مالية|توازن/.test(meeting.title)
       ?{key:'budget-spending-owner',name:'مسؤول الميزانية والإنفاق'}
-      :/استقرار|سيولة|تمويل/.test(meeting.title)
+      :/استقرار|سيولة|تمويل|مخاطر|تعلم/.test(meeting.title)
         ?{key:'liquidity-protection-owner',name:'مسؤول السيولة والحماية'}
         :/استثمار|أصول/.test(meeting.title)
           ?{key:'investment-owner',name:'مسؤول الاستثمار'}
@@ -339,7 +339,7 @@ async function meetingCandidates(userId:string,now:Date):Promise<ProactiveCandid
             ?{key:'obligations-owner',name:'مسؤول الالتزامات'}
             :{key:'central-governor',name:'محافظ بنك نماء المركزي'};
     const urgent=days<=1;
-    const budgetBrief=/ميزانية|إنفاق/.test(meeting.title)
+    const budgetBrief=/ميزانية|إنفاق|دورة مالية|توازن/.test(meeting.title)
       ?await buildBudgetCommitteePreMeetingBrief(userId,meeting.id).catch(()=>null)
       :null;
     candidates.push({
