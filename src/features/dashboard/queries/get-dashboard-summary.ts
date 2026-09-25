@@ -3,36 +3,55 @@ import { Money } from '@/financial-engine/money';
 import { getCurrentFinancialState } from '@/features/financial-engine/queries/get-current-financial-state';
 import { listCycleRecommendations } from '@/features/financial-engine/queries/list-cycle-recommendations';
 import { FinancialPlatformError } from '@/features/financial-engine/services/financial-platform-error';
+import { getLivePersonalBudgetCalculation } from '@/lib/finance/live-personal-budget-calculation';
 
 export async function getDashboardSummary(userId: string, cycleId?: string) {
   const dashboard = await dashboardRepository.get(userId, cycleId);
   if (!dashboard || dashboard.cycle.source !== 'LIVE') return dashboard;
 
   try {
-    const [engine, recommendations] = await Promise.all([
+    const [engine, recommendations, liveCalculation] = await Promise.all([
       getCurrentFinancialState(userId, dashboard.cycle.id),
       listCycleRecommendations(userId, dashboard.cycle.id),
+      getLivePersonalBudgetCalculation(userId, dashboard.cycle.id),
     ]);
     const expectedTotal = Money.parse(engine.verifiedIncomeReceived)
       .add(Money.parse(engine.expectedIncomeUnreceived))
       .toString();
     const top = recommendations[0] ?? null;
 
+    const unified = liveCalculation.calculation.values;
     return {
       ...dashboard,
       liquidity: { total: engine.actualLiquidity },
       safeToSpend: {
-        amount: engine.freeCashAmount,
-        status: Money.parse(engine.freeCashAmount).isZero() ? 'ZERO' as const : 'AVAILABLE' as const,
+        amount: unified.trueAvailable,
+        status: Money.parse(unified.trueAvailable).isZero() ? 'ZERO' as const : 'AVAILABLE' as const,
+        blockingIssue: null,
+      },
+      dailySafeLimit: {
+        amount: unified.dailyGuidance ?? '0.00',
+        status: Money.parse(unified.dailyGuidance ?? '0.00').isZero() ? 'ZERO' as const : 'AVAILABLE' as const,
         blockingIssue: null,
       },
       income: {
         expected: expectedTotal,
-        actual: engine.verifiedIncomeReceived,
+        actual: unified.verifiedIncome,
+      },
+      budget: {
+        planned: unified.plannedAmount,
+        actual: unified.realizedAmount,
+        remaining: Money.parse(unified.plannedAmount).subtract(Money.parse(unified.realizedAmount)).max(Money.zero()).toString(),
+        utilizationPercent: unified.utilizationPercent,
+      },
+      saving: {
+        ...dashboard.saving,
+        actual: unified.netRealizedSavings,
+        rate: unified.savingsRatePercent,
       },
       forecast: {
-        projectedEndBalance: engine.projectedEndBalance,
-        expectedDeficit: engine.projectedDeficit,
+        projectedEndBalance: unified.projectedEndBalance ?? engine.projectedEndBalance,
+        expectedDeficit: Money.parse(unified.operatingDeficit).max(Money.parse(engine.projectedDeficit)).toString(),
         deficitStatus: 'AVAILABLE' as const,
         blockingIssue: null,
       },
