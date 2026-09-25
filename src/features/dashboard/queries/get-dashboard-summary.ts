@@ -4,6 +4,7 @@ import { getCurrentFinancialState } from '@/features/financial-engine/queries/ge
 import { listCycleRecommendations } from '@/features/financial-engine/queries/list-cycle-recommendations';
 import { FinancialPlatformError } from '@/features/financial-engine/services/financial-platform-error';
 import { getLivePersonalBudgetCalculation } from '@/lib/finance/live-personal-budget-calculation';
+import type { DashboardSummary } from '@/features/dashboard/types/dashboard';
 
 export async function getDashboardSummary(userId: string, cycleId?: string) {
   const dashboard = await dashboardRepository.get(userId, cycleId);
@@ -27,8 +28,15 @@ export async function getDashboardSummary(userId: string, cycleId?: string) {
       .subtract(Money.parse(unified.realizedAmount))
       .max(Money.zero())
       .toString();
+    const learnedProjectedEndBalance = liveCalculation.softForecast.active
+      ?liveCalculation.softForecast.learnedProjectedEndBalance
+      :unified.projectedEndBalance??engine.projectedEndBalance;
+    const learnedDeficitMoney=Money.parse(learnedProjectedEndBalance).isNegative()
+      ?Money.parse(learnedProjectedEndBalance).abs()
+      :Money.zero();
     const expectedDeficit = Money.parse(unified.operatingDeficit)
       .max(Money.parse(engine.projectedDeficit))
+      .max(learnedDeficitMoney)
       .toString();
 
     const nextDashboard = {
@@ -60,7 +68,7 @@ export async function getDashboardSummary(userId: string, cycleId?: string) {
         rate: unified.savingsRatePercent,
       },
       forecast: {
-        projectedEndBalance: unified.projectedEndBalance ?? engine.projectedEndBalance,
+        projectedEndBalance: learnedProjectedEndBalance,
         expectedDeficit,
         deficitStatus: 'AVAILABLE',
         blockingIssue: null,
