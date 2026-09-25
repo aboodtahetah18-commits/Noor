@@ -200,7 +200,7 @@ export async function getGovernanceMeetingSchedule(userId:string){
       cadence:typeof override.cadence==='string'?override.cadence:'حسب الحاجة فقط',
       status:typeof override.status==='string'?override.status:'مجدول',
       agenda:Array.isArray(override.agenda)?override.agenda.filter((item):item is string=>typeof item==='string'):[],
-      ready:true,editable:true,deletable:false,custom:true,
+      ready:true,editable:true,deletable:true,custom:true,
     });
   }
 
