@@ -240,6 +240,7 @@ function explainPoint(point:BudgetCommitteePoint){
       '. القاعدة — '+explanation.rule.title+
       '. الذاكرة السابقة — '+memory+
       '. التعلم — '+learning+
+      '. نتائج القرارات السابقة — '+(explanation.outcomeLearning?.shortText??'لا توجد نتائج مقيمة كافية لهذا النوع')+
       '. لماذا الآن — '+explanation.why+
       '. الأدلة الرقمية: '+evidence+
       ' هذا تفسير تحليلي وليس تنفيذًا ماليًا تلقائيًا.';
@@ -340,6 +341,17 @@ export async function createBudgetCommitteeConversationReply(args:{userId:string
         decision_use:point.decisionExplanation.learning.decisionUse,
         source_cycle_ids:point.decisionExplanation.learning.sourceCycleIds,
         confidence:point.decisionExplanation.learning.confidence,
+      }:null,
+      outcome_learning:point.decisionExplanation.outcomeLearning?{
+        stance:point.decisionExplanation.outcomeLearning.stance,
+        sample_size:point.decisionExplanation.outcomeLearning.sampleSize,
+        confidence:point.decisionExplanation.outcomeLearning.confidence,
+        positive_rate:point.decisionExplanation.outcomeLearning.positiveRate,
+        negative_rate:point.decisionExplanation.outcomeLearning.negativeRate,
+        rule_code:point.decisionExplanation.outcomeLearning.ruleCode,
+        actor_key:point.decisionExplanation.outcomeLearning.actorKey,
+        action:point.decisionExplanation.outcomeLearning.action,
+        decision_ids:point.decisionExplanation.outcomeLearning.decisionIds,
       }:null,
       why:point.decisionExplanation.why,
       guardrails:point.decisionExplanation.guardrails,
