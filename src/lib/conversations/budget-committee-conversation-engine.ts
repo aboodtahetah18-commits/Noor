@@ -214,7 +214,7 @@ export async function createBudgetCommitteeConversationReply(args:{userId:string
   ]);
   const meeting=schedule.meetings.find(item=>item.id===args.meetingId);
   const threadId=threadRows[0]?.id?String(threadRows[0].id):null;
-  if(!meeting||!threadId||!/ميزانية|إنفاق/.test(meeting.title))return null;
+  if(!meeting||!threadId||!/ميزانية|إنفاق|دورة مالية|توازن/.test(meeting.title))return null;
 
   const [points,lastTurn]=await Promise.all([
     buildBudgetCommitteePoints(args.userId,args.meetingId),
