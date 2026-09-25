@@ -1,0 +1,45 @@
+import { describe, expect, it } from 'vitest';
+import {
+  compactAuthorityAllowed,
+  compactProcedure,
+  COMPACT_AUTHORITIES,
+  COMPACT_PROCEDURES,
+} from '../../src/lib/governance/compact-authority-model';
+import {
+  compactAuthoritiesForRole,
+  roleHasCompactAuthority,
+} from '../../src/lib/governance/algorithm-role-registry';
+
+describe('نموذج الصلاحيات والإجراءات المختصر',()=>{
+  it('يبقي عدد الصلاحيات الأساسية محدودًا',()=>{
+    expect(COMPACT_AUTHORITIES).toHaveLength(7);
+  });
+
+  it('يبقي عدد الإجراءات التشغيلية محدودًا',()=>{
+    expect(COMPACT_PROCEDURES).toHaveLength(7);
+  });
+
+  it('لا يمنح صاحب المسؤولية اعتماد التغيير الحوكمي',()=>{
+    expect(compactAuthorityAllowed('responsibility_owner','APPROVE_GOVERNANCE_CHANGE')).toBe(false);
+    expect(roleHasCompactAuthority('budget-spending-owner','APPROVE_GOVERNANCE_CHANGE')).toBe(false);
+  });
+
+  it('يحصر اعتماد التغيير الحوكمي بالمجلس',()=>{
+    expect(compactAuthorityAllowed('council','APPROVE_GOVERNANCE_CHANGE')).toBe(true);
+    expect(roleHasCompactAuthority('namaa-council','APPROVE_GOVERNANCE_CHANGE')).toBe(true);
+  });
+
+  it('يسمح لصاحب المسؤولية بالحساب والتوصية والتصعيد دون تنفيذ خارجي',()=>{
+    const actions=compactAuthoritiesForRole('liquidity-protection-owner');
+    expect(actions).toContain('CALCULATE_AND_ANALYZE');
+    expect(actions).toContain('RECOMMEND_WITHIN_DOMAIN');
+    expect(actions).toContain('ESCALATE_CASE');
+    expect(COMPACT_AUTHORITIES.every(item=>item.externalExecution===false)).toBe(true);
+  });
+
+  it('يعرف إجراء التحقق من تنفيذ المستخدم كمسار مطابقة لا تنفيذ آلي',()=>{
+    const procedure=compactProcedure('VERIFY_USER_EXECUTION');
+    expect(procedure?.steps).toContain('انتظار التنفيذ البشري');
+    expect(procedure?.steps).toContain('مطابقة الأثر وإعادة الحساب');
+  });
+});
