@@ -7,12 +7,14 @@ import { getLivePersonalBudgetCalculation } from '@/lib/finance/live-personal-bu
 import type { ConversationMessageKind } from '@/lib/conversations/store';
 import { assertRoleCompactAuthority, compactAuthoritiesForRole } from '@/lib/governance/algorithm-role-registry';
 import { getFinancialDecisionLearningContext, type FinancialDecisionLearningContext } from '@/lib/finance/financial-learning-decision-context';
+import { getFinancialDecisionExplanation, type FinancialDecisionExplanation } from '@/lib/finance/financial-decision-explanation';
 
 export type BudgetCommitteePointKind='RISK'|'DEVIATION'|'DATA_GAP'|'IMPROVEMENT'|'INFO';
 export type BudgetCommitteePoint={
   key:string; kind:BudgetCommitteePointKind; priority:number; title:string;
   summary:string; evidence:string[]; question:string|null; requiresResponse:boolean;
   learningContext?:FinancialDecisionLearningContext|null;
+  decisionExplanation?:FinancialDecisionExplanation|null;
 };
 type BudgetCommitteeReply={
   id:string; sender_type:'agent'; sender_key:string; sender_name:string;
@@ -84,14 +86,16 @@ async function lastCommitteeTurn(userId:string,threadId:string,meetingId:string)
 }
 
 export async function buildBudgetCommitteePoints(userId:string,meetingId:string):Promise<BudgetCommitteePoint[]>{
-  const [dashboard,monitoring,schedule,liveCalculation,budgetLearning,forecastLearning]=await Promise.all([
+  const [dashboard,monitoring,schedule,liveCalculation,budgetExplanation,forecastExplanation]=await Promise.all([
     getDashboardSummary(userId).catch(()=>null),
     getCurrentFinancialPlanMonitoring(userId).catch(()=>null),
     getGovernanceMeetingSchedule(userId).catch(()=>null),
     getLivePersonalBudgetCalculation(userId).catch(()=>null),
-    getFinancialDecisionLearningContext(userId,'budget_spending').catch(()=>null),
-    getFinancialDecisionLearningContext(userId,'forecast').catch(()=>null),
+    getFinancialDecisionExplanation(userId,'budget_spending').catch(()=>null),
+    getFinancialDecisionExplanation(userId,'forecast').catch(()=>null),
   ]);
+  const budgetLearning=budgetExplanation?.learning??null;
+  const forecastLearning=forecastExplanation?.learning??null;
   const meeting=schedule?.meetings.find(item=>item.id===meetingId);
   const points:BudgetCommitteePoint[]=[];
 
@@ -123,6 +127,7 @@ export async function buildBudgetCommitteePoints(userId:string,meetingId:string)
           ...(forecastLearning?['ذاكرة التعلم: '+forecastLearning.shortText]:[]),
         ],
         learningContext:forecastLearning,
+        decisionExplanation:forecastExplanation,
         question:'هل يوجد مبلغ متحقق أو سداد أو تغيير فعلي لم يدخل السجل بعد قبل أن نعيد توزيع الخطة؟',
         requiresResponse:true,
       });
@@ -144,6 +149,7 @@ export async function buildBudgetCommitteePoints(userId:string,meetingId:string)
           ...(budgetLearning?['ذاكرة التعلم: '+budgetLearning.shortText]:[]),
         ],
         learningContext:budgetLearning,
+        decisionExplanation:budgetExplanation,
         question:'هل هذا الارتفاع مؤقت لهذه الدورة، أم يعكس مستوى إنفاق يتكرر معك؟',
         requiresResponse:true,
       });
@@ -172,6 +178,7 @@ export async function buildBudgetCommitteePoints(userId:string,meetingId:string)
           ...(forecastLearning?['ذاكرة التعلم: '+forecastLearning.shortText]:[]),
         ],
         learningContext:forecastLearning,
+        decisionExplanation:forecastExplanation,
         question:'قبل أن أقترح خفضًا: هل يوجد دخل قريب أو مبلغ متوقع لم يُسجل بعد؟',requiresResponse:true,
       });
     }
@@ -189,6 +196,7 @@ export async function buildBudgetCommitteePoints(userId:string,meetingId:string)
           ...(budgetLearning?['ذاكرة التعلم: '+budgetLearning.shortText]:[]),
         ],
         learningContext:budgetLearning,
+        decisionExplanation:budgetExplanation,
         question:'هل الارتفاع هذا مؤقت بسبب ظرف محدد، أم أصبح نمطًا متكررًا؟',requiresResponse:true,
       });
     }
@@ -206,6 +214,7 @@ export async function buildBudgetCommitteePoints(userId:string,meetingId:string)
           ...(budgetLearning?['ذاكرة التعلم: '+budgetLearning.shortText]:[]),
         ],
         learningContext:budgetLearning,
+        decisionExplanation:budgetExplanation,
         question:'هل هذا التجاوز سببه حالة مؤقتة يمكن استثناؤها، أم يحتاج تعديلًا في الخطة؟',requiresResponse:true,
       });
     }
@@ -223,6 +232,18 @@ export async function buildBudgetCommitteePoints(userId:string,meetingId:string)
 
 function explainPoint(point:BudgetCommitteePoint){
   const evidence=point.evidence.length?point.evidence.map((item,index)=>(index+1)+') '+item).join(' '):'لا يوجد دليل رقمي إضافي مسجل.';
+  const explanation=point.decisionExplanation;
+  if(explanation){
+    const memory=explanation.memory.summary??'لا يوجد سياق سابق موثق يغير القرار الحالي';
+    const learning=explanation.learning?.shortText??'لا يوجد تعلم سابق مؤهل للتأثير على القرار';
+    return 'تفسير النقطة «'+point.title+'»: الرقم الحالي — '+explanation.current.label+' '+explanation.current.value+
+      '. القاعدة — '+explanation.rule.title+
+      '. الذاكرة السابقة — '+memory+
+      '. التعلم — '+learning+
+      '. لماذا الآن — '+explanation.why+
+      '. الأدلة الرقمية: '+evidence+
+      ' هذا تفسير تحليلي وليس تنفيذًا ماليًا تلقائيًا.';
+  }
   const learning=point.learningContext?' ومن سجل التعلم: '+point.learningContext.shortText:'';
   return 'سبب تركيزي على «'+point.title+'» هو أن أثرها أعلى من بقية النقاط الحالية. الأدلة: '+evidence+learning+' هذا تفسير تحليلي وليس تنفيذًا أو قرارًا ماليًا تلقائيًا.';
 }
@@ -307,6 +328,22 @@ export async function createBudgetCommitteeConversationReply(args:{userId:string
     committee_resolved_point_fingerprint:resolvedPointFingerprint,
     committee_decision:decision,committee_context_note:contextNote,response_type:responseType,
     ranked_points:points.slice(0,3).map(item=>({key:item.key,title:item.title,kind:item.kind,priority:item.priority})),
+    decision_explanation:point?.decisionExplanation?{
+      domain:point.decisionExplanation.domain,
+      current:point.decisionExplanation.current,
+      rule:point.decisionExplanation.rule,
+      memory:point.decisionExplanation.memory,
+      learning:point.decisionExplanation.learning?{
+        algorithm_key:point.decisionExplanation.learning.algorithmKey,
+        algorithm_name:point.decisionExplanation.learning.algorithmName,
+        outcome:point.decisionExplanation.learning.outcome,
+        decision_use:point.decisionExplanation.learning.decisionUse,
+        source_cycle_ids:point.decisionExplanation.learning.sourceCycleIds,
+        confidence:point.decisionExplanation.learning.confidence,
+      }:null,
+      why:point.decisionExplanation.why,
+      guardrails:point.decisionExplanation.guardrails,
+    }:null,
     learning_decision_context:point?.learningContext?{
       algorithm_key:point.learningContext.algorithmKey,
       algorithm_name:point.learningContext.algorithmName,
