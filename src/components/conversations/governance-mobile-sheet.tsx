@@ -7,7 +7,8 @@ import { governanceCatalog } from '@/lib/governance/mobile-catalog';
 import styles from './conversation-workspace.module.css';
 
 type SheetMode='governance'|'meetings'|'documents'|null;
-type Meeting={id:string;title:string;kind:string;scheduled_at:string;cadence:string;status:string;agenda?:string[];ready?:boolean;missing_data?:string[];editable?:boolean;custom?:boolean};
+type Meeting={id:string;title:string;kind:string;scheduled_at:string;cadence:string;status:string;agenda?:string[];ready?:boolean;missing_data?:string[];editable?:boolean;deletable?:boolean;custom?:boolean};
+type MeetingCapabilities={canCreateTemporary:boolean;canEdit:boolean;canDeleteCustom:boolean;actorRole:string;actorName:string};
 type DocumentRow={id:string;file_name:string;content_type?:string|null;verification_status?:string|null;created_at?:string;room_title?:string|null};
 type GovernanceRecord={id:string;sender_name:string;message_kind:string;body:string;created_at:string;room_title?:string|null};
 
@@ -27,6 +28,7 @@ export function GovernanceMobileSheet({
   const [meetingEditor,setMeetingEditor]=useState<{mode:'add'|'edit';id?:string;title:string;scheduled_at:string;cadence:string}|null>(null);
   const [meetingSaving,setMeetingSaving]=useState(false);
   const [meetingDetails,setMeetingDetails]=useState<Meeting|null>(null);
+  const [meetingCapabilities,setMeetingCapabilities]=useState<MeetingCapabilities|null>(null);
   const title=mode==='governance'
     ?'مركز الحوكمة والسياسات'
     :mode==='meetings'
@@ -44,11 +46,12 @@ export function GovernanceMobileSheet({
         :'/api/governance/records';
     fetch(endpoint,{cache:'no-store'})
       .then(async response=>{
-        const data=await response.json() as {meetings?:Meeting[];files?:DocumentRow[];records?:GovernanceRecord[];code?:string};
+        const data=await response.json() as {meetings?:Meeting[];meetingCapabilities?:MeetingCapabilities;files?:DocumentRow[];records?:GovernanceRecord[];code?:string};
         if(!response.ok) throw new Error(data.code??'UNAVAILABLE');
         if(cancelled) return;
         if(mode==='meetings'){
           setMeetings(Array.isArray(data.meetings)?data.meetings:[]);
+          setMeetingCapabilities(data.meetingCapabilities??null);
           fetch('/api/conversations/files',{cache:'no-store'})
             .then(async fileResponse=>fileResponse.ok?fileResponse.json():null)
             .then(fileData=>{if(!cancelled&&fileData)setDocuments(Array.isArray(fileData.files)?fileData.files:[])})
@@ -86,9 +89,10 @@ export function GovernanceMobileSheet({
   const meetingDate=(value:string)=>new Intl.DateTimeFormat('ar-SA-u-ca-gregory-nu-latn',{dateStyle:'medium',timeStyle:'short'}).format(new Date(value));
   async function refreshMeetings(){
     const response=await fetch('/api/governance/meetings',{cache:'no-store'});
-    const data=await response.json() as {meetings?:Meeting[]};
+    const data=await response.json() as {meetings?:Meeting[];meetingCapabilities?:MeetingCapabilities};
     if(!response.ok)throw new Error('meetings');
     setMeetings(Array.isArray(data.meetings)?data.meetings:[]);
+    setMeetingCapabilities(data.meetingCapabilities??null);
   }
   async function saveMeeting(){
     if(!meetingEditor||meetingSaving)return;
@@ -161,7 +165,10 @@ export function GovernanceMobileSheet({
           <LucideIcon name="calendarDays" size={24}/>
           <div><strong>الاجتماعات واللجان</strong><small>لا يعتبر أي اجتماع جاهزًا تلقائيًا إذا كانت بياناته الأساسية ناقصة. يمكنك تعديل الموعد أو إضافة اجتماع أو حذفه.</small></div>
         </div>
-        <div className={styles.meetingsToolbar}><button type="button" className={styles.primaryActionButton} onClick={()=>setMeetingEditor({mode:'add',title:'',scheduled_at:new Date().toISOString().slice(0,16),cadence:'حسب الحاجة'})}><LucideIcon name="plus" size={16}/><span>إضافة اجتماع</span></button></div>
+        <div className={styles.meetingsToolbar}>
+          {meetingCapabilities?.canCreateTemporary&&<button type="button" className={styles.primaryActionButton} onClick={()=>setMeetingEditor({mode:'add',title:'',scheduled_at:new Date().toISOString().slice(0,16),cadence:'حسب الحاجة'})}><LucideIcon name="plus" size={16}/><span>إضافة اجتماع مؤقت</span></button>}
+          {meetingCapabilities&&<small>إدارة الجدول التشغيلية باسم {meetingCapabilities.actorName}. اللجان الأساسية لا تحذف من هذه الشاشة.</small>}
+        </div>
         {loading&&<p className={styles.sheetMessage}>جارٍ تحميل الاجتماعات…</p>}
         {error&&<p className={styles.sheetMessage}>{error}</p>}
         {!loading&&!error&&!orderedMeetings.length&&<p className={styles.sheetMessage}>سيظهر الجدول بعد اعتماد التأسيس الأولي.</p>}
@@ -178,8 +185,8 @@ export function GovernanceMobileSheet({
               <div className={styles.meetingActions}>
                 {onOpenMeetingChat&&<button type="button" onClick={()=>onOpenMeetingChat({id:meeting.id,title:meeting.title})}><LucideIcon name="messageSquareText" size={16}/><span>الدردشة</span></button>}
                 <button type="button" onClick={()=>setMeetingDetails(meeting)}><LucideIcon name="info" size={16}/><span>التفاصيل</span></button>
-                <button type="button" onClick={()=>setMeetingEditor({mode:'edit',id:meeting.id,title:meeting.title,scheduled_at:new Date(meeting.scheduled_at).toISOString().slice(0,16),cadence:meeting.cadence})} aria-label={'تعديل '+meeting.title}><LucideIcon name="pencil" size={16}/><span>تعديل</span></button>
-                <button type="button" onClick={()=>void deleteMeeting(meeting.id)} aria-label={'حذف '+meeting.title}><LucideIcon name="trash2" size={16}/><span>حذف</span></button>
+                {meetingCapabilities?.canEdit&&meeting.editable===true&&<button type="button" onClick={()=>setMeetingEditor({mode:'edit',id:meeting.id,title:meeting.title,scheduled_at:new Date(meeting.scheduled_at).toISOString().slice(0,16),cadence:meeting.cadence})} aria-label={'تعديل '+meeting.title}><LucideIcon name="pencil" size={16}/><span>تعديل</span></button>}
+                {meetingCapabilities?.canDeleteCustom&&meeting.custom===true&&meeting.deletable===true&&<button type="button" onClick={()=>void deleteMeeting(meeting.id)} aria-label={'حذف '+meeting.title}><LucideIcon name="trash2" size={16}/><span>حذف</span></button>}
               </div>
             </article>)}
           </div>
