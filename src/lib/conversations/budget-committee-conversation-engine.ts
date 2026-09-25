@@ -3,6 +3,7 @@ import { getRawSql } from '@/infrastructure/db/client';
 import { getDashboardSummary } from '@/features/dashboard/queries/get-dashboard-summary';
 import { getCurrentFinancialPlanMonitoring } from '@/lib/allocation/financial-plan-monitoring';
 import { getGovernanceMeetingSchedule } from '@/lib/governance/governance-meeting-scheduler';
+import { getLivePersonalBudgetCalculation } from '@/lib/finance/live-personal-budget-calculation';
 import type { ConversationMessageKind } from '@/lib/conversations/store';
 
 export type BudgetCommitteePointKind='RISK'|'DEVIATION'|'DATA_GAP'|'IMPROVEMENT'|'INFO';
@@ -80,10 +81,11 @@ async function lastCommitteeTurn(userId:string,threadId:string,meetingId:string)
 }
 
 export async function buildBudgetCommitteePoints(userId:string,meetingId:string):Promise<BudgetCommitteePoint[]>{
-  const [dashboard,monitoring,schedule]=await Promise.all([
+  const [dashboard,monitoring,schedule,liveCalculation]=await Promise.all([
     getDashboardSummary(userId).catch(()=>null),
     getCurrentFinancialPlanMonitoring(userId).catch(()=>null),
     getGovernanceMeetingSchedule(userId).catch(()=>null),
+    getLivePersonalBudgetCalculation(userId).catch(()=>null),
   ]);
   const meeting=schedule?.meetings.find(item=>item.id===meetingId);
   const points:BudgetCommitteePoint[]=[];
@@ -95,6 +97,48 @@ export async function buildBudgetCommitteePoints(userId:string,meetingId:string)
       evidence:meeting.missing_data.map(item=>'البيان الناقص: '+item),
       question:'نبدأ بأهم نقص: '+meeting.missing_data[0]+'. هل تستطيع تزويدي به الآن؟',requiresResponse:true,
     });
+  }
+
+  if(liveCalculation){
+    const values=liveCalculation.calculation.values;
+    const currentDeficit=n(values.operatingDeficit);
+    if(currentDeficit>0){
+      points.push({
+        key:'current-operating-deficit',
+        kind:'RISK',
+        priority:155,
+        title:'عجز تشغيلي حالي مثبت حسابيًا',
+        summary:'المحرك الحسابي الموحد يبين أن المتطلبات المحمية الحالية تتجاوز الموارد التشغيلية بمقدار '+money(currentDeficit)+'.',
+        evidence:[
+          'الموارد التشغيلية: '+money(n(values.operatingResources)),
+          'الالتزامات المحمية: '+money(n(values.protectedObligations)),
+          'الأساسيات المحجوزة: '+money(n(values.reservedEssentials)),
+          'الحماية المطلوبة: '+money(n(values.requiredProtection)),
+          'مخصصات الأهداف الواجبة: '+money(n(values.requiredGoalAllocations)),
+        ],
+        question:'هل يوجد مبلغ متحقق أو سداد أو تغيير فعلي لم يدخل السجل بعد قبل أن نعيد توزيع الخطة؟',
+        requiresResponse:true,
+      });
+    }
+
+    const utilization=n(values.utilizationPercent);
+    if(utilization>=85){
+      points.push({
+        key:'calculated-budget-utilization',
+        kind:utilization>=100?'DEVIATION':'IMPROVEMENT',
+        priority:utilization>=100?136:106,
+        title:utilization>=100?'تجاوز محسوب في خطة الإنفاق':'اقتراب محسوب من حد خطة الإنفاق',
+        summary:'المنفذ الفعلي مقابل المخطط وصل إلى '+percent(utilization)+'.',
+        evidence:[
+          'المخطط: '+money(n(values.plannedAmount)),
+          'المنفذ الفعلي: '+money(n(values.realizedAmount)),
+          'الانحراف: '+money(n(values.varianceAmount)),
+          'المتاح الحقيقي الحالي: '+money(n(values.trueAvailable)),
+        ],
+        question:'هل هذا الارتفاع مؤقت لهذه الدورة، أم يعكس مستوى إنفاق يتكرر معك؟',
+        requiresResponse:true,
+      });
+    }
   }
 
   if(dashboard){
@@ -120,7 +164,7 @@ export async function buildBudgetCommitteePoints(userId:string,meetingId:string)
 
     const util=n(dashboard.budget.utilizationPercent);
     const remaining=n(dashboard.budget.remaining);
-    if(util>=85){
+    if(!liveCalculation&&util>=85){
       points.push({
         key:'budget-utilization',kind:util>=100?'DEVIATION':'IMPROVEMENT',priority:util>=100?132:104,
         title:util>=100?'تجاوز في استخدام الميزانية':'اقتراب من حد الميزانية',
