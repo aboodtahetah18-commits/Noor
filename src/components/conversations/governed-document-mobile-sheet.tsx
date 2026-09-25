@@ -10,9 +10,48 @@ import { LucideIcon, type LucideIconName } from '@/components/ui/lucide-icon';
 import type { GovernedDocumentRef } from '@/lib/conversations/governed-room-details';
 import styles from './conversation-workspace.module.css';
 
+type GovernanceUnitType=
+  |'article'
+  |'clause'
+  |'paragraph'
+  |'step'
+  |'stage'
+  |'category'
+  |'reason'
+  |'method'
+  |'calculation'
+  |'example';
+
+const governanceUnitLabel:Record<GovernanceUnitType,string>={
+  article:'مادة',
+  clause:'بند',
+  paragraph:'فقرة',
+  step:'خطوة',
+  stage:'مرحلة',
+  category:'نوع',
+  reason:'سبب',
+  method:'طريقة',
+  calculation:'طريقة حساب',
+  example:'مثال',
+};
+
+const unitTypeFromArabicLabel:Record<string,GovernanceUnitType>={
+  'المادة':'article',
+  'البند':'clause',
+  'الفقرة':'paragraph',
+  'الخطوة':'step',
+  'المرحلة':'stage',
+  'النوع':'category',
+  'السبب':'reason',
+  'الطريقة':'method',
+  'طريقة الحساب':'calculation',
+  'المثال':'example',
+};
+
+
 type Amendment={
   requestId:string; documentRef:string; documentTitle:string; roomKey:string;
-  clauseRef:string|null; parentRef:string|null; changeAction:'ADD'|'EDIT'|'DELETE'; unitType:'article'|'clause'|'paragraph';
+  clauseRef:string|null; parentRef:string|null; changeAction:'ADD'|'EDIT'|'DELETE'; unitType:GovernanceUnitType;
   currentRule:string|null; proposedRule:string; rationale:string;
   priority:'NORMAL'|'NEXT_MEETING'|'URGENT'; status:string; requestedAt:string;
   governorReviewedAt:string|null; secretaryReceivedAt:string|null; councilDecisionAt:string|null;
@@ -26,7 +65,7 @@ type TypoCorrection={
 };
 type DirectChange={
   changeId:string; documentRef:string; documentTitle:string; roomKey:string;
-  unitRef:string; parentRef:string|null; changeAction:'ADD'|'EDIT'|'DELETE'; unitType:'article'|'clause'|'paragraph';
+  unitRef:string; parentRef:string|null; changeAction:'ADD'|'EDIT'|'DELETE'; unitType:GovernanceUnitType;
   currentRule:string|null; proposedRule:string; rationale:string; changedAt:string; status:'APPLIED';
 };
 
@@ -39,6 +78,7 @@ const statusLabel:Record<string,string>={
 type DocumentBlock =
   | {kind:'paragraph';number:string|null;text:string;sourceText:string}
   | {kind:'clause';number:string;title:string;text:string;sourceText:string}
+  | {kind:'unit';unitType:Exclude<GovernanceUnitType,'article'|'clause'|'paragraph'>;number:string;text:string;sourceText:string}
   | {kind:'table';headers:string[];rows:string[][]};
 type DocumentSection={number:string;title:string;blocks:DocumentBlock[]};
 
@@ -231,6 +271,22 @@ function parseGovernedDocument(content:string):DocumentSection[]{
       continue;
     }
 
+    const explicitStructuredUnit=normalized.match(/^(طريقة الحساب|الخطوة|المرحلة|النوع|السبب|الطريقة|المثال)\s+(\d+(?:\.\d+)*)\s*(?::|：|[–—-])?\s*(.*)$/u);
+    if(explicitStructuredUnit){
+      const unitType=unitTypeFromArabicLabel[explicitStructuredUnit[1]??''];
+      const text=cleanDocumentText(explicitStructuredUnit[3]??'');
+      if(unitType&&unitType!=='article'&&unitType!=='clause'&&unitType!=='paragraph'&&text){
+        ensureSection().blocks.push({
+          kind:'unit',
+          unitType,
+          number:westernDigits(explicitStructuredUnit[2]??''),
+          text,
+          sourceText:raw,
+        });
+      }
+      continue;
+    }
+
     const markdownHeading=normalized.match(/^(#{1,6})\s+(.+)$/);
     if(markdownHeading){
       const level=(markdownHeading[1]??'').length;
@@ -304,7 +360,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
   const [formOpen,setFormOpen]=useState(false);
   const [editMode,setEditMode]=useState<'direct'|'governance'>('direct');
   const [changeAction,setChangeAction]=useState<'ADD'|'EDIT'|'DELETE'>('EDIT');
-  const [unitType,setUnitType]=useState<'article'|'clause'|'paragraph'>('paragraph');
+  const [unitType,setUnitType]=useState<GovernanceUnitType>('paragraph');
   const [parentRef,setParentRef]=useState('');
   const [pending,setPending]=useState(false);
   const [feedback,setFeedback]=useState('');
@@ -393,7 +449,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
   const displayDescription=governedDisplayDescription(displayType);
   const documentStatus=useMemo(()=>governedDocumentStatus(documentContent),[documentContent]);
   const unitOptions=useMemo(()=>{
-    const items:Array<{ref:string;type:'article'|'clause'|'paragraph';label:string;text:string;raw:string;example:string;parentRef:string|null}>=[];
+    const items:Array<{ref:string;type:GovernanceUnitType;label:string;text:string;raw:string;example:string;parentRef:string|null}>=[];
     for(const section of documentSections){
       items.push({ref:section.number,type:'article',label:'المادة '+section.number,text:section.title,raw:section.title,example:'',parentRef:null});
       for(const block of section.blocks){
@@ -403,6 +459,17 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
         }else if(block.kind==='paragraph'&&block.number){
           const parent=block.number.split('.').slice(0,-1).join('.');
           items.push({ref:block.number,type:'paragraph',label:'الفقرة '+block.number,text:block.text,raw:block.sourceText||block.text,example:'',parentRef:parent});
+        }else if(block.kind==='unit'){
+          const parent=block.number.split('.').slice(0,-1).join('.');
+          items.push({
+            ref:block.number,
+            type:block.unitType,
+            label:governanceUnitLabel[block.unitType]+' '+block.number,
+            text:block.text,
+            raw:block.sourceText||block.text,
+            example:'',
+            parentRef:parent,
+          });
         }
       }
     }
@@ -412,7 +479,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
   const articleOptions=useMemo(()=>unitOptions.filter(item=>item.type==='article'),[unitOptions]);
   const clauseOptions=useMemo(()=>unitOptions.filter(item=>item.type==='clause'),[unitOptions]);
 
-  function nextUnitRef(type:'article'|'clause'|'paragraph',parent:string){
+  function nextUnitRef(type:GovernanceUnitType,parent:string){
     if(type==='article'){
       const max=Math.max(0,...articleOptions.map(item=>Number(item.ref)||0));
       return String(max+1);
@@ -423,8 +490,8 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
       const max=Math.max(0,...siblings.map(item=>Number(item.ref.split('.').at(-1))||0));
       return article+'.'+String(max+1);
     }
-    const clause=parent.replace(/^البند\s+/u,'').trim();
-    const siblings=unitOptions.filter(item=>item.type==='paragraph'&&item.ref.startsWith(clause+'.'));
+    const clause=parent.replace(/^(?:البند|المادة|الفقرة|الخطوة|المرحلة|النوع|السبب|الطريقة|طريقة الحساب|المثال)\s+/u,'').trim();
+    const siblings=unitOptions.filter(item=>item.type===type&&item.ref.startsWith(clause+'.'));
     const max=Math.max(0,...siblings.map(item=>Number(item.ref.split('.').at(-1))||0));
     return clause+'.'+String(max+1);
   }
@@ -456,7 +523,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
     setExampleText(item.example);
   }
 
-  function updateAddTarget(type:'article'|'clause'|'paragraph',parent:string){
+  function updateAddTarget(type:GovernanceUnitType,parent:string){
     setUnitType(type);
     setParentRef(parent);
     if(type==='article')setClauseRef(nextUnitRef(type,''));
@@ -467,7 +534,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
     setExampleText('');
   }
 
-  function openUnitEditor(type:'article'|'clause'|'paragraph',reference:string,currentText:string,parent:string|null,sourceText?:string){
+  function openUnitEditor(type:GovernanceUnitType,reference:string,currentText:string,parent:string|null,sourceText?:string){
     const parts=type==='clause'?splitClauseContent(currentText):{explanation:currentText,example:''};
     setEditMode('direct');
     setChangeAction('EDIT');
@@ -488,7 +555,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
     if(pending||!clauseRef.trim()||(changeAction!=='DELETE'&&!proposedRule.trim()))return;
     setPending(true); setFeedback('');
     try{
-      const unitLabel=unitType==='article'?'المادة':unitType==='clause'?'البند':'الفقرة';
+      const unitLabel=governanceUnitLabel[unitType];
       const composedRule=changeAction==='DELETE'
         ?(currentRule.trim()||'حذف العنصر')
         :unitType==='clause'&&exampleText.trim()
@@ -630,12 +697,21 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
             {changeAction==='ADD'
               ?<>
                 <label><span>نوع الإضافة</span><select value={unitType} onChange={e=>updateAddTarget(e.target.value as typeof unitType,'')}>
-                  <option value="article">مادة</option><option value="clause">بند</option><option value="paragraph">فقرة</option>
+                  <option value="article">مادة</option>
+                  <option value="clause">بند</option>
+                  <option value="paragraph">فقرة</option>
+                  <option value="step">خطوة</option>
+                  <option value="stage">مرحلة</option>
+                  <option value="category">نوع</option>
+                  <option value="reason">سبب</option>
+                  <option value="method">طريقة</option>
+                  <option value="calculation">طريقة حساب</option>
+                  <option value="example">مثال</option>
                 </select></label>
                 {unitType==='clause'&&<label><span>تحت المادة</span><select value={parentRef} onChange={e=>updateAddTarget('clause',e.target.value)}>
                   <option value="">اختر المادة</option>{articleOptions.map(item=><option key={item.ref} value={item.ref}>{item.label}</option>)}
                 </select></label>}
-                {unitType==='paragraph'&&<label><span>تحت البند</span><select value={parentRef} onChange={e=>updateAddTarget('paragraph',e.target.value)}>
+                {unitType!=='article'&&unitType!=='clause'&&<label><span>تحت البند</span><select value={parentRef} onChange={e=>updateAddTarget(unitType,e.target.value)}>
                   <option value="">اختر البند</option>{clauseOptions.map(item=><option key={item.ref} value={item.ref}>{item.label}</option>)}
                 </select></label>}
                 <label><span>الترقيم</span><input value={clauseRef} readOnly placeholder="يُنشأ تلقائيًا"/></label>
@@ -650,7 +726,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
               <label><span>مثال</span><textarea value={exampleText} onChange={e=>setExampleText(e.target.value)} placeholder="أضف مثالًا عمليًا يوضح البند"/></label>
             </>}
             {changeAction!=='DELETE'&&unitType!=='clause'&&<label><span>{changeAction==='ADD'?'النص الجديد':'النص المعدل'}</span><textarea required value={proposedRule} onChange={e=>setProposedRule(e.target.value)} placeholder={changeAction==='ADD'?'اكتب محتوى العنصر الجديد':'عدّل النص المطلوب'}/></label>}
-            {changeAction==='DELETE'&&<p className={styles.governedDeleteNotice}>سيتم حذف {unitType==='article'?'المادة وما يندرج تحتها':unitType==='clause'?'البند وما يندرج تحته':'الفقرة المحددة'} من نسخة العرض. في المسار الحوكمي لا يصبح الحذف نافذًا إلا بعد الاعتماد.</p>}
+            {changeAction==='DELETE'&&<p className={styles.governedDeleteNotice}>سيتم حذف {unitType==='article'?'المادة وما يندرج تحتها':unitType==='clause'?'البند وما يندرج تحته':governanceUnitLabel[unitType]+' المحدد'} من نسخة العرض. في المسار الحوكمي لا يصبح الحذف نافذًا إلا بعد الاعتماد.</p>}
             <label><span>{editMode==='direct'?'ملاحظة':'مبرر التغيير'}</span><textarea required={editMode==='governance'} value={rationale} onChange={e=>setRationale(e.target.value)} placeholder={editMode==='direct'?'اختياري خلال مرحلة التأسيس':'اشرح سبب الإضافة أو التعديل أو الحذف وأثره'}/></label>
             {editMode==='governance'&&<label><span>الأولوية</span><select value={priority} onChange={e=>setPriority(e.target.value as typeof priority)}><option value="NORMAL">عادي</option><option value="NEXT_MEETING">للاجتماع القادم</option><option value="URGENT">عاجل، اجتماع فوري</option></select></label>}
             <p>{editMode==='direct'
