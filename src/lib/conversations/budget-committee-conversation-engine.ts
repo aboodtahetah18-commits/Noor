@@ -5,6 +5,7 @@ import { getCurrentFinancialPlanMonitoring } from '@/lib/allocation/financial-pl
 import { getGovernanceMeetingSchedule } from '@/lib/governance/governance-meeting-scheduler';
 import { getLivePersonalBudgetCalculation } from '@/lib/finance/live-personal-budget-calculation';
 import type { ConversationMessageKind } from '@/lib/conversations/store';
+import { assertRoleCompactAuthority, compactAuthoritiesForRole } from '@/lib/governance/algorithm-role-registry';
 
 export type BudgetCommitteePointKind='RISK'|'DEVIATION'|'DATA_GAP'|'IMPROVEMENT'|'INFO';
 export type BudgetCommitteePoint={
@@ -207,6 +208,8 @@ function nextPointBody(point:BudgetCommitteePoint,remaining:number){
 }
 
 export async function createBudgetCommitteeConversationReply(args:{userId:string;meetingId:string;userText:string;}):Promise<BudgetCommitteeReply|null>{
+  assertRoleCompactAuthority('budget-spending-owner','CALCULATE_AND_ANALYZE');
+  assertRoleCompactAuthority('budget-spending-owner','RECORD_INTERNAL_CONTEXT');
   const sql=getRawSql();
   const [schedule,threadRows]=await Promise.all([
     getGovernanceMeetingSchedule(args.userId),
@@ -276,6 +279,7 @@ export async function createBudgetCommitteeConversationReply(args:{userId:string
     committee_resolved_point_fingerprint:resolvedPointFingerprint,
     committee_decision:decision,committee_context_note:contextNote,response_type:responseType,
     ranked_points:points.slice(0,3).map(item=>({key:item.key,title:item.title,kind:item.kind,priority:item.priority})),
+    allowed_authorities:compactAuthoritiesForRole('budget-spending-owner'),
     memory_aware:true,external_execution:false,
     execution_boundary:'حوار لجنة وتحليل وقرارات مسجلة فقط؛ لا تنفيذ مالي خارجي تلقائي',
   };
