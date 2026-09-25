@@ -66,6 +66,7 @@ export const governedRoomDetails:Record<ConversationRoomKey,GovernedRoomDetail>=
     records:[
       {referenceCode:'NMC-REG-05',title:'لائحة سجل الأثر والتدقيق',kind:'record',version:'v1.0'},
       {referenceCode:'NMC-REG-06',title:'لائحة المتابعة والتقارير الدورية',kind:'record',version:'v1.0'},
+      {referenceCode:'NMC-CORE-07',title:'المرجع المختصر للصلاحيات والحوكمة واللجان',kind:'reference',version:'v1.0-draft'},
     ],
     policies:[
       {referenceCode:'OPS-REF-01',title:'تأسيس مركز العمليات والمطابقة — بنك نماء المركزي',kind:'reference',version:'v0.1',sourceUrl:'https://docs.google.com/document/d/1jtP85JWnHPHoCzRxZFOwqDhyFmRNHnCBYP-0R51fKr0/edit'},
