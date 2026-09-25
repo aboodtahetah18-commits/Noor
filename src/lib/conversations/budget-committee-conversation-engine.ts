@@ -6,7 +6,7 @@ import { getGovernanceMeetingSchedule } from '@/lib/governance/governance-meetin
 import { getLivePersonalBudgetCalculation } from '@/lib/finance/live-personal-budget-calculation';
 import type { ConversationMessageKind } from '@/lib/conversations/store';
 import { assertRoleCompactAuthority, compactAuthoritiesForRole } from '@/lib/governance/algorithm-role-registry';
-import { getFinancialDecisionLearningContext, type FinancialDecisionLearningContext } from '@/lib/finance/financial-learning-decision-context';
+import type { FinancialDecisionLearningContext } from '@/lib/finance/financial-learning-decision-context';
 import { getFinancialDecisionExplanation, type FinancialDecisionExplanation } from '@/lib/finance/financial-decision-explanation';
 
 export type BudgetCommitteePointKind='RISK'|'DEVIATION'|'DATA_GAP'|'IMPROVEMENT'|'INFO';
