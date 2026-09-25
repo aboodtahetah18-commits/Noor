@@ -13,6 +13,7 @@ import { shouldProactivelyOpenCase } from '@/algorithmic-systems/orchestration/p
 import type { BankForwardNeed } from '@/algorithmic-systems/domain/interbank-planning';
 import { getGovernanceMeetingSchedule } from '@/lib/governance/governance-meeting-scheduler';
 import { buildBudgetCommitteePreMeetingBrief } from '@/lib/conversations/budget-committee-conversation-engine';
+import { getLivePersonalBudgetCalculation } from '@/lib/finance/live-personal-budget-calculation';
 
 export type ProactiveCandidate={
   key:string;
@@ -175,6 +176,7 @@ function dataCompletionCandidates(presentFacts:Set<string>):ProactiveCandidate[]
 
 function operationalCandidates(
   dashboard:Awaited<ReturnType<typeof getDashboardSummary>>,
+  liveCalculation:Awaited<ReturnType<typeof getLivePersonalBudgetCalculation>>,
 ):ProactiveCandidate[]{
   if(!dashboard)return [];
   const candidates:ProactiveCandidate[]=[];
@@ -194,6 +196,44 @@ function operationalCandidates(
       body:`ظهر لدي ${overdue.length} استحقاق متأخر في السجلات. قبل أن أفترض أنه لم يُسدد: هل تم السداد خارج نماء، أم ما زال الالتزام قائمًا؟ أرسل الحالة أو الإثبات المتاح وسأحدّث المتابعة بناءً على ردك.`,
       reason:'يوجد استحقاق متأخر يحتاج تحققًا مباشرًا من المستخدم.',
     });
+  }
+
+  const currentDeficit=numberValue(liveCalculation?.calculation.values.operatingDeficit);
+  if(currentDeficit>0){
+    const need:BankForwardNeed={
+      id:'current-operating-deficit',
+      bank:'MALAA',
+      domain:'LIQUIDITY_PROTECTION',
+      title:'معالجة العجز التشغيلي الحالي',
+      currentAmount:0,
+      targetAmount:currentDeficit,
+      gapAmount:currentDeficit,
+      horizonDays:7,
+      minimumAcceptableAmount:currentDeficit,
+      idealAmount:currentDeficit,
+      priority:'HIGH',
+      rationale:'المتطلبات المحمية الحالية أعلى من الموارد التشغيلية المتحققة.',
+      sourceCandidates:['تصحيح بيانات ناقصة','خفض إنفاق مرن','إعادة توزيع داخل الدورة','دخل متحقق إضافي'],
+      status:'ACTIVE',
+      confidenceScore:liveCalculation?.calculation.values.calculationConfidence??90,
+    };
+    if(shouldProactivelyOpenCase(need)){
+      candidates.push({
+        key:'current-operating-deficit',
+        roomKey:'solvency',
+        senderKey:'liquidity-protection-owner',
+        senderName:'مسؤول السيولة والحماية',
+        scopeKind:'role',scopeKey:'liquidity-protection-owner',
+        kind:'risk',
+        basePriority:146,
+        cooldownDays:3,
+        requestedFact:null,
+        title:'عجز تشغيلي حالي',
+        body:`الحسابات الحالية تظهر عجزًا تشغيليًا قدره ${new Intl.NumberFormat('ar-SA-u-nu-latn',{maximumFractionDigits:2}).format(currentDeficit)} ر.س بعد الالتزامات والحماية والأساسيات ومخصصات الأهداف. قبل أي اقتراح خفض: هل هناك مبلغ متحقق أو سداد حديث لم يدخل نماء بعد؟`,
+        reason:'المحرك الحسابي الموحد اكتشف عجزًا حاليًا في الدورة.',
+        interbankNeed:need,
+      });
+    }
   }
 
   const deficit=numberValue(dashboard.forecast.expectedDeficit);
@@ -391,16 +431,17 @@ export async function runDailyConversationOrchestratorForUser(
       return {userId,status:'ONBOARDING_INCOMPLETE',roomKey:null,promptKey:null,messageId:null,errorCode:null};
     }
     const operationalDate=await getUserOperationalDate(userId,now);
-    const [dailyPromptCount,facts,memory,dashboard,meetings]=await Promise.all([
+    const [dailyPromptCount,facts,memory,dashboard,meetings,liveCalculation]=await Promise.all([
       proactiveCountToday(userId,operationalDate),
       activeFactKeys(userId),
       readProactiveConversationMemory(userId),
       getDashboardSummary(userId).catch(()=>null),
       meetingCandidates(userId,now),
+      getLivePersonalBudgetCalculation(userId).catch(()=>null),
     ]);
 
     const candidates=[
-      ...operationalCandidates(dashboard),
+      ...operationalCandidates(dashboard,liveCalculation),
       ...meetings,
       ...dataCompletionCandidates(facts),
     ].filter(candidate=>isCandidateEligible(candidate,memory,facts,now))
