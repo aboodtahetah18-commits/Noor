@@ -2,6 +2,7 @@ import { rawSql } from '@/infrastructure/db/client';
 import { Money } from '@/financial-engine/money';
 import { getCurrentFinancialState } from '@/features/financial-engine/queries/get-current-financial-state';
 import { goalRepository } from '@/repositories/goal-repository';
+import { emergencyRepository } from '@/repositories/emergency-repository';
 import {
   calculatePersonalBudget,
   type PersonalBudgetCalculationResult,
@@ -75,7 +76,7 @@ export async function getLivePersonalBudgetCalculation(
   if(!cycle)return null;
   const resolvedCycleId=String(cycle.id);
 
-  const [state,planRows,goals]=await Promise.all([
+  const [state,planRows,goals,emergency]=await Promise.all([
     getCurrentFinancialState(userId,resolvedCycleId),
     rawSql`
       with current_plan as (
@@ -92,6 +93,7 @@ export async function getLivePersonalBudgetCalculation(
           coalesce(sum(ba.planned_amount) filter(where ba.allocation_type='ESSENTIAL'),0) essential_planned,
           coalesce(sum(ba.planned_amount) filter(where ba.allocation_type='FLEXIBLE'),0) flexible_planned,
           coalesce(sum(ba.planned_amount) filter(where ba.allocation_type='GOAL'),0) goal_planned,
+          coalesce(sum(ba.planned_amount) filter(where ba.allocation_type='SAVING'),0) saving_planned,
           coalesce(sum(ba.planned_amount) filter(where ba.allocation_type in ('ESSENTIAL','FLEXIBLE')),0) spending_planned,
           max(ba.plan_version_id)::text plan_version_id
         from public.budget_allocations ba
@@ -157,9 +159,11 @@ export async function getLivePersonalBudgetCalculation(
         allocations.essential_planned::text,
         allocations.flexible_planned::text,
         allocations.goal_planned::text,
+        allocations.saving_planned::text,
         allocations.spending_planned::text,
         greatest(essential_planned-essential_actual.amount,0)::text remaining_essentials,
         greatest(goal_planned-actual_by_type.goal_actual,0)::text remaining_goals,
+        greatest(saving_planned-savings.actual,0)::text remaining_savings,
         greatest(flexible_planned-flexible_actual.amount,0)::text flexible_remaining,
         flexible_actual.amount::text flexible_actual,
         greatest(actual_by_type.expense_actual-refunds.amount,0)::text spending_actual,
@@ -167,11 +171,17 @@ export async function getLivePersonalBudgetCalculation(
       from allocations,actual_by_type,refunds,essential_actual,flexible_actual,savings
     `,
     goalRepository.list(userId),
+    emergencyRepository.summary(userId),
   ]);
 
   const plan=(planRows[0]??{}) as Record<string,unknown>;
   const remainingDays=daysUntil(String(cycle.expected_next_income_date));
   const confidence=state.confidenceScore===null?undefined:Number(state.confidenceScore);
+
+  const remainingEmergency=emergency?.allocation?.remainingToTransfer??'0.00';
+  const otherActiveReservations=Money.parse(String(plan.remaining_savings??'0.00'))
+    .add(Money.parse(remainingEmergency))
+    .toString();
 
   const calculation=calculatePersonalBudget({
     verifiedIncome:state.verifiedIncomeReceived,
@@ -181,7 +191,7 @@ export async function getLivePersonalBudgetCalculation(
     reservedEssentials:String(plan.remaining_essentials??'0.00'),
     requiredProtection:state.requiredProtection,
     requiredGoalAllocations:String(plan.remaining_goals??'0.00'),
-    otherActiveReservations:'0.00',
+    otherActiveReservations,
     plannedAmount:String(plan.spending_planned??'0.00'),
     realizedAmount:String(plan.spending_actual??'0.00'),
     netRealizedSavings:String(plan.saving_actual??'0.00'),
