@@ -39,6 +39,18 @@ function RoleSection({number,title,items}:{number:number;title:string;items:stri
 
 type RoleCorrection={documentRef:string;currentRule:string;correctedRule:string;correctedAt:string};
 type RoleAmendment={documentRef:string;currentRule:string|null;proposedRule:string;status:string;requestedAt:string};
+type RoleCapability={
+  key:string;
+  arabicName:string;
+  description:string;
+  externalExecution:boolean;
+};
+type RoleProcedure={
+  key:string;
+  arabicName:string;
+  purpose:string;
+  steps:string[];
+};
 
 function applyRoleEdits(value:string,corrections:RoleCorrection[],amendments:RoleAmendment[]){
   let next=value;
@@ -63,8 +75,26 @@ export function AlgorithmRoleMobileSheet({role,onClose,onOpenChat}:{role:Algorit
   const [priority,setPriority]=useState<'NORMAL'|'NEXT_MEETING'|'URGENT'>('NORMAL');
   const [pending,setPending]=useState(false);
   const [feedback,setFeedback]=useState('');
+  const [capabilities,setCapabilities]=useState<RoleCapability[]>([]);
+  const [procedures,setProcedures]=useState<RoleProcedure[]>([]);
+  const [capabilitiesLoading,setCapabilitiesLoading]=useState(true);
   const documentRef=role.referenceCode;
   const documentTitle='الوصف الوظيفي — '+role.name;
+
+  useEffect(()=>{
+    let cancelled=false;
+    setCapabilitiesLoading(true);
+    fetch('/api/governance/roles/'+encodeURIComponent(role.key)+'/capabilities',{cache:'no-store'})
+      .then(async response=>response.ok?response.json():null)
+      .then(data=>{
+        if(cancelled||!data)return;
+        setCapabilities(Array.isArray(data.authorities)?data.authorities:[]);
+        setProcedures(Array.isArray(data.procedures)?data.procedures:[]);
+      })
+      .catch(()=>{})
+      .finally(()=>{if(!cancelled)setCapabilitiesLoading(false)});
+    return()=>{cancelled=true};
+  },[role.key]);
 
   useEffect(()=>{
     let cancelled=false;
@@ -81,9 +111,16 @@ export function AlgorithmRoleMobileSheet({role,onClose,onOpenChat}:{role:Algorit
 
   const editText=(value:string)=>applyRoleEdits(value,corrections,amendments);
   const policyTitles=role.policyRefs.map(ref=>policyTitle(ref)).filter((title):title is string=>Boolean(title)).map(editText);
+  const capabilityItems=capabilities.length
+    ?capabilities.map(item=>item.arabicName+' — '+item.description)
+    :capabilitiesLoading
+      ?[]
+      :role.authorities;
+  const procedureItems=procedures.map(item=>item.arabicName+' — '+item.purpose);
   const sections=[
     {title:'المسؤوليات الرئيسية',items:role.accountableFor},
-    {title:'الصلاحيات داخل التفويض',items:role.authorities},
+    {title:'الصلاحيات الفعلية داخل النظام',items:capabilityItems},
+    {title:'الإجراءات التشغيلية المسموحة',items:procedureItems},
     {title:'القرارات التي يملكها أو يرفعها',items:role.decisions??[]},
     {title:'المدخلات والبيانات التي يعتمد عليها',items:role.inputs??[]},
     {title:'المخرجات التي يصدرها',items:role.outputs??[]},
@@ -154,6 +191,21 @@ export function AlgorithmRoleMobileSheet({role,onClose,onOpenChat}:{role:Algorit
         <section className={styles.algorithmRoleSection}>
           <header><small>المادة 1</small><strong>الغرض من الدور والمهمة الأساسية</strong></header>
           <div className={styles.algorithmRoleItem}><span>1.1</span><p>{editText(role.mandate)}</p></div>
+        </section>
+
+        <section className={styles.algorithmRoleSection}>
+          <header><small>حالة التفويض</small><strong>الصلاحيات المرتبطة فعليًا بالمحرك</strong></header>
+          <div className={styles.algorithmRoleItems}>
+            {capabilitiesLoading
+              ?<p className={styles.algorithmRoleEmpty}>جارٍ تحميل الصلاحيات الفعلية…</p>
+              :capabilities.length
+                ?capabilities.map((item,index)=><article key={item.key} className={styles.algorithmRoleItem}>
+                  <span>{index+1}</span>
+                  <p><strong>{item.arabicName}</strong> — {item.description}</p>
+                </article>)
+                :<p className={styles.algorithmRoleEmpty}>لا توجد صلاحيات تشغيلية فعالة لهذا الدور.</p>}
+          </div>
+          <p className={styles.algorithmRoleEmpty}>لا تمنح أي من هذه الصلاحيات تنفيذًا ماليًا خارجيًا. التنفيذ الفعلي يبقى منفصلًا ويحتاج إجراءً من المستخدم.</p>
         </section>
 
         {onOpenChat&&<button type="button" className={styles.primaryActionButton} onClick={onOpenChat}><LucideIcon name="messageSquareText" size={20}/><span>فتح دردشة مباشرة مع {role.name}</span></button>}
