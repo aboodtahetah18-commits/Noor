@@ -203,16 +203,12 @@ function whyText(
   return 'اخترت هذه القراءة لأن '+current.label+' هو '+current.value+'، وتطبق قاعدة «'+rule.title+'».'+memoryPart+learningPart;
 }
 
-export async function getFinancialDecisionExplanation(
-  userId:string,
+export function composeFinancialDecisionExplanation(
   domain:FinancialDecisionLearningDomain,
-):Promise<FinancialDecisionExplanation>{
-  const [live,memory,learning]=await Promise.all([
-    getLivePersonalBudgetCalculation(userId).catch(()=>null),
-    previousDecisionMemory(userId,domain).catch(()=>({summary:null,at:null,source:'none' as const})),
-    getFinancialDecisionLearningContext(userId,domain).catch(()=>null),
-  ]);
-  const current=currentForDomain(domain,live);
+  current:FinancialDecisionExplanation['current'],
+  memory:FinancialDecisionExplanation['memory'],
+  learning:FinancialDecisionLearningContext|null,
+):FinancialDecisionExplanation{
   const rule=RULES[domain];
   const why=whyText(current,rule,memory,learning);
   const memoryText=memory.summary?' الذاكرة السابقة: '+memory.summary+'.':'';
@@ -231,4 +227,17 @@ export async function getFinancialDecisionExplanation(
       learningCanOverrideCurrentFacts:false,
     },
   };
+}
+
+export async function getFinancialDecisionExplanation(
+  userId:string,
+  domain:FinancialDecisionLearningDomain,
+):Promise<FinancialDecisionExplanation>{
+  const [live,memory,learning]=await Promise.all([
+    getLivePersonalBudgetCalculation(userId).catch(()=>null),
+    previousDecisionMemory(userId,domain).catch(()=>({summary:null,at:null,source:'none' as const})),
+    getFinancialDecisionLearningContext(userId,domain).catch(()=>null),
+  ]);
+  const current=currentForDomain(domain,live);
+  return composeFinancialDecisionExplanation(domain,current,memory,learning);
 }
