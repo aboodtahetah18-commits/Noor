@@ -90,6 +90,15 @@ export default async function DecisionLogPage(){
                 <div><strong>القاعدة المستخدمة</strong><p>{row.rule.title??'لا توجد قاعدة تفسيرية موثقة لهذا القرار القديم.'}</p>{row.rule.code?<small>{row.rule.code}</small>:null}</div>
                 <div><strong>الذاكرة السابقة</strong><p>{row.memory.summary??'لا توجد ذاكرة سابقة مسجلة لهذا القرار.'}</p>{row.memory.at?<small>{new Date(row.memory.at).toLocaleString('ar-SA')}</small>:null}</div>
                 <div><strong>التعلم</strong><p>{row.learning.algorithmName??'لا يوجد تعلم خوارزمي مرتبط بهذا القرار.'}</p>{row.learning.algorithmName?<small>{row.learning.outcome??'—'} · {row.learning.decisionUse??'—'} · الثقة {row.learning.confidence??'—'}%</small>:null}</div>
+                <div><strong>نتائج قرارات مشابهة</strong><p>{row.outcomeLearning.stance?(
+                  row.outcomeLearning.stance==='SUPPORT'
+                    ?'هذا النوع من التوصيات نجح سابقًا بما يكفي لاستخدامه كدليل مساعد.'
+                    :row.outcomeLearning.stance==='CAUTION'
+                      ?'هذا النوع من التوصيات سجل نتائج سلبية سابقة؛ خُفّض الاعتماد عليه.'
+                      :row.outcomeLearning.stance==='NEUTRAL'
+                        ?'نتائج هذا النوع من التوصيات مختلطة.'
+                        :'لا توجد عينة كافية بعد.'
+                ):'لم يكن هناك نمط نتائج سابق مسجل وقت القرار.'}</p>{row.outcomeLearning.sampleSize!==null?<small>العينة {row.outcomeLearning.sampleSize} · الثقة {row.outcomeLearning.confidence??'—'}% · إيجابي {Math.round((row.outcomeLearning.positiveRate??0)*100)}% · سلبي {Math.round((row.outcomeLearning.negativeRate??0)*100)}%</small>:null}</div>
                 <div><strong>نتيجة القرار</strong><p>{row.outcome?.summary??'بانتظار دليل لاحق يسمح بتقييم الأثر.'}</p>{row.outcome?.assessedAt?<small>{new Date(row.outcome.assessedAt).toLocaleString('ar-SA')} · {outcomeLabel(row.outcome.effect)} · {qualityLabel(row.outcome.quality)}</small>:null}</div>
               </div>
             </details>
