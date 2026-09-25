@@ -16,6 +16,7 @@ export type GovernanceMeetingScheduleItem={
   ready?:boolean;
   missing_data?:string[];
   editable?:boolean;
+  deletable?:boolean;
   custom?:boolean;
 };
 
@@ -123,7 +124,7 @@ export async function getGovernanceMeetingSchedule(userId:string){
       cadence:'مرة واحدة بعد 24 ساعة من اعتماد التأسيس',
       status:councilAt>now?'مجدول':'مستحق للمراجعة',
       agenda:['مراجعة فهم المجلس للمستخدم','مناقشة الأهداف والالتزامات والسيولة والأصول','معايرة أسلوب الخوارزميات وأسئلتها ومستوى الشرح','تثبيت تفضيلات الحوكمة والاجتماعات'],
-      ready:true,editable:true,
+      ready:true,editable:true,deletable:false,
     },
     ...(financialBalanceTrigger?[{
       id:`financial-balance-${cycleId}`,
@@ -145,6 +146,7 @@ export async function getGovernanceMeetingSchedule(userId:string){
       ready:budgetReady,
       missing_data:budgetMissing,
       editable:true,
+      deletable:false,
     }]:[]),
     ...(oversightTrigger?[{
       id:`oversight-learning-${cycleId}`,
@@ -165,6 +167,7 @@ export async function getGovernanceMeetingSchedule(userId:string){
       sensitivity:'رقابية حساسة' as const,
       ready:true,
       editable:true,
+      deletable:false,
     }]:[]),
   ];
 
@@ -183,7 +186,7 @@ export async function getGovernanceMeetingSchedule(userId:string){
       cadence:typeof override.cadence==='string'?override.cadence:meeting.cadence,
       status:typeof override.status==='string'?override.status:meeting.status,
       agenda:Array.isArray(override.agenda)?override.agenda.filter((item):item is string=>typeof item==='string'):meeting.agenda,
-      editable:true,
+      editable:true,deletable:false,
     }];
   });
   for(const [id,override] of Object.entries(overrides)){
@@ -197,7 +200,7 @@ export async function getGovernanceMeetingSchedule(userId:string){
       cadence:typeof override.cadence==='string'?override.cadence:'حسب الحاجة فقط',
       status:typeof override.status==='string'?override.status:'مجدول',
       agenda:Array.isArray(override.agenda)?override.agenda.filter((item):item is string=>typeof item==='string'):[],
-      ready:true,editable:true,custom:true,
+      ready:true,editable:true,deletable:false,custom:true,
     });
   }
 
