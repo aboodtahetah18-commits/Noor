@@ -5,6 +5,10 @@ import {
   type FinancialDecisionLearningContext,
   type FinancialDecisionLearningDomain,
 } from '@/lib/finance/financial-learning-decision-context';
+import {
+  getDecisionOutcomeLearningContext,
+  type DecisionOutcomeLearningContext,
+} from '@/lib/finance/decision-outcome-learning-engine';
 
 export type FinancialDecisionExplanation={
   domain:FinancialDecisionLearningDomain;
@@ -25,6 +29,7 @@ export type FinancialDecisionExplanation={
     source:'conversation'|'none';
   };
   learning:FinancialDecisionLearningContext|null;
+  outcomeLearning:DecisionOutcomeLearningContext|null;
   why:string;
   shortText:string;
   guardrails:{
@@ -191,6 +196,7 @@ function whyText(
   rule:FinancialDecisionExplanation['rule'],
   memory:FinancialDecisionExplanation['memory'],
   learning:FinancialDecisionLearningContext|null,
+  outcomeLearning:DecisionOutcomeLearningContext|null,
 ){
   const memoryPart=memory.summary?' وهناك سياق سابق محفوظ يؤثر على القراءة الحالية.':' ولا يوجد سياق سابق موثق يغير القراءة الحالية.';
   const learningPart=learning
@@ -200,7 +206,16 @@ function whyText(
         ?' لكن سجل التعلم يفرض الحذر لأنه يتضمن تجربة سابقة غير مستقرة أو متراجَعًا عنها.'
         :' ويوجد تعلم سابق، لكنه غير مؤهل وحده للتأثير على القرار.'
     :' ولا يوجد تعلم خوارزمي سابق مناسب لهذا المجال حتى الآن.';
-  return 'اخترت هذه القراءة لأن '+current.label+' هو '+current.value+'، وتطبق قاعدة «'+rule.title+'».'+memoryPart+learningPart;
+  const outcomePart=outcomeLearning
+    ?outcomeLearning.stance==='SUPPORT'
+      ?' كما أن نتائج قرارات سابقة من النوع نفسه كانت إيجابية بما يكفي لاستخدامها كدليل مساعد.'
+      :outcomeLearning.stance==='CAUTION'
+        ?' لكن نتائج قرارات سابقة من النوع نفسه كانت سلبية بما يكفي لخفض الاعتماد عليه وطلب سياق إضافي.'
+        :outcomeLearning.stance==='NEUTRAL'
+          ?' ونتائج القرارات السابقة من هذا النوع مختلطة، لذلك لا أرفع وزن التوصية ولا أخفضه.'
+          :' ولا توجد نتائج قرارات مقيمة كافية للحكم على فعالية هذا النوع.'
+    :' ولا توجد نتائج قرارات سابقة كافية مرتبطة بهذا المجال.';
+  return 'اخترت هذه القراءة لأن '+current.label+' هو '+current.value+'، وتطبق قاعدة «'+rule.title+'».'+memoryPart+learningPart+outcomePart;
 }
 
 export function composeFinancialDecisionExplanation(
@@ -208,19 +223,22 @@ export function composeFinancialDecisionExplanation(
   current:FinancialDecisionExplanation['current'],
   memory:FinancialDecisionExplanation['memory'],
   learning:FinancialDecisionLearningContext|null,
+  outcomeLearning:DecisionOutcomeLearningContext|null=null,
 ):FinancialDecisionExplanation{
   const rule=RULES[domain];
-  const why=whyText(current,rule,memory,learning);
+  const why=whyText(current,rule,memory,learning,outcomeLearning);
   const memoryText=memory.summary?' الذاكرة السابقة: '+memory.summary+'.':'';
   const learningText=learning?' '+learning.shortText:'';
+  const outcomeLearningText=outcomeLearning?' نتائج القرارات السابقة: '+outcomeLearning.shortText:'';
   return {
     domain,
     current,
     rule,
     memory,
     learning,
+    outcomeLearning,
     why,
-    shortText:current.label+': '+current.value+'. القاعدة: '+rule.title+'.'+memoryText+learningText+' '+why,
+    shortText:current.label+': '+current.value+'. القاعدة: '+rule.title+'.'+memoryText+learningText+outcomeLearningText+' '+why,
     guardrails:{
       externalExecution:false,
       hardRulesOverride:false,
@@ -233,11 +251,12 @@ export async function getFinancialDecisionExplanation(
   userId:string,
   domain:FinancialDecisionLearningDomain,
 ):Promise<FinancialDecisionExplanation>{
-  const [live,memory,learning]=await Promise.all([
+  const [live,memory,learning,outcomeLearning]=await Promise.all([
     getLivePersonalBudgetCalculation(userId).catch(()=>null),
     previousDecisionMemory(userId,domain).catch(()=>({summary:null,at:null,source:'none' as const})),
     getFinancialDecisionLearningContext(userId,domain).catch(()=>null),
+    getDecisionOutcomeLearningContext(userId,domain).catch(()=>null),
   ]);
   const current=currentForDomain(domain,live);
-  return composeFinancialDecisionExplanation(domain,current,memory,learning);
+  return composeFinancialDecisionExplanation(domain,current,memory,learning,outcomeLearning);
 }
