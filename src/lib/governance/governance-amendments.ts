@@ -21,6 +21,11 @@ export type GovernanceUnitType=
   |'reason'
   |'method'
   |'calculation'
+  |'input'
+  |'output'
+  |'condition'
+  |'validation'
+  |'limit'
   |'example';
 
 export type GovernanceAmendmentRequest={
@@ -119,6 +124,11 @@ const governanceUnitLabels:Record<GovernanceUnitType,string>={
   reason:'السبب',
   method:'الطريقة',
   calculation:'طريقة الحساب',
+  input:'المدخل',
+  output:'المخرج',
+  condition:'الشرط',
+  validation:'التحقق',
+  limit:'الحد',
   example:'المثال',
 };
 
@@ -131,7 +141,7 @@ function governanceUnitLabel(unitType:GovernanceUnitType){
 }
 
 function governanceUnitLinePattern(){
-  return '(?:المادة|البند|الفقرة|الخطوة|المرحلة|النوع|السبب|الطريقة|طريقة الحساب|المثال)';
+  return '(?:المادة|البند|الفقرة|الخطوة|المرحلة|النوع|السبب|الطريقة|طريقة الحساب|المدخل|المخرج|الشرط|التحقق|الحد|المثال)';
 }
 function escapeRegExp(value:string){
   return value.replace(/[.*+?^$()|[\]\\]/g,'\\$&').replace(/[{}]/g,'\\$&');
