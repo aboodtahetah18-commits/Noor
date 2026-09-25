@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { getRawSql } from '@/infrastructure/db/client';
 import { getLivePersonalBudgetCalculation } from '@/lib/finance/live-personal-budget-calculation';
+import { syncFinancialLearningLifecycle } from '@/lib/finance/financial-learning-lifecycle';
 
 export type GovernanceMeetingScheduleItem={
   id:string;
@@ -61,7 +62,7 @@ export async function getGovernanceMeetingSchedule(userId:string){
   const completedAt=onboardingRows[0]?.created_at?new Date(String(onboardingRows[0].created_at)):null;
   if(!completedAt) return {onboarding_complete:false,cycle_anchor:null,cycle_count:0,meetings:[] as GovernanceMeetingScheduleItem[]};
 
-  const [cycleRows,cycleCountRows,liveCalculation]=await Promise.all([
+  const [cycleRows,cycleCountRows,liveCalculation,learningLifecycle]=await Promise.all([
     sql`
       select id,start_date::text,expected_next_income_date::text,status,created_at
       from public.financial_cycles
@@ -71,6 +72,7 @@ export async function getGovernanceMeetingSchedule(userId:string){
     `,
     sql`select count(*)::int as count from public.financial_cycles where user_id=${userId}::uuid`,
     getLivePersonalBudgetCalculation(userId).catch(()=>null),
+    syncFinancialLearningLifecycle(userId).catch(()=>null),
   ]);
 
   const cycleCount=Number(cycleCountRows[0]?.count??0);
@@ -87,7 +89,9 @@ export async function getGovernanceMeetingSchedule(userId:string){
     utilizationPercent:Number.isFinite(utilization)?utilization:0,
   });
   const financialBalanceTrigger=committeeTriggers.financialBalance;
-  const oversightTrigger=committeeTriggers.oversightLearning;
+  const learningItems=learningLifecycle?Object.values(learningLifecycle.store.items):[];
+  const learningReviewItems=learningItems.filter(item=>['BACKTEST_PASSED','IN_REVIEW','APPROVED'].includes(item.status));
+  const oversightTrigger=committeeTriggers.oversightLearning||learningReviewItems.length>0;
   const now=new Date();
 
   const readinessRows=await sql`
@@ -153,14 +157,16 @@ export async function getGovernanceMeetingSchedule(userId:string){
       title:'لجنة المراجعة والمخاطر والتعلم',
       kind:'لجنة دائمة' as const,
       scheduled_at:addDays(anchor,5).toISOString(),
-      cadence:'كل سادس دورة مالية، مع جلسة إضافية فقط عند خلل أو تغيير جوهري',
+      cadence:'كل سادس دورة مالية، أو عند وجود مقترح تعلم اجتاز الاختبار الخلفي ويحتاج مراجعة',
       status:'مطلوبة للمراجعة',
       agenda:[
         'جودة الحسابات ومصدر الحقيقة',
         'المخاطر والحدود الصارمة',
         'أداء الخوارزميات ودقة التوقع',
-        'التعلم المستمر والتغييرات المقترحة',
-        'التعديلات الحوكمية التي تحتاج اعتمادًا',
+        learningReviewItems.length
+          ?'مراجعة '+learningReviewItems.length+' مقترح تعلم اجتاز الاختبار الخلفي'
+          :'التعلم المستمر والتغييرات المقترحة',
+        'قرار قبول أو رفض المعايرة دون تغيير القواعد الصارمة',
       ],
       minimum_annual_meetings:2,
       periodic:true,
