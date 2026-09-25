@@ -16,6 +16,7 @@ import { buildBudgetCommitteePreMeetingBrief } from '@/lib/conversations/budget-
 import { getLivePersonalBudgetCalculation } from '@/lib/finance/live-personal-budget-calculation';
 import { roleHasCompactAuthority, compactAuthoritiesForRole } from '@/lib/governance/algorithm-role-registry';
 import { buildFinancialLearningBrief } from '@/lib/finance/financial-continuous-learning-engine';
+import { monitorActiveFinancialLearning } from '@/lib/finance/financial-learning-monitor';
 
 export type ProactiveCandidate={
   key:string;
@@ -321,6 +322,28 @@ function operationalCandidates(
   return candidates;
 }
 
+async function learningMonitoringCandidates(userId:string):Promise<ProactiveCandidate[]>{
+  const monitoring=await monitorActiveFinancialLearning(userId).catch(()=>null);
+  const item=monitoring?.rollbackReviewRequired[0]??null;
+  if(!item||!item.monitoring)return [];
+  const fmt=(value:number|null)=>value===null?'غير متاح':new Intl.NumberFormat('ar-SA-u-nu-latn',{maximumFractionDigits:1}).format(value)+'٪';
+  return [{
+    key:'learning-rollback-review:'+item.key,
+    roomKey:'council',
+    senderKey:'central-governor',
+    senderName:'محافظ بنك نماء المركزي',
+    kind:'risk',
+    basePriority:148,
+    cooldownDays:3,
+    requestedFact:null,
+    title:'مراجعة معايرة تعلم نشطة',
+    body:'المعايرة «'+item.title+'» تدهورت في الدورات الجديدة: متوسط الخطأ بدونها '+fmt(item.monitoring.baselineMaePercent)+'، ومعها '+fmt(item.monitoring.activeMaePercent)+'. لم أتراجع عنها تلقائيًا. فتحتها للمراجعة في لجنة المراجعة والمخاطر والتعلم حتى نقرر الإبقاء أو التراجع.',
+    reason:'مراقبة ما بعد التفعيل تجاوزت حد مراجعة التراجع.',
+    scopeKind:null,
+    scopeKey:null,
+  }];
+}
+
 async function meetingCandidates(userId:string,now:Date):Promise<ProactiveCandidate[]>{
   const schedule=await getGovernanceMeetingSchedule(userId).catch(()=>null);
   if(!schedule?.onboarding_complete)return [];
@@ -449,16 +472,18 @@ export async function runDailyConversationOrchestratorForUser(
       return {userId,status:'ONBOARDING_INCOMPLETE',roomKey:null,promptKey:null,messageId:null,errorCode:null};
     }
     const operationalDate=await getUserOperationalDate(userId,now);
-    const [dailyPromptCount,facts,memory,dashboard,meetings,liveCalculation]=await Promise.all([
+    const [dailyPromptCount,facts,memory,dashboard,meetings,liveCalculation,learningAlerts]=await Promise.all([
       proactiveCountToday(userId,operationalDate),
       activeFactKeys(userId),
       readProactiveConversationMemory(userId),
       getDashboardSummary(userId).catch(()=>null),
       meetingCandidates(userId,now),
       getLivePersonalBudgetCalculation(userId).catch(()=>null),
+      learningMonitoringCandidates(userId),
     ]);
 
     const candidates=[
+      ...learningAlerts,
       ...operationalCandidates(dashboard,liveCalculation),
       ...meetings,
       ...dataCompletionCandidates(facts),
