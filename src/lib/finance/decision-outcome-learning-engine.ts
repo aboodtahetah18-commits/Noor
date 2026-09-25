@@ -58,7 +58,7 @@ export type DecisionOutcomeLearningContext={
   shortText:string;
 };
 
-type DecisionMetadata={
+export type DecisionOutcomeLearningDecisionOutcomeLearningDecisionMetadata={
   decisionId:string;
   domain:FinancialDecisionLearningDomain;
   ruleCode:string;
@@ -124,10 +124,10 @@ function summaryFor(pattern:{
 }
 
 export function buildDecisionOutcomeLearningProfile(
-  metadata:DecisionMetadata[],
+  metadata:DecisionOutcomeLearningDecisionMetadata[],
   outcomes:Awaited<ReturnType<typeof readDecisionOutcomeRegistry>>['outcomes'],
 ):DecisionOutcomeLearningProfile{
-  const groups=new Map<string,{meta:DecisionMetadata;decisionIds:string[];qualities:DecisionOutcomeQuality[]}>();
+  const groups=new Map<string,{meta:DecisionOutcomeLearningDecisionMetadata;decisionIds:string[];qualities:DecisionOutcomeQuality[]}>();
 
   for(const item of metadata){
     const outcome=outcomes[item.decisionId];
@@ -189,7 +189,7 @@ export function buildDecisionOutcomeLearningProfile(
   };
 }
 
-async function readDecisionMetadata(userId:string):Promise<DecisionMetadata[]>{
+async function readDecisionOutcomeLearningDecisionMetadata(userId:string):Promise<DecisionOutcomeLearningDecisionMetadata[]>{
   const sql=getRawSql();
   const rows=await sql`
     select id,sender_key,message_kind,structured_data
@@ -200,7 +200,7 @@ async function readDecisionMetadata(userId:string):Promise<DecisionMetadata[]>{
     limit ${MAX_DECISIONS}
   `;
 
-  const result:DecisionMetadata[]=[];
+  const result:DecisionOutcomeLearningDecisionMetadata[]=[];
   for(const row of rows){
     const data=asRecord(row.structured_data)??{};
     const explanation=asRecord(data.decision_explanation);
@@ -223,6 +223,35 @@ async function readDecisionMetadata(userId:string):Promise<DecisionMetadata[]>{
     });
   }
   return result;
+}
+
+export async function readDecisionOutcomeLearningProfile(userId:string):Promise<DecisionOutcomeLearningProfile|null>{
+  const sql=getRawSql();
+  const rows=await sql`
+    select value_json
+    from public.user_foundation_facts
+    where user_id=${userId}::uuid
+      and fact_key=${FACT_KEY}
+      and status='ACTIVE'
+    limit 1
+  `;
+  const value=rows[0]?.value_json;
+  return value&&typeof value==='object'&&!Array.isArray(value)
+    ?value as DecisionOutcomeLearningProfile
+    :null;
+}
+
+function sameProfile(a:DecisionOutcomeLearningProfile|null,b:DecisionOutcomeLearningProfile){
+  if(!a)return false;
+  return JSON.stringify({
+    assessedDecisions:a.assessedDecisions,
+    patterns:a.patterns,
+    safeguards:a.safeguards,
+  })===JSON.stringify({
+    assessedDecisions:b.assessedDecisions,
+    patterns:b.patterns,
+    safeguards:b.safeguards,
+  });
 }
 
 async function writeProfile(userId:string,profile:DecisionOutcomeLearningProfile){
@@ -248,10 +277,12 @@ async function writeProfile(userId:string,profile:DecisionOutcomeLearningProfile
 
 export async function refreshDecisionOutcomeLearning(userId:string){
   const [metadata,registry]=await Promise.all([
-    readDecisionMetadata(userId),
+    readDecisionOutcomeLearningDecisionMetadata(userId),
     readDecisionOutcomeRegistry(userId),
   ]);
   const profile=buildDecisionOutcomeLearningProfile(metadata,registry.outcomes);
+  const stored=await readDecisionOutcomeLearningProfile(userId);
+  if(sameProfile(stored,profile))return stored!;
   await writeProfile(userId,profile);
   return profile;
 }
