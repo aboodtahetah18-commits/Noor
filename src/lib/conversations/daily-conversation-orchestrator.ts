@@ -18,6 +18,7 @@ import { roleHasCompactAuthority, compactAuthoritiesForRole } from '@/lib/govern
 import { buildFinancialLearningBrief } from '@/lib/finance/financial-continuous-learning-engine';
 import { monitorActiveFinancialLearning } from '@/lib/finance/financial-learning-monitor';
 import { financialLearningDomainForRole, getFinancialDecisionLearningContext } from '@/lib/finance/financial-learning-decision-context';
+import { getFinancialDecisionExplanation } from '@/lib/finance/financial-decision-explanation';
 
 export type ProactiveCandidate={
   key:string;
@@ -499,13 +500,21 @@ export async function runDailyConversationOrchestratorForUser(
       return {userId,status:'ALREADY_SENT',roomKey:selectedBase.roomKey,promptKey:selectedBase.key,messageId:null,errorCode:null};
     }
     const learningDomain=financialLearningDomainForRole(selectedBase.senderKey);
-    const learningContext=learningDomain&&selectedBase.kind!=='request'
-      ?await getFinancialDecisionLearningContext(userId,learningDomain).catch(()=>null)
-      :null;
-    const learnedBody=learningContext&&learningContext.decisionUse!=='HISTORICAL_ONLY'
-      ?selectedBase.body+' '+learningContext.shortText
-      :selectedBase.body;
-    const selected={...selectedBase,body:adaptCandidateBody({...selectedBase,body:learnedBody},memory)};
+    const [learningContext,decisionExplanation]=learningDomain&&selectedBase.kind!=='request'
+      ?await Promise.all([
+        getFinancialDecisionLearningContext(userId,learningDomain).catch(()=>null),
+        getFinancialDecisionExplanation(userId,learningDomain).catch(()=>null),
+      ])
+      :[null,null];
+    const explanationText=decisionExplanation
+      ?' التفسير: '+decisionExplanation.current.label+' '+decisionExplanation.current.value+
+        '؛ القاعدة: '+decisionExplanation.rule.title+
+        (decisionExplanation.memory.summary?'؛ الذاكرة السابقة: '+decisionExplanation.memory.summary:'')+
+        (decisionExplanation.learning?'؛ التعلم: '+decisionExplanation.learning.shortText:'')
+      :learningContext&&learningContext.decisionUse!=='HISTORICAL_ONLY'
+        ?' '+learningContext.shortText
+        :'';
+    const selected={...selectedBase,body:adaptCandidateBody({...selectedBase,body:selectedBase.body+explanationText},memory)};
 
     const sql=getRawSql();
     const threadRows=await sql`
@@ -534,6 +543,22 @@ export async function runDailyConversationOrchestratorForUser(
           operational_date:operationalDate,
           requested_fact:selected.requestedFact,
           interbank_need:selected.interbankNeed??null,
+          decision_explanation:decisionExplanation?{
+            domain:decisionExplanation.domain,
+            current:decisionExplanation.current,
+            rule:decisionExplanation.rule,
+            memory:decisionExplanation.memory,
+            learning:decisionExplanation.learning?{
+              algorithm_key:decisionExplanation.learning.algorithmKey,
+              algorithm_name:decisionExplanation.learning.algorithmName,
+              outcome:decisionExplanation.learning.outcome,
+              decision_use:decisionExplanation.learning.decisionUse,
+              source_cycle_ids:decisionExplanation.learning.sourceCycleIds,
+              confidence:decisionExplanation.learning.confidence,
+            }:null,
+            why:decisionExplanation.why,
+            guardrails:decisionExplanation.guardrails,
+          }:null,
           learning_decision_context:learningContext?{
             algorithm_key:learningContext.algorithmKey,
             algorithm_name:learningContext.algorithmName,
