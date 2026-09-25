@@ -20,6 +20,11 @@ type GovernanceUnitType=
   |'reason'
   |'method'
   |'calculation'
+  |'input'
+  |'output'
+  |'condition'
+  |'validation'
+  |'limit'
   |'example';
 
 const governanceUnitLabel:Record<GovernanceUnitType,string>={
@@ -32,6 +37,11 @@ const governanceUnitLabel:Record<GovernanceUnitType,string>={
   reason:'سبب',
   method:'طريقة',
   calculation:'طريقة حساب',
+  input:'مدخل',
+  output:'مخرج',
+  condition:'شرط',
+  validation:'تحقق',
+  limit:'حد',
   example:'مثال',
 };
 
@@ -45,6 +55,11 @@ const unitTypeFromArabicLabel:Record<string,GovernanceUnitType>={
   'السبب':'reason',
   'الطريقة':'method',
   'طريقة الحساب':'calculation',
+  'المدخل':'input',
+  'المخرج':'output',
+  'الشرط':'condition',
+  'التحقق':'validation',
+  'الحد':'limit',
   'المثال':'example',
 };
 
@@ -271,7 +286,7 @@ function parseGovernedDocument(content:string):DocumentSection[]{
       continue;
     }
 
-    const explicitStructuredUnit=normalized.match(/^(طريقة الحساب|الخطوة|المرحلة|النوع|السبب|الطريقة|المثال)\s+(\d+(?:\.\d+)*)\s*(?::|：|[–—-])?\s*(.*)$/u);
+    const explicitStructuredUnit=normalized.match(/^(طريقة الحساب|المدخل|المخرج|الشرط|التحقق|الحد|الخطوة|المرحلة|النوع|السبب|الطريقة|المثال)\s+(\d+(?:\.\d+)*)\s*(?::|：|[–—-])?\s*(.*)$/u);
     if(explicitStructuredUnit){
       const unitType=unitTypeFromArabicLabel[explicitStructuredUnit[1]??''];
       const text=cleanDocumentText(explicitStructuredUnit[3]??'');
@@ -490,7 +505,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
       const max=Math.max(0,...siblings.map(item=>Number(item.ref.split('.').at(-1))||0));
       return article+'.'+String(max+1);
     }
-    const clause=parent.replace(/^(?:البند|المادة|الفقرة|الخطوة|المرحلة|النوع|السبب|الطريقة|طريقة الحساب|المثال)\s+/u,'').trim();
+    const clause=parent.replace(/^(?:البند|المادة|الفقرة|الخطوة|المرحلة|النوع|السبب|الطريقة|طريقة الحساب|المدخل|المخرج|الشرط|التحقق|الحد|المثال)\s+/u,'').trim();
     const siblings=unitOptions.filter(item=>item.type===type&&item.ref.startsWith(clause+'.'));
     const max=Math.max(0,...siblings.map(item=>Number(item.ref.split('.').at(-1))||0));
     return clause+'.'+String(max+1);
@@ -716,6 +731,11 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
                   <option value="reason">سبب</option>
                   <option value="method">طريقة</option>
                   <option value="calculation">طريقة حساب</option>
+                  <option value="input">مدخل</option>
+                  <option value="output">مخرج</option>
+                  <option value="condition">شرط</option>
+                  <option value="validation">تحقق</option>
+                  <option value="limit">حد</option>
                   <option value="example">مثال</option>
                 </select></label>
                 {unitType==='clause'&&<label><span>تحت المادة</span><select value={parentRef} onChange={e=>updateAddTarget('clause',e.target.value)}>
