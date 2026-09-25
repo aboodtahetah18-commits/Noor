@@ -10,7 +10,7 @@ import {
   roleHasCompactAuthority,
   assertRoleCompactAuthority,
 } from '../../src/lib/governance/algorithm-role-registry';
-import { governanceAmendmentActionAllowed } from '../../src/lib/governance/governance-amendments';
+import { governanceAmendmentActionAllowed, governanceDiscussionActorAllowed } from '../../src/lib/governance/governance-amendments';
 
 describe('نموذج الصلاحيات والإجراءات المختصر',()=>{
   it('يبقي عدد الصلاحيات الأساسية محدودًا',()=>{
@@ -43,6 +43,13 @@ describe('نموذج الصلاحيات والإجراءات المختصر',()=
     expect(governanceAmendmentActionAllowed('GOVERNOR_REVIEW','COUNCIL_APPROVE')).toBe(false);
     expect(governanceAmendmentActionAllowed('COUNCIL_DISCUSSION','COUNCIL_APPROVE')).toBe(true);
     expect(governanceAmendmentActionAllowed('APPROVED_PENDING_EFFECTIVE','MARK_EFFECTIVE')).toBe(true);
+  });
+
+  it('يربط هوية المناقش بمرحلة طلب التعديل',()=>{
+    expect(governanceDiscussionActorAllowed('GOVERNOR_REVIEW','GOVERNOR')).toBe(true);
+    expect(governanceDiscussionActorAllowed('GOVERNOR_REVIEW','COUNCIL')).toBe(false);
+    expect(governanceDiscussionActorAllowed('SECRETARY_INTAKE','SECRETARY')).toBe(true);
+    expect(governanceDiscussionActorAllowed('COUNCIL_DISCUSSION','COUNCIL')).toBe(true);
   });
 
   it('يرفض حارس الصلاحيات اعتماد الحوكمة من صاحب مسؤولية',()=>{
