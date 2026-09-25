@@ -114,7 +114,15 @@ export async function POST(request:Request){
     return NextResponse.json({ok:true,...result},{status:body.operation==='CREATE'||body.operation==='DIRECT_CHANGE'||body.operation==='TYPO_CORRECTION'?201:200,headers});
   }catch(error){
     const code=error instanceof Error?error.message:'GOVERNANCE_AMENDMENT_FAILED';
-    const status=code==='GOVERNANCE_AMENDMENT_NOT_FOUND'?404:code==='GOVERNANCE_EFFECTIVE_DATE_AND_VERSION_REQUIRED'?422:500;
+    const status=code==='GOVERNANCE_AMENDMENT_NOT_FOUND'
+      ?404
+      :code==='GOVERNANCE_AUTHORITY_DENIED'
+        ?403
+        :code==='GOVERNANCE_AMENDMENT_INVALID_TRANSITION'
+          ?409
+          :['GOVERNANCE_EFFECTIVE_DATE_AND_VERSION_REQUIRED','GOVERNANCE_EFFECTIVE_DATE_NOT_REACHED'].includes(code)
+            ?422
+            :500;
     console.error('[governance-amendments-post]',{name:error instanceof Error?error.name:'UnknownError',code});
     return NextResponse.json({ok:false,error:code},{status,headers});
   }
