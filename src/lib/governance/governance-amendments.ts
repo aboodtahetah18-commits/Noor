@@ -11,7 +11,17 @@ export type GovernanceAmendmentStatus=
   |'REJECTED';
 
 export type GovernanceChangeAction='ADD'|'EDIT'|'DELETE';
-export type GovernanceUnitType='article'|'clause'|'paragraph';
+export type GovernanceUnitType=
+  |'article'
+  |'clause'
+  |'paragraph'
+  |'step'
+  |'stage'
+  |'category'
+  |'reason'
+  |'method'
+  |'calculation'
+  |'example';
 
 export type GovernanceAmendmentRequest={
   requestId:string;
@@ -99,10 +109,29 @@ async function appendEvent(args:{
 }
 
 
+const governanceUnitLabels:Record<GovernanceUnitType,string>={
+  article:'المادة',
+  clause:'البند',
+  paragraph:'الفقرة',
+  step:'الخطوة',
+  stage:'المرحلة',
+  category:'النوع',
+  reason:'السبب',
+  method:'الطريقة',
+  calculation:'طريقة الحساب',
+  example:'المثال',
+};
+
 function unitLinePrefix(unitType:GovernanceUnitType,unitRef:string){
-  if(unitType==='article')return 'المادة '+unitRef+':';
-  if(unitType==='clause')return 'البند '+unitRef+':';
-  return 'الفقرة '+unitRef+':';
+  return governanceUnitLabels[unitType]+' '+unitRef+':';
+}
+
+function governanceUnitLabel(unitType:GovernanceUnitType){
+  return governanceUnitLabels[unitType];
+}
+
+function governanceUnitLinePattern(){
+  return '(?:المادة|البند|الفقرة|الخطوة|المرحلة|النوع|السبب|الطريقة|طريقة الحساب|المثال)';
 }
 function escapeRegExp(value:string){
   return value.replace(/[.*+?^$()|[\]\\]/g,'\\$&').replace(/[{}]/g,'\\$&');
@@ -115,7 +144,7 @@ function normalizedComparableLine(value:string){
     .replace(/\*\*|__|\*|_|\`/g,'')
     .replace(/[A-Za-z][A-Za-z0-9_./:-]*/g,'')
     .replace(/^\d+(?:\.\d+)*[.)-]?\s*/u,'')
-    .replace(/^(?:المادة|البند|الفقرة)\s+\d+(?:\.\d+)*\s*[:.)-]?\s*/u,'')
+    .replace(new RegExp('^'+governanceUnitLinePattern()+'\\s+\\d+(?:\\.\\d+)*\\s*[:.)-]?\\s*','u'),'')
     .replace(/\s+[—–-]\s+/g,'، ')
     .replace(/\s{2,}/g,' ')
     .replace(/\s+([،؛:.])/g,'$1')
@@ -152,7 +181,8 @@ function applyStructuredChange(content:string,change:{
     if(change.unitType==='article'){
       while(endIndex<lines.length&&!/^المادة\s+\d+/u.test(lines[endIndex]?.trim()??''))endIndex+=1;
     }else if(change.unitType==='clause'){
-      while(endIndex<lines.length&&!/^(?:المادة|البند)\s+\d+/u.test(lines[endIndex]?.trim()??'')
+      while(endIndex<lines.length
+        &&!new RegExp('^(?:المادة|البند)\\s+\\d+','u').test(lines[endIndex]?.trim()??'')
         &&!/^\d+(?:\.\d+)+\s/u.test(lines[endIndex]?.trim()??''))endIndex+=1;
     }
     lines.splice(targetIndex,endIndex-targetIndex);
@@ -181,17 +211,19 @@ function applyStructuredChange(content:string,change:{
   if(lines.some(line=>line.trim().startsWith(prefix)))return content;
   if(change.unitType==='article')return content.trimEnd()+'\n\n'+newLine+'\n';
 
-  const parentPrefix=change.unitType==='clause'
-    ?'المادة '+String(change.parentRef??'').replace(/^المادة\s+/u,'').trim()+':'
-    :'البند '+String(change.parentRef??'').replace(/^البند\s+/u,'').trim()+':';
-  const parentIndex=lines.findIndex(line=>line.trim().startsWith(parentPrefix));
+  const rawParent=String(change.parentRef??'').trim();
+  const parentRef=rawParent.replace(new RegExp('^'+governanceUnitLinePattern()+'\\s+','u'),'').trim();
+  const parentIndex=lines.findIndex(line=>{
+    const trimmed=line.trim();
+    return new RegExp('^'+governanceUnitLinePattern()+'\\s+'+escapeRegExp(parentRef)+'\\s*:','u').test(trimmed);
+  });
   if(parentIndex<0)return content.trimEnd()+'\n'+newLine+'\n';
 
   let insertAt=parentIndex+1;
   for(let i=parentIndex+1;i<lines.length;i++){
     const line=lines[i]?.trim()??'';
-    if(change.unitType==='clause'&&/^المادة\s+/u.test(line))break;
-    if(change.unitType==='paragraph'&&/^(?:المادة|البند)\s+/u.test(line))break;
+    if(/^المادة\s+/u.test(line))break;
+    if(change.unitType!=='clause'&&/^البند\s+/u.test(line))break;
     insertAt=i+1;
   }
   lines.splice(insertAt,0,newLine);
@@ -218,7 +250,7 @@ export async function createGovernanceDirectChange(args:{
     .digest('hex').slice(0,16).toUpperCase();
   await appendEvent({
     userId:args.userId,roomKey:'central',senderKey:'central-governor',senderName:'محافظ بنك نماء المركزي',kind:'followup',
-    body:'تم '+(args.changeAction==='ADD'?'إضافة':args.changeAction==='DELETE'?'حذف':'تعديل')+' '+(args.unitType==='article'?'المادة':args.unitType==='clause'?'البند':'الفقرة')+' '+args.unitRef+' في «'+args.documentTitle+'» ضمن التحرير المباشر.',
+    body:'تم '+(args.changeAction==='ADD'?'إضافة':args.changeAction==='DELETE'?'حذف':'تعديل')+' '+governanceUnitLabel(args.unitType)+' '+args.unitRef+' في «'+args.documentTitle+'» ضمن التحرير المباشر.',
     structured:{
       governance_direct_change:true,change_id:changeId,document_ref:args.documentRef,document_title:args.documentTitle,
       source_room:args.roomKey,unit_ref:args.unitRef,parent_ref:args.parentRef??null,change_action:args.changeAction,
@@ -534,7 +566,7 @@ export async function applyEffectiveGovernanceAmendments(userId:string,documentR
     .sort((a,b)=>a.requestedAt.localeCompare(b.requestedAt));
   return amendments.reduce((next,item)=>{
     const rawRef=item.clauseRef??'';
-    const unitRef=rawRef.replace(/^(?:المادة|البند|الفقرة)\s+/u,'').trim();
+    const unitRef=rawRef.replace(new RegExp('^'+governanceUnitLinePattern()+'\\s+','u'),'').trim();
     if(!unitRef)return next;
     return applyStructuredChange(next,{
       changeAction:item.changeAction,unitType:item.unitType,unitRef,parentRef:item.parentRef,
