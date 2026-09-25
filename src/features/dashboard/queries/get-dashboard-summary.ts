@@ -6,7 +6,7 @@ import { FinancialPlatformError } from '@/features/financial-engine/services/fin
 import { getLivePersonalBudgetCalculation } from '@/lib/finance/live-personal-budget-calculation';
 import type { DashboardSummary } from '@/features/dashboard/types/dashboard';
 
-export async function getDashboardSummary(userId: string, cycleId?: string) {
+export async function getDashboardSummary(userId: string, cycleId?: string): Promise<DashboardSummary | null> {
   const dashboard = await dashboardRepository.get(userId, cycleId);
   if (!dashboard || dashboard.cycle.source !== 'LIVE') return dashboard;
 
