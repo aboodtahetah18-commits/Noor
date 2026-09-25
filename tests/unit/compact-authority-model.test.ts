@@ -10,7 +10,7 @@ import {
   roleHasCompactAuthority,
   assertRoleCompactAuthority,
 } from '../../src/lib/governance/algorithm-role-registry';
-import { governanceAmendmentActionAllowed, governanceDiscussionActorAllowed } from '../../src/lib/governance/governance-amendments';
+import { governanceAmendmentActionAllowed, governanceAmendmentAvailableActions, governanceDiscussionActorAllowed } from '../../src/lib/governance/governance-amendments';
 
 describe('نموذج الصلاحيات والإجراءات المختصر',()=>{
   it('يبقي عدد الصلاحيات الأساسية محدودًا',()=>{
@@ -43,6 +43,30 @@ describe('نموذج الصلاحيات والإجراءات المختصر',()=
     expect(governanceAmendmentActionAllowed('GOVERNOR_REVIEW','COUNCIL_APPROVE')).toBe(false);
     expect(governanceAmendmentActionAllowed('COUNCIL_DISCUSSION','COUNCIL_APPROVE')).toBe(true);
     expect(governanceAmendmentActionAllowed('APPROVED_PENDING_EFFECTIVE','MARK_EFFECTIVE')).toBe(true);
+  });
+
+  it('يعرض فقط أزرار الحوكمة المناسبة للمرحلة الحالية',()=>{
+    const governorActions=governanceAmendmentAvailableActions({status:'GOVERNOR_REVIEW',effectiveAt:null});
+    expect(governorActions.map(item=>item.action)).toEqual(['GOVERNOR_ACCEPT','GOVERNOR_REJECT']);
+    expect(governorActions.every(item=>item.roleKey==='central-governor')).toBe(true);
+
+    const councilActions=governanceAmendmentAvailableActions({status:'COUNCIL_DISCUSSION',effectiveAt:null});
+    expect(councilActions.map(item=>item.action)).toEqual(['COUNCIL_APPROVE','COUNCIL_REJECT']);
+    expect(councilActions.every(item=>item.roleKey==='namaa-council')).toBe(true);
+  });
+
+  it('لا يظهر زر تفعيل الإصدار قبل حلول تاريخ النفاذ',()=>{
+    const before=governanceAmendmentAvailableActions(
+      {status:'APPROVED_PENDING_EFFECTIVE',effectiveAt:'2030-01-02'},
+      new Date('2030-01-01T12:00:00Z'),
+    );
+    const after=governanceAmendmentAvailableActions(
+      {status:'APPROVED_PENDING_EFFECTIVE',effectiveAt:'2030-01-02'},
+      new Date('2030-01-02T12:00:00Z'),
+    );
+    expect(before).toHaveLength(0);
+    expect(after.map(item=>item.action)).toEqual(['MARK_EFFECTIVE']);
+    expect(after[0]?.roleKey).toBe('central-secretary');
   });
 
   it('يربط هوية المناقش بمرحلة طلب التعديل',()=>{
