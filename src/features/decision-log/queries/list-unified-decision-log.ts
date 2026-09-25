@@ -40,6 +40,16 @@ export type UnifiedDecisionLogItem={
     confidence:number|null;
     sourceCycleIds:string[];
   };
+  outcomeLearning:{
+    stance:string|null;
+    sampleSize:number|null;
+    confidence:number|null;
+    positiveRate:number|null;
+    negativeRate:number|null;
+    ruleCode:string|null;
+    actorKey:string|null;
+    action:string|null;
+  };
   confidence:number|null;
   why:string|null;
   outcome:DecisionOutcomeRecord|null;
@@ -105,6 +115,7 @@ export function mapBankDecisionToUnified(row:Awaited<ReturnType<typeof listBankD
     },
     memory:{summary:null,at:null},
     learning:{algorithmName:null,outcome:null,decisionUse:null,confidence:null,sourceCycleIds:[]},
+    outcomeLearning:{stance:null,sampleSize:null,confidence:null,positiveRate:null,negativeRate:null,ruleCode:null,actorKey:null,action:null},
     confidence:null,
     why:row.reason,
     outcome:null,
@@ -137,6 +148,7 @@ export function mapConversationDecisionToUnified(row:{
   const rule=asRecord(explanation?.rule);
   const memory=asRecord(explanation?.memory);
   const learning=asRecord(explanation?.learning);
+  const outcomeLearning=asRecord(explanation?.outcome_learning);
   const title=
     text(data.committee_point_title)
     ??text(data.meeting_title)
@@ -184,6 +196,16 @@ export function mapConversationDecisionToUnified(row:{
       decisionUse:text(learning?.decision_use),
       confidence,
       sourceCycleIds:stringArray(learning?.source_cycle_ids),
+    },
+    outcomeLearning:{
+      stance:text(outcomeLearning?.stance),
+      sampleSize:numberValue(outcomeLearning?.sample_size),
+      confidence:numberValue(outcomeLearning?.confidence),
+      positiveRate:numberValue(outcomeLearning?.positive_rate),
+      negativeRate:numberValue(outcomeLearning?.negative_rate),
+      ruleCode:text(outcomeLearning?.rule_code),
+      actorKey:text(outcomeLearning?.actor_key),
+      action:text(outcomeLearning?.action),
     },
     confidence,
     why:text(explanation?.why)??text(data.committee_context_note)??text(row.body),
@@ -262,6 +284,7 @@ export async function listUnifiedDecisionLog(userId:string,limit=200):Promise<Un
           confidence:entry.confidence,
           sourceCycleIds:entry.sourceCycleIds,
         },
+        outcomeLearning:{stance:null,sampleSize:null,confidence:null,positiveRate:null,negativeRate:null,ruleCode:null,actorKey:null,action:null},
         confidence:entry.confidence,
         why:entry.why,
         outcome:null,
