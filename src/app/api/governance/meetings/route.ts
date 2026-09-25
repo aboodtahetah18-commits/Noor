@@ -100,7 +100,7 @@ export async function PATCH(request:Request){
   const overrides=await readOverrides(user.id);
   overrides[id]={
     ...(overrides[id]??{}),
-    title,
+    title:target.custom===true?title:target.title,
     scheduled_at:new Date(scheduledAt).toISOString(),
     cadence:cadence||'حسب الحاجة',
     authority_role:'central-secretary',
