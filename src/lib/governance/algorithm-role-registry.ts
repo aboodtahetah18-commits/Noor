@@ -1,5 +1,6 @@
 import type { ConversationRoomKey } from '@/lib/conversations/store';
 import { FINANCIAL_RESPONSIBILITY_ROLES, ECONOMIC_ADVISOR } from '@/lib/advisors/approved-advisors';
+import { COMPACT_AUTHORITIES, type CompactAuthorityAction } from '@/lib/governance/compact-authority-model';
 
 export type AlgorithmRoleKind='governor'|'central_bank_manager'|'bank_manager'|'responsibility_owner'|'advisor'|'operations'|'secretary'|'council';
 export type AlgorithmRoleRef={
@@ -276,4 +277,16 @@ export function algorithmRolesForRoom(roomKey:ConversationRoomKey){
 
 export function algorithmRoleByKey(key:string){
   return ALGORITHM_ROLE_REGISTRY.find(role=>role.key===key)??null;
+}
+
+export function compactAuthoritiesForRole(key:string):CompactAuthorityAction[]{
+  const role=algorithmRoleByKey(key);
+  if(!role)return [];
+  return COMPACT_AUTHORITIES
+    .filter(authority=>authority.allowedKinds.includes(role.kind))
+    .map(authority=>authority.action);
+}
+
+export function roleHasCompactAuthority(key:string,action:CompactAuthorityAction){
+  return compactAuthoritiesForRole(key).includes(action);
 }
