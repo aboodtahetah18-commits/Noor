@@ -256,11 +256,10 @@ export async function refreshDecisionOutcomeLearning(userId:string){
   return profile;
 }
 
-export async function getDecisionOutcomeLearningContext(
-  userId:string,
+export function decisionOutcomeLearningContextFromProfile(
+  profile:DecisionOutcomeLearningProfile,
   domain:FinancialDecisionLearningDomain,
-):Promise<DecisionOutcomeLearningContext|null>{
-  const profile=await refreshDecisionOutcomeLearning(userId);
+):DecisionOutcomeLearningContext|null{
   const pattern=profile.patterns
     .filter(item=>item.domain===domain)
     .sort((a,b)=>{
@@ -281,4 +280,12 @@ export async function getDecisionOutcomeLearningContext(
     decisionIds:pattern.decisionIds,
     shortText:pattern.summary,
   };
+}
+
+export async function getDecisionOutcomeLearningContext(
+  userId:string,
+  domain:FinancialDecisionLearningDomain,
+):Promise<DecisionOutcomeLearningContext|null>{
+  const profile=await refreshDecisionOutcomeLearning(userId);
+  return decisionOutcomeLearningContextFromProfile(profile,domain);
 }
