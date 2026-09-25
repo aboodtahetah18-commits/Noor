@@ -37,6 +37,16 @@ export function governanceAmendmentActionAllowed(status:GovernanceAmendmentStatu
   return amendmentActionPolicy[action].from.includes(status);
 }
 
+export function governanceDiscussionActorAllowed(
+  status:GovernanceAmendmentStatus,
+  actor:'GOVERNOR'|'SECRETARY'|'COUNCIL',
+){
+  if(status==='GOVERNOR_REVIEW')return actor==='GOVERNOR';
+  if(status==='SECRETARY_INTAKE')return actor==='SECRETARY';
+  if(status==='COUNCIL_DISCUSSION'||status==='APPROVED_PENDING_EFFECTIVE')return actor==='COUNCIL';
+  return false;
+}
+
 function assertGovernanceAmendmentAction(status:GovernanceAmendmentStatus,action:GovernanceAmendmentAction){
   const policy=amendmentActionPolicy[action];
   if(!policy.from.includes(status)){
@@ -526,8 +536,12 @@ export async function advanceGovernanceAmendment(args:{
     return {status:'APPROVED_PENDING_EFFECTIVE' as const};
   }
 
-  if(current.effectiveAt&&Date.parse(current.effectiveAt+'T00:00:00Z')>Date.now()){
-    throw new Error('GOVERNANCE_EFFECTIVE_DATE_NOT_REACHED');
+  if(current.effectiveAt){
+    const effectiveTimestamp=/^\d{4}-\d{2}-\d{2}$/.test(current.effectiveAt)
+      ?Date.parse(current.effectiveAt+'T00:00:00Z')
+      :Date.parse(current.effectiveAt);
+    if(!Number.isFinite(effectiveTimestamp))throw new Error('GOVERNANCE_EFFECTIVE_DATE_INVALID');
+    if(effectiveTimestamp>Date.now())throw new Error('GOVERNANCE_EFFECTIVE_DATE_NOT_REACHED');
   }
   await appendEvent({userId:args.userId,roomKey:'secretary',senderKey:'central-secretary',senderName:'أمين السر المركزي',kind:'followup',
     body:`أصبح تعديل ${current.documentRef} نافذًا وفق القرار ${current.councilDecisionId??args.decisionId??args.requestId}. المرجع التشغيلي الجديد هو الإصدار ${current.nextVersion??args.nextVersion??'المعتمد'}.`,
@@ -538,6 +552,7 @@ export async function advanceGovernanceAmendment(args:{
 export async function addGovernanceAmendmentDiscussion(args:{userId:string;requestId:string;note:string;actor:'GOVERNOR'|'SECRETARY'|'COUNCIL'}){
   const target=await getGovernanceAmendment(args.userId,args.requestId);
   if(!target) throw new Error('GOVERNANCE_AMENDMENT_NOT_FOUND');
+  if(!governanceDiscussionActorAllowed(target.status,args.actor))throw new Error('GOVERNANCE_DISCUSSION_ACTOR_INVALID');
   const roomKey=args.actor==='GOVERNOR'?'central':args.actor==='SECRETARY'?'secretary':'council';
   const senderKey=args.actor==='GOVERNOR'?'central-governor':args.actor==='SECRETARY'?'central-secretary':'namaa-council';
   const senderName=args.actor==='GOVERNOR'?'محافظ بنك نماء المركزي':args.actor==='SECRETARY'?'أمين السر المركزي':'مجلس نماء الأعلى';
