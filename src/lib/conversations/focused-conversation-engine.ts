@@ -170,7 +170,7 @@ export async function createFocusedRoleReply(args:{
 }
 
 function meetingOwner(title:string){
-  if(/ميزانية|إنفاق/.test(title))return {key:'budget-spending-owner',name:'مسؤول الميزانية والإنفاق'};
+  if(/ميزانية|إنفاق|دورة مالية|توازن/.test(title))return {key:'budget-spending-owner',name:'مسؤول الميزانية والإنفاق'};
   if(/استقرار|سيولة|تمويل/.test(title))return {key:'liquidity-protection-owner',name:'مسؤول السيولة والحماية'};
   if(/أهداف|التزامات/.test(title))return {key:'obligations-owner',name:'مسؤول الالتزامات'};
   if(/استثمار|أصول/.test(title))return {key:'investment-owner',name:'مسؤول الاستثمار'};
@@ -190,7 +190,7 @@ export async function createFocusedMeetingReply(args:{
   const meeting=schedule.meetings.find(item=>item.id===args.meetingId);
   const threadId=threadRows[0]?.id?String(threadRows[0].id):null;
   if(!meeting||!threadId)return null;
-  if(/ميزانية|إنفاق/.test(meeting.title)){
+  if(/ميزانية|إنفاق|دورة مالية|توازن/.test(meeting.title)){
     const budgetReply=await createBudgetCommitteeConversationReply(args);
     if(budgetReply)return budgetReply;
   }
