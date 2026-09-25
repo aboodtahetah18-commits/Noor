@@ -5,7 +5,7 @@ import { listCycleRecommendations } from '@/features/financial-engine/queries/li
 import { FinancialPlatformError } from '@/features/financial-engine/services/financial-platform-error';
 import { getLivePersonalBudgetCalculation } from '@/lib/finance/live-personal-budget-calculation';
 
-export async function getDashboardSummary(userId: string, cycleId?: string) {
+export async function getDashboardSummary(userId: string, cycleId?: string): Promise<DashboardSummary | null> {
   const dashboard = await dashboardRepository.get(userId, cycleId);
   if (!dashboard || dashboard.cycle.source !== 'LIVE') return dashboard;
 
@@ -22,17 +22,26 @@ export async function getDashboardSummary(userId: string, cycleId?: string) {
 
     if(!liveCalculation)return dashboard;
     const unified = liveCalculation.calculation.values;
-    return {
+    const dailySafeAmount = unified.dailyGuidance ?? '0.00';
+    const budgetRemaining = Money.parse(unified.plannedAmount)
+      .subtract(Money.parse(unified.realizedAmount))
+      .max(Money.zero())
+      .toString();
+    const expectedDeficit = Money.parse(unified.operatingDeficit)
+      .max(Money.parse(engine.projectedDeficit))
+      .toString();
+
+    const nextDashboard: DashboardSummary = {
       ...dashboard,
       liquidity: { total: engine.actualLiquidity },
       safeToSpend: {
         amount: unified.trueAvailable,
-        status: Money.parse(unified.trueAvailable).isZero() ? 'ZERO' as const : 'AVAILABLE' as const,
+        status: Money.parse(unified.trueAvailable).isZero() ? 'ZERO' : 'AVAILABLE',
         blockingIssue: null,
       },
       dailySafeLimit: {
-        amount: unified.dailyGuidance ?? '0.00',
-        status: Money.parse(unified.dailyGuidance ?? '0.00').isZero() ? 'ZERO' as const : 'AVAILABLE' as const,
+        amount: dailySafeAmount,
+        status: Money.parse(dailySafeAmount).isZero() ? 'ZERO' : 'AVAILABLE',
         blockingIssue: null,
       },
       income: {
@@ -42,18 +51,18 @@ export async function getDashboardSummary(userId: string, cycleId?: string) {
       budget: {
         planned: unified.plannedAmount,
         actual: unified.realizedAmount,
-        remaining: Money.parse(unified.plannedAmount).subtract(Money.parse(unified.realizedAmount)).max(Money.zero()).toString(),
+        remaining: budgetRemaining,
         utilizationPercent: unified.utilizationPercent,
       },
       saving: {
-        ...dashboard.saving,
+        planned: dashboard.saving.planned,
         actual: unified.netRealizedSavings,
         rate: unified.savingsRatePercent,
       },
       forecast: {
         projectedEndBalance: unified.projectedEndBalance ?? engine.projectedEndBalance,
-        expectedDeficit: Money.parse(unified.operatingDeficit).max(Money.parse(engine.projectedDeficit)).toString(),
-        deficitStatus: 'AVAILABLE' as const,
+        expectedDeficit,
+        deficitStatus: 'AVAILABLE',
         blockingIssue: null,
       },
       topRecommendation: top ? {
@@ -65,8 +74,9 @@ export async function getDashboardSummary(userId: string, cycleId?: string) {
         reasonCode: top.reasonCode,
         status: top.status,
       } : null,
-      recommendationEngineStatus: 'AVAILABLE' as const,
+      recommendationEngineStatus: 'AVAILABLE',
     };
+    return nextDashboard;
   } catch (error) {
     if (error instanceof FinancialPlatformError && ['FINANCIAL_STATE_NOT_AVAILABLE','FINANCIAL_CYCLE_NOT_FOUND'].includes(error.code)) {
       return dashboard;
