@@ -34,11 +34,12 @@ describe('الاختبار الخلفي للتعلم المالي',()=>{
   });
 
   it('لا يعتبر أي تغيير ناجحًا لمجرد وجود ثلاث دورات',()=>{
+    const base=expenseRows[0]!;
     const unstable=[
-      {...expenseRows[0],cycleId:'u1',actualExpense:2000},
-      {...expenseRows[0],cycleId:'u2',actualExpense:6000},
-      {...expenseRows[0],cycleId:'u3',actualExpense:4000},
-      {...expenseRows[0],cycleId:'u4',actualExpense:6500},
+      {...base,cycleId:'u1',actualExpense:2000},
+      {...base,cycleId:'u2',actualExpense:6000},
+      {...base,cycleId:'u3',actualExpense:4000},
+      {...base,cycleId:'u4',actualExpense:6500},
     ];
     const result=backtestFinancialLearningAdjustment(unstable,'EXPENSE_BASELINE');
     expect(result.passed).toBe(false);
