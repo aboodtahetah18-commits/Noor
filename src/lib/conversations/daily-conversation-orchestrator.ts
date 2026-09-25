@@ -19,6 +19,7 @@ import { buildFinancialLearningBrief } from '@/lib/finance/financial-continuous-
 import { monitorActiveFinancialLearning } from '@/lib/finance/financial-learning-monitor';
 import { financialLearningDomainForRole, getFinancialDecisionLearningContext } from '@/lib/finance/financial-learning-decision-context';
 import { getFinancialDecisionExplanation } from '@/lib/finance/financial-decision-explanation';
+import { getDecisionOutcomeLearningContext, type DecisionOutcomeLearningContext } from '@/lib/finance/decision-outcome-learning-engine';
 
 export type ProactiveCandidate={
   key:string;
@@ -35,6 +36,8 @@ export type ProactiveCandidate={
   interbankNeed?:BankForwardNeed|null;
   scopeKind?:'role'|'meeting'|null;
   scopeKey?:string|null;
+  outcomePriorityAdjustment?:number;
+  outcomeLearningStance?:DecisionOutcomeLearningContext['stance']|null;
 };
 
 type ProactiveRunResult={
@@ -65,7 +68,7 @@ export function candidateScore(
 ){
   const prompt=memory.prompts[candidate.key];
   const room=memory.rooms[candidate.roomKey];
-  let score=candidate.basePriority;
+  let score=candidate.basePriority+(candidate.outcomePriorityAdjustment??0);
   if(prompt?.lastAnswerAt) score+=6;
   if(prompt?.lastPromptAt&&!prompt.lastAnswerAt&&daysBetween(now,prompt.lastPromptAt)>=7) score-=12;
   if(prompt?.unansweredStreak) score-=Math.min(24,prompt.unansweredStreak*6);
@@ -75,6 +78,20 @@ export function candidateScore(
   }
   if(room?.userTurns) score+=Math.min(6,Math.floor(room.userTurns/4));
   return score;
+}
+
+export function outcomeLearningPriorityAdjustment(
+  candidate:ProactiveCandidate,
+  context:DecisionOutcomeLearningContext|null,
+){
+  if(!context||candidate.kind==='request'||context.stance==='INSUFFICIENT'||context.stance==='NEUTRAL')return 0;
+  if(context.stance==='SUPPORT')return candidate.kind==='risk'?2:6;
+  if(context.stance==='CAUTION'){
+    // Historical recommendation quality must never suppress a current factual risk or hard financial trigger.
+    if(candidate.kind==='risk'||candidate.basePriority>=130)return 0;
+    return -10;
+  }
+  return 0;
 }
 
 export function adaptCandidateBody(
@@ -484,13 +501,25 @@ export async function runDailyConversationOrchestratorForUser(
       learningMonitoringCandidates(userId),
     ]);
 
-    const candidates=[
+    const eligibleCandidates=[
       ...learningAlerts,
       ...operationalCandidates(dashboard,liveCalculation),
       ...meetings,
       ...dataCompletionCandidates(facts),
-    ].filter(candidate=>candidateHasAuthority(candidate)&&isCandidateEligible(candidate,memory,facts,now))
-      .sort((a,b)=>candidateScore(b,memory,now)-candidateScore(a,memory,now));
+    ].filter(candidate=>candidateHasAuthority(candidate)&&isCandidateEligible(candidate,memory,facts,now));
+
+    const candidates=await Promise.all(eligibleCandidates.map(async candidate=>{
+      const domain=financialLearningDomainForRole(candidate.senderKey);
+      const outcomeLearning=domain&&candidate.kind!=='request'
+        ?await getDecisionOutcomeLearningContext(userId,domain).catch(()=>null)
+        :null;
+      return {
+        ...candidate,
+        outcomePriorityAdjustment:outcomeLearningPriorityAdjustment(candidate,outcomeLearning),
+        outcomeLearningStance:outcomeLearning?.stance??null,
+      };
+    }));
+    candidates.sort((a,b)=>candidateScore(b,memory,now)-candidateScore(a,memory,now));
 
     const selectedBase=candidates[0];
     if(!selectedBase){
@@ -541,6 +570,8 @@ export async function runDailyConversationOrchestratorForUser(
           proactive_key:selected.key,
           proactive_title:selected.title,
           proactive_reason:selected.reason,
+          outcome_priority_adjustment:selected.outcomePriorityAdjustment??0,
+          outcome_learning_stance:selected.outcomeLearningStance??null,
           operational_date:operationalDate,
           requested_fact:selected.requestedFact,
           interbank_need:selected.interbankNeed??null,
