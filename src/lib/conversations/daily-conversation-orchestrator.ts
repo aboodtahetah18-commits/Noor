@@ -510,7 +510,8 @@ export async function runDailyConversationOrchestratorForUser(
       ?' التفسير: '+decisionExplanation.current.label+' '+decisionExplanation.current.value+
         '؛ القاعدة: '+decisionExplanation.rule.title+
         (decisionExplanation.memory.summary?'؛ الذاكرة السابقة: '+decisionExplanation.memory.summary:'')+
-        (decisionExplanation.learning?'؛ التعلم: '+decisionExplanation.learning.shortText:'')
+        (decisionExplanation.learning?'؛ التعلم: '+decisionExplanation.learning.shortText:'')+
+        (decisionExplanation.outcomeLearning?'؛ نتائج القرارات السابقة: '+decisionExplanation.outcomeLearning.shortText:'')
       :learningContext&&learningContext.decisionUse!=='HISTORICAL_ONLY'
         ?' '+learningContext.shortText
         :'';
@@ -555,6 +556,17 @@ export async function runDailyConversationOrchestratorForUser(
               decision_use:decisionExplanation.learning.decisionUse,
               source_cycle_ids:decisionExplanation.learning.sourceCycleIds,
               confidence:decisionExplanation.learning.confidence,
+            }:null,
+            outcome_learning:decisionExplanation.outcomeLearning?{
+              stance:decisionExplanation.outcomeLearning.stance,
+              sample_size:decisionExplanation.outcomeLearning.sampleSize,
+              confidence:decisionExplanation.outcomeLearning.confidence,
+              positive_rate:decisionExplanation.outcomeLearning.positiveRate,
+              negative_rate:decisionExplanation.outcomeLearning.negativeRate,
+              rule_code:decisionExplanation.outcomeLearning.ruleCode,
+              actor_key:decisionExplanation.outcomeLearning.actorKey,
+              action:decisionExplanation.outcomeLearning.action,
+              decision_ids:decisionExplanation.outcomeLearning.decisionIds,
             }:null,
             why:decisionExplanation.why,
             guardrails:decisionExplanation.guardrails,
