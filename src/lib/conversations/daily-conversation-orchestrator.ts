@@ -17,6 +17,7 @@ import { getLivePersonalBudgetCalculation } from '@/lib/finance/live-personal-bu
 import { roleHasCompactAuthority, compactAuthoritiesForRole } from '@/lib/governance/algorithm-role-registry';
 import { buildFinancialLearningBrief } from '@/lib/finance/financial-continuous-learning-engine';
 import { monitorActiveFinancialLearning } from '@/lib/finance/financial-learning-monitor';
+import { financialLearningDomainForRole, getFinancialDecisionLearningContext } from '@/lib/finance/financial-learning-decision-context';
 
 export type ProactiveCandidate={
   key:string;
@@ -497,7 +498,14 @@ export async function runDailyConversationOrchestratorForUser(
     if(dailyPromptCount>=2||(dailyPromptCount>=1&&selectedBase.basePriority<130)){
       return {userId,status:'ALREADY_SENT',roomKey:selectedBase.roomKey,promptKey:selectedBase.key,messageId:null,errorCode:null};
     }
-    const selected={...selectedBase,body:adaptCandidateBody(selectedBase,memory)};
+    const learningDomain=financialLearningDomainForRole(selectedBase.senderKey);
+    const learningContext=learningDomain&&selectedBase.kind!=='request'
+      ?await getFinancialDecisionLearningContext(userId,learningDomain).catch(()=>null)
+      :null;
+    const learnedBody=learningContext&&learningContext.decisionUse!=='HISTORICAL_ONLY'
+      ?selectedBase.body+' '+learningContext.shortText
+      :selectedBase.body;
+    const selected={...selectedBase,body:adaptCandidateBody({...selectedBase,body:learnedBody},memory)};
 
     const sql=getRawSql();
     const threadRows=await sql`
@@ -526,6 +534,15 @@ export async function runDailyConversationOrchestratorForUser(
           operational_date:operationalDate,
           requested_fact:selected.requestedFact,
           interbank_need:selected.interbankNeed??null,
+          learning_decision_context:learningContext?{
+            algorithm_key:learningContext.algorithmKey,
+            algorithm_name:learningContext.algorithmName,
+            outcome:learningContext.outcome,
+            decision_use:learningContext.decisionUse,
+            source_cycle_ids:learningContext.sourceCycleIds,
+            confidence:learningContext.confidence,
+            last_event_at:learningContext.lastEventAt,
+          }:null,
           authority_action:proactiveAuthorityAction(selected),
           allowed_authorities:compactAuthoritiesForRole(selected.senderKey),
           scope_kind:selected.scopeKind??null,
