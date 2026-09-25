@@ -1,5 +1,7 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { getRawSql } from '@/infrastructure/db/client';
+import { roleHasCompactAuthority } from '@/lib/governance/algorithm-role-registry';
+import type { CompactAuthorityAction } from '@/lib/governance/compact-authority-model';
 
 export type GovernanceAmendmentPriority='NORMAL'|'NEXT_MEETING'|'URGENT';
 export type GovernanceAmendmentStatus=
@@ -9,6 +11,43 @@ export type GovernanceAmendmentStatus=
   |'APPROVED_PENDING_EFFECTIVE'
   |'EFFECTIVE'
   |'REJECTED';
+
+export type GovernanceAmendmentAction=
+  |'GOVERNOR_ACCEPT'
+  |'GOVERNOR_REJECT'
+  |'SECRETARY_ACCEPT'
+  |'COUNCIL_APPROVE'
+  |'COUNCIL_REJECT'
+  |'MARK_EFFECTIVE';
+
+const amendmentActionPolicy:Record<GovernanceAmendmentAction,{
+  roleKey:string;
+  authority:CompactAuthorityAction;
+  from:readonly GovernanceAmendmentStatus[];
+}>={
+  GOVERNOR_ACCEPT:{roleKey:'central-governor',authority:'ESCALATE_CASE',from:['GOVERNOR_REVIEW']},
+  GOVERNOR_REJECT:{roleKey:'central-governor',authority:'RECORD_INTERNAL_CONTEXT',from:['GOVERNOR_REVIEW']},
+  SECRETARY_ACCEPT:{roleKey:'central-secretary',authority:'ESCALATE_CASE',from:['SECRETARY_INTAKE']},
+  COUNCIL_APPROVE:{roleKey:'namaa-council',authority:'APPROVE_GOVERNANCE_CHANGE',from:['COUNCIL_DISCUSSION']},
+  COUNCIL_REJECT:{roleKey:'namaa-council',authority:'APPROVE_GOVERNANCE_CHANGE',from:['COUNCIL_DISCUSSION']},
+  MARK_EFFECTIVE:{roleKey:'central-secretary',authority:'RECORD_INTERNAL_CONTEXT',from:['APPROVED_PENDING_EFFECTIVE']},
+};
+
+export function governanceAmendmentActionAllowed(status:GovernanceAmendmentStatus,action:GovernanceAmendmentAction){
+  return amendmentActionPolicy[action].from.includes(status);
+}
+
+function assertGovernanceAmendmentAction(status:GovernanceAmendmentStatus,action:GovernanceAmendmentAction){
+  const policy=amendmentActionPolicy[action];
+  if(!policy.from.includes(status)){
+    throw new Error('GOVERNANCE_AMENDMENT_INVALID_TRANSITION');
+  }
+  if(!roleHasCompactAuthority(policy.roleKey,policy.authority)){
+    throw new Error('GOVERNANCE_AUTHORITY_DENIED');
+  }
+  return policy;
+}
+
 
 export type GovernanceChangeAction='ADD'|'EDIT'|'DELETE';
 export type GovernanceUnitType=
@@ -441,54 +480,58 @@ export async function createGovernanceAmendmentRequest(args:{
 
 export async function advanceGovernanceAmendment(args:{
   userId:string;requestId:string;
-  action:'GOVERNOR_ACCEPT'|'GOVERNOR_REJECT'|'SECRETARY_ACCEPT'|'COUNCIL_APPROVE'|'COUNCIL_REJECT'|'MARK_EFFECTIVE';
+  action:GovernanceAmendmentAction;
   note?:string|null;decisionId?:string|null;effectiveAt?:string|null;nextVersion?:string|null;
 }){
   const current=await getGovernanceAmendment(args.userId,args.requestId);
   if(!current) throw new Error('GOVERNANCE_AMENDMENT_NOT_FOUND');
 
+  const actionPolicy=assertGovernanceAmendmentAction(current.status,args.action);
   const now=new Date().toISOString();
   if(args.action==='GOVERNOR_REJECT'){
     await appendEvent({userId:args.userId,roomKey:'central',senderKey:'central-governor',senderName:'محافظ بنك نماء المركزي',kind:'decision',
       body:`أغلق المحافظ طلب التعديل ${args.requestId} بعد المراجعة الأولية. ${args.note??''}`.trim(),
-      structured:{governance_amendment_event:true,request_id:args.requestId,status:'REJECTED',event:'GOVERNOR_REJECTED',note:args.note??null,at:now,external_execution:false}});
+      structured:{governance_amendment_event:true,request_id:args.requestId,status:'REJECTED',event:'GOVERNOR_REJECTED',note:args.note??null,at:now,authority_role:actionPolicy.roleKey,authority_action:actionPolicy.authority,external_execution:false}});
     return {status:'REJECTED' as const};
   }
   if(args.action==='GOVERNOR_ACCEPT'){
     await appendEvent({userId:args.userId,roomKey:'central',senderKey:'central-governor',senderName:'محافظ بنك نماء المركزي',kind:'decision',
       body:`بعد المراجعة الأولية، وافق المحافظ على إحالة طلب التعديل ${args.requestId} إلى أمين السر لاستكمال المسار الحوكمي. ${args.note??''}`.trim(),
-      structured:{governance_amendment_event:true,request_id:args.requestId,status:'SECRETARY_INTAKE',event:'GOVERNOR_ACCEPTED',note:args.note??null,at:now,council_required:true,external_execution:false}});
+      structured:{governance_amendment_event:true,request_id:args.requestId,status:'SECRETARY_INTAKE',event:'GOVERNOR_ACCEPTED',note:args.note??null,at:now,council_required:true,authority_role:actionPolicy.roleKey,authority_action:actionPolicy.authority,external_execution:false}});
     await appendEvent({userId:args.userId,roomKey:'secretary',senderKey:'central-secretary',senderName:'أمين السر المركزي',kind:'followup',
       body:`استلم أمين السر طلب التعديل ${args.requestId} المحال من المحافظ. يبدأ الآن تجهيز ملف العرض على مجلس نماء الأعلى وتحديد توقيت المناقشة وفق الأولوية.`,
-      structured:{governance_amendment_event:true,request_id:args.requestId,status:'SECRETARY_INTAKE',event:'SECRETARY_RECEIVED',note:args.note??null,at:now,council_required:true,external_execution:false}});
+      structured:{governance_amendment_event:true,request_id:args.requestId,status:'SECRETARY_INTAKE',event:'SECRETARY_RECEIVED',note:args.note??null,at:now,council_required:true,authority_role:actionPolicy.roleKey,authority_action:actionPolicy.authority,external_execution:false}});
     return {status:'SECRETARY_INTAKE' as const};
   }
   if(args.action==='SECRETARY_ACCEPT'){
     await appendEvent({userId:args.userId,roomKey:'secretary',senderKey:'central-secretary',senderName:'أمين السر المركزي',kind:'decision',
       body:`أكمل أمين السر تجهيز طلب التعديل ${args.requestId} وأدرجه على مجلس نماء الأعلى للمناقشة. ${args.note??''}`.trim(),
-      structured:{governance_amendment_event:true,request_id:args.requestId,status:'COUNCIL_DISCUSSION',event:'SECRETARY_ACCEPTED',note:args.note??null,at:now,external_execution:false}});
+      structured:{governance_amendment_event:true,request_id:args.requestId,status:'COUNCIL_DISCUSSION',event:'SECRETARY_ACCEPTED',note:args.note??null,at:now,authority_role:actionPolicy.roleKey,authority_action:actionPolicy.authority,external_execution:false}});
     await appendEvent({userId:args.userId,roomKey:'council',senderKey:'council-secretary',senderName:'أمين السر المركزي',kind:'request',
       body:`أُدرج طلب التعديل ${args.requestId} على مجلس نماء الأعلى للمناقشة قبل أي اعتماد. لا يصبح أي تعديل نافذًا من مجرد المناقشة.`,
-      structured:{governance_amendment_event:true,request_id:args.requestId,status:'COUNCIL_DISCUSSION',event:'COUNCIL_AGENDA_CREATED',note:args.note??null,at:now,external_execution:false}});
+      structured:{governance_amendment_event:true,request_id:args.requestId,status:'COUNCIL_DISCUSSION',event:'COUNCIL_AGENDA_CREATED',note:args.note??null,at:now,authority_role:actionPolicy.roleKey,authority_action:actionPolicy.authority,external_execution:false}});
     return {status:'COUNCIL_DISCUSSION' as const};
   }
   if(args.action==='COUNCIL_REJECT'){
-    await appendEvent({userId:args.userId,roomKey:'council',senderKey:'central-governor',senderName:'محافظ بنك نماء المركزي',kind:'decision',
+    await appendEvent({userId:args.userId,roomKey:'council',senderKey:'namaa-council',senderName:'مجلس نماء الأعلى',kind:'decision',
       body:`رفض مجلس نماء الأعلى طلب التعديل ${args.requestId}. ${args.note??''}`.trim(),
-      structured:{governance_amendment_event:true,request_id:args.requestId,status:'REJECTED',event:'COUNCIL_REJECTED',note:args.note??null,decision_id:args.decisionId??null,at:now,external_execution:false}});
+      structured:{governance_amendment_event:true,request_id:args.requestId,status:'REJECTED',event:'COUNCIL_REJECTED',note:args.note??null,decision_id:args.decisionId??null,at:now,authority_role:actionPolicy.roleKey,authority_action:actionPolicy.authority,external_execution:false}});
     return {status:'REJECTED' as const};
   }
   if(args.action==='COUNCIL_APPROVE'){
     if(!args.effectiveAt||!args.nextVersion) throw new Error('GOVERNANCE_EFFECTIVE_DATE_AND_VERSION_REQUIRED');
-    await appendEvent({userId:args.userId,roomKey:'council',senderKey:'central-governor',senderName:'محافظ بنك نماء المركزي',kind:'decision',
+    await appendEvent({userId:args.userId,roomKey:'council',senderKey:'namaa-council',senderName:'مجلس نماء الأعلى',kind:'decision',
       body:`اعتمد مجلس نماء الأعلى طلب التعديل ${args.requestId}. الإصدار الجديد ${args.nextVersion}، ويبدأ النفاذ في ${args.effectiveAt}. لا يستخدمه النظام قبل تاريخ النفاذ.`,
-      structured:{governance_amendment_event:true,request_id:args.requestId,status:'APPROVED_PENDING_EFFECTIVE',event:'COUNCIL_APPROVED',note:args.note??null,decision_id:args.decisionId??args.requestId,effective_at:args.effectiveAt,next_version:args.nextVersion,at:now,external_execution:false}});
+      structured:{governance_amendment_event:true,request_id:args.requestId,status:'APPROVED_PENDING_EFFECTIVE',event:'COUNCIL_APPROVED',note:args.note??null,decision_id:args.decisionId??args.requestId,effective_at:args.effectiveAt,next_version:args.nextVersion,at:now,authority_role:actionPolicy.roleKey,authority_action:actionPolicy.authority,external_execution:false}});
     return {status:'APPROVED_PENDING_EFFECTIVE' as const};
   }
 
-  await appendEvent({userId:args.userId,roomKey:'council',senderKey:'central-governor',senderName:'محافظ بنك نماء المركزي',kind:'followup',
+  if(current.effectiveAt&&Date.parse(current.effectiveAt+'T00:00:00Z')>Date.now()){
+    throw new Error('GOVERNANCE_EFFECTIVE_DATE_NOT_REACHED');
+  }
+  await appendEvent({userId:args.userId,roomKey:'secretary',senderKey:'central-secretary',senderName:'أمين السر المركزي',kind:'followup',
     body:`أصبح تعديل ${current.documentRef} نافذًا وفق القرار ${current.councilDecisionId??args.decisionId??args.requestId}. المرجع التشغيلي الجديد هو الإصدار ${current.nextVersion??args.nextVersion??'المعتمد'}.`,
-    structured:{governance_amendment_event:true,request_id:args.requestId,status:'EFFECTIVE',event:'MARKED_EFFECTIVE',at:now,external_execution:false}});
+    structured:{governance_amendment_event:true,request_id:args.requestId,status:'EFFECTIVE',event:'MARKED_EFFECTIVE',at:now,authority_role:actionPolicy.roleKey,authority_action:actionPolicy.authority,external_execution:false}});
   return {status:'EFFECTIVE' as const};
 }
 
