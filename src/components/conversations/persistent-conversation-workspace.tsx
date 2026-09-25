@@ -1373,11 +1373,9 @@ export function PersistentConversationWorkspace(){
       ?<>{savedFocusedChats(recentOwnerChats)}{mobileOwnerButtons}</>
       :<><div className={styles.directoryMeetingGroups}>
         {[
-          {title:'مجلس نماء الأعلى',subtitle:'الاجتماعات العامة والتأسيسية',logo:'/brand/bank-central.webp'},
-          {title:'لجنة الميزانية والإنفاق',subtitle:'الخطة الدورية والانحرافات',logo:'/brand/bank-hilal.webp'},
-          {title:'لجنة الاستقرار والسيولة والتمويل',subtitle:'الحماية والسيولة والتمويل',logo:'/brand/bank-malaa.webp'},
-          {title:'لجنة الأهداف والالتزامات',subtitle:'الأهداف والاستحقاقات',logo:'/brand/bank-central.webp'},
-          {title:'لجنة الاستثمار والأصول',subtitle:'الاستثمار والأصول',logo:'/brand/bank-assets.webp'},
+          {title:'مجلس نماء الأعلى',subtitle:'الاعتمادات والتغييرات الحوكمية الكبرى',logo:'/brand/bank-central.webp'},
+          {title:'لجنة الدورة المالية والتوازن',subtitle:'الميزانية والالتزامات والسيولة والأهداف عند الحاجة',logo:'/brand/bank-central.webp'},
+          {title:'لجنة المراجعة والمخاطر والتعلم',subtitle:'المخاطر وجودة الحسابات والتعلم المستمر',logo:'/brand/bank-central.webp'},
         ].map(group=><button type="button" key={group.title} className={styles.directoryMeetingGroup} onClick={()=>{setRoomsOpen(false);setGovernanceMode('meetings')}}>
           <span className={styles.directoryMeetingGroupLogo}><Image src={group.logo} alt="" fill unoptimized sizes="72px"/></span>
           <span><strong>{group.title}</strong><small>{group.subtitle}</small></span>
