@@ -13,6 +13,7 @@ import {
   readActiveFinancialLearningFactors,
   syncFinancialLearningLifecycle,
 } from '@/lib/finance/financial-learning-lifecycle';
+import { monitorActiveFinancialLearning } from '@/lib/finance/financial-learning-monitor';
 
 const headers={'Cache-Control':'private, no-store, max-age=0'};
 
@@ -26,13 +27,19 @@ export async function GET(){
     const candidates=buildFinancialLearningChangeCandidates(profile);
     const lifecycle=await syncFinancialLearningLifecycle(user.id,profile);
     const activeFactors=await readActiveFinancialLearningFactors(user.id);
+    const monitoring=await monitorActiveFinancialLearning(user.id);
     return NextResponse.json({
       ok:true,
       profile,
       candidates,
       reviewEligible:candidates.filter(item=>item.status==='ELIGIBLE_FOR_REVIEW'),
-      lifecycle:lifecycle.store,
+      lifecycle:monitoring.store,
       activeFactors,
+      monitoring:{
+        activeItems:monitoring.activeItems,
+        rollbackReviewRequired:monitoring.rollbackReviewRequired,
+        hasRollbackReviewRequired:monitoring.hasRollbackReviewRequired,
+      },
     },{headers});
   }catch(error){
     console.error('[financial-learning-get]',{
