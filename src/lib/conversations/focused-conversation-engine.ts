@@ -6,6 +6,7 @@ import { getGovernanceMeetingSchedule } from '@/lib/governance/governance-meetin
 import type { ConversationMessageKind, ConversationRoomKey } from '@/lib/conversations/store';
 import { createBudgetCommitteeConversationReply } from '@/lib/conversations/budget-committee-conversation-engine';
 import { getLivePersonalBudgetCalculation } from '@/lib/finance/live-personal-budget-calculation';
+import { createLearningCommitteeConversationReply } from '@/lib/conversations/learning-committee-conversation-engine';
 
 type FocusedReply={
   id:string;
@@ -196,6 +197,10 @@ export async function createFocusedMeetingReply(args:{
   if(/ميزانية|إنفاق|دورة مالية|توازن/.test(meeting.title)){
     const budgetReply=await createBudgetCommitteeConversationReply(args);
     if(budgetReply)return budgetReply;
+  }
+  if(/مراجعة|مخاطر|تعلم/.test(meeting.title)){
+    const learningReply=await createLearningCommitteeConversationReply(args);
+    if(learningReply)return learningReply as FocusedReply;
   }
   const owner=meetingOwner(meeting.title);
   assertRoleCompactAuthority(owner.key,'RECORD_INTERNAL_CONTEXT');
