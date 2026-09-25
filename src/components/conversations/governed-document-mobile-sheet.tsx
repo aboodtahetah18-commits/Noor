@@ -761,7 +761,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
                   ?'اكتب المعادلة أو طريقة الحساب فقط؛ الشرح والأسباب تكون في خانات مستقلة.'
                   :changeAction==='ADD'?'اكتب محتوى هذا العنصر فقط':'عدّل محتوى هذا العنصر'}
               />
-            </>}
+            </label>}
             {changeAction==='DELETE'&&<p className={styles.governedDeleteNotice}>سيتم حذف {unitType==='article'?'المادة وما يندرج تحتها':unitType==='clause'?'البند وما يندرج تحته':governanceUnitLabel[unitType]+' المحدد'} من نسخة العرض. في المسار الحوكمي لا يصبح الحذف نافذًا إلا بعد الاعتماد.</p>}
             <label><span>{editMode==='direct'?'ملاحظة':'مبرر التغيير'}</span><textarea required={editMode==='governance'} value={rationale} onChange={e=>setRationale(e.target.value)} placeholder={editMode==='direct'?'اختياري خلال مرحلة التأسيس':'اشرح سبب الإضافة أو التعديل أو الحذف وأثره'}/></label>
             {editMode==='governance'&&<label><span>الأولوية</span><select value={priority} onChange={e=>setPriority(e.target.value as typeof priority)}><option value="NORMAL">عادي</option><option value="NEXT_MEETING">للاجتماع القادم</option><option value="URGENT">عاجل، اجتماع فوري</option></select></label>}
