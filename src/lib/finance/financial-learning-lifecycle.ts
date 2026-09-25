@@ -48,6 +48,15 @@ export type FinancialLearningLifecycleItem={
   rejectedAt:string|null;
   rolledBackAt:string|null;
   previousActiveValue:number|null;
+  monitoring?:{
+    state:'INSUFFICIENT_DATA'|'STABLE'|'IMPROVED'|'ROLLBACK_REVIEW_REQUIRED';
+    sampleSize:number;
+    baselineMaePercent:number|null;
+    activeMaePercent:number|null;
+    changePercent:number|null;
+    reason:string;
+    evaluatedAt:string;
+  }|null;
   history:FinancialLearningLifecycleEvent[];
 };
 
@@ -182,6 +191,7 @@ export async function syncFinancialLearningLifecycle(userId:string,profile?:Fina
       rejectedAt:null,
       rolledBackAt:null,
       previousActiveValue:null,
+      monitoring:null,
       history:[{
         at:now,action:'SYNC',actorRole:'financial-learning-engine',
         note:'نجح المرشح في الاختبار الخلفي وأصبح مؤهلًا للمراجعة.',
@@ -279,4 +289,14 @@ export async function advanceFinancialLearningLifecycle(args:{
   await writeFact(args.userId,LIFECYCLE_FACT_KEY,'learning',store,['financial_learning','governance_review','audit']);
 
   return {item,store,activeFactors:await readActiveFinancialLearningFactors(args.userId)};
+}
+
+
+export async function saveFinancialLearningLifecycleStore(
+  userId:string,
+  store:FinancialLearningLifecycleStore,
+){
+  store.updatedAt=new Date().toISOString();
+  await writeFact(userId,LIFECYCLE_FACT_KEY,'learning',store,['financial_learning','governance_review','audit']);
+  return store;
 }
