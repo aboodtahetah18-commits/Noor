@@ -290,3 +290,10 @@ export function compactAuthoritiesForRole(key:string):CompactAuthorityAction[]{
 export function roleHasCompactAuthority(key:string,action:CompactAuthorityAction){
   return compactAuthoritiesForRole(key).includes(action);
 }
+
+export function assertRoleCompactAuthority(key:string,action:CompactAuthorityAction){
+  const role=algorithmRoleByKey(key);
+  if(!role)throw new Error('GOVERNANCE_ROLE_NOT_FOUND');
+  if(!roleHasCompactAuthority(key,action))throw new Error('GOVERNANCE_AUTHORITY_DENIED');
+  return role;
+}
