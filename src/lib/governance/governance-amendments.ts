@@ -47,6 +47,46 @@ export function governanceDiscussionActorAllowed(
   return false;
 }
 
+export type GovernanceAmendmentUiAction={
+  action:GovernanceAmendmentAction;
+  label:string;
+  roleKey:string;
+  roleName:string;
+  tone:'primary'|'danger'|'neutral';
+  requires:readonly ('nextVersion'|'effectiveAt'|'decisionId'|'note')[];
+};
+
+export function governanceAmendmentAvailableActions(
+  amendment:Pick<GovernanceAmendmentRequest,'status'|'effectiveAt'>,
+  now=new Date(),
+):GovernanceAmendmentUiAction[]{
+  const actions:GovernanceAmendmentUiAction[]=[];
+  const push=(action:GovernanceAmendmentAction,label:string,roleName:string,tone:GovernanceAmendmentUiAction['tone'],requires:GovernanceAmendmentUiAction['requires']=[])=>{
+    const policy=amendmentActionPolicy[action];
+    if(!governanceAmendmentActionAllowed(amendment.status,action))return;
+    if(!roleHasCompactAuthority(policy.roleKey,policy.authority))return;
+    actions.push({action,label,roleKey:policy.roleKey,roleName,tone,requires});
+  };
+
+  if(amendment.status==='GOVERNOR_REVIEW'){
+    push('GOVERNOR_ACCEPT','إحالة إلى أمين السر','محافظ بنك نماء المركزي','primary',['note']);
+    push('GOVERNOR_REJECT','رفض الطلب','محافظ بنك نماء المركزي','danger',['note']);
+  }else if(amendment.status==='SECRETARY_INTAKE'){
+    push('SECRETARY_ACCEPT','إدراج على مجلس نماء الأعلى','أمين السر المركزي','primary',['note']);
+  }else if(amendment.status==='COUNCIL_DISCUSSION'){
+    push('COUNCIL_APPROVE','اعتماد التعديل','مجلس نماء الأعلى','primary',['nextVersion','effectiveAt','decisionId','note']);
+    push('COUNCIL_REJECT','رفض التعديل','مجلس نماء الأعلى','danger',['decisionId','note']);
+  }else if(amendment.status==='APPROVED_PENDING_EFFECTIVE'){
+    const effectiveAt=amendment.effectiveAt?Date.parse(/^\d{4}-\d{2}-\d{2}$/.test(amendment.effectiveAt)
+      ?amendment.effectiveAt+'T00:00:00Z'
+      :amendment.effectiveAt):Number.NaN;
+    if(Number.isFinite(effectiveAt)&&effectiveAt<=now.getTime()){
+      push('MARK_EFFECTIVE','تفعيل الإصدار المعتمد','أمين السر المركزي','primary');
+    }
+  }
+  return actions;
+}
+
 function assertGovernanceAmendmentAction(status:GovernanceAmendmentStatus,action:GovernanceAmendmentAction){
   const policy=amendmentActionPolicy[action];
   if(!policy.from.includes(status)){
