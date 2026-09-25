@@ -20,6 +20,7 @@ export async function getDashboardSummary(userId: string, cycleId?: string) {
       .toString();
     const top = recommendations[0] ?? null;
 
+    if(!liveCalculation)return dashboard;
     const unified = liveCalculation.calculation.values;
     return {
       ...dashboard,
