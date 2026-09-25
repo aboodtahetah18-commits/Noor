@@ -12,6 +12,7 @@ import {
   createGovernanceAmendmentRequest,
   createGovernanceDirectChange,
   createGovernanceTypoCorrection,
+  governanceAmendmentAvailableActions,
   listGovernanceAmendments,
   listGovernanceDirectChanges,
   listGovernanceTypoCorrections,
@@ -83,7 +84,15 @@ export async function GET(){
       listGovernanceDirectChanges(user.id),
       listGovernanceTypoCorrections(user.id),
     ]);
-    return NextResponse.json({ok:true,amendments,directChanges,corrections},{headers});
+    return NextResponse.json({
+      ok:true,
+      amendments:amendments.map(item=>({
+        ...item,
+        availableActions:governanceAmendmentAvailableActions(item),
+      })),
+      directChanges,
+      corrections,
+    },{headers});
   }catch(error){
     console.error('[governance-amendments-get]',{name:error instanceof Error?error.name:'UnknownError'});
     return NextResponse.json({ok:false,error:'GOVERNANCE_AMENDMENTS_UNAVAILABLE'},{status:503,headers});
