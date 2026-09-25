@@ -7,6 +7,7 @@ import {
   readFinancialContinuousLearning,
   refreshFinancialContinuousLearning,
 } from '@/lib/finance/financial-continuous-learning-engine';
+import { buildFinancialLearningChangeCandidates } from '@/lib/finance/financial-learning-change-candidates';
 
 const headers={'Cache-Control':'private, no-store, max-age=0'};
 
@@ -17,7 +18,13 @@ export async function GET(){
   try{
     const stored=await readFinancialContinuousLearning(user.id);
     const profile=stored??await refreshFinancialContinuousLearning(user.id);
-    return NextResponse.json({ok:true,profile},{headers});
+    const candidates=buildFinancialLearningChangeCandidates(profile);
+    return NextResponse.json({
+      ok:true,
+      profile,
+      candidates,
+      reviewEligible:candidates.filter(item=>item.status==='ELIGIBLE_FOR_REVIEW'),
+    },{headers});
   }catch(error){
     console.error('[financial-learning-get]',{
       name:error instanceof Error?error.name:'UnknownError',
