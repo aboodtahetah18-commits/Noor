@@ -47,6 +47,7 @@ export const governedRoomDetails:Record<ConversationRoomKey,GovernedRoomDetail>=
     policies:[
       {referenceCode:'NMC-REF-02',title:'الفهرس الرئيسي لبنك نماء المركزي',kind:'reference',version:'v2.0',sourceUrl:'https://drive.google.com/file/d/1Tp5TqMm1Heon8K9-mEXWhkr0aurQmW-z/view'},
       {referenceCode:'NMC-CONST-01',title:'دستور منصة نماء والمعمار المؤسسي والتشغيلي الأعلى',kind:'charter',version:'v1.0',sourceUrl:'https://docs.google.com/document/d/1Vy12Q4MS-oB5Ma-8L5ynyG3WKHdTtB71d0lbiajm9Z0/edit?usp=drivesdk'},
+      {referenceCode:'NMC-CORE-01',title:'المرجع الحسابي لإدارة الميزانية الشخصية والدورة المالية',kind:'reference',version:'v1.0-draft'},
       ...CENTRAL_ACTIVE_POLICIES.map(policy=>({referenceCode:policy.referenceCode,title:policy.title,kind:'policy' as const,version:policy.version??undefined})),
       {referenceCode:'NMC-CTR-01',title:'عقد البيانات والتكامل المركزي — بنك نماء',kind:'contract',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1DJ64l0-IMxza5ob9peP7RSpzZn7yxwqFsSYl0qreG2c/edit'},
       {referenceCode:'NMC-CHR-02',title:'ميثاق أصحاب المسؤوليات المالية والمستشار الاقتصادي',kind:'charter',version:'v1.0',sourceUrl:'https://docs.google.com/document/d/1fXG8jJuS4_WXllyiSYcVP7unKf2jJ-s_AGRa_2xEYLA/edit'},
@@ -126,6 +127,7 @@ export const governedRoomDetails:Record<ConversationRoomKey,GovernedRoomDetail>=
     policies:[
       {referenceCode:'HIL-CHR-01',title:'ميثاق وتشغيل بنك الهلال',kind:'charter',sourceUrl:'https://docs.google.com/document/d/1Z1cnyyVmym1VDGU6ZSFakMIBznUvKPiVr4fuvctkJyo/edit'},
       {referenceCode:'HIL-POL-01',title:'سياسة الميزانية والإنفاق والتدفقات النقدية لبنك الهلال',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1YoWUyS1AgqWAZcnAd-HzD3WvG35_aQfbQL5H8oBTmYA/edit'},
+      {referenceCode:'NMC-CORE-01',title:'المرجع الحسابي لإدارة الميزانية الشخصية والدورة المالية',kind:'reference',version:'v1.0-draft'},
       {referenceCode:'HIL-POL-02',title:'دليل الأدوار ومصفوفة الصلاحيات لبنك الهلال',kind:'policy',sourceUrl:'https://docs.google.com/document/d/13TXLBG8Axn862QQZ51yzYfwjVhQbPlNUFEaA3DccbN4/edit'},
       {referenceCode:'HIL-REF-01',title:'دليل العمليات والآليات والخوارزميات التشغيلية لبنك الهلال',kind:'reference',sourceUrl:'https://docs.google.com/document/d/182x3t6eGfqFed9j3mNUKsgjJmFPNnOHLUPNzGgcUKEE/edit'},
       {referenceCode:'HIL-POL-03',title:'سياسة التمويل الداخلي والائتمان والسداد لبنك الهلال',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1aNBxa_NH4CjXRcEUkm8Mm8t5Iv3nakGHvZO8SD5inQg/edit'},
