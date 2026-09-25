@@ -64,6 +64,14 @@ const unitTypeFromArabicLabel:Record<string,GovernanceUnitType>={
 };
 
 
+type GovernanceUiAction={
+  action:'GOVERNOR_ACCEPT'|'GOVERNOR_REJECT'|'SECRETARY_ACCEPT'|'COUNCIL_APPROVE'|'COUNCIL_REJECT'|'MARK_EFFECTIVE';
+  label:string;
+  roleKey:string;
+  roleName:string;
+  tone:'primary'|'danger'|'neutral';
+  requires:Array<'nextVersion'|'effectiveAt'|'decisionId'|'note'>;
+};
 type Amendment={
   requestId:string; documentRef:string; documentTitle:string; roomKey:string;
   clauseRef:string|null; parentRef:string|null; changeAction:'ADD'|'EDIT'|'DELETE'; unitType:GovernanceUnitType;
@@ -71,6 +79,7 @@ type Amendment={
   priority:'NORMAL'|'NEXT_MEETING'|'URGENT'; status:string; requestedAt:string;
   governorReviewedAt:string|null; secretaryReceivedAt:string|null; councilDecisionAt:string|null;
   councilDecisionId:string|null; effectiveAt:string|null; nextVersion:string|null; discussionNotes:string[];
+  availableActions?:GovernanceUiAction[];
 };
 
 type TypoCorrection={
@@ -385,6 +394,15 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
   const [exampleText,setExampleText]=useState('');
   const [rationale,setRationale]=useState('');
   const [priority,setPriority]=useState<'NORMAL'|'NEXT_MEETING'|'URGENT'>('NEXT_MEETING');
+  const [workflowDraft,setWorkflowDraft]=useState<{
+    requestId:string;
+    action:GovernanceUiAction;
+    note:string;
+    nextVersion:string;
+    effectiveAt:string;
+    decisionId:string;
+  }|null>(null);
+  const [workflowPending,setWorkflowPending]=useState(false);
 
   async function load(){
     const response=await fetch('/api/governance/amendments',{cache:'no-store'});
@@ -564,6 +582,54 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
     setFormOpen(true);
   }
 
+
+  async function executeWorkflow(event:FormEvent){
+    event.preventDefault();
+    if(!workflowDraft||workflowPending)return;
+    const required=new Set(workflowDraft.action.requires);
+    if(required.has('nextVersion')&&!workflowDraft.nextVersion.trim()){
+      setFeedback('أدخل رقم الإصدار الجديد قبل الاعتماد.');
+      return;
+    }
+    if(required.has('effectiveAt')&&!workflowDraft.effectiveAt.trim()){
+      setFeedback('حدد تاريخ النفاذ قبل الاعتماد.');
+      return;
+    }
+    setWorkflowPending(true);
+    setFeedback('');
+    try{
+      const response=await fetch('/api/governance/amendments',{
+        method:'POST',
+        headers:{'content-type':'application/json'},
+        body:JSON.stringify({
+          operation:'ADVANCE',
+          requestId:workflowDraft.requestId,
+          action:workflowDraft.action.action,
+          note:workflowDraft.note.trim()||null,
+          nextVersion:workflowDraft.nextVersion.trim()||null,
+          effectiveAt:workflowDraft.effectiveAt.trim()||null,
+          decisionId:workflowDraft.decisionId.trim()||null,
+        }),
+      });
+      const data=await response.json().catch(()=>({})) as {error?:string};
+      if(!response.ok)throw new Error(data.error||'WORKFLOW_FAILED');
+      setFeedback('تم تنفيذ الإجراء الحوكمي وتحديث مرحلة الطلب.');
+      setWorkflowDraft(null);
+      await load();
+      const responseDocument=await fetch('/api/governance/documents/'+encodeURIComponent(document.referenceCode),{cache:'no-store'});
+      const next=await responseDocument.json().catch(()=>({})) as {document?:{content?:string}};
+      if(responseDocument.ok)setDocumentContent(String(next.document?.content??''));
+    }catch(error){
+      const code=error instanceof Error?error.message:'WORKFLOW_FAILED';
+      setFeedback(code==='GOVERNANCE_EFFECTIVE_DATE_NOT_REACHED'
+        ?'لم يصل تاريخ النفاذ بعد، لذلك لا يظهر التعديل كنافذ.'
+        :code==='GOVERNANCE_AMENDMENT_INVALID_TRANSITION'
+          ?'تغيرت مرحلة الطلب. تم منع الإجراء غير المناسب؛ أعد تحميل الطلب.'
+          :'تعذر تنفيذ الإجراء الحوكمي الآن.');
+    }finally{
+      setWorkflowPending(false);
+    }
+  }
 
   async function submit(event:FormEvent){
     event.preventDefault();
@@ -769,6 +835,57 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
               ?'يطبق التغيير فورًا في نسخة العرض الحالية ويسجل أثره. هذا المسار مخصص لمرحلة ضبط المنصة.'
               :'المسار: المحافظ، ثم أمين السر، ثم مجلس نماء الأعلى، ثم الاعتماد أو الرفض، ثم تاريخ النفاذ والإصدار الجديد.'}</p>
             <div className={styles.governedAmendmentActions}><button type="button" onClick={()=>setFormOpen(false)}>إلغاء</button><button type="submit" disabled={pending||!clauseRef.trim()||(changeAction!=='DELETE'&&!proposedRule.trim())}>{pending?'جارٍ الحفظ…':changeAction==='DELETE'?(editMode==='direct'?'حذف مباشر':'طلب الحذف'):(editMode==='direct'?'حفظ مباشر':'إرسال للمحافظ')}</button></div>
+          </form>
+        </div>}
+
+        {related.some(item=>item.status!=='EFFECTIVE'&&item.status!=='REJECTED')&&<section className={styles.governedHistorySection}>
+          <header className={styles.governedHistoryHeader}>
+            <span className={styles.governedHistoryIcon}><LucideIcon name="landmark" size={20}/></span>
+            <div><strong>طلبات التعديل الجارية</strong><small>تظهر فقط الإجراءات المسموحة في المرحلة الحالية ومن الجهة صاحبة الصلاحية.</small></div>
+          </header>
+          <div className={styles.governedHistoryList}>
+            {related.filter(item=>item.status!=='EFFECTIVE'&&item.status!=='REJECTED').map(item=><article key={'workflow-'+item.requestId} className={styles.governedHistoryItem+' '+styles.governedHistory_governance}>
+              <span className={styles.governedHistoryDot} aria-hidden="true"/>
+              <div className={styles.governedHistoryMeta}><span>{item.requestId}</span><b>{statusLabel[item.status]??'قيد المعالجة'}</b></div>
+              <strong>{item.clauseRef?item.clauseRef+' — ':''}{item.rationale}</strong>
+              {item.status==='APPROVED_PENDING_EFFECTIVE'&&item.effectiveAt&&!(item.availableActions?.length)
+                ?<p>معتمد وينتظر تاريخ النفاذ: {item.effectiveAt}</p>
+                :null}
+              {(item.availableActions??[]).length>0&&<div className={styles.governedAmendmentActions}>
+                {(item.availableActions??[]).map(action=><button
+                  key={action.action}
+                  type="button"
+                  onClick={()=>setWorkflowDraft({
+                    requestId:item.requestId,
+                    action,
+                    note:'',
+                    nextVersion:item.nextVersion??'',
+                    effectiveAt:item.effectiveAt??'',
+                    decisionId:item.councilDecisionId??'',
+                  })}
+                >{action.label} · {action.roleName}</button>)}
+              </div>}
+            </article>)}
+          </div>
+        </section>}
+
+        {workflowDraft&&<div className={styles.governedEditModal} role="dialog" aria-modal="true" aria-label={workflowDraft.action.label}>
+          <button type="button" className={styles.governedEditModalScrim} aria-label="إغلاق" onClick={()=>setWorkflowDraft(null)}/>
+          <form className={styles.governedAmendmentForm+' '+styles.governedEditModalCard} onSubmit={executeWorkflow}>
+            <header className={styles.governedEditFormHeader}>
+              <span className={styles.governedEditFormIcon}><LucideIcon name="landmark" size={20}/></span>
+              <div><strong>{workflowDraft.action.label}</strong><small>ينفذ هذا الإجراء باسم {workflowDraft.action.roleName} وفق المرحلة الحالية.</small></div>
+              <button type="button" className={styles.governedEditClose} onClick={()=>setWorkflowDraft(null)} aria-label="إغلاق"><LucideIcon name="x" size={20}/></button>
+            </header>
+            {workflowDraft.action.requires.includes('nextVersion')&&<label><span>الإصدار الجديد</span><input value={workflowDraft.nextVersion} onChange={e=>setWorkflowDraft(current=>current?{...current,nextVersion:e.target.value}:current)} placeholder="مثال: v1.1" required/></label>}
+            {workflowDraft.action.requires.includes('effectiveAt')&&<label><span>تاريخ النفاذ</span><input type="date" value={workflowDraft.effectiveAt} onChange={e=>setWorkflowDraft(current=>current?{...current,effectiveAt:e.target.value}:current)} required/></label>}
+            {workflowDraft.action.requires.includes('decisionId')&&<label><span>رقم القرار</span><input value={workflowDraft.decisionId} onChange={e=>setWorkflowDraft(current=>current?{...current,decisionId:e.target.value}:current)} placeholder="اختياري"/></label>}
+            {workflowDraft.action.requires.includes('note')&&<label><span>ملاحظة القرار</span><textarea value={workflowDraft.note} onChange={e=>setWorkflowDraft(current=>current?{...current,note:e.target.value}:current)} placeholder="اختياري"/></label>}
+            <p>لن يظهر أي إجراء آخر غير المسموح به في هذه المرحلة، والتحقق النهائي يتم مرة أخرى في الخادم.</p>
+            <div className={styles.governedAmendmentActions}>
+              <button type="button" onClick={()=>setWorkflowDraft(null)}>إلغاء</button>
+              <button type="submit" disabled={workflowPending}>{workflowPending?'جارٍ التنفيذ…':'تأكيد الإجراء'}</button>
+            </div>
           </form>
         </div>}
 
