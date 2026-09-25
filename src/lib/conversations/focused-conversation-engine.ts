@@ -8,6 +8,7 @@ import { createBudgetCommitteeConversationReply } from '@/lib/conversations/budg
 import { getLivePersonalBudgetCalculation } from '@/lib/finance/live-personal-budget-calculation';
 import { createLearningCommitteeConversationReply } from '@/lib/conversations/learning-committee-conversation-engine';
 import { financialLearningDomainForRole, getFinancialDecisionLearningContext } from '@/lib/finance/financial-learning-decision-context';
+import { getFinancialDecisionExplanation, type FinancialDecisionExplanation } from '@/lib/finance/financial-decision-explanation';
 
 type FocusedReply={
   id:string;
@@ -74,6 +75,17 @@ function shouldShowLearningDecisionContext(text:string){
   return /(?:ليش|لماذا|وش تقترح|ماذا تقترح|تنصح|التوصية|القرار|الأفضل|النمط|متكرر|عادة|تعلم|سابق|قبل|توقع)/i.test(text);
 }
 
+function decisionExplanationText(explanation:FinancialDecisionExplanation|null){
+  if(!explanation)return null;
+  const memory=explanation.memory.summary??'لا يوجد سياق سابق موثق يغير القرار الحالي';
+  const learning=explanation.learning?.shortText??'لا يوجد تعلم سابق مؤهل للتأثير على هذا القرار';
+  return 'تفسير القرار: الرقم الحالي — '+explanation.current.label+' '+explanation.current.value+
+    '. القاعدة — '+explanation.rule.title+
+    '. الذاكرة السابقة — '+memory+
+    '. التعلم — '+learning+
+    '. لماذا هذه التوصية — '+explanation.why;
+}
+
 function roleIntro(role:AlgorithmRoleRef){
   const protectedItems=role.accountableFor.slice(0,3).join('، ');
   return `أنا ${role.name}. أتعامل مع هذا الحوار ضمن نطاقي المباشر: ${protectedItems}. أقرأ البيانات المؤكدة المشتركة مع بقية نماء قبل أن أطلب منك معلومة جديدة، ولا أعيد السؤال عن معلومة صالحة إلا إذا تغيرت أو احتجت تأكيدًا جديدًا.`;
@@ -111,7 +123,8 @@ export async function createFocusedRoleReply(args:{
   assertRoleCompactAuthority(role.key,'RECORD_INTERNAL_CONTEXT');
   const sql=getRawSql();
   const learningDomain=financialLearningDomainForRole(role.key);
-  const [threadRows,factRows,dashboard,liveCalculation,learningContext]=await Promise.all([
+  const needsDecisionExplanation=Boolean(learningDomain&&shouldShowLearningDecisionContext(args.userText));
+  const [threadRows,factRows,dashboard,liveCalculation,learningContext,decisionExplanation]=await Promise.all([
     sql`select id from public.conversation_threads where user_id=${args.userId}::uuid and room_key=${args.roomKey} limit 1`,
     sql`
       select fact_key,value_json
@@ -123,6 +136,9 @@ export async function createFocusedRoleReply(args:{
     getEntityOperationalDashboard(args.userId,args.roomKey).catch(()=>null),
     getLivePersonalBudgetCalculation(args.userId).catch(()=>null),
     learningDomain?getFinancialDecisionLearningContext(args.userId,learningDomain).catch(()=>null):Promise.resolve(null),
+    needsDecisionExplanation&&learningDomain
+      ?getFinancialDecisionExplanation(args.userId,learningDomain).catch(()=>null)
+      :Promise.resolve(null),
   ]);
   const threadId=threadRows[0]?.id?String(threadRows[0].id):null;
   if(!threadId)return null;
@@ -146,7 +162,8 @@ export async function createFocusedRoleReply(args:{
   const learningSummary=learningContext&&shouldShowLearningDecisionContext(args.userText)
     ?learningContext.shortText
     :null;
-  const body=`${roleIntro(role)} ${calculationSummary??''} ${learningSummary??''} ${roleQuestion(role,args.userText,known,plan?.nextAction??null,previousUserMessage)}`.trim();
+  const explanationSummary=decisionExplanationText(decisionExplanation);
+  const body=`${roleIntro(role)} ${calculationSummary??''} ${explanationSummary??learningSummary??''} ${roleQuestion(role,args.userText,known,plan?.nextAction??null,previousUserMessage)}`.trim();
   const structuredData={
     scope_kind:'role',
     role_key:role.key,
@@ -156,6 +173,22 @@ export async function createFocusedRoleReply(args:{
     next_action:plan?.nextAction??null,
     allowed_authorities:compactAuthoritiesForRole(role.key),
     calculation_engine:liveCalculation?liveCalculation.calculation.engineVersion:null,
+    decision_explanation:decisionExplanation?{
+      domain:decisionExplanation.domain,
+      current:decisionExplanation.current,
+      rule:decisionExplanation.rule,
+      memory:decisionExplanation.memory,
+      learning:decisionExplanation.learning?{
+        algorithm_key:decisionExplanation.learning.algorithmKey,
+        algorithm_name:decisionExplanation.learning.algorithmName,
+        outcome:decisionExplanation.learning.outcome,
+        decision_use:decisionExplanation.learning.decisionUse,
+        source_cycle_ids:decisionExplanation.learning.sourceCycleIds,
+        confidence:decisionExplanation.learning.confidence,
+      }:null,
+      why:decisionExplanation.why,
+      guardrails:decisionExplanation.guardrails,
+    }:null,
     learning_decision_context:learningContext?{
       domain:learningContext.domain,
       algorithm_key:learningContext.algorithmKey,
