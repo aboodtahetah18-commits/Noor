@@ -79,10 +79,12 @@ function decisionExplanationText(explanation:FinancialDecisionExplanation|null){
   if(!explanation)return null;
   const memory=explanation.memory.summary??'لا يوجد سياق سابق موثق يغير القرار الحالي';
   const learning=explanation.learning?.shortText??'لا يوجد تعلم سابق مؤهل للتأثير على هذا القرار';
+  const outcomeLearning=explanation.outcomeLearning?.shortText??'لا توجد نتائج قرارات سابقة كافية للحكم على هذا النوع من التوصيات';
   return 'تفسير القرار: الرقم الحالي — '+explanation.current.label+' '+explanation.current.value+
     '. القاعدة — '+explanation.rule.title+
     '. الذاكرة السابقة — '+memory+
     '. التعلم — '+learning+
+    '. نتائج القرارات السابقة — '+outcomeLearning+
     '. لماذا هذه التوصية — '+explanation.why;
 }
 
@@ -185,6 +187,17 @@ export async function createFocusedRoleReply(args:{
         decision_use:decisionExplanation.learning.decisionUse,
         source_cycle_ids:decisionExplanation.learning.sourceCycleIds,
         confidence:decisionExplanation.learning.confidence,
+      }:null,
+      outcome_learning:decisionExplanation.outcomeLearning?{
+        stance:decisionExplanation.outcomeLearning.stance,
+        sample_size:decisionExplanation.outcomeLearning.sampleSize,
+        confidence:decisionExplanation.outcomeLearning.confidence,
+        positive_rate:decisionExplanation.outcomeLearning.positiveRate,
+        negative_rate:decisionExplanation.outcomeLearning.negativeRate,
+        rule_code:decisionExplanation.outcomeLearning.ruleCode,
+        actor_key:decisionExplanation.outcomeLearning.actorKey,
+        action:decisionExplanation.outcomeLearning.action,
+        decision_ids:decisionExplanation.outcomeLearning.decisionIds,
       }:null,
       why:decisionExplanation.why,
       guardrails:decisionExplanation.guardrails,
