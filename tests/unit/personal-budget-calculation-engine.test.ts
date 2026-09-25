@@ -113,6 +113,22 @@ describe('المحرك الحسابي الموحد للميزانية الشخص
     expect(result.values.dailyGuidance).toBe('100.00');
   });
 
+  it('يستخدم السيولة التشغيلية الحية كمصدر حقيقة دون مضاعفة الدخل المتحقق',()=>{
+    const result=calculatePersonalBudget({
+      verifiedIncome:'8000.00',
+      expectedIncome:'2000.00',
+      operatingResourcesOverride:'4200.00',
+      protectedObligations:'1000.00',
+      reservedEssentials:'900.00',
+      requiredProtection:'500.00',
+      requiredGoalAllocations:'300.00',
+    });
+
+    expect(result.values.verifiedIncome).toBe('8000.00');
+    expect(result.values.operatingResources).toBe('4200.00');
+    expect(result.values.trueAvailable).toBe('1500.00');
+  });
+
   it('يرفض المدخلات النقدية السالبة في حقول الموارد والحجوزات',()=>{
     expect(()=>calculatePersonalBudget({
       verifiedIncome:'-1.00',
