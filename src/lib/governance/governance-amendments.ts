@@ -539,11 +539,12 @@ export async function addGovernanceAmendmentDiscussion(args:{userId:string;reque
   const target=await getGovernanceAmendment(args.userId,args.requestId);
   if(!target) throw new Error('GOVERNANCE_AMENDMENT_NOT_FOUND');
   const roomKey=args.actor==='GOVERNOR'?'central':args.actor==='SECRETARY'?'secretary':'council';
-  const senderKey=args.actor==='GOVERNOR'?'central-governor':args.actor==='SECRETARY'?'central-secretary':'central-governor';
+  const senderKey=args.actor==='GOVERNOR'?'central-governor':args.actor==='SECRETARY'?'central-secretary':'namaa-council';
   const senderName=args.actor==='GOVERNOR'?'محافظ بنك نماء المركزي':args.actor==='SECRETARY'?'أمين السر المركزي':'مجلس نماء الأعلى';
+  if(!roleHasCompactAuthority(senderKey,'RECORD_INTERNAL_CONTEXT'))throw new Error('GOVERNANCE_AUTHORITY_DENIED');
   await appendEvent({userId:args.userId,roomKey,senderKey,senderName,kind:'followup',
     body:args.note,
-    structured:{governance_amendment_event:true,governance_amendment_discussion:true,request_id:args.requestId,actor:args.actor,note:args.note,at:new Date().toISOString(),external_execution:false}});
+    structured:{governance_amendment_event:true,governance_amendment_discussion:true,request_id:args.requestId,actor:args.actor,note:args.note,at:new Date().toISOString(),authority_role:senderKey,authority_action:'RECORD_INTERNAL_CONTEXT',external_execution:false}});
   return {ok:true};
 }
 
