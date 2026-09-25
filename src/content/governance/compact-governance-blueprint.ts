@@ -10,6 +10,11 @@ export type CompactGovernanceUnitType=
   |'reason'
   |'method'
   |'calculation'
+  |'input'
+  |'output'
+  |'condition'
+  |'validation'
+  |'limit'
   |'example';
 
 export type CompactGovernanceArticleBlueprint={
@@ -30,7 +35,7 @@ export type CompactGovernanceDocumentBlueprint={
 };
 
 const allEditableUnits:CompactGovernanceUnitType[]=[
-  'article','clause','paragraph','step','stage','category','reason','method','calculation','example',
+  'article','clause','paragraph','step','stage','category','reason','method','calculation','input','output','condition','validation','limit','example',
 ];
 
 export const COMPACT_GOVERNANCE_BLUEPRINT:readonly CompactGovernanceDocumentBlueprint[]=[
