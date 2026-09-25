@@ -7,6 +7,7 @@ import {
   calculatePersonalBudget,
   type PersonalBudgetCalculationResult,
 } from '@/lib/finance/personal-budget-calculation-engine';
+import { readActiveFinancialLearningFactors } from '@/lib/finance/financial-learning-lifecycle';
 
 export type LivePersonalBudgetGoal={
   id:string;
@@ -39,6 +40,16 @@ export type LivePersonalBudgetCalculation={
     sourceOfGoals:'financial_goals';
   };
   calculation:PersonalBudgetCalculationResult;
+  softForecast:{
+    active:boolean;
+    expenseBaselineFactor:number;
+    savingExpectationFactor:number;
+    incomeRealizationFactor:number;
+    learnedExpectedIncome:string;
+    learnedExpenseBaseline:string;
+    learnedSavingExpectation:string;
+    learnedProjectedEndBalance:string;
+  };
   goals:LivePersonalBudgetGoal[];
 };
 
@@ -52,6 +63,12 @@ function daysUntil(dateValue:string){
 function nonNegativeDifference(a:string,b:string){
   const result=Money.parse(a).subtract(Money.parse(b));
   return result.isNegative()?'0.00':result.toString();
+}
+
+function applyLearningFactor(value:string,factor:number){
+  const money=Money.parse(value);
+  const basisPoints=BigInt(Math.round(Math.max(0,factor)*10_000));
+  return Money.fromMinorUnits((money.minorUnits*basisPoints)/10_000n);
 }
 
 export async function getLivePersonalBudgetCalculation(
@@ -76,7 +93,7 @@ export async function getLivePersonalBudgetCalculation(
   if(!cycle)return null;
   const resolvedCycleId=String(cycle.id);
 
-  const [state,planRows,goals,emergency]=await Promise.all([
+  const [state,planRows,goals,emergency,learningFactors]=await Promise.all([
     getCurrentFinancialState(userId,resolvedCycleId),
     rawSql`
       with current_plan as (
@@ -172,6 +189,7 @@ export async function getLivePersonalBudgetCalculation(
     `,
     goalRepository.list(userId),
     emergencyRepository.summary(userId),
+    readActiveFinancialLearningFactors(userId).catch(()=>null),
   ]);
 
   const plan=(planRows[0]??{}) as Record<string,unknown>;
@@ -182,6 +200,30 @@ export async function getLivePersonalBudgetCalculation(
   const otherActiveReservations=Money.parse(String(plan.remaining_savings??'0.00'))
     .add(Money.parse(remainingEmergency))
     .toString();
+
+  const activeLearning=learningFactors??{
+    version:1 as const,
+    updatedAt:new Date().toISOString(),
+    factors:{expenseBaselineFactor:1,savingExpectationFactor:1,incomeRealizationFactor:1},
+    sources:{},
+  };
+  const learnedExpectedIncome=applyLearningFactor(
+    state.expectedIncomeUnreceived,
+    activeLearning.factors.incomeRealizationFactor,
+  );
+  const learnedExpenseBaseline=applyLearningFactor(
+    String(plan.remaining_essentials??'0.00'),
+    activeLearning.factors.expenseBaselineFactor,
+  );
+  const learnedSavingExpectation=applyLearningFactor(
+    String(plan.remaining_savings??'0.00'),
+    activeLearning.factors.savingExpectationFactor,
+  );
+  const learnedProjectedEndBalance=Money.parse(state.actualLiquidity)
+    .subtract(Money.parse(state.reservedObligations))
+    .subtract(learnedExpenseBaseline)
+    .subtract(learnedSavingExpectation)
+    .add(learnedExpectedIncome);
 
   const calculation=calculatePersonalBudget({
     verifiedIncome:state.verifiedIncomeReceived,
@@ -225,6 +267,16 @@ export async function getLivePersonalBudgetCalculation(
       sourceOfGoals:'financial_goals',
     },
     calculation,
+    softForecast:{
+      active:Object.keys(activeLearning.sources).length>0,
+      expenseBaselineFactor:activeLearning.factors.expenseBaselineFactor,
+      savingExpectationFactor:activeLearning.factors.savingExpectationFactor,
+      incomeRealizationFactor:activeLearning.factors.incomeRealizationFactor,
+      learnedExpectedIncome:learnedExpectedIncome.toString(),
+      learnedExpenseBaseline:learnedExpenseBaseline.toString(),
+      learnedSavingExpectation:learnedSavingExpectation.toString(),
+      learnedProjectedEndBalance:learnedProjectedEndBalance.toString(),
+    },
     goals:goals
       .filter(goal=>goal.status!=='CANCELLED')
       .map(goal=>({
