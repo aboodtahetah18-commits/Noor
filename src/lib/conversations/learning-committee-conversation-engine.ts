@@ -36,7 +36,8 @@ function factor(value:number){
   return new Intl.NumberFormat('ar-SA-u-nu-latn',{maximumFractionDigits:3}).format(value);
 }
 
-function lifecyclePriority(status:FinancialLearningLifecycleItem['status']){
+function lifecyclePriority(item:FinancialLearningLifecycleItem){
+  if(item.status==='ACTIVE'&&item.monitoring?.state==='ROLLBACK_REVIEW_REQUIRED')return 0;
   const order:Record<FinancialLearningLifecycleItem['status'],number>={
     IN_REVIEW:1,
     BACKTEST_PASSED:2,
@@ -45,28 +46,34 @@ function lifecyclePriority(status:FinancialLearningLifecycleItem['status']){
     REJECTED:5,
     ROLLED_BACK:6,
   };
-  return order[status];
+  return order[item.status];
 }
 
 function activeCandidate(items:FinancialLearningLifecycleItem[]){
   return items
     .filter(item=>!['REJECTED','ROLLED_BACK'].includes(item.status))
-    .sort((a,b)=>lifecyclePriority(a.status)-lifecyclePriority(b.status)||b.confidence-a.confidence)[0]??null;
+    .sort((a,b)=>lifecyclePriority(a)-lifecyclePriority(b)||b.confidence-a.confidence)[0]??null;
 }
 
 function candidateSummary(item:FinancialLearningLifecycleItem){
+  const monitoring=item.monitoring;
+  const postActivation=monitoring
+    ?' وبعد التفعيل: الخطأ الأساسي '+percent(monitoring.baselineMaePercent)+
+      ' مقابل '+percent(monitoring.activeMaePercent)+' مع المعايرة، والتغير '+percent(monitoring.changePercent)+'.'
+    :'';
   return item.title+
     '. المعامل المقترح '+factor(item.proposedValue)+
     '، الثقة '+percent(item.confidence)+
     '، ومتوسط الخطأ قبل الاختبار '+percent(item.baselineErrorPercent)+
     ' وبعده '+percent(item.candidateErrorPercent)+
-    '، والتحسن '+percent(item.improvementPercent)+'.';
+    '، والتحسن '+percent(item.improvementPercent)+'.'+postActivation;
 }
 
 function nextInstruction(item:FinancialLearningLifecycleItem){
   if(item.status==='BACKTEST_PASSED')return 'إذا رغبت، قل: أرسل للمراجعة.';
   if(item.status==='IN_REVIEW')return 'يمكن الآن اعتماد المقترح أو رفضه بعد مراجعة الأدلة.';
   if(item.status==='APPROVED')return 'المقترح معتمد لكنه غير مفعل. قل: فعّل المعايرة، لتطبيقها على التوقعات فقط.';
+  if(item.status==='ACTIVE'&&item.monitoring?.state==='ROLLBACK_REVIEW_REQUIRED')return 'نتائج الدورات الجديدة تطلب مراجعة تراجع. يمكن الإبقاء عليها بعد مراجعة الأدلة أو قول: تراجع عن التفعيل.';
   if(item.status==='ACTIVE')return 'المعايرة نشطة على التوقعات فقط، ويمكن التراجع عنها دون تغيير القواعد الصارمة.';
   return '';
 }
@@ -148,7 +155,10 @@ export async function createLearningCommitteeConversationReply(args:{
       item=activeCandidate(Object.values(actionResult.store.items));
     }
   }else{
-    body=candidateSummary(item)+' الحالة الحالية: '+item.status+'. '+nextInstruction(item);
+    const alert=item.status==='ACTIVE'&&item.monitoring?.state==='ROLLBACK_REVIEW_REQUIRED'
+      ?' تنبيه: المعايرة النشطة أسوأ من الخط الأساسي بأكثر من حد المراجعة المحدد، لذلك فتحت مراجعة تراجع ولم أتراجع تلقائيًا.'
+      :'';
+    body=candidateSummary(item)+' الحالة الحالية: '+item.status+'.'+alert+' '+nextInstruction(item);
   }
 
   const messageKind:ConversationMessageKind=item?.status==='IN_REVIEW'?'request':'message';
@@ -166,6 +176,8 @@ export async function createLearningCommitteeConversationReply(args:{
     backtest_before:item?.baselineErrorPercent??null,
     backtest_after:item?.candidateErrorPercent??null,
     backtest_improvement:item?.improvementPercent??null,
+    post_activation_monitoring:item?.monitoring??null,
+    rollback_review_required:item?.monitoring?.state==='ROLLBACK_REVIEW_REQUIRED',
     active_factors:actionResult?.activeFactors??null,
     external_execution:false,
     hard_rules_mutable:false,
