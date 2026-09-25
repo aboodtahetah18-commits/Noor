@@ -118,9 +118,9 @@ export async function POST(request:Request){
       ?404
       :code==='GOVERNANCE_AUTHORITY_DENIED'
         ?403
-        :code==='GOVERNANCE_AMENDMENT_INVALID_TRANSITION'
+        :['GOVERNANCE_AMENDMENT_INVALID_TRANSITION','GOVERNANCE_DISCUSSION_ACTOR_INVALID'].includes(code)
           ?409
-          :['GOVERNANCE_EFFECTIVE_DATE_AND_VERSION_REQUIRED','GOVERNANCE_EFFECTIVE_DATE_NOT_REACHED'].includes(code)
+          :['GOVERNANCE_EFFECTIVE_DATE_AND_VERSION_REQUIRED','GOVERNANCE_EFFECTIVE_DATE_NOT_REACHED','GOVERNANCE_EFFECTIVE_DATE_INVALID'].includes(code)
             ?422
             :500;
     console.error('[governance-amendments-post]',{name:error instanceof Error?error.name:'UnknownError',code});
