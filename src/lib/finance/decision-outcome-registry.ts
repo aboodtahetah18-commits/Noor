@@ -158,7 +158,7 @@ function learningOutcomeToRecord(input:DecisionOutcomeSyncInput):DecisionOutcome
   return null;
 }
 
-function initialRecord(input:DecisionOutcomeSyncInput):DecisionOutcomeRecord{
+export function deriveInitialDecisionOutcome(input:DecisionOutcomeSyncInput):DecisionOutcomeRecord{
   const learning=learningOutcomeToRecord(input);
   if(learning)return learning;
   if(input.source==='BANK_OPERATION'&&input.externalExecution){
@@ -188,7 +188,7 @@ export async function syncDecisionOutcomeRegistry(
     const nextLearning=learningOutcomeToRecord(input);
     const existing=registry.outcomes[input.id];
     if(!existing){
-      registry.outcomes[input.id]=initialRecord(input);
+      registry.outcomes[input.id]=deriveInitialDecisionOutcome(input);
       changed=true;
       continue;
     }
