@@ -558,9 +558,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
       const unitLabel=governanceUnitLabel[unitType];
       const composedRule=changeAction==='DELETE'
         ?(currentRule.trim()||'حذف العنصر')
-        :unitType==='clause'&&exampleText.trim()
-          ?proposedRule.trim()+' مثال: '+exampleText.trim()
-          :proposedRule.trim();
+        :proposedRule.trim();
       const actionLabel=changeAction==='ADD'?'إضافة':changeAction==='DELETE'?'حذف':'تعديل';
       const common={
         documentRef:document.referenceCode,documentTitle:document.title,roomKey,
@@ -651,7 +649,19 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
                               <div><small>مثال</small><p>{splitClauseContent(block.text).example||'لم يضف مثال لهذا البند بعد.'}</p></div>
                             </div>}
                           </article>
-                          :<div className={styles.governedTableScroll} key={'t-'+blockIndex}>
+                          :block.kind==='unit'
+                            ?<article className={styles.governedParagraphRow} key={'u-'+block.unitType+'-'+block.number+'-'+blockIndex}>
+                              <div className={styles.governedUnitToolbar}>
+                                <strong>{governanceUnitLabel[block.unitType]+' ('+block.number+')'}</strong>
+                                <button
+                                  type="button"
+                                  onClick={()=>openUnitEditor(block.unitType,block.number,block.text,block.number.split('.').slice(0,-1).join('.'),block.sourceText)}
+                                  aria-label={'تعديل '+governanceUnitLabel[block.unitType]+' '+block.number}
+                                ><LucideIcon name="pencil" size={16}/>تعديل</button>
+                              </div>
+                              <p>{block.text}</p>
+                            </article>
+                            :<div className={styles.governedTableScroll} key={'t-'+blockIndex}>
                           <table className={styles.governedContentTable}>
                             <thead><tr>{block.headers.map((header,headerIndex)=><th scope="col" key={headerIndex}>{header||'البيان'}</th>)}</tr></thead>
                             <tbody>{block.rows.map((row,rowIndex)=><tr key={rowIndex}>{block.headers.map((_,cellIndex)=><td key={cellIndex}>{row[cellIndex]||'غير محدد'}</td>)}</tr>)}</tbody>
@@ -721,11 +731,17 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
               </select></label>}
 
             {changeAction!=='ADD'&&<label><span>النص الحالي</span><textarea value={currentRule} readOnly/></label>}
-            {changeAction!=='DELETE'&&unitType==='clause'&&<>
-              <label><span>شرح البند</span><textarea required value={proposedRule} onChange={e=>setProposedRule(e.target.value)} placeholder="اكتب شرح البند بوضوح"/></label>
-              <label><span>مثال</span><textarea value={exampleText} onChange={e=>setExampleText(e.target.value)} placeholder="أضف مثالًا عمليًا يوضح البند"/></label>
+            {changeAction!=='DELETE'&&<label>
+              <span>{unitType==='clause'?'محتوى البند':governanceUnitLabel[unitType]+' — المحتوى'}</span>
+              <textarea
+                required
+                value={proposedRule}
+                onChange={e=>setProposedRule(e.target.value)}
+                placeholder={unitType==='calculation'
+                  ?'اكتب المعادلة أو طريقة الحساب فقط؛ الشرح والأسباب تكون في خانات مستقلة.'
+                  :changeAction==='ADD'?'اكتب محتوى هذا العنصر فقط':'عدّل محتوى هذا العنصر'}
+              />
             </>}
-            {changeAction!=='DELETE'&&unitType!=='clause'&&<label><span>{changeAction==='ADD'?'النص الجديد':'النص المعدل'}</span><textarea required value={proposedRule} onChange={e=>setProposedRule(e.target.value)} placeholder={changeAction==='ADD'?'اكتب محتوى العنصر الجديد':'عدّل النص المطلوب'}/></label>}
             {changeAction==='DELETE'&&<p className={styles.governedDeleteNotice}>سيتم حذف {unitType==='article'?'المادة وما يندرج تحتها':unitType==='clause'?'البند وما يندرج تحته':governanceUnitLabel[unitType]+' المحدد'} من نسخة العرض. في المسار الحوكمي لا يصبح الحذف نافذًا إلا بعد الاعتماد.</p>}
             <label><span>{editMode==='direct'?'ملاحظة':'مبرر التغيير'}</span><textarea required={editMode==='governance'} value={rationale} onChange={e=>setRationale(e.target.value)} placeholder={editMode==='direct'?'اختياري خلال مرحلة التأسيس':'اشرح سبب الإضافة أو التعديل أو الحذف وأثره'}/></label>
             {editMode==='governance'&&<label><span>الأولوية</span><select value={priority} onChange={e=>setPriority(e.target.value as typeof priority)}><option value="NORMAL">عادي</option><option value="NEXT_MEETING">للاجتماع القادم</option><option value="URGENT">عاجل، اجتماع فوري</option></select></label>}
