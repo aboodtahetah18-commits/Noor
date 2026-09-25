@@ -55,6 +55,7 @@ export const COMPACT_GOVERNANCE_BLUEPRINT:readonly CompactGovernanceDocumentBlue
       {ref:'6',title:'الإنفاق الآمن حتى نهاية الدورة',owner:'hilal',allowedUnits:['clause','calculation','step','method','example']},
       {ref:'7',title:'الحساب العكسي من الهدف إلى المطلوب',owner:'central',allowedUnits:['clause','calculation','step','method','example']},
       {ref:'8',title:'اختبارات التوازن وعدم تجاوز المال الحقيقي',owner:'central',allowedUnits:['clause','calculation','step','reason','example']},
+      {ref:'9',title:'قاموس المتغيرات الحسابية الموحد',owner:'central',allowedUnits:['clause','category','input','method','calculation','condition','validation','output','example']},
     ],
   },
   {
