@@ -5,6 +5,7 @@ import { getEntityOperationalDashboard } from '@/lib/conversations/entity-operat
 import { getGovernanceMeetingSchedule } from '@/lib/governance/governance-meeting-scheduler';
 import type { ConversationMessageKind, ConversationRoomKey } from '@/lib/conversations/store';
 import { createBudgetCommitteeConversationReply } from '@/lib/conversations/budget-committee-conversation-engine';
+import { getLivePersonalBudgetCalculation } from '@/lib/finance/live-personal-budget-calculation';
 
 type FocusedReply={
   id:string;
@@ -32,6 +33,39 @@ function shortFactSummary(rows:Array<{fact_key:unknown;value_json:unknown}>){
     .map(row=>labels[String(row.fact_key)])
     .filter((label):label is string=>typeof label==='string'&&label.length>0)
     .slice(0,6);
+}
+
+function roleCalculationSummary(
+  roleKey:string,
+  live:Awaited<ReturnType<typeof getLivePersonalBudgetCalculation>>,
+){
+  if(!live)return null;
+  const values=live.calculation.values;
+  const sar=(value:string|null)=>value===null?'غير متاح':new Intl.NumberFormat('ar-SA-u-nu-latn',{maximumFractionDigits:2}).format(Number(value))+' ر.س';
+  const pct=(value:string|null)=>value===null?'غير متاح':new Intl.NumberFormat('ar-SA-u-nu-latn',{maximumFractionDigits:2}).format(Number(value))+'٪';
+  if(roleKey==='budget-spending-owner'){
+    return 'القراءة الحسابية الحالية: المتاح الحقيقي '+sar(values.trueAvailable)+'، استخدام الخطة '+pct(values.utilizationPercent)+'، والحد اليومي الاسترشادي '+sar(values.dailyGuidance)+'.';
+  }
+  if(roleKey==='obligations-owner'){
+    return 'القراءة الحسابية الحالية: الالتزامات المحمية '+sar(values.protectedObligations)+'، والعجز التشغيلي '+sar(values.operatingDeficit)+'.';
+  }
+  if(roleKey==='liquidity-protection-owner'){
+    return 'القراءة الحسابية الحالية: الحماية المطلوبة '+sar(values.requiredProtection)+'، والمتاح الحقيقي '+sar(values.trueAvailable)+'، والعجز التشغيلي '+sar(values.operatingDeficit)+'.';
+  }
+  if(roleKey==='goals-owner'){
+    const goal=live.goals[0];
+    return goal
+      ?'القراءة الحسابية الحالية لأعلى هدف ظاهر: المتبقي '+sar(goal.remainingAmount)+'، والمساهمة الدورية المطلوبة '+sar(goal.requiredContribution)+'.'
+      :'لا يوجد هدف مالي نشط قابل للحساب حاليًا.';
+  }
+  if(roleKey==='investment-owner'){
+    return 'القراءة الحسابية الحالية: الفائض الحقيقي قبل اختبار الأهلية الاستثمارية '+sar(values.trueSurplus)+'.';
+  }
+  return null;
+}
+
+function shouldShowCalculationSummary(text:string){
+  return /(?:كم|الحالي|الوضع|الحساب|احسب|ميزاني|المتاح|العجز|الفائض|الالتزام|الهدف|الإنفاق|الصرف|الادخار|الاستثمار)/i.test(text);
 }
 
 function roleIntro(role:AlgorithmRoleRef){
@@ -68,7 +102,7 @@ export async function createFocusedRoleReply(args:{
   const role=algorithmRoleByKey(args.roleKey);
   if(!role||role.kind!=='responsibility_owner'||role.homeRoom!==args.roomKey)return null;
   const sql=getRawSql();
-  const [threadRows,factRows,dashboard]=await Promise.all([
+  const [threadRows,factRows,dashboard,liveCalculation]=await Promise.all([
     sql`select id from public.conversation_threads where user_id=${args.userId}::uuid and room_key=${args.roomKey} limit 1`,
     sql`
       select fact_key,value_json
@@ -78,6 +112,7 @@ export async function createFocusedRoleReply(args:{
       order by updated_at desc
     `,
     getEntityOperationalDashboard(args.userId,args.roomKey).catch(()=>null),
+    getLivePersonalBudgetCalculation(args.userId).catch(()=>null),
   ]);
   const threadId=threadRows[0]?.id?String(threadRows[0].id):null;
   if(!threadId)return null;
@@ -95,7 +130,10 @@ export async function createFocusedRoleReply(args:{
   const previousUserMessage=historyRows[1]?.body?String(historyRows[1].body).trim().slice(0,180):null;
   const known=shortFactSummary(factRows as Array<{fact_key:unknown;value_json:unknown}>);
   const plan=dashboard?.plans.find(item=>item.ownerName===role.name)??null;
-  const body=`${roleIntro(role)} ${roleQuestion(role,args.userText,known,plan?.nextAction??null,previousUserMessage)}`.trim();
+  const calculationSummary=shouldShowCalculationSummary(args.userText)
+    ?roleCalculationSummary(role.key,liveCalculation)
+    :null;
+  const body=`${roleIntro(role)} ${calculationSummary??''} ${roleQuestion(role,args.userText,known,plan?.nextAction??null,previousUserMessage)}`.trim();
   const structuredData={
     scope_kind:'role',
     role_key:role.key,
@@ -103,6 +141,17 @@ export async function createFocusedRoleReply(args:{
     room_key:args.roomKey,
     known_fact_groups:known,
     next_action:plan?.nextAction??null,
+    calculation_engine:liveCalculation?liveCalculation.calculation.engineVersion:null,
+    calculation_snapshot:liveCalculation?{
+      true_available:liveCalculation.calculation.values.trueAvailable,
+      operating_deficit:liveCalculation.calculation.values.operatingDeficit,
+      true_surplus:liveCalculation.calculation.values.trueSurplus,
+      required_protection:liveCalculation.calculation.values.requiredProtection,
+      protected_obligations:liveCalculation.calculation.values.protectedObligations,
+      utilization_percent:liveCalculation.calculation.values.utilizationPercent,
+      calculation_confidence:liveCalculation.calculation.values.calculationConfidence,
+      engine_snapshot_id:liveCalculation.source.engineSnapshotId,
+    }:null,
     memory_aware:true,
     external_execution:false,
     execution_boundary:'إرشاد وتحليل ومتابعة فقط؛ لا تنفيذ مالي خارجي',
