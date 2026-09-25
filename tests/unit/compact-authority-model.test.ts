@@ -8,7 +8,9 @@ import {
 import {
   compactAuthoritiesForRole,
   roleHasCompactAuthority,
+  assertRoleCompactAuthority,
 } from '../../src/lib/governance/algorithm-role-registry';
+import { governanceAmendmentActionAllowed } from '../../src/lib/governance/governance-amendments';
 
 describe('نموذج الصلاحيات والإجراءات المختصر',()=>{
   it('يبقي عدد الصلاحيات الأساسية محدودًا',()=>{
@@ -35,6 +37,19 @@ describe('نموذج الصلاحيات والإجراءات المختصر',()=
     expect(actions).toContain('RECOMMEND_WITHIN_DOMAIN');
     expect(actions).toContain('ESCALATE_CASE');
     expect(COMPACT_AUTHORITIES.every(item=>item.externalExecution===false)).toBe(true);
+  });
+
+  it('يمنع انتقالات الحوكمة من مرحلة غير صحيحة',()=>{
+    expect(governanceAmendmentActionAllowed('GOVERNOR_REVIEW','COUNCIL_APPROVE')).toBe(false);
+    expect(governanceAmendmentActionAllowed('COUNCIL_DISCUSSION','COUNCIL_APPROVE')).toBe(true);
+    expect(governanceAmendmentActionAllowed('APPROVED_PENDING_EFFECTIVE','MARK_EFFECTIVE')).toBe(true);
+  });
+
+  it('يرفض حارس الصلاحيات اعتماد الحوكمة من صاحب مسؤولية',()=>{
+    expect(()=>assertRoleCompactAuthority('budget-spending-owner','APPROVE_GOVERNANCE_CHANGE'))
+      .toThrow('GOVERNANCE_AUTHORITY_DENIED');
+    expect(()=>assertRoleCompactAuthority('namaa-council','APPROVE_GOVERNANCE_CHANGE'))
+      .not.toThrow();
   });
 
   it('يعرف إجراء التحقق من تنفيذ المستخدم كمسار مطابقة لا تنفيذ آلي',()=>{
