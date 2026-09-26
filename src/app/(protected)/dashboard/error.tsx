@@ -3,7 +3,7 @@
 import { Button, FeedbackState } from '@/components/ui';
 import styles from './dashboard.module.css';
 
-export default function DashboardError({ reset }: { error: Error & { digest?: string }; reset: () => void }) {
+export default function DashboardError({ reset }: { reset: () => void }) {
   return (
     <div className={`${styles.page} ${styles.statePage}`} dir="rtl">
       <div className={styles.stateCard}>
