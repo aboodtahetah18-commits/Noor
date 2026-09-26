@@ -13,15 +13,30 @@ export const dynamic = 'force-dynamic';
 
 export default async function ProtectedLayout({ children }: Readonly<{ children: ReactNode }>) {
   const user = await requireAuthenticatedUser();
+  const profile = {
+    displayName: user.name,
+    email: user.email,
+    timezone: 'Asia/Riyadh',
+    emailVerified: user.emailVerified,
+    image: user.image,
+  };
+
   return (
-    <div className="protected-app-shell">
+    <div className="protected-app-shell" data-responsive-platform="full">
       <FinancialFormIntelligence />
       <a className="skip-link" href="#main-content">تجاوز إلى المحتوى الرئيسي</a>
+
       <DesktopTopNav />
-      <GlobalTopBar profile={{displayName:user.name,email:user.email,timezone:'Asia/Riyadh',emailVerified:user.emailVerified,image:user.image}} />
-      <TabletTopNav />
-      <MobileTopBar profile={{displayName:user.name,email:user.email,timezone:'Asia/Riyadh',emailVerified:user.emailVerified,image:user.image}} />
-      <div id="main-content" tabIndex={-1} className="main-content-focus-target"><MobileConversationGate>{children}</MobileConversationGate></div>
+      <GlobalTopBar profile={profile} />
+      <TabletTopNav profile={profile} />
+      <MobileTopBar profile={profile} />
+
+      <main id="main-content" tabIndex={-1} className="namaa-app-main main-content-focus-target">
+        <div className="namaa-page-frame">
+          <MobileConversationGate>{children}</MobileConversationGate>
+        </div>
+      </main>
+
       <MobileBottomNav />
       <BankMessageDialog />
     </div>
