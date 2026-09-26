@@ -4328,8 +4328,8 @@
     min-height:0
   }
   .agentMessage{
-    width:88%;
-    max-width:88%;
+    width:fit-content;
+    max-width:92%;
     align-self:flex-end;
     border-end-end-radius:var(--ux-radius-2);
     border-color:var(--namaa-border-strong);
@@ -12967,12 +12967,4 @@
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap
-}
-
-
-@media (max-width:767px){
-  .agentMessage{
-    width:fit-content;
-    max-width:92%;
-  }
 }
