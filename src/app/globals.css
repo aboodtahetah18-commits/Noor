@@ -1278,7 +1278,7 @@ label:has(input),label:has(select),label:has(textarea){color:var(--ux-color-ink)
    the :where()/custom-property parser interaction seen in earlier builds. */
 .protected-app-shell {
   color:var(--ux-text-primary);
-  font-family:"Tajawal", system-ui, sans-serif;
+  font-family:var(--ux-font-family-base);
 }
 
 .protected-app-shell h1 {
