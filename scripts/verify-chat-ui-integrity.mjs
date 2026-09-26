@@ -45,7 +45,7 @@ if(!workspace.includes('messagesScrollRef')||!workspace.includes('container.scro
 if(!workspace.includes("onBlur={e=>{if(!draft.trim())e.currentTarget.style.height='40px'}}")) fail('empty composer must collapse after focus leaves');
 if(!css.includes('.agentMessage{\n  align-self:flex-end') || !css.includes('margin-left:auto;\n  margin-right:var(--ux-space-0)') || !css.includes('.userMessage{\n  align-self:flex-start') || !css.includes('margin-left:var(--ux-space-0);\n  margin-right:auto')) fail('approved message sides changed: governor must stay right and user must stay left');
 if(workspace.includes('resumeIntakeButton')) fail('structured intake reopen must live inside the active question message, not float over chat');
-if(!workspace.includes('showStructuredAction') || !workspace.includes('متابعة استكمال البيانات')) fail('structured intake in-message action missing');
+if(!workspace.includes('showStructuredAction') || !workspace.includes('onOpenStructuredIntake') || !workspace.includes('inlineIntakeButton')) fail('structured intake in-message action missing');
 
 console.log('CHAT-UI-INTEGRITY-PASS');
 
