@@ -54,9 +54,9 @@ for(const file of files){
 
   if(file.endsWith('.css')){
     const checks=[
-      ['raw radius',/border-radius\s*:\s*([^;}]*)/gi,(v)=>/(?:^|\s|\/)0(?:\s|$)|(?:\d*\.?\d+)(?:px|rem|em|%)/i.test(v)],
+      ['raw radius',/border-radius\s*:\s*([^;}]*)/gi,(v)=>/(?:\d*\.?\d+)(?:px|rem|em|%)/i.test(v)],
       ['raw shadow',/box-shadow\s*:\s*([^;}]*)/gi,(v)=>!/^\s*var\(--(?:ux|namaa|ndos)-/i.test(v)],
-      ['raw spacing',/(?:margin|padding|gap|row-gap|column-gap|scroll-padding)(?:-[a-z-]+)?\s*:\s*([^;}]*)/gi,(v)=>/(?:^|\s)0(?:\s|$)|-?(?:\d+(?:\.\d+)?|\.\d+)(?:px|rem|em)\b/i.test(v)],
+      ['raw spacing',/(?:margin|padding|gap|row-gap|column-gap|scroll-padding)(?:-[a-z-]+)?\s*:\s*([^;}]*)/gi,(v)=>/-?(?:\d+(?:\.\d+)?|\.\d+)(?:px|rem|em)\b/i.test(v)],
       ['raw font-size',/font-size\s*:\s*([^;}]*)/gi,(v)=>/(?:\d+(?:\.\d+)?|\.\d+)(?:px|rem|em)\b/i.test(v)],
       ['raw motion duration',/(?:transition|animation)(?:-[a-z-]+)?\s*:\s*([^;}]*)/gi,(v)=>/-?(?:\d+(?:\.\d+)?|\.\d+)(?:ms|s)\b/i.test(v)],
     ];
