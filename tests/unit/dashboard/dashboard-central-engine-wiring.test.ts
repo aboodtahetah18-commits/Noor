@@ -1,14 +1,16 @@
 import { beforeEach,describe,expect,it,vi } from 'vitest';
 
-const {getDashboard,getCurrent,listRecommendations}=vi.hoisted(()=>({
+const {getDashboard,getCurrent,listRecommendations,getLiveCalculation}=vi.hoisted(()=>({
   getDashboard:vi.fn(),
   getCurrent:vi.fn(),
   listRecommendations:vi.fn(),
+  getLiveCalculation:vi.fn(),
 }));
 
 vi.mock('@/repositories/dashboard-repository',()=>({dashboardRepository:{get:getDashboard}}));
 vi.mock('@/features/financial-engine/queries/get-current-financial-state',()=>({getCurrentFinancialState:getCurrent}));
 vi.mock('@/features/financial-engine/queries/list-cycle-recommendations',()=>({listCycleRecommendations:listRecommendations}));
+vi.mock('@/lib/finance/live-personal-budget-calculation',()=>({getLivePersonalBudgetCalculation:getLiveCalculation}));
 
 import { getDashboardSummary } from '@/features/dashboard/queries/get-dashboard-summary';
 
@@ -23,7 +25,7 @@ const base={
 };
 
 describe('dashboard central engine wiring',()=>{
-  beforeEach(()=>{getDashboard.mockReset();getCurrent.mockReset();listRecommendations.mockReset();});
+  beforeEach(()=>{getDashboard.mockReset();getCurrent.mockReset();listRecommendations.mockReset();getLiveCalculation.mockReset();});
 
   it('overrides live dashboard financial truth with the central engine snapshot',async()=>{
     getDashboard.mockResolvedValue(base);
@@ -33,6 +35,21 @@ describe('dashboard central engine wiring',()=>{
       projectedSurplus:'5000',projectedDeficit:'0',weightedScore:'81',finalState:'STABLE',confidenceScore:'90',dataCoverageBps:9000,recommendationReadiness:'HIGH',hardGateCode:null,
     });
     listRecommendations.mockResolvedValue([{id:'r',type:'OPPORTUNITY',status:'NEW',priority:1,title:'فائض',message:'رسالة',reasonCode:'ENGINE_FREE_CASH_AVAILABLE',reasonData:{},createdAt:'x',gateStatus:'ALLOWED',sensitivity:'SENSITIVE',gateReason:'ok',readiness:'HIGH',confidenceScore:'90',hardGateCode:null}]);
+    getLiveCalculation.mockResolvedValue({
+      calculation:{values:{
+        dailyGuidance:'300.00',
+        plannedAmount:'6000.00',
+        realizedAmount:'3000.00',
+        projectedEndBalance:'5000.00',
+        operatingDeficit:'0.00',
+        trueAvailable:'3000',
+        verifiedIncome:'8000',
+        netRealizedSavings:'0.00',
+        savingsRatePercent:null,
+        utilizationPercent:'50.00',
+      }},
+      softForecast:{active:false,learnedProjectedEndBalance:'5000.00'},
+    });
     const result=await getDashboardSummary(userId);
     expect(result?.liquidity.total).toBe('10000');
     expect(result?.safeToSpend.amount).toBe('3000');
