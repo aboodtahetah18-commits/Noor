@@ -1,14 +1,13 @@
 import type { ConversationRoomKey } from '@/lib/conversations/store';
-import { CENTRAL_ACTIVE_POLICIES } from '@/content/governance/central-active-policies';
-import { CENTRAL_ACTIVE_REGULATIONS } from '@/content/governance/central-active-regulations';
+import { COMPACT_CORE_GOVERNANCE_DOCUMENTS } from '@/content/governance/compact-core-documents';
 
-export type GovernedDocumentSection = {
+export type GovernedDocumentSection={
   ref:string;
   title:string;
   summary:string;
 };
 
-export type GovernedDocumentRef = {
+export type GovernedDocumentRef={
   referenceCode:string;
   title:string;
   kind:'record'|'policy'|'charter'|'contract'|'reference';
@@ -17,7 +16,7 @@ export type GovernedDocumentRef = {
   sections?:GovernedDocumentSection[];
 };
 
-export type GovernedRoomDetail = {
+export type GovernedRoomDetail={
   roleTitle:string;
   entityTitle:string;
   responsibility:string;
@@ -30,160 +29,112 @@ export type GovernedRoomDetail = {
   policies:GovernedDocumentRef[];
 };
 
+const compactRefs=COMPACT_CORE_GOVERNANCE_DOCUMENTS.map(document=>({
+  referenceCode:document.referenceCode,
+  title:document.title,
+  kind:'reference' as const,
+  version:document.version??undefined,
+}));
+
+function refs(...codes:string[]):GovernedDocumentRef[]{
+  return compactRefs.filter(item=>codes.includes(item.referenceCode));
+}
+
 export const governedRoomDetails:Record<ConversationRoomKey,GovernedRoomDetail>={
   central:{
     roleTitle:'محافظ بنك نماء المركزي',
     entityTitle:'بنك نماء المركزي',
-    responsibility:'القيادة التنفيذية العليا لنماء، الإشراف على مديري البنوك، ضمان الاتساق المؤسسي، وفض التعارضات الاستراتيجية ضمن الحوكمة.',
-    observes:'جلسة التأسيس الأولى، القضايا الاستراتيجية، الخلافات والتغييرات الهيكلية وتقدم التأسيس.',
-    intervention:'يتدخل في التأسيس والقرارات العابرة للبنوك والتعارضات الاستراتيجية وما يتجاوز تفويض مدير بنك نماء المركزي أو مديري البنوك.',
-    avoids:'لا يدير المعاملات الروتينية بعد التأسيس، ولا يعتمد الحركة النقدية نيابة عن المستخدم.',
-    governanceNote:'محافظ نماء أعلى دور تنفيذي إشرافي، بينما يقود مدير بنك نماء المركزي التشغيل اليومي للمركزي ويتابع أصحاب المسؤوليات مباشرة.',
-    sourceRefs:['ROLE-GOV','حوكمة-تأسيس-٢٢'],
-    records:[
-      ...CENTRAL_ACTIVE_REGULATIONS.map(regulation=>({referenceCode:regulation.referenceCode,title:regulation.title,kind:'record' as const,version:regulation.version??undefined})),
-      {referenceCode:'NMC-REF-01',title:'تقرير المراجعة الختامية وإغلاق بنك نماء المركزي',kind:'reference',version:'v2.0',sourceUrl:'https://drive.google.com/file/d/1buvI-zbUmyx2_z0bvm3TafN_LKPpIUWV/view'},
-    ],
-    policies:[
-      {referenceCode:'NMC-REF-02',title:'الفهرس الرئيسي لبنك نماء المركزي',kind:'reference',version:'v2.0',sourceUrl:'https://drive.google.com/file/d/1Tp5TqMm1Heon8K9-mEXWhkr0aurQmW-z/view'},
-      {referenceCode:'NMC-CONST-01',title:'دستور منصة نماء والمعمار المؤسسي والتشغيلي الأعلى',kind:'charter',version:'v1.0',sourceUrl:'https://docs.google.com/document/d/1Vy12Q4MS-oB5Ma-8L5ynyG3WKHdTtB71d0lbiajm9Z0/edit?usp=drivesdk'},
-      {referenceCode:'NMC-CORE-01',title:'المرجع الحسابي لإدارة الميزانية الشخصية والدورة المالية',kind:'reference',version:'v1.0-draft'},
-      ...CENTRAL_ACTIVE_POLICIES.map(policy=>({referenceCode:policy.referenceCode,title:policy.title,kind:'policy' as const,version:policy.version??undefined})),
-      {referenceCode:'NMC-CTR-01',title:'عقد البيانات والتكامل المركزي — بنك نماء',kind:'contract',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1DJ64l0-IMxza5ob9peP7RSpzZn7yxwqFsSYl0qreG2c/edit'},
-      {referenceCode:'NMC-CHR-02',title:'ميثاق أصحاب المسؤوليات المالية والمستشار الاقتصادي',kind:'charter',version:'v1.0',sourceUrl:'https://docs.google.com/document/d/1fXG8jJuS4_WXllyiSYcVP7unKf2jJ-s_AGRa_2xEYLA/edit'},
-      {referenceCode:'NMC-REF-03',title:'تأسيس مركز العمليات والمطابقة — بنك نماء المركزي',kind:'reference',version:'v0.1',sourceUrl:'https://docs.google.com/document/d/1jtP85JWnHPHoCzRxZFOwqDhyFmRNHnCBYP-0R51fKr0/edit'},
-    ]
+    responsibility:'القيادة التنفيذية العليا لنماء، الإشراف على البنوك، ضمان اتساق القرار المالي، وفض التعارضات ضمن الحوكمة المختصرة.',
+    observes:'الدورة المالية، المخاطر، القرارات العابرة للبنوك، التعديلات الحوكمية، نتائج التعلم، والقضايا المصعدة.',
+    intervention:'عند التعارضات الاستراتيجية أو المخاطر أو التغييرات التي تتجاوز تفويض الجهة المختصة.',
+    avoids:'لا يدير العمليات اليومية نيابة عن أصحاب المسؤوليات، ولا ينفذ حركة مالية خارجية نيابة عن المستخدم.',
+    governanceNote:'المركزي ينسق ويعتمد داخل حدود الصلاحيات المختصرة، والتنفيذ المالي الخارجي يبقى بيد المستخدم.',
+    sourceRefs:['NMC-CORE-01','NMC-CORE-03','NMC-CORE-04','NMC-CORE-05','NMC-CORE-06','NMC-CORE-07'],
+    records:refs('NMC-CORE-03','NMC-CORE-05','NMC-CORE-06'),
+    policies:refs('NMC-CORE-01','NMC-CORE-04','NMC-CORE-07'),
   },
   operations:{
     roleTitle:'مركز العمليات والمطابقة',
     entityTitle:'بنك نماء المركزي',
-    responsibility:'إدارة استقبال الرسائل البنكية وكشوف الحسابات والإيصالات والحركات، واستخراج بياناتها ومطابقتها ومنع التكرار وربطها بالحساب أو البطاقة والتاجر قبل التصنيف والتسوية.',
-    observes:'الرسائل البنكية، كشوف الحساب، الإيصالات، المبالغ، التجار، التواريخ، الحسابات، وآخر أربعة أرقام من البطاقات عند الحاجة.',
-    intervention:'عند إرسال عملية جديدة أو ظهور تعارض أو نقص يمنع المطابقة.',
-    avoids:'لا ينشئ حركة مالية خارجية ولا يفترض تصنيفًا نهائيًا عند انخفاض الثقة.',
-    governanceNote:'وحدة تشغيلية مستقلة داخل بنك نماء المركزي وليست مستشارًا ولا بنكًا تابعًا. وظيفتها إثبات ومطابقة وتسوية البيانات؛ لا تملك الميزانية ولا البنود. تستدعي أحد أصحاب المسؤوليات المالية الخمسة أو المستشار الاقتصادي عند الحاجة، وتوجّه الناتج للجهة المختصة.',
-    sourceRefs:['دور-مركز-المطابقة','عمليات-استقبال-٢٠٩','خوارزمية-توجيه-١٦٤'],
-    records:[
-      {referenceCode:'NMC-REG-05',title:'لائحة سجل الأثر والتدقيق',kind:'record',version:'v1.0'},
-      {referenceCode:'NMC-REG-06',title:'لائحة المتابعة والتقارير الدورية',kind:'record',version:'v1.0'},
-      {referenceCode:'NMC-CORE-07',title:'المرجع المختصر للصلاحيات والحوكمة واللجان',kind:'reference',version:'v1.0-draft'},
-    ],
-    policies:[
-      {referenceCode:'OPS-REF-01',title:'تأسيس مركز العمليات والمطابقة — بنك نماء المركزي',kind:'reference',version:'v0.1',sourceUrl:'https://docs.google.com/document/d/1jtP85JWnHPHoCzRxZFOwqDhyFmRNHnCBYP-0R51fKr0/edit'},
-      {referenceCode:'OPS-CTR-01',title:'عقد البيانات والتكامل المركزي — بنك نماء',kind:'contract',version:'v1.1',sourceUrl:'https://docs.google.com/document/d/1DJ64l0-IMxza5ob9peP7RSpzZn7yxwqFsSYl0qreG2c/edit'},
-      {referenceCode:'NMC-POL-01',title:'سياسة الحوكمة والتشغيل المركزي لبنك نماء المركزي',kind:'policy',version:'v1.0'},
-      {referenceCode:'NMC-POL-05',title:'سياسة البيانات وجودتها ودرجة الثقة',kind:'policy',version:'v1.0'},
-      {referenceCode:'NMC-POL-07',title:'سياسة التنفيذ البشري والإثبات والمتابعة',kind:'policy',version:'v1.0'},
-    ],
+    responsibility:'استقبال الحركات والوثائق، المطابقة، منع التكرار، تثبيت مصدر الحقيقة، والتحقق من تنفيذ المستخدم.',
+    observes:'الحركات البنكية، الإيصالات، الحسابات، البطاقات، التجار، الأدلة، وحالات المطابقة.',
+    intervention:'عند وصول بيانات جديدة أو ظهور تعارض أو نقص إثبات أو قرار يحتاج تحققًا من التنفيذ.',
+    avoids:'لا يفترض تصنيفًا نهائيًا عند ضعف الدليل، ولا ينفذ حركة مالية جديدة.',
+    governanceNote:'وظيفته إثبات ومطابقة وتسوية البيانات وفق مصدر الحقيقة، ثم إعادة الحالة للجهة المختصة.',
+    sourceRefs:['NMC-CORE-03','NMC-CORE-06','NMC-CORE-07'],
+    records:refs('NMC-CORE-03','NMC-CORE-06'),
+    policies:refs('NMC-CORE-07'),
   },
   solvency:{
     roleTitle:'مدير بنك ملاءة',
     entityTitle:'بنك ملاءة',
-    responsibility:'تقييم الحاجات غير التشغيلية الكبيرة أو الطارئة أو الجسرية، ودعم المؤسسات ومقارنة بدائل الدفع والتمويل.',
-    observes:'سيولة ملاءة، الحالات المحالة، بدائل التمويل والدفع.',
-    intervention:'عند حاجة ضمن اختصاص ملاءة، أو دعم مؤسسي، أو قرار مهم أو رفض أو اعتراض.',
-    avoids:'لا يتدخل في المصروفات اليومية العادية التي تخص التشغيل المعتاد.',
-    governanceNote:'يعتمد العرض المؤسسي ضمن السياسة، لا الحركة النقدية الفعلية للمستخدم.',
-    sourceRefs:['ROLE-MAL-MGR','ENTITY-MAL'],
-    records:[],
-    policies:[
-      {referenceCode:'MAL-CHR-01',title:'ميثاق وتشغيل بنك ملاءة',kind:'charter',sourceUrl:'https://docs.google.com/document/d/1rtRYHnMxMp7u62InuJm9dqiAORkPkGBk-oFJL3K1rw8/edit'},
-      {referenceCode:'MAL-POL-01',title:'سياسة الحماية والسيولة والطوارئ لبنك ملاءة',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1qoFG-CIdd003DvGqqyccpkf1TGJ-29pOItYBtpciSfc/edit'},
-      {referenceCode:'MAL-POL-02',title:'دليل الأدوار ومصفوفة الصلاحيات لبنك ملاءة',kind:'policy',sourceUrl:'https://docs.google.com/document/d/11Z_DtA8vJQqZ02xC4CWu1oGsFBLApZhGWVWjra8-9lA/edit'},
-      {referenceCode:'MAL-REF-01',title:'دليل العمليات والآليات والخوارزميات التشغيلية لبنك ملاءة',kind:'reference',sourceUrl:'https://docs.google.com/document/d/1armGZRtKTfoIDcwbJ5t1K9LEjNPnNyES7CdD4vvEOiI/edit'},
-      {referenceCode:'MAL-POL-03',title:'سياسة التعلم والتغيير والتدقيق لبنك ملاءة',kind:'policy',sourceUrl:'https://docs.google.com/document/d/10qY_ADXVjbm1_BRrTRlwCSCM2p1SBos3jztpaHOKaXI/edit'},
-      {referenceCode:'MAL-POL-04',title:'سياسة رأس مال الحماية والاحتياطي المستثمر لبنك ملاءة',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1_fGVfq_HJnf5lg9FmsNyet59IBOAWFPCrVqtUFNx9IA/edit'},
-    ],
+    responsibility:'حماية السيولة والاحتياط والاستحقاقات ومنع القرارات التي تكسر حدود الحماية.',
+    observes:'السيولة، الاحتياط، فجوات الحماية، الالتزامات الحساسة، وقدرة الدورة على الاستمرار دون عجز.',
+    intervention:'عند ظهور عجز أو فجوة حماية أو خطر على التزام أو سيولة مطلوبة.',
+    avoids:'لا يحول الحماية إلى نسبة ثابتة بلا بيانات، ولا ينفذ دفعًا أو تحويلًا فعليًا.',
+    governanceNote:'كل توصية حماية تبنى على المال المتحقق والحدود الصارمة، وأي استثناء جوهري يصعد.',
+    sourceRefs:['NMC-CORE-01','NMC-CORE-02','NMC-CORE-04','NMC-CORE-07'],
+    records:refs('NMC-CORE-02'),
+    policies:refs('NMC-CORE-01','NMC-CORE-04','NMC-CORE-07'),
   },
   assets:{
     roleTitle:'مدير بنك الأصول الاستثماري',
     entityTitle:'بنك الأصول الاستثماري',
-    responsibility:'إدارة التخطيط الرأسمالي والأهداف المتوسطة والطويلة والفرص الاستثمارية والمتابعة الشهرية لمسار الأهداف.',
-    observes:'الأهداف، التقدم الشهري، الأصول والاستثمارات.',
-    intervention:'عند إنشاء هدف أو انحراف عن المسار أو فرصة أو خطر استثماري أو اجتماع ذي صلة.',
-    avoids:'لا يتدخل في الحركات اليومية غير المرتبطة بالأهداف أو الأصول.',
-    governanceNote:'يعتمد الخطة المؤسسية لا تنفيذ الاستثمار النقدي الفعلي.',
-    sourceRefs:['ROLE-AI-MGR'],
-    records:[],
-    policies:[
-      {referenceCode:'AST-CHR-01',title:'ميثاق وتشغيل بنك الأصول الاستثماري',kind:'charter',sourceUrl:'https://docs.google.com/document/d/1Vg-RrBMLCwFYlWBOTsnwv5C9tWOKw-6IuGX7X3hhgnw/edit'},
-      {referenceCode:'AST-POL-01',title:'السياسة المالية والاستثمارية الشاملة لبنك الأصول',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1uDE3kINPLykYKjtxZEpgn-TG1qkgOFjeRuUlioWxGjc/edit'},
-      {referenceCode:'AST-POL-02',title:'دليل الأدوار ومصفوفة الصلاحيات لبنك الأصول',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1S91uTKPX3fS9MXAM9DohWjf3oFG2pa_3MEfi48AlXd0/edit'},
-      {referenceCode:'AST-REF-01',title:'دليل العمليات والآليات والخوارزميات التشغيلية لبنك الأصول',kind:'reference',sourceUrl:'https://docs.google.com/document/d/1R-MmR_a7kW1EdaIhA98btwfebpyD2w4sRV6RegHCUTo/edit'},
-      {referenceCode:'AST-POL-03',title:'سياسة التعلم والتغيير والتدقيق لبنك الأصول',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1PWd0l_KxshiS26kZ2pRClT1WgJCfWJbJ2U6qs-R3NWo/edit'},
-      {referenceCode:'AST-POL-04',title:'سياسة رأس المال المؤهل والتوزيع الاستراتيجي لبنك الأصول',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1z8D2uiGW5dEi4fiI3hyjUS0p_NFk8u4eJ6duOj_wiK8/edit'},
-      {referenceCode:'AST-REF-02',title:'آليات تحليل الفرص الاستثمارية لبنك الأصول',kind:'reference',sourceUrl:'https://docs.google.com/document/d/1yUKPCHoFdHkcU_jxGX1-0T0hn8rytDCSEgz8RIHlnak/edit'},
-    ],
+    responsibility:'تقييم الأهداف والفرص الاستثمارية بعد حماية السيولة والالتزامات وقياس القدرة الآمنة.',
+    observes:'الأهداف، الفائض الحقيقي، رأس المال المؤهل، الأفق الزمني، نتائج القرارات السابقة، ومخاطر الاستثمار.',
+    intervention:'عند إنشاء هدف أو تعديل مساهمة أو دراسة استثمار أو ظهور انحراف عن المسار.',
+    avoids:'لا يعتبر الفائض مؤهلًا للاستثمار تلقائيًا، ولا ينفذ استثمارًا فعليًا نيابة عن المستخدم.',
+    governanceNote:'الاستثمار مرحلة لاحقة للحماية والتوازن، وكل توصية تبقى قابلة للتفسير والمراجعة.',
+    sourceRefs:['NMC-CORE-01','NMC-CORE-02','NMC-CORE-04','NMC-CORE-05','NMC-CORE-07'],
+    records:refs('NMC-CORE-05'),
+    policies:refs('NMC-CORE-01','NMC-CORE-02','NMC-CORE-04','NMC-CORE-07'),
   },
   hilal:{
     roleTitle:'مدير بنك الهلال',
     entityTitle:'بنك الهلال',
-    responsibility:'التمويل التشغيلي والاكتتاب والتسعير الديناميكي وإدارة محفظة التمويل.',
-    observes:'محفظة الهلال، البنود، السيولة والقدرة على السداد.',
-    intervention:'عند شرح عرض أو رفض أو إعادة جدولة، أو عند ضغط التمويل على النطاقات الآمنة.',
-    avoids:'لا يتدخل في العمليات الاعتيادية المتوافقة مع السياسة.',
-    governanceNote:'يعتمد العرض المؤسسي لا التنفيذ النقدي، ولا يستخدم حدودًا رقمية ثابتة غير معتمدة.',
-    sourceRefs:['ROLE-HL'],
-    records:[],
-    policies:[
-      {referenceCode:'HIL-CHR-01',title:'ميثاق وتشغيل بنك الهلال',kind:'charter',sourceUrl:'https://docs.google.com/document/d/1Z1cnyyVmym1VDGU6ZSFakMIBznUvKPiVr4fuvctkJyo/edit'},
-      {referenceCode:'HIL-POL-01',title:'سياسة الميزانية والإنفاق والتدفقات النقدية لبنك الهلال',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1YoWUyS1AgqWAZcnAd-HzD3WvG35_aQfbQL5H8oBTmYA/edit'},
-      {referenceCode:'NMC-CORE-01',title:'المرجع الحسابي لإدارة الميزانية الشخصية والدورة المالية',kind:'reference',version:'v1.0-draft'},
-      {referenceCode:'HIL-POL-02',title:'دليل الأدوار ومصفوفة الصلاحيات لبنك الهلال',kind:'policy',sourceUrl:'https://docs.google.com/document/d/13TXLBG8Axn862QQZ51yzYfwjVhQbPlNUFEaA3DccbN4/edit'},
-      {referenceCode:'HIL-REF-01',title:'دليل العمليات والآليات والخوارزميات التشغيلية لبنك الهلال',kind:'reference',sourceUrl:'https://docs.google.com/document/d/182x3t6eGfqFed9j3mNUKsgjJmFPNnOHLUPNzGgcUKEE/edit'},
-      {referenceCode:'HIL-POL-03',title:'سياسة التمويل الداخلي والائتمان والسداد لبنك الهلال',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1aNBxa_NH4CjXRcEUkm8Mm8t5Iv3nakGHvZO8SD5inQg/edit'},
-      {referenceCode:'HIL-POL-04',title:'سياسة التعلم والتغيير والتدقيق لبنك الهلال',kind:'policy',sourceUrl:'https://docs.google.com/document/d/1N60Gvu8gYueP5cJ2aA0uZbv-9z3z7_9B9ZX2bW3MKZU/edit'},
-    ],
+    responsibility:'إدارة الميزانية والإنفاق والالتزامات والتدفقات ضمن الدورة المالية باستخدام المحرك الحسابي الموحد.',
+    observes:'الدخل المتحقق، المصروفات، البنود، الالتزامات، الانحرافات، المتاح الحقيقي، العجز والفائض.',
+    intervention:'عند بداية الدورة أو تغير المدخلات أو ظهور انحراف أو إنفاق غير مخطط أو تعارض في التخصيص.',
+    avoids:'لا يعتمد نسبًا عامة بدل البيانات الفعلية، ولا يحسب الدخل المتوقع كمال متاح.',
+    governanceNote:'الحسابات التشغيلية تأتي من المرجع الحسابي الموحد، وأي عجز أو تعارض جوهري يصعد.',
+    sourceRefs:['NMC-CORE-01','NMC-CORE-03','NMC-CORE-04','NMC-CORE-05','NMC-CORE-07'],
+    records:refs('NMC-CORE-03','NMC-CORE-05'),
+    policies:refs('NMC-CORE-01','NMC-CORE-04','NMC-CORE-07'),
   },
   advisor:{
     roleTitle:'المستشار الاقتصادي',
     entityTitle:'المستشار الاقتصادي',
-    responsibility:'تحليل الصورة الاقتصادية الشخصية الكلية: الدخل والاتجاهات والاستقرار والتوقعات والتضخم الشخصي.',
-    observes:'الدخل، الاتجاهات، التضخم الشخصي، الدورة والاستقرار العام.',
-    intervention:'عند تغير دخل أو اتجاه جوهري، أو قضية متعددة المجالات، أو عند طلب رأيه مباشرة.',
-    avoids:'لا يدير تفاصيل كل بند يوميًا إذا لم تمس الصورة الكلية.',
-    governanceNote:'دوره استشاري، ولا يعتمد حركة نقدية.',
-    sourceRefs:['ROLE-EA'],
-    records:[],
-    policies:[
-      {referenceCode:'ADV-CHR-01',title:'ميثاق أصحاب المسؤوليات المالية والمستشار الاقتصادي',kind:'charter',version:'v1.0',sourceUrl:'https://docs.google.com/document/d/1fXG8jJuS4_WXllyiSYcVP7unKf2jJ-s_AGRa_2xEYLA/edit'},
-      {referenceCode:'NMC-POL-06',title:'سياسة التعلم الخوارزمي والذاكرة المالية',kind:'policy',version:'v1.0'},
-      {referenceCode:'NMC-POL-04',title:'سياسة المخاطر المركزية والتحليل الاستباقي',kind:'policy',version:'v1.0'},
-    ],
+    responsibility:'تحليل الصورة الاقتصادية الشخصية والسيناريوهات والافتراضات التي قد تؤثر على قرارات نماء.',
+    observes:'الدخل، الاتجاهات، الاستقرار، التوقعات، الموسمية، التضخم الشخصي، والقرارات متعددة المجالات.',
+    intervention:'عند تغير جوهري في الافتراضات أو وجود قضية متعددة المجالات أو طلب رأيه مباشرة.',
+    avoids:'لا يملك حصة مالية ولا يعتمد قرارًا تنفيذيًا ولا يغير قاعدة صلبة.',
+    governanceNote:'رأيه استشاري يستخدم كمدخل للقرار ولا يحل محل مصدر الحقيقة أو المحرك الحسابي.',
+    sourceRefs:['NMC-CORE-01','NMC-CORE-04','NMC-CORE-05','NMC-CORE-06'],
+    records:refs('NMC-CORE-05','NMC-CORE-06'),
+    policies:refs('NMC-CORE-01','NMC-CORE-04'),
   },
   secretary:{
     roleTitle:'أمين السر المركزي',
     entityTitle:'مجلس نماء الأعلى واللجان',
-    responsibility:'إدارة المحاضر، جداول الأعمال، ملفات الاجتماعات، استرجاع السياسات والصلاحيات، وفتح طلبات المراجعة والمتابعة.',
-    observes:'المحاضر والسياسات والإصدارات والقرارات والإجراءات والمواعيد.',
-    intervention:'عند طلب سياسة أو محضر أو اجتماع أو متابعة قضية أو تعديل قاعدة.',
-    avoids:'لا يصدر قرارًا ماليًا ولا يغيّر سياسة حاكمة مباشرة.',
-    governanceNote:'هو المدخل الحواري لمركز الحوكمة والاجتماعات، مع حفظ النسخ التاريخية والتعديلات الرسمية.',
-    sourceRefs:['دور-أمين-السر','حوكمة-عرض-٢١١','حوكمة-مراجعة-٢١٢'],
-    records:[
-      {referenceCode:'NMC-REG-02',title:'لائحة اللجان والاجتماعات والقرارات',kind:'record',version:'v1.0'},
-      {referenceCode:'NMC-REG-05',title:'لائحة سجل الأثر والتدقيق',kind:'record',version:'v1.0'},
-      {referenceCode:'NMC-REG-06',title:'لائحة المتابعة والتقارير الدورية',kind:'record',version:'v1.0'},
-    ],
-    policies:[
-      {referenceCode:'NMC-POL-08',title:'سياسة إدارة السياسات واللوائح والتغيير المؤسسي',kind:'policy',version:'v1.0'},
-      {referenceCode:'NMC-POL-02',title:'سياسة الصلاحيات والتفويض والتصعيد لبنك نماء المركزي',kind:'policy',version:'v1.0'},
-    ],
+    responsibility:'إدارة المحاضر والاجتماعات وطلبات التعديل وسجلات الاعتماد والنماذج التشغيلية للمراحل.',
+    observes:'طلبات التعديل، المحاضر، الاجتماعات، الإصدارات، النماذج، القرارات، ومواعيد النفاذ.',
+    intervention:'عند فتح تعديل حوكمي أو اجتماع أو متابعة قرار أو حفظ نموذج مرحلة.',
+    avoids:'لا يصدر قرارًا ماليًا ولا يغير مرجعًا حاكمًا مباشرة.',
+    governanceNote:'أمين السر يدير المسار والسجل؛ اعتماد التغيير يظل للجهة المخولة وفق المرجع المختصر للصلاحيات.',
+    sourceRefs:['NMC-CORE-06','NMC-CORE-07'],
+    records:refs('NMC-CORE-06'),
+    policies:refs('NMC-CORE-07'),
   },
   council:{
     roleTitle:'مجلس نماء الأعلى',
     entityTitle:'مجلس نماء الأعلى',
-    responsibility:'البت في القرارات الكبرى والنهائية، والإشراف على اللجان، واعتماد التوجهات العليا، وحسم القضايا التي تتجاوز صلاحيات اللجان.',
-    observes:'تقارير اللجان والقضايا الكبرى.',
-    intervention:'عند القضايا المصعدة التي تحتاج قرارًا أعلى متعدد التخصصات.',
-    avoids:'لا يحل محل البنوك أو المستشارين في التشغيل اليومي.',
-    governanceNote:'يرأسه المحافظ، والاعتماد المؤسسي يبقى ضمن Hard Guards، والتنفيذ المالي الفعلي يبقى بحسب صلاحيات المستخدم.',
-    sourceRefs:['ENTITY-COUNCIL','ROLE-CHAIR'],
-    records:[],
-    policies:[
-      {referenceCode:'NMC-POL-08',title:'سياسة إدارة السياسات واللوائح والتغيير المؤسسي',kind:'policy',version:'v1.0'},
-      {referenceCode:'NMC-POL-02',title:'سياسة الصلاحيات والتفويض والتصعيد لبنك نماء المركزي',kind:'policy',version:'v1.0'},
-      {referenceCode:'NMC-POL-03',title:'سياسة القرار المالي المركزي وإدارة التعارضات',kind:'policy',version:'v1.0'},
-    ],
+    responsibility:'اعتماد التغييرات الحوكمية الجوهرية والبت في القضايا المصعدة التي تتجاوز التفويض التشغيلي.',
+    observes:'التعارضات الكبرى، نتائج المراجعة والمخاطر والتعلم، وطلبات تعديل المراجع الحاكمة.',
+    intervention:'عند الحاجة إلى اعتماد تغيير حوكمي أو حسم قضية تتجاوز تفويض المحافظ أو البنوك.',
+    avoids:'لا يحل محل البنوك وأصحاب المسؤوليات في التشغيل اليومي، ولا ينفذ حركة مالية خارجية.',
+    governanceNote:'المجلس يعتمد التغيير الحوكمي فقط عبر المسار الموثق، مع بقاء التاريخ والإصدار السابق قابلين للمراجعة.',
+    sourceRefs:['NMC-CORE-04','NMC-CORE-05','NMC-CORE-07'],
+    records:refs('NMC-CORE-05'),
+    policies:refs('NMC-CORE-04','NMC-CORE-07'),
   },
 };
