@@ -58,7 +58,7 @@ export type DecisionOutcomeLearningContext={
   shortText:string;
 };
 
-export type DecisionOutcomeLearningDecisionOutcomeLearningDecisionMetadata={
+export type DecisionOutcomeLearningDecisionMetadata={
   decisionId:string;
   domain:FinancialDecisionLearningDomain;
   ruleCode:string;
