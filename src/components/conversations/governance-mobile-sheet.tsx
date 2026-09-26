@@ -30,7 +30,7 @@ export function GovernanceMobileSheet({
   const [meetingDetails,setMeetingDetails]=useState<Meeting|null>(null);
   const [meetingCapabilities,setMeetingCapabilities]=useState<MeetingCapabilities|null>(null);
   const title=mode==='governance'
-    ?'مركز الحوكمة والسياسات'
+    ?'مركز الحوكمة المختصر'
     :mode==='meetings'
       ?'الاجتماعات واللجان'
       :'الوثائق والسجلات';
@@ -72,8 +72,9 @@ export function GovernanceMobileSheet({
   const meetingGroupMeta=(meeting:Meeting)=>{
     const title=meeting.title;
     if(/استثمار|الأصول/.test(title)) return {key:'assets',title:'بنك الأصول الاستثماري',logo:'/brand/bank-assets.webp'};
+    if(/مراجعة|مخاطر|تعلم/.test(title)) return {key:'central',title:'بنك نماء المركزي',logo:'/brand/bank-central.webp'};
     if(/استقرار|سيولة|تمويل/.test(title)) return {key:'solvency',title:'بنك ملاءة',logo:'/brand/bank-malaa.webp'};
-    if(/ميزانية|إنفاق/.test(title)) return {key:'hilal',title:'بنك الهلال',logo:'/brand/bank-hilal.webp'};
+    if(/ميزانية|إنفاق|دورة مالية|توازن/.test(title)) return {key:'hilal',title:'بنك الهلال',logo:'/brand/bank-hilal.webp'};
     return {key:'central',title:'بنك نماء المركزي',logo:'/brand/bank-central.webp'};
   };
   const meetingGroups=useMemo(()=>{
