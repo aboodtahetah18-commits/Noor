@@ -12913,7 +12913,7 @@
     padding-inline:var(--ux-space-1)!important
   }
   .meetingActions button span{
-    font-size:calc(var(--ux-type-caption-size) - 1px)!important
+    font-size:var(--ux-type-caption-size)!important
   }
 }
 
