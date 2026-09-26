@@ -626,17 +626,11 @@
   min-height:var(--ux-size-20);
   border-radius:var(--ux-radius-lg);
   background:var(--ux-section-soft-teal);
-  animation:pulse var(--ux-motion-duration-slow) var(--ux-motion-ease-standard) infinite alternate;
 }
 
 .skeletonHero {
   min-height:calc(var(--ux-size-20) * 2);
   grid-column:1 / -1;
-}
-
-@keyframes pulse {
-  from { opacity:.55; }
-  to { opacity:1; }
 }
 
 @media (min-width:768px) and (max-width:1023px) {
@@ -871,8 +865,3 @@
   }
 }
 
-@media (prefers-reduced-motion:reduce) {
-  .skeleton {
-    animation:none;
-  }
-}
