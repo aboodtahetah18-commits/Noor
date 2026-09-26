@@ -26,21 +26,21 @@ html[data-theme="light"] {
 
 html[data-theme="dark"] {
   color-scheme: dark;
-  --ux-page-bg:#111A17;
-  --ux-card-bg:#17231F;
-  --ux-shell-topbar-bg:#13201C;
-  --ux-shell-topbar-border:#2A3B35;
-  --ux-shell-sidebar-bg:#081B15;
-  --ux-shell-sidebar-hover:#173329;
+  --ux-page-bg:var(--ux-dark-page-bg);
+  --ux-card-bg:var(--ux-dark-card-bg);
+  --ux-shell-topbar-bg:var(--ux-dark-shell-topbar-bg);
+  --ux-shell-topbar-border:var(--ux-dark-border);
+  --ux-shell-sidebar-bg:var(--ux-dark-shell-sidebar-bg);
+  --ux-shell-sidebar-hover:var(--ux-dark-soft-teal);
   --ux-shell-sidebar-active:var(--namaa-green-700);
   --ux-shell-sidebar-active-soft:color-mix(in srgb,var(--namaa-green-700) 18%,transparent);
-  --ux-border-default:#31443D;
-  --ux-border-emphasis:#40584F;
-  --ux-text-primary:#F6F7F5;
-  --ux-text-secondary:#C5D0CB;
-  --ux-text-muted:#AAB7B1;
-  --ux-section-soft-blue:#1A2A24;
-  --ux-section-soft-teal:#173329;
+  --ux-border-default:var(--ux-dark-border);
+  --ux-border-emphasis:var(--ux-dark-soft-teal-border);
+  --ux-text-primary:var(--ux-dark-text-primary);
+  --ux-text-secondary:var(--ux-dark-text-secondary);
+  --ux-text-muted:var(--ux-dark-text-secondary);
+  --ux-section-soft-blue:var(--ux-dark-surface-muted);
+  --ux-section-soft-teal:var(--ux-dark-soft-teal);
   --ux-surface-canvas:var(--ux-page-bg);
   --ux-surface-default:var(--ux-card-bg);
   --ux-surface-inverse:var(--namaa-card);
