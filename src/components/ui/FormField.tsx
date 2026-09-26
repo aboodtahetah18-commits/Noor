@@ -1,19 +1,29 @@
 import type { ReactNode } from 'react';
 
-type FormFieldProps = {
+export type FormFieldProps = {
   label: string;
   htmlFor: string;
   error?: string;
   hint?: string;
+  required?: boolean;
   children: ReactNode;
 };
 
-export function FormField({ label, htmlFor, error, hint, children }: FormFieldProps) {
+export function FormField({ label, htmlFor, error, hint, required = false, children }: FormFieldProps) {
+  const messageId = `${htmlFor}-message`;
+
   return (
-    <div className="ux-field">
-      <label htmlFor={htmlFor}>{label}</label>
+    <div className="ux-field" data-invalid={error ? 'true' : undefined}>
+      <label htmlFor={htmlFor}>
+        {label}
+        {required ? <span className="ux-field-required" aria-hidden="true"> *</span> : null}
+      </label>
       {children}
-      {error ? <div className="ux-field-error" role="alert">{error}</div> : hint ? <small>{hint}</small> : null}
+      {error ? (
+        <div id={messageId} className="ux-field-error" role="alert">{error}</div>
+      ) : hint ? (
+        <small id={messageId}>{hint}</small>
+      ) : null}
     </div>
   );
 }
