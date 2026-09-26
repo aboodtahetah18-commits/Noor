@@ -1,5 +1,14 @@
 import type { TextareaHTMLAttributes } from 'react';
 
-export function Textarea({ className = '', ...props }: TextareaHTMLAttributes<HTMLTextAreaElement>) {
-  return <textarea className={`ux-control ${className}`.trim()} {...props} />;
+export type TextareaProps = TextareaHTMLAttributes<HTMLTextAreaElement>;
+
+export function Textarea({ className = '', 'aria-invalid': ariaInvalid, ...props }: TextareaProps) {
+  return (
+    <textarea
+      className={`ux-control ${className}`.trim()}
+      aria-invalid={ariaInvalid}
+      data-invalid={ariaInvalid === true || ariaInvalid === 'true' ? 'true' : undefined}
+      {...props}
+    />
+  );
 }
