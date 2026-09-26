@@ -60,11 +60,6 @@ function daysUntil(dateValue:string){
   return Math.max(0,Math.ceil((target-todayUtc)/86_400_000));
 }
 
-function nonNegativeDifference(a:string,b:string){
-  const result=Money.parse(a).subtract(Money.parse(b));
-  return result.isNegative()?'0.00':result.toString();
-}
-
 function applyLearningFactor(value:string,factor:number){
   const money=Money.parse(value);
   const basisPoints=BigInt(Math.round(Math.max(0,factor)*10_000));
