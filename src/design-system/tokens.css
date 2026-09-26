@@ -143,6 +143,8 @@
   --ux-shadow-m:var(--ux-shadow-sm);
   --ux-shadow-l:var(--ux-shadow-lg);
   --ux-offset-sidebar-toggle:calc(var(--ux-space-5) * -1);
+  --ux-size-24:96px;
+  --ux-z-popover:var(--ux-z-dropdown);
   --ux-auth-title-size:var(--ux-type-page-title-size);
   --ux-auth-visual-bg:var(--namaa-green-900);
   --ux-auth-field-dark-bg:var(--namaa-surface-warm);
