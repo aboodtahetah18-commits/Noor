@@ -25,10 +25,10 @@ assert(css.includes('.mobileFieldFull')&&css.includes('grid-column:1 / -1'),'MOB
 assert(css.includes('.mobileRecordEditorActions')&&css.includes('grid-template-rows:auto minmax(0,1fr) auto'),'MOBILE-STICKY-ACTIONS-CONTRACT-MISSING');
 assert(onboarding.includes('recurrenceLabel'),'MOBILE-ARABIC-RECURRENCE-LABEL-MISSING');
 assert(onboarding.includes('اسم مختصر للحساب'),'MOBILE-ACCOUNT-ARABIC-LABEL-MISSING');
-for(let index=1;index<=9;index++){
-  const suffix=String(index).padStart(2,'0');
-  assert(localIndex.includes(`batch-${suffix}`),'LOCAL-GOVERNANCE-BATCH-MISSING-'+suffix);
-}
+assert(localIndex.includes("COMPACT_CORE_GOVERNANCE_DOCUMENTS"),'LOCAL-GOVERNANCE-COMPACT-SOURCE-MISSING');
+assert(localIndex.includes("LOCAL_GOVERNANCE_DOCUMENTS"),'LOCAL-GOVERNANCE-REGISTRY-MISSING');
+assert(localIndex.includes("getLocalGovernanceDocument"),'LOCAL-GOVERNANCE-LOOKUP-EXPORT-MISSING');
+assert(!localIndex.includes("batch-01")&&!localIndex.includes("central-active-policies")&&!localIndex.includes("central-active-regulations"),'LOCAL-GOVERNANCE-LEGACY-SOURCE-REINTRODUCED');
 assert(localRoute.includes('getAuthenticatedUser'),'LOCAL-GOVERNANCE-AUTH-MISSING');
 assert(localRoute.includes('getLocalGovernanceDocument'),'LOCAL-GOVERNANCE-LOOKUP-MISSING');
 assert(governed.includes('/api/governance/documents/'),'LOCAL-GOVERNANCE-CLIENT-MISSING');
