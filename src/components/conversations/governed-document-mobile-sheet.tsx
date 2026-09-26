@@ -391,6 +391,7 @@ export function GovernedDocumentMobileSheet({document,roomKey,onClose}:{document
   const [clauseRef,setClauseRef]=useState('');
   const [currentRule,setCurrentRule]=useState('');
   const [proposedRule,setProposedRule]=useState('');
+  const [,setExampleText]=useState('');
   const [rationale,setRationale]=useState('');
   const [priority,setPriority]=useState<'NORMAL'|'NEXT_MEETING'|'URGENT'>('NEXT_MEETING');
   const [workflowDraft,setWorkflowDraft]=useState<{
