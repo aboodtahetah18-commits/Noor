@@ -114,4 +114,39 @@
   --ux-alpha-night-72:color-mix(in srgb,var(--namaa-text) 72%,transparent);
   --ux-shadow-brand:var(--ux-shadow-sm);
   --ux-shadow-brand-strong:var(--ux-shadow-md);
+
+  /* Compatibility aliases retained for legacy selectors while page styles migrate. */
+  --ux-ink-a04:color-mix(in srgb,var(--namaa-text) 4%,transparent);
+  --ux-ink-a08:color-mix(in srgb,var(--namaa-text) 8%,transparent);
+  --ux-ink-a12:color-mix(in srgb,var(--namaa-text) 12%,transparent);
+  --ux-ink-a20:color-mix(in srgb,var(--namaa-text) 20%,transparent);
+  --ux-ink-a32:color-mix(in srgb,var(--namaa-text) 32%,transparent);
+  --ux-primary-a12:color-mix(in srgb,var(--namaa-green-900) 12%,transparent);
+  --ux-primary-a20:color-mix(in srgb,var(--namaa-green-900) 20%,transparent);
+  --ux-border-strong:var(--ux-border-emphasis);
+  --ux-white:var(--namaa-card);
+  --ux-alpha-white-10:color-mix(in srgb,var(--namaa-card) 10%,transparent);
+  --ux-alpha-white-12:color-mix(in srgb,var(--namaa-card) 12%,transparent);
+  --ux-alpha-white-15:color-mix(in srgb,var(--namaa-card) 15%,transparent);
+  --ux-alpha-white-18:color-mix(in srgb,var(--namaa-card) 18%,transparent);
+  --ux-alpha-white-55:color-mix(in srgb,var(--namaa-card) 55%,transparent);
+  --ux-alpha-white-84:color-mix(in srgb,var(--namaa-card) 84%,transparent);
+  --ux-alpha-white-88:color-mix(in srgb,var(--namaa-card) 88%,transparent);
+  --ux-type-display-size:var(--ux-type-number-lg-size);
+  --ux-type-display-line:var(--ux-type-number-lg-line);
+  --ux-type-display-weight:var(--ux-type-number-lg-weight);
+  --ux-type-table-head-size:12px;
+  --ux-type-table-cell-size:var(--ux-type-body-sm-size);
+  --ux-mobile-nav-label-size:var(--ux-type-caption-size);
+  --ux-shell-topbar-control:var(--namaa-card);
+  --ux-shadow-s:var(--ux-shadow-xs);
+  --ux-shadow-m:var(--ux-shadow-sm);
+  --ux-shadow-l:var(--ux-shadow-lg);
+  --ux-offset-sidebar-toggle:calc(var(--ux-space-5) * -1);
+  --ux-auth-title-size:var(--ux-type-page-title-size);
+  --ux-auth-visual-bg:var(--namaa-green-900);
+  --ux-auth-field-dark-bg:var(--namaa-surface-warm);
+  --ux-auth-field-dark-border:var(--namaa-border-strong);
+  --ux-auth-field-dark-text:var(--namaa-green-900);
+  --ux-auth-field-focus-bg:var(--namaa-card);
 }
