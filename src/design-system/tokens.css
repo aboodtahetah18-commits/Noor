@@ -82,7 +82,7 @@
   --ux-z-base:0; --ux-z-sticky:100; --ux-z-navigation:200; --ux-z-dropdown:400; --ux-z-overlay:600; --ux-z-modal:700; --ux-z-toast:800; --ux-z-critical:900;
 
   --ux-container-reading:640px; --ux-container-form:720px; --ux-container-content:1360px; --ux-container-wide:1440px;
-  --ux-shell-sidebar-expanded:248px; --ux-shell-sidebar-collapsed:72px; --ux-shell-topbar-height:64px; --ux-mobile-header-height:56px;
+  --ux-shell-sidebar-expanded:256px; --ux-shell-sidebar-collapsed:76px; --ux-shell-topbar-height:68px; --ux-mobile-header-height:56px;
   --ux-logo-desktop-width:128px; --ux-logo-mobile-width:96px; --ux-logo-tablet-width:112px; --ux-logo-collapsed-size:48px;
   --ux-drawer-max-width:320px; --ux-textarea-min-height:96px;
 
@@ -114,8 +114,4 @@
   --ux-alpha-night-72:color-mix(in srgb,var(--namaa-text) 72%,transparent);
   --ux-shadow-brand:var(--ux-shadow-sm);
   --ux-shadow-brand-strong:var(--ux-shadow-md);
-  --ux-logo-desktop-width:128px;
-  --ux-logo-tablet-width:112px;
-  --ux-logo-mobile-width:96px;
-  --ux-logo-collapsed-size:48px;
 }
