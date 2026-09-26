@@ -60,7 +60,7 @@ Logo rules:
 - Core radii use the governed 12–16px component range and 20–24px large-container range.
 - Icons use a consistent outline / soft-rounded visual weight.
 - No uncontrolled gradients, glow, decorative 3D, or page-local visual language.
-- Mobile remains chat-first; dashboards and dense tables must use approved responsive patterns.
+- Mobile exposes the full current platform responsively; no core capability is hidden by viewport. Dashboards and dense tables must use approved responsive patterns rather than desktop shrink-down.
 - All new data-driven screens must define loading, empty, success, recoverable error, and unavailable states where applicable.
 
 ## Golden visual references
@@ -74,7 +74,7 @@ The approved identity package images in the project sources are Golden Reference
 - governance and committee identities,
 - approved algorithmic character visual language.
 
-Generated concept images are secondary references only. They may guide composition, but they may not override official logo assets, tokens, typography, or the frozen design contracts.
+The user-approved platform reference images are the binding visual authority for composition and appearance. They may not override official logo assets, operational typography, or frozen identity colors; when those conflict, the official identity assets and frozen tokens win.
 
 ## Change control
 
