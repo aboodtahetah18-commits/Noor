@@ -77,13 +77,13 @@ export function AlgorithmRoleMobileSheet({role,onClose,onOpenChat}:{role:Algorit
   const [feedback,setFeedback]=useState('');
   const [capabilities,setCapabilities]=useState<RoleCapability[]>([]);
   const [procedures,setProcedures]=useState<RoleProcedure[]>([]);
-  const [capabilitiesLoading,setCapabilitiesLoading]=useState(true);
+  const [capabilitiesRoleKey,setCapabilitiesRoleKey]=useState<string|null>(null);
+  const capabilitiesLoading=capabilitiesRoleKey!==role.key;
   const documentRef=role.referenceCode;
   const documentTitle='الوصف الوظيفي — '+role.name;
 
   useEffect(()=>{
     let cancelled=false;
-    setCapabilitiesLoading(true);
     fetch('/api/governance/roles/'+encodeURIComponent(role.key)+'/capabilities',{cache:'no-store'})
       .then(async response=>response.ok?response.json():null)
       .then(data=>{
@@ -92,7 +92,7 @@ export function AlgorithmRoleMobileSheet({role,onClose,onOpenChat}:{role:Algorit
         setProcedures(Array.isArray(data.procedures)?data.procedures:[]);
       })
       .catch(()=>{})
-      .finally(()=>{if(!cancelled)setCapabilitiesLoading(false)});
+      .finally(()=>{if(!cancelled)setCapabilitiesRoleKey(role.key)});
     return()=>{cancelled=true};
   },[role.key]);
 
