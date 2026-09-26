@@ -25,10 +25,6 @@ export type ProactiveConversationMemory={
 
 const MEMORY_FACT_KEY='conversation_learning_memory';
 
-function emptyMemory():ProactiveConversationMemory{
-  return {version:1,prompts:{},rooms:{},updatedAt:null};
-}
-
 function asRecord(value:unknown):Record<string,unknown>{
   return value&&typeof value==='object'&&!Array.isArray(value)?value as Record<string,unknown>:{};
 }
