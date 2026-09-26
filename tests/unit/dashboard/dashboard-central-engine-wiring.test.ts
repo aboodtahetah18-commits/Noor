@@ -54,7 +54,7 @@ describe('dashboard central engine wiring',()=>{
     expect(result?.liquidity.total).toBe('10000');
     expect(result?.safeToSpend.amount).toBe('3000');
     expect(result?.income.expected).toBe('10000.00');
-    expect(result?.forecast.projectedEndBalance).toBe('5000');
+    expect(result?.forecast.projectedEndBalance).toBe('5000.00');
     expect(result?.topRecommendation?.reasonCode).toBe('ENGINE_FREE_CASH_AVAILABLE');
   });
 });
