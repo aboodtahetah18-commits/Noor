@@ -275,26 +275,6 @@ function EntityReferenceList({items,roomId,onOpen,icon}:{items:GovernedDocumentR
     </button>)}
   </div>;
 }
-const onboardingStepNumber:Record<string,number>={
-  marital_status:1,dependents:2,home_city:3,housing:4,employment:5,work_city:6,
-  commute:7,income:8,accounts:9,obligations:10,goals:11,statements:12,review:13,
-};
-const onboardingStepMeta:Record<string,{title:string;reason:string;icon:LucideIconName}>={
-  marital_status:{title:'الوضع الأسري',reason:'لبناء صورة واقعية للالتزامات وتكوين الأسرة.',icon:'circleUserRound'},
-  dependents:{title:'المعالون',reason:'لفهم من يعتمد عليك ماليًا وما قد يرتبط بهم من مصروفات.',icon:'circleUserRound'},
-  home_city:{title:'مدينة السكن',reason:'لربط تكاليف المعيشة والتنقل بواقعك الفعلي.',icon:'landmark'},
-  housing:{title:'السكن',reason:'لتحديد طبيعة التزام السكن وأثره على الميزانية.',icon:'house'},
-  employment:{title:'العمل',reason:'لفهم مصدر الدخل واستقراره دون افتراضات.',icon:'store'},
-  work_city:{title:'مدينة العمل',reason:'لقياس أثر مكان العمل على التنقل والتكاليف المتكررة.',icon:'landmark'},
-  commute:{title:'التنقل',reason:'لتقدير المصروفات المنتظمة المرتبطة بالعمل والتنقل.',icon:'arrowUpDown'},
-  income:{title:'الدخل',reason:'لبناء أساس مالي واقعي يمكن الاعتماد عليه في التحليل.',icon:'walletCards'},
-  accounts:{title:'الحسابات',reason:'لتجميع مصادر السيولة والحسابات دون تنفيذ أي حركة مالية.',icon:'creditCard'},
-  obligations:{title:'الالتزامات',reason:'لحماية الاستحقاقات الأساسية قبل أي توصية أو تخصيص.',icon:'receiptText'},
-  goals:{title:'الأهداف',reason:'لترتيب الأهداف وتقدير أثرها على التدفق النقدي.',icon:'target'},
-  statements:{title:'كشوف الحساب',reason:'لتحسين دقة المطابقة والمراجعة من بياناتك الفعلية.',icon:'receiptText'},
-  review:{title:'مراجعة التأسيس',reason:'لتأكيد أن البيانات صحيحة قبل اعتماد الملف وبدء التشغيل الكامل.',icon:'listChecks'},
-};
-
 function OnboardingMessageContent({message,showStructuredAction,onOpenStructuredIntake}:{message:Message;showStructuredAction?:boolean;onOpenStructuredIntake?:()=>void}){
   const data=message.structured_data&&typeof message.structured_data==='object'?message.structured_data:{};
   const question=typeof data.next_question==='string'?data.next_question.trim():'';
@@ -986,7 +966,15 @@ export function PersistentConversationWorkspace(){
 
   useEffect(()=>{
     if(!roomsOpen)return;
-    void refreshFocusedChats();
+    let cancelled=false;
+    fetch('/api/conversations/focused',{cache:'no-store'})
+      .then(async response=>response.ok?response.json():null)
+      .then(data=>{
+        if(cancelled||!data)return;
+        setFocusedChats(Array.isArray(data.chats)?data.chats:[]);
+      })
+      .catch(()=>{});
+    return()=>{cancelled=true};
   },[roomsOpen]);
 
   useEffect(()=>{ let cancelled=false; fetch(`/api/conversations/${activeRoomId}`,{cache:'no-store'})
