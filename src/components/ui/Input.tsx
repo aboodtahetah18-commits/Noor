@@ -1,5 +1,14 @@
 import type { InputHTMLAttributes } from 'react';
 
-export function Input({ className = '', ...props }: InputHTMLAttributes<HTMLInputElement>) {
-  return <input className={`ux-control ${className}`.trim()} {...props} />;
+export type InputProps = InputHTMLAttributes<HTMLInputElement>;
+
+export function Input({ className = '', 'aria-invalid': ariaInvalid, ...props }: InputProps) {
+  return (
+    <input
+      className={`ux-control ${className}`.trim()}
+      aria-invalid={ariaInvalid}
+      data-invalid={ariaInvalid === true || ariaInvalid === 'true' ? 'true' : undefined}
+      {...props}
+    />
+  );
 }
