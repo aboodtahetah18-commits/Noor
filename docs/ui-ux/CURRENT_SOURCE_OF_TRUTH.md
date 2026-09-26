@@ -2,21 +2,19 @@
 
 Current governed visual identity package: **نماء — الهوية البصرية المعتمدة v1.0 — 2026-09-22**.
 
-This package is the highest visual authority for Namaa. The effective frozen identity inside it is **NDOS v1.2 FINAL** with the executable design system **v2.0**.
+The effective frozen identity inside the approved package is **NDOS v1.2 FINAL** with the executable design system **v2.0**.
 
 ## Authority order
 
-When any source conflicts, use this order:
+Authority is split by concern and must not be collapsed into a single source:
 
-1. Frozen identity / explicit identity freeze rules.
-2. AI UI / design execution contract.
-3. Machine-readable tokens, components, microstates, and icon contracts.
-4. Human-readable component and page specifications.
-5. Approved visual references / Golden References.
-6. Layout-only references.
-7. Deprecated references: never use.
+1. **Official identity package / frozen NDOS** — logo assets, operational font and frozen brand colors.
+2. **User-approved platform reference images** — layout, visual composition, hierarchy, density and responsive presentation.
+3. **Current application** — routes, data, permissions, business behavior and existing capabilities.
+4. **Executable shared design-system contracts** — implementation of the three authorities above.
+5. Deprecated phase notes, experimental palettes and legacy CSS — compatibility only; never a source for new visual decisions.
 
-Older phase notes, screenshots, experimental palettes, legacy CSS, or generated mockups never override this authority.
+A screenshot must not redraw or recolor official identity assets. The current application must not override the approved visual language merely because a legacy page already looks different.
 
 ## Mandatory brand invariants
 
