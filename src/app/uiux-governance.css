@@ -1,23 +1,10 @@
 /*
- * UX-P07 → UX-P28 implementation layer.
- * Authority: docs/ui-ux/* and IMPLEMENTATION_HANDOFF_FOR_P29.md
- * Imported after legacy styles so approved tokens/components win without changing product logic.
+ * Legacy page/component presentation rules.
+ * Visual tokens are intentionally NOT defined here.
+ * Runtime foundations come only from src/design-system; this file remains temporarily
+ * for selectors still used by current pages until those pages migrate to shared components.
  */
-:root{
-  --ux-color-ink:#0B1220;--ux-color-primary:#2563EB;--ux-color-cyan:#06B6D4;--ux-color-canvas:#F8FAFC;--ux-color-white:#FFFFFF;--ux-color-slate:#475569;--ux-color-success:#15803D;--ux-color-warning:#B45309;--ux-color-error:#B42318;--ux-color-transparent:transparent;
-  --ux-ink-a04:rgb(11 18 32 / .04);--ux-ink-a08:rgb(11 18 32 / .08);--ux-ink-a12:rgb(11 18 32 / .12);--ux-ink-a20:rgb(11 18 32 / .20);--ux-ink-a32:rgb(11 18 32 / .32);--ux-primary-a12:rgb(37 99 235 / .12);--ux-primary-a20:rgb(37 99 235 / .20);--ux-cyan-a16:rgb(6 182 212 / .16);
-  --ux-surface-canvas:var(--ux-color-canvas);--ux-surface-default:var(--ux-color-white);--ux-surface-inverse:var(--ux-color-ink);--ux-text-primary:var(--ux-color-ink);--ux-text-secondary:var(--ux-color-slate);--ux-text-inverse:var(--ux-color-white);--ux-action-primary:var(--ux-color-primary);--ux-accent-supporting:var(--ux-color-cyan);--ux-border-default:var(--ux-ink-a12);--ux-border-strong:var(--ux-ink-a20);--ux-focus-ring:var(--ux-color-primary);--ux-state-success:var(--ux-color-success);--ux-state-warning:var(--ux-color-warning);--ux-state-error:var(--ux-color-error);
-  --ux-font-family-base:"Tajawal",sans-serif;
-  --ux-type-display-size:40px;--ux-type-display-weight:700;--ux-type-display-line:52px;--ux-type-page-title-size:32px;--ux-type-page-title-weight:700;--ux-type-page-title-line:44px;--ux-type-section-title-size:24px;--ux-type-section-title-weight:600;--ux-type-section-title-line:34px;--ux-type-card-title-size:18px;--ux-type-card-title-weight:600;--ux-type-card-title-line:28px;--ux-type-body-size:16px;--ux-type-body-weight:400;--ux-type-body-line:28px;--ux-type-body-sm-size:14px;--ux-type-body-sm-line:24px;--ux-type-caption-size:12px;--ux-type-caption-line:20px;--ux-type-label-size:14px;--ux-type-label-weight:500;--ux-type-label-line:22px;--ux-type-button-size:14px;--ux-type-button-weight:600;--ux-type-button-line:22px;--ux-type-table-head-size:13px;--ux-type-table-cell-size:14px;--ux-type-number-lg-size:32px;--ux-type-number-lg-weight:600;--ux-type-number-lg-line:40px;
-  --ux-space-0:0;--ux-space-1:4px;--ux-space-2:8px;--ux-space-3:12px;--ux-space-4:16px;--ux-space-5:20px;--ux-space-6:24px;--ux-space-8:32px;--ux-space-10:40px;--ux-space-12:48px;--ux-space-16:64px;--ux-space-20:80px;--ux-space-24:96px;
-  --ux-radius-0:0;--ux-radius-1:4px;--ux-radius-2:8px;--ux-radius-3:12px;--ux-radius-4:16px;--ux-radius-6:24px;--ux-radius-full:9999px;
-  --ux-border-width-0:0;--ux-border-width-1:1px;--ux-border-width-2:2px;--ux-border-style-default:solid;--ux-shadow-none:none;--ux-shadow-xs:0 1px 2px rgb(11 18 32 / .08);--ux-shadow-sm:0 4px 12px rgb(11 18 32 / .08);--ux-shadow-md:0 12px 28px rgb(11 18 32 / .12);--ux-shadow-lg:0 20px 48px rgb(11 18 32 / .16);
-  --ux-size-4:16px;--ux-size-5:20px;--ux-size-6:24px;--ux-size-8:32px;--ux-size-10:40px;--ux-size-11:44px;--ux-size-12:48px;--ux-size-14:56px;--ux-size-16:64px;
-  --ux-motion-duration-0:0ms;--ux-motion-duration-fast:120ms;--ux-motion-duration-base:200ms;--ux-motion-duration-slow:320ms;--ux-motion-ease-standard:cubic-bezier(.2,0,0,1);--ux-motion-ease-enter:cubic-bezier(0,0,.2,1);--ux-motion-ease-exit:cubic-bezier(.4,0,1,1);
-  --ux-z-base:0;--ux-z-sticky:100;--ux-z-navigation:200;--ux-z-dropdown:400;--ux-z-overlay:600;--ux-z-modal:700;--ux-z-toast:800;--ux-z-critical:900;
-  --ux-container-reading:640px;--ux-container-form:720px;--ux-container-content:1200px;--ux-container-wide:1280px;
 
-}
 html{font-family:var(--ux-font-family-base);background:var(--ux-surface-canvas);color:var(--ux-text-primary);scroll-behavior:smooth;}
 body{font-family:var(--ux-font-family-base);font-size:var(--ux-type-body-size);line-height:var(--ux-type-body-line);background:var(--ux-surface-canvas);color:var(--ux-text-primary);}
 button,input,select,textarea{font:inherit;color:inherit;}
@@ -150,91 +137,7 @@ a,button,input,select,textarea,summary{transition-duration:var(--ux-motion-durat
 /* CR-002 — MUSTAQBALI DESIGN-LED PRODUCT RECONSTRUCTION                      */
 /* Authority: MUSTAQBALI_IMPLEMENTATION_HANDOFF_V1 / Source of Truth + Spec   */
 /* ========================================================================== */
-:root{
-  --ux-brand-primary:#0B2D5B;
-  --ux-brand-secondary:#0EA5A2;
-  --ux-brand-accent:#22C55E;
-  --ux-success:#16A34A;
-  --ux-warning:#F59E0B;
-  --ux-error:#EF4444;
-  --ux-neutral-800:#334155;
-  --ux-neutral-400:#94A3B8;
-  --ux-page-bg:#F1F5F9;
-  --ux-card-bg:#FFFFFF;
-  --ux-shell-topbar-bg:#E6EDF5;
-  --ux-shell-topbar-border:#D6E0EA;
-  --ux-shell-sidebar-bg:#0B2D5B;
-  --ux-shell-sidebar-hover:#123D72;
-  --ux-shell-sidebar-active:#0EA5A2;
-  --ux-shell-sidebar-active-soft:rgb(14 165 162 / .16);
-  --ux-section-soft-blue:#EAF3FA;
-  --ux-section-soft-teal:#E7F7F5;
-  --ux-border-default:#D9E2EC;
-  --ux-text-primary:#0B2D5B;
-  --ux-text-secondary:#475569;
-  --ux-text-muted:#64748B;
-  --ux-dark-page-bg:#08111F;
-  --ux-dark-card-bg:#0D1B2A;
-  --ux-dark-shell-topbar-bg:#0A1726;
-  --ux-dark-shell-sidebar-bg:#07101C;
-  --ux-dark-surface-muted:#12263A;
-  --ux-dark-border:#24364B;
-  --ux-dark-text-primary:#F8FAFC;
-  --ux-dark-text-secondary:#CBD5E1;
-  --ux-font-family-base:var(--font-tajawal),"Tajawal",sans-serif;
-  --ux-color-ink:var(--ux-brand-primary);
-  --ux-color-primary:var(--ux-brand-primary);
-  --ux-color-cyan:var(--ux-brand-secondary);
-  --ux-color-canvas:var(--ux-page-bg);
-  --ux-color-white:var(--ux-card-bg);
-  --ux-color-slate:var(--ux-text-secondary);
-  --ux-color-success:var(--ux-success);
-  --ux-color-warning:var(--ux-warning);
-  --ux-color-error:var(--ux-error);
-  --ux-surface-canvas:var(--ux-page-bg);
-  --ux-surface-default:var(--ux-card-bg);
-  --ux-surface-inverse:var(--ux-brand-primary);
-  --ux-text-inverse:#FFFFFF;
-  --ux-action-primary:var(--ux-brand-primary);
-  --ux-accent-supporting:var(--ux-brand-secondary);
-  --ux-focus-ring:var(--ux-brand-secondary);
-  --ux-state-success:var(--ux-success);
-  --ux-state-warning:var(--ux-warning);
-  --ux-state-error:var(--ux-error);
-  --ux-radius-xs:8px;--ux-radius-sm:10px;--ux-radius-md:12px;--ux-radius-lg:16px;--ux-radius-xl:20px;
-  --ux-radius-2:var(--ux-radius-xs);--ux-radius-3:var(--ux-radius-md);--ux-radius-4:var(--ux-radius-lg);
-  --ux-type-page-title-size:28px;--ux-type-page-title-line:38px;--ux-type-page-title-weight:700;
-  --ux-type-section-title-size:20px;--ux-type-section-title-line:29px;--ux-type-section-title-weight:700;
-  --ux-type-card-title-size:16px;--ux-type-card-title-line:23px;--ux-type-card-title-weight:700;
-  --ux-type-body-size:14px;--ux-type-body-line:24px;--ux-type-body-weight:400;
-  --ux-type-body-sm-size:13px;--ux-type-body-sm-line:21px;
-  --ux-type-caption-size:12px;--ux-type-caption-line:18px;
-  --ux-type-label-size:13px;--ux-type-label-line:20px;--ux-type-label-weight:500;
-  --ux-type-button-size:14px;--ux-type-button-line:20px;--ux-type-button-weight:500;
-  --ux-type-number-lg-size:32px;--ux-type-number-lg-line:37px;--ux-type-number-lg-weight:700;
-  --ux-container-content:1360px;--ux-container-wide:1440px;
-  --ux-shell-sidebar-expanded:248px;--ux-shell-sidebar-collapsed:72px;--ux-shell-topbar-height:64px;--ux-mobile-header-height:56px;
-  --ux-logo-desktop-width:156px;--ux-logo-mobile-width:128px;--ux-logo-tablet-width:138px;--ux-logo-collapsed-size:44px;
-  --ux-drawer-max-width:320px;--ux-auth-title-size:32px;--ux-nav-label-size:11px;--ux-mobile-nav-label-size:11px;
-  --ux-alpha-white-55:rgb(255 255 255 / .55);--ux-alpha-white-84:rgb(255 255 255 / .84);--ux-alpha-white-88:rgb(255 255 255 / .88);--ux-alpha-white-10:rgb(255 255 255 / .10);--ux-alpha-white-12:rgb(255 255 255 / .12);--ux-alpha-white-15:rgb(255 255 255 / .15);--ux-alpha-white-18:rgb(255 255 255 / .18);
-  --ux-alpha-navy-05:rgb(11 45 91 / .05);--ux-alpha-navy-06:rgb(11 45 91 / .06);--ux-alpha-navy-10:rgb(11 45 91 / .10);--ux-alpha-navy-18:rgb(11 45 91 / .18);--ux-alpha-overlay:rgb(8 17 31 / .40);--ux-alpha-teal-15:rgb(14 165 162 / .15);--ux-alpha-teal-20:rgb(14 165 162 / .20);
 
-  --ux-border-emphasis:#B8CBE0;
-  --ux-soft-green:#EAF8F0;
-  --ux-soft-red:#FFF0F1;
-  --ux-soft-orange:#FFF3E6;
-  --ux-soft-purple:#F3EDFF;
-  --ux-shell-topbar-control:#FFFFFF;
-  --ux-dark-soft-teal:#0D2B30;--ux-dark-soft-teal-border:#145A59;--ux-white:#FFFFFF;
-  --ux-shadow-s:0 1px 2px var(--ux-alpha-navy-05);--ux-shadow-m:0 4px 18px var(--ux-alpha-navy-06);--ux-shadow-l:0 18px 48px var(--ux-alpha-navy-18);--ux-shadow-focus:0 0 0 4px var(--ux-alpha-teal-15);
-  --ux-textarea-min-height:96px;--ux-offset-sidebar-toggle:-22px;
-
-  --ux-auth-visual-bg:var(--ux-brand-primary);
-  --ux-auth-field-dark-bg:#EAF3FA;
-  --ux-auth-field-dark-text:#0B2D5B;
-  --ux-auth-field-dark-border:#B9CCE0;
-  --ux-auth-field-focus-bg:#FFFFFF;
-}
 
 html,body{font-family:var(--ux-font-family-base)!important;background:var(--ux-page-bg)!important;color:var(--ux-text-primary)!important;}
 body{font-size:var(--ux-type-body-size)!important;line-height:1.7!important;}
