@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { COMPACT_CORE_GOVERNANCE_DOCUMENTS } from "../../../src/content/governance/compact-core-documents";
 import { getLocalGovernanceDocument, LOCAL_GOVERNANCE_DOCUMENTS } from "../../../src/content/governance";
+import { COMPACT_AUTHORITIES, compactProcedure } from "../../../src/lib/governance/compact-authority-model";
 import { governedRoomDetails } from "../../../src/lib/conversations/governed-room-details";
 
 describe("ربط مراجع الحوكمة النافذة بالواجهة", () => {
@@ -23,11 +24,13 @@ describe("ربط مراجع الحوكمة النافذة بالواجهة", () 
     expect(actual.some((referenceCode)=>referenceCode.startsWith("NMC-REG-"))).toBe(false);
   });
 
-  it("يعرض المرجع المختصر للصلاحيات ويتضمن حدود أصحاب المسؤوليات ومديري البنوك", () => {
+  it("يربط المرجع NMC-CORE-07 بنطاق الصلاحيات الحالي لأصحاب المسؤوليات ومديري البنوك", () => {
     const doc=getLocalGovernanceDocument("NMC-CORE-07");
-    expect(doc?.title).toContain("الصلاحيات والحوكمة واللجان");
-    expect(doc?.content).toContain("حدود أصحاب المسؤوليات");
-    expect(doc?.content).toContain("حدود مديري البنوك");
+    expect(doc?.referenceCode).toBe("NMC-CORE-07");
+    expect(COMPACT_AUTHORITIES.some((authority)=>authority.allowedKinds.includes("responsibility_owner"))).toBe(true);
+    expect(COMPACT_AUTHORITIES.some((authority)=>authority.allowedKinds.includes("bank_manager"))).toBe(true);
+    const approval=COMPACT_AUTHORITIES.find((authority)=>authority.action==="APPROVE_GOVERNANCE_CHANGE");
+    expect(approval?.allowedKinds).toEqual(["council"]);
   });
 
   it("يحافظ السجل الحاكم الحالي على رموز فريدة ولا يعيد المصادر القديمة", () => {
@@ -41,9 +44,13 @@ describe("ربط مراجع الحوكمة النافذة بالواجهة", () 
     ]) expect(codes).not.toContain(code);
   });
 
-  it("يثبت المرجع الحالي الفصل بين الحساب والتوصية والتنفيذ المالي الخارجي", () => {
-    expect(getLocalGovernanceDocument("NMC-CORE-01")?.content).toContain("قاعدة الرقم القابل للتفسير");
-    expect(getLocalGovernanceDocument("NMC-CORE-07")?.content).toContain("لا ينفذ حركة مالية");
-    expect(getLocalGovernanceDocument("NMC-CORE-07")?.content).toContain("ينفذها المستخدم");
+  it("يثبت عقد الصلاحيات الفصل بين القرار الداخلي والتنفيذ المالي الخارجي", () => {
+    expect(getLocalGovernanceDocument("NMC-CORE-01")?.referenceCode).toBe("NMC-CORE-01");
+    expect(getLocalGovernanceDocument("NMC-CORE-07")?.referenceCode).toBe("NMC-CORE-07");
+    expect(COMPACT_AUTHORITIES).toHaveLength(7);
+    expect(COMPACT_AUTHORITIES.every((authority)=>authority.externalExecution===false)).toBe(true);
+    const verification=compactProcedure("VERIFY_USER_EXECUTION");
+    expect(verification?.key).toBe("VERIFY_USER_EXECUTION");
+    expect(verification?.ownerKinds).toEqual(["operations","secretary","central_bank_manager"]);
   });
 });
