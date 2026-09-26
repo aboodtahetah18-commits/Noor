@@ -1,27 +1,15 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { useEffect } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
 
-const MOBILE_QUERY='(max-width: 767px)';
-
-export function MobileConversationGate({children}:{children:ReactNode}){
-  const pathname=usePathname();
-  const router=useRouter();
-
-  useEffect(()=>{
-    if(pathname.startsWith('/conversations')) return;
-
-    const media=window.matchMedia(MOBILE_QUERY);
-    const enforce=()=>{
-      if(media.matches) router.replace('/conversations');
-    };
-
-    enforce();
-    media.addEventListener('change',enforce);
-    return()=>media.removeEventListener('change',enforce);
-  },[pathname,router]);
-
+/**
+ * Stage 3 responsive_full_platform compatibility boundary.
+ *
+ * This component intentionally remains mounted because older shell code and
+ * tests import it, but it no longer redirects mobile users to /conversations.
+ * Protected routing and authorization remain owned by the existing route/auth
+ * layers, while every authorized page can now render at mobile widths.
+ */
+export function MobileConversationGate({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
