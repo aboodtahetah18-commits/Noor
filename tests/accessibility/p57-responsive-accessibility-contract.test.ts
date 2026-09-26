@@ -11,7 +11,8 @@ const css = readFileSync('src/app/globals.css', 'utf8');
 describe('P57 responsive accessibility closure', () => {
   it('keeps dedicated navigation shells for all three viewport classes', () => {
     expect(layout).toContain('<MobileBottomNav />');
-    expect(layout).toContain('<TabletTopNav />');
+    expect(layout).toContain('TabletTopNav');
+    expect(layout).toContain('<TabletTopNav profile={profile} />');
     expect(layout).toContain('<DesktopTopNav />');
     expect(mobile).toContain('aria-label="التنقل الرئيسي للجوال"');
     expect(tablet).toContain('tablet-top-nav');
