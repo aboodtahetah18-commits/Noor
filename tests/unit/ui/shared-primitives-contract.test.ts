@@ -75,7 +75,9 @@ describe('Stage 2 shared primitive contract', () => {
     expect(css).toContain('.ux-drawer-surface');
   });
 
-  it('keeps the legacy feedback import path as a compatibility layer', () => {
-    expect(read('src/components/ui/feedback-state.tsx')).toContain("from './FeedbackState'");
+  it('keeps the legacy feedback implementation as a compatibility layer', () => {
+    const legacy = read('src/components/ui/feedback-state.tsx');
+    expect(legacy).toContain('p47-feedback-state');
+    expect(legacy).toContain("'danger'");
   });
 });
