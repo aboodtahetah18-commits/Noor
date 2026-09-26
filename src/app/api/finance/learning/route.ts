@@ -27,7 +27,7 @@ export async function GET(){
     const stored=await readFinancialContinuousLearning(user.id);
     const profile=stored??await refreshFinancialContinuousLearning(user.id);
     const candidates=buildFinancialLearningChangeCandidates(profile);
-    const lifecycle=await syncFinancialLearningLifecycle(user.id,profile);
+    await syncFinancialLearningLifecycle(user.id,profile);
     const activeFactors=await readActiveFinancialLearningFactors(user.id);
     const monitoring=await monitorActiveFinancialLearning(user.id);
     const timeline=buildFinancialLearningTimeline(monitoring.store);
