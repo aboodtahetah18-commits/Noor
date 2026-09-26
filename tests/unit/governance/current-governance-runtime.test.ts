@@ -1,36 +1,39 @@
 import { describe, expect, it } from "vitest";
-import { CENTRAL_ACTIVE_POLICIES } from "../../../src/content/governance/central-active-policies";
-import { CENTRAL_ACTIVE_REGULATIONS } from "../../../src/content/governance/central-active-regulations";
+import { COMPACT_CORE_GOVERNANCE_DOCUMENTS } from "../../../src/content/governance/compact-core-documents";
 import { getLocalGovernanceDocument, LOCAL_GOVERNANCE_DOCUMENTS } from "../../../src/content/governance";
 import { governedRoomDetails } from "../../../src/lib/conversations/governed-room-details";
 
 describe("ربط مراجع الحوكمة النافذة بالواجهة", () => {
-  it("يعرض سجل السياسات المركزية الجديد تلقائيًا داخل شاشة بنك نماء المركزي", () => {
-    const expected=CENTRAL_ACTIVE_POLICIES.map(x=>x.referenceCode);
-    const actual=governedRoomDetails.central.policies
-      .filter(x=>x.referenceCode.startsWith("NMC-POL-"))
-      .map(x=>x.referenceCode);
+  it("يعرض المراجع الحاكمة الحالية المرتبطة بالمركزي من المصدر التنفيذي المختصر", () => {
+    const expected=COMPACT_CORE_GOVERNANCE_DOCUMENTS
+      .filter((document)=>governedRoomDetails.central.sourceRefs.includes(document.referenceCode))
+      .map((document)=>document.referenceCode)
+      .sort();
+    const actual=[...governedRoomDetails.central.records,...governedRoomDetails.central.policies]
+      .map((document)=>document.referenceCode)
+      .filter((referenceCode,index,all)=>all.indexOf(referenceCode)===index)
+      .sort();
     expect(actual).toEqual(expected);
   });
 
-  it("يعرض سجل اللوائح المركزية الجديد تلقائيًا داخل شاشة بنك نماء المركزي", () => {
-    const expected=CENTRAL_ACTIVE_REGULATIONS.map(x=>x.referenceCode);
-    const actual=governedRoomDetails.central.records
-      .filter(x=>x.referenceCode.startsWith("NMC-REG-"))
-      .map(x=>x.referenceCode);
-    expect(actual).toEqual(expected);
+  it("لا يعرض رموز السياسات واللوائح المركزية القديمة داخل شاشة المركزي", () => {
+    const actual=[...governedRoomDetails.central.records,...governedRoomDetails.central.policies]
+      .map((document)=>document.referenceCode);
+    expect(actual.some((referenceCode)=>referenceCode.startsWith("NMC-POL-"))).toBe(false);
+    expect(actual.some((referenceCode)=>referenceCode.startsWith("NMC-REG-"))).toBe(false);
   });
 
-  it("يعرض سياسة الصلاحيات الجديدة ويتضمن صلاحيات مدير البنك", () => {
-    const doc=getLocalGovernanceDocument("NMC-POL-02");
-    expect(doc?.title).toContain("الصلاحيات والتفويض والتصعيد");
-    expect(doc?.content).toContain("صلاحيات مدير البنك");
-    expect(doc?.content).toContain("أصحاب المسؤوليات");
+  it("يعرض المرجع المختصر للصلاحيات ويتضمن حدود أصحاب المسؤوليات ومديري البنوك", () => {
+    const doc=getLocalGovernanceDocument("NMC-CORE-07");
+    expect(doc?.title).toContain("الصلاحيات والحوكمة واللجان");
+    expect(doc?.content).toContain("حدود أصحاب المسؤوليات");
+    expect(doc?.content).toContain("حدود مديري البنوك");
   });
 
-  it("لا يحتوي السجل النشط على رموز السياسات المركزية القديمة", () => {
-    const codes=LOCAL_GOVERNANCE_DOCUMENTS.map(x=>x.referenceCode);
+  it("يحافظ السجل الحاكم الحالي على رموز فريدة ولا يعيد المصادر القديمة", () => {
+    const codes=LOCAL_GOVERNANCE_DOCUMENTS.map((document)=>document.referenceCode);
     expect(new Set(codes).size).toBe(codes.length);
+    expect(codes.every((referenceCode)=>referenceCode.startsWith("NMC-CORE-"))).toBe(true);
     for(const code of [
       "NMC-POL-09","NMC-POL-10","ADV-POL-01","ADV-POL-02",
       "OPS-POL-01","SEC-POL-01","SEC-POL-02","SEC-POL-03",
@@ -38,10 +41,9 @@ describe("ربط مراجع الحوكمة النافذة بالواجهة", () 
     ]) expect(codes).not.toContain(code);
   });
 
-  it("يثبت أدوار البنوك ومديريها وأصحاب المسؤوليات في السياسات الجديدة", () => {
-    expect(getLocalGovernanceDocument("NMC-POL-01")?.content).toContain("مدير كل بنك");
-    expect(getLocalGovernanceDocument("NMC-POL-04")?.content).toContain("أصحاب المسؤوليات");
-    expect(getLocalGovernanceDocument("NMC-POL-06")?.content).toContain("أصحاب المسؤوليات");
-    expect(getLocalGovernanceDocument("NMC-POL-07")?.content).toContain("دور مدير البنك");
+  it("يثبت المرجع الحالي الفصل بين الحساب والتوصية والتنفيذ المالي الخارجي", () => {
+    expect(getLocalGovernanceDocument("NMC-CORE-01")?.content).toContain("قاعدة الرقم القابل للتفسير");
+    expect(getLocalGovernanceDocument("NMC-CORE-07")?.content).toContain("لا ينفذ حركة مالية");
+    expect(getLocalGovernanceDocument("NMC-CORE-07")?.content).toContain("ينفذها المستخدم");
   });
 });
