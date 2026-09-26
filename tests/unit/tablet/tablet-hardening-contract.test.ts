@@ -11,7 +11,8 @@ const tabletSection = css;
 
 describe('tablet responsive hardening contract', () => {
   it('provides a tablet-specific navigation shell between mobile and desktop breakpoints', () => {
-    expect(layout).toContain('<TabletTopNav />');
+    expect(layout).toContain('TabletTopNav');
+    expect(layout).toContain('<TabletTopNav profile={profile} />');
     expect(layout).toContain('<DesktopTopNav />');
     expect(layout).toContain('<MobileBottomNav />');
     expect(tabletSection).toContain('@media(min-width:768px) and (max-width:1023px)');
