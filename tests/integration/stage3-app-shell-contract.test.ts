@@ -57,7 +57,7 @@ describe('Stage 3 responsive full-platform app shell', () => {
     expect(desktop).toContain('role="search"');
     expect(desktop).toContain('ProfileTrigger');
     expect(desktop).toContain('ThemeToggle');
-    expect(desktop).toContain("href="/alerts"");
+    expect(desktop).toContain('href="/alerts"');
 
     expect(tablet).toContain('role="search"');
     expect(tablet).toContain('ProfileTrigger');
