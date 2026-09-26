@@ -7,7 +7,7 @@ export type CardProps = HTMLAttributes<HTMLDivElement> & {
 export function Card({ className = '', interactive = false, ...props }: CardProps) {
   return (
     <div
-      className={`ux-card ${className}`.trim()}
+      className={`ux-surface ${className}`.trim()}
       data-interactive={interactive ? 'true' : undefined}
       {...props}
     />
