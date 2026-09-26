@@ -1,18 +1,25 @@
 import type { HTMLAttributes, ReactNode, TableHTMLAttributes } from 'react';
 
-type TableShellProps = HTMLAttributes<HTMLDivElement> & {
+export type TableShellProps = HTMLAttributes<HTMLDivElement> & {
   children: ReactNode;
+  ariaLabel?: string;
 };
 
-export function TableShell({ className = '', children, ...props }: TableShellProps) {
+export function TableShell({ className = '', children, ariaLabel, ...props }: TableShellProps) {
   return (
-    <div className={`ux-table-wrap ${className}`.trim()} {...props}>
+    <div
+      className={`ux-table-wrap ${className}`.trim()}
+      role={ariaLabel ? 'region' : undefined}
+      aria-label={ariaLabel}
+      tabIndex={ariaLabel ? 0 : undefined}
+      {...props}
+    >
       {children}
     </div>
   );
 }
 
-type TableProps = TableHTMLAttributes<HTMLTableElement> & {
+export type TableProps = TableHTMLAttributes<HTMLTableElement> & {
   children: ReactNode;
 };
 
