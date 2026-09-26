@@ -58,7 +58,7 @@ const runtimeAliases = [
   '--ux-action-primary:var(--namaa-green-900)',
 ];
 for (const alias of runtimeAliases) if (!ndos.includes(alias)) fail(`Frozen runtime alias missing: ${alias}`);
-if (!legacyGovernance.includes(':root')) fail('Legacy governance compatibility layer is unexpectedly missing.');
+if (legacyGovernance.includes(':root')) fail('Legacy governance compatibility layer must not redefine root design tokens after Foundations consolidation.');
 
 if (failures.length) {
   console.error(`NDOS-FROZEN-CONTRACT-FAIL ${failures.length} issue(s)`);
