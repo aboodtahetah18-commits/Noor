@@ -1,0 +1,584 @@
+/* Stage 3 — App Shell authority.
+   Scope: shell composition only. Visual values consume frozen NDOS/UX tokens. */
+
+.protected-app-shell {
+  min-height:100dvh;
+  max-width:100%;
+  overflow-x:clip;
+  background:var(--ux-page-bg);
+  color:var(--ux-text-primary);
+}
+
+.namaa-app-main {
+  min-width:0;
+  width:100%;
+  outline:none;
+}
+
+.namaa-page-frame {
+  width:min(100%,var(--ux-container-wide));
+  min-width:0;
+  margin-inline:auto;
+}
+
+/* Shared page/container composition without altering page-local content. */
+.protected-app-shell :where(.page-shell,.dashboard-shell,.p47-page-stack) {
+  width:min(100%,var(--ux-container-content));
+  max-width:100%;
+  margin-inline:auto;
+}
+
+.protected-app-shell :where(.page-header,.p47-page-heading,.p47-resource-header) {
+  min-width:0;
+}
+
+.protected-app-shell :where(.section-title-row,.p47-section-header) {
+  min-width:0;
+}
+
+/* Desktop >= 1024: fixed right sidebar + fixed topbar. */
+@media (min-width:1024px) {
+  .protected-app-shell {
+    min-height:100dvh;
+    padding-inline-start:var(--ux-shell-sidebar-collapsed);
+    padding-block-start:var(--ux-shell-topbar-height);
+  }
+
+  html[data-sidebar="expanded"] .protected-app-shell {
+    padding-inline-start:var(--ux-shell-sidebar-expanded);
+  }
+
+  .desktop-top-nav-wrap.mustaqbali-sidebar {
+    display:block;
+    position:fixed;
+    inset-block:0;
+    inset-inline-start:0;
+    width:var(--ux-shell-sidebar-collapsed);
+    height:100dvh;
+    z-index:var(--ux-z-navigation);
+    overflow:hidden;
+    border-inline-end:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-shell-topbar-border);
+    background:var(--ux-shell-sidebar-bg);
+    color:var(--ux-text-inverse);
+  }
+
+  html[data-sidebar="expanded"] .desktop-top-nav-wrap.mustaqbali-sidebar {
+    width:var(--ux-shell-sidebar-expanded);
+  }
+
+  .mustaqbali-sidebar-inner {
+    height:100%;
+    min-width:0;
+    display:grid;
+    grid-template-rows:auto minmax(0,1fr);
+  }
+
+  .namaa-wide-sidebar-head {
+    min-height:var(--ux-shell-topbar-height);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:var(--ux-space-2);
+    padding-inline:var(--ux-space-3);
+    border-block-end:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-shell-topbar-border);
+  }
+
+  .namaa-wide-sidebar-brand {
+    min-width:0;
+    display:flex;
+    align-items:center;
+    text-decoration:none;
+  }
+
+  .namaa-wide-sidebar-brand .namaa-brand-logo {
+    width:var(--ux-logo-desktop-width);
+    height:auto;
+  }
+
+  html[data-sidebar="collapsed"] .namaa-wide-sidebar-brand {
+    display:none;
+  }
+
+  .namaa-wide-sidebar-close,
+  .mustaqbali-topbar-menu,
+  .mustaqbali-topbar-actions > a,
+  .mustaqbali-topbar-actions > button {
+    min-width:var(--ux-size-10);
+    width:var(--ux-size-10);
+    min-height:var(--ux-size-10);
+    height:var(--ux-size-10);
+    display:inline-grid;
+    place-items:center;
+    padding:0;
+    border:var(--ux-border-width-1) var(--ux-border-style-default) transparent;
+    border-radius:var(--ux-radius-sm);
+    background:transparent;
+    color:inherit;
+  }
+
+  .namaa-wide-sidebar-close:hover,
+  .namaa-wide-sidebar-close:focus-visible {
+    background:var(--ux-shell-sidebar-hover);
+  }
+
+  .mustaqbali-sidebar-nav {
+    min-width:0;
+    overflow-y:auto;
+    overflow-x:hidden;
+    padding:var(--ux-space-3) var(--ux-space-2) var(--ux-space-6);
+  }
+
+  .mustaqbali-nav-section {
+    display:grid;
+    gap:var(--ux-space-1);
+  }
+
+  .mustaqbali-nav-section + .mustaqbali-nav-section {
+    margin-block-start:var(--ux-space-4);
+    padding-block-start:var(--ux-space-3);
+    border-block-start:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-shell-topbar-border);
+  }
+
+  .mustaqbali-nav-section > p {
+    margin:0;
+    padding:var(--ux-space-2) var(--ux-space-3);
+    color:var(--ux-text-inverse);
+    font-size:var(--ux-type-caption-size);
+    font-weight:var(--ux-type-label-weight);
+  }
+
+  html[data-sidebar="collapsed"] .mustaqbali-nav-section > p,
+  html[data-sidebar="collapsed"] .mustaqbali-nav-label {
+    display:none;
+  }
+
+  .mustaqbali-sidebar-nav a {
+    min-height:var(--ux-size-10);
+    min-width:0;
+    display:flex;
+    align-items:center;
+    gap:var(--ux-space-3);
+    padding-inline:var(--ux-space-3);
+    border-radius:var(--ux-radius-sm);
+    color:var(--ux-text-inverse);
+    text-decoration:none;
+  }
+
+  .mustaqbali-sidebar-nav a:hover,
+  .mustaqbali-sidebar-nav a:focus-visible {
+    background:var(--ux-shell-sidebar-hover);
+  }
+
+  .mustaqbali-sidebar-nav a.is-active {
+    background:var(--ux-shell-sidebar-active);
+    font-weight:var(--ux-type-button-weight);
+    box-shadow:inset calc(var(--ux-border-width-2) * -1) 0 0 var(--ux-brand-accent);
+  }
+
+  html[data-sidebar="collapsed"] .mustaqbali-sidebar-nav a {
+    justify-content:center;
+    padding-inline:0;
+  }
+
+  .mustaqbali-nav-icon {
+    flex:0 0 auto;
+    display:inline-grid;
+    place-items:center;
+  }
+
+  .mustaqbali-topbar.namaa-topbar {
+    display:grid;
+    grid-template-columns:auto minmax(0,1fr) auto;
+    align-items:center;
+    gap:var(--ux-space-4);
+    position:fixed;
+    inset-block-start:0;
+    inset-inline-start:var(--ux-shell-sidebar-collapsed);
+    inset-inline-end:0;
+    min-height:var(--ux-shell-topbar-height);
+    height:var(--ux-shell-topbar-height);
+    z-index:var(--ux-z-sticky);
+    padding-inline:var(--ux-space-5);
+    border-block-end:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-shell-topbar-border);
+    background:var(--ux-shell-topbar-bg) !important;
+    color:var(--ux-text-primary) !important;
+  }
+
+  html[data-sidebar="expanded"] .mustaqbali-topbar.namaa-topbar {
+    inset-inline-start:var(--ux-shell-sidebar-expanded);
+  }
+
+  .mustaqbali-topbar-brand-zone,
+  .mustaqbali-topbar-actions {
+    display:flex;
+    align-items:center;
+    gap:var(--ux-space-2);
+  }
+
+  .mustaqbali-topbar-logo .namaa-brand-logo {
+    width:var(--ux-logo-desktop-width);
+    height:auto;
+  }
+
+  .mustaqbali-global-search {
+    justify-self:center;
+    width:min(100%,var(--ux-container-reading));
+    min-height:var(--ux-size-10);
+    display:grid;
+    grid-template-columns:auto minmax(0,1fr);
+    align-items:center;
+    gap:var(--ux-space-2);
+    padding-inline:var(--ux-space-3);
+    border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);
+    border-radius:var(--ux-radius-sm);
+    background:var(--ux-card-bg);
+    color:var(--ux-text-secondary);
+  }
+
+  .mustaqbali-global-search input {
+    width:100%;
+    min-width:0;
+    border:0;
+    outline:0;
+    background:transparent;
+    color:var(--ux-text-primary);
+    font:inherit;
+  }
+
+  .mustaqbali-global-search:focus-within {
+    border-color:var(--ux-focus-ring);
+    box-shadow:var(--ux-shadow-focus);
+  }
+
+  .mustaqbali-topbar-actions {
+    justify-content:flex-end;
+  }
+
+  .mustaqbali-topbar-actions > a:hover,
+  .mustaqbali-topbar-actions > button:hover {
+    background:var(--ux-section-soft-teal);
+  }
+
+  .namaa-app-main {
+    padding:var(--ux-space-6) var(--ux-space-6) var(--ux-space-8);
+  }
+
+  .namaa-page-frame {
+    padding-inline:var(--ux-space-2);
+  }
+}
+
+/* Tablet 768–1023: independent two-row shell, no desktop sidebar. */
+@media (min-width:768px) and (max-width:1023px) {
+  .protected-app-shell {
+    min-height:100dvh;
+  }
+
+  .mustaqbali-topbar,
+  .desktop-top-nav-wrap,
+  .p47-mobile-topbar,
+  .mobile-bottom-nav {
+    display:none !important;
+  }
+
+  .tablet-top-nav-wrap {
+    display:block !important;
+    position:sticky;
+    inset-block-start:0;
+    z-index:var(--ux-z-sticky);
+    border-block-end:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-shell-topbar-border);
+    background:var(--ux-shell-topbar-bg);
+  }
+
+  .mustaqbali-tablet-topbar {
+    min-height:var(--ux-shell-topbar-height);
+    display:grid;
+    grid-template-columns:auto minmax(0,1fr) auto;
+    align-items:center;
+    gap:var(--ux-space-3);
+    padding-inline:var(--ux-space-5);
+    background:var(--ux-shell-topbar-bg);
+  }
+
+  .mustaqbali-tablet-brand .namaa-brand-logo {
+    width:var(--ux-logo-tablet-width);
+    height:auto;
+  }
+
+  .mustaqbali-tablet-search {
+    min-height:var(--ux-size-10);
+    display:grid;
+    grid-template-columns:auto minmax(0,1fr);
+    align-items:center;
+    gap:var(--ux-space-2);
+    padding-inline:var(--ux-space-3);
+    border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);
+    border-radius:var(--ux-radius-sm);
+    background:var(--ux-card-bg);
+    color:var(--ux-text-secondary);
+  }
+
+  .mustaqbali-tablet-search input {
+    min-width:0;
+    width:100%;
+    border:0;
+    outline:0;
+    background:transparent;
+    color:var(--ux-text-primary);
+    font:inherit;
+  }
+
+  .mustaqbali-tablet-search:focus-within {
+    border-color:var(--ux-focus-ring);
+    box-shadow:var(--ux-shadow-focus);
+  }
+
+  .mustaqbali-tablet-actions {
+    display:flex;
+    align-items:center;
+    gap:var(--ux-space-2);
+  }
+
+  .mustaqbali-tablet-action,
+  .mustaqbali-tablet-actions > button {
+    min-width:var(--ux-size-10);
+    width:var(--ux-size-10);
+    min-height:var(--ux-size-10);
+    height:var(--ux-size-10);
+    display:inline-grid;
+    place-items:center;
+    border-radius:var(--ux-radius-sm);
+    color:var(--ux-text-primary);
+  }
+
+  .mustaqbali-tablet-nav {
+    display:flex;
+    align-items:center;
+    gap:var(--ux-space-1);
+    overflow-x:auto;
+    overscroll-behavior-inline:contain;
+    padding:var(--ux-space-2) var(--ux-space-5);
+    border-block-start:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-shell-topbar-border);
+    scrollbar-width:thin;
+  }
+
+  .mustaqbali-tablet-nav a {
+    flex:0 0 auto;
+    min-height:var(--ux-size-9);
+    display:inline-flex;
+    align-items:center;
+    padding-inline:var(--ux-space-3);
+    border-radius:var(--ux-radius-sm);
+    color:var(--ux-text-secondary);
+    text-decoration:none;
+    white-space:nowrap;
+  }
+
+  .mustaqbali-tablet-nav a:hover,
+  .mustaqbali-tablet-nav a:focus-visible {
+    background:var(--ux-section-soft-teal);
+    color:var(--ux-text-primary);
+  }
+
+  .mustaqbali-tablet-nav a.is-active {
+    background:var(--ux-action-primary);
+    color:var(--ux-text-inverse);
+    font-weight:var(--ux-type-button-weight);
+  }
+
+  .namaa-app-main {
+    padding:var(--ux-space-5) var(--ux-space-6) var(--ux-space-8);
+  }
+
+  .namaa-page-frame {
+    width:min(100%,var(--ux-container-content));
+  }
+
+  .protected-app-shell :where(.ux-responsive-grid,.dashboard-main-grid,.dashboard-triple-grid) {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
+
+/* Mobile <768: light topbar + fixed five-item bottom navigation + shared Drawer. */
+@media (max-width:767px) {
+  .mustaqbali-topbar,
+  .desktop-top-nav-wrap,
+  .tablet-top-nav-wrap {
+    display:none !important;
+  }
+
+  .p47-mobile-topbar.mustaqbali-mobile-header {
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) auto !important;
+    align-items:center;
+    gap:var(--ux-space-2);
+    position:sticky;
+    inset-block-start:0;
+    z-index:var(--ux-z-sticky);
+    min-height:var(--ux-mobile-header-height);
+    width:100%;
+    max-inline-size:100vw !important;
+    padding-inline:var(--ux-space-3);
+    border-block-end:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-shell-topbar-border);
+    background:var(--ux-shell-topbar-bg) !important;
+    color:var(--ux-text-primary);
+  }
+
+  .mustaqbali-mobile-brand-zone,
+  .mustaqbali-mobile-header-actions {
+    min-inline-size:0 !important;
+    display:flex;
+    align-items:center;
+    gap:var(--ux-space-1);
+  }
+
+  .mustaqbali-mobile-brand-zone {
+    overflow:hidden;
+  }
+
+  .mustaqbali-mobile-brand {
+    min-width:0;
+    display:flex;
+    align-items:center;
+    overflow:hidden;
+  }
+
+  .mustaqbali-mobile-brand .namaa-brand-logo {
+    width:var(--ux-logo-mobile-width);
+    height:auto;
+  }
+
+  .mustaqbali-mobile-menu-trigger,
+  .mustaqbali-mobile-header-actions > a,
+  .mustaqbali-mobile-header-actions > button {
+    flex:0 0 auto;
+    min-width:var(--ux-size-10);
+    width:var(--ux-size-10);
+    min-height:var(--ux-size-10);
+    height:var(--ux-size-10);
+    display:inline-grid;
+    place-items:center;
+    padding:0;
+    border:0;
+    border-radius:var(--ux-radius-sm);
+    background:transparent;
+    color:var(--ux-text-primary);
+  }
+
+  .mustaqbali-mobile-menu-trigger:hover,
+  .mustaqbali-mobile-header-actions > a:hover,
+  .mustaqbali-mobile-header-actions > button:hover {
+    background:var(--ux-section-soft-teal);
+  }
+
+  .mobile-bottom-nav.mustaqbali-mobile-bottom-nav {
+    display:grid !important;
+    grid-template-columns:repeat(5,minmax(0,1fr));
+    position:fixed;
+    inset-inline:0;
+    inset-block-end:0;
+    z-index:var(--ux-z-navigation);
+    padding:var(--ux-space-1) var(--ux-space-2) max(var(--ux-space-1),env(safe-area-inset-bottom));
+    border-block-start:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);
+    background:var(--ux-card-bg);
+    box-shadow:var(--ux-shadow-sm);
+  }
+
+  .mobile-bottom-nav a {
+    min-width:0;
+    min-height:var(--ux-size-12);
+    display:grid;
+    place-items:center;
+    align-content:center;
+    gap:var(--ux-space-1);
+    padding:var(--ux-space-1);
+    border-radius:var(--ux-radius-sm);
+    color:var(--ux-text-secondary);
+    text-decoration:none;
+    font-size:var(--ux-type-caption-size);
+    line-height:var(--ux-type-caption-line);
+  }
+
+  .mobile-bottom-nav a:hover,
+  .mobile-bottom-nav a:focus-visible {
+    background:var(--ux-section-soft-teal);
+    color:var(--ux-text-primary);
+  }
+
+  .mobile-bottom-nav a.is-active {
+    color:var(--ux-brand-primary);
+    background:var(--ux-section-soft-teal);
+    font-weight:var(--ux-type-button-weight);
+  }
+
+  .mobile-nav-icon {
+    display:inline-grid;
+    place-items:center;
+  }
+
+  .namaa-app-main {
+    width:100%;
+    min-width:0;
+    padding:var(--ux-space-3) var(--ux-space-3) calc(var(--ux-size-16) + var(--ux-space-6) + env(safe-area-inset-bottom));
+  }
+
+  .namaa-page-frame {
+    width:100%;
+    min-width:0;
+    padding:0;
+  }
+
+  .protected-app-shell :where(.page-shell,.dashboard-shell,.p47-page-stack) {
+    width:100%;
+    max-width:100%;
+    min-width:0;
+  }
+
+  .protected-app-shell :where(.page-header,.p47-page-heading,.p47-resource-header) {
+    width:100%;
+    max-width:100%;
+    min-width:0;
+  }
+
+  .protected-app-shell :where(.section-title-row,.p47-section-header) {
+    max-width:100%;
+    min-width:0;
+  }
+
+  .namaa-mobile-navigation-drawer {
+    z-index:var(--ux-z-modal);
+  }
+
+  .namaa-mobile-drawer-nav {
+    display:grid;
+    gap:var(--ux-space-1);
+  }
+
+  .namaa-mobile-drawer-nav a {
+    min-height:var(--ux-size-12);
+    display:flex;
+    align-items:center;
+    padding-inline:var(--ux-space-3);
+    border-radius:var(--ux-radius-sm);
+    color:var(--ux-text-primary);
+    text-decoration:none;
+  }
+
+  .namaa-mobile-drawer-nav a:hover,
+  .namaa-mobile-drawer-nav a:focus-visible {
+    background:var(--ux-section-soft-teal);
+  }
+
+  .namaa-mobile-drawer-nav a.is-active {
+    background:var(--ux-action-primary);
+    color:var(--ux-text-inverse);
+    font-weight:var(--ux-type-button-weight);
+  }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  .desktop-top-nav-wrap.mustaqbali-sidebar,
+  .mustaqbali-topbar.namaa-topbar {
+    transition:none !important;
+  }
+}
