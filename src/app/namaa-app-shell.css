@@ -172,7 +172,7 @@
   .mustaqbali-sidebar-nav a.is-active {
     background:var(--ux-shell-sidebar-active);
     font-weight:var(--ux-type-button-weight);
-    box-shadow:inset calc(var(--ux-border-width-2) * -1) 0 0 var(--ux-brand-accent);
+    border-inline-start:var(--ux-border-width-2) var(--ux-border-style-default) var(--ux-brand-accent);
   }
 
   html[data-sidebar="collapsed"] .mustaqbali-sidebar-nav a {
