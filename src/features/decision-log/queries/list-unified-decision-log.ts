@@ -125,16 +125,20 @@ export function mapBankDecisionToUnified(row:Awaited<ReturnType<typeof listBankD
   };
 }
 
-export function mapConversationDecisionToUnified(row:{
-  id:unknown;
-  sender_key:unknown;
-  sender_name:unknown;
-  sender_type:unknown;
-  message_kind:unknown;
-  body:unknown;
-  structured_data:unknown;
-  created_at:unknown;
-}):UnifiedDecisionLogItem|null{
+type ConversationDecisionRow={
+  id?:unknown;
+  sender_key?:unknown;
+  sender_name?:unknown;
+  sender_type?:unknown;
+  message_kind?:unknown;
+  body?:unknown;
+  structured_data?:unknown;
+  created_at?:unknown;
+};
+
+export function mapConversationDecisionToUnified(
+  row:ConversationDecisionRow,
+):UnifiedDecisionLogItem|null{
   const data=asRecord(row.structured_data)??{};
   const explanation=asRecord(data.decision_explanation);
   const committeeDecision=text(data.committee_decision);
@@ -240,7 +244,7 @@ export async function listUnifiedDecisionLog(userId:string,limit=200):Promise<Un
   ]);
 
   const bank=bankRows.map(mapBankDecisionToUnified);
-  const conversations=conversationRows
+  const conversations=(conversationRows as ConversationDecisionRow[])
     .map(row=>mapConversationDecisionToUnified(row))
     .filter((item):item is UnifiedDecisionLogItem=>item!==null);
 
