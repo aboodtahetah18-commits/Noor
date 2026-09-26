@@ -1,5 +1,15 @@
 import type { HTMLAttributes } from 'react';
 
-export function Card({ className = '', ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={`ux-surface ${className}`.trim()} {...props} />;
+export type CardProps = HTMLAttributes<HTMLDivElement> & {
+  interactive?: boolean;
+};
+
+export function Card({ className = '', interactive = false, ...props }: CardProps) {
+  return (
+    <div
+      className={`ux-card ${className}`.trim()}
+      data-interactive={interactive ? 'true' : undefined}
+      {...props}
+    />
+  );
 }
