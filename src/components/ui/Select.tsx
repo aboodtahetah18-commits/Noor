@@ -1,5 +1,14 @@
 import type { SelectHTMLAttributes } from 'react';
 
-export function Select({ className = '', ...props }: SelectHTMLAttributes<HTMLSelectElement>) {
-  return <select className={`ux-control ${className}`.trim()} {...props} />;
+export type SelectProps = SelectHTMLAttributes<HTMLSelectElement>;
+
+export function Select({ className = '', 'aria-invalid': ariaInvalid, ...props }: SelectProps) {
+  return (
+    <select
+      className={`ux-control ${className}`.trim()}
+      aria-invalid={ariaInvalid}
+      data-invalid={ariaInvalid === true || ariaInvalid === 'true' ? 'true' : undefined}
+      {...props}
+    />
+  );
 }
