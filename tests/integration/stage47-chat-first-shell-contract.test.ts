@@ -15,6 +15,17 @@ describe('Stage 4.7 chat-first mobile shell contract', () => {
     expect(shell).toContain('height:100dvh');
   });
 
+  it('removes the unused desktop sidebar reservation from the chat-first route', () => {
+    const shell = read('src/app/namaa-app-shell.css');
+
+    expect(shell).toContain('Stage 4.7 — desktop chat-first alignment');
+    expect(shell).toContain('.protected-app-shell:has([data-chat-first-route="true"]) {');
+    expect(shell).toContain('padding-inline-start:0;');
+    expect(shell).toContain('.desktop-top-nav-wrap.mustaqbali-sidebar');
+    expect(shell).toContain('inset-inline-start:0;');
+    expect(shell).toContain('max-width:100%;');
+  });
+
   it('removes duplicate global mobile chrome only while conversations own the viewport', () => {
     const top = read('src/app/(protected)/mobile-top-bar.tsx');
     const bottom = read('src/app/(protected)/mobile-bottom-nav.tsx');

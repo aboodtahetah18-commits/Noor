@@ -268,6 +268,38 @@
   }
 }
 
+
+/* Stage 4.7 — desktop chat-first alignment.
+   The conversation workspace already owns its left/right contextual rails, so the global
+   desktop sidebar must not reserve an additional RTL gutter on this route. */
+@media (min-width:1024px) {
+  .protected-app-shell:has([data-chat-first-route="true"]) {
+    padding-inline-start:0;
+  }
+
+  .protected-app-shell:has([data-chat-first-route="true"]) .desktop-top-nav-wrap.mustaqbali-sidebar {
+    display:none;
+  }
+
+  .protected-app-shell:has([data-chat-first-route="true"]) .mustaqbali-topbar.namaa-topbar {
+    inset-inline-start:0;
+  }
+
+  .protected-app-shell:has([data-chat-first-route="true"]) .namaa-app-main {
+    width:100%;
+    max-width:100%;
+    padding:var(--ux-space-4);
+  }
+
+  .protected-app-shell:has([data-chat-first-route="true"]) .namaa-page-frame,
+  .protected-app-shell:has([data-chat-first-route="true"]) [data-chat-first-route="true"] {
+    width:100%;
+    max-width:100%;
+    margin-inline:auto;
+    padding-inline:0;
+  }
+}
+
 /* Tablet 768–1023: independent two-row shell, no desktop sidebar. */
 @media (min-width:768px) and (max-width:1023px) {
   .protected-app-shell {
