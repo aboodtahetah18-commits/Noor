@@ -13,7 +13,7 @@ const secondary: ReadonlyArray<{ href:string; label:string; icon:LucideIconName 
   { href:'/conversations', label:'مركز العمل', icon:'messageSquareText' },
   { href:'/bank-operations', label:'البنوك', icon:'landmark' },
   { href:'/investments', label:'الاستثمارات', icon:'chart' },
-  { href:'/governance', label:'المعرفة', icon:'bookOpen' },
+  { href:'/governance', label:'المعرفة', icon:'receiptText' },
   { href:'/cases', label:'القضايا والقرارات', icon:'listChecks' },
   { href:'/reports', label:'التقارير', icon:'chart' },
   { href:'/advisor', label:'مختبر الخوارزميات', icon:'sparkles' },
