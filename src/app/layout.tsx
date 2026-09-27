@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { Noto_Sans_Arabic } from 'next/font/google';
 import './globals.css';
-import './uiux-governance.css';
+import './uiux-governance.css'; // legacy component compatibility only; shell authority is namaa-app-shell.css
 import '../design-system/tokens.css';
 import '../design-system/themes.css';
 import '../design-system/typography.css';
