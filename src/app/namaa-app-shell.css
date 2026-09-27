@@ -613,11 +613,15 @@
    Conversations own the mobile viewport and internal navigation on this route only. */
 @media (max-width:767px) {
   .protected-app-shell:has([data-chat-first-route="true"]) {
+    position:fixed;
+    inset:0;
     width:100dvw;
     max-width:100dvw;
+    height:100dvh;
     min-height:100dvh;
     margin:0;
     overflow:hidden;
+    overscroll-behavior:none;
     background:var(--ux-page-bg);
   }
 

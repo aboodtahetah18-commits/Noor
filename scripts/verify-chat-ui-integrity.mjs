@@ -49,7 +49,8 @@ if(!workspace.includes('showStructuredAction') || !workspace.includes('onOpenStr
 
 console.log('CHAT-UI-INTEGRITY-PASS');
 
-for(const required of ["setDetailTab('role')","setDetailTab('team')","setDetailTab('files')","setDetailTab('policies')","setDetailTab('authority')","setDetailTab('procedures')","setDetailTab('records')",'السياسات واللوائح','مصفوفة الصلاحيات','الإجراءات والآليات']){ if(!workspace.includes(required)) fail('governed entity detail section missing: '+required); }
+for(const required of ["setDetailTab('role')","setDetailTab('team')","setDetailTab('files')","setDetailTab('policies')",'السياسات واللوائح']){ if(!workspace.includes(required)) fail('governed entity detail section missing: '+required); }
+for(const retired of ["setDetailTab('authority')","setDetailTab('procedures')","setDetailTab('records')"]){ if(workspace.includes(retired)) fail('empty entity detail tab must stay removed: '+retired); }
 for(const persona of [
   '/brand/personas/central-governor.webp',
   '/brand/personas/central-bank-manager.webp',
@@ -86,3 +87,7 @@ if(!workspace.includes('styles.accountSurfaceOverlay')||!workspace.includes('sty
 if(!css.includes('.accountSurfaceScrim{\n    background:color-mix(in srgb,var(--namaa-chat-canvas) 10%,transparent)')||!css.includes('.accountSurfaceSheet{\n    top:72px;')) fail('mobile account surfaces must avoid the heavy full-screen gray veil');
 if(!css.includes('background:color-mix(in srgb,var(--namaa-surface-warm) 84%,var(--namaa-card))')) fail('mobile user bubble must retain the brighter warm governed surface');
 if(!css.includes(':global(html[data-theme="dark"]) .userMessage{\n    background:color-mix(in srgb,var(--ux-section-soft-teal) 72%,var(--ux-card-bg))')) fail('dark mobile user bubble must remain visibly distinct from the chat canvas');
+
+if(!workspace.includes("namaa-logo-white-transparent.png")||!workspace.includes('styles.chatHeaderBrand')) fail('mobile chat header must show the official Namaa logo');
+if(!css.includes('Stage 4.7 internal mobile recovery')) fail('mobile chat recovery authority missing');
+if(!css.includes('.composer{\n    position:relative;')) fail('mobile composer must remain inside the visible chat flex stack');
