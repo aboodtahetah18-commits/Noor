@@ -1,0 +1,45 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { describe, expect, it } from 'vitest';
+
+const root = process.cwd();
+const read = (file: string) => fs.readFileSync(path.join(root, file), 'utf8');
+
+describe('Stage 4.7 chat-first mobile shell contract', () => {
+  it('marks the conversation route as the mobile viewport owner', () => {
+    const page = read('src/app/(protected)/conversations/page.tsx');
+    const shell = read('src/app/namaa-app-shell.css');
+
+    expect(page).toContain('data-chat-first-route="true"');
+    expect(shell).toContain(':has([data-chat-first-route="true"]) .namaa-app-main');
+    expect(shell).toContain('height:100dvh');
+  });
+
+  it('removes duplicate global mobile chrome only while conversations own the viewport', () => {
+    const top = read('src/app/(protected)/mobile-top-bar.tsx');
+    const bottom = read('src/app/(protected)/mobile-bottom-nav.tsx');
+
+    expect(top).toContain("pathname === '/conversations'");
+    expect(top).toContain('if (chatFirst) return null');
+    expect(bottom).toContain("pathname === '/conversations'");
+    expect(bottom).toContain('if (chatFirst) return null');
+  });
+
+  it('keeps the existing five-destination mobile navigation for non-chat routes', () => {
+    const bottom = read('src/app/(protected)/mobile-bottom-nav.tsx');
+    for (const route of ['/dashboard', '/accounts', '/transactions', '/budget', '/more']) {
+      expect(bottom).toContain(`href: '${route}'`);
+    }
+  });
+
+  it('stabilizes conversation geometry without raw palette values', () => {
+    const css = read('src/components/conversations/conversation-workspace.module.css');
+    const stage = css.slice(css.lastIndexOf('Stage 4.7 — mobile chat-first viewport stabilization'));
+
+    expect(stage).toContain('position:relative!important');
+    expect(stage).toContain('max-width:84%!important');
+    expect(stage).toContain('max-width:78%!important');
+    expect(stage).toContain('var(--ux-z-modal)');
+    expect(stage).not.toMatch(/#[0-9a-f]{3,8}\b/i);
+  });
+});

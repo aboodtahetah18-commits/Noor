@@ -12968,3 +12968,43 @@
   text-overflow:ellipsis;
   white-space:nowrap
 }
+
+
+/* Stage 4.7 — mobile chat-first viewport stabilization.
+   Keep the conversation inside its route geometry instead of covering the global shell. */
+@media(max-width:767px){
+  .page{
+    position:relative!important;
+    inset:auto!important;
+    z-index:auto!important;
+    width:100%!important;
+    height:100dvh!important;
+    min-height:100dvh!important;
+    border-radius:var(--ux-radius-0)!important;
+    overflow:hidden!important
+  }
+  .workspace,
+  .workspace.withoutRooms,
+  .workspace.withoutContext,
+  .workspace.withoutRooms.withoutContext{
+    height:100%!important;
+    min-height:0!important
+  }
+  .chatPane{
+    height:100%!important;
+    max-height:100%!important;
+    min-height:0!important
+  }
+  .messages{
+    padding-inline:var(--ux-space-3)!important
+  }
+  .agentMessage{
+    max-width:84%!important
+  }
+  .userMessage{
+    max-width:78%!important
+  }
+  .mobileOverlay{
+    z-index:var(--ux-z-modal)!important
+  }
+}

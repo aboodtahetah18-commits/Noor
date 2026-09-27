@@ -14,6 +14,9 @@ const items: Array<{ href: string; label: string; icon: LucideIconName }> = [
 
 export function MobileBottomNav() {
   const pathname = usePathname();
+  const chatFirst = pathname === '/conversations' || pathname.startsWith('/conversations/');
+
+  if (chatFirst) return null;
 
   return (
     <nav className="mobile-bottom-nav mustaqbali-mobile-bottom-nav" aria-label="التنقل الرئيسي للجوال">

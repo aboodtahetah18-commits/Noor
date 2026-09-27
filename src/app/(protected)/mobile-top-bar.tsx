@@ -26,6 +26,9 @@ const secondary = [
 export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const chatFirst = pathname === '/conversations' || pathname.startsWith('/conversations/');
+
+  if (chatFirst) return null;
 
   return (
     <>
