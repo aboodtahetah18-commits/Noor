@@ -4027,17 +4027,17 @@
   }
   .page{
     min-height:100dvh;
-  border-radius:var(--ux-radius-0);
-  border-inline:0;
-  box-shadow:var(--ux-shadow-none);
-  position:fixed;
-  inset:var(--ux-space-0);
-  z-index:20;
-  height:100dvh;
-  width:100%;
-  border:0;
-  overflow:hidden;
-  background:var(--namaa-chat-canvas)
+    height:100dvh;
+    width:100%;
+    border-radius:var(--ux-radius-0);
+    border-inline:0;
+    box-shadow:var(--ux-shadow-none);
+    position:relative;
+    inset:auto;
+    z-index:auto;
+    border:0;
+    overflow:hidden;
+    background:var(--namaa-chat-canvas)
   }
   .workspace{
     height:100dvh;
@@ -4128,8 +4128,10 @@
   }
   .message>p{
     font-size:var(--ux-type-body-sm-size);
-  line-height:1.62
+    line-height:1.62
   }
+  .agentMessage{max-width:84%}
+  .userMessage{max-width:78%}
   .groupContinuation{margin-top:calc(var(--ux-space-1) * -1)}
   .conversationTimeDivider{padding:var(--ux-space-0);margin:var(--ux-space-1) var(--ux-space-0)}
   .messageIdentity{
@@ -4190,9 +4192,9 @@
   }
   .mobileOverlay{
     display:block;
-  position:fixed;
-  inset:var(--ux-space-0);
-  z-index:120
+    position:fixed;
+    inset:var(--ux-space-0);
+    z-index:var(--ux-z-modal)
   }
   .mobileAppBar{
     display:none;
@@ -4258,8 +4260,8 @@
   }
   .workspace,.workspace.withoutRooms,.workspace.withoutContext,.workspace.withoutRooms.withoutContext{
     display:block;
-    min-height:100dvh;
-    height:100dvh;
+    min-height:0;
+    height:100%;
     overflow:hidden
   }
   .mobileConversationList{
@@ -4284,8 +4286,8 @@
     display:flex;
     flex-direction:column;
     min-height:0;
-    height:100dvh;
-    max-height:100dvh;
+    height:100%;
+    max-height:100%;
     background:var(--namaa-chat-canvas);
     overflow:hidden;
     position:relative;
@@ -12970,41 +12972,3 @@
 }
 
 
-/* Stage 4.7 — mobile chat-first viewport stabilization.
-   Keep the conversation inside its route geometry instead of covering the global shell. */
-@media(max-width:767px){
-  .page{
-    position:relative!important;
-    inset:auto!important;
-    z-index:auto!important;
-    width:100%!important;
-    height:100dvh!important;
-    min-height:100dvh!important;
-    border-radius:var(--ux-radius-0)!important;
-    overflow:hidden!important
-  }
-  .workspace,
-  .workspace.withoutRooms,
-  .workspace.withoutContext,
-  .workspace.withoutRooms.withoutContext{
-    height:100%!important;
-    min-height:0!important
-  }
-  .chatPane{
-    height:100%!important;
-    max-height:100%!important;
-    min-height:0!important
-  }
-  .messages{
-    padding-inline:var(--ux-space-3)!important
-  }
-  .agentMessage{
-    max-width:84%!important
-  }
-  .userMessage{
-    max-width:78%!important
-  }
-  .mobileOverlay{
-    z-index:var(--ux-z-modal)!important
-  }
-}

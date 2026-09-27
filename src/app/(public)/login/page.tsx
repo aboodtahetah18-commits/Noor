@@ -6,6 +6,7 @@ import { LoginForm } from './login-form';
 import { APP_VERSION, appEnvironmentLabel } from '@/lib/app-release';
 import { ThemeToggle } from '../../theme-toggle';
 import { BrandLogo } from '@/components/brand/brand-logo';
+import { LucideIcon } from '@/components/ui/lucide-icon';
 import styles from './login.module.css';
 
 export const dynamic = 'force-dynamic';
@@ -20,60 +21,30 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
 
   return (
     <main className={styles.page}>
-      <section className={styles.shell} aria-label="تسجيل الدخول إلى نماء">
-        <aside className={styles.visual} aria-label="هوية نماء">
-          <div className={styles.leafDecorOne} aria-hidden="true" />
-          <div className={styles.leafDecorTwo} aria-hidden="true" />
-          <div className={styles.heroTheme}><ThemeToggle /></div>
+      <section className={styles.card} aria-label="تسجيل الدخول إلى نماء">
+        <div className={styles.themeButton}><ThemeToggle /></div>
 
-          <div className={styles.brand}>
-            <span className={styles.logoFrame} aria-label="نماء"><BrandLogo surface="light" className={`${styles.logo} ${styles.logoLight}`} priority /><BrandLogo surface="dark" className={`${styles.logo} ${styles.logoDark}`} priority /></span>
-            <span className={styles.brandText}><strong>نماء</strong><span>مستقبل مالي أكثر وعيًا</span></span>
+        <header className={styles.brandBlock}>
+          <BrandLogo surface="auto" className={styles.logo} priority />
+          <div className={styles.titleRow}>
+            <span className={styles.lockIcon} aria-hidden="true"><LucideIcon name="lockKeyhole" size={20} /></span>
+            <h1 id="login-title">تسجيل الدخول</h1>
           </div>
+        </header>
 
-          <div className={styles.mobileHeroCopy}>
-            <span className={styles.mobileBadge}>ابدأ بوعي مالي</span>
-            <h1>مرحبًا بعودتك</h1>
-            <p>أدخل بيانات حسابك للوصول إلى نماء.</p>
+        {bootstrapStatus === 'DATABASE_NOT_READY' ? (
+          <div className={styles.loadingCard}>
+            <strong>جاري تجهيز بيئة التشغيل</strong>
+            <p>قاعدة البيانات لم تكتمل تهيئتها بعد. حاول مجددًا بعد اكتمال التجهيز.</p>
           </div>
+        ) : (
+          <LoginForm returnTo={returnTo} />
+        )}
 
-          <div className={styles.visualCopy}>
-            <span className={styles.identityBadge}>منصة إدارة مالية شخصية</span>
-            <h1>قرار مالي أوضح،<br/>ضمن تجربة واحدة.</h1>
-            <p>تابع الميزانية، الالتزامات، الأهداف والقرارات من مكان واحد، مع بقاء التنفيذ المالي بيدك.</p>
-            <div className={styles.featureStrip} aria-label="مزايا نماء">
-              <span><b>01</b> رؤية مالية موحدة</span>
-              <span><b>02</b> قرارات قابلة للتتبع</span>
-              <span><b>03</b> متابعة دون تنفيذ تلقائي</span>
-            </div>
-          </div>
-        </aside>
-
-        <section className={styles.panel} aria-labelledby="login-title">
-          <div className={styles.themeButton}><ThemeToggle /></div>
-
-          {bootstrapStatus === 'DATABASE_NOT_READY' ? (
-            <div className={styles.loadingCard}>
-              <p className={styles.kicker}>تهيئة البيئة</p>
-              <h2 id="login-title">جاري تجهيز بيئة التشغيل</h2>
-              <p>قاعدة البيانات لم تكتمل تهيئتها بعد. أعد نشر هذه النسخة ثم حاول مجددًا.</p>
-            </div>
-          ) : (
-            <>
-              <div className={styles.heading}>
-                <p className={styles.kicker}>مرحبًا بعودتك</p>
-                <h2 id="login-title">تسجيل الدخول إلى نماء</h2>
-                <p>استخدم بريدك الإلكتروني وكلمة المرور للمتابعة إلى مساحة العمل.</p>
-              </div>
-              <LoginForm returnTo={returnTo} />
-            </>
-          )}
-
-          <footer className={styles.footer} aria-label="إصدار التطبيق">
-            <span>{appEnvironmentLabel()}</span>
-            <b>الإصدار {APP_VERSION}</b>
-          </footer>
-        </section>
+        <footer className={styles.footer} aria-label="إصدار التطبيق">
+          <span>{appEnvironmentLabel()}</span>
+          <b>الإصدار {APP_VERSION}</b>
+        </footer>
       </section>
     </main>
   );
