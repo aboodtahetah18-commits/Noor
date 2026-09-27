@@ -31,7 +31,7 @@ export async function buildDailyAlgorithmKnowledgeReport(userId:string,now:Date=
     }
   }else findings.push(sourceFailure('continuous','التعلم المالي المستمر'));
   if(monitor.status==='fulfilled'){
-    for(const item of monitor.value.rollbackReviewRequired)findings.push({key:'monitor-'+item.id,severity:'REVIEW_REQUIRED',title:'أداء بعد التفعيل يحتاج مراجعة',detail:item.monitoring?.reason??'أظهر القياس بعد التفعيل تراجعًا يستدعي المراجعة.',source:'مراقبة ما بعد التفعيل',evidenceCount:item.monitoring?.sampleSize??0,nextStep:'جمّد أي توسيع للتغيير الحالي، وراجع التراجع ثم اختبر خيار التعديل أو الرجوع.'});
+    for(const item of monitor.value.rollbackReviewRequired)findings.push({key:'monitor-'+item.key,severity:'REVIEW_REQUIRED',title:'أداء بعد التفعيل يحتاج مراجعة',detail:item.monitoring?.reason??'أظهر القياس بعد التفعيل تراجعًا يستدعي المراجعة.',source:'مراقبة ما بعد التفعيل',evidenceCount:item.monitoring?.sampleSize??0,nextStep:'جمّد أي توسيع للتغيير الحالي، وراجع التراجع ثم اختبر خيار التعديل أو الرجوع.'});
   }else findings.push(sourceFailure('monitor','مراقبة ما بعد التفعيل'));
   if(pilot.status==='fulfilled'){
     for(const item of pilot.value)findings.push({key:'pilot-'+item.id,severity:item.severity==='REVIEW_REQUIRED'?'REVIEW_REQUIRED':'WATCH',title:item.title,detail:item.rationale,source:'جودة التوصيات',evidenceCount:item.evidenceCount,nextStep:item.proposedAction});
