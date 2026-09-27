@@ -12450,3 +12450,40 @@
 .desktopChatHeaderForeground{min-height:68px}
 .chatHeaderBuilding img{filter:saturate(.78) contrast(.96)}
 .centralChatHeader .chatHeaderBuilding{opacity:.1}
+
+
+/* Phase 1 / Chat step 2 — message hierarchy and composer */
+.messages{padding:18px 18px 20px;gap:12px;background:var(--namaa-chat-canvas)}
+.message{border-radius:14px;padding:12px 14px;box-shadow:none}
+.agentMessage{max-width:min(720px,86%);background:#fff;border-color:var(--namaa-border)}
+.userMessage{max-width:min(680px,82%);background:var(--namaa-user-message);border-color:color-mix(in srgb,var(--namaa-green-700) 34%,var(--namaa-border))}
+.messageIdentity{gap:8px;margin-bottom:8px;padding-bottom:7px;border-bottom-color:var(--namaa-border)}
+.messageIdentity strong{color:var(--namaa-green-900);font-weight:700}.messageIdentity small{color:var(--namaa-muted)}
+.miniAvatar{width:30px;height:30px;flex-basis:30px;border-radius:8px;background:#EDF8F4;border-color:var(--namaa-border)}
+.message>p,.messageCopy,.onboardingMessageContent>p{color:var(--namaa-text);line-height:1.85}
+.structuredCard{border-radius:12px;border-color:var(--namaa-border);background:#fff;box-shadow:none}
+.kind_risk{border-inline-start-color:var(--namaa-gold-500);background:color-mix(in srgb,var(--namaa-cream) 52%,#fff)}
+.kind_decision{border-inline-start-color:var(--namaa-green-900)}
+.kind_recommendation{border-inline-start-color:var(--namaa-green-700);background:color-mix(in srgb,#EDF8F4 48%,#fff)}
+.kind_request{border-inline-start-color:var(--namaa-gold-action)}
+.facts>span{border-radius:10px;background:var(--namaa-surface-warm);border-color:var(--namaa-border)}
+.userAttachmentCard{border-color:var(--namaa-border);background:rgb(255 255 255 / .72);border-radius:10px}
+.attachmentPolicy{border-color:var(--namaa-border-strong);background:rgb(255 255 255 / .72)}
+.composer{margin:0 14px 14px;padding:8px 8px 8px 10px;border:1px solid var(--namaa-border-strong);border-radius:14px;background:#fff;box-shadow:0 6px 20px rgb(31 41 55 / .07)}
+.composer:focus-within{border-color:var(--namaa-green-700);box-shadow:0 0 0 4px rgb(24 159 127 / .12),0 6px 20px rgb(31 41 55 / .06)}
+.composer textarea{min-height:42px;max-height:132px;padding:9px 8px;resize:none;color:var(--namaa-text)}
+.attachButton{width:42px;height:42px;flex-basis:42px;border:1px solid var(--namaa-border);border-radius:10px;background:var(--namaa-surface-warm);color:var(--namaa-green-900)}
+.attachButton:hover{background:var(--namaa-cream);border-color:var(--namaa-border-strong)}
+.sendButton{min-width:82px;height:42px;padding-inline:14px;border-radius:10px;background:var(--namaa-green-900);color:#fff;font-weight:700}
+.sendButton:hover:not(:disabled){background:var(--namaa-green-700)}
+.sendButton:disabled{background:color-mix(in srgb,var(--namaa-green-900) 42%,#fff);opacity:1}
+@media(max-width:767px){
+  .messages{padding:12px 10px 14px;gap:10px}
+  .message{max-width:92%;padding:10px 12px;border-radius:13px}
+  .agentMessage{max-width:92%}.userMessage{max-width:88%}
+  .composer{margin:0 8px 8px;padding:6px;border-radius:13px;gap:6px}
+  .composer textarea{min-height:40px;padding:8px 6px}
+  .attachButton,.sendButton{height:40px}
+  .attachButton{width:40px;flex-basis:40px}
+  .sendButton{min-width:44px;padding-inline:10px}
+}
