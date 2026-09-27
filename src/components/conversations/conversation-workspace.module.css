@@ -12452,3 +12452,24 @@
     z-index:5!important;
   }
 }
+
+
+/* 2026-09-27 — CANONICAL CHAT HEADER CONTRACT */
+@media (min-width:768px){
+  .workspaceHeader{min-height:72px;padding:var(--ux-space-3) var(--ux-space-5)}
+  .headingCopy{gap:0}
+  .headingCopy p{display:none}
+  .chatHeader,.centralChatHeader{min-height:64px;height:64px;padding-inline:var(--ux-space-4);background:var(--namaa-card)}
+  .desktopChatHeaderForeground,.centralChatHeader .desktopChatHeaderForeground{min-height:64px;height:64px}
+  .chatIdentity{gap:var(--ux-space-2)}
+  .chatIdentity .persona_md,.chatIdentity .persona_lg{width:44px;height:44px;flex-basis:44px}
+  .chatHeaderBankMark{width:44px;height:44px}
+}
+.chatHeader::after{
+  content:"";position:absolute;inset-inline-end:72px;top:50%;width:112px;height:112px;
+  transform:translateY(-50%) rotate(-8deg);background:url('/brand/namaa-leaf.webp') center/contain no-repeat;
+  opacity:.045;pointer-events:none;z-index:1
+}
+@media (max-width:767px){
+  .chatHeader::after{inset-inline-end:52px;width:88px;height:88px;opacity:.055;filter:brightness(0) invert(1)}
+}
