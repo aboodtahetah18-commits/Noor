@@ -12975,3 +12975,68 @@
 }
 
 
+
+
+/* ========================================================================== */
+/* STAGE 4.7 FINAL DESKTOP CHAT AUTHORITY                                      */
+/* Centers the chat workspace and keeps agent/user messages visually distinct. */
+/* ========================================================================== */
+@media (min-width:1024px){
+  .page{
+    width:100%!important;
+    max-width:none!important;
+    margin:0!important;
+  }
+
+  .workspace{
+    width:100%!important;
+    max-width:none!important;
+    grid-template-columns:minmax(240px,280px) minmax(0,1fr) minmax(240px,280px)!important;
+  }
+
+  .workspace.withoutContext{
+    grid-template-columns:minmax(240px,280px) minmax(0,1fr)!important;
+  }
+
+  .workspace.withoutRooms{
+    grid-template-columns:minmax(0,1fr) minmax(240px,280px)!important;
+  }
+
+  .workspace.withoutRooms.withoutContext{
+    grid-template-columns:minmax(0,1fr)!important;
+  }
+
+  .page .agentMessage{
+    background:color-mix(in srgb,var(--namaa-gold-500) 58%,var(--namaa-wide-card))!important;
+    border-color:color-mix(in srgb,var(--namaa-gold-500) 72%,var(--namaa-wide-border))!important;
+    color:var(--namaa-wide-text)!important;
+  }
+
+  .page .userMessage{
+    background:color-mix(in srgb,var(--namaa-green-700) 10%,var(--namaa-wide-card))!important;
+    border-color:color-mix(in srgb,var(--namaa-green-700) 42%,var(--namaa-wide-border))!important;
+    color:var(--namaa-wide-text)!important;
+  }
+
+  .page .agentMessage .messageIdentity,
+  .page .userMessage .messageIdentity{
+    border-bottom-color:color-mix(in srgb,currentColor 14%,transparent)!important;
+  }
+
+  :global(html[data-theme="dark"]) .page .agentMessage{
+    background:color-mix(in srgb,var(--namaa-green-900) 82%,var(--ux-shell-sidebar-bg))!important;
+    border-color:var(--namaa-green-700)!important;
+    color:var(--ux-text-inverse)!important;
+  }
+
+  :global(html[data-theme="dark"]) .page .userMessage{
+    background:color-mix(in srgb,var(--namaa-gold-500) 16%,var(--ux-shell-sidebar-bg))!important;
+    border-color:color-mix(in srgb,var(--namaa-gold-500) 58%,var(--namaa-green-700))!important;
+    color:var(--ux-text-inverse)!important;
+  }
+
+  :global(html[data-theme="dark"]) .page .agentMessage *,
+  :global(html[data-theme="dark"]) .page .userMessage *{
+    color:inherit!important;
+  }
+}

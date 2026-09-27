@@ -26,6 +26,17 @@ describe('Stage 4.7 chat-first mobile shell contract', () => {
     expect(shell).toContain('max-width:100%;');
   });
 
+  it('keeps desktop chat centered and agent/user bubbles visually distinct', () => {
+    const css = read('src/components/conversations/conversation-workspace.module.css');
+
+    expect(css).toContain('STAGE 4.7 FINAL DESKTOP CHAT AUTHORITY');
+    expect(css).toContain('grid-template-columns:minmax(240px,280px) minmax(0,1fr) minmax(240px,280px)!important');
+    expect(css).toContain('.page .agentMessage{');
+    expect(css).toContain('.page .userMessage{');
+    expect(css).toContain('var(--namaa-gold-500)');
+    expect(css).toContain('var(--namaa-green-700)');
+  });
+
   it('removes duplicate global mobile chrome only while conversations own the viewport', () => {
     const top = read('src/app/(protected)/mobile-top-bar.tsx');
     const bottom = read('src/app/(protected)/mobile-bottom-nav.tsx');
