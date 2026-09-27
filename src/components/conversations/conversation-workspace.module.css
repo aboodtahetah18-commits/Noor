@@ -7854,7 +7854,6 @@
 /* Final approved mobile polish — single-deploy authority */
 
 /* Shared Namaa motif */
-.chatHeader,
 .algorithmRoleHero,
 .onboardingIntakeHeader,
 .mobileRecordEditorHeader,
@@ -7863,7 +7862,6 @@
   overflow:hidden!important;
   isolation:isolate
 }
-.chatHeader::before,
 .algorithmRoleHero::before,
 .onboardingIntakeHeader::before,
 .mobileRecordEditorHeader::before,
@@ -7880,7 +7878,6 @@
   opacity:.09!important;
   transform:rotate(-8deg)!important
 }
-.chatHeader>*,
 .algorithmRoleHero>*,
 .onboardingIntakeHeader>*,
 .mobileRecordEditorHeader>*,
@@ -13004,4 +13001,37 @@
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap
+}
+
+
+/* 2026-09-27 — Conversation redesign: no legacy logo/building/motif canvas */
+.messagesBuildingBackdrop,
+.chatHeaderBuilding,
+.chatBuildingThumb{
+  display:none!important;
+}
+.chatPane,
+.messages,
+.page,
+.workspace{
+  background-image:none!important;
+}
+@media (max-width:767px){
+  .chatHeader,
+  .centralChatHeader{
+    background:var(--namaa-green-900)!important;
+    background-image:none!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+  }
+  .chatHeader::before,
+  .centralChatHeader::before{content:none!important;display:none!important}
+  .chatHeaderShade{display:none!important}
+  .messages{
+    background:var(--namaa-card)!important;
+    background-image:none!important;
+  }
+  .composer{
+    border-radius:0!important;
+  }
 }
