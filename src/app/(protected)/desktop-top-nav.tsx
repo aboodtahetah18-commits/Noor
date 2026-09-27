@@ -31,7 +31,7 @@ export function DesktopTopNav() {
   const collapseSidebar = () => {
     window.localStorage.setItem('sidebarState', 'collapsed');
     document.documentElement.dataset.sidebar = 'collapsed';
-    window.dispatchEvent(new Event('mustaqbali:sidebar-state'));
+    window.dispatchEvent(new Event('namaa:sidebar-state'));
   };
 
   return (
