@@ -12430,3 +12430,47 @@
   background:color-mix(in srgb,var(--namaa-green-700) 38%,var(--ux-dark-card-bg))!important;
   border-color:color-mix(in srgb,var(--namaa-green-700) 74%,var(--ux-dark-border))!important;
 }
+
+
+/* 2026-09-27 — CANONICAL CHAT VIEWPORT CONTRACT
+ * Keep the composer visible and make the message timeline the only flexible scroll region.
+ */
+@media (min-width:768px){
+  .page{
+    height:calc(100dvh - var(--ux-shell-topbar-height) - (var(--ux-space-8) * 2));
+    min-height:620px;
+  }
+  .workspace{
+    height:calc(100% - 96px);
+    min-height:0;
+  }
+  .chatPane{
+    height:100%;
+    min-height:0;
+    overflow:hidden;
+  }
+  .messages{
+    min-height:0;
+    overscroll-behavior:contain;
+  }
+  .composer{
+    position:relative;
+    z-index:3;
+    flex:0 0 auto;
+  }
+}
+
+@media (max-width:767px){
+  .routingNote,
+  .attachmentPolicy,
+  .executionNote{
+    flex:0 0 auto;
+  }
+  .messages{
+    overscroll-behavior:contain!important;
+  }
+  .composer{
+    position:relative!important;
+    z-index:5!important;
+  }
+}
