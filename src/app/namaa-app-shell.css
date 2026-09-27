@@ -551,7 +551,7 @@
   .namaa-app-main {
     width:100%;
     min-width:0;
-    padding:var(--ux-space-3) var(--ux-space-3) calc(var(--ux-size-16) + var(--ux-space-6) + env(safe-area-inset-bottom));
+    padding:0 0 calc(var(--ux-size-16) + var(--ux-space-5) + env(safe-area-inset-bottom));
   }
 
   .namaa-page-frame {
@@ -581,19 +581,65 @@
     z-index:var(--ux-z-modal);
   }
 
+  .namaa-mobile-navigation-drawer {
+    width:min(88vw,360px);
+    max-width:88vw;
+    border-inline-start:1px solid var(--ux-border-default);
+    background:var(--ux-card-bg);
+  }
+
+  .namaa-mobile-navigation-drawer .ux-dialog-header {
+    align-items:center;
+    padding:var(--ux-space-4);
+    border-block-end:1px solid var(--ux-border-default);
+  }
+
+  .namaa-mobile-navigation-drawer .ux-dialog-close {
+    width:40px;
+    min-width:40px;
+    height:40px;
+    min-height:40px;
+    padding:0;
+    border:1px solid var(--ux-border-default);
+    border-radius:var(--ux-radius-sm);
+    background:var(--ux-card-bg);
+    color:var(--ux-text-primary);
+    font-size:28px;
+    line-height:1;
+  }
+
+  .namaa-mobile-navigation-drawer .ux-dialog-body {
+    padding:var(--ux-space-3);
+  }
+
   .namaa-mobile-drawer-nav {
     display:grid;
-    gap:var(--ux-space-1);
+    grid-template-columns:1fr;
+    gap:var(--ux-space-2);
   }
 
   .namaa-mobile-drawer-nav a {
-    min-height:var(--ux-size-12);
-    display:flex;
+    min-height:56px;
+    display:grid;
+    grid-template-columns:44px minmax(0,1fr);
     align-items:center;
-    padding-inline:var(--ux-space-3);
-    border-radius:var(--ux-radius-sm);
+    gap:var(--ux-space-3);
+    padding:var(--ux-space-2);
+    border:1px solid var(--ux-border-default);
+    border-radius:var(--ux-radius-md);
+    background:var(--ux-card-bg);
     color:var(--ux-text-primary);
     text-decoration:none;
+  }
+
+  .namaa-mobile-drawer-icon {
+    width:44px;
+    height:44px;
+    display:grid;
+    place-items:center;
+    border-radius:var(--ux-radius-sm);
+    background:var(--ux-section-soft-teal);
+    color:var(--ux-brand-primary);
   }
 
   .namaa-mobile-drawer-nav a:hover,
@@ -602,9 +648,15 @@
   }
 
   .namaa-mobile-drawer-nav a.is-active {
-    background:var(--ux-action-primary);
-    color:var(--ux-text-inverse);
+    background:var(--ux-section-soft-teal);
+    border-color:var(--ux-brand-secondary);
+    color:var(--ux-brand-primary);
     font-weight:var(--ux-type-button-weight);
+  }
+
+  .namaa-mobile-drawer-nav a.is-active .namaa-mobile-drawer-icon {
+    background:var(--ux-brand-primary);
+    color:var(--ux-text-inverse);
   }
 }
 
