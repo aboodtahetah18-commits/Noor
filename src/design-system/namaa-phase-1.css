@@ -218,3 +218,178 @@ html[data-theme="dark"] .protected-app-shell :where(
   border-color:var(--ux-border-default);
   color:var(--ux-text-primary);
 }
+
+
+/* Phase 1 / Step 2 — unified application shell.
+   The shell follows the reference system's structural discipline while remaining Namaa-only. */
+@media (min-width:1024px) {
+  .protected-app-shell {
+    padding-inline-start:var(--ux-shell-sidebar-expanded);
+  }
+
+  html[data-sidebar="collapsed"] .protected-app-shell {
+    padding-inline-start:var(--ux-shell-sidebar-collapsed);
+  }
+
+  .desktop-top-nav-wrap.mustaqbali-sidebar {
+    width:var(--ux-shell-sidebar-expanded);
+    transition:width 200ms var(--ux-motion-ease-standard);
+  }
+
+  html[data-sidebar="collapsed"] .desktop-top-nav-wrap.mustaqbali-sidebar {
+    width:var(--ux-shell-sidebar-collapsed);
+  }
+
+  .namaa-wide-sidebar-head {
+    padding-inline:16px;
+  }
+
+  .mustaqbali-sidebar-nav {
+    padding:12px 10px 24px;
+  }
+
+  .mustaqbali-sidebar-nav a {
+    min-height:44px;
+    gap:12px;
+    padding-inline:12px;
+  }
+
+  .mustaqbali-nav-section > p {
+    padding:10px 12px 6px;
+    opacity:.76;
+  }
+
+  .mustaqbali-topbar.namaa-topbar {
+    inset-inline-start:var(--ux-shell-sidebar-expanded);
+    grid-template-columns:auto minmax(280px,640px) auto;
+    padding-inline:20px;
+    transition:inset-inline-start 200ms var(--ux-motion-ease-standard);
+  }
+
+  html[data-sidebar="collapsed"] .mustaqbali-topbar.namaa-topbar {
+    inset-inline-start:var(--ux-shell-sidebar-collapsed);
+  }
+
+  .mustaqbali-global-search {
+    width:min(100%,640px);
+    background:var(--namaa-phase1-canvas)!important;
+  }
+
+  .mustaqbali-topbar-actions > a,
+  .mustaqbali-topbar-actions > button,
+  .mustaqbali-topbar-menu {
+    border:1px solid transparent;
+    border-radius:10px;
+  }
+
+  .mustaqbali-topbar-actions > a:hover,
+  .mustaqbali-topbar-actions > button:hover,
+  .mustaqbali-topbar-menu:hover {
+    border-color:var(--namaa-phase1-border);
+    background:var(--namaa-phase1-soft);
+  }
+
+  .namaa-page-frame {
+    width:min(100%,1440px);
+    padding-inline:0;
+  }
+}
+
+@media (min-width:768px) and (max-width:1023px) {
+  .tablet-top-nav-wrap {
+    background:rgb(255 255 255 / .97);
+    border-block-end:1px solid var(--namaa-phase1-border);
+  }
+
+  .mustaqbali-tablet-topbar {
+    min-height:64px;
+    padding-inline:20px;
+  }
+
+  .mustaqbali-tablet-nav {
+    gap:4px;
+    padding:8px 20px;
+  }
+
+  .mustaqbali-tablet-nav a {
+    min-height:36px;
+    border:1px solid transparent;
+    border-radius:8px;
+  }
+
+  .mustaqbali-tablet-nav a.is-active {
+    background:var(--namaa-phase1-primary);
+    border-color:var(--namaa-phase1-primary);
+    color:#fff;
+  }
+
+  .mustaqbali-tablet-search {
+    background:var(--namaa-phase1-canvas)!important;
+  }
+}
+
+@media (max-width:767px) {
+  .p47-mobile-topbar.mustaqbali-mobile-header {
+    min-height:60px;
+    padding-inline:12px;
+    background:rgb(255 255 255 / .98);
+    border-block-end:1px solid var(--namaa-phase1-border);
+    box-shadow:0 1px 2px rgb(31 41 55 / .04);
+  }
+
+  .mustaqbali-mobile-menu-trigger,
+  .mustaqbali-mobile-header-actions > a,
+  .mustaqbali-mobile-header-actions > button {
+    min-width:40px;
+    min-height:40px;
+    border-radius:10px;
+  }
+
+  .namaa-mobile-navigation-drawer {
+    background:var(--namaa-phase1-card);
+  }
+
+  .namaa-mobile-drawer-nav {
+    display:grid;
+    gap:4px;
+  }
+
+  .namaa-mobile-drawer-nav a {
+    min-height:44px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding-inline:12px;
+    border:1px solid transparent;
+    border-radius:10px;
+    color:var(--namaa-phase1-text);
+    text-decoration:none;
+  }
+
+  .namaa-mobile-drawer-nav a.is-active {
+    background:color-mix(in srgb,var(--namaa-phase1-primary) 9%,white);
+    border-color:color-mix(in srgb,var(--namaa-phase1-primary) 22%,white);
+    color:var(--namaa-phase1-primary);
+    font-weight:700;
+  }
+
+  .mobile-bottom-nav.mustaqbali-mobile-bottom-nav {
+    background:rgb(255 255 255 / .98);
+    border-block-start:1px solid var(--namaa-phase1-border);
+    box-shadow:0 -4px 16px rgb(31 41 55 / .06);
+  }
+
+  .mobile-bottom-nav.mustaqbali-mobile-bottom-nav a {
+    color:var(--namaa-phase1-muted);
+  }
+
+  .mobile-bottom-nav.mustaqbali-mobile-bottom-nav a.is-active {
+    color:var(--namaa-phase1-primary);
+    font-weight:700;
+  }
+
+  .mobile-bottom-nav.mustaqbali-mobile-bottom-nav a.is-active .mobile-nav-icon {
+    background:color-mix(in srgb,var(--namaa-phase1-primary) 10%,white);
+    border-radius:10px;
+  }
+}
