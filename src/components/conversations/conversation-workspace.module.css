@@ -8262,60 +8262,6 @@
   object-fit:contain!important
 }
 
-/* Chat bubbles: other party on the left in Namaa green; user on the right in a neutral surface. */
-.chatPane .agentMessage{
-  align-self:flex-end;
-  margin-left:auto;
-  margin-right:var(--ux-space-0);
-  background:var(--namaa-green-900);
-  border-color:var(--namaa-green-900);
-  color:var(--ux-text-inverse)
-}
-.agentMessage>p,
-.agentMessage>.messageIdentity strong{
-  color:var(--ux-text-inverse)!important
-}
-.agentMessage>.messageIdentity small,
-.agentMessage>.messageMeta{
-  color:color-mix(in srgb,var(--ux-text-inverse) 78%,transparent)!important
-}
-.agentMessage>.messageIdentity{
-  border-bottom-color:color-mix(in srgb,var(--ux-text-inverse) 22%,transparent)!important
-}
-.chatPane .userMessage{
-  align-self:flex-start;
-  margin-left:var(--ux-space-0);
-  margin-right:auto;
-  background:var(--namaa-card);
-  border-color:var(--namaa-border-strong);
-  color:var(--ux-text-primary)
-}
-
-@media (max-width:767px){
-  .governedQuickActions>button{
-    min-height:48px!important;
-    padding-inline:var(--ux-space-1)!important
-  }
-  .governedQuickActions>button strong{
-    font-size:var(--ux-type-caption-size)!important
-  }
-  .algorithmRoleItem{
-    padding-inline:var(--ux-space-2)!important
-  }
-}
-
-:global(html[data-theme="dark"]) .agentMessage{
-  background:var(--namaa-green-900);
-  border-color:color-mix(in srgb,var(--namaa-green-700) 74%,var(--ux-border-emphasis));
-  color:var(--ux-text-inverse)
-}
-:global(html[data-theme="dark"]) .userMessage{
-  background:var(--ux-card-bg);
-  border-color:var(--ux-border-emphasis);
-  color:var(--ux-text-primary)
-}
-
-
 /* Namaa final mobile refinement — drawer profile, collapsible stages, solid chat bubbles */
 
 /* Keep the user card physically inside the mobile drawer. */
@@ -8503,53 +8449,6 @@
   }
 }
 
-/* Solid chat surfaces: motifs belong to the conversation canvas, never inside a message bubble. */
-.message,
-.message::before,
-.message::after,
-.message .richMessageHero,
-.message .structuredCard,
-.message .onboardingQuestionCard,
-.message .onboardingQuestionBox,
-.message .onboardingQuestionReason{
-  background-image:none!important
-}
-.chatPane .agentMessage{
-  background:var(--namaa-green-900);
-  background-color:var(--namaa-green-900);
-  opacity:1
-}
-.agentMessage .richMessageHero,
-.agentMessage .structuredCard,
-.agentMessage .onboardingQuestionCard,
-.agentMessage .onboardingQuestionBox,
-.agentMessage .onboardingQuestionReason{
-  background:color-mix(in srgb,var(--namaa-green-900) 88%,var(--ux-text-primary))!important;
-  border-color:color-mix(in srgb,var(--ux-text-inverse) 18%,var(--namaa-green-900))!important;
-  color:var(--ux-text-inverse)!important
-}
-.agentMessage .richMessageHero *,
-.agentMessage .structuredCard *,
-.agentMessage .onboardingQuestionCard *,
-.agentMessage .onboardingQuestionBox *,
-.agentMessage .onboardingQuestionReason *{
-  color:var(--ux-text-inverse)!important
-}
-.chatPane .userMessage{
-  background:var(--namaa-card);
-  background-color:var(--namaa-card);
-  opacity:1
-}
-:global(html[data-theme="dark"]) .agentMessage{
-  background:var(--namaa-green-900);
-  background-color:var(--namaa-green-900)
-}
-:global(html[data-theme="dark"]) .userMessage{
-  background:var(--ux-card-bg);
-  background-color:var(--ux-card-bg)
-}
-
-
 /* Namaa precision pass — solid chat, crisp identity, edit modals */
 
 /* Persona images: keep the approved assets crisp at every presentation size. */
@@ -8570,53 +8469,6 @@
   overflow:hidden!important;
   background:var(--namaa-card)!important;
   box-shadow:var(--ux-shadow-none)!important
-}
-
-/* One solid surface per chat bubble — no motif, tint, transparency or inherited image inside messages. */
-.agentMessage,
-.chatPane .userMessage{
-  opacity:1;
-  background-image:none;
-  backdrop-filter:none;
-  -webkit-backdrop-filter:none
-}
-.agentMessage::before,
-.agentMessage::after,
-.userMessage::before,
-.userMessage::after,
-.agentMessage .onboardingMessageContent::before,
-.agentMessage .onboardingMessageContent::after,
-.userMessage .onboardingMessageContent::before,
-.userMessage .onboardingMessageContent::after{
-  content:none!important;
-  display:none!important;
-  background:none!important;
-  background-image:none!important
-}
-.chatPane .agentMessage{
-  background:var(--namaa-green-900);
-  border-color:color-mix(in srgb,var(--namaa-green-700) 68%,var(--namaa-green-900))
-}
-.chatPane .userMessage{
-  background:var(--namaa-card);
-  border-color:var(--namaa-border-strong)
-}
-.agentMessage .richMessageHero,
-.agentMessage .structuredCard,
-.agentMessage .onboardingQuestionCard,
-.agentMessage .onboardingQuestionBox,
-.agentMessage .onboardingQuestionReason,
-.agentMessage .goalAnalysisCard,
-.agentMessage .goalAnalysisCard>div>span{
-  background:transparent!important;
-  background-color:transparent!important;
-  background-image:none!important;
-  box-shadow:var(--ux-shadow-none)!important
-}
-.agentMessage .onboardingQuestionCard,
-.agentMessage .onboardingQuestionBox,
-.agentMessage .onboardingQuestionReason{
-  border-color:color-mix(in srgb,var(--ux-text-inverse) 24%,transparent)!important
 }
 
 /* Accent indicators remain readable without introducing non-brand colors. */
@@ -8754,44 +8606,6 @@
   }
 }
 
-
-/* Namaa final upload pass — full-screen edits and solid chat canvas */
-
-/* Chat canvas: one dark green surface with no decorative imagery. */
-.messagesBuildingBackdrop{
-  display:none!important
-}
-.chatPane::before,
-.chatPane::after,
-.messages::before,
-.messages::after{
-  content:none!important;
-  display:none!important;
-  background:none!important;
-  background-image:none!important
-}
-
-/* Keep both speakers fully opaque and motif-free on the solid chat canvas. */
-.agentMessage,
-.userMessage,
-.agentMessage::before,
-.agentMessage::after,
-.userMessage::before,
-.userMessage::after{
-  background-image:none!important;
-  backdrop-filter:none!important;
-  -webkit-backdrop-filter:none!important
-}
-.chatPane .agentMessage{
-  background:color-mix(in srgb,var(--namaa-green-700) 76%,var(--namaa-green-900));
-  border-color:color-mix(in srgb,var(--ux-text-inverse) 22%,var(--namaa-green-900));
-  opacity:1
-}
-.chatPane .userMessage{
-  background:var(--namaa-card);
-  border-color:var(--namaa-border-strong);
-  opacity:1
-}
 
 /* Full-screen amendment flow, matching the governed-reference page hierarchy. */
 .governedEditModal{
@@ -8962,582 +8776,6 @@
 }
 
 
-/* Namaa approved chat palettes — 2026-09-23 */
-
-/* LIGHT — approved visual board */
-:global(html:not([data-theme="dark"])) .chatPane,
-:global(html:not([data-theme="dark"])) .messages{
-  background:var(--namaa-surface-warm)!important;
-  background-image:none!important
-}
-:global(html:not([data-theme="dark"])) .userMessage{
-  background:var(--namaa-user-message);
-  border-color:var(--namaa-border);
-  color:var(--namaa-text)
-}
-:global(html:not([data-theme="dark"])) .agentMessage{
-  background:var(--namaa-card);
-  border-color:var(--namaa-border);
-  color:var(--namaa-text)
-}
-:global(html:not([data-theme="dark"])) .userMessage *,
-:global(html:not([data-theme="dark"])) .agentMessage *{
-  color:var(--namaa-text)
-}
-:global(html:not([data-theme="dark"])) .userMessage .messageMeta,
-:global(html:not([data-theme="dark"])) .agentMessage .messageMeta,
-:global(html:not([data-theme="dark"])) .userMessage .messageIdentity small,
-:global(html:not([data-theme="dark"])) .agentMessage .messageIdentity small{
-  color:var(--namaa-muted)!important
-}
-:global(html:not([data-theme="dark"])) .agentMessage .messageIdentity,
-:global(html:not([data-theme="dark"])) .userMessage .messageIdentity{
-  border-bottom-color:var(--namaa-border)!important
-}
-:global(html:not([data-theme="dark"])) .agentMessage .onboardingQuestionCard,
-:global(html:not([data-theme="dark"])) .agentMessage .onboardingQuestionReason,
-:global(html:not([data-theme="dark"])) .agentMessage .onboardingQuestionBox,
-:global(html:not([data-theme="dark"])) .agentMessage .structuredCard,
-:global(html:not([data-theme="dark"])) .agentMessage .richMessageHero{
-  background:var(--namaa-card)!important;
-  background-image:none!important;
-  border-color:var(--namaa-border)!important;
-  color:var(--namaa-text)!important
-}
-:global(html:not([data-theme="dark"])) .agentMessage .onboardingQuestionIcon,
-:global(html:not([data-theme="dark"])) .agentMessage .onboardingQuestionHeader>b,
-:global(html:not([data-theme="dark"])) .agentMessage .onboardingQuestionBox>span{
-  background:var(--namaa-user-message)!important;
-  border-color:var(--namaa-border)!important;
-  color:var(--namaa-green-900)!important
-}
-:global(html:not([data-theme="dark"])) .agentMessage .onboardingQuestionIcon svg{
-  color:var(--namaa-green-900)!important
-}
-:global(html:not([data-theme="dark"])) .agentMessage .onboardingProgressTrack{
-  background:var(--namaa-border)!important
-}
-:global(html:not([data-theme="dark"])) .agentMessage .onboardingProgressTrack>span{
-  background:var(--namaa-green-900)!important
-}
-:global(html:not([data-theme="dark"])) .agentMessage .inlineIntakeButton{
-  background:var(--namaa-green-900)!important;
-  border-color:var(--namaa-green-900)!important;
-  color:var(--namaa-card)!important
-}
-:global(html:not([data-theme="dark"])) .agentMessage .inlineIntakeButton *{
-  color:var(--namaa-card)!important
-}
-:global(html:not([data-theme="dark"])) .composer{
-  background:var(--namaa-card)!important;
-  border-top-color:var(--namaa-border)!important
-}
-:global(html:not([data-theme="dark"])) .composer textarea{
-  background:var(--namaa-card)!important;
-  border-color:var(--namaa-border)!important;
-  color:var(--namaa-text)!important
-}
-:global(html:not([data-theme="dark"])) .attachButton{
-  background:var(--namaa-card)!important;
-  border-color:var(--namaa-border)!important;
-  color:var(--namaa-text)!important
-}
-:global(html:not([data-theme="dark"])) .sendButton{
-  background:var(--namaa-green-700)!important;
-  color:var(--namaa-card)!important
-}
-
-/* DARK — approved visual board */
-:global(html[data-theme="dark"]) .chatPane,
-:global(html[data-theme="dark"]) .messages{
-  background:var(--ux-dark-page-bg)!important;
-  background-image:none!important;
-  color:var(--namaa-card)!important
-}
-:global(html[data-theme="dark"]) .chatHeader{
-  background:var(--namaa-green-900)!important;
-  border-bottom-color:var(--ux-dark-border)!important
-}
-:global(html[data-theme="dark"]) .userMessage{
-  background:var(--namaa-green-700);
-  border-color:var(--ux-dark-border);
-  color:var(--namaa-card)
-}
-:global(html[data-theme="dark"]) .agentMessage{
-  background:color-mix(in srgb,var(--namaa-green-900) 72%,var(--ux-dark-card-bg));
-  border-color:var(--ux-dark-border);
-  color:var(--namaa-card)
-}
-:global(html[data-theme="dark"]) .userMessage *,
-:global(html[data-theme="dark"]) .agentMessage *{
-  color:var(--namaa-card)
-}
-:global(html[data-theme="dark"]) .userMessage .messageMeta,
-:global(html[data-theme="dark"]) .userMessage .messageIdentity small{
-  color:var(--ux-dark-text-secondary)!important
-}
-:global(html[data-theme="dark"]) .agentMessage .messageIdentity,
-:global(html[data-theme="dark"]) .userMessage .messageIdentity{
-  border-bottom-color:var(--ux-dark-border)!important
-}
-:global(html[data-theme="dark"]) .agentMessage .onboardingQuestionCard,
-:global(html[data-theme="dark"]) .agentMessage .onboardingQuestionReason,
-:global(html[data-theme="dark"]) .agentMessage .onboardingQuestionBox,
-:global(html[data-theme="dark"]) .agentMessage .structuredCard,
-:global(html[data-theme="dark"]) .agentMessage .richMessageHero{
-  background:color-mix(in srgb,var(--namaa-green-900) 72%,var(--ux-dark-card-bg))!important;
-  background-image:none!important;
-  border-color:var(--ux-dark-border)!important;
-  color:var(--namaa-card)!important
-}
-:global(html[data-theme="dark"]) .agentMessage .onboardingQuestionIcon,
-:global(html[data-theme="dark"]) .agentMessage .onboardingQuestionHeader>b,
-:global(html[data-theme="dark"]) .agentMessage .onboardingQuestionBox>span{
-  background:var(--ux-dark-card-bg)!important;
-  border-color:var(--namaa-gold-action)!important;
-  color:var(--namaa-gold-action)!important
-}
-:global(html[data-theme="dark"]) .agentMessage .onboardingQuestionIcon svg{
-  color:var(--namaa-gold-action)!important
-}
-:global(html[data-theme="dark"]) .agentMessage .onboardingProgressTrack{
-  background:var(--ux-dark-card-bg)!important;
-  border:1px solid var(--ux-dark-border)!important
-}
-:global(html[data-theme="dark"]) .agentMessage .onboardingProgressTrack>span{
-  background:var(--namaa-gold-action)!important
-}
-:global(html[data-theme="dark"]) .agentMessage .inlineIntakeButton{
-  background:var(--ux-dark-page-bg)!important;
-  border-color:var(--namaa-gold-action)!important;
-  color:var(--namaa-card)!important
-}
-:global(html[data-theme="dark"]) .agentMessage .inlineIntakeButton *{
-  color:var(--namaa-card)!important
-}
-:global(html[data-theme="dark"]) .composer{
-  background:var(--ux-dark-card-bg)!important;
-  border-top-color:var(--ux-dark-border)!important
-}
-:global(html[data-theme="dark"]) .composer textarea{
-  background:var(--ux-dark-page-bg)!important;
-  border-color:var(--ux-dark-border)!important;
-  color:var(--namaa-card)!important
-}
-
-:global(html[data-theme="dark"]) .attachButton{
-  background:var(--ux-dark-page-bg)!important;
-  border-color:var(--ux-dark-border)!important;
-  color:var(--namaa-card)!important
-}
-:global(html[data-theme="dark"]) .sendButton{
-  background:var(--namaa-green-700)!important;
-  color:var(--namaa-card)!important
-}
-
-/* The approved chat surfaces are always opaque and pattern-free. */
-.agentMessage,
-.userMessage,
-.agentMessage *,
-.userMessage *{
-  background-image:none!important
-}
-
-
-/* Namaa contrast rule — distinct surfaces, black dark-chat canvas, gold/user balance */
-/*
-  Contrast rule:
-  Never place a message/card foreground on a background with a near-identical hue/value.
-  Adjacent chat layers must remain visually distinct in both light and dark themes.
-*/
-
-/* Read receipts are blue in both themes. */
-.messageReceipt,
-.messageReceiptRead{
-  color:var(--namaa-info)!important
-}
-
-/* LIGHT: user stays mint; assistant becomes the approved logo-gold family with dark text. */
-:global(html:not([data-theme="dark"])) .chatPane,
-:global(html:not([data-theme="dark"])) .messages{
-  background:var(--namaa-card)!important;
-  background-image:none!important
-}
-:global(html:not([data-theme="dark"])) .userMessage{
-  background:var(--namaa-user-message);
-  border-color:var(--namaa-border);
-  color:var(--namaa-text)
-}
-:global(html:not([data-theme="dark"])) .userMessage *{
-  color:var(--namaa-text)
-}
-:global(html:not([data-theme="dark"])) .userMessage .messageReceipt,
-:global(html:not([data-theme="dark"])) .userMessage .messageReceiptRead{
-  color:var(--namaa-info)!important
-}
-:global(html:not([data-theme="dark"])) .agentMessage{
-  background:color-mix(in srgb,var(--namaa-gold-500) 84%,var(--namaa-text));
-  border-color:color-mix(in srgb,var(--namaa-gold-500) 72%,var(--namaa-text));
-  color:var(--namaa-text)
-}
-:global(html:not([data-theme="dark"])) .agentMessage .messageCopy,
-:global(html:not([data-theme="dark"])) .agentMessage .messageIdentity strong,
-:global(html:not([data-theme="dark"])) .agentMessage .messageIdentity small,
-:global(html:not([data-theme="dark"])) .agentMessage .messageMeta,
-:global(html:not([data-theme="dark"])) .agentMessage .onboardingQuestionCard,
-:global(html:not([data-theme="dark"])) .agentMessage .onboardingQuestionReason,
-:global(html:not([data-theme="dark"])) .agentMessage .onboardingQuestionBox,
-:global(html:not([data-theme="dark"])) .agentMessage .structuredCard,
-:global(html:not([data-theme="dark"])) .agentMessage .richMessageHero{
-  color:var(--namaa-text)!important
-}
-:global(html:not([data-theme="dark"])) .agentMessage .onboardingQuestionCard,
-:global(html:not([data-theme="dark"])) .agentMessage .onboardingQuestionReason,
-:global(html:not([data-theme="dark"])) .agentMessage .onboardingQuestionBox,
-:global(html:not([data-theme="dark"])) .agentMessage .structuredCard,
-:global(html:not([data-theme="dark"])) .agentMessage .richMessageHero{
-  background:color-mix(in srgb,var(--namaa-gold-500) 82%,var(--namaa-cream))!important;
-  border-color:color-mix(in srgb,var(--namaa-gold-500) 76%,var(--namaa-text))!important
-}
-:global(html:not([data-theme="dark"])) .agentMessage .onboardingQuestionIcon,
-:global(html:not([data-theme="dark"])) .agentMessage .onboardingQuestionHeader>b,
-:global(html:not([data-theme="dark"])) .agentMessage .onboardingQuestionBox>span{
-  background:var(--namaa-cream)!important;
-  border-color:var(--namaa-green-900)!important;
-  color:var(--namaa-green-900)!important
-}
-:global(html:not([data-theme="dark"])) .agentMessage .onboardingQuestionIcon svg,
-:global(html:not([data-theme="dark"])) .agentMessage .structuredCardHeader svg,
-:global(html:not([data-theme="dark"])) .agentMessage .inlineIntakeButton svg{
-  color:var(--namaa-green-900)!important;
-  stroke:var(--namaa-green-900)!important
-}
-:global(html:not([data-theme="dark"])) .agentMessage .onboardingProgressTrack{
-  background:var(--namaa-cream)!important;
-  border:1px solid color-mix(in srgb,var(--namaa-gold-500) 76%,var(--namaa-text))!important
-}
-:global(html:not([data-theme="dark"])) .agentMessage .onboardingProgressTrack>span{
-  background:var(--namaa-green-900)!important
-}
-:global(html:not([data-theme="dark"])) .agentMessage .inlineIntakeButton{
-  background:var(--namaa-cream)!important;
-  border-color:var(--namaa-green-900)!important;
-  color:var(--namaa-green-900)!important
-}
-:global(html:not([data-theme="dark"])) .agentMessage .inlineIntakeButton *{
-  color:var(--namaa-green-900)!important
-}
-
-/* DARK: black chat canvas; user is light gold with dark-green text; assistant stays deep green. */
-:global(html[data-theme="dark"]) .chatPane,
-:global(html[data-theme="dark"]) .messages{
-  background:color-mix(in srgb,var(--namaa-text) 90%,var(--namaa-green-900))!important;
-  background-color:color-mix(in srgb,var(--namaa-text) 90%,var(--namaa-green-900))!important;
-  background-image:none!important;
-  color:var(--namaa-card)!important
-}
-:global(html[data-theme="dark"]) .messagesBuildingBackdrop,
-:global(html[data-theme="dark"]) .chatPane::before,
-:global(html[data-theme="dark"]) .chatPane::after,
-:global(html[data-theme="dark"]) .messages::before,
-:global(html[data-theme="dark"]) .messages::after{
-  display:none!important;
-  content:none!important;
-  background:none!important;
-  background-image:none!important
-}
-:global(html[data-theme="dark"]) .userMessage{
-  background:color-mix(in srgb,var(--namaa-gold-500) 68%,var(--namaa-cream));
-  border-color:color-mix(in srgb,var(--namaa-gold-500) 86%,var(--namaa-text));
-  color:var(--namaa-green-900)
-}
-:global(html[data-theme="dark"]) .userMessage .messageCopy,
-:global(html[data-theme="dark"]) .userMessage .messageIdentity strong,
-:global(html[data-theme="dark"]) .userMessage .messageIdentity small,
-:global(html[data-theme="dark"]) .userMessage .messageMeta{
-  color:var(--namaa-green-900)!important
-}
-:global(html[data-theme="dark"]) .userMessage .messageReceipt,
-:global(html[data-theme="dark"]) .userMessage .messageReceiptRead{
-  color:var(--namaa-info)!important
-}
-:global(html[data-theme="dark"]) .agentMessage{
-  background:color-mix(in srgb,var(--namaa-green-900) 72%,var(--ux-dark-card-bg));
-  border-color:color-mix(in srgb,var(--namaa-green-700) 54%,var(--ux-dark-border));
-  color:var(--namaa-card)
-}
-:global(html[data-theme="dark"]) .agentMessage .messageCopy,
-:global(html[data-theme="dark"]) .agentMessage .messageIdentity strong,
-:global(html[data-theme="dark"]) .agentMessage .messageIdentity small,
-:global(html[data-theme="dark"]) .agentMessage .messageMeta{
-  color:var(--namaa-card)!important
-}
-:global(html[data-theme="dark"]) .agentMessage .onboardingQuestionCard,
-:global(html[data-theme="dark"]) .agentMessage .onboardingQuestionReason,
-:global(html[data-theme="dark"]) .agentMessage .onboardingQuestionBox,
-:global(html[data-theme="dark"]) .agentMessage .structuredCard,
-:global(html[data-theme="dark"]) .agentMessage .richMessageHero{
-  background:var(--ux-dark-card-bg)!important;
-  border-color:color-mix(in srgb,var(--namaa-green-700) 54%,var(--ux-dark-border))!important;
-  color:var(--namaa-card)!important
-}
-:global(html[data-theme="dark"]) .agentMessage .onboardingQuestionIcon,
-:global(html[data-theme="dark"]) .agentMessage .onboardingQuestionHeader>b,
-:global(html[data-theme="dark"]) .agentMessage .onboardingQuestionBox>span{
-  background:color-mix(in srgb,var(--namaa-gold-500) 68%,var(--namaa-cream))!important;
-  border-color:var(--namaa-gold-action)!important;
-  color:var(--namaa-green-900)!important
-}
-:global(html[data-theme="dark"]) .agentMessage .onboardingQuestionIcon svg,
-:global(html[data-theme="dark"]) .agentMessage .structuredCardHeader svg,
-:global(html[data-theme="dark"]) .agentMessage .inlineIntakeButton svg{
-  color:var(--namaa-gold-action)!important;
-  stroke:var(--namaa-gold-action)!important
-}
-:global(html[data-theme="dark"]) .agentMessage .onboardingProgressTrack{
-  background:var(--ux-dark-page-bg)!important;
-  border:1px solid color-mix(in srgb,var(--namaa-green-700) 54%,var(--ux-dark-border))!important
-}
-:global(html[data-theme="dark"]) .agentMessage .onboardingProgressTrack>span{
-  background:var(--namaa-gold-action)!important
-}
-:global(html[data-theme="dark"]) .agentMessage .inlineIntakeButton{
-  background:color-mix(in srgb,var(--namaa-gold-500) 68%,var(--namaa-cream))!important;
-  border-color:var(--namaa-gold-action)!important;
-  color:var(--namaa-green-900)!important
-}
-:global(html[data-theme="dark"]) .agentMessage .inlineIntakeButton *{
-  color:var(--namaa-green-900)!important
-}
-
-/* General icon visibility guard for chat controls/cards. */
-.agentMessage svg,
-.userMessage svg,
-.composer svg{
-  opacity:1!important;
-  visibility:visible!important
-}
-
-
-/* Namaa final chat visual lock — approved light/dark composition */
-
-/* LIGHT — white canvas with restrained Namaa leaf motifs; messages remain solid. */
-:global(html:not([data-theme="dark"])) .page .messages{
-  position:relative!important;
-  background:var(--namaa-card)!important;
-  background-image:none!important;
-  isolation:isolate!important
-}
-:global(html:not([data-theme="dark"])) .page .messages::before{
-  content:""!important;
-  display:block!important;
-  position:absolute!important;
-  inset:0!important;
-  z-index:0!important;
-  pointer-events:none!important;
-  background-image:
-    url('/brand/namaa-leaf.webp'),
-    url('/brand/namaa-leaf.webp'),
-    url('/brand/namaa-leaf.webp')!important;
-  background-repeat:no-repeat!important;
-  background-size:260px auto,220px auto,180px auto!important;
-  background-position:8% 14%,92% 52%,18% 88%!important;
-  opacity:.055!important
-}
-:global(html:not([data-theme="dark"])) .page .messages>*{
-  position:relative!important;
-  z-index:1!important
-}
-:global(html:not([data-theme="dark"])) .page .userMessage{
-  background:color-mix(in srgb,var(--namaa-user-message) 88%,var(--namaa-green-700));
-  border-color:color-mix(in srgb,var(--namaa-green-700) 24%,var(--namaa-border))
-}
-:global(html:not([data-theme="dark"])) .page .agentMessage{
-  background:color-mix(in srgb,var(--namaa-gold-500) 84%,var(--namaa-text));
-  border-color:color-mix(in srgb,var(--namaa-gold-500) 72%,var(--namaa-text))
-}
-:global(html:not([data-theme="dark"])) .page .agentMessage .messageIdentity strong,
-:global(html:not([data-theme="dark"])) .page .agentMessage .messageIdentity small,
-:global(html:not([data-theme="dark"])) .page .agentMessage .messageCopy,
-:global(html:not([data-theme="dark"])) .page .agentMessage .messageMeta{
-  color:var(--namaa-text)!important
-}
-:global(html:not([data-theme="dark"])) .page .agentMessage .onboardingQuestionCard,
-:global(html:not([data-theme="dark"])) .page .agentMessage .onboardingQuestionReason,
-:global(html:not([data-theme="dark"])) .page .agentMessage .onboardingQuestionBox,
-:global(html:not([data-theme="dark"])) .page .agentMessage .structuredCard,
-:global(html:not([data-theme="dark"])) .page .agentMessage .richMessageHero{
-  background:color-mix(in srgb,var(--namaa-gold-500) 78%,var(--namaa-cream))!important;
-  border-color:color-mix(in srgb,var(--namaa-gold-500) 62%,var(--namaa-text))!important;
-  color:var(--namaa-text)!important
-}
-:global(html:not([data-theme="dark"])) .page .agentMessage .onboardingQuestionCard *,
-:global(html:not([data-theme="dark"])) .page .agentMessage .onboardingQuestionReason *,
-:global(html:not([data-theme="dark"])) .page .agentMessage .onboardingQuestionBox *,
-:global(html:not([data-theme="dark"])) .page .agentMessage .structuredCard *,
-:global(html:not([data-theme="dark"])) .page .agentMessage .richMessageHero *{
-  color:var(--namaa-text)!important
-}
-:global(html:not([data-theme="dark"])) .page .agentMessage .onboardingQuestionIcon,
-:global(html:not([data-theme="dark"])) .page .agentMessage .onboardingQuestionHeader>b,
-:global(html:not([data-theme="dark"])) .page .agentMessage .onboardingQuestionBox>span{
-  background:var(--namaa-cream)!important;
-  border-color:var(--namaa-green-900)!important;
-  color:var(--namaa-green-900)!important
-}
-:global(html:not([data-theme="dark"])) .page .agentMessage .onboardingQuestionIcon svg,
-:global(html:not([data-theme="dark"])) .page .agentMessage .structuredCardHeader svg,
-:global(html:not([data-theme="dark"])) .page .agentMessage .inlineIntakeButton svg{
-  color:var(--namaa-green-900)!important;
-  stroke:var(--namaa-green-900)!important
-}
-
-/* LIGHT composer — same green family as the chat header, with white field and white icons. */
-:global(html:not([data-theme="dark"])) .page .composer{
-  background:var(--namaa-green-900)!important;
-  border-top-color:color-mix(in srgb,var(--namaa-card) 24%,var(--namaa-green-900))!important
-}
-:global(html:not([data-theme="dark"])) .page .composer textarea{
-  background:var(--namaa-card)!important;
-  border-color:var(--namaa-card)!important;
-  color:var(--namaa-text)!important;
-  font-weight:800!important
-}
-:global(html:not([data-theme="dark"])) .page .composer textarea::placeholder{
-  color:var(--namaa-muted)!important;
-  font-weight:800!important
-}
-:global(html:not([data-theme="dark"])) .page .attachButton,
-:global(html:not([data-theme="dark"])) .page .sendButton{
-  background:var(--namaa-green-900)!important;
-  border:1px solid color-mix(in srgb,var(--namaa-card) 38%,var(--namaa-green-900))!important;
-  color:var(--namaa-card)!important
-}
-:global(html:not([data-theme="dark"])) .page .attachButton svg,
-:global(html:not([data-theme="dark"])) .page .sendButton svg{
-  color:var(--namaa-card)!important;
-  stroke:var(--namaa-card)!important
-}
-
-/* DARK — governor identity and message heading remain white on the deep green bubble. */
-:global(html[data-theme="dark"]) .page .agentMessage>.messageIdentity strong,
-:global(html[data-theme="dark"]) .page .agentMessage>.messageIdentity small,
-:global(html[data-theme="dark"]) .page .agentMessage>.messageCopy,
-:global(html[data-theme="dark"]) .page .agentMessage>.messageMeta{
-  color:var(--namaa-card)!important
-}
-
-/* DARK — green operational icons, light-gold borders, no yellow icon glyphs. */
-:global(html[data-theme="dark"]) .page .agentMessage .onboardingQuestionIcon,
-:global(html[data-theme="dark"]) .page .agentMessage .onboardingQuestionHeader>b,
-:global(html[data-theme="dark"]) .page .agentMessage .onboardingQuestionBox>span{
-  background:color-mix(in srgb,var(--namaa-gold-500) 64%,var(--namaa-cream))!important;
-  border-color:color-mix(in srgb,var(--namaa-gold-500) 74%,var(--namaa-cream))!important;
-  color:var(--namaa-green-900)!important
-}
-:global(html[data-theme="dark"]) .page .agentMessage .onboardingQuestionIcon svg,
-:global(html[data-theme="dark"]) .page .agentMessage .structuredCardHeader svg,
-:global(html[data-theme="dark"]) .page .agentMessage .inlineIntakeButton svg{
-  color:var(--namaa-green-900)!important;
-  stroke:var(--namaa-green-900)!important
-}
-:global(html[data-theme="dark"]) .page .agentMessage .onboardingQuestionCard,
-:global(html[data-theme="dark"]) .page .agentMessage .onboardingQuestionReason,
-:global(html[data-theme="dark"]) .page .agentMessage .onboardingQuestionBox{
-  border-color:color-mix(in srgb,var(--namaa-gold-500) 42%,var(--namaa-green-700))!important
-}
-
-/* DARK composer — fully green; white bold copy; dark-gold circles with dark-green glyphs. */
-:global(html[data-theme="dark"]) .page .composer{
-  background:var(--namaa-green-900)!important;
-  border-top-color:color-mix(in srgb,var(--namaa-gold-500) 34%,var(--namaa-green-900))!important
-}
-:global(html[data-theme="dark"]) .page .composer textarea{
-  background:color-mix(in srgb,var(--namaa-green-900) 88%,var(--namaa-green-700))!important;
-  border-color:color-mix(in srgb,var(--namaa-card) 24%,var(--namaa-green-900))!important;
-  color:var(--namaa-card)!important;
-  font-weight:800!important
-}
-:global(html[data-theme="dark"]) .page .composer textarea::placeholder{
-  color:color-mix(in srgb,var(--namaa-card) 82%,transparent)!important;
-  font-weight:800!important
-}
-:global(html[data-theme="dark"]) .page .attachButton,
-:global(html[data-theme="dark"]) .page .sendButton{
-  background:color-mix(in srgb,var(--namaa-gold-500) 84%,var(--namaa-text))!important;
-  border:1px solid color-mix(in srgb,var(--namaa-gold-500) 72%,var(--namaa-cream))!important;
-  color:var(--namaa-green-900)!important
-}
-:global(html[data-theme="dark"]) .page .attachButton svg,
-:global(html[data-theme="dark"]) .page .sendButton svg{
-  color:var(--namaa-green-900)!important;
-  stroke:var(--namaa-green-900)!important
-}
-
-/* Message copy itself is always strong and readable for both speakers. */
-.page .messageCopy,
-.page .onboardingMessageContent>p,
-.page .onboardingQuestionBox strong{
-  font-weight:800!important
-}
-
-
-/* Namaa dark chat lock — white counterparty copy and deep-gold composer controls */
-
-/* Dark mode: every visible counterparty heading and primary message line is white. */
-:global(html[data-theme="dark"]) .page .agentMessage>.messageIdentity strong,
-:global(html[data-theme="dark"]) .page .agentMessage>.messageIdentity small,
-:global(html[data-theme="dark"]) .page .agentMessage>.messageCopy,
-:global(html[data-theme="dark"]) .page .agentMessage>p,
-:global(html[data-theme="dark"]) .page .agentMessage>.onboardingMessageContent>p,
-:global(html[data-theme="dark"]) .page .agentMessage>.messageMeta{
-  color:var(--namaa-card)!important;
-  font-weight:800!important
-}
-
-/* Dark composer: solid deep green, no motif or decorative layer. */
-:global(html[data-theme="dark"]) .page .composer{
-  background:var(--namaa-green-900)!important;
-  background-image:none!important;
-  border-top-color:color-mix(in srgb,var(--namaa-gold-500) 32%,var(--namaa-green-900))!important
-}
-:global(html[data-theme="dark"]) .page .composer::before,
-:global(html[data-theme="dark"]) .page .composer::after{
-  content:none!important;
-  display:none!important;
-  background:none!important;
-  background-image:none!important
-}
-:global(html[data-theme="dark"]) .page .composer textarea{
-  background:color-mix(in srgb,var(--namaa-green-900) 92%,var(--namaa-text))!important;
-  background-image:none!important;
-  border-color:color-mix(in srgb,var(--namaa-card) 20%,var(--namaa-green-900))!important;
-  color:var(--namaa-card)!important;
-  font-weight:900!important
-}
-:global(html[data-theme="dark"]) .page .composer textarea::placeholder{
-  color:var(--namaa-card)!important;
-  opacity:1!important;
-  font-weight:900!important
-}
-
-/* Dark composer controls: deeper approved gold, with dark-green glyphs. */
-:global(html[data-theme="dark"]) .page .attachButton,
-:global(html[data-theme="dark"]) .page .sendButton{
-  background:var(--namaa-gold-500)!important;
-  border:1px solid color-mix(in srgb,var(--namaa-gold-500) 78%,var(--namaa-text))!important;
-  color:var(--namaa-green-900)!important
-}
-:global(html[data-theme="dark"]) .page .attachButton svg,
-:global(html[data-theme="dark"]) .page .sendButton svg{
-  color:var(--namaa-green-900)!important;
-  stroke:var(--namaa-green-900)!important
-}
-:global(html[data-theme="dark"]) .page .sendButton:disabled{
-  opacity:.88!important
-}
-
-
 /* Namaa dark governed surfaces — eliminate light-on-light states */
 
 /* Dark mode must never pair a light surface with light text. */
@@ -9631,74 +8869,6 @@
   transform:none!important;
   image-rendering:auto!important;
   filter:none!important
-}
-
-
-/* FINAL AUTHORITY — dark counterparty text, composer copy, and progress badge */
-/*
-  This block is intentionally last in the stylesheet.
-  It supersedes earlier dark-chat experiments so legacy rules cannot recolor
-  counterparty copy or the composer placeholder.
-*/
-
-/* Every textual node in an incoming/counterparty message is white in dark mode. */
-:global(html[data-theme="dark"]) .page .agentMessage,
-:global(html[data-theme="dark"]) .page .agentMessage :is(p,strong,small,b,span,time,em,li,label){
-  color:var(--ux-text-inverse)!important;
-  -webkit-text-fill-color:var(--ux-text-inverse)!important
-}
-:global(html[data-theme="dark"]) .page .agentMessage>.messageIdentity strong,
-:global(html[data-theme="dark"]) .page .agentMessage>.messageIdentity small,
-:global(html[data-theme="dark"]) .page .agentMessage>.messageCopy,
-:global(html[data-theme="dark"]) .page .agentMessage>p,
-:global(html[data-theme="dark"]) .page .agentMessage>.onboardingMessageContent>p,
-:global(html[data-theme="dark"]) .page .agentMessage>.messageMeta{
-  color:var(--ux-text-inverse)!important;
-  -webkit-text-fill-color:var(--ux-text-inverse)!important;
-  font-weight:800!important
-}
-
-/* Preserve operational icon color while keeping all copy white. */
-:global(html[data-theme="dark"]) .page .agentMessage .onboardingQuestionIcon svg,
-:global(html[data-theme="dark"]) .page .agentMessage .structuredCardHeader svg,
-:global(html[data-theme="dark"]) .page .agentMessage .inlineIntakeButton svg{
-  color:var(--namaa-green-900)!important;
-  stroke:var(--namaa-green-900)!important;
-  -webkit-text-fill-color:initial!important
-}
-
-/* Dark composer: bright Namaa green surface, no motif; actual and placeholder copy are white and bold. */
-:global(html[data-theme="dark"]) .page .composer,
-:global(html[data-theme="dark"]) .page .composer textarea{
-  background-image:none!important
-}
-:global(html[data-theme="dark"]) .page .composer{
-  background:color-mix(in srgb,var(--namaa-green-700) 82%,var(--namaa-green-900))!important
-}
-:global(html[data-theme="dark"]) .page .composer textarea{
-  background:color-mix(in srgb,var(--namaa-green-700) 76%,var(--namaa-green-900))!important;
-  color:var(--ux-text-inverse)!important;
-  -webkit-text-fill-color:var(--ux-text-inverse)!important;
-  font-weight:900!important
-}
-:global(html[data-theme="dark"]) .page .composer textarea::placeholder{
-  color:var(--ux-text-inverse)!important;
-  -webkit-text-fill-color:var(--ux-text-inverse)!important;
-  opacity:1!important;
-  font-weight:900!important
-}
-
-/* Progress percentage: visibly larger, wider and heavier. */
-.page .onboardingQuestionHeader>b{
-  min-width:76px!important;
-  min-height:52px!important;
-  display:inline-flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  padding-inline:var(--ux-space-3)!important;
-  font-size:var(--ux-type-body-size)!important;
-  font-weight:900!important;
-  line-height:1!important
 }
 
 
@@ -9944,55 +9114,6 @@
   opacity:1!important;
   image-rendering:auto!important
 }
-
-/* Light chat canvas: large, quiet Namaa leaf marks across the white surface only. */
-:global(html:not([data-theme="dark"])) .page .messages{
-  position:relative!important;
-  isolation:isolate!important;
-  background:var(--namaa-card)!important;
-  background-image:none!important
-}
-:global(html:not([data-theme="dark"])) .page .messages::before{
-  content:""!important;
-  display:block!important;
-  position:absolute!important;
-  inset:0!important;
-  z-index:0!important;
-  pointer-events:none!important;
-  background-image:
-    url('/brand/namaa-leaf.webp'),
-    url('/brand/namaa-leaf.webp'),
-    url('/brand/namaa-leaf.webp'),
-    url('/brand/namaa-leaf.webp')!important;
-  background-repeat:no-repeat!important;
-  background-size:340px auto,300px auto,280px auto,240px auto!important;
-  background-position:-70px 8%,calc(100% + 90px) 34%,-55px 68%,calc(100% + 55px) 92%!important;
-  opacity:.045!important
-}
-:global(html:not([data-theme="dark"])) .page .messages>*{
-  position:relative!important;
-  z-index:1!important
-}
-
-/* Motifs belong to the canvas, never inside a message card. */
-:global(html:not([data-theme="dark"])) .page .agentMessage,
-:global(html:not([data-theme="dark"])) .page .userMessage,
-:global(html:not([data-theme="dark"])) .page .agentMessage::before,
-:global(html:not([data-theme="dark"])) .page .agentMessage::after,
-:global(html:not([data-theme="dark"])) .page .userMessage::before,
-:global(html:not([data-theme="dark"])) .page .userMessage::after{
-  background-image:none!important
-}
-
-/* Dark chat remains completely free of canvas motifs. */
-:global(html[data-theme="dark"]) .page .messages::before,
-:global(html[data-theme="dark"]) .page .messages::after{
-  content:none!important;
-  display:none!important;
-  background:none!important;
-  background-image:none!important
-}
-
 
 /* Direct governance edit receipt: compact, image-free, brand-native system confirmation. */
 .directChangeReceipt{
@@ -13004,39 +12125,6 @@
 }
 
 
-/* 2026-09-27 — Conversation redesign: no legacy logo/building/motif canvas */
-.messagesBuildingBackdrop,
-.chatHeaderBuilding,
-.chatBuildingThumb{
-  display:none!important;
-}
-.chatPane,
-.messages,
-.page,
-.workspace{
-  background-image:none!important;
-}
-@media (max-width:767px){
-  .chatHeader,
-  .centralChatHeader{
-    background:var(--namaa-green-900)!important;
-    background-image:none!important;
-    border-radius:0!important;
-    box-shadow:none!important;
-  }
-  .chatHeader::before,
-  .centralChatHeader::before{content:none!important;display:none!important}
-  .chatHeaderShade{display:none!important}
-  .messages{
-    background:var(--namaa-card)!important;
-    background-image:none!important;
-  }
-  .composer{
-    border-radius:0!important;
-  }
-}
-
-
 /* 2026-09-27 — Team/persona mobile geometry */
 @media (max-width:767px){
   .entityTeamGrid{
@@ -13069,4 +12157,238 @@
     background-size:600% 200%!important;
     background-repeat:no-repeat!important;
   }
+}
+
+
+/* 2026-09-27 — CANONICAL MOBILE CHAT DESIGN — single authority */
+.messagesBuildingBackdrop,
+.chatHeaderBuilding,
+.chatBuildingThumb,
+.chatHeaderShade{
+  display:none!important;
+}
+
+@media (max-width:767px){
+  .page,
+  .workspace,
+  .chatPane{
+    width:100dvw!important;
+    max-width:100dvw!important;
+    min-width:0!important;
+    height:100dvh!important;
+    min-height:100dvh!important;
+    margin:0!important;
+    border:0!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+    overflow:hidden!important;
+    background:var(--namaa-card)!important;
+    background-image:none!important;
+  }
+
+  .chatPane{
+    display:flex!important;
+    flex-direction:column!important;
+  }
+
+  .chatHeader,
+  .centralChatHeader{
+    flex:0 0 72px!important;
+    height:72px!important;
+    min-height:72px!important;
+    padding:0 var(--ux-space-3)!important;
+    border:0!important;
+    border-bottom:1px solid color-mix(in srgb,var(--ux-text-inverse) 18%,transparent)!important;
+    border-radius:0!important;
+    background:var(--namaa-green-900)!important;
+    background-image:none!important;
+    color:var(--ux-text-inverse)!important;
+    box-shadow:none!important;
+    overflow:hidden!important;
+  }
+
+  .chatHeader::before,
+  .chatHeader::after,
+  .centralChatHeader::before,
+  .centralChatHeader::after{
+    content:none!important;
+    display:none!important;
+    background-image:none!important;
+  }
+
+  .chatHeaderForeground,
+  .desktopChatHeaderForeground{
+    min-height:72px!important;
+    height:72px!important;
+    background:transparent!important;
+  }
+
+  .chatHeader .compactRoleTitle strong,
+  .chatHeader .entityTitle strong,
+  .chatHeader .chatIdentity small{
+    color:var(--ux-text-inverse)!important;
+  }
+
+  .chatHeader .mobileTools button,
+  .chatHeader .compactMenuButton{
+    width:40px!important;
+    height:40px!important;
+    min-width:40px!important;
+    min-height:40px!important;
+    border:1px solid color-mix(in srgb,var(--ux-text-inverse) 28%,transparent)!important;
+    border-radius:var(--ux-radius-sm)!important;
+    background:color-mix(in srgb,var(--ux-text-inverse) 8%,transparent)!important;
+    color:var(--ux-text-inverse)!important;
+    box-shadow:none!important;
+  }
+
+  .messages{
+    flex:1 1 auto!important;
+    min-height:0!important;
+    width:100%!important;
+    max-width:100%!important;
+    padding:var(--ux-space-3) var(--ux-space-3) var(--ux-space-4)!important;
+    gap:var(--ux-space-3)!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    background:var(--namaa-card)!important;
+    background-image:none!important;
+  }
+
+  .messages::before,
+  .messages::after{
+    content:none!important;
+    display:none!important;
+    background-image:none!important;
+  }
+
+  .message,
+  .message::before,
+  .message::after,
+  .message .richMessageHero,
+  .message .structuredCard,
+  .message .onboardingQuestionCard,
+  .message .onboardingQuestionBox,
+  .message .onboardingQuestionReason{
+    background-image:none!important;
+    opacity:1!important;
+  }
+
+  .message{
+    width:fit-content!important;
+    max-width:86%!important;
+    min-width:0!important;
+    padding:var(--ux-space-2) var(--ux-space-3)!important;
+    border-radius:var(--ux-radius-md)!important;
+    box-shadow:none!important;
+  }
+
+  .agentMessage{
+    align-self:flex-start!important;
+    margin-inline:0 auto!important;
+    background:var(--namaa-surface-warm)!important;
+    border:1px solid var(--namaa-border-strong)!important;
+    color:var(--ux-text-primary)!important;
+  }
+
+  .agentMessage *,
+  .agentMessage .messageCopy,
+  .agentMessage .messageIdentity strong,
+  .agentMessage .messageIdentity small,
+  .agentMessage .messageMeta{
+    color:var(--ux-text-primary)!important;
+  }
+
+  .userMessage{
+    align-self:flex-end!important;
+    margin-inline:auto 0!important;
+    background:var(--namaa-user-message)!important;
+    border:1px solid var(--namaa-green-700)!important;
+    color:var(--ux-text-primary)!important;
+  }
+
+  .userMessage *{
+    color:var(--ux-text-primary)!important;
+  }
+
+  .messageReceipt,
+  .messageReceiptRead{
+    color:var(--namaa-info)!important;
+  }
+
+  .composer{
+    flex:0 0 auto!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-height:72px!important;
+    margin:0!important;
+    padding:var(--ux-space-2) var(--ux-space-3) calc(var(--ux-space-2) + env(safe-area-inset-bottom))!important;
+    border:0!important;
+    border-top:1px solid var(--namaa-border)!important;
+    border-radius:0!important;
+    background:var(--namaa-card)!important;
+    background-image:none!important;
+    box-shadow:none!important;
+  }
+
+  .composer textarea{
+    min-height:44px!important;
+    max-height:96px!important;
+    border:1px solid var(--namaa-border-strong)!important;
+    border-radius:var(--ux-radius-full)!important;
+    background:var(--namaa-surface-warm)!important;
+    color:var(--ux-text-primary)!important;
+  }
+
+  .composer textarea::placeholder{
+    color:var(--ux-text-secondary)!important;
+  }
+
+  .attachButton,
+  .sendButton{
+    width:44px!important;
+    height:44px!important;
+    min-width:44px!important;
+    min-height:44px!important;
+    padding:0!important;
+    border-radius:var(--ux-radius-full)!important;
+    border:1px solid var(--namaa-green-700)!important;
+    background:var(--namaa-green-900)!important;
+    color:var(--ux-text-inverse)!important;
+    box-shadow:none!important;
+  }
+
+  .sendButton span{
+    display:none!important;
+  }
+}
+
+:global(html[data-theme="dark"]) .chatPane,
+:global(html[data-theme="dark"]) .messages{
+  background:var(--ux-dark-page-bg)!important;
+  background-image:none!important;
+}
+:global(html[data-theme="dark"]) .agentMessage{
+  background:var(--ux-dark-card-bg)!important;
+  border-color:var(--ux-dark-border)!important;
+}
+:global(html[data-theme="dark"]) .agentMessage *,
+:global(html[data-theme="dark"]) .userMessage *{
+  color:var(--ux-text-inverse)!important;
+}
+:global(html[data-theme="dark"]) .userMessage{
+  background:color-mix(in srgb,var(--namaa-green-900) 72%,var(--ux-dark-card-bg))!important;
+  border-color:var(--namaa-green-700)!important;
+}
+:global(html[data-theme="dark"]) .composer{
+  background:var(--ux-dark-card-bg)!important;
+  border-top-color:var(--ux-dark-border)!important;
+}
+:global(html[data-theme="dark"]) .composer textarea{
+  background:var(--ux-dark-page-bg)!important;
+  border-color:var(--ux-dark-border)!important;
+  color:var(--ux-text-inverse)!important;
+}
+:global(html[data-theme="dark"]) .composer textarea::placeholder{
+  color:color-mix(in srgb,var(--ux-text-inverse) 62%,transparent)!important;
 }
