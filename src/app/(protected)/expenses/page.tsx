@@ -8,7 +8,7 @@ import { listBudgetCategories } from '@/features/budget-categories/queries/list-
 import { listExpenses } from '@/features/expenses/queries/list-expenses';
 import { recordExpenseAction } from './actions';
 
-import { EmptyState } from '@/components/ui/feedback-state';
+import { EmptyState } from '@/components/ui';
 import { ActionDialog } from '@/components/overlays/action-dialog';
 import { BankMessageDialogTrigger } from '@/components/bank-message-dialog';
 export default async function ExpensesPage() {

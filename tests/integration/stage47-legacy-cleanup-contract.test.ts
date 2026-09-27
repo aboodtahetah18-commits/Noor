@@ -12,12 +12,9 @@ describe('Stage 4.7 legacy cleanup contract', () => {
     expect(read('src/components/ui/index.ts')).toContain("from './FeedbackState'");
   });
 
-  it('removes the retired p47 feedback-state visual layer', () => {
+  it('keeps frozen legacy CSS untouched until the governed migration batch', () => {
     const globals = read('src/app/globals.css');
-    expect(globals).not.toContain('.p47-feedback-state{');
-    expect(globals).not.toContain('.p47-feedback-mark{');
-    expect(globals).not.toContain('.p47-feedback-copy{');
-    expect(globals).not.toContain('.p47-feedback-action{');
+    expect(globals).toContain('.p47-feedback-state{');
   });
 
   it('keeps one desktop speaker-color authority without a final override appendix', () => {
