@@ -715,3 +715,98 @@ tr:last-child td{border-bottom:0}
     padding:8px 10px calc(8px + env(safe-area-inset-bottom))!important;
   }
 }
+
+
+/* Transactions V2 */
+.v2-transactions-hero{display:flex;align-items:end;justify-content:space-between;gap:18px}
+.v2-transactions-hero-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.v2-filter-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;min-width:min(84vw,820px)}
+.v2-filter-grid label{display:grid;gap:6px;font-weight:700;color:var(--n-ink)}
+.v2-filter-search{grid-column:1/-1}
+.v2-filter-actions{grid-column:1/-1;display:flex;gap:8px;justify-content:flex-start}
+.v2-transaction-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.v2-transaction-summary>article{
+  min-height:126px;display:grid;grid-template-columns:auto 1fr;align-items:center;gap:12px;
+  padding:18px;border:1px solid var(--n-border-strong);border-radius:var(--n-radius-lg);
+  background:var(--n-surface);box-shadow:var(--n-shadow)
+}
+.v2-transaction-summary>article:nth-child(1){background:linear-gradient(135deg,var(--n-surface-soft),var(--n-surface))}
+.v2-transaction-summary>article:nth-child(2){background:linear-gradient(135deg,#ECFBF6,var(--n-surface))}
+.v2-transaction-summary>article:nth-child(3){background:linear-gradient(135deg,var(--n-gold-soft),var(--n-surface))}
+.v2-transaction-summary>article:nth-child(4){background:linear-gradient(135deg,#F4F7FA,var(--n-surface))}
+.v2-transaction-summary-icon{
+  width:48px;height:48px;display:grid;place-items:center;border-radius:14px;
+  background:var(--n-surface-soft);color:var(--n-green-900);border:1px solid var(--n-border)
+}
+.v2-transaction-summary-icon.is-green{background:#ECFBF6;color:var(--n-green-700)}
+.v2-transaction-summary-icon.is-gold{background:var(--n-gold-soft);color:var(--n-gold)}
+.v2-transaction-summary article>div{display:grid;gap:3px}
+.v2-transaction-summary span,.v2-transaction-summary small{color:var(--n-muted)}
+.v2-transaction-summary strong{font-size:1.5rem}
+.v2-transactions-toolbar{
+  display:flex;align-items:end;justify-content:space-between;gap:16px;
+  padding:18px;border:1px solid var(--n-border);border-radius:var(--n-radius-lg);background:var(--n-surface)
+}
+.v2-inline-actions{display:flex;gap:8px;flex-wrap:wrap}
+.v2-inline-actions>button,.v2-inline-actions button{
+  min-height:42px;padding:0 14px;border:1px solid var(--n-border-strong);border-radius:12px;background:var(--n-surface);color:var(--n-green-900);font-weight:700
+}
+.v2-transaction-list{display:grid;gap:10px}
+.v2-transaction-card{
+  min-width:0;display:grid;grid-template-columns:46px minmax(0,1fr) auto auto;gap:14px;align-items:center;
+  padding:14px 16px;border:1px solid var(--n-border);border-radius:var(--n-radius-md);background:var(--n-surface)
+}
+.v2-transaction-card[data-tone="positive"]{border-inline-start:4px solid var(--n-green-700)}
+.v2-transaction-card[data-tone="expense"]{border-inline-start:4px solid var(--n-gold)}
+.v2-transaction-card[data-tone="neutral"]{border-inline-start:4px solid var(--n-info)}
+.v2-transaction-icon{
+  width:44px;height:44px;display:grid;place-items:center;border-radius:14px;background:var(--n-surface-soft);color:var(--n-green-900)
+}
+.v2-transaction-card[data-tone="expense"] .v2-transaction-icon{background:var(--n-gold-soft);color:var(--n-gold)}
+.v2-transaction-card[data-tone="neutral"] .v2-transaction-icon{background:#EEF4FF;color:var(--n-info)}
+.v2-transaction-copy{min-width:0;display:grid;gap:5px}
+.v2-transaction-title-row{display:flex;align-items:center;gap:8px;min-width:0}
+.v2-transaction-title-row>strong{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.v2-transaction-copy small{color:var(--n-muted)}
+.v2-transaction-state span{
+  display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;background:var(--n-surface-soft);color:var(--n-green-900);font-size:.78rem;font-weight:700
+}
+.v2-transaction-amount{display:grid;justify-items:end;gap:6px}
+.v2-transaction-amount>strong{font-size:1.1rem;white-space:nowrap}
+.v2-transaction-amount>button{
+  min-height:34px;padding:0 10px;border:1px solid var(--n-border);border-radius:10px;background:var(--n-surface);color:var(--n-green-900);font-weight:700
+}
+.v2-dialog-actions{display:flex;justify-content:flex-start;margin-top:14px}
+.v2-form-full{grid-column:1/-1}
+.v2-pagination{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px}
+.v2-pagination>a{
+  width:max-content;min-height:40px;display:inline-flex;align-items:center;padding:0 14px;border:1px solid var(--n-border-strong);border-radius:12px;background:var(--n-surface);color:var(--n-green-900);text-decoration:none;font-weight:700
+}
+.v2-pagination>a:last-child{justify-self:end}.v2-pagination>span:nth-child(2){color:var(--n-muted)}
+.v2-next-step{
+  display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:14px;
+  padding:18px;border:1px solid var(--n-border-strong);border-radius:var(--n-radius-lg);
+  background:linear-gradient(135deg,var(--n-surface-soft),var(--n-surface));text-decoration:none
+}
+.v2-next-step-icon{width:46px;height:46px;display:grid;place-items:center;border-radius:14px;background:var(--n-green-900);color:#fff}
+.v2-next-step>span:nth-child(2){display:grid;gap:3px}.v2-next-step small{color:var(--n-muted)}
+
+@media(max-width:900px){
+  .v2-transactions-hero{display:grid;align-items:stretch}
+  .v2-transaction-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .v2-transactions-toolbar{display:grid}
+}
+@media(max-width:620px){
+  .v2-filter-grid{grid-template-columns:1fr;min-width:0;width:100%}
+  .v2-filter-search,.v2-filter-actions{grid-column:auto}
+  .v2-transaction-summary{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .v2-transaction-summary>article{min-height:112px;grid-template-columns:1fr;justify-items:center;text-align:center;padding:12px 8px}
+  .v2-transaction-summary-icon{width:42px;height:42px}
+  .v2-transaction-summary strong{font-size:1.15rem}.v2-transaction-summary span,.v2-transaction-summary small{font-size:.72rem}
+  .v2-transaction-card{grid-template-columns:42px minmax(0,1fr) auto;gap:10px;padding:12px}
+  .v2-transaction-state{grid-column:2/3}
+  .v2-transaction-amount{grid-column:3/4;grid-row:1/3}
+  .v2-transaction-title-row{display:grid;justify-items:start}
+  .v2-transaction-copy small{font-size:.76rem}
+  .v2-next-step{padding:14px}
+}
