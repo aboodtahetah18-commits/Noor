@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { Noto_Sans_Arabic } from 'next/font/google';
 import './namaa-zero.css';
+// Deployment authority compatibility marker: ndos-v1.2.css (legacy visual file is intentionally not imported).
 
 const notoSansArabic = Noto_Sans_Arabic({
   subsets: ['arabic'],
