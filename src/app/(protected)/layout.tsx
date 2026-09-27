@@ -1,12 +1,8 @@
 import type { ReactNode } from 'react';
 import { requireAuthenticatedUser } from '@/auth/require-authenticated-user';
-import { MobileBottomNav } from './mobile-bottom-nav';
-import { DesktopTopNav } from './desktop-top-nav';
-import { TabletTopNav } from './tablet-top-nav';
-import { MobileTopBar } from './mobile-top-bar';
-import { GlobalTopBar } from './global-top-bar';
 import { BankMessageDialog } from '@/components/bank-message-dialog';
 import { FinancialFormIntelligence } from '@/components/forms/financial-form-intelligence';
+import { V2AppShell } from './v2-app-shell';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,23 +17,10 @@ export default async function ProtectedLayout({ children }: Readonly<{ children:
   };
 
   return (
-    <div className="protected-app-shell" data-responsive-platform="full">
+    <>
       <FinancialFormIntelligence />
-      <a className="skip-link" href="#main-content">تجاوز إلى المحتوى الرئيسي</a>
-
-      <DesktopTopNav />
-      <GlobalTopBar profile={profile} />
-      <TabletTopNav profile={profile} />
-      <MobileTopBar profile={profile} />
-
-      <main id="main-content" tabIndex={-1} className="namaa-app-main main-content-focus-target">
-        <div className="namaa-page-frame">
-          {children}
-        </div>
-      </main>
-
-      <MobileBottomNav />
+      <V2AppShell profile={profile}>{children}</V2AppShell>
       <BankMessageDialog />
-    </div>
+    </>
   );
 }
