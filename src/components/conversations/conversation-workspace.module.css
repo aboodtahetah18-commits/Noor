@@ -12487,3 +12487,38 @@
   .attachButton{width:40px;flex-basis:40px}
   .sendButton{min-width:44px;padding-inline:10px}
 }
+
+
+/* Phase 1 / Chat step 3 — remove dead space and simplify side context */
+.workspaceHeader{min-height:72px;padding:14px 18px}.headingCopy{gap:2px}.headingCopy p{max-width:620px}
+.workspace{min-height:calc(100dvh - 205px)}
+.roomsPane,.contextPane{padding:12px}
+.paneTitle{height:36px}.paneTitle>span{font-weight:700}
+.roomItem{min-height:52px}.roomCopy{gap:2px}
+.contextPane{gap:10px}
+.chatHeader,.desktopChatHeaderForeground{min-height:62px}
+.centralChatHeader,.centralChatHeader .desktopChatHeaderForeground{min-height:68px}
+.chatBuildingThumb{width:64px;height:48px;flex-basis:64px;border-radius:9px}
+.entityTitle strong{font-size:14px}.entityTitle span{font-weight:700;padding:3px 7px}
+.routingNote{margin:8px 12px 0;padding:8px 10px;border-radius:9px;background:color-mix(in srgb,var(--namaa-surface-warm) 70%,#fff)}
+.messages{min-height:0}
+@media(min-width:1200px){
+  .workspace{grid-template-columns:228px minmax(520px,1fr) 228px}
+  .workspace.withoutRooms{grid-template-columns:minmax(520px,1fr) 228px}
+  .workspace.withoutContext{grid-template-columns:228px minmax(520px,1fr)}
+}
+@media(max-width:1199px) and (min-width:768px){
+  .workspace{grid-template-columns:210px minmax(420px,1fr)}
+  .contextPane{display:none}
+  .workspace.withoutRooms{grid-template-columns:minmax(0,1fr)}
+}
+@media(max-width:767px){
+  .page{min-height:100dvh;border:0;border-radius:0}
+  .workspaceHeader{display:none}
+  .workspace{min-height:100dvh;display:block}
+  .roomsPane,.contextPane{display:none}
+  .chatPane{min-height:100dvh;grid-template-rows:auto auto minmax(0,1fr) auto auto auto}
+  .chatHeader,.desktopChatHeaderForeground{min-height:58px}
+  .centralChatHeader,.centralChatHeader .desktopChatHeaderForeground{min-height:58px}
+  .routingNote{margin:6px 8px 0;padding:7px 9px}
+}
