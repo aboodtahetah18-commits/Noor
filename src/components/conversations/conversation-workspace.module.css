@@ -12473,3 +12473,39 @@
 @media (max-width:767px){
   .chatHeader::after{inset-inline-end:52px;width:88px;height:88px;opacity:.055;filter:brightness(0) invert(1)}
 }
+
+
+/* 2026-09-27 — COMPACT CHAT GUIDANCE + COMPOSER */
+.specialistRoutingNote{
+  margin:var(--ux-space-2) var(--ux-space-3) 0;
+  padding:var(--ux-space-1) var(--ux-space-3);
+  min-height:32px;
+  align-items:center;
+  white-space:nowrap;
+  overflow:hidden;
+}
+.specialistRoutingNote>span{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.composer{
+  position:relative;
+}
+.composerPolicy{
+  position:absolute;
+  inset-inline-start:var(--ux-space-3);
+  bottom:calc(100% + 2px);
+  font-size:var(--ux-type-caption-size);
+  color:var(--ux-text-muted);
+  pointer-events:none;
+  opacity:.78;
+}
+@media (max-width:767px){
+  .specialistRoutingNote:not(.focusedChatBanner){
+    display:none!important;
+  }
+  .composerPolicy{
+    display:none;
+  }
+}
