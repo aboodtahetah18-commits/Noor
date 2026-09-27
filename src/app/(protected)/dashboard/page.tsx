@@ -25,7 +25,7 @@ export default async function DashboardPage() {
     return (
       <main className={styles.page} dir="rtl">
         <section className={styles.emptyState}>
-          <div className={styles.emptyIcon}><LucideIcon name="walletCards" size={28}/></div>
+          <div className={styles.emptyIcon}><LucideIcon name="walletCards" size={32}/></div>
           <span>مستقبلي</span>
           <h1>ابدأ دورتك المالية الأولى</h1>
           <p>أنشئ دورة مالية حتى يبدأ نماء في حساب وضعك المالي الحقيقي.</p>
@@ -50,14 +50,14 @@ export default async function DashboardPage() {
           <p>هنا نظرة سريعة على وضعك المالي اليوم</p>
         </div>
         <div className={styles.heroTools}>
-          <Link href="/alerts" aria-label="التنبيهات"><LucideIcon name="bell" size={22}/></Link>
-          <Link href="/settings" aria-label="الإعدادات"><LucideIcon name="settings" size={22}/></Link>
+          <Link href="/alerts" aria-label="التنبيهات"><LucideIcon name="bell" size={24}/></Link>
+          <Link href="/settings" aria-label="الإعدادات"><LucideIcon name="settings" size={24}/></Link>
         </div>
       </section>
 
       <div className={styles.content}>
         <section className={styles.cycleCard}>
-          <div className={styles.cycleIcon}><LucideIcon name="calendarDays" size={26}/></div>
+          <div className={styles.cycleIcon}><LucideIcon name="calendarDays" size={24}/></div>
           <div className={styles.cycleCopy}>
             <span>أنت في دورتك المالية الحالية</span>
             <strong>{dashboard.cycle.name}</strong>
@@ -85,12 +85,12 @@ export default async function DashboardPage() {
         </section>
 
         <section className={styles.quickActions} aria-label="إجراءات سريعة">
-          <Link href="/expenses"><span><LucideIcon name="plus" size={22}/></span><b>إضافة عملية</b></Link>
-          <Link href="/transfers/new"><span><LucideIcon name="repeat2" size={22}/></span><b>تحويل</b></Link>
-          <BankMessageDialogTrigger className={styles.quickButton}><span><LucideIcon name="creditCard" size={22}/></span><b>رسالة بنك</b></BankMessageDialogTrigger>
-          <Link href="/goals"><span><LucideIcon name="target" size={22}/></span><b>الأهداف</b></Link>
-          <Link href="/budget"><span><LucideIcon name="chart" size={22}/></span><b>الميزانية</b></Link>
-          <Link href="/more"><span><LucideIcon name="layoutGrid" size={22}/></span><b>المزيد</b></Link>
+          <Link href="/expenses"><span><LucideIcon name="plus" size={24}/></span><b>إضافة عملية</b></Link>
+          <Link href="/transfers/new"><span><LucideIcon name="repeat2" size={24}/></span><b>تحويل</b></Link>
+          <BankMessageDialogTrigger className={styles.quickButton}><span><LucideIcon name="creditCard" size={24}/></span><b>رسالة بنك</b></BankMessageDialogTrigger>
+          <Link href="/goals"><span><LucideIcon name="target" size={24}/></span><b>الأهداف</b></Link>
+          <Link href="/budget"><span><LucideIcon name="chart" size={24}/></span><b>الميزانية</b></Link>
+          <Link href="/more"><span><LucideIcon name="layoutGrid" size={24}/></span><b>المزيد</b></Link>
         </section>
 
         <section className={styles.mainGrid}>
@@ -101,13 +101,13 @@ export default async function DashboardPage() {
           </article>
 
           <article className={styles.safePanel}>
-            <header><div><span>المتاح الآمن للصرف</span><strong>{metricValue(dashboard.safeToSpend.amount)}</strong></div><LucideIcon name="shieldCheck" size={24}/></header>
+            <header><div><span>المتاح الآمن للصرف</span><strong>{metricValue(dashboard.safeToSpend.amount)}</strong></div><LucideIcon name="lockKeyhole" size={24}/></header>
             <p>{dashboard.safeToSpend.status === 'BLOCKED' ? 'بانتظار اكتمال قاعدة الأمان المالي.' : `الحد اليومي الآمن ${metricValue(dashboard.dailySafeLimit.amount)}`}</p>
             <Link href="/reports/future-pressure">عرض التوقع المالي</Link>
           </article>
 
           <article className={styles.advisorPanel}>
-            <header><div><span>توصية ذكية</span><h2>{dashboard.topRecommendation?.title ?? 'وضعك المالي مستقر الآن'}</h2></div><LucideIcon name="sparkles" size={26}/></header>
+            <header><div><span>توصية ذكية</span><h2>{dashboard.topRecommendation?.title ?? 'وضعك المالي مستقر الآن'}</h2></div><LucideIcon name="sparkles" size={24}/></header>
             <p>{dashboard.topRecommendation?.message ?? 'لا توجد توصية مفتوحة تستحق التدخل في الوقت الحالي.'}</p>
             {dashboard.topRecommendation ? (
               <form action={viewRecommendationAction}>
