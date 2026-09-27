@@ -12286,8 +12286,8 @@
   .agentMessage{
     align-self:flex-start!important;
     margin-inline:0 auto!important;
-    background:var(--namaa-surface-warm)!important;
-    border:1px solid var(--namaa-border-strong)!important;
+    background:var(--namaa-cream)!important;
+    border:1px solid var(--namaa-gold-500)!important;
     color:var(--ux-text-primary)!important;
   }
 
