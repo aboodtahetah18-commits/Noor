@@ -12392,3 +12392,41 @@
 :global(html[data-theme="dark"]) .composer textarea::placeholder{
   color:color-mix(in srgb,var(--ux-text-inverse) 62%,transparent)!important;
 }
+
+
+/* REDESIGN V1 — hard message/background contrast rule */
+@media (max-width:767px){
+  .messages{
+    background:var(--namaa-card)!important;
+  }
+  .agentMessage{
+    background:color-mix(in srgb,var(--namaa-gold-500) 18%,var(--namaa-card))!important;
+    border:2px solid color-mix(in srgb,var(--namaa-gold-500) 55%,var(--namaa-border-strong))!important;
+    color:var(--ux-text-primary)!important;
+  }
+  .userMessage{
+    background:color-mix(in srgb,var(--namaa-green-700) 14%,var(--namaa-card))!important;
+    border:2px solid color-mix(in srgb,var(--namaa-green-700) 58%,var(--namaa-border-strong))!important;
+    color:var(--ux-text-primary)!important;
+  }
+  .agentMessage *,
+  .userMessage *{
+    color:var(--ux-text-primary)!important;
+  }
+  .messageReceipt,
+  .messageReceiptRead{
+    color:var(--namaa-info)!important;
+  }
+}
+
+:global(html[data-theme="dark"]) .messages{
+  background:var(--ux-dark-page-bg)!important;
+}
+:global(html[data-theme="dark"]) .agentMessage{
+  background:color-mix(in srgb,var(--namaa-gold-500) 18%,var(--ux-dark-card-bg))!important;
+  border-color:color-mix(in srgb,var(--namaa-gold-500) 62%,var(--ux-dark-border))!important;
+}
+:global(html[data-theme="dark"]) .userMessage{
+  background:color-mix(in srgb,var(--namaa-green-700) 38%,var(--ux-dark-card-bg))!important;
+  border-color:color-mix(in srgb,var(--namaa-green-700) 74%,var(--ux-dark-border))!important;
+}
