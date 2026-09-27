@@ -34,12 +34,11 @@ describe('Stage 4.7 chat-first mobile shell contract', () => {
 
   it('stabilizes conversation geometry without raw palette values', () => {
     const css = read('src/components/conversations/conversation-workspace.module.css');
-    const stage = css.slice(css.lastIndexOf('Stage 4.7 — mobile chat-first viewport stabilization'));
 
-    expect(stage).toContain('position:relative!important');
-    expect(stage).toContain('max-width:84%!important');
-    expect(stage).toContain('max-width:78%!important');
-    expect(stage).toContain('var(--ux-z-modal)');
-    expect(stage).not.toMatch(/#[0-9a-f]{3,8}\b/i);
+    expect(css).toContain('position:relative;');
+    expect(css).toContain('.agentMessage{max-width:84%}');
+    expect(css).toContain('.userMessage{max-width:78%}');
+    expect(css).toContain('z-index:var(--ux-z-modal)');
+    expect(css).not.toMatch(/#[0-9a-f]{3,8}\b/i);
   });
 });

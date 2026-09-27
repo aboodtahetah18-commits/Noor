@@ -25,7 +25,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         <div className={styles.themeButton}><ThemeToggle /></div>
 
         <header className={styles.brandBlock}>
-          <BrandLogo surface="auto" className={styles.logo} priority />
+          <BrandLogo surface="dark" className={styles.logo} priority />
           <div className={styles.titleRow}>
             <span className={styles.lockIcon} aria-hidden="true"><LucideIcon name="lockKeyhole" size={20} /></span>
             <h1 id="login-title">تسجيل الدخول</h1>

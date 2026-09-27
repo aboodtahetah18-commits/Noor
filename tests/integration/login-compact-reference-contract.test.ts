@@ -9,7 +9,7 @@ describe('compact Namaa login reference', () => {
   it('uses one centered login card and removes the former split visual hero', () => {
     const page = read('src/app/(public)/login/page.tsx');
     expect(page).toContain('className={styles.card}');
-    expect(page).toContain('<BrandLogo surface="auto"');
+    expect(page).toContain('<BrandLogo surface="dark"');
     expect(page).toContain('lockKeyhole');
     expect(page).not.toContain('styles.visual');
     expect(page).not.toContain('styles.featureStrip');

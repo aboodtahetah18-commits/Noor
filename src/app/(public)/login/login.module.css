@@ -254,6 +254,9 @@
 
 @media(max-width:767px){
   .page{
+    height:100dvh;
+    min-height:100dvh;
+    overflow:hidden;
     padding:var(--ux-space-4);
   }
 
