@@ -1,0 +1,435 @@
+/* ==========================================================================
+   NAMAA REDESIGN V1 — AUTHORITATIVE VISUAL LAYER
+   Built from the approved September 2026 visual direction.
+   This file intentionally sits last in the cascade while the legacy layer is
+   being removed page-by-page. All values use the approved design tokens only.
+   ========================================================================== */
+
+:root{
+  --nr-page:var(--ux-page-bg);
+  --nr-card:var(--ux-card-bg);
+  --nr-primary:var(--ux-brand-primary);
+  --nr-secondary:var(--ux-brand-secondary);
+  --nr-accent:var(--ux-brand-accent);
+  --nr-soft:var(--ux-section-soft-teal);
+  --nr-soft-blue:var(--ux-section-soft-blue);
+  --nr-border:var(--ux-border-default);
+  --nr-border-strong:var(--ux-border-emphasis);
+  --nr-text:var(--ux-text-primary);
+  --nr-muted:var(--ux-text-secondary);
+  --nr-inverse:var(--ux-text-inverse);
+}
+
+html,body{background:var(--nr-page)!important;color:var(--nr-text)!important}
+body{overflow-x:hidden}
+
+.namaa-page-frame,
+.namaa-app-main,
+.app-page,
+.p47-page,
+.page-shell,
+.p47-content-shell{
+  width:100%;
+  max-width:none;
+  min-width:0;
+}
+
+/* App chrome */
+.mustaqbali-topbar,
+.p47-mobile-topbar.mustaqbali-mobile-header,
+.namaa-mobile-header{
+  background:var(--nr-primary)!important;
+  color:var(--nr-inverse)!important;
+  border-color:color-mix(in srgb,var(--nr-inverse) 16%,transparent)!important;
+  box-shadow:none!important;
+}
+
+.mustaqbali-topbar a,
+.mustaqbali-topbar button,
+.p47-mobile-topbar.mustaqbali-mobile-header a,
+.p47-mobile-topbar.mustaqbali-mobile-header button{
+  color:var(--nr-inverse)!important;
+}
+
+.mustaqbali-mobile-bottom-nav{
+  background:var(--nr-card)!important;
+  border-top:1px solid var(--nr-border)!important;
+  box-shadow:0 -8px 24px color-mix(in srgb,var(--nr-text) 7%,transparent)!important;
+}
+
+.mustaqbali-mobile-bottom-nav a{
+  min-height:64px;
+  color:var(--nr-muted)!important;
+}
+
+.mustaqbali-mobile-bottom-nav a.is-active{
+  color:var(--nr-primary)!important;
+  background:var(--nr-soft)!important;
+  border-radius:var(--ux-radius-lg);
+}
+
+/* Universal page hero */
+:where(.page-header,.p47-page-heading,.p47-resource-header,.more-hub-header){
+  margin:0!important;
+  padding:var(--ux-space-6)!important;
+  border:0!important;
+  border-radius:0 0 var(--ux-radius-xl) var(--ux-radius-xl)!important;
+  background:var(--nr-primary)!important;
+  color:var(--nr-inverse)!important;
+  box-shadow:none!important;
+}
+
+:where(.page-header,.p47-page-heading,.p47-resource-header,.more-hub-header) h1,
+:where(.page-header,.p47-page-heading,.p47-resource-header,.more-hub-header) h2,
+:where(.page-header,.p47-page-heading,.p47-resource-header,.more-hub-header) p,
+:where(.page-header,.p47-page-heading,.p47-resource-header,.more-hub-header) .eyebrow,
+:where(.page-header,.p47-page-heading,.p47-resource-header,.more-hub-header) .p47-kicker{
+  color:var(--nr-inverse)!important;
+}
+
+:where(.page-header,.p47-page-heading,.p47-resource-header,.more-hub-header) .eyebrow,
+:where(.page-header,.p47-page-heading,.p47-resource-header,.more-hub-header) .p47-kicker{
+  opacity:.82;
+}
+
+.p47-content-shell,
+.p47-resource-page,
+.more-hub-shell{
+  display:grid;
+  gap:var(--ux-space-4);
+}
+
+.p47-content-shell,
+.p47-resource-page{
+  padding:0 var(--ux-space-5) var(--ux-space-8);
+}
+
+.p47-content-shell>.p47-page-heading,
+.p47-resource-page>.p47-resource-header{
+  margin-inline:calc(var(--ux-space-5) * -1)!important;
+}
+
+/* Buttons */
+.primary-link,
+.primary-button,
+.primary,
+.p47-primary-action,
+.namaa-wide-action{
+  background:var(--nr-primary)!important;
+  border:1px solid var(--nr-primary)!important;
+  color:var(--nr-inverse)!important;
+  border-radius:var(--ux-radius-md)!important;
+  box-shadow:none!important;
+}
+
+.secondary-button,
+.p47-secondary-action,
+.p47-quiet-action,
+.secondary-link{
+  background:var(--nr-card)!important;
+  color:var(--nr-primary)!important;
+  border:1px solid var(--nr-border-strong)!important;
+  border-radius:var(--ux-radius-md)!important;
+}
+
+/* Cards and panels */
+:where(.card,.panel,.p47-panel,.p47-resource-card,.p47-account-tile,.account-card,.detail-list,.empty-state,.more-hub-card,.functional-state-card,.p74-focus-summary){
+  background:var(--nr-card)!important;
+  color:var(--nr-text)!important;
+  border:1px solid var(--nr-border-strong)!important;
+  border-radius:var(--ux-radius-lg)!important;
+  box-shadow:0 10px 30px color-mix(in srgb,var(--nr-text) 6%,transparent)!important;
+}
+
+.p47-panel,
+.p47-resource-card{padding:var(--ux-space-5)!important}
+
+/* Financial summary treatments */
+.p74-focus-summary,
+.p47-budget-hero{
+  background:linear-gradient(135deg,var(--nr-soft),var(--nr-card))!important;
+  border:1px solid var(--nr-border-strong)!important;
+}
+
+.p47-budget-hero{
+  border-radius:var(--ux-radius-xl)!important;
+  box-shadow:0 10px 30px color-mix(in srgb,var(--nr-text) 6%,transparent)!important;
+}
+
+.p47-budget-summary-grid{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:var(--ux-space-3)!important;
+}
+
+.p47-budget-summary-grid>article{
+  border:1px solid var(--nr-border-strong)!important;
+  border-radius:var(--ux-radius-lg)!important;
+  background:var(--nr-card)!important;
+  box-shadow:0 8px 24px color-mix(in srgb,var(--nr-text) 5%,transparent)!important;
+}
+
+.p47-budget-item-bar,
+.dashboard-progress{
+  background:var(--nr-soft)!important;
+}
+
+.p47-budget-item-bar>span,
+.dashboard-progress>i{
+  background:var(--nr-primary)!important;
+}
+
+/* Accounts */
+.p47-account-map{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:var(--ux-space-3)!important;
+}
+
+.p47-account-tile{
+  padding:var(--ux-space-4)!important;
+  gap:var(--ux-space-3)!important;
+  overflow:hidden!important;
+}
+
+.p47-account-tile:nth-child(4n+1){background:linear-gradient(135deg,var(--nr-soft),var(--nr-card))!important}
+.p47-account-tile:nth-child(4n+2){background:linear-gradient(135deg,color-mix(in srgb,var(--nr-accent) 10%,var(--nr-card)),var(--nr-card))!important}
+.p47-account-tile:nth-child(4n+3){background:linear-gradient(135deg,var(--nr-soft-blue),var(--nr-card))!important}
+.p47-account-tile:nth-child(4n+4){background:linear-gradient(135deg,color-mix(in srgb,var(--nr-secondary) 9%,var(--nr-card)),var(--nr-card))!important}
+
+.p47-account-tile>div:last-child{
+  border-top:1px solid var(--nr-border)!important;
+}
+
+/* Transactions */
+.p47-transaction-list{
+  display:grid!important;
+  gap:var(--ux-space-2)!important;
+}
+
+.p47-transaction-row{
+  min-width:0!important;
+  border:1px solid var(--nr-border)!important;
+  border-radius:var(--ux-radius-md)!important;
+  background:var(--nr-card)!important;
+  box-shadow:0 6px 18px color-mix(in srgb,var(--nr-text) 4%,transparent)!important;
+}
+
+.p47-transaction-kind{
+  border-radius:var(--ux-radius-sm)!important;
+  background:var(--nr-soft)!important;
+  color:var(--nr-primary)!important;
+}
+
+/* More hub — every tile must read as a tile. */
+.more-hub-page{
+  background:var(--nr-page)!important;
+  padding:0!important;
+}
+
+.more-hub-shell{
+  width:100%!important;
+  max-width:none!important;
+}
+
+.more-hub-header{
+  margin:0!important;
+}
+
+.more-hub-sections{
+  padding:var(--ux-space-5)!important;
+  display:grid!important;
+  gap:var(--ux-space-5)!important;
+}
+
+.more-hub-section{
+  display:grid!important;
+  gap:var(--ux-space-3)!important;
+}
+
+.more-hub-section-head{
+  display:flex!important;
+  align-items:center!important;
+  gap:var(--ux-space-2)!important;
+}
+
+.more-hub-section-head h2{margin:0!important}
+.more-hub-section-head p{margin:var(--ux-space-1) 0 0!important;color:var(--nr-muted)!important}
+
+.more-hub-grid{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:var(--ux-space-3)!important;
+}
+
+.more-hub-card{
+  min-height:136px!important;
+  display:grid!important;
+  grid-template-columns:52px minmax(0,1fr) 20px!important;
+  align-items:center!important;
+  gap:var(--ux-space-3)!important;
+  padding:var(--ux-space-4)!important;
+  border-width:2px!important;
+  border-color:var(--nr-border-strong)!important;
+  text-decoration:none!important;
+}
+
+.more-hub-card:nth-child(3n+1){background:linear-gradient(135deg,var(--nr-card),var(--nr-soft))!important}
+.more-hub-card:nth-child(3n+2){background:linear-gradient(135deg,var(--nr-card),color-mix(in srgb,var(--nr-accent) 8%,var(--nr-card)))!important}
+.more-hub-card:nth-child(3n+3){background:linear-gradient(135deg,var(--nr-card),var(--nr-soft-blue))!important}
+
+.more-hub-card-icon{
+  width:52px!important;
+  height:52px!important;
+  display:grid!important;
+  place-items:center!important;
+  border-radius:var(--ux-radius-full)!important;
+  background:var(--nr-soft)!important;
+  color:var(--nr-primary)!important;
+  border:1px solid var(--nr-border)!important;
+}
+
+/* Knowledge / governance */
+.namaa-governance-portal{
+  width:100%!important;
+  max-width:none!important;
+  padding:0 var(--ux-space-5) var(--ux-space-8)!important;
+}
+
+.namaa-governance-portal-hero{
+  margin-inline:calc(var(--ux-space-5) * -1)!important;
+  padding:var(--ux-space-6)!important;
+  border-radius:0 0 var(--ux-radius-xl) var(--ux-radius-xl)!important;
+  background:var(--nr-primary)!important;
+  color:var(--nr-inverse)!important;
+}
+
+.namaa-governance-portal-hero *{color:var(--nr-inverse)!important}
+
+.namaa-governance-portal-metrics,
+.namaa-governance-portal-grid{
+  gap:var(--ux-space-3)!important;
+}
+
+.namaa-governance-library-card{
+  border:1px solid var(--nr-border-strong)!important;
+  border-radius:var(--ux-radius-lg)!important;
+  background:var(--nr-card)!important;
+  box-shadow:0 10px 30px color-mix(in srgb,var(--nr-text) 6%,transparent)!important;
+}
+
+.namaa-governance-doc-preview>*{
+  border:1px solid var(--nr-border)!important;
+  border-radius:var(--ux-radius-md)!important;
+  background:var(--nr-page)!important;
+}
+
+/* Reports */
+.namaa-observatory-wide,
+.reports-page{
+  width:100%!important;
+  max-width:none!important;
+}
+
+.namaa-observatory-hero{
+  background:var(--nr-primary)!important;
+  color:var(--nr-inverse)!important;
+  border:0!important;
+  border-radius:0 0 var(--ux-radius-xl) var(--ux-radius-xl)!important;
+}
+
+.namaa-observatory-hero *{color:var(--nr-inverse)!important}
+
+.namaa-observatory-kpis>article,
+.namaa-observatory-main,
+.namaa-observatory-side{
+  border:1px solid var(--nr-border-strong)!important;
+  border-radius:var(--ux-radius-lg)!important;
+  background:var(--nr-card)!important;
+  box-shadow:0 10px 30px color-mix(in srgb,var(--nr-text) 6%,transparent)!important;
+}
+
+/* Dialogs */
+.p49-action-dialog::backdrop{background:color-mix(in srgb,var(--nr-text) 44%,transparent)!important}
+.p49-dialog-shell{
+  border:1px solid var(--nr-border-strong)!important;
+  background:var(--nr-card)!important;
+  box-shadow:var(--ux-shadow-lg)!important;
+}
+.p49-dialog-header{
+  background:var(--nr-primary)!important;
+  color:var(--nr-inverse)!important;
+  border-color:var(--nr-primary)!important;
+}
+.p49-dialog-header *{color:var(--nr-inverse)!important}
+.p49-dialog-header::after{display:none!important}
+
+/* Mobile */
+@media(max-width:767px){
+  .namaa-app-main{padding-inline:0!important}
+
+  .p47-content-shell,
+  .p47-resource-page,
+  .namaa-governance-portal{
+    padding-inline:var(--ux-space-3)!important;
+  }
+
+  .p47-content-shell>.p47-page-heading,
+  .p47-resource-page>.p47-resource-header,
+  .namaa-governance-portal-hero{
+    margin-inline:calc(var(--ux-space-3) * -1)!important;
+  }
+
+  :where(.page-header,.p47-page-heading,.p47-resource-header,.more-hub-header){
+    padding:var(--ux-space-5) var(--ux-space-4)!important;
+  }
+
+  .p47-budget-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .p47-account-map{grid-template-columns:1fr!important}
+
+  .more-hub-sections{padding:var(--ux-space-3)!important}
+  .more-hub-grid{grid-template-columns:1fr!important}
+  .more-hub-card{
+    min-height:88px!important;
+    grid-template-columns:48px minmax(0,1fr) 20px!important;
+    padding:var(--ux-space-3)!important;
+    border-width:1.5px!important;
+  }
+  .more-hub-card-icon{width:48px!important;height:48px!important}
+
+  .p47-transaction-row{
+    padding:var(--ux-space-3)!important;
+  }
+
+  .p49-action-dialog,
+  .p49-action-dialog.is-sm,
+  .p49-action-dialog.is-lg,
+  .p49-action-dialog.is-xl{
+    width:100vw!important;
+    max-width:100vw!important;
+    margin:auto 0 0!important;
+  }
+
+  .p49-dialog-shell{
+    border-radius:var(--ux-radius-xl) var(--ux-radius-xl) 0 0!important;
+    border-inline:0!important;
+    border-bottom:0!important;
+  }
+}
+
+@media(min-width:768px){
+  .p47-content-shell,
+  .p47-resource-page,
+  .namaa-governance-portal{
+    max-width:1480px!important;
+    margin-inline:auto!important;
+  }
+}
+
+/* Dark-mode contract uses the same hierarchy without light-on-light states. */
+html[data-theme="dark"]{
+  --nr-page:var(--ux-dark-page-bg);
+  --nr-card:var(--ux-dark-card-bg);
+  --nr-border:var(--ux-dark-border);
+  --nr-border-strong:var(--ux-dark-border);
+}
