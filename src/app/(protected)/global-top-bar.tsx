@@ -10,10 +10,10 @@ import { BrandLogo } from '@/components/brand/brand-logo';
 function subscribeSidebar(callback: () => void) {
   const onStorage = (event: StorageEvent) => { if (event.key === 'sidebarState') callback(); };
   window.addEventListener('storage', onStorage);
-  window.addEventListener('mustaqbali:sidebar-state', callback);
+  window.addEventListener('namaa:sidebar-state', callback);
   return () => {
     window.removeEventListener('storage', onStorage);
-    window.removeEventListener('mustaqbali:sidebar-state', callback);
+    window.removeEventListener('namaa:sidebar-state', callback);
   };
 }
 
@@ -37,7 +37,7 @@ export function GlobalTopBar({ profile }: { profile: HeaderProfile }) {
     const next = !collapsed;
     window.localStorage.setItem('sidebarState', next ? 'collapsed' : 'expanded');
     document.documentElement.dataset.sidebar = next ? 'collapsed' : 'expanded';
-    window.dispatchEvent(new Event('mustaqbali:sidebar-state'));
+    window.dispatchEvent(new Event('namaa:sidebar-state'));
   };
 
   return (
