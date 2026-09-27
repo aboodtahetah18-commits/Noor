@@ -6,7 +6,6 @@ import { TabletTopNav } from './tablet-top-nav';
 import { MobileTopBar } from './mobile-top-bar';
 import { GlobalTopBar } from './global-top-bar';
 import { BankMessageDialog } from '@/components/bank-message-dialog';
-import { MobileConversationGate } from './mobile-conversation-gate';
 import { FinancialFormIntelligence } from '@/components/forms/financial-form-intelligence';
 
 export const dynamic = 'force-dynamic';
@@ -33,7 +32,7 @@ export default async function ProtectedLayout({ children }: Readonly<{ children:
 
       <main id="main-content" tabIndex={-1} className="namaa-app-main main-content-focus-target">
         <div className="namaa-page-frame">
-          <MobileConversationGate>{children}</MobileConversationGate>
+          {children}
         </div>
       </main>
 

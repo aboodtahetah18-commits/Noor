@@ -8,18 +8,15 @@ const read = (file: string) => fs.readFileSync(path.join(root, file), 'utf8');
 describe('Stage 3 responsive full-platform app shell', () => {
   it('keeps authenticated shell structure and enables full mobile route rendering', () => {
     const layout = read('src/app/(protected)/layout.tsx');
-    const gate = read('src/app/(protected)/mobile-conversation-gate.tsx');
-
     expect(layout).toContain('data-responsive-platform="full"');
     expect(layout).toContain('<DesktopTopNav />');
     expect(layout).toContain('<TabletTopNav profile={profile} />');
     expect(layout).toContain('<MobileTopBar profile={profile} />');
     expect(layout).toContain('<MobileBottomNav />');
 
-    expect(gate).toContain('responsive_full_platform');
-    expect(gate).not.toContain('router.replace');
-    expect(gate).not.toContain("useRouter");
-    expect(gate).not.toContain("matchMedia");
+    expect(layout).not.toContain('MobileConversationGate');
+    expect(layout).not.toContain('router.replace');
+    expect(layout).not.toContain('matchMedia');
   });
 
   it('keeps a five-destination mobile bottom navigation and secondary routes in the shared drawer', () => {
