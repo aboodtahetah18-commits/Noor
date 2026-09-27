@@ -12430,3 +12430,23 @@
   background:color-mix(in srgb,var(--namaa-green-700) 38%,var(--ux-dark-card-bg))!important;
   border-color:color-mix(in srgb,var(--namaa-green-700) 74%,var(--ux-dark-border))!important;
 }
+
+
+/* Namaa identity rebuild — conversation workspace */
+.page{border-radius:16px;border-color:var(--namaa-border);box-shadow:var(--ux-shadow-xs);background:var(--namaa-surface-warm)}
+.workspaceHeader{min-height:82px;padding:16px 20px;background:#fff;border-bottom-color:var(--namaa-border)}
+.eyebrow{color:var(--namaa-green-900);font-weight:700}
+.headingCopy h1{color:var(--namaa-text)}
+.secondaryButton{height:40px;border-radius:8px;background:#fff;border-color:var(--namaa-border-strong);color:var(--namaa-green-900)}
+.secondaryButton:hover{background:var(--namaa-cream)}
+.workspace{grid-template-columns:minmax(210px,244px) minmax(460px,1fr) minmax(210px,244px);background:#fff}
+.roomsPane,.contextPane{padding:14px;background:#fff;border-color:var(--namaa-border)}
+.roomList{gap:6px}.roomItem{min-height:56px;border-radius:10px;padding:8px}.roomItem:hover{background:var(--namaa-surface-warm)}
+.activeRoom{background:#EDF8F4;border-color:color-mix(in srgb,var(--namaa-green-700) 40%,var(--namaa-border))}
+.entityAvatar{border-radius:10px;background:#EDF8F4;border-color:var(--namaa-border);color:var(--namaa-green-900)}
+.chatPane{background:var(--namaa-chat-canvas)}
+.chatPane::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.34;background-image:radial-gradient(circle at 18px 18px,rgb(11 107 79 / .055) 1.2px,transparent 1.4px);background-size:36px 36px}
+.chatHeader{min-height:68px;padding-inline:16px;background:rgb(255 255 255 / .97);border-bottom-color:var(--namaa-border)}
+.desktopChatHeaderForeground{min-height:68px}
+.chatHeaderBuilding img{filter:saturate(.78) contrast(.96)}
+.centralChatHeader .chatHeaderBuilding{opacity:.1}
