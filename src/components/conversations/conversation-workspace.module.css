@@ -12509,3 +12509,69 @@
     display:none;
   }
 }
+
+
+/* 2026-09-27 — FINAL COMPOSER CONTROL CONTRACT */
+.composer{
+  direction:rtl;
+  align-items:flex-end;
+}
+.composer textarea{
+  order:2;
+}
+.attachButton{
+  order:1;
+  border:1px solid var(--namaa-border-strong);
+  background:var(--namaa-surface-warm);
+  color:var(--namaa-green-900);
+}
+.sendButton{
+  order:3;
+  min-width:76px;
+  justify-content:center;
+  background:var(--namaa-green-900);
+  color:var(--ux-text-inverse);
+}
+.composer textarea:focus-visible,
+.attachButton:focus-visible,
+.sendButton:focus-visible{
+  outline:3px solid color-mix(in srgb,var(--namaa-gold-500) 58%,transparent);
+  outline-offset:2px;
+}
+.attachButton:disabled,
+.sendButton:disabled{
+  background:var(--namaa-surface-warm);
+  border-color:var(--namaa-border);
+  color:var(--ux-text-muted);
+  opacity:1;
+  cursor:not-allowed;
+}
+@media (max-width:767px){
+  .composer{
+    gap:var(--ux-space-2)!important;
+  }
+  .composer textarea{
+    order:2!important;
+    resize:none!important;
+  }
+  .attachButton{
+    order:1!important;
+    background:var(--namaa-surface-warm)!important;
+    border-color:var(--namaa-border-strong)!important;
+    color:var(--namaa-green-900)!important;
+  }
+  .sendButton{
+    order:3!important;
+    min-width:44px!important;
+    background:var(--namaa-green-900)!important;
+    border-color:var(--namaa-green-900)!important;
+    color:var(--ux-text-inverse)!important;
+  }
+  .attachButton:disabled,
+  .sendButton:disabled{
+    background:var(--namaa-surface-warm)!important;
+    border-color:var(--namaa-border)!important;
+    color:var(--ux-text-muted)!important;
+    opacity:1!important;
+  }
+}
