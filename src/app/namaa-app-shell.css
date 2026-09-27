@@ -581,13 +581,20 @@
    Conversations own the mobile viewport and internal navigation on this route only. */
 @media (max-width:767px) {
   .protected-app-shell:has([data-chat-first-route="true"]) {
+    width:100dvw;
+    max-width:100dvw;
     min-height:100dvh;
+    margin:0;
+    overflow:hidden;
     background:var(--ux-page-bg);
   }
 
   .protected-app-shell:has([data-chat-first-route="true"]) .namaa-app-main {
+    width:100dvw;
+    max-width:100dvw;
     height:100dvh;
     min-height:100dvh;
+    margin:0;
     padding:0;
     overflow:hidden;
   }
@@ -595,10 +602,12 @@
   .protected-app-shell:has([data-chat-first-route="true"]) .namaa-page-frame,
   .protected-app-shell:has([data-chat-first-route="true"]) [data-chat-first-route="true"] {
     width:100%;
+    max-width:none;
     height:100%;
     min-height:0;
     margin:0;
     padding:0;
+    overflow:hidden;
   }
 }
 

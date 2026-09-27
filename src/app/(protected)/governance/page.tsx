@@ -3,8 +3,13 @@ import { LucideIcon } from '@/components/ui/lucide-icon';
 import { COMPACT_CORE_GOVERNANCE_DOCUMENTS } from '@/content/governance/compact-core-documents';
 import { COMPACT_PROCEDURES, COMPACT_AUTHORITIES } from '@/lib/governance/compact-authority-model';
 import { COMPACT_GOVERNANCE_STAGE_FORMS } from '@/lib/governance/compact-governance-forms';
+import { requireAuthenticatedUser } from '@/auth/require-authenticated-user';
+import { readDailyAlgorithmKnowledgeReport } from '@/features/algorithm-learning/services/daily-algorithm-knowledge-report';
 
-export default function GovernancePage(){
+export default async function GovernancePage(){
+  const user=await requireAuthenticatedUser();
+  const dailyReport=await readDailyAlgorithmKnowledgeReport(user.id);
+  const latest=dailyReport?.latest??null;
   return <main className="namaa-governance-portal page-shell" dir="rtl">
     <header className="namaa-governance-portal-hero">
       <div>
@@ -65,6 +70,20 @@ export default function GovernancePage(){
         </div>
         <Link className="namaa-governance-open-library" href="/governance/authorization-matrix">فتح مصفوفة الصلاحيات</Link>
       </article>
+    </section>
+
+    <section className="namaa-governance-library-card card-procedure" aria-labelledby="daily-algorithm-report-title">
+      <header><div><span>التعلم والتحسين المستمر</span><h2 id="daily-algorithm-report-title">التقرير اليومي للذكاء والخوارزميات</h2></div><LucideIcon name="sparkles" size={24}/></header>
+      {latest ? <>
+        <p>تقرير {latest.reportDate} يجمع الإشكاليات والتحديات ونقاط عدم اليقين من مصادر التعلم الفعلية، ثم يحولها إلى خطوات مراجعة قابلة للتتبع دون أي تعديل تلقائي للقواعد.</p>
+        <div className="namaa-governance-portal-metrics" aria-label="ملخص التقرير اليومي">
+          <article className="tone-policy"><span>تحتاج مراجعة</span><strong>{latest.summary.reviewRequired}</strong><small>إشارات عالية الأولوية</small></article>
+          <article className="tone-procedure"><span>تحت المراقبة</span><strong>{latest.summary.watch}</strong><small>تحتاج أدلة إضافية</small></article>
+          <article className="tone-auth"><span>مصادر لم تكتمل</span><strong>{latest.summary.sourcesUnavailable}</strong><small>لا يتم تجاهلها أو اختراع نتيجة بديلة</small></article>
+        </div>
+        <div className="namaa-governance-doc-preview">{latest.findings.slice(0,5).map(item=><div key={item.key}><strong>{item.title}</strong><small>{item.source} · {item.evidenceCount} إشارة · {item.nextStep}</small></div>)}</div>
+      </> : <p>لم يصدر التقرير اليومي الأول بعد. سيظهر هنا بعد أول تشغيل يومي لمحرك نماء، ومن دون إنشاء بيانات أو استنتاجات وهمية.</p>}
+      <div className="ux-button-row"><Link className="namaa-governance-open-library" href="/reports/learning">فتح ذاكرة التعلم</Link><Link className="namaa-governance-open-library" href="/pilot/algorithm-review">فتح مراجعة الخوارزميات</Link></div>
     </section>
 
     <section className="namaa-governance-portal-footer">

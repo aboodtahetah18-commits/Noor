@@ -946,7 +946,7 @@
   font-size:var(--ux-type-body-sm-size)
 }
 
-@media(max-width:1023px){.workspace{grid-template-columns:minmax(170px,220px) minmax(390px,1fr)}.contextPane{display:none}.workspace.withoutRooms,.workspace.withoutContext,.workspace.withoutRooms.withoutContext{grid-template-columns:minmax(0,1fr)}.headerActions button:last-child{display:none}}
+@media(min-width:768px) and (max-width:1023px){.workspace{grid-template-columns:minmax(170px,220px) minmax(390px,1fr)}.contextPane{display:none}.workspace.withoutRooms,.workspace.withoutContext,.workspace.withoutRooms,.workspace.withoutContext,.workspace.withoutRooms.withoutContext{grid-template-columns:minmax(0,1fr)}.headerActions button:last-child{display:none}}
 
 
 /* Chat-first mobile conversation experience — NDOS token-only */
@@ -4028,7 +4028,9 @@
   .page{
     min-height:100dvh;
     height:100dvh;
-    width:100%;
+    width:100dvw;
+    max-width:100dvw;
+    margin:0;
     border-radius:var(--ux-radius-0);
     border-inline:0;
     box-shadow:var(--ux-shadow-none);
@@ -4130,8 +4132,6 @@
     font-size:var(--ux-type-body-sm-size);
     line-height:1.62
   }
-  .agentMessage{max-width:84%}
-  .userMessage{max-width:78%}
   .groupContinuation{margin-top:calc(var(--ux-space-1) * -1)}
   .conversationTimeDivider{padding:var(--ux-space-0);margin:var(--ux-space-1) var(--ux-space-0)}
   .messageIdentity{
@@ -4260,8 +4260,11 @@
   }
   .workspace,.workspace.withoutRooms,.workspace.withoutContext,.workspace.withoutRooms.withoutContext{
     display:block;
+    width:100%;
+    max-width:100%;
     min-height:0;
     height:100%;
+    margin:0;
     overflow:hidden
   }
   .mobileConversationList{
@@ -4331,7 +4334,7 @@
   }
   .agentMessage{
     width:fit-content;
-    max-width:92%;
+    max-width:84%;
     align-self:flex-end;
     border-end-end-radius:var(--ux-radius-2);
     border-color:var(--namaa-border-strong);

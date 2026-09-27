@@ -4,6 +4,7 @@ import { logServerError } from '@/security/safe-logging';
 import { runHilalRecoveryFollowupJob } from '@/lib/conversations/hilal-recovery-followup';
 import { runFinancialPlanMonitoringJob } from '@/lib/allocation/financial-plan-monitoring';
 import { runDailyConversationOrchestratorJob } from '@/lib/conversations/daily-conversation-orchestrator';
+import { runDailyAlgorithmKnowledgeReportJob } from '@/features/algorithm-learning/services/daily-algorithm-knowledge-report';
 
 export const dynamic='force-dynamic';
 export const runtime='nodejs';
@@ -17,17 +18,19 @@ function authorized(request:Request){
 async function run(request:Request){
   if(!authorized(request))return NextResponse.json({ok:false,error:'UNAUTHORIZED'},{status:401,headers:{'Cache-Control':'no-store'}});
   try{
-    const [results,hilalRecovery,planMonitoring,proactiveConversations]=await Promise.all([
+    const [results,hilalRecovery,planMonitoring,proactiveConversations,algorithmKnowledgeReports]=await Promise.all([
       runFinancialEngineRecalcJob(),
       runHilalRecoveryFollowupJob(),
       runFinancialPlanMonitoringJob(),
       runDailyConversationOrchestratorJob(),
+      runDailyAlgorithmKnowledgeReportJob(),
     ]);
     const failed=results.filter((x)=>x.status==='FAILED').length;
     const hilalFailed=hilalRecovery.filter((x)=>x.status==='FAILED').length;
     const planMonitoringFailed=planMonitoring.filter((x)=>x.status==='FAILED').length;
     const proactiveFailed=proactiveConversations.filter((x)=>x.status==='FAILED').length;
-    const totalFailed=failed+hilalFailed+planMonitoringFailed+proactiveFailed;
+    const algorithmKnowledgeFailed=algorithmKnowledgeReports.filter((x)=>x.status==='FAILED').length;
+    const totalFailed=failed+hilalFailed+planMonitoringFailed+proactiveFailed+algorithmKnowledgeFailed;
     return NextResponse.json({
       ok:totalFailed===0,
       processed:results.length,
@@ -36,6 +39,7 @@ async function run(request:Request){
       hilalRecovery:{processed:hilalRecovery.length,failed:hilalFailed,results:hilalRecovery},
       planMonitoring:{processed:planMonitoring.length,failed:planMonitoringFailed,results:planMonitoring},
       proactiveConversations:{processed:proactiveConversations.length,failed:proactiveFailed,results:proactiveConversations},
+      algorithmKnowledgeReports:{processed:algorithmKnowledgeReports.length,failed:algorithmKnowledgeFailed,results:algorithmKnowledgeReports},
     },{status:totalFailed===0?200:207,headers:{'Cache-Control':'no-store'}});
   }catch{
     const requestId=logServerError('financial-engine-recalc-job-failed',{endpoint:'/api/jobs/financial-engine'});
