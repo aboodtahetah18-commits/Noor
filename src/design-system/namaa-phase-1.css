@@ -1,0 +1,220 @@
+/* NAMAA — Phase 1 unified visual foundation.
+ * Identity authority: approved Namaa package v1.0 (2026-09-22).
+ * Reference-platform screenshots inform layout discipline only; no foreign brand values are copied.
+ */
+
+:root {
+  --namaa-phase1-section-gap:24px;
+  --namaa-phase1-card-gap:16px;
+  --namaa-phase1-card-padding:20px;
+  --namaa-phase1-section-padding:24px;
+  --namaa-phase1-card-radius:16px;
+  --namaa-phase1-control-radius:8px;
+  --namaa-phase1-border:#DCE6E0;
+  --namaa-phase1-border-strong:#C9D8D1;
+  --namaa-phase1-canvas:#FAF9F4;
+  --namaa-phase1-card:#FFFFFF;
+  --namaa-phase1-soft:#FFF7E6;
+  --namaa-phase1-primary:#0B6B4F;
+  --namaa-phase1-secondary:#189F7F;
+  --namaa-phase1-accent:#D4AF6B;
+  --namaa-phase1-action:#FCAA30;
+  --namaa-phase1-text:#1F2937;
+  --namaa-phase1-muted:#61758A;
+}
+
+html[data-theme="light"] body,
+html[data-theme="light"] .protected-app-shell {
+  background:var(--namaa-phase1-canvas);
+  color:var(--namaa-phase1-text);
+}
+
+/* One page rhythm across dashboard, records, forms and operational pages. */
+.protected-app-shell :where(
+  .page-shell,.dashboard-shell,.p47-page-stack,.workspace-shell,.app-page
+) {
+  min-width:0;
+}
+
+.protected-app-shell :where(
+  .page-header,.dashboard-header,.p47-page-heading,.p47-resource-header
+) {
+  margin-block-end:var(--namaa-phase1-section-gap);
+}
+
+.protected-app-shell :where(
+  .dashboard-main-grid,.dashboard-triple-grid,.accounts-grid,.ux-responsive-grid
+) {
+  gap:var(--namaa-phase1-card-gap);
+}
+
+/* Unified card language: clear separation without visual heaviness. */
+.protected-app-shell :where(
+  .ux-card,.ux-surface,.card,.panel,.dashboard-card,.dashboard-kpis article,
+  .account-total,.account-card,.account-detail-hero,.detail-list,.empty-state,
+  .form-card,.summary-card,.p47-panel,.p47-command-panel,.p47-resource-card,
+  .p47-flow-card,.p47-analysis-card,.workspace-module-card,.more-hub-card,
+  .statement-kpis>div
+) {
+  background:var(--namaa-phase1-card);
+  border:1px solid var(--namaa-phase1-border);
+  border-radius:var(--namaa-phase1-card-radius);
+  box-shadow:0 1px 2px rgb(31 41 55 / .05);
+}
+
+.protected-app-shell :where(
+  .ux-card,.card,.panel,.dashboard-card,.form-card,.summary-card,
+  .p47-panel,.p47-command-panel,.p47-resource-card,.workspace-module-card
+) {
+  padding:var(--namaa-phase1-card-padding);
+}
+
+.protected-app-shell :where(
+  .ux-card,.ux-surface,.account-card,.dashboard-card,.p47-resource-card
+)[data-interactive="true"]:hover,
+.protected-app-shell :where(.account-card,.p47-resource-card):hover {
+  border-color:var(--namaa-phase1-border-strong);
+  box-shadow:0 4px 14px rgb(31 41 55 / .07);
+}
+
+/* Stronger hierarchy: headings stay dark; supporting copy is deliberately quieter. */
+.protected-app-shell :where(h1,h2,h3,.page-title,.section-title) {
+  color:var(--namaa-phase1-text);
+}
+
+.protected-app-shell :where(
+  .muted,.dashboard-subtle,.eyebrow,.page-header p:not(.eyebrow),
+  .dashboard-header p:not(.eyebrow)
+) {
+  color:var(--namaa-phase1-muted);
+}
+
+/* Inputs and controls use a single geometry and visible boundary. */
+.protected-app-shell :where(
+  input:not([type="checkbox"]):not([type="radio"]),select,textarea,
+  .ux-control,.mustaqbali-global-search,.mustaqbali-tablet-search
+) {
+  border-color:var(--namaa-phase1-border);
+  border-radius:var(--namaa-phase1-control-radius);
+}
+
+.protected-app-shell :where(
+  input:not([type="checkbox"]):not([type="radio"]),select,textarea,.ux-control
+):focus,
+.protected-app-shell :where(.mustaqbali-global-search,.mustaqbali-tablet-search):focus-within {
+  border-color:var(--namaa-phase1-secondary);
+  box-shadow:0 0 0 4px rgb(24 159 127 / .14);
+  outline:0;
+}
+
+/* Buttons: brand green is primary, lighter green is secondary emphasis, gold remains accent only. */
+.protected-app-shell :where(
+  .ux-button--primary,.primary,.primary-button,.primary-link,
+  .p47-primary-action,.p47-sidebar-add
+) {
+  background:var(--namaa-phase1-primary);
+  border-color:var(--namaa-phase1-primary);
+  color:#fff;
+}
+
+.protected-app-shell :where(
+  .ux-button--primary,.primary,.primary-button,.primary-link,
+  .p47-primary-action,.p47-sidebar-add
+):hover {
+  background:var(--namaa-phase1-secondary);
+  border-color:var(--namaa-phase1-secondary);
+}
+
+.protected-app-shell :where(.ux-button--secondary,.secondary-button,.secondary-link,.button-link) {
+  background:var(--namaa-phase1-card);
+  border-color:var(--namaa-phase1-border-strong);
+  color:var(--namaa-phase1-primary);
+}
+
+/* Tables and lists get explicit row separation, matching the reference system's clarity. */
+.protected-app-shell :where(.ux-table-wrap,.transaction-table-wrap) {
+  border:1px solid var(--namaa-phase1-border);
+  border-radius:var(--namaa-phase1-card-radius);
+  background:var(--namaa-phase1-card);
+}
+
+.protected-app-shell :where(.ux-table th,.transaction-table th) {
+  background:color-mix(in srgb,var(--namaa-phase1-primary) 5%,var(--namaa-phase1-card));
+  color:var(--namaa-phase1-primary);
+}
+
+.protected-app-shell :where(.ux-table td,.ux-table th,.transaction-table td,.transaction-table th) {
+  border-block-end-color:var(--namaa-phase1-border);
+}
+
+/* Desktop shell: Namaa identity, clean boundaries, no borrowed colors. */
+@media (min-width:1024px) {
+  .desktop-top-nav-wrap.mustaqbali-sidebar {
+    background:var(--namaa-phase1-primary);
+    border-inline-end-color:rgb(255 255 255 / .14);
+  }
+
+  .mustaqbali-sidebar-nav a {
+    border-radius:10px;
+  }
+
+  .mustaqbali-sidebar-nav a.is-active {
+    background:rgb(255 255 255 / .14) !important;
+    box-shadow:inset -3px 0 var(--namaa-phase1-accent) !important;
+  }
+
+  .mustaqbali-topbar.namaa-topbar {
+    background:rgb(255 255 255 / .97) !important;
+    border-block-end-color:var(--namaa-phase1-border);
+    box-shadow:0 1px 0 rgb(31 41 55 / .02);
+  }
+
+  .namaa-app-main {
+    padding:24px;
+  }
+}
+
+/* Tablet: same identity, two-column content where space permits. */
+@media (min-width:768px) and (max-width:1023px) {
+  .namaa-app-main { padding:20px; }
+  .protected-app-shell :where(.ux-responsive-grid,.dashboard-main-grid,.dashboard-triple-grid) {
+    gap:16px;
+  }
+}
+
+/* Mobile: single-column rhythm, compact spacing, same components and visual identity. */
+@media (max-width:767px) {
+  :root {
+    --namaa-phase1-section-gap:20px;
+    --namaa-phase1-card-gap:12px;
+    --namaa-phase1-card-padding:16px;
+  }
+
+  .namaa-app-main { padding:16px 12px; }
+
+  .protected-app-shell :where(
+    .dashboard-main-grid,.dashboard-triple-grid,.accounts-grid,.ux-responsive-grid
+  ) {
+    grid-template-columns:1fr;
+    gap:var(--namaa-phase1-card-gap);
+  }
+
+  .protected-app-shell :where(
+    .ux-card,.card,.panel,.dashboard-card,.form-card,.summary-card,
+    .p47-panel,.p47-command-panel,.p47-resource-card,.workspace-module-card
+  ) {
+    padding:var(--namaa-phase1-card-padding);
+  }
+}
+
+/* Dark mode remains derived from Namaa; phase-one light values must not override it. */
+html[data-theme="dark"] .protected-app-shell :where(
+  .ux-card,.ux-surface,.card,.panel,.dashboard-card,.dashboard-kpis article,
+  .account-total,.account-card,.account-detail-hero,.detail-list,.empty-state,
+  .form-card,.summary-card,.p47-panel,.p47-command-panel,.p47-resource-card,
+  .workspace-module-card
+) {
+  background:var(--ux-card-bg);
+  border-color:var(--ux-border-default);
+  color:var(--ux-text-primary);
+}
