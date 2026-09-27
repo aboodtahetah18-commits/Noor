@@ -32,6 +32,7 @@ function isActive(pathname:string,href:string){
 export function V2AppShell({children,profile}:{children:ReactNode;profile:HeaderProfile}){
   const pathname=usePathname();
   const chat=pathname==='/conversations'||pathname.startsWith('/conversations/');
+  const home=pathname==='/dashboard';
   if(chat) return <>{children}</>;
 
   return <div className="v2-shell" dir="rtl">
@@ -52,7 +53,7 @@ export function V2AppShell({children,profile}:{children:ReactNode;profile:Header
     </aside>
 
     <section className="v2-stage">
-      <header className="v2-mobile-topbar">
+      {!home ? <header className="v2-mobile-topbar">
         <Link href="/dashboard" className="v2-mobile-brand"><BrandLogo surface="auto" priority/></Link>
         <div className="v2-mobile-actions">
           <Link href="/alerts" aria-label="التنبيهات"><LucideIcon name="bell" size={20}/></Link>
