@@ -1,23 +1,7 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { Noto_Sans_Arabic } from 'next/font/google';
-import './globals.css';
-import './uiux-governance.css';
-import '../design-system/tokens.css';
-import '../design-system/themes.css';
-import '../design-system/typography.css';
-import '../design-system/foundations.css';
-import '../design-system/responsive.css';
-import '../design-system/contracts.css';
-import '../design-system/components.css';
-import '../design-system/interaction-components.css';
-import '../design-system/pages.css';
-import './namaa-responsive-polish.css';
-import './namaa-shell-visibility.css';
-import './namaa-app-shell.css';
-import '../design-system/ndos-v1.2.acceptance.css';
-import '../design-system/ndos-v1.2.css';
-import '../design-system/ndos-v1.2.enforcement.css';
+import './namaa-zero.css';
 
 const notoSansArabic = Noto_Sans_Arabic({
   subsets: ['arabic'],
