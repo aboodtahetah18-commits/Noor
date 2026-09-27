@@ -13035,3 +13035,38 @@
     border-radius:0!important;
   }
 }
+
+
+/* 2026-09-27 — Team/persona mobile geometry */
+@media (max-width:767px){
+  .entityTeamGrid{
+    grid-template-columns:1fr!important;
+    gap:var(--ux-space-2)!important;
+  }
+  .entityTeamGrid>button{
+    min-height:84px!important;
+    grid-template-columns:64px minmax(0,1fr) 20px!important;
+    gap:var(--ux-space-3)!important;
+    padding:var(--ux-space-2) var(--ux-space-3)!important;
+  }
+  .entityTeamPortrait{
+    width:64px!important;
+    height:64px!important;
+    min-width:64px!important;
+    min-height:64px!important;
+    border-radius:var(--ux-radius-full)!important;
+    aspect-ratio:1/1!important;
+    flex:none!important;
+  }
+  .entityTeamPortrait img{
+    width:100%!important;
+    height:100%!important;
+    object-fit:cover!important;
+    object-position:center 18%!important;
+    transform:none!important;
+  }
+  .personaSpritePortrait{
+    background-size:600% 200%!important;
+    background-repeat:no-repeat!important;
+  }
+}
