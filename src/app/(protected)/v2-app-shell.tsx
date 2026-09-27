@@ -53,13 +53,15 @@ export function V2AppShell({children,profile}:{children:ReactNode;profile:Header
     </aside>
 
     <section className="v2-stage">
-      {!home ? <header className="v2-mobile-topbar">
-        <Link href="/dashboard" className="v2-mobile-brand"><BrandLogo surface="auto" priority/></Link>
-        <div className="v2-mobile-actions">
-          <Link href="/alerts" aria-label="التنبيهات"><LucideIcon name="bell" size={20}/></Link>
-          <ProfileTrigger profile={profile}/>
-        </div>
-      </header>
+      {!home ? (
+        <header className="v2-mobile-topbar">
+          <Link href="/dashboard" className="v2-mobile-brand"><BrandLogo surface="auto" priority/></Link>
+          <div className="v2-mobile-actions">
+            <Link href="/alerts" aria-label="التنبيهات"><LucideIcon name="bell" size={20}/></Link>
+            <ProfileTrigger profile={profile}/>
+          </div>
+        </header>
+      ) : null}
 
       <main id="main-content" className="v2-content" tabIndex={-1}>{children}</main>
 
