@@ -7976,11 +7976,6 @@
   z-index:2!important;
   pointer-events:auto!important
 }
-.mobileSideSheet{
-  position:absolute!important;
-  z-index:2!important
-}
-
 
 /* Namaa mobile readability refinement — dashboard, governed pages, chat contrast */
 
@@ -8137,9 +8132,6 @@
 /* Namaa final mobile refinement — drawer profile, collapsible stages, solid chat bubbles */
 
 /* Keep the user card physically inside the mobile drawer. */
-.mobileSideSheet{
-  position:absolute!important;
-}
 .sideBrandRow{
   position:relative!important;
 }
