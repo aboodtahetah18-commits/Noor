@@ -4313,6 +4313,9 @@
     flex:1 1 auto;
     align-self:center;
     box-sizing:border-box;
+    min-height:40px;
+    max-height:40dvh;
+    height:40px;
     resize:none;
     font-size:var(--ux-type-body-sm-size);
     line-height:1.5;
@@ -5294,7 +5297,7 @@
   .composer textarea{
     min-height:40px!important;
     height:40px;
-    max-height:96px!important;
+    max-height:40dvh!important;
     resize:none!important
   }
 
@@ -12215,8 +12218,9 @@
   }
 
   .composer textarea{
-    min-height:44px;
-    max-height:96px;
+    min-height:40px;
+    max-height:40dvh;
+    height:40px;
     border:1px solid var(--namaa-border-strong);
     border-radius:var(--ux-radius-full);
     background:var(--namaa-surface-warm);
