@@ -62,10 +62,8 @@ body { font-family:var(--ux-font-family-base); }
 
 /* Shared surfaces across dashboard, banks, advisor, cases, execution and settings. */
 .card,
-.panel,
-.panel,
-.namaa-collection-card,
-.namaa-collection-card,
+  .panel,
+  .namaa-collection-card,
 .namaa-data-row,
 .namaa-kpi-strip > article,
 .account-card,
@@ -190,32 +188,6 @@ body { font-family:var(--ux-font-family-base); }
 .transaction-table tbody tr:hover,
 .ux-table tbody tr:hover { background:var(--ux-section-soft-teal) !important; }
 
-/* Protected application shell. */
-.namaa-tablet-topbar,
-
-.namaa-sidebar,
-.namaa-mobile-navigation-drawer {
-  background:var(--ux-shell-sidebar-bg) !important;
-  color:var(--ux-text-inverse) !important;
-}
-.namaa-mobile-navigation-drawer a {
-  color:var(--ux-text-inverse) !important;
-  border-radius:var(--ux-radius-md);
-}
-.namaa-mobile-navigation-drawer a:hover { background:var(--ux-shell-sidebar-hover) !important; }
-.namaa-mobile-navigation-drawer a.is-active {
-  background:var(--ux-shell-sidebar-active-soft) !important;
-  color:var(--ux-text-inverse) !important;
-  box-shadow:inset var(--ux-border-width-2) 0 0 var(--ux-shell-sidebar-active) !important;
-}
-.namaa-mobile-bottom-nav {
-  border-color:var(--ux-border-default) !important;
-  background:var(--ux-card-bg) !important;
-  box-shadow:var(--ux-shadow-sm) !important;
-}
-.namaa-mobile-bottom-nav a { color:var(--ux-text-muted) !important; }
-.namaa-mobile-bottom-nav a.is-active { color:var(--ux-brand-primary) !important; }
-
 /* Recommendation, decision, execution and governance states inherit semantic identity. */
 [data-tone="success"],.status-success,.is-success { --ux-state-accent:var(--ux-success); }
 [data-tone="warning"],.status-warning,.is-warning { --ux-state-accent:var(--ux-warning); }
@@ -268,17 +240,12 @@ html[data-theme="dark"] .onboarding-money-hero {
   background:var(--ux-card-bg) !important;
   border-color:var(--ux-border-default) !important;
 }
-html[data-theme="dark"] .namaa-tablet-topbar,
-html[data-theme="dark"] 
 html[data-theme="dark"] .transaction-table th,
 html[data-theme="dark"] .ux-table th { background:var(--ux-section-soft-blue) !important; }
 
 /* Responsive composition: governed viewport bands only. */
 @media (max-width:767px) {
   .app-page { padding:var(--ux-space-4) var(--ux-space-3) !important; }
-  .page-header,
-  .page-header,
-  .page-header,
   .page-header {
     padding:var(--ux-space-4) !important;
     border-radius:var(--ux-radius-lg) !important;
@@ -311,19 +278,6 @@ html[data-theme="dark"] .ux-table th { background:var(--ux-section-soft-blue) !i
   .primary-button { transition:none !important; }
 }
 
-
-/* Governed desktop shell surfaces required by the page identity contract. */
-.namaa-topbar {
-  background:var(--ux-shell-topbar-bg) !important;
-  color:var(--ux-text-inverse) !important;
-  border-color:var(--ux-shell-topbar-border) !important;
-}
-.namaa-sidebar,
-.namaa-wide-sidebar {
-  background:var(--ux-shell-sidebar-bg) !important;
-  color:var(--ux-text-inverse) !important;
-  border-color:var(--ux-shell-topbar-border) !important;
-}
 
 .namaa-decisions-progress-native {
   width:100%;
