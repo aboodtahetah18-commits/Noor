@@ -19,6 +19,14 @@ describe('Desktop visual authority contract', () => {
     expect(css).not.toContain('background:var(--ux-action-primary)!important;color:var(--ux-action-primary)!important');
   });
 
+  it('keeps expanded desktop navigation labels visible and active state readable', () => {
+    expect(shell).toContain('html[data-sidebar="expanded"] .mustaqbali-nav-label');
+    expect(shell).toContain('text-overflow:ellipsis');
+    expect(shell).toContain('.mustaqbali-sidebar-nav a.is-active .mustaqbali-nav-icon');
+    expect(shell).toContain('color:var(--ux-text-inverse)');
+    expect(shell).toContain('.mustaqbali-topbar-actions > a:focus-visible');
+  });
+
   it('keeps mobile and desktop navigation mounted while CSS separates their viewports', () => {
     expect(layout).toContain('<DesktopTopNav />');
     expect(layout).toContain('<MobileBottomNav />');
