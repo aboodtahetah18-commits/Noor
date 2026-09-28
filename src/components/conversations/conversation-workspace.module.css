@@ -4427,25 +4427,16 @@
   }
   .mobileSideSheet{
     display:block;
-  position:absolute;
-  inset-block:var(--ux-space-0);
-  inset-inline-start:var(--ux-space-0);
-  width:min(80vw,312px);
-  overflow:auto;
-  z-index:2;
-  background:var(--namaa-card);
-  border-inline-end:1px solid var(--namaa-border);
-  box-shadow:var(--ux-shadow-lg);
-  padding:var(--ux-space-3)
+    overflow:auto;
+    z-index:2;
+    background:var(--namaa-card)
   }
   .sideBrandRow{
     display:flex;
     align-items:center;
     gap:var(--ux-space-2);
     min-height:52px;
-    padding:var(--ux-space-1) var(--ux-space-1) var(--ux-space-3);
     border-bottom:1px solid var(--namaa-border);
-    margin-bottom:var(--ux-space-3);
     direction:rtl
   }
   .sideBrandLogoWrap{
