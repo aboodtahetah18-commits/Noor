@@ -226,7 +226,7 @@ body { min-height:100vh; }
     max-width:100%;
     margin-inline:auto;
   }
-.dashboard-header,.page-header){
+.protected-app-shell :where(.dashboard-header,.page-header){
     min-width:0;
   }
 
@@ -242,7 +242,7 @@ body { min-height:100vh; }
     width:100%;
     max-width:none;
   }
-.empty-state){
+.protected-app-shell :where(.empty-state){
     margin-inline:auto;
   }
 
@@ -602,7 +602,6 @@ summary{cursor:pointer;min-height:var(--ux-size-11);display:flex;align-items:cen
 }
 
 
-,
 
 
 /* P47.5 + P47.6 — Goals,trips{--p47-goal-accent:var(--ux-surface-inverse);--p47-goal-soft:var(--ux-surface-default);--p47-warm:var(--ux-surface-default);--p47-warm-ink:var(--ux-surface-default);}
@@ -610,7 +609,6 @@ summary{cursor:pointer;min-height:var(--ux-size-11);display:flex;align-items:cen
 
 
    P47.7 + P47.8 — Analysis,advisor{background:var(--ux-surface-default);min-height:100%;}
-,
 
 
 
