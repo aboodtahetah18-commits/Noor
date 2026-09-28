@@ -13,6 +13,8 @@ describe('Desktop visual authority contract', () => {
     expect(shell).toContain('@media (min-width:1024px)');
     expect(css).not.toContain('/* Phase 33 — Desktop Hardening */');
     expect(css).not.toContain('.desktop-top-nav{height:100%;max-width:1320px');
+    expect(css).not.toContain('.desktop-top-nav-wrap.p47-desktop-sidebar');
+    expect(css).not.toContain('.p47-sidebar-add{');
   });
 
   it('keeps mobile and desktop navigation mounted while CSS separates their viewports', () => {
