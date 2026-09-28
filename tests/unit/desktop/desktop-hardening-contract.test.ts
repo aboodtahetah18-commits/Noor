@@ -27,6 +27,10 @@ describe('Desktop visual authority contract', () => {
     expect(governance).not.toContain('p47-sidebar-add');
     expect(governance).not.toContain('p47-sidebar-nav');
     expect(governance).not.toContain('p47-sidebar-footer');
+    for (const legacy of ['p47-sidebar-add','p47-sidebar-brand','p47-nav-icon','p47-mobile-brand','p47-mobile-top-actions','p47-mobile-topbar','p47-dashboard-page','p47-shell','p47-trip-workspace','p47-pressure-page']) {
+      expect(css).not.toContain(legacy);
+      expect(governance).not.toContain(legacy);
+    }
     expect(css).not.toMatch(/\.p49(?:13)?-/);
     expect(governance).not.toMatch(/\.p49(?:13)?-/);
     expect(shell).toContain('@media (min-width:1024px)');
