@@ -10657,126 +10657,126 @@
 /* FINAL MOBILE NAV + PAGE AUTHORITY — grouped drawer and full-page inner screens. */
 @media (max-width:767px){
   .mobileSideSheet{
-    position:fixed!important;
-    inset-block-start:72px!important;
-    inset-inline:0!important;
-    width:100dvw!important;
-    max-width:100dvw!important;
-    height:calc(100dvh - 72px)!important;
-    max-height:calc(100dvh - 72px)!important;
-    margin:0!important;
-    padding:0!important;
-    border:0!important;
-    border-radius:0!important;
-    box-shadow:var(--ux-shadow-none)!important;
-    background:var(--namaa-card)!important;
+    position:fixed;
+    inset-block-start:72px;
+    inset-inline:0;
+    width:100dvw;
+    max-width:100dvw;
+    height:calc(100dvh - 72px);
+    max-height:calc(100dvh - 72px);
+    margin:0;
+    padding:0;
+    border:0;
+    border-radius:0;
+    box-shadow:var(--ux-shadow-none);
+    background:var(--namaa-card);
   }
   .mobileSideSheet .sideBrandRow{
-    margin:0!important;
-    padding:var(--ux-space-2) var(--ux-space-3)!important;
+    margin:0;
+    padding:var(--ux-space-2) var(--ux-space-3);
   }
   .mobileSideSheet{
-    display:block!important;
-    overflow-y:auto!important;
-    overscroll-behavior:contain!important
+    display:block;
+    overflow-y:auto;
+    overscroll-behavior:contain
   }
   .mobileSideSheet .sideSection{
-    display:grid!important;
-    gap:var(--ux-space-2)!important;
-    padding-block:var(--ux-space-3)!important;
-    border-top:1px solid var(--namaa-border)!important
+    display:grid;
+    gap:var(--ux-space-2);
+    padding-block:var(--ux-space-3);
+    border-top:1px solid var(--namaa-border)
   }
   .mobileSideSheet .sideSection>small{
-    display:block!important;
-    padding-inline:var(--ux-space-2)!important;
-    color:var(--ux-text-secondary)!important;
-    font-size:var(--ux-type-caption-size)!important;
-    font-weight:900!important
+    display:block;
+    padding-inline:var(--ux-space-2);
+    color:var(--ux-text-secondary);
+    font-size:var(--ux-type-caption-size);
+    font-weight:900
   }
   .mobileSideSheet .roomList{
-    display:grid!important;
-    gap:var(--ux-space-1)!important
+    display:grid;
+    gap:var(--ux-space-1)
   }
   .mobileSideSheet .roomItemShell{
-    width:100%!important;
-    min-height:72px!important;
-    display:grid!important;
-    grid-template-columns:minmax(0,1fr) 44px!important;
-    align-items:center!important;
-    gap:var(--ux-space-2)!important;
-    margin:0!important;
-    padding:var(--ux-space-1)!important;
-    border:1px solid transparent!important;
-    border-radius:var(--ux-radius-4)!important;
-    background:transparent!important
+    width:100%;
+    min-height:72px;
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 44px;
+    align-items:center;
+    gap:var(--ux-space-2);
+    margin:0;
+    padding:var(--ux-space-1);
+    border:1px solid transparent;
+    border-radius:var(--ux-radius-4);
+    background:transparent
   }
   .mobileSideSheet .roomItemShell.activeRoom{
-    background:var(--namaa-cream)!important;
-    border-color:var(--namaa-gold-500)!important
+    background:var(--namaa-cream);
+    border-color:var(--namaa-gold-500)
   }
   .mobileSideSheet .roomItem{
-    min-width:0!important;
-    width:100%!important;
-    min-height:64px!important;
-    display:grid!important;
-    grid-template-columns:56px minmax(0,1fr)!important;
-    align-items:center!important;
-    gap:var(--ux-space-3)!important;
-    padding:var(--ux-space-1)!important;
-    text-align:right!important;
-    background:transparent!important
+    min-width:0;
+    width:100%;
+    min-height:64px;
+    display:grid;
+    grid-template-columns:56px minmax(0,1fr);
+    align-items:center;
+    gap:var(--ux-space-3);
+    padding:var(--ux-space-1);
+    text-align:right;
+    background:transparent
   }
   .mobileSideSheet .roomItem .personaAvatar{
-    width:56px!important;
-    height:56px!important;
-    min-width:56px!important;
-    flex-basis:56px!important;
-    justify-self:start!important
+    width:56px;
+    height:56px;
+    min-width:56px;
+    flex-basis:56px;
+    justify-self:start
   }
   .mobileSideSheet .roomCopy{
-    min-width:0!important;
-    width:100%!important;
-    display:grid!important;
-    align-items:center!important
+    min-width:0;
+    width:100%;
+    display:grid;
+    align-items:center
   }
   .mobileSideSheet .roomCopy strong{
-    display:block!important;
-    width:100%!important;
-    margin:0!important;
-    color:var(--ux-text-primary)!important;
-    font-size:var(--ux-type-body-sm-size)!important;
-    line-height:1.4!important;
-    text-align:right!important;
-    white-space:normal!important;
-    overflow:visible!important;
-    text-overflow:clip!important
+    display:block;
+    width:100%;
+    margin:0;
+    color:var(--ux-text-primary);
+    font-size:var(--ux-type-body-sm-size);
+    line-height:1.4;
+    text-align:right;
+    white-space:normal;
+    overflow:visible;
+    text-overflow:clip
   }
   .mobileSideSheet .roomDetailButton{
-    width:40px!important;
-    height:40px!important;
-    margin:0!important;
-    justify-self:center!important;
-    align-self:center!important
+    width:40px;
+    height:40px;
+    margin:0;
+    justify-self:center;
+    align-self:center
   }
   .mobileSideSheet .sideUtilityList{
-    display:grid!important;
-    grid-template-columns:1fr!important;
-    gap:var(--ux-space-1)!important
+    display:grid;
+    grid-template-columns:1fr;
+    gap:var(--ux-space-1)
   }
   .mobileSideSheet .sideUtilityList>button{
-    min-height:52px!important;
-    width:100%!important;
-    display:grid!important;
-    grid-template-columns:28px minmax(0,1fr)!important;
-    align-items:center!important;
-    gap:var(--ux-space-3)!important;
-    padding:var(--ux-space-2) var(--ux-space-3)!important;
-    border:0!important;
-    border-radius:var(--ux-radius-3)!important;
-    background:transparent!important;
-    color:var(--ux-text-primary)!important;
-    font:inherit!important;
-    text-align:right!important
+    min-height:52px;
+    width:100%;
+    display:grid;
+    grid-template-columns:28px minmax(0,1fr);
+    align-items:center;
+    gap:var(--ux-space-3);
+    padding:var(--ux-space-2) var(--ux-space-3);
+    border:0;
+    border-radius:var(--ux-radius-3);
+    background:transparent;
+    color:var(--ux-text-primary);
+    font:inherit;
+    text-align:right
   }
 
   .mobileFullPageSheet,
