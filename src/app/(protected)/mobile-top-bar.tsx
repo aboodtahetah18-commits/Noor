@@ -32,7 +32,7 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
 
   return (
     <>
-      <header className="p47-mobile-topbar mustaqbali-mobile-header namaa-mobile-header" dir="rtl">
+      <header className="namaa-mobile-topbar mustaqbali-mobile-header namaa-mobile-header" dir="rtl">
         <div className="mustaqbali-mobile-brand-zone">
           <button
             className="mustaqbali-mobile-menu-trigger"
