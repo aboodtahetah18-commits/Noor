@@ -283,7 +283,8 @@
   .protected-app-shell:has([data-chat-first-route="true"]) .namaa-app-main {
     width:100%;
     max-width:100%;
-    padding:var(--ux-space-4);
+    padding:0;
+    overflow:hidden;
   }
 
   .protected-app-shell:has([data-chat-first-route="true"]) .namaa-page-frame,
