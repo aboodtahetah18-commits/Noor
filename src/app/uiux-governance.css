@@ -173,18 +173,13 @@ label>span,.field-label{font-weight:500!important;color:var(--ux-text-primary)!i
   *,*::before,*::after{scroll-behavior:auto!important;animation-duration:var(--ux-motion-duration-0)!important;animation-iteration-count:1!important;transition-duration:var(--ux-motion-duration-0)!important;}
 }
 @media(min-width:1024px){
-  .mustaqbali-profile-trigger{width:var(--ux-size-11)!important;height:var(--ux-size-11)!important;min-width:var(--ux-size-11)!important;min-height:var(--ux-size-11)!important;border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default)!important;border-radius:var(--ux-space-3)!important;background:var(--ux-white)!important;color:var(--ux-brand-primary)!important;padding:var(--ux-space-1)!important;display:grid!important;place-items:center!important;}
-  .mustaqbali-profile-trigger .p4913-logo-mark{display:grid;place-items:center;width:var(--ux-size-8);height:var(--ux-size-8);border-radius:var(--ux-radius-sm);overflow:hidden;}
-  .mustaqbali-profile-trigger svg,.mustaqbali-profile-trigger .p60-avatar-image{width:var(--ux-space-8)!important;height:var(--ux-space-8)!important;}
+  .namaa-profile-trigger{width:var(--ux-size-11)!important;height:var(--ux-size-11)!important;min-width:var(--ux-size-11)!important;min-height:var(--ux-size-11)!important;border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default)!important;border-radius:var(--ux-space-3)!important;background:var(--ux-white)!important;color:var(--ux-brand-primary)!important;padding:var(--ux-space-1)!important;display:grid!important;place-items:center!important;}
+  .namaa-profile-trigger .p4913-logo-mark{display:grid;place-items:center;width:var(--ux-size-8);height:var(--ux-size-8);border-radius:var(--ux-radius-sm);overflow:hidden;}
+  .namaa-profile-trigger svg,.namaa-profile-trigger .p60-avatar-image{width:var(--ux-space-8)!important;height:var(--ux-space-8)!important;}
 }
 
 
 /* === Mustaqbali visual correction — 2026-09-07 Build 05 === */
-
-/* Logo rules: colored logo on light surfaces, white logo on dark surfaces. */
-.mustaqbali-logo-dark{display:none!important;}
-.mustaqbali-logo-light{display:block!important;}
-
 
 /* Public authentication: remove decorative clutter and give the brand first visual priority. */
 .auth-stage{align-items:stretch!important;}
@@ -328,9 +323,6 @@ html[data-theme="light"] .p47-dashboard-page{
   background:var(--ux-page-bg)!important;
   color:var(--ux-text-primary)!important;
 }
-html[data-theme="light"] .mustaqbali-logo-light{display:block!important;}
-html[data-theme="light"] .mustaqbali-logo-dark{display:none!important;}
-
 html[data-theme="light"] .card,
 html[data-theme="light"] .panel,
 html[data-theme="light"] .dashboard-card,
@@ -356,8 +348,8 @@ html[data-theme="light"] .cycle-create-card{
 html[data-theme="light"] input,
 html[data-theme="light"] select,
 html[data-theme="light"] textarea,
-html[data-theme="light"] .mustaqbali-global-search,
-html[data-theme="light"] .mustaqbali-tablet-search{
+html[data-theme="light"] .namaa-global-search,
+html[data-theme="light"] .namaa-tablet-search{
   background:var(--ux-white)!important;
   color:var(--ux-brand-primary)!important;
   border-color:var(--ux-border-default)!important;
@@ -385,9 +377,6 @@ html[data-theme="dark"] .p47-dashboard-page{
   background:var(--ux-dark-page-bg)!important;
   color:var(--ux-dark-text-primary)!important;
 }
-html[data-theme="dark"] .mustaqbali-logo-light{display:none!important;}
-html[data-theme="dark"] .mustaqbali-logo-dark{display:block!important;}
-
 html[data-theme="dark"] .card,
 html[data-theme="dark"] .panel,
 html[data-theme="dark"] .dashboard-card,
@@ -413,8 +402,8 @@ html[data-theme="dark"] .cycle-create-card{
 html[data-theme="dark"] input,
 html[data-theme="dark"] select,
 html[data-theme="dark"] textarea,
-html[data-theme="dark"] .mustaqbali-global-search,
-html[data-theme="dark"] .mustaqbali-tablet-search{
+html[data-theme="dark"] .namaa-global-search,
+html[data-theme="dark"] .namaa-tablet-search{
   background:var(--ux-dark-surface-muted)!important;
   color:var(--ux-white)!important;
   border-color:var(--ux-dark-border)!important;
@@ -455,7 +444,7 @@ html[data-theme="dark"] .auth-form-v42 input:focus{
   border-color:var(--ux-brand-secondary)!important;
 }
 
-.mustaqbali-theme-toggle{
+.namaa-theme-toggle{
   width:var(--ux-size-11)!important;
   height:var(--ux-size-11)!important;
   min-width:var(--ux-size-11)!important;
@@ -469,12 +458,12 @@ html[data-theme="dark"] .auth-form-v42 input:focus{
   cursor:pointer!important;
   padding:var(--ux-space-0)!important;
 }
-html[data-theme="dark"] .mustaqbali-theme-toggle{
+html[data-theme="dark"] .namaa-theme-toggle{
   background:var(--ux-dark-surface-muted)!important;
   color:var(--ux-white)!important;
   border-color:var(--ux-dark-border)!important;
 }
-.mustaqbali-tablet-actions{display:flex;align-items:center;gap:var(--ux-space-2);}
+.namaa-tablet-actions{display:flex;align-items:center;gap:var(--ux-space-2);}
 .auth-theme-action{position:absolute;inset-block-start:var(--ux-space-4);inset-inline-end:var(--ux-space-4);z-index:var(--ux-z-sticky);}
 .auth-panel{position:relative;}
 
