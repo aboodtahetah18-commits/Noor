@@ -22,7 +22,7 @@ export function TabletTopNav({ profile }: { profile: HeaderProfile }) {
   const pathname = usePathname();
 
   return (
-    <header className="tablet-top-nav-wrap namaa-tablet-wrap" dir="rtl">
+    <header className="namaa-tablet-wrap" dir="rtl">
       <div className="namaa-tablet-topbar">
         <Link href="/dashboard" className="namaa-tablet-brand" aria-label="نماء — الرئيسية">
           <BrandLogo surface="auto" priority />
