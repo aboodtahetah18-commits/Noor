@@ -605,13 +605,9 @@ summary{cursor:pointer;min-height:var(--ux-size-11);display:flex;align-items:cen
 
 
 
-@media(min-width:1024px) and (max-width:1439px){
 
-}
 
-@media(min-width:768px) and (max-width:1023px){
 
-}
 
 @media(max-width:767px){
 
@@ -623,7 +619,7 @@ summary{cursor:pointer;min-height:var(--ux-size-11);display:flex;align-items:cen
 
 
 ,
-@media(max-width:1439px) and (min-width:1024px){}
+
 
 /* P47.5 + P47.6 — Goals,trips{--p47-goal-accent:var(--ux-surface-inverse);--p47-goal-soft:var(--ux-surface-default);--p47-warm:var(--ux-surface-default);--p47-warm-ink:var(--ux-surface-default);}
 
