@@ -12107,7 +12107,7 @@
     margin:0;
     border:0;
     border-radius:0;
-    box-shadow:none;
+    box-shadow:var(--ux-shadow-none);
     overflow:hidden;
     background:var(--namaa-card);
     background-image:none;
@@ -12130,7 +12130,7 @@
     background:var(--namaa-green-900);
     background-image:none;
     color:var(--ux-text-inverse);
-    box-shadow:none;
+    box-shadow:var(--ux-shadow-none);
     overflow:hidden;
   }
 
@@ -12166,7 +12166,7 @@
     border-radius:var(--ux-radius-sm);
     background:color-mix(in srgb,var(--ux-text-inverse) 8%,transparent);
     color:var(--ux-text-inverse);
-    box-shadow:none;
+    box-shadow:var(--ux-shadow-none);
   }
 
   .messages{
@@ -12207,7 +12207,7 @@
     min-width:0;
     padding:var(--ux-space-2) var(--ux-space-3);
     border-radius:var(--ux-radius-md);
-    box-shadow:none;
+    box-shadow:var(--ux-shadow-none);
   }
 
   .agentMessage{
@@ -12255,7 +12255,7 @@
     border-radius:0;
     background:var(--namaa-card);
     background-image:none;
-    box-shadow:none;
+    box-shadow:var(--ux-shadow-none);
   }
 
   .composer textarea{
@@ -12282,7 +12282,7 @@
     border:1px solid var(--namaa-green-700);
     background:var(--namaa-green-900);
     color:var(--ux-text-inverse);
-    box-shadow:none;
+    box-shadow:var(--ux-shadow-none);
   }
 
   .sendButton span{
