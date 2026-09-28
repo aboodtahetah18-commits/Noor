@@ -636,7 +636,7 @@ html[data-theme="dark"] .namaa-sidebar-brand img{opacity:1!important;}
   border-color:var(--ux-border-emphasis)!important;
   box-shadow:var(--ux-shadow-m)!important;
 }
-.protected-app-shell :where(.page-header,.dashboard-header{
+.protected-app-shell :where(.dashboard-header){
   background:var(--ux-section-soft-blue)!important;
   border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-emphasis)!important;
   box-shadow:var(--ux-shadow-s)!important;
@@ -655,7 +655,7 @@ html[data-theme="dark"] .namaa-sidebar-brand img{opacity:1!important;}
 .protected-app-shell :where(.kpi-grid,.statement-kpis,.dashboard-grid)>:nth-child(4n+4){background:var(--ux-soft-purple)!important;border-color:var(--ux-brand-primary)!important;}
 
 /* Header action rows remain on one line on desktop. */
-.protected-app-shell :where(.page-header,.dashboard-header{
+.protected-app-shell :where(.dashboard-header){
   display:flex!important;align-items:center!important;justify-content:space-between!important;gap:var(--ux-space-3)!important;
 }
 .dashboard-header-actions,.actions-row{
@@ -729,12 +729,12 @@ html[data-theme="dark"] .namaa-sidebar-brand img{opacity:1!important;}
 
 /* Dark theme keeps the same hierarchy without washed-out panels. */
 html[data-theme="dark"]{--ux-border-emphasis:var(--ux-dark-border);}
-html[data-theme="dark"] :where(.page-header,.dashboard-header{background:var(--ux-dark-surface-muted)!important;border-color:var(--ux-dark-border)!important;}
+html[data-theme="dark"] :where(.dashboard-header){background:var(--ux-dark-surface-muted)!important;border-color:var(--ux-dark-border)!important;}
 html[data-theme="dark"] :where(.kpi-grid,.statement-kpis,.dashboard-grid)>*{background:var(--ux-dark-card-bg)!important;border-color:var(--ux-dark-border)!important;}
 html[data-theme="dark"] .p4913-filter-toggle,html[data-theme="dark"] .p4913-filter-content{background:var(--ux-dark-card-bg)!important;color:var(--ux-dark-text-primary)!important;border-color:var(--ux-dark-border)!important;}
 
 @media(max-width:767px){
-  .protected-app-shell :where(.page-header,.dashboard-header{display:grid!important;grid-template-columns:minmax(0,1fr)!important;padding:var(--ux-space-3)!important;}
+  .protected-app-shell :where(.dashboard-header){display:grid!important;grid-template-columns:minmax(0,1fr)!important;padding:var(--ux-space-3)!important;}
 .dashboard-header-actions,.actions-row{width:100%!important;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:var(--ux-space-2)!important;}
 .dashboard-header-actions,.actions-row{width:100%!important;min-width:0!important;}
   .p4913-filter-shell{width:100%!important;}
@@ -782,7 +782,7 @@ html[data-theme="dark"] .namaa-topbar-logo img{
 .dashboard-header::before{display:none!important;}
 
 /* Header cards remain visibly distinct in light mode. */
-html[data-theme="light"] :where(.page-header,.dashboard-header{
+html[data-theme="light"] :where(.dashboard-header){
   background:var(--ux-section-soft-blue)!important;
   border-color:var(--ux-border-emphasis)!important;
   box-shadow:var(--ux-shadow-m)!important;
