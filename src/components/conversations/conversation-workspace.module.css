@@ -4025,27 +4025,6 @@
   padding:var(--ux-space-0);
   justify-content:center
   }
-  .page{
-    min-height:100dvh;
-    height:100dvh;
-    width:100dvw;
-    max-width:100dvw;
-    margin:0;
-    border-radius:var(--ux-radius-0);
-    border-inline:0;
-    box-shadow:var(--ux-shadow-none);
-    position:relative;
-    inset:auto;
-    z-index:auto;
-    border:0;
-    overflow:hidden;
-    background:var(--namaa-chat-canvas)
-  }
-  .workspace{
-    height:100dvh;
-  min-height:100dvh;
-  background:var(--namaa-chat-canvas)
-  }
   .mobileConversationListVisible{
     display:block
   }
@@ -9241,10 +9220,6 @@
 /* One authority for tablet/laptop/desktop conversation layout.               */
 /* ========================================================================== */
 @media (min-width:768px){
-  .workspaceHeader{
-    display:none!important;
-  }
-
   .workspace{
     display:grid;
     grid-template-columns:minmax(220px,264px) minmax(0,1fr) minmax(220px,280px);
