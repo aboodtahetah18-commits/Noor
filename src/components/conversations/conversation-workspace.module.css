@@ -344,8 +344,12 @@
 }
 
 .messages{
+  flex:1 1 auto;
+  min-height:0;
   padding:var(--ux-space-4) var(--ux-space-4) var(--ux-space-5);
-  overflow:auto;
+  overflow-y:auto;
+  overflow-x:hidden;
+  overscroll-behavior:contain;
   display:flex;
   flex-direction:column;
   gap:var(--ux-space-4);
@@ -590,6 +594,9 @@
 }
 
 .composer{
+  position:relative;
+  z-index:3;
+  flex:0 0 auto;
   margin:var(--ux-space-0) var(--ux-space-3) var(--ux-space-3);
   padding:var(--ux-space-2);
   background:var(--namaa-card);
@@ -12397,15 +12404,6 @@
     min-height:0;
     overflow:hidden;
   }
-  .messages{
-    min-height:0;
-    overscroll-behavior:contain;
-  }
-  .composer{
-    position:relative;
-    z-index:3;
-    flex:0 0 auto;
-  }
 }
 
 @media (max-width:767px){
@@ -12413,13 +12411,6 @@
   .attachmentPolicy,
   .executionNote{
     flex:0 0 auto;
-  }
-  .messages{
-    overscroll-behavior:contain!important;
-  }
-  .composer{
-    position:relative!important;
-    z-index:5!important;
   }
 }
 
@@ -12458,9 +12449,6 @@
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
-}
-.composer{
-  position:relative;
 }
 .composerPolicy{
   position:absolute;
