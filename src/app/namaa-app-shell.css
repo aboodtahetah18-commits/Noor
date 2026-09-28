@@ -302,7 +302,7 @@
     min-height:100dvh;
   }
 
-  .tablet-top-nav-wrap {
+  .namaa-tablet-wrap {
     position:sticky;
     inset-block-start:0;
     z-index:var(--ux-z-sticky);
