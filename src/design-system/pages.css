@@ -10,7 +10,7 @@ body { font-family:var(--ux-font-family-base); }
 
 /* Application canvas and bounded content. */
 .app-page,
-.p47-page-stack,
+.app-page,
 .dashboard-composition-v2,
 .dashboard-composition-v3 { color:var(--ux-text-primary); }
 .app-page { background:var(--ux-page-bg) !important; }
@@ -19,11 +19,11 @@ body { font-family:var(--ux-font-family-base); }
 
 /* Global page headers and financial hero surfaces. */
 .page-header,
-.p47-page-heading,
-.p47-resource-header,
-.page-header.p47-closure-header,
-.p47-budget-hero,
-.p47-financial-hero,
+.page-header,
+.page-header,
+.page-header,
+.page-header,
+.page-header,
 .account-detail-hero,
 .account-total,
 .onboarding-money-hero {
@@ -36,11 +36,11 @@ body { font-family:var(--ux-font-family-base); }
   box-shadow:var(--ux-shadow-xs) !important;
 }
 .page-header::before,
-.p47-page-heading::before,
-.p47-resource-header::before,
-.page-header.p47-closure-header::before,
-.p47-budget-hero::before,
-.p47-financial-hero::before,
+.page-header::before,
+.page-header::before,
+.page-header::before,
+.page-header::before,
+.page-header::before,
 .account-detail-hero::before,
 .account-total::before,
 .onboarding-money-hero::before {
@@ -52,22 +52,22 @@ body { font-family:var(--ux-font-family-base); }
   background:var(--ux-brand-secondary);
 }
 .page-header h1,
-.p47-page-heading h1,
-.p47-resource-header h1,
-.page-header.p47-closure-header h1 { color:var(--ux-text-primary) !important; }
+.page-header h1,
+.page-header h1,
+.page-header h1 { color:var(--ux-text-primary) !important; }
 .page-header p,
-.p47-page-heading p,
-.p47-resource-header p,
-.page-header.p47-closure-header p { color:var(--ux-text-secondary) !important; }
+.page-header p,
+.page-header p,
+.page-header p { color:var(--ux-text-secondary) !important; }
 
 /* Shared surfaces across dashboard, banks, advisor, cases, execution and settings. */
 .card,
 .panel,
-.p47-panel,
-.p47-resource-card,
-.p47-account-tile,
-.p47-transaction-row,
-.p47-kpi-strip > article,
+.panel,
+.namaa-collection-card,
+.namaa-collection-card,
+.namaa-data-row,
+.namaa-kpi-strip > article,
 .account-card,
 .detail-list,
 .form-card,
@@ -84,14 +84,14 @@ body { font-family:var(--ux-font-family-base); }
 }
 .card,
 .panel,
-.p47-panel,
-.p47-resource-card,
-.p47-account-tile,
+.panel,
+.namaa-collection-card,
+.namaa-collection-card,
 .account-card,
 .empty-state { border-radius:var(--ux-radius-lg) !important; }
 .card:hover,
-.p47-resource-card:hover,
-.p47-account-tile:hover,
+.namaa-collection-card:hover,
+.namaa-collection-card:hover,
 .account-card:hover {
   border-color:var(--ux-border-emphasis) !important;
   box-shadow:var(--ux-shadow-sm) !important;
@@ -102,7 +102,7 @@ body { font-family:var(--ux-font-family-base); }
 .account-balance strong,
 .account-total strong,
 .account-detail-hero strong,
-.p47-kpi-strip strong,
+.namaa-kpi-strip strong,
 [data-financial-value="true"] {
   color:var(--ux-text-primary) !important;
   font-variant-numeric:tabular-nums;
@@ -146,7 +146,7 @@ body { font-family:var(--ux-font-family-base); }
 }
 
 /* Forms and financial inputs. */
-:where(.app-page,.p47-page-stack) :where(input,select,textarea),
+:where(.app-page,.app-page) :where(input,select,textarea),
 .account-form input,
 .account-form select,
 .form-grid input,
@@ -158,7 +158,7 @@ body { font-family:var(--ux-font-family-base); }
   background:var(--ux-card-bg) !important;
   color:var(--ux-text-primary) !important;
 }
-:where(.app-page,.p47-page-stack) :where(input,select,textarea):focus,
+:where(.app-page,.app-page) :where(input,select,textarea):focus,
 .account-form input:focus,
 .account-form select:focus,
 .form-grid input:focus,
@@ -192,12 +192,7 @@ body { font-family:var(--ux-font-family-base); }
 
 /* Protected application shell. */
 .mustaqbali-tablet-topbar,
-.p47-mobile-topbar.mustaqbali-mobile-header {
-  background:var(--ux-shell-topbar-bg) !important;
-  color:var(--ux-text-primary) !important;
-  border-color:var(--ux-shell-topbar-border) !important;
-  box-shadow:var(--ux-shadow-xs) !important;
-}
+
 .mustaqbali-sidebar,
 .mustaqbali-mobile-drawer {
   background:var(--ux-shell-sidebar-bg) !important;
@@ -262,11 +257,11 @@ body { font-family:var(--ux-font-family-base); }
 
 /* Dark mode uses the same semantic contracts; NDOS remaps them at the root. */
 html[data-theme="dark"] .page-header,
-html[data-theme="dark"] .p47-page-heading,
-html[data-theme="dark"] .p47-resource-header,
-html[data-theme="dark"] .page-header.p47-closure-header,
-html[data-theme="dark"] .p47-budget-hero,
-html[data-theme="dark"] .p47-financial-hero,
+html[data-theme="dark"] .page-header,
+html[data-theme="dark"] .page-header,
+html[data-theme="dark"] .page-header,
+html[data-theme="dark"] .page-header,
+html[data-theme="dark"] .page-header,
 html[data-theme="dark"] .account-detail-hero,
 html[data-theme="dark"] .account-total,
 html[data-theme="dark"] .onboarding-money-hero {
@@ -274,7 +269,7 @@ html[data-theme="dark"] .onboarding-money-hero {
   border-color:var(--ux-border-default) !important;
 }
 html[data-theme="dark"] .mustaqbali-tablet-topbar,
-html[data-theme="dark"] .p47-mobile-topbar.mustaqbali-mobile-header { background:var(--ux-shell-topbar-bg) !important; }
+html[data-theme="dark"] 
 html[data-theme="dark"] .transaction-table th,
 html[data-theme="dark"] .ux-table th { background:var(--ux-section-soft-blue) !important; }
 
@@ -282,17 +277,17 @@ html[data-theme="dark"] .ux-table th { background:var(--ux-section-soft-blue) !i
 @media (max-width:767px) {
   .app-page { padding:var(--ux-space-4) var(--ux-space-3) !important; }
   .page-header,
-  .p47-page-heading,
-  .p47-resource-header,
-  .page-header.p47-closure-header {
+  .page-header,
+  .page-header,
+  .page-header {
     padding:var(--ux-space-4) !important;
     border-radius:var(--ux-radius-lg) !important;
   }
   .card,
   .panel,
-  .p47-panel,
-  .p47-resource-card,
-  .p47-account-tile,
+  .panel,
+  .namaa-collection-card,
+  .namaa-collection-card,
   .account-card,
   .empty-state { border-radius:var(--ux-radius-md) !important; }
   .transaction-table-wrap,
@@ -308,8 +303,8 @@ html[data-theme="dark"] .ux-table th { background:var(--ux-section-soft-blue) !i
 @media (prefers-reduced-motion:reduce) {
   .card,
   .panel,
-  .p47-resource-card,
-  .p47-account-tile,
+  .namaa-collection-card,
+  .namaa-collection-card,
   .account-card,
   .ux-button,
   .primary-link,
