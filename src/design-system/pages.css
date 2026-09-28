@@ -191,30 +191,30 @@ body { font-family:var(--ux-font-family-base); }
 .ux-table tbody tr:hover { background:var(--ux-section-soft-teal) !important; }
 
 /* Protected application shell. */
-.mustaqbali-tablet-topbar,
+.namaa-tablet-topbar,
 
-.mustaqbali-sidebar,
-.mustaqbali-mobile-drawer {
+.namaa-sidebar,
+.namaa-mobile-navigation-drawer {
   background:var(--ux-shell-sidebar-bg) !important;
   color:var(--ux-text-inverse) !important;
 }
-.mustaqbali-mobile-drawer a {
+.namaa-mobile-navigation-drawer a {
   color:var(--ux-text-inverse) !important;
   border-radius:var(--ux-radius-md);
 }
-.mustaqbali-mobile-drawer a:hover { background:var(--ux-shell-sidebar-hover) !important; }
-.mustaqbali-mobile-drawer a.is-active {
+.namaa-mobile-navigation-drawer a:hover { background:var(--ux-shell-sidebar-hover) !important; }
+.namaa-mobile-navigation-drawer a.is-active {
   background:var(--ux-shell-sidebar-active-soft) !important;
   color:var(--ux-text-inverse) !important;
   box-shadow:inset var(--ux-border-width-2) 0 0 var(--ux-shell-sidebar-active) !important;
 }
-.mustaqbali-mobile-bottom-nav {
+.namaa-mobile-bottom-nav {
   border-color:var(--ux-border-default) !important;
   background:var(--ux-card-bg) !important;
   box-shadow:var(--ux-shadow-sm) !important;
 }
-.mustaqbali-mobile-bottom-nav a { color:var(--ux-text-muted) !important; }
-.mustaqbali-mobile-bottom-nav a.is-active { color:var(--ux-brand-primary) !important; }
+.namaa-mobile-bottom-nav a { color:var(--ux-text-muted) !important; }
+.namaa-mobile-bottom-nav a.is-active { color:var(--ux-brand-primary) !important; }
 
 /* Recommendation, decision, execution and governance states inherit semantic identity. */
 [data-tone="success"],.status-success,.is-success { --ux-state-accent:var(--ux-success); }
@@ -268,7 +268,7 @@ html[data-theme="dark"] .onboarding-money-hero {
   background:var(--ux-card-bg) !important;
   border-color:var(--ux-border-default) !important;
 }
-html[data-theme="dark"] .mustaqbali-tablet-topbar,
+html[data-theme="dark"] .namaa-tablet-topbar,
 html[data-theme="dark"] 
 html[data-theme="dark"] .transaction-table th,
 html[data-theme="dark"] .ux-table th { background:var(--ux-section-soft-blue) !important; }
@@ -313,12 +313,12 @@ html[data-theme="dark"] .ux-table th { background:var(--ux-section-soft-blue) !i
 
 
 /* Governed desktop shell surfaces required by the page identity contract. */
-.mustaqbali-topbar {
+.namaa-topbar {
   background:var(--ux-shell-topbar-bg) !important;
   color:var(--ux-text-inverse) !important;
   border-color:var(--ux-shell-topbar-border) !important;
 }
-.mustaqbali-sidebar,
+.namaa-sidebar,
 .namaa-wide-sidebar {
   background:var(--ux-shell-sidebar-bg) !important;
   color:var(--ux-text-inverse) !important;
