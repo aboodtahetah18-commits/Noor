@@ -979,11 +979,7 @@ label:has(input),label:has(select),label:has(textarea){color:var(--ux-color-ink)
 
 /* Desktop sidebar: richer and unmistakably branded */
 @media(min-width:1024px){
-  .desktop-top-nav-wrap.p47-desktop-sidebar{
-    background:var(--ux-surface-inverse)!important;
-    border-inline-end:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default)!important;
-    box-shadow:var(--ux-shadow-md)!important;}
-  .p47-brand-mark{background:var(--ux-surface-default)!important;color:var(--ux-text-primary)!important;box-shadow:var(--ux-shadow-xs)!important;}
+.p47-brand-mark{background:var(--ux-surface-default)!important;color:var(--ux-text-primary)!important;box-shadow:var(--ux-shadow-xs)!important;}
   .p47-sidebar-add{border-color:var(--ux-border-default)!important;background:var(--ux-surface-inverse)!important;}
   .p47-nav-section>a.is-active,.p47-sidebar-footer>a.is-active{
     background:var(--ux-surface-inverse)!important;color:var(--ux-text-inverse)!important;
@@ -996,7 +992,6 @@ label:has(input),label:has(select),label:has(textarea){color:var(--ux-color-ink)
 @media(max-width:1023px){
   .p47-mobile-topbar,.mobile-top-bar{background:var(--ux-surface-default)!important;color:var(--ux-text-primary)!important;border-bottom:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default)!important;}
   
-  .mobile-bottom-nav>a.is-active,
 }
 
 /* keep headers usable on small screens while retaining the visible redesign */
@@ -1086,8 +1081,6 @@ label:has(input),label:has(select),label:has(textarea){color:var(--ux-color-ink)
 
   /* Global mobile bottom navigation: five equal, correctly linked tabs. */
   
-  .mobile-bottom-nav>a,
-  .mobile-bottom-nav>a.is-active,
   
   
   
@@ -1104,7 +1097,6 @@ label:has(input),label:has(select),label:has(textarea){color:var(--ux-color-ink)
   .p4913-mobile-top-actions a{inline-size:var(--ux-size-11)!important;block-size:var(--ux-size-11)!important;}.p47-mobile-topbar.p4913-mobile-topbar{grid-template-columns:minmax(0,1fr) auto!important;padding-inline:var(--ux-space-2)!important;}.p4913-mobile-brand strong{font-size:var(--ux-type-body-sm-size)!important;}
   .form-grid,.p47-flow-form,.p47-flow-page .form-grid,.p47-flow-page .account-form,.account-form,.p49-form-page{gap:var(--ux-space-2)!important;}
   .more-hub-grid,.p47-module-grid,.workspace-module-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
-  .mobile-bottom-nav>a,
 }
 
 /* P55 — User Profile & Header Interaction Completion */
