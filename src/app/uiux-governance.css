@@ -208,7 +208,7 @@ label>span,.field-label{font-weight:500!important;color:var(--ux-text-primary)!i
 /* Tablet shell */
 @media(min-width:768px) and (max-width:1023px){
   .desktop-top-nav-wrap,.namaa-topbar,.mobile-bottom-nav{display:none!important;}
-  .tablet-top-nav-wrap.mustaqbali-tablet-wrap{display:block!important;position:sticky;top:var(--ux-space-0);z-index:var(--ux-z-navigation);background:var(--ux-shell-topbar-bg);border-bottom:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-shell-topbar-border);}
+  .tablet-top-nav-wrap.namaa-tablet-wrap{display:block!important;position:sticky;top:var(--ux-space-0);z-index:var(--ux-z-navigation);background:var(--ux-shell-topbar-bg);border-bottom:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-shell-topbar-border);}
   .namaa-tablet-topbar{height:var(--ux-shell-topbar-height);display:grid;grid-template-columns:auto minmax(220px,1fr) 44px;align-items:center;gap:var(--ux-space-4);padding-inline:var(--ux-space-6);}
   .namaa-tablet-brand img{width:var(--ux-logo-tablet-width);height:auto;max-height:50px;object-fit:contain;object-position:center;}
   .namaa-tablet-search{height:var(--ux-size-10);display:flex;align-items:center;gap:var(--ux-space-2);background:var(--ux-white);border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);border-radius:var(--ux-radius-md);padding-inline:var(--ux-space-3);}
@@ -241,7 +241,7 @@ label>span,.field-label{font-weight:500!important;color:var(--ux-text-primary)!i
   .namaa-mobile-bottom-nav a.is-active{color:var(--ux-brand-primary)!important;background:var(--ux-section-soft-teal)!important;}
   .namaa-mobile-bottom-nav a.is-active .mobile-nav-icon{color:var(--ux-brand-secondary)!important;}
 
-  .mustaqbali-drawer-backdrop{position:fixed;inset:0;z-index:var(--ux-z-modal);background:var(--ux-alpha-overlay);display:flex;justify-content:flex-start;}
+  .namaa-drawer-backdrop{position:fixed;inset:0;z-index:var(--ux-z-modal);background:var(--ux-alpha-overlay);display:flex;justify-content:flex-start;}
   .namaa-mobile-navigation-drawer{width:min(84vw,var(--ux-drawer-max-width));height:100dvh;background:var(--ux-white);border-inline-end:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);box-shadow:var(--ux-shadow-lg);padding:calc(var(--ux-space-3) + env(safe-area-inset-top)) var(--ux-space-4) calc(var(--ux-space-4) + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:var(--ux-space-4);}
   .namaa-mobile-navigation-drawer>header{display:flex;align-items:center;justify-content:space-between;min-height:var(--ux-size-12);border-bottom:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);}
   .namaa-mobile-navigation-drawer>header strong{font-size:var(--ux-type-card-title-size);color:var(--ux-brand-primary);}
@@ -249,7 +249,7 @@ label>span,.field-label{font-weight:500!important;color:var(--ux-text-primary)!i
   .namaa-mobile-navigation-drawer nav{display:grid;gap:var(--ux-space-1);}
   .namaa-mobile-navigation-drawer nav a{min-height:var(--ux-size-11);display:flex;align-items:center;padding-inline:var(--ux-space-3);border-radius:var(--ux-radius-md);text-decoration:none;color:var(--ux-text-primary);font-weight:500;}
   .namaa-mobile-navigation-drawer nav a.is-active{background:var(--ux-section-soft-teal);color:var(--ux-brand-primary);border-inline-start:var(--ux-space-1) var(--ux-border-style-default) var(--ux-brand-secondary);}
-  .mustaqbali-drawer-descriptor{margin-top:auto;color:var(--ux-text-muted);font-size:var(--ux-type-caption-size);}
+  .namaa-drawer-descriptor{margin-top:auto;color:var(--ux-text-muted);font-size:var(--ux-type-caption-size);}
 
   /* Adaptive 1–2 column forms: short fields pair, long text/search remain full width. */
   .form-grid,.account-form,.transaction-filter-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;column-gap:var(--ux-space-3)!important;row-gap:var(--ux-space-3)!important;}
@@ -295,8 +295,8 @@ label>span,.field-label{font-weight:500!important;color:var(--ux-text-primary)!i
 /* === Mustaqbali visual correction — 2026-09-07 Build 05 === */
 
 /* Logo rules: colored logo on light surfaces, white logo on dark surfaces. */
-.mustaqbali-logo-dark{display:none!important;}
-.mustaqbali-logo-light{display:block!important;}
+.namaa-logo-dark{display:none!important;}
+.namaa-logo-light{display:block!important;}
 .namaa-sidebar-brand img{background:transparent!important;}
 .namaa-sidebar-brand a{overflow:visible!important;}
 
@@ -465,9 +465,9 @@ html[data-theme="light"] .dashboard-page{
   background:var(--ux-page-bg)!important;
   color:var(--ux-text-primary)!important;
 }
-html[data-theme="light"] .mustaqbali-logo-light{display:block!important;}
-html[data-theme="light"] .mustaqbali-logo-dark{display:none!important;}
-html[data-theme="light"] .tablet-top-nav-wrap.mustaqbali-tablet-wrap,
+html[data-theme="light"] .namaa-logo-light{display:block!important;}
+html[data-theme="light"] .namaa-logo-dark{display:none!important;}
+html[data-theme="light"] .tablet-top-nav-wrap.namaa-tablet-wrap,
 html[data-theme="light"] .namaa-topbar{
   background:var(--ux-shell-topbar-bg)!important;
   color:var(--ux-brand-primary)!important;
@@ -523,10 +523,10 @@ html[data-theme="dark"] .dashboard-page{
   background:var(--ux-dark-page-bg)!important;
   color:var(--ux-dark-text-primary)!important;
 }
-html[data-theme="dark"] .mustaqbali-logo-light{display:none!important;}
-html[data-theme="dark"] .mustaqbali-logo-dark{display:block!important;}
+html[data-theme="dark"] .namaa-logo-light{display:none!important;}
+html[data-theme="dark"] .namaa-logo-dark{display:block!important;}
 html[data-theme="dark"] .namaa-topbar,
-html[data-theme="dark"] .tablet-top-nav-wrap.mustaqbali-tablet-wrap{
+html[data-theme="dark"] .tablet-top-nav-wrap.namaa-tablet-wrap{
   background:var(--ux-dark-shell-topbar-bg)!important;
   color:var(--ux-white)!important;
   border-color:var(--ux-dark-border)!important;
@@ -604,7 +604,7 @@ html[data-theme="dark"] .auth-form-v42 input:focus{
   border-color:var(--ux-brand-secondary)!important;
 }
 
-.mustaqbali-theme-toggle{
+.namaa-theme-toggle{
   width:var(--ux-size-11)!important;
   height:var(--ux-size-11)!important;
   min-width:var(--ux-size-11)!important;
@@ -618,7 +618,7 @@ html[data-theme="dark"] .auth-form-v42 input:focus{
   cursor:pointer!important;
   padding:var(--ux-space-0)!important;
 }
-html[data-theme="dark"] .mustaqbali-theme-toggle{
+html[data-theme="dark"] .namaa-theme-toggle{
   background:var(--ux-dark-surface-muted)!important;
   color:var(--ux-white)!important;
   border-color:var(--ux-dark-border)!important;
@@ -732,7 +732,7 @@ html[data-theme="dark"] .namaa-sidebar-brand img{opacity:1!important;}
 
 /* Tablet/mobile header uses the same dark identity block as desktop. */
 @media(max-width:1023px){
-  .tablet-top-nav-wrap.mustaqbali-tablet-wrap{background:var(--ux-shell-sidebar-bg)!important;color:var(--ux-white)!important;border-color:var(--ux-shell-topbar-border)!important;}
+  .tablet-top-nav-wrap.namaa-tablet-wrap{background:var(--ux-shell-sidebar-bg)!important;color:var(--ux-white)!important;border-color:var(--ux-shell-topbar-border)!important;}
   .namaa-mobile-brand img,.namaa-tablet-brand img{object-fit:contain!important;}
   .namaa-mobile-header-actions>a,.namaa-mobile-header-actions>button,.namaa-tablet-actions>a,.namaa-tablet-actions>button{background:var(--ux-alpha-white-10)!important;color:var(--ux-white)!important;border-color:var(--ux-alpha-white-18)!important;}
 }
@@ -955,5 +955,5 @@ html[data-theme="light"] :where(.p55-profile-form,.p60-security-form,select,text
   }
   .p4913-filter-content{inset-inline-end:var(--ux-space-0)!important;}
   .p55-profile-form,.p60-security-form{grid-template-columns:1fr!important;}
-  .namaa-mobile-header,.mustaqbali-tablet-wrap{overflow:hidden!important;}
+  .namaa-mobile-header,.namaa-tablet-wrap{overflow:hidden!important;}
 }
