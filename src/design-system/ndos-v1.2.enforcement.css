@@ -4497,19 +4497,7 @@ textarea {
   }
 }
 
-@media (max-width:767px){
-  .mustaqbali-mobile-drawer>header{
-    display:flex!important;
-    align-items:center!important;
-    justify-content:space-between!important;
-  }
 
-  .mustaqbali-drawer-title{
-    color:inherit!important;
-    font-size:18px!important;
-    font-weight:900!important;
-  }
-}
 
 
 /* NAMA'A NO-EXPLANATION WIDE CLEANUP */
