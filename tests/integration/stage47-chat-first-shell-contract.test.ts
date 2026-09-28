@@ -59,8 +59,9 @@ describe('Stage 4.7 chat-first mobile shell contract', () => {
     const css = read('src/components/conversations/conversation-workspace.module.css');
 
     expect(css).toContain('position:relative;');
-    expect(css).toMatch(/\.agentMessage\s*\{[^}]*max-width:84%/s);
-    expect(css).toMatch(/\.userMessage\s*\{[^}]*max-width:78%/s);
+    expect(css).toContain('max-width:min(720px,88%)');
+    expect(css).toContain('.page .agentMessage{');
+    expect(css).toContain('.page .userMessage{');
     expect(css).toContain('z-index:var(--ux-z-modal)');
     expect(css).not.toMatch(/#[0-9a-f]{3,8}\b/i);
   });
