@@ -1,11 +1,9 @@
 .page{
-  min-height:calc(100dvh - 132px);
+  width:100%;
+  max-width:100%;
   background:var(--namaa-surface-warm);
   color:var(--ux-text-primary);
-  border-radius:var(--ux-radius-6);
-  overflow:hidden;
-  border:1px solid var(--namaa-border);
-  box-shadow:var(--ux-shadow-sm)
+  overflow:hidden
 }
 
 .workspaceHeader{
@@ -72,7 +70,7 @@
 .workspace{
   display:grid;
   grid-template-columns:minmax(190px,248px) minmax(420px,1fr) minmax(190px,248px);
-  min-height:calc(100dvh - 229px);
+  min-height:0;
   background:var(--namaa-card)
 }
 
