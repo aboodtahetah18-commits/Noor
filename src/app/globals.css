@@ -1815,9 +1815,4 @@ label:has(input),label:has(select),label:has(textarea){color:var(--ux-color-ink)
   .account-form-matching{width:100%!important;margin-top:var(--ux-space-3)!important}
   .account-form-actions{width:100%!important}
   .account-form-actions .primary-button{width:100%!important;min-height:52px!important}
-
-  .mustaqbali-mobile-header{
-    width:100%!important;
-    padding-inline:var(--ux-space-3)!important;
-  }
 }
