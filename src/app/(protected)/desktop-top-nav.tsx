@@ -35,8 +35,8 @@ export function DesktopTopNav() {
   };
 
   return (
-    <aside id="namaa-desktop-sidebar" data-namaa-side="right" className="desktop-top-nav-wrap mustaqbali-sidebar namaa-wide-sidebar" dir="rtl">
-      <div className="mustaqbali-sidebar-inner namaa-wide-sidebar-inner">
+    <aside id="namaa-desktop-sidebar" data-namaa-side="right" className="desktop-top-nav-wrap namaa-sidebar namaa-wide-sidebar" dir="rtl">
+      <div className="namaa-sidebar-inner namaa-wide-sidebar-inner">
         <div className="namaa-wide-sidebar-head">
           <Link href="/dashboard" className="namaa-wide-sidebar-brand" aria-label="نماء — الرئيسية">
             <BrandLogo surface="dark" priority />
@@ -46,28 +46,28 @@ export function DesktopTopNav() {
           </button>
         </div>
 
-        <nav className="mustaqbali-sidebar-nav namaa-wide-sidebar-nav" aria-label="التنقل الرئيسي للكمبيوتر">
-          <section className="mustaqbali-nav-section">
+        <nav className="namaa-sidebar-nav namaa-wide-sidebar-nav" aria-label="التنقل الرئيسي للكمبيوتر">
+          <section className="namaa-nav-section">
             <p>مساحات نماء</p>
             {pages.map((item) => {
               const active = isPrimaryNavigationItemActive(pathname, item.href);
               return (
                 <Link key={item.href} href={item.href} className={active ? 'is-active' : ''} aria-current={active ? 'page' : undefined}>
-                  <span className="mustaqbali-nav-icon"><LucideIcon name={item.icon} size={20} /></span>
-                  <span className="mustaqbali-nav-label">{item.label}</span>
+                  <span className="namaa-nav-icon"><LucideIcon name={item.icon} size={20} /></span>
+                  <span className="namaa-nav-label">{item.label}</span>
                 </Link>
               );
             })}
           </section>
 
-          <section className="mustaqbali-nav-section">
+          <section className="namaa-nav-section">
             <p>المالية</p>
             {financePages.map((item) => {
               const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
               return (
                 <Link key={item.href} href={item.href} className={active ? 'is-active' : ''} aria-current={active ? 'page' : undefined}>
-                  <span className="mustaqbali-nav-icon"><LucideIcon name={item.icon} size={20} /></span>
-                  <span className="mustaqbali-nav-label">{item.label}</span>
+                  <span className="namaa-nav-icon"><LucideIcon name={item.icon} size={20} /></span>
+                  <span className="namaa-nav-label">{item.label}</span>
                 </Link>
               );
             })}
