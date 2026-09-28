@@ -190,9 +190,6 @@ body { font-family:var(--ux-font-family-base); }
 .transaction-table tbody tr:hover,
 .ux-table tbody tr:hover { background:var(--ux-section-soft-teal) !important; }
 
-.mustaqbali-mobile-bottom-nav a { color:var(--ux-text-muted) !important; }
-.mustaqbali-mobile-bottom-nav a.is-active { color:var(--ux-brand-primary) !important; }
-
 /* Recommendation, decision, execution and governance states inherit semantic identity. */
 [data-tone="success"],.status-success,.is-success { --ux-state-accent:var(--ux-success); }
 [data-tone="warning"],.status-warning,.is-warning { --ux-state-accent:var(--ux-warning); }
@@ -245,8 +242,6 @@ html[data-theme="dark"] .onboarding-money-hero {
   background:var(--ux-card-bg) !important;
   border-color:var(--ux-border-default) !important;
 }
-html[data-theme="dark"] .mustaqbali-tablet-topbar,
-html[data-theme="dark"] .p47-mobile-topbar.mustaqbali-mobile-header { background:var(--ux-shell-topbar-bg) !important; }
 html[data-theme="dark"] .transaction-table th,
 html[data-theme="dark"] .ux-table th { background:var(--ux-section-soft-blue) !important; }
 
