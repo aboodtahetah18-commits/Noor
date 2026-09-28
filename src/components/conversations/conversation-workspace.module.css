@@ -12210,8 +12210,8 @@
     margin:0;
     padding:var(--ux-space-2) var(--ux-space-3) calc(var(--ux-space-2) + env(safe-area-inset-bottom));
     border:0;
-    border-top:1px solid var(--namaa-border-strong);
     border-radius:0;
+    border-top:1px solid var(--namaa-border-strong);
     background:var(--namaa-card);
     background-image:none;
     box-shadow:var(--ux-shadow-none);
@@ -12223,7 +12223,7 @@
     height:40px;
     border:1px solid var(--namaa-border-strong);
     border-radius:var(--ux-radius-full);
-    background:var(--namaa-surface-warm);
+    background:var(--namaa-card);
     color:var(--ux-text-primary);
   }
 
