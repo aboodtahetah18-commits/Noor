@@ -246,82 +246,6 @@ textarea {
     --namaa-wide-shadow: 0 14px 36px rgb(31 41 55 / 7%);
   }
 
-  .protected-app-shell {
-    background:var(--namaa-wide-surface);
-  }
-
-  .namaa-wide-sidebar {
-    border-inline-start: 1px solid var(--namaa-wide-border);
-    background:#0B6B4F;
-    color:#ece3c8;
-  }
-
-  .namaa-wide-sidebar-inner {
-    min-height: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-  }
-
-
-
-
-
-  .namaa-wide-sidebar-nav {
-    flex: 1;
-  }
-
-  .namaa-wide-sidebar-nav .mustaqbali-nav-section > p {
-    color: rgb(226 195 127 / 74%);
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: .02em;
-    margin: 0 0 8px;
-  }
-
-  .namaa-wide-sidebar-nav .mustaqbali-nav-section > a {
-    min-height: 46px;
-    border-radius: 13px;
-    color: rgb(232 224 197 / 92%);
-    transition: background-color .18s ease, color .18s ease, transform .18s ease;
-  }
-
-  .namaa-wide-sidebar-nav .mustaqbali-nav-section > a:hover {
-    background: rgb(212 175 107 / 12%);
-    color:#ece3c8;
-  }
-
-  .namaa-wide-sidebar-nav .mustaqbali-nav-section > a.is-active {
-    background:#D4AF6B;
-    color: #163a31;
-    box-shadow: 0 8px 22px rgb(0 0 0 / 12%);
-  }
-
-  .namaa-wide-sidebar-nav .mustaqbali-nav-icon {
-    color: currentColor;
-  }
-
-  .namaa-wide-tablet {
-    border-bottom: 1px solid var(--namaa-wide-border);
-    background:rgb(255 255 255 / 96%);
-    backdrop-filter:none;
-  }
-
-  .namaa-wide-tablet-nav {
-    scrollbar-width: thin;
-    scrollbar-color: rgb(11 107 79 / 28%) transparent;
-  }
-
-  .namaa-wide-tablet-nav a {
-    white-space: nowrap;
-  }
-
-  .namaa-wide-tablet-nav a.is-active {
-    color: var(--namaa-wide-green);
-    border-color: var(--namaa-wide-gold);
-    background: rgb(11 107 79 / 7%);
-  }
-
   .namaa-wide-page,
   .namaa-wide-card,
   .namaa-wide-panel {
@@ -367,14 +291,7 @@ textarea {
   }
 }
 
-/* Desktop/laptop-specific refinements. */
-@media (min-width: 1024px) {
 
-
-  .namaa-wide-sidebar-nav .mustaqbali-nav-section > a {
-    min-height: 48px;
-  }
-}
 
 
 @media (min-width: 768px) {
@@ -1660,11 +1577,7 @@ textarea {
   }
 }
 
-@media (min-width:1024px) {
-  .namaa-wide-sidebar + .namaa-topbar + .namaa-tablet-wrap + .namaa-mobile-header + #main-content {
-    min-width:0;
-  }
-}
+
 
 @media (min-width:768px) and (max-width:1023px) {
   .namaa-banks-wide { padding:16px; }
@@ -1770,18 +1683,7 @@ textarea {
 }
 
 
-/* Tablet shell isolation: desktop topbar/drawer stay out of the tablet workspace. */
-@media (min-width:768px) and (max-width:1023px) {
-  .desktop-top-nav-wrap.namaa-wide-sidebar,
-  .mustaqbali-topbar.namaa-topbar {
-    display:none!important;
-  }
 
-  .protected-app-shell {
-    padding-top:0!important;
-    padding-inline:0!important;
-  }
-}
 
 @media (min-width:768px) {
   /* Repeatable-data UX borrowed from mobile simplicity, translated to wide tables. */
@@ -1882,10 +1784,6 @@ textarea {
    This replaces the removed draft/legacy desktop layers and is the single owner
    for tablet/laptop/desktop composition from 768px upward. */
 @media (min-width:768px) {
-  .protected-app-shell > #main-content {
-    min-width:0;
-    width:100%;
-  }
 
   .protected-app-shell .page-shell,
   .protected-app-shell .dashboard-shell,
@@ -5009,16 +4907,6 @@ textarea {
     gap:8px!important;
   }
 
-  /* 4) عناصر التنقل السفلية تنتقل للقائمة الجانبية على الشاشات الواسعة */
-  .mustaqbali-mobile-bottom-nav,
-  .mobile-bottom-nav{
-    display:none!important;
-  }
-  .namaa-wide-sidebar-nav{
-    display:grid!important;
-    gap:16px!important;
-  }
-
   /* 5) أشرطة الإجراءات صف واحد وأزرار مدمجة */
   .protected-app-shell :where(
     .namaa-investments-actions,.p49-resource-actions,.namaa-lab-actions,.namaa-settings-actions,
@@ -5239,20 +5127,7 @@ textarea {
 
 
 
-/* BANK OPERATIONS — COMPACT VIEWPORT-SAFE AUTHORITY */
-@media (min-width:1024px){
-  .protected-app-shell>#main-content{
-    margin:0!important;
-    padding:0!important;
-    min-width:0!important;
-    width:100%!important;
-  }
-
-  .protected-app-shell>#main-content>.p47-page{
-    margin:0!important;
-    padding:0!important;
-  }
-}
+/* BANK OPERATIONS — COMPACT VIEWPORT-SAFE PAGE AUTHORITY */
 
 @media (min-width:768px){
   .p47-page{
