@@ -4289,41 +4289,6 @@
   .messages>p{
     flex:0 0 auto
   }
-  .message{
-    max-width:88%;
-    border-radius:var(--ux-radius-4);
-    padding:var(--ux-space-2) var(--ux-space-3);
-    border:1px solid var(--namaa-border-strong);
-    box-shadow:var(--ux-shadow-xs);
-    width:fit-content;
-    min-height:0
-  }
-  .agentMessage{
-    width:fit-content;
-    max-width:84%;
-    align-self:flex-end;
-    border-end-end-radius:var(--ux-radius-2);
-    border-color:var(--namaa-border-strong);
-    background:color-mix(in srgb,var(--namaa-agent-message) 88%,var(--namaa-surface-warm) 12%);
-    margin-left:auto;
-    margin-right:var(--ux-space-0)
-  }
-  .userMessage{
-    width:fit-content;
-    max-width:78%;
-    min-width:0;
-    padding:var(--ux-space-2) var(--ux-space-3);
-    align-self:flex-start;
-    border-end-start-radius:var(--ux-radius-2);
-    border-color:var(--namaa-green-700);
-    background:color-mix(in srgb,var(--namaa-surface-warm) 84%,var(--namaa-card));
-    color:var(--ux-text-primary);
-    box-shadow:var(--ux-shadow-sm);
-    margin-left:var(--ux-space-0);
-    margin-right:auto;
-    box-sizing:border-box;
-    overflow:hidden
-  }
   .userAttachmentCard{grid-template-columns:30px minmax(0,1fr);padding:var(--ux-space-1) var(--ux-space-2)}
   .userAttachmentCard>span{width:30px;height:30px}
   .facts{
@@ -4343,17 +4308,6 @@
   .onboardingReviewPrompt .secondaryButton{
     flex:0 0 auto;
   white-space:nowrap
-  }
-  .attachButton,.sendButton{
-    width:40px;
-    height:40px;
-    flex:0 0 40px;
-    border-radius:var(--ux-radius-full);
-    flex-basis:40px;
-    box-shadow:var(--ux-shadow-xs)
-  }
-  .attachButton{
-    border:1px solid var(--namaa-border-strong)
   }
   .composer textarea{
     flex:1 1 auto;
