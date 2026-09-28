@@ -918,20 +918,8 @@ label:has(input),label:has(select),label:has(textarea){color:var(--ux-color-ink)
   background:var(--ux-action-primary)!important;color:var(--ux-action-primary)!important;box-shadow:var(--ux-shadow-xs)!important;}
 .p49-tab-panel{padding-top:var(--ux-space-1);}
 
-/* Desktop sidebar: richer and unmistakably branded */
-@media(min-width:1024px){
-  .desktop-top-nav-wrap.p47-desktop-sidebar{
-    background:var(--ux-surface-inverse)!important;
-    border-inline-end:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default)!important;
-    box-shadow:var(--ux-shadow-md)!important;}
-  .p47-brand-mark{background:var(--ux-surface-default)!important;color:var(--ux-text-primary)!important;box-shadow:var(--ux-shadow-xs)!important;}
-  .p47-sidebar-add{border-color:var(--ux-border-default)!important;background:var(--ux-surface-inverse)!important;}
-  .p47-nav-section>a.is-active,.p47-sidebar-footer>a.is-active{
-    background:var(--ux-surface-inverse)!important;color:var(--ux-text-inverse)!important;
-    box-shadow:var(--ux-shadow-md)!important;}
-  .p47-nav-section>a:hover,.p47-sidebar-footer>a:hover{background:var(--ux-surface-inverse)!important;}
-  .p47-nav-section>p{color:var(--ux-text-primary)!important;}
-}
+/* Desktop sidebar visual authority is canonical in namaa-app-shell.css.
+   Do not add legacy p47 desktop sidebar overrides here. */
 
 /* Mobile bars carry the same visual identity */
 @media(max-width:1023px){
