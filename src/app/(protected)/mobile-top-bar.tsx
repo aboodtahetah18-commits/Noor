@@ -32,7 +32,7 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
 
   return (
     <>
-      <header className="namaa-mobile-topbar namaa-mobile-header namaa-mobile-header" dir="rtl">
+      <header className="namaa-mobile-topbar namaa-mobile-header" dir="rtl">
         <div className="namaa-mobile-brand-zone">
           <button
             className="namaa-mobile-menu-trigger"
