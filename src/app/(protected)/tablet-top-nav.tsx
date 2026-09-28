@@ -22,7 +22,7 @@ export function TabletTopNav({ profile }: { profile: HeaderProfile }) {
   const pathname = usePathname();
 
   return (
-    <header className="tablet-top-nav-wrap mustaqbali-tablet-wrap namaa-tablet-wrap namaa-wide-tablet" dir="rtl">
+    <header className="tablet-top-nav-wrap namaa-tablet-wrap namaa-tablet-wrap namaa-wide-tablet" dir="rtl">
       <div className="namaa-tablet-topbar">
         <Link href="/dashboard" className="namaa-tablet-brand" aria-label="نماء — الرئيسية">
           <BrandLogo surface="auto" priority />
@@ -38,7 +38,7 @@ export function TabletTopNav({ profile }: { profile: HeaderProfile }) {
             <LucideIcon name="bell" size={20} />
           </Link>
           <ThemeToggle />
-          <ProfileTrigger profile={profile} className="mustaqbali-tablet-profile-trigger" />
+          <ProfileTrigger profile={profile} className="namaa-tablet-profile-trigger" />
         </div>
       </div>
 
