@@ -37,6 +37,8 @@ describe('Desktop visual authority contract', () => {
     expect(governance).not.toMatch(/\.p47-(?:goal|goals|funding|decision|advisor|alert|alerts|analysis)/);
     expect(css).not.toMatch(/\.p47-(?:budget|transaction|obligation|obligations|income|forecast|report|settings|flow)/);
     expect(governance).not.toMatch(/\.p47-(?:budget|transaction|obligation|obligations|income|forecast|report|settings|flow)/);
+    expect(css).not.toMatch(/\.p47-/);
+    expect(governance).not.toMatch(/\.p47-/);
     expect(shell).toContain('@media (min-width:1024px)');
 
     expect(css).not.toContain('background:var(--ux-action-primary)!important;color:var(--ux-action-primary)!important');
