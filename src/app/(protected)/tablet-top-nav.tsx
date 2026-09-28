@@ -22,7 +22,7 @@ export function TabletTopNav({ profile }: { profile: HeaderProfile }) {
   const pathname = usePathname();
 
   return (
-    <header className="tablet-top-nav-wrap namaa-tablet-wrap namaa-wide-tablet" dir="rtl">
+    <header className="tablet-top-nav-wrap namaa-tablet-wrap" dir="rtl">
       <div className="namaa-tablet-topbar">
         <Link href="/dashboard" className="namaa-tablet-brand" aria-label="نماء — الرئيسية">
           <BrandLogo surface="auto" priority />
@@ -42,7 +42,7 @@ export function TabletTopNav({ profile }: { profile: HeaderProfile }) {
         </div>
       </div>
 
-      <nav className="namaa-tablet-nav namaa-wide-tablet-nav" aria-label="التنقل الرئيسي للتابلت">
+      <nav className="namaa-tablet-nav" aria-label="التنقل الرئيسي للتابلت">
         {items.map(([href, label]) => {
           const active = pathname === href || pathname.startsWith(`${href}/`);
           return (
