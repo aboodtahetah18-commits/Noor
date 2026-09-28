@@ -43,6 +43,12 @@ describe('Desktop visual authority contract', () => {
     expect(css).toContain('overscroll-behavior-inline:contain');
   });
 
+  it('keeps legacy desktop content contrast readable', () => {
+    expect(css).toContain('.p47-progress-row span,.p47-progress-row small{color:var(--ux-text-inverse)');
+    expect(css).toContain('.p47-budget-hero-progress>div:first-child{height:var(--ux-size-4);overflow:hidden;border-radius:var(--ux-radius-6);background:var(--ux-border-default)');
+    expect(css).not.toContain('background:var(--ux-action-primary)!important;color:var(--ux-color-ink)!important');
+  });
+
   it('retains desktop page density without redefining shell geometry', () => {
     expect(css).toContain('.dashboard-main-grid{grid-template-columns:minmax(0,1.35fr)');
     expect(css).toContain('.transaction-filter-grid{grid-template-columns:repeat(4');
