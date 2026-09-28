@@ -15,7 +15,9 @@ describe('Desktop visual authority contract', () => {
     expect(css).not.toContain('.desktop-top-nav{height:100%;max-width:1320px');
     expect(css).not.toContain('.desktop-top-nav-wrap.p47-desktop-sidebar');
     expect(css).not.toContain('.p47-sidebar-add{width:100%');
-    expect(css).not.toContain('.desktop-top-nav-wrap.p47-desktop-sidebar{width:238px');
+    expect(css).not.toContain('.desktop-top-nav-wrap.p47-desktop-sidebar');
+    expect(css).not.toContain('.protected-app-shell>#main-content{margin-inline-start');
+    expect(css).not.toContain('/* desktop sidebar */');
     expect(css).not.toContain('background:var(--ux-action-primary)!important;color:var(--ux-action-primary)!important');
   });
 
