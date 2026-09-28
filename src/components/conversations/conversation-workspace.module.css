@@ -4025,27 +4025,6 @@
   padding:var(--ux-space-0);
   justify-content:center
   }
-  .page{
-    min-height:100dvh;
-    height:100dvh;
-    width:100dvw;
-    max-width:100dvw;
-    margin:0;
-    border-radius:var(--ux-radius-0);
-    border-inline:0;
-    box-shadow:var(--ux-shadow-none);
-    position:relative;
-    inset:auto;
-    z-index:auto;
-    border:0;
-    overflow:hidden;
-    background:var(--namaa-chat-canvas)
-  }
-  .workspace{
-    height:100dvh;
-  min-height:100dvh;
-  background:var(--namaa-chat-canvas)
-  }
   .mobileConversationListVisible{
     display:block
   }
@@ -4309,15 +4288,8 @@
   line-height:1.35
   }
   .messages{
-    flex:1 1 auto;
-    padding:var(--ux-space-3) var(--ux-space-2) calc(var(--ux-space-4) + env(safe-area-inset-bottom));
-    min-height:0;
-    overflow-y:auto;
-    overflow-x:hidden;
-    overscroll-behavior-y:contain;
     -webkit-overflow-scrolling:touch;
     touch-action:pan-y;
-    gap:var(--ux-space-3);
     scroll-padding-bottom:calc(var(--ux-space-16) + env(safe-area-inset-bottom))
   }
   .messages>p{
