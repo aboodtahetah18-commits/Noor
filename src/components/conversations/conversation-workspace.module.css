@@ -12123,7 +12123,7 @@
     background-image:none;
   }
 
-  .chatPane{
+  .page .chatPane{
     display:flex;
     flex-direction:column;
   }
