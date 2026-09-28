@@ -4,25 +4,27 @@ import path from 'node:path';
 
 const root = process.cwd();
 const css = fs.readFileSync(path.join(root, 'src/app/globals.css'), 'utf8');
+const shell = fs.readFileSync(path.join(root, 'src/app/namaa-app-shell.css'), 'utf8');
 const layout = fs.readFileSync(path.join(root, 'src/app/(protected)/layout.tsx'), 'utf8');
-const nav = fs.readFileSync(path.join(root, 'src/app/(protected)/desktop-top-nav.tsx'), 'utf8');
 
-describe('Phase 33 desktop hardening contract', () => {
-  it('adds a desktop-only navigation shell without removing mobile navigation', () => {
+describe('Desktop visual authority contract', () => {
+  it('keeps one global desktop shell authority', () => {
+    expect(shell).toContain('/* Desktop >= 1024: fixed right sidebar + fixed topbar. */');
+    expect(shell).toContain('@media (min-width:1024px)');
+    expect(css).not.toContain('/* Phase 33 — Desktop Hardening */');
+    expect(css).not.toContain('.desktop-top-nav{height:100%;max-width:1320px');
+  });
+
+  it('keeps mobile and desktop navigation mounted while CSS separates their viewports', () => {
     expect(layout).toContain('<DesktopTopNav />');
     expect(layout).toContain('<MobileBottomNav />');
-    expect(css).toContain('@media(min-width:1024px)');
-    expect(css).toContain('.desktop-top-nav-wrap');
-    expect(nav).toContain('التنقل الرئيسي للكمبيوتر');
+    expect(shell).toContain('/* Mobile <768: light topbar + fixed five-item bottom navigation + shared Drawer. */');
   });
 
-  it('hardens desktop tables and dashboard density', () => {
-    expect(css).toContain('position:sticky;top:0');
+  it('retains desktop page density without redefining shell geometry', () => {
     expect(css).toContain('.dashboard-main-grid{grid-template-columns:minmax(0,1.35fr)');
     expect(css).toContain('.transaction-filter-grid{grid-template-columns:repeat(4');
-  });
-
-  it('keeps desktop target widths explicit', () => {
+    expect(css).toContain('position:sticky;top:0');
     expect(css).toContain('@media(min-width:1440px)');
     expect(css).toContain('max-width:1300px');
   });
