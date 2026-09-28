@@ -22,6 +22,10 @@ describe('Desktop visual authority contract', () => {
     expect(governance).not.toContain('p47-desktop-sidebar');
     expect(governance).not.toContain('margin-inline-start:var(--ux-space-24)');
     expect(governance).toContain('Desktop shell geometry is governed exclusively by namaa-app-shell.css');
+    expect(governance).not.toContain('.tablet-top-nav-wrap{display:block!important');
+    expect(governance).not.toContain('.p47-mobile-topbar,.mobile-bottom-nav{display:flex!important');
+    expect(shell).toContain('@media (min-width:1024px)');
+
     expect(css).not.toContain('background:var(--ux-action-primary)!important;color:var(--ux-action-primary)!important');
   });
 
