@@ -23,18 +23,18 @@ export function TabletTopNav({ profile }: { profile: HeaderProfile }) {
 
   return (
     <header className="tablet-top-nav-wrap mustaqbali-tablet-wrap namaa-tablet-wrap namaa-wide-tablet" dir="rtl">
-      <div className="mustaqbali-tablet-topbar">
-        <Link href="/dashboard" className="mustaqbali-tablet-brand" aria-label="نماء — الرئيسية">
+      <div className="namaa-tablet-topbar">
+        <Link href="/dashboard" className="namaa-tablet-brand" aria-label="نماء — الرئيسية">
           <BrandLogo surface="auto" priority />
         </Link>
 
-        <form action="/transactions" method="get" className="mustaqbali-tablet-search" role="search">
+        <form action="/transactions" method="get" className="namaa-tablet-search" role="search">
           <LucideIcon name="search" size={20} />
           <input name="search" aria-label="ابحث في نماء" placeholder="ابحث في نماء…" />
         </form>
 
-        <div className="mustaqbali-tablet-actions">
-          <Link href="/alerts" className="mustaqbali-tablet-action" aria-label="التنبيهات">
+        <div className="namaa-tablet-actions">
+          <Link href="/alerts" className="namaa-tablet-action" aria-label="التنبيهات">
             <LucideIcon name="bell" size={20} />
           </Link>
           <ThemeToggle />
@@ -42,7 +42,7 @@ export function TabletTopNav({ profile }: { profile: HeaderProfile }) {
         </div>
       </div>
 
-      <nav className="mustaqbali-tablet-nav namaa-wide-tablet-nav" aria-label="التنقل الرئيسي للتابلت">
+      <nav className="namaa-tablet-nav namaa-wide-tablet-nav" aria-label="التنقل الرئيسي للتابلت">
         {items.map(([href, label]) => {
           const active = pathname === href || pathname.startsWith(`${href}/`);
           return (
