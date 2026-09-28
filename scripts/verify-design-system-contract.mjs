@@ -68,7 +68,7 @@ const interaction = read('src/design-system/interaction-components.css');
 for (const token of ['.mx-action-rail','touch-action:pan-x','.mx-action-chip']) if (!interaction.includes(token)) fail.push(`interaction component layer missing ${token}`);
 
 const pages = read('src/design-system/pages.css');
-for (const selector of ['.mustaqbali-topbar','.mustaqbali-sidebar','.p47-page-heading','.transaction-table','.p49-dialog-shell','.p55-profile-summary']) {
+for (const selector of ['.page-header','.namaa-collection-card','.namaa-kpi-strip','.transaction-table','.p49-dialog-shell','.p55-profile-summary']) {
   if (!pages.includes(selector)) fail.push(`page identity layer is missing governed surface: ${selector}`);
 }
 
