@@ -79,7 +79,7 @@ textarea {
 .ndos-field--wide { grid-column: 1 / -1; }
 
 /* Do not let legacy action classes produce giant controls. */
-:where(.primary,.primary-button,.secondary-button,.p47-primary-action,.p47-secondary-action,.p47-sidebar-add,.p49-modal-trigger) {
+:where(.primary,.primary-button,.secondary-button,.primary-button,.secondary-button,.primary-button,.p49-modal-trigger) {
   min-height: var(--ndos-control-md) !important;
   height: var(--ndos-control-md) !important;
   width: auto !important;
@@ -1889,14 +1889,14 @@ textarea {
 
   .protected-app-shell .page-shell,
   .protected-app-shell .dashboard-shell,
-  .protected-app-shell .p47-content-shell,
+  .protected-app-shell .page-shell,
   .protected-app-shell .app-page {
     min-width:0;
   }
 
   .protected-app-shell .page-shell,
   .protected-app-shell .dashboard-shell,
-  .protected-app-shell .p47-content-shell {
+  .protected-app-shell .page-shell {
     width:min(100%,1540px);
     max-width:1540px;
     margin-inline:auto;
@@ -1908,8 +1908,8 @@ textarea {
   }
 
   .protected-app-shell .page-header,
-  .protected-app-shell .p47-page-heading,
-  .protected-app-shell .p47-resource-header {
+  .protected-app-shell .page-header,
+  .protected-app-shell .page-header {
     display:flex;
     align-items:center;
     justify-content:space-between;
@@ -1918,21 +1918,21 @@ textarea {
   }
 
   .protected-app-shell .page-header > div:first-child,
-  .protected-app-shell .p47-page-heading > div:first-child,
-  .protected-app-shell .p47-resource-header > div:first-child {
+  .protected-app-shell .page-header > div:first-child,
+  .protected-app-shell .page-header > div:first-child {
     min-width:0;
   }
 
   .protected-app-shell .page-header > div:last-child,
-  .protected-app-shell .p47-page-heading > div:last-child,
-  .protected-app-shell .p47-resource-header > div:last-child {
+  .protected-app-shell .page-header > div:last-child,
+  .protected-app-shell .page-header > div:last-child {
     display:flex;
     align-items:center;
     gap:10px;
     flex-wrap:wrap;
   }
 
-  .protected-app-shell :where(.card,.panel,.p47-panel,.p47-resource-card,.dashboard-card,.form-card) {
+  .protected-app-shell :where(.card,.panel,.panel,.namaa-collection-card,.dashboard-card,.form-card) {
     border:1px solid var(--namaa-wide-border);
     border-radius:var(--namaa-wide-radius);
     background:var(--namaa-wide-card);
@@ -1990,7 +1990,7 @@ textarea {
 @media (min-width:768px) and (max-width:1023px) {
   .protected-app-shell .page-shell,
   .protected-app-shell .dashboard-shell,
-  .protected-app-shell .p47-content-shell {
+  .protected-app-shell .page-shell {
     padding-inline:16px;
   }
 
@@ -2262,7 +2262,7 @@ textarea {
     grid-template-columns:repeat(2,minmax(0,1fr))!important;
   }
 
-  .p47-resource-header,
+  .page-header,
   .page-header,
   .namaa-collection-head {
     align-items:stretch!important;
@@ -2326,7 +2326,7 @@ textarea {
   }
 
   .namaa-collection-card,
-  .p47-resource-card{
+  .namaa-collection-card{
     min-width:0!important;
     overflow:visible!important;
   }
@@ -2747,7 +2747,7 @@ textarea {
 /* ========================================================================== */
 @media (min-width:768px){
   .namaa-governance-catalog,
-  .p47-goals-page{
+  .namaa-goals-page{
     width:min(100%,1480px)!important;
     max-width:1480px!important;
     margin-inline:auto!important;
@@ -2757,7 +2757,7 @@ textarea {
   }
 
   .namaa-governance-catalog-hero,
-  .p47-goals-page .namaa-goals-hero{
+  .namaa-goals-page .namaa-goals-hero{
     min-height:0!important;
     padding:20px 22px!important;
     margin-bottom:14px!important;
@@ -2769,12 +2769,12 @@ textarea {
   }
 
   .namaa-governance-catalog-hero :where(h1,h2,strong),
-  .p47-goals-page .namaa-goals-hero :where(h1,h2,strong){
+  .namaa-goals-page .namaa-goals-hero :where(h1,h2,strong){
     color:#FFFFFF!important;
   }
 
   .namaa-governance-catalog-hero :where(p,span,small),
-  .p47-goals-page .namaa-goals-hero :where(p,span,small,.eyebrow,.muted){
+  .namaa-goals-page .namaa-goals-hero :where(p,span,small,.eyebrow,.muted){
     color:rgb(255 255 255 / 82%)!important;
   }
 
@@ -2822,11 +2822,11 @@ textarea {
   .namaa-decisions-kpis article :where(span,small){color:#61758A!important;}
 
   .namaa-governance-catalog-empty,
-  .p47-goals-page .namaa-goals-focus,
-  .p47-goals-page .namaa-goals-empty,
-  .p47-goals-page .p47-resource-card,
-  .p47-goals-page .namaa-collection-card,
-  .p47-goals-page .detail-list{
+  .namaa-goals-page .namaa-goals-focus,
+  .namaa-goals-page .namaa-goals-empty,
+  .namaa-goals-page .namaa-collection-card,
+  .namaa-goals-page .namaa-collection-card,
+  .namaa-goals-page .detail-list{
     background:#FFFFFF!important;
     color:#1F2937!important;
     border-color:#DCE6E0!important;
@@ -2844,12 +2844,12 @@ textarea {
     border-radius:16px!important;
   }
 
-  .p47-goals-page .namaa-goals-focus{margin:0 0 12px!important;padding:16px!important;border:1px solid #DCE6E0!important;border-radius:16px!important;}
-  .p47-goals-page .namaa-goals-focus.is-warning{background:#FFF7E6!important;border-color:#D4AF6B!important;color:#5E481B!important;}
-  .p47-goals-page .namaa-goals-empty{min-height:230px!important;padding:28px 22px!important;border:1px solid #DCE6E0!important;border-radius:18px!important;}
-  .p47-goals-page .namaa-data-table thead th{background:#F7F8F6!important;color:#0B6B4F!important;}
-  .p47-goals-page .namaa-data-table tbody td{background:#FFFFFF!important;}
-  .p47-goals-page .namaa-data-table tbody tr:nth-child(even) td{background:#F8FAF8!important;}
+  .namaa-goals-page .namaa-goals-focus{margin:0 0 12px!important;padding:16px!important;border:1px solid #DCE6E0!important;border-radius:16px!important;}
+  .namaa-goals-page .namaa-goals-focus.is-warning{background:#FFF7E6!important;border-color:#D4AF6B!important;color:#5E481B!important;}
+  .namaa-goals-page .namaa-goals-empty{min-height:230px!important;padding:28px 22px!important;border:1px solid #DCE6E0!important;border-radius:18px!important;}
+  .namaa-goals-page .namaa-data-table thead th{background:#F7F8F6!important;color:#0B6B4F!important;}
+  .namaa-goals-page .namaa-data-table tbody td{background:#FFFFFF!important;}
+  .namaa-goals-page .namaa-data-table tbody tr:nth-child(even) td{background:#F8FAF8!important;}
 
   .namaa-goals-funding-visual{
     grid-column:1/-1!important;
@@ -3427,14 +3427,14 @@ textarea {
     --namaa-light-muted:#61758A;
   }
 
-  html[data-theme="light"] :where(body,.protected-app-shell,.protected-app-shell>#main-content,.app-page,.page-shell,.dashboard-shell,.p47-content-shell){
+  html[data-theme="light"] :where(body,.protected-app-shell,.protected-app-shell>#main-content,.app-page,.page-shell,.dashboard-shell,.page-shell){
     background:var(--namaa-light-page)!important;
     color:var(--namaa-light-text)!important;
   }
 
   html[data-theme="light"] :where(
     .namaa-wide-card,.namaa-wide-panel,.card,.panel,.dashboard-card,.form-card,.summary-card,
-    .p47-panel,.p47-resource-card,.p47-command-panel,.p47-analysis-card,.detail-list,.empty-state,
+    .panel,.namaa-collection-card,.panel,.panel,.detail-list,.empty-state,
     .namaa-investments-chat,.namaa-investments-dashboard,.namaa-investments-followup,
     .namaa-banks-team,.namaa-banks-dashboard,.namaa-banks-goals,.namaa-policy-index,.namaa-policy-reader
   ){
@@ -3445,7 +3445,7 @@ textarea {
   }
 
   html[data-theme="light"] :where(
-    .page-header,.dashboard-header,.p47-page-heading,.p47-resource-header,.p47-section-header,
+    .page-header,.dashboard-header,.page-header,.page-header,.section-title-row,
     .namaa-collection-head
   ){
     background:transparent!important;
@@ -3457,7 +3457,7 @@ textarea {
   html[data-theme="light"] :where(
     .namaa-banks-hero,.namaa-investments-header,.namaa-knowledge-hero,.namaa-decisions-hero,
     .namaa-observatory-hero,.namaa-lab-hero,.namaa-settings-hero,.namaa-governance-portal-hero,
-    .namaa-policy-library-header,.p47-goals-page .namaa-goals-hero,.namaa-governance-catalog-hero
+    .namaa-policy-library-header,.namaa-goals-page .namaa-goals-hero,.namaa-governance-catalog-hero
   ){
     background:#0B6B4F!important;
     color:#FFFFFF!important;
@@ -3467,7 +3467,7 @@ textarea {
   html[data-theme="light"] :where(
     .namaa-banks-hero,.namaa-investments-header,.namaa-knowledge-hero,.namaa-decisions-hero,
     .namaa-observatory-hero,.namaa-lab-hero,.namaa-settings-hero,.namaa-governance-portal-hero,
-    .namaa-policy-library-header,.p47-goals-page .namaa-goals-hero,.namaa-governance-catalog-hero
+    .namaa-policy-library-header,.namaa-goals-page .namaa-goals-hero,.namaa-governance-catalog-hero
   ) :where(h1,h2,h3,strong){
     color:#FFFFFF!important;
   }
@@ -3475,14 +3475,14 @@ textarea {
   html[data-theme="light"] :where(
     .namaa-banks-hero,.namaa-investments-header,.namaa-knowledge-hero,.namaa-decisions-hero,
     .namaa-observatory-hero,.namaa-lab-hero,.namaa-settings-hero,.namaa-governance-portal-hero,
-    .namaa-policy-library-header,.p47-goals-page .namaa-goals-hero,.namaa-governance-catalog-hero
+    .namaa-policy-library-header,.namaa-goals-page .namaa-goals-hero,.namaa-governance-catalog-hero
   ) :where(p,span,small,.eyebrow,.muted){
     color:rgb(255 255 255 / 84%)!important;
   }
 
   /* الأزرار: وظيفة واضحة لكل لون */
   html[data-theme="light"] :where(
-    .primary,.primary-button,.primary-link,.p47-primary-action,.namaa-wide-action,.auth-submit
+    .primary,.primary-button,.primary-link,.primary-button,.namaa-wide-action,.auth-submit
   ){
     background:#0B6B4F!important;
     color:#FFFFFF!important;
@@ -3491,11 +3491,11 @@ textarea {
   }
 
   html[data-theme="light"] :where(
-    .primary,.primary-button,.primary-link,.p47-primary-action,.namaa-wide-action,.auth-submit
+    .primary,.primary-button,.primary-link,.primary-button,.namaa-wide-action,.auth-submit
   ) svg{color:#FFFFFF!important;}
 
   html[data-theme="light"] :where(
-    .secondary-button,.secondary-link,.button-link,.p47-secondary-action,.p49-modal-trigger,.namaa-wide-action-secondary
+    .secondary-button,.secondary-link,.button-link,.secondary-button,.p49-modal-trigger,.namaa-wide-action-secondary
   ){
     background:#FFF7E6!important;
     color:#5E481B!important;
@@ -3504,7 +3504,7 @@ textarea {
   }
 
   html[data-theme="light"] :where(
-    .secondary-button,.secondary-link,.button-link,.p47-secondary-action,.p49-modal-trigger,.namaa-wide-action-secondary
+    .secondary-button,.secondary-link,.button-link,.secondary-button,.p49-modal-trigger,.namaa-wide-action-secondary
   ) svg{color:#8A6A2B!important;}
 
   html[data-theme="light"] :where(.danger-button,.is-destructive){
@@ -3731,7 +3731,7 @@ textarea {
     .primary,
     .primary-button,
     .primary-link,
-    .p47-primary-action,
+    .primary-button,
     .auth-submit,
     .namaa-governance-open-library,
     .namaa-governance-portal-footer>a,
@@ -3750,7 +3750,7 @@ textarea {
     .primary,
     .primary-button,
     .primary-link,
-    .p47-primary-action,
+    .primary-button,
     .auth-submit,
     .namaa-governance-open-library,
     .namaa-governance-portal-footer>a,
@@ -3766,7 +3766,7 @@ textarea {
     .primary,
     .primary-button,
     .primary-link,
-    .p47-primary-action,
+    .primary-button,
     .auth-submit,
     .namaa-governance-open-library,
     .namaa-governance-portal-footer>a,
@@ -3784,7 +3784,7 @@ textarea {
     .secondary-button,
     .secondary-link,
     .button-link,
-    .p47-secondary-action,
+    .secondary-button,
     .p49-modal-trigger,
     .namaa-wide-action-secondary,
     .p49-action-dialog .secondary-button,
@@ -3800,7 +3800,7 @@ textarea {
     .secondary-button,
     .secondary-link,
     .button-link,
-    .p47-secondary-action,
+    .secondary-button,
     .p49-modal-trigger,
     .namaa-wide-action-secondary,
     .p49-action-dialog .secondary-button,
@@ -3925,8 +3925,8 @@ textarea {
   /* 1) إبراز التقسيمات: العنوان والفاصل جزء واضح من الهيكل */
   .namaa-policy-reader-body > :where(h2,h3),
   .namaa-investments-section-title,
-  .p47-section-header,
-  .p47-section-heading,
+  .section-title-row,
+  .section-title-row,
   .namaa-collection-head{
     position:relative!important;
   }
@@ -3952,8 +3952,8 @@ textarea {
   }
 
   .namaa-investments-section-title,
-  .p47-section-header,
-  .p47-section-heading,
+  .section-title-row,
+  .section-title-row,
   .namaa-collection-head{
     padding-bottom:12px!important;
     margin-bottom:14px!important;
@@ -3961,8 +3961,8 @@ textarea {
   }
 
   .namaa-investments-section-title::after,
-  .p47-section-header::after,
-  .p47-section-heading::after,
+  .section-title-row::after,
+  .section-title-row::after,
   .namaa-collection-head::after{
     content:""!important;
     position:absolute!important;
@@ -4013,7 +4013,7 @@ textarea {
   .p49-action-dialog .namaa-investment-dialog-content,
   .p49-action-dialog .namaa-investment-dialog-content > form,
   .p49-action-dialog form.form-grid,
-  .p49-action-dialog .p47-settings-form{
+  .p49-action-dialog .settings-form{
     width:100%!important;
     max-width:none!important;
     min-width:0!important;
@@ -4021,7 +4021,7 @@ textarea {
   }
 
   .p49-action-dialog form.form-grid,
-  .p49-action-dialog .p47-settings-form{
+  .p49-action-dialog .settings-form{
     display:grid!important;
     grid-template-columns:repeat(2,minmax(0,1fr))!important;
     gap:16px 18px!important;
@@ -4029,7 +4029,7 @@ textarea {
   }
 
   .p49-action-dialog form.form-grid > label,
-  .p49-action-dialog .p47-settings-form > label{
+  .p49-action-dialog .settings-form > label{
     width:100%!important;
     max-width:none!important;
     min-width:0!important;
@@ -4058,8 +4058,8 @@ textarea {
     .namaa-decisions-status span,
     .namaa-decisions-meta span,
     .status-pill,
-    .p47-status-pill,
-    .p47-count-badge
+    .status-pill,
+    .count-badge
   ){
     background:#FFF7E6!important;
     border:1px solid #D4AF6B!important;
@@ -4081,8 +4081,8 @@ textarea {
     .namaa-decisions-status span,
     .namaa-decisions-meta span,
     .status-pill,
-    .p47-status-pill,
-    .p47-count-badge
+    .status-pill,
+    .count-badge
   ){
     background:#31594C!important;
     border:1px solid #D7BE84!important;
@@ -4136,7 +4136,7 @@ textarea {
   }
 
   .p49-action-dialog form.form-grid,
-  .p49-action-dialog .p47-settings-form{
+  .p49-action-dialog .settings-form{
     grid-template-columns:1fr!important;
   }
 
@@ -4158,7 +4158,7 @@ textarea {
   /* البطاقة الرئيسية */
   html[data-theme="light"] :where(
     .namaa-governance-library-card,
-    .p47-goals-page .namaa-goals-focus,
+    .namaa-goals-page .namaa-goals-focus,
     .namaa-decisions-visuals>article,
     .namaa-observatory-side>article,
     .namaa-investments-dashboard,
@@ -4175,8 +4175,8 @@ textarea {
   html[data-theme="light"] :where(
     .namaa-governance-library-card>header,
     .namaa-investments-section-title,
-    .p47-section-header,
-    .p47-section-heading,
+    .section-title-row,
+    .section-title-row,
     .namaa-collection-head
   ){
     background:#F7F8F6!important;
@@ -4255,7 +4255,7 @@ textarea {
   /* الوضع الداكن: نفس الهرمية لكن بدرجات الداكن المعتمدة */
   html[data-theme="dark"] :where(
     .namaa-governance-library-card,
-    .p47-goals-page .namaa-goals-focus,
+    .namaa-goals-page .namaa-goals-focus,
     .namaa-decisions-visuals>article,
     .namaa-observatory-side>article,
     .namaa-investments-dashboard,
@@ -4269,8 +4269,8 @@ textarea {
   html[data-theme="dark"] :where(
     .namaa-governance-library-card>header,
     .namaa-investments-section-title,
-    .p47-section-header,
-    .p47-section-heading,
+    .section-title-row,
+    .section-title-row,
     .namaa-collection-head
   ){
     background:#31594C!important;
@@ -4316,10 +4316,10 @@ textarea {
     .dashboard-card,
     .form-card,
     .summary-card,
-    .p47-panel,
-    .p47-resource-card,
-    .p47-command-panel,
-    .p47-analysis-card,
+    .panel,
+    .namaa-collection-card,
+    .panel,
+    .panel,
     .namaa-collection-card,
     .detail-list,
     .empty-state,
@@ -4342,9 +4342,9 @@ textarea {
 
   /* رؤوس البطاقات والأقسام: أغمق قليلًا من جسم البطاقة */
   html[data-theme="light"] .protected-app-shell :where(
-    .p47-section-header,
-    .p47-section-heading,
-    .p47-resource-header,
+    .section-title-row,
+    .section-title-row,
+    .page-header,
     .namaa-collection-head,
     .card-header,
     .panel-header,
@@ -4360,9 +4360,9 @@ textarea {
   }
 
   html[data-theme="light"] .protected-app-shell :where(
-    .p47-section-header,
-    .p47-section-heading,
-    .p47-resource-header,
+    .section-title-row,
+    .section-title-row,
+    .page-header,
     .namaa-collection-head,
     .card-header,
     .panel-header,
@@ -4377,10 +4377,10 @@ textarea {
 
   /* المربعات الداخلية: درجة مستقلة وواضحة */
   html[data-theme="light"] .protected-app-shell :where(
-    .p47-resource-card>article,
-    .p47-panel>article,
-    .p47-command-panel>article,
-    .p47-analysis-card>article,
+    .namaa-collection-card>article,
+    .panel>article,
+    .panel>article,
+    .panel>article,
     .namaa-collection-card>article,
     .detail-list>article,
     .detail-list>li,
@@ -4408,10 +4408,10 @@ textarea {
   }
 
   html[data-theme="light"] .protected-app-shell :where(
-    .p47-resource-card>article,
-    .p47-panel>article,
-    .p47-command-panel>article,
-    .p47-analysis-card>article,
+    .namaa-collection-card>article,
+    .panel>article,
+    .panel>article,
+    .panel>article,
     .namaa-collection-card>article,
     .detail-list>article,
     .detail-list>li,
@@ -4544,10 +4544,10 @@ textarea {
     .dashboard-card,
     .form-card,
     .summary-card,
-    .p47-panel,
-    .p47-resource-card,
-    .p47-command-panel,
-    .p47-analysis-card,
+    .panel,
+    .namaa-collection-card,
+    .panel,
+    .panel,
     .namaa-collection-card,
     .detail-list,
     .empty-state,
@@ -4567,9 +4567,9 @@ textarea {
   }
 
   html[data-theme="dark"] .protected-app-shell :where(
-    .p47-section-header,
-    .p47-section-heading,
-    .p47-resource-header,
+    .section-title-row,
+    .section-title-row,
+    .page-header,
     .namaa-collection-head,
     .card-header,
     .panel-header,
@@ -4585,10 +4585,10 @@ textarea {
   }
 
   html[data-theme="dark"] .protected-app-shell :where(
-    .p47-resource-card>article,
-    .p47-panel>article,
-    .p47-command-panel>article,
-    .p47-analysis-card>article,
+    .namaa-collection-card>article,
+    .panel>article,
+    .panel>article,
+    .panel>article,
     .namaa-collection-card>article,
     .detail-list>article,
     .detail-list>li,
@@ -4614,10 +4614,10 @@ textarea {
   }
 
   html[data-theme="dark"] .protected-app-shell :where(
-    .p47-resource-card>article,
-    .p47-panel>article,
-    .p47-command-panel>article,
-    .p47-analysis-card>article,
+    .namaa-collection-card>article,
+    .panel>article,
+    .panel>article,
+    .panel>article,
     .namaa-collection-card>article,
     .detail-list>article,
     .detail-list>li,
@@ -4867,7 +4867,7 @@ textarea {
   .section-heading>p,
   .page-header>div>p:not(.eyebrow),
   .dashboard-header>div>p:not(.eyebrow),
-  .p47-page-heading>div>p:not(.eyebrow){
+  .page-header>div>p:not(.eyebrow){
     display:none!important;
   }
 }
@@ -4924,7 +4924,7 @@ textarea {
 @media (min-width:768px){
   /* 1) كل مربع يختلف عن الخلفية مع حدود أوضح */
   html[data-theme="light"] .protected-app-shell :where(
-    .namaa-wide-card,.namaa-wide-panel,.p47-panel,.p47-resource-card,.namaa-collection-card,
+    .namaa-wide-card,.namaa-wide-panel,.panel,.namaa-collection-card,.namaa-collection-card,
     .dashboard-card,.form-card,.summary-card,.detail-list,.settings-card,.report-card
   ){
     background:#FFFFFF!important;
@@ -4933,7 +4933,7 @@ textarea {
   }
 
   html[data-theme="light"] .protected-app-shell :where(
-    .namaa-wide-card,.namaa-wide-panel,.p47-panel,.p47-resource-card,.namaa-collection-card,
+    .namaa-wide-card,.namaa-wide-panel,.panel,.namaa-collection-card,.namaa-collection-card,
     .dashboard-card,.form-card,.summary-card,.detail-list,.settings-card,.report-card
   ) :where(article,.info-tile,.data-tile,.metric-tile,.summary-tile,.detail-tile,.mini-card):not(.is-warning):not(.is-critical):not(.is-success){
     background:#F2F5F3!important;
@@ -4941,7 +4941,7 @@ textarea {
   }
 
   html[data-theme="light"] .protected-app-shell :where(
-    .namaa-investments-section-title,.p47-section-header,.p47-section-heading,.p47-resource-header,
+    .namaa-investments-section-title,.section-title-row,.section-title-row,.page-header,
     .namaa-collection-head,.card-header,.panel-header,.section-header,.summary-header
   ){
     background:#EEF3EF!important;
@@ -5186,14 +5186,14 @@ textarea {
   }
 
   html[data-theme="dark"] .protected-app-shell :where(
-    .namaa-wide-card,.namaa-wide-panel,.p47-panel,.p47-resource-card,.namaa-collection-card,
+    .namaa-wide-card,.namaa-wide-panel,.panel,.namaa-collection-card,.namaa-collection-card,
     .dashboard-card,.form-card,.summary-card,.detail-list,.settings-card,.report-card
   ){
     background:#23483D!important;
     border-color:#6E8A7B!important;
   }
   html[data-theme="dark"] .protected-app-shell :where(
-    .namaa-wide-card,.namaa-wide-panel,.p47-panel,.p47-resource-card,.namaa-collection-card,
+    .namaa-wide-card,.namaa-wide-panel,.panel,.namaa-collection-card,.namaa-collection-card,
     .dashboard-card,.form-card,.summary-card,.detail-list,.settings-card,.report-card
   ) :where(article,.info-tile,.data-tile,.metric-tile,.summary-tile,.detail-tile,.mini-card):not(.is-warning):not(.is-critical):not(.is-success){
     background:#31594C!important;
@@ -5248,14 +5248,14 @@ textarea {
     width:100%!important;
   }
 
-  .protected-app-shell>#main-content>.p47-page{
+  .protected-app-shell>#main-content>.app-page{
     margin:0!important;
     padding:0!important;
   }
 }
 
 @media (min-width:768px){
-  .p47-page{
+  .app-page{
     width:100%!important;
     max-width:100%!important;
     min-width:0!important;
