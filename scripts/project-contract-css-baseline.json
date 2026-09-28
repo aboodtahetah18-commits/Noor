@@ -1,10 +1,10 @@
 {
   "src/app/globals.css": {
-    "sha256": "58ad3a57e32de02ca4ec43d4538af741ff314ed7d22ceef7801b9d281829400d",
-    "bytes": 286262
+    "sha256": "5663560f69c198a16ef240b76a5acd3a259fd1fd5b53d4f23c99a5e231400eea",
+    "bytes": 284507
   },
   "src/app/uiux-governance.css": {
-    "sha256": "5672418d206fb89b7f16223d843044542e07f814567060914810e5b055ce3d5c",
-    "bytes": 94639
+    "sha256": "2950acb0ebab1179031c8b1524a4df554684881314fae7edf8e966e38b19c7d4",
+    "bytes": 64017
   }
 }
