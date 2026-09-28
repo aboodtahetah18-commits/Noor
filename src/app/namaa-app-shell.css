@@ -48,9 +48,7 @@
     padding-inline-start:var(--ux-shell-sidebar-expanded);
   }
 
-  .desktop-top-nav-wrap.mustaqbali-sidebar {
-    display:block;
-    position:fixed;
+  .desktop-top-nav-wrap.mustaqbali-sidebar {\n    position:fixed;
     inset-block:0;
     inset-inline-start:0;
     width:var(--ux-shell-sidebar-collapsed);
@@ -275,12 +273,7 @@
 @media (min-width:1024px) {
   .protected-app-shell:has([data-chat-first-route="true"]) {
     padding-inline-start:0;
-  }
-
-  .protected-app-shell:has([data-chat-first-route="true"]) .desktop-top-nav-wrap.mustaqbali-sidebar {
-    display:none;
-  }
-
+  }\n
   .protected-app-shell:has([data-chat-first-route="true"]) .mustaqbali-topbar.namaa-topbar {
     inset-inline-start:0;
   }
@@ -304,18 +297,8 @@
 @media (min-width:768px) and (max-width:1023px) {
   .protected-app-shell {
     min-height:100dvh;
-  }
-
-  .mustaqbali-topbar,
-  .desktop-top-nav-wrap,
-  .p47-mobile-topbar,
-  .mobile-bottom-nav {
-    display:none !important;
-  }
-
-  .tablet-top-nav-wrap {
-    display:block !important;
-    position:sticky;
+  }\n
+  .tablet-top-nav-wrap {\n    position:sticky;
     inset-block-start:0;
     z-index:var(--ux-z-sticky);
     border-block-end:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-shell-topbar-border);
@@ -432,16 +415,8 @@
 }
 
 /* Mobile <768: light topbar + fixed five-item bottom navigation + shared Drawer. */
-@media (max-width:767px) {
-  .mustaqbali-topbar,
-  .desktop-top-nav-wrap,
-  .tablet-top-nav-wrap {
-    display:none !important;
-  }
-
-  .p47-mobile-topbar.mustaqbali-mobile-header {
-    display:grid !important;
-    grid-template-columns:minmax(0,1fr) auto !important;
+@media (max-width:767px) {\n
+  .p47-mobile-topbar.mustaqbali-mobile-header {\n    grid-template-columns:minmax(0,1fr) auto !important;
     align-items:center;
     gap:var(--ux-space-2);
     position:sticky;
@@ -503,9 +478,7 @@
     background:var(--ux-section-soft-teal);
   }
 
-  .mobile-bottom-nav.mustaqbali-mobile-bottom-nav {
-    display:grid !important;
-    grid-template-columns:repeat(5,minmax(0,1fr));
+  .mobile-bottom-nav.mustaqbali-mobile-bottom-nav {\n    grid-template-columns:repeat(5,minmax(0,1fr));
     position:fixed;
     inset-inline:0;
     inset-block-end:0;
