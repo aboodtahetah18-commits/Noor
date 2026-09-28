@@ -19,8 +19,6 @@ button,input,select,textarea{font:inherit;color:inherit;}
 .page-shell,.dashboard-shell{width:min(100%,var(--ux-container-content))!important;max-width:var(--ux-container-content)!important;margin-inline:auto!important;padding-inline:var(--ux-space-8)!important;}
 .narrow-shell{width:min(100%,var(--ux-container-form))!important;max-width:var(--ux-container-form)!important;}
 /* Desktop shell geometry is governed exclusively by namaa-app-shell.css. */
-@media(min-width:1440px){.page-shell,.dashboard-shell}
-@media(min-width:768px) and (max-width:1023px){.page-shell,.dashboard-shell}
 @media(max-width:767px){.protected-app-shell>#main-content{margin-inline:var(--ux-space-0)!important;padding-block-start:var(--ux-size-14)!important;padding-block-end:calc(var(--ux-space-20) + env(safe-area-inset-bottom))!important;}.app-page{padding-block:var(--ux-space-4)!important;}.page-shell,.dashboard-shell,.narrow-shell{max-width:100%!important;}}
 
 /* Typography / P09 */
