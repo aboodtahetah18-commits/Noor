@@ -979,3 +979,11 @@ html[data-theme="light"] :where(.p55-profile-form,.p60-security-form,.p47-settin
   .p55-profile-form,.p60-security-form,.p47-settings-form{grid-template-columns:1fr!important;}
   .mustaqbali-mobile-header,.mustaqbali-tablet-wrap{overflow:hidden!important;}
 }
+
+
+/* 2026-09-28 — LEGACY SHELL QUARANTINE
+ * uiux-governance.css remains for page/component compatibility only.
+ * Shell visibility and structural offsets are owned by namaa-shell-visibility.css
+ * and namaa-app-shell.css, which are imported later in the cascade.
+ * Do not add new shell composition rules to this legacy file.
+ */
