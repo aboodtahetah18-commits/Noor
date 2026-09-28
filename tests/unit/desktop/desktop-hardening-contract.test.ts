@@ -27,6 +27,8 @@ describe('Desktop visual authority contract', () => {
     expect(governance).not.toContain('p47-sidebar-add');
     expect(governance).not.toContain('p47-sidebar-nav');
     expect(governance).not.toContain('p47-sidebar-footer');
+    expect(css).not.toMatch(/\.p49(?:13)?-/);
+    expect(governance).not.toMatch(/\.p49(?:13)?-/);
     expect(shell).toContain('@media (min-width:1024px)');
 
     expect(css).not.toContain('background:var(--ux-action-primary)!important;color:var(--ux-action-primary)!important');
