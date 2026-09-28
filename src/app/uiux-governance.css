@@ -31,12 +31,10 @@ p{line-height:var(--ux-type-body-line);}
 .eyebrow,.muted,small,.page-footnote{color:var(--ux-text-secondary)!important;}
 .eyebrow{font-size:var(--ux-type-label-size)!important;line-height:var(--ux-type-label-line)!important;font-weight:500!important;}
 .p47-financial-hero h2,.p47-hero-main h2,.account-detail-hero strong,.dashboard-hero-value{font-size:var(--ux-type-display-size)!important;line-height:var(--ux-type-display-line)!important;font-weight:var(--ux-type-display-weight)!important;font-variant-numeric:tabular-nums;}
-@media(max-width:767px){h1,.protected-app-shell h1{font-size:var(--ux-type-section-title-size)!important;line-height:var(--ux-type-section-title-line)!important;}.p47-financial-hero h2,.p47-hero-main h2,.account-detail-hero strong,.dashboard-hero-value{font-size:var(--ux-type-number-lg-size)!important;line-height:var(--ux-type-number-lg-line)!important;}}
-
-/* Cards / surfaces / P12 */
-.card,.panel,.account-total,.account-card,.account-detail-hero,.detail-list,.danger-zone,.empty-state,.form-card,.summary-card,.dashboard-card,.p47-panel,.p47-command-panel,.p47-resource-card,.p47-flow-card,.p47-analysis-card,.workspace-module-card,.more-hub-card,.statement-kpis>div{
+@media(max-width:767px){h1,.protected-app-shell h1{font-size:var(--ux-type-section-title-size)!important;line-height:var(--ux-type-section-title-line)!important;}.p47-financial-hero h2,.p47-hero-main h2,.account-detail-hero strong,.dashboard-hero-value{font-size:var(--ux-type-number-lg-size)!important;line-height:var(--ux-type-number-lg-line)!important;}}/* Cards / surfaces / P12 */
+.card,.panel,.account-total,.account-card,.account-detail-hero,.detail-list,.danger-zone,.empty-state,.form-card,.summary-card,.dashboard-card,.p47-panel,.p47-command-panel,.p47-resource-card,.p47-flow-card,.workspace-module-card,.more-hub-card,.statement-kpis>div{
   background:var(--ux-surface-default)!important;border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default)!important;border-radius:var(--ux-radius-4)!important;box-shadow:var(--ux-shadow-xs)!important;color:var(--ux-text-primary)!important;}
-.card,.panel,.form-card,.p47-panel,.p47-command-panel,.p47-resource-card,.p47-flow-card,.p47-analysis-card{padding:var(--ux-space-6)!important;}
+.card,.panel,.form-card,.p47-panel,.p47-command-panel,.p47-resource-card,.p47-flow-card{padding:var(--ux-space-6)!important;}
 .card+.card,.panel+.panel{margin-block-start:var(--ux-space-6);}
 
 /* Buttons / one family */
@@ -136,10 +134,10 @@ button,input,select,textarea{font-family:inherit!important;}
 .protected-app-shell{background:var(--ux-page-bg)!important;min-height:100dvh;}
 .app-page,.p47-page{background:var(--ux-page-bg)!important;color:var(--ux-text-primary)!important;}
 .page-shell,.dashboard-shell,.p47-content-shell{max-width:1360px!important;width:100%!important;margin-inline:auto!important;}
-.card,.panel,.dashboard-card,.p47-panel,.p47-command-panel,.p47-resource-card,.p47-flow-card,.p47-analysis-card,.form-card,.summary-card,.account-card,.account-total,.detail-list,.empty-state,.statement-kpis>div{
+.card,.panel,.dashboard-card,.p47-panel,.p47-command-panel,.p47-resource-card,.p47-flow-card,.form-card,.summary-card,.account-card,.account-total,.detail-list,.empty-state,.statement-kpis>div{
   background:var(--ux-card-bg)!important;border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default)!important;border-radius:var(--ux-radius-lg)!important;box-shadow:var(--ux-shadow-s)!important;color:var(--ux-text-primary)!important;
 }
-.card,.panel,.form-card,.p47-panel,.p47-command-panel,.p47-resource-card,.p47-flow-card,.p47-analysis-card{padding:var(--ux-space-5)!important;}
+.card,.panel,.form-card,.p47-panel,.p47-command-panel,.p47-resource-card,.p47-flow-card{padding:var(--ux-space-5)!important;}
 
 /* Mustaqbali button language */
 .primary,.primary-button,.primary-link,.auth-form button,.auth-submit,.p47-primary-action{
@@ -227,7 +225,7 @@ label>span,.field-label{font-weight:500!important;color:var(--ux-text-primary)!i
   h2,.protected-app-shell h2{font-size:var(--ux-type-card-title-size)!important;line-height:1.4!important;}
   h3,.protected-app-shell h3{font-size:var(--ux-type-card-title-size)!important;line-height:1.45!important;}
   .p47-financial-hero h2,.p47-hero-main h2,.account-detail-hero strong,.dashboard-hero-value{font-size:var(--ux-type-page-title-size)!important;line-height:1.15!important;}
-  .card,.panel,.form-card,.p47-panel,.p47-command-panel,.p47-resource-card,.p47-flow-card,.p47-analysis-card{padding:var(--ux-space-4)!important;}
+.card,.panel,.form-card,.p47-panel,.p47-command-panel,.p47-resource-card,.p47-flow-card{padding:var(--ux-space-4)!important;}
 
   .mobile-bottom-nav.mustaqbali-mobile-bottom-nav{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;position:fixed!important;inset-inline:0!important;bottom:0!important;min-height:calc(var(--ux-size-16) + env(safe-area-inset-bottom))!important;padding:var(--ux-space-1) var(--ux-space-2) env(safe-area-inset-bottom)!important;background:var(--ux-white)!important;border-top:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default)!important;z-index:var(--ux-z-navigation)!important;box-shadow:var(--ux-shadow-sm)!important;}
   .mustaqbali-mobile-bottom-nav a{min-width:0!important;min-height:var(--ux-size-14)!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:var(--ux-space-1)!important;border-radius:var(--ux-radius-sm)!important;color:var(--ux-text-muted)!important;text-decoration:none!important;font-size:var(--ux-mobile-nav-label-size)!important;font-weight:500!important;}
@@ -270,9 +268,8 @@ label>span,.field-label{font-weight:500!important;color:var(--ux-text-primary)!i
 .auth-feature-chips span{background:var(--ux-alpha-white-10)!important;color:var(--ux-white)!important;border-color:var(--ux-alpha-white-15)!important;}
 .auth-panel{background:var(--ux-white)!important;}
 .auth-live-dot{background:var(--ux-brand-secondary)!important;}
-
-/* Semantic color always carries text/icon/state treatment, never color alone. */
-.status-pill,.p47-advisor-badge,[class*="status-chip"]{font-weight:500!important;}
+/* Semantic color always carries text/icon/state treatment,never color alone. */
+.status-pill,[class*="status-chip"]{font-weight:500!important;}
 .success-banner,.success-callout,.p44-success{border-inline-start:var(--ux-space-1) var(--ux-border-style-default) var(--ux-success)!important;}
 .form-error,.error-banner,.p47-inline-error{border-inline-start:var(--ux-space-1) var(--ux-border-style-default) var(--ux-error)!important;}
 .p44-alert,.warning-banner{border-inline-start:var(--ux-space-1) var(--ux-border-style-default) var(--ux-warning)!important;}
@@ -458,26 +455,7 @@ html[data-theme="light"] .tablet-top-nav-wrap.mustaqbali-tablet-wrap,html[data-t
   color:var(--ux-brand-primary)!important;
   border-color:var(--ux-shell-topbar-border)!important;
 }
-html[data-theme="light"] .mobile-bottom-nav.mustaqbali-mobile-bottom-nav,
-html[data-theme="light"] .mustaqbali-mobile-drawer,
-html[data-theme="light"] .card,
-html[data-theme="light"] .panel,
-html[data-theme="light"] .dashboard-card,
-html[data-theme="light"] .p47-panel,
-html[data-theme="light"] .p47-command-panel,
-html[data-theme="light"] .p47-resource-card,
-html[data-theme="light"] .p47-flow-card,
-html[data-theme="light"] .p47-analysis-card,
-html[data-theme="light"] .form-card,
-html[data-theme="light"] .summary-card,
-html[data-theme="light"] .account-card,
-html[data-theme="light"] .account-total,
-html[data-theme="light"] .detail-list,
-html[data-theme="light"] .empty-state,
-html[data-theme="light"] .statement-kpis>div,
-html[data-theme="light"] .more-hub-section,
-html[data-theme="light"] .more-hub-card,
-html[data-theme="light"] .cycle-create-card{
+html[data-theme="light"] .mobile-bottom-nav.mustaqbali-mobile-bottom-nav,html[data-theme="light"] .mustaqbali-mobile-drawer,html[data-theme="light"] .card,html[data-theme="light"] .panel,html[data-theme="light"] .dashboard-card,html[data-theme="light"] .p47-panel,html[data-theme="light"] .p47-command-panel,html[data-theme="light"] .p47-resource-card,html[data-theme="light"] .p47-flow-card,html[data-theme="light"] .form-card,html[data-theme="light"] .summary-card,html[data-theme="light"] .account-card,html[data-theme="light"] .account-total,html[data-theme="light"] .detail-list,html[data-theme="light"] .empty-state,html[data-theme="light"] .statement-kpis>div,html[data-theme="light"] .more-hub-section,html[data-theme="light"] .more-hub-card,html[data-theme="light"] .cycle-create-card{
   background:var(--ux-white)!important;
   border-color:var(--ux-border-default)!important;
   color:var(--ux-brand-primary)!important;
@@ -516,24 +494,7 @@ html[data-theme="dark"] .mustaqbali-topbar,html[data-theme="dark"] .tablet-top-n
   color:var(--ux-white)!important;
   border-color:var(--ux-dark-border)!important;
 }
-html[data-theme="dark"] .card,
-html[data-theme="dark"] .panel,
-html[data-theme="dark"] .dashboard-card,
-html[data-theme="dark"] .p47-panel,
-html[data-theme="dark"] .p47-command-panel,
-html[data-theme="dark"] .p47-resource-card,
-html[data-theme="dark"] .p47-flow-card,
-html[data-theme="dark"] .p47-analysis-card,
-html[data-theme="dark"] .form-card,
-html[data-theme="dark"] .summary-card,
-html[data-theme="dark"] .account-card,
-html[data-theme="dark"] .account-total,
-html[data-theme="dark"] .detail-list,
-html[data-theme="dark"] .empty-state,
-html[data-theme="dark"] .statement-kpis>div,
-html[data-theme="dark"] .more-hub-section,
-html[data-theme="dark"] .more-hub-card,
-html[data-theme="dark"] .cycle-create-card{
+html[data-theme="dark"] .card,html[data-theme="dark"] .panel,html[data-theme="dark"] .dashboard-card,html[data-theme="dark"] .p47-panel,html[data-theme="dark"] .p47-command-panel,html[data-theme="dark"] .p47-resource-card,html[data-theme="dark"] .p47-flow-card,html[data-theme="dark"] .form-card,html[data-theme="dark"] .summary-card,html[data-theme="dark"] .account-card,html[data-theme="dark"] .account-total,html[data-theme="dark"] .detail-list,html[data-theme="dark"] .empty-state,html[data-theme="dark"] .statement-kpis>div,html[data-theme="dark"] .more-hub-section,html[data-theme="dark"] .more-hub-card,html[data-theme="dark"] .cycle-create-card{
   background:var(--ux-dark-card-bg)!important;
   border-color:var(--ux-dark-border)!important;
   color:var(--ux-dark-text-primary)!important;
@@ -626,21 +587,18 @@ html[data-theme="dark"] .mustaqbali-sidebar-brand img{opacity:1!important;}
 /* Compatibility hook retained for UX-P29 audit; theme activation remains explicit. */
 @media(prefers-color-scheme:dark){
   html[data-theme="dark"]{color-scheme:dark;}
-}
-
-
-/* ========================================================================== */
+}/* ========================================================================== */
 /* Build 14 — Full visual system rollout                                      */
-/* Approved direction: dark topbar + right sidebar, stronger cards/borders,   */
-/* compact header actions, on-demand filters, configurable light/dark logos.  */
+/* Approved direction: dark topbar + right sidebar,stronger cards/borders,*/
+/* compact header actions,on-demand filters,configurable light/dark logos.  */
 /* ========================================================================== */
 
 /* Universal card hierarchy — stronger borders and readable separation. */
-.protected-app-shell :where(.card,.panel,.dashboard-card,.form-card,.summary-card,.account-card,.account-total,.detail-list,.empty-state,.p47-panel,.p47-command-panel,.p47-resource-card,.p47-flow-card,.p47-analysis-card,.workspace-module-card,.more-hub-card,.statement-kpis>div){
+.protected-app-shell :where(.card,.panel,.dashboard-card,.form-card,.summary-card,.account-card,.account-total,.detail-list,.empty-state,.p47-panel,.p47-command-panel,.p47-resource-card,.p47-flow-card,.workspace-module-card,.more-hub-card,.statement-kpis>div){
   border-color:var(--ux-border-emphasis)!important;
   box-shadow:var(--ux-shadow-m)!important;
 }
-.protected-app-shell :where(.page-header,.dashboard-header,.p47-page-heading,.p47-resource-header,.p47-flow-header,.p47-closure-header,.p47-analysis-header,.p47-section-header){
+.protected-app-shell :where(.page-header,.dashboard-header,.p47-page-heading,.p47-resource-header,.p47-flow-header,.p47-closure-header,.p47-section-header){
   background:var(--ux-section-soft-blue)!important;
   border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-emphasis)!important;
   box-shadow:var(--ux-shadow-s)!important;
@@ -657,9 +615,8 @@ html[data-theme="dark"] .mustaqbali-sidebar-brand img{opacity:1!important;}
 .protected-app-shell :where(.kpi-grid,.p47-kpi-strip,.p47-budget-summary-grid,.statement-kpis,.dashboard-grid)>:nth-child(4n+2){background:var(--ux-section-soft-blue)!important;border-color:var(--ux-brand-secondary)!important;}
 .protected-app-shell :where(.kpi-grid,.p47-kpi-strip,.p47-budget-summary-grid,.statement-kpis,.dashboard-grid)>:nth-child(4n+3){background:var(--ux-soft-orange)!important;border-color:var(--ux-warning)!important;}
 .protected-app-shell :where(.kpi-grid,.p47-kpi-strip,.p47-budget-summary-grid,.statement-kpis,.dashboard-grid)>:nth-child(4n+4){background:var(--ux-soft-purple)!important;border-color:var(--ux-brand-primary)!important;}
-
 /* Header action rows remain on one line on desktop. */
-.protected-app-shell :where(.page-header,.dashboard-header,.p47-page-heading,.p47-resource-header,.p47-flow-header,.p47-analysis-header,.p47-section-header){
+.protected-app-shell :where(.page-header,.dashboard-header,.p47-page-heading,.p47-resource-header,.p47-flow-header,.p47-section-header){
   display:flex!important;align-items:center!important;justify-content:space-between!important;gap:var(--ux-space-3)!important;
 }
 .protected-app-shell :where(.p47-page-actions,.p47-header-actions,.dashboard-header-actions,.actions-row,.p47-inline-actions){
@@ -739,12 +696,12 @@ html[data-theme="dark"] .mustaqbali-sidebar-brand img{opacity:1!important;}
 
 /* Dark theme keeps the same hierarchy without washed-out panels. */
 html[data-theme="dark"]{--ux-border-emphasis:var(--ux-dark-border);}
-html[data-theme="dark"] :where(.page-header,.dashboard-header,.p47-page-heading,.p47-resource-header,.p47-flow-header,.p47-closure-header,.p47-analysis-header,.p47-section-header){background:var(--ux-dark-surface-muted)!important;border-color:var(--ux-dark-border)!important;}
+html[data-theme="dark"] :where(.page-header,.dashboard-header,.p47-page-heading,.p47-resource-header,.p47-flow-header,.p47-closure-header,.p47-section-header){background:var(--ux-dark-surface-muted)!important;border-color:var(--ux-dark-border)!important;}
 html[data-theme="dark"] :where(.kpi-grid,.p47-kpi-strip,.p47-budget-summary-grid,.statement-kpis,.dashboard-grid)>*{background:var(--ux-dark-card-bg)!important;border-color:var(--ux-dark-border)!important;}
 
 
 @media(max-width:767px){
-  .protected-app-shell :where(.page-header,.dashboard-header,.p47-page-heading,.p47-resource-header,.p47-flow-header,.p47-analysis-header,.p47-section-header){display:grid!important;grid-template-columns:minmax(0,1fr)!important;padding:var(--ux-space-3)!important;}
+.protected-app-shell :where(.page-header,.dashboard-header,.p47-page-heading,.p47-resource-header,.p47-flow-header,.p47-section-header){display:grid!important;grid-template-columns:minmax(0,1fr)!important;padding:var(--ux-space-3)!important;}
   .protected-app-shell :where(.p47-page-actions,.p47-header-actions,.dashboard-header-actions,.actions-row,.p47-inline-actions){width:100%!important;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:var(--ux-space-2)!important;}
   .protected-app-shell :where(.p47-page-actions,.p47-header-actions,.dashboard-header-actions,.actions-row,.p47-inline-actions)>*{width:100%!important;min-width:0!important;}
 
@@ -787,12 +744,10 @@ html[data-theme="dark"] .mustaqbali-topbar-logo img{
 }
 .mustaqbali-topbar-brand-zone{justify-content:flex-start!important;}
 .mustaqbali-topbar-page-label{display:none!important;}
-
 /* Remove the legacy decorative circle that cuts into page headers. */
-.page-header::before,.p47-page-heading::before,.p47-resource-header::before,.p47-flow-header::before,.p47-closure-header::before,.p47-analysis-header::before,.dashboard-header::before,.p47-section-header::before{display:none!important;}
-
+.page-header::before,.p47-page-heading::before,.p47-resource-header::before,.p47-flow-header::before,.p47-closure-header::before,.dashboard-header::before,.p47-section-header::before{display:none!important;}
 /* Header cards remain visibly distinct in light mode. */
-html[data-theme="light"] :where(.page-header,.dashboard-header,.p47-page-heading,.p47-resource-header,.p47-flow-header,.p47-closure-header,.p47-analysis-header,.p47-section-header){
+html[data-theme="light"] :where(.page-header,.dashboard-header,.p47-page-heading,.p47-resource-header,.p47-flow-header,.p47-closure-header,.p47-section-header){
   background:var(--ux-section-soft-blue)!important;
   border-color:var(--ux-border-emphasis)!important;
   box-shadow:var(--ux-shadow-m)!important;
