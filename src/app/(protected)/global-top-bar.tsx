@@ -41,11 +41,11 @@ export function GlobalTopBar({ profile }: { profile: HeaderProfile }) {
   };
 
   return (
-    <header className="mustaqbali-topbar namaa-topbar" dir="rtl">
-      <div className="mustaqbali-topbar-brand-zone">
+    <header className="namaa-topbar namaa-topbar" dir="rtl">
+      <div className="namaa-topbar-brand-zone">
         <button
           type="button"
-          className="mustaqbali-topbar-menu"
+          className="namaa-topbar-menu"
           onClick={toggleSidebar}
           aria-label={collapsed ? 'توسيع القائمة الجانبية' : 'طي القائمة الجانبية'}
           aria-controls="namaa-desktop-sidebar"
@@ -53,17 +53,17 @@ export function GlobalTopBar({ profile }: { profile: HeaderProfile }) {
         >
           <LucideIcon name="menu" size={20} />
         </button>
-        <Link href="/dashboard" className="mustaqbali-topbar-logo" aria-label="نماء — الرئيسية">
+        <Link href="/dashboard" className="namaa-topbar-logo" aria-label="نماء — الرئيسية">
           <BrandLogo surface="auto" priority />
         </Link>
       </div>
 
-      <form action="/transactions" method="get" className="mustaqbali-global-search" role="search">
+      <form action="/transactions" method="get" className="namaa-global-search" role="search">
         <LucideIcon name="search" size={20} />
         <input name="search" aria-label="ابحث في نماء" placeholder="ابحث في نماء…" />
       </form>
 
-      <div className="mustaqbali-topbar-actions">
+      <div className="namaa-topbar-actions">
         <Link href="/conversations" aria-label="الدردشة" title="الدردشة">
           <LucideIcon name="messageSquareText" size={20} />
         </Link>
@@ -71,7 +71,7 @@ export function GlobalTopBar({ profile }: { profile: HeaderProfile }) {
           <LucideIcon name="bell" size={20} />
         </Link>
         <ThemeToggle />
-        <ProfileTrigger profile={profile} className="mustaqbali-profile-trigger" />
+        <ProfileTrigger profile={profile} className="namaa-profile-trigger" />
       </div>
     </header>
   );
