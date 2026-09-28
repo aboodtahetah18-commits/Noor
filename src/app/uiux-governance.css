@@ -72,8 +72,6 @@ fieldset{border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux
 .mobile-nav-icon svg{width:var(--ux-size-6)!important;height:var(--ux-size-6)!important;}.p47-mobile-top-actions a{display:grid!important;place-items:center!important;min-width:var(--ux-size-11)!important;min-height:var(--ux-size-11)!important;border-radius:var(--ux-radius-3)!important;color:var(--ux-text-primary)!important;}
 .p47-mobile-brand strong{font-size:var(--ux-type-label-size)!important;color:var(--ux-text-primary)!important;}
 
-.mobile-bottom-nav>a.is-active,.mobile-bottom-nav>button.is-active{background:var(--ux-primary-a12)!important;color:var(--ux-action-primary)!important;}.mobile-bottom-nav .is-primary .mobile-nav-icon{width:var(--ux-size-8)!important;height:var(--ux-size-8)!important;background:var(--ux-action-primary)!important;color:var(--ux-text-inverse)!important;border-radius:var(--ux-radius-full)!important;box-shadow:var(--ux-shadow-none)!important;}
-
 /* Overlays / P12 + P19 + P25 */
 dialog.p49-action-dialog,.bank-message-global-dialog{z-index:var(--ux-z-modal)!important;border:var(--ux-border-width-0)!important;border-radius:var(--ux-radius-6)!important;background:var(--ux-surface-default)!important;color:var(--ux-text-primary)!important;box-shadow:var(--ux-shadow-md)!important;max-height:min(88dvh,860px)!important;padding:var(--ux-space-0)!important;}.p49-action-dialog::backdrop,.bank-message-global-dialog::backdrop{background:var(--ux-ink-a32)!important;}.p49-dialog-shell{border-radius:inherit!important;overflow:hidden!important;}.p49-dialog-header{padding:var(--ux-space-5) var(--ux-space-6)!important;border-block-end:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default)!important;background:var(--ux-surface-default)!important;}.p49-dialog-header h2{font-size:var(--ux-type-card-title-size)!important;line-height:var(--ux-type-card-title-line)!important;}.p49-dialog-header p{font-size:var(--ux-type-body-sm-size)!important;line-height:var(--ux-type-body-sm-line)!important;color:var(--ux-text-secondary)!important;}.p49-dialog-body{padding:var(--ux-space-6)!important;overflow:auto!important;max-height:70dvh!important;}.p49-dialog-close{display:grid!important;place-items:center!important;min-width:var(--ux-size-11)!important;min-height:var(--ux-size-11)!important;border:var(--ux-border-width-0)!important;border-radius:var(--ux-radius-3)!important;background:var(--ux-color-transparent)!important;color:var(--ux-text-primary)!important;}
 .mobile-quick-add-backdrop{z-index:var(--ux-z-overlay)!important;background:var(--ux-ink-a32)!important;}.mobile-quick-add-sheet{z-index:var(--ux-z-modal)!important;border:var(--ux-border-width-0)!important;border-radius:var(--ux-radius-6) var(--ux-radius-6) var(--ux-radius-0) var(--ux-radius-0)!important;background:var(--ux-surface-default)!important;box-shadow:var(--ux-shadow-md)!important;padding:var(--ux-space-4) var(--ux-space-4) calc(var(--ux-space-4) + env(safe-area-inset-bottom))!important;}.mobile-quick-add-sheet header{margin:var(--ux-space-0)!important;padding:var(--ux-space-0) var(--ux-space-0) var(--ux-space-3)!important;background:var(--ux-color-transparent)!important;color:var(--ux-text-primary)!important;border-radius:var(--ux-radius-0)!important;}.mobile-quick-add-sheet header button{min-width:var(--ux-size-11)!important;min-height:var(--ux-size-11)!important;border:var(--ux-border-width-0)!important;background:var(--ux-color-transparent)!important;color:var(--ux-text-primary)!important;}.mobile-quick-add-options{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:var(--ux-space-2)!important;}.mobile-quick-add-options a,.mobile-quick-add-bank{min-height:var(--ux-size-14)!important;display:flex!important;align-items:center!important;gap:var(--ux-space-2)!important;padding:var(--ux-space-3)!important;border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default)!important;border-radius:var(--ux-radius-3)!important;background:var(--ux-surface-default)!important;color:var(--ux-text-primary)!important;text-decoration:none!important;box-shadow:var(--ux-shadow-none)!important;}
@@ -333,8 +331,6 @@ html[data-theme="light"] .p47-dashboard-page{
 html[data-theme="light"] .mustaqbali-logo-light{display:block!important;}
 html[data-theme="light"] .mustaqbali-logo-dark{display:none!important;}
 
-html[data-theme="light"] .mobile-bottom-nav.mustaqbali-mobile-bottom-nav,
-html[data-theme="light"] .mustaqbali-mobile-drawer,
 html[data-theme="light"] .card,
 html[data-theme="light"] .panel,
 html[data-theme="light"] .dashboard-card,
@@ -422,16 +418,6 @@ html[data-theme="dark"] .mustaqbali-tablet-search{
   background:var(--ux-dark-surface-muted)!important;
   color:var(--ux-white)!important;
   border-color:var(--ux-dark-border)!important;
-}
-html[data-theme="dark"] .mobile-bottom-nav.mustaqbali-mobile-bottom-nav,
-html[data-theme="dark"] .mustaqbali-mobile-drawer{
-  background:var(--ux-dark-card-bg)!important;
-  border-color:var(--ux-dark-border)!important;
-}
-html[data-theme="dark"] .mustaqbali-mobile-bottom-nav a{color:var(--ux-dark-text-secondary)!important;}
-html[data-theme="dark"] .mustaqbali-mobile-bottom-nav a.is-active{
-  color:var(--ux-white)!important;
-  background:var(--ux-dark-soft-teal)!important;
 }
 html[data-theme="dark"] .p47-financial-hero{
   background:var(--ux-dark-soft-teal)!important;
