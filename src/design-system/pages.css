@@ -190,34 +190,6 @@ body { font-family:var(--ux-font-family-base); }
 .transaction-table tbody tr:hover,
 .ux-table tbody tr:hover { background:var(--ux-section-soft-teal) !important; }
 
-/* Protected application shell. */
-.mustaqbali-tablet-topbar,
-.p47-mobile-topbar.mustaqbali-mobile-header {
-  background:var(--ux-shell-topbar-bg) !important;
-  color:var(--ux-text-primary) !important;
-  border-color:var(--ux-shell-topbar-border) !important;
-  box-shadow:var(--ux-shadow-xs) !important;
-}
-.mustaqbali-sidebar,
-.mustaqbali-mobile-drawer {
-  background:var(--ux-shell-sidebar-bg) !important;
-  color:var(--ux-text-inverse) !important;
-}
-.mustaqbali-mobile-drawer a {
-  color:var(--ux-text-inverse) !important;
-  border-radius:var(--ux-radius-md);
-}
-.mustaqbali-mobile-drawer a:hover { background:var(--ux-shell-sidebar-hover) !important; }
-.mustaqbali-mobile-drawer a.is-active {
-  background:var(--ux-shell-sidebar-active-soft) !important;
-  color:var(--ux-text-inverse) !important;
-  box-shadow:inset var(--ux-border-width-2) 0 0 var(--ux-shell-sidebar-active) !important;
-}
-.mustaqbali-mobile-bottom-nav {
-  border-color:var(--ux-border-default) !important;
-  background:var(--ux-card-bg) !important;
-  box-shadow:var(--ux-shadow-sm) !important;
-}
 .mustaqbali-mobile-bottom-nav a { color:var(--ux-text-muted) !important; }
 .mustaqbali-mobile-bottom-nav a.is-active { color:var(--ux-brand-primary) !important; }
 
@@ -316,19 +288,6 @@ html[data-theme="dark"] .ux-table th { background:var(--ux-section-soft-blue) !i
   .primary-button { transition:none !important; }
 }
 
-
-/* Governed desktop shell surfaces required by the page identity contract. */
-.mustaqbali-topbar {
-  background:var(--ux-shell-topbar-bg) !important;
-  color:var(--ux-text-inverse) !important;
-  border-color:var(--ux-shell-topbar-border) !important;
-}
-.mustaqbali-sidebar,
-.namaa-wide-sidebar {
-  background:var(--ux-shell-sidebar-bg) !important;
-  color:var(--ux-text-inverse) !important;
-  border-color:var(--ux-shell-topbar-border) !important;
-}
 
 .namaa-decisions-progress-native {
   width:100%;
