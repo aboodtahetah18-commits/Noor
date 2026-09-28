@@ -50,14 +50,14 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
         </div>
 
         <div className="namaa-mobile-header-actions">
-          <Link href="/transactions" className="mustaqbali-mobile-search-action" aria-label="البحث في نماء" title="البحث">
+          <Link href="/transactions" className="namaa-mobile-search-action" aria-label="البحث في نماء" title="البحث">
             <LucideIcon name="search" size={20} />
           </Link>
           <Link href="/alerts" aria-label="التنبيهات" title="التنبيهات">
             <LucideIcon name="bell" size={20} />
           </Link>
           <ThemeToggle />
-          <ProfileTrigger profile={profile} className="mustaqbali-mobile-profile-trigger" />
+          <ProfileTrigger profile={profile} className="namaa-mobile-profile-trigger" />
         </div>
       </header>
 
