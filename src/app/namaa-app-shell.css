@@ -635,7 +635,7 @@
     border-radius:var(--ux-radius-sm);
     background:var(--ux-card-bg);
     color:var(--ux-text-primary);
-    font-size:28px;
+    font-size:var(--ux-type-page-title-size);
     line-height:1;
   }
 
