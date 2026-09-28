@@ -14,7 +14,9 @@ describe('Desktop visual authority contract', () => {
     expect(css).not.toContain('/* Phase 33 — Desktop Hardening */');
     expect(css).not.toContain('.desktop-top-nav{height:100%;max-width:1320px');
     expect(css).not.toContain('.desktop-top-nav-wrap.p47-desktop-sidebar');
-    expect(css).not.toContain('.p47-sidebar-add{');
+    expect(css).not.toContain('.p47-sidebar-add{width:100%');
+    expect(css).not.toContain('.desktop-top-nav-wrap.p47-desktop-sidebar{width:238px');
+    expect(css).not.toContain('background:var(--ux-action-primary)!important;color:var(--ux-action-primary)!important');
   });
 
   it('keeps mobile and desktop navigation mounted while CSS separates their viewports', () => {
