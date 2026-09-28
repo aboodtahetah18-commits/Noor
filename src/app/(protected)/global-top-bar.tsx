@@ -41,7 +41,7 @@ export function GlobalTopBar({ profile }: { profile: HeaderProfile }) {
   };
 
   return (
-    <header className="namaa-topbar namaa-topbar" dir="rtl">
+    <header className="namaa-topbar" dir="rtl">
       <div className="namaa-topbar-brand-zone">
         <button
           type="button"
