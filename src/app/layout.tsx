@@ -15,10 +15,10 @@ import '../design-system/pages.css';
 import './namaa-responsive-polish.css';
 import './namaa-shell-visibility.css';
 import './namaa-app-shell.css';
-import '../design-system/ndos-v1.2.acceptance.css';
-import '../design-system/ndos-v1.2.css';
 import '../design-system/redesign-v1.css';
 import '../design-system/namaa-phase-1.css';
+import '../design-system/ndos-v1.2.acceptance.css';
+import '../design-system/ndos-v1.2.css';
 import '../design-system/ndos-v1.2.enforcement.css';
 
 const notoSansArabic = Noto_Sans_Arabic({
