@@ -35,18 +35,18 @@ export function DesktopTopNav() {
   };
 
   return (
-    <aside id="namaa-desktop-sidebar" data-namaa-side="right" className="desktop-top-nav-wrap namaa-sidebar namaa-wide-sidebar" dir="rtl">
-      <div className="namaa-sidebar-inner namaa-wide-sidebar-inner">
-        <div className="namaa-wide-sidebar-head">
-          <Link href="/dashboard" className="namaa-wide-sidebar-brand" aria-label="نماء — الرئيسية">
+    <aside id="namaa-desktop-sidebar" data-namaa-side="right" className="desktop-top-nav-wrap namaa-sidebar" dir="rtl">
+      <div className="namaa-sidebar-inner">
+        <div className="namaa-sidebar-head">
+          <Link href="/dashboard" className="namaa-sidebar-brand" aria-label="نماء — الرئيسية">
             <BrandLogo surface="dark" priority />
           </Link>
-          <button type="button" className="namaa-wide-sidebar-close" onClick={collapseSidebar} aria-label="طي القائمة الجانبية">
+          <button type="button" className="namaa-sidebar-close" onClick={collapseSidebar} aria-label="طي القائمة الجانبية">
             <LucideIcon name="x" size={24} />
           </button>
         </div>
 
-        <nav className="namaa-sidebar-nav namaa-wide-sidebar-nav" aria-label="التنقل الرئيسي للكمبيوتر">
+        <nav className="namaa-sidebar-nav" aria-label="التنقل الرئيسي للكمبيوتر">
           <section className="namaa-nav-section">
             <p>مساحات نماء</p>
             {pages.map((item) => {
