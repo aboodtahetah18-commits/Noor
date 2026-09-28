@@ -12210,7 +12210,7 @@
     margin:0;
     padding:var(--ux-space-2) var(--ux-space-3) calc(var(--ux-space-2) + env(safe-area-inset-bottom));
     border:0;
-    border-top:1px solid var(--namaa-border);
+    border-top:1px solid var(--namaa-border-strong);
     border-radius:0;
     background:var(--namaa-card);
     background-image:none;
