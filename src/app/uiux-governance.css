@@ -185,7 +185,6 @@ label>span,.field-label{font-weight:500!important;color:var(--ux-text-primary)!i
   html[data-sidebar="collapsed"] .protected-app-shell>#main-content{margin-inline-start:var(--ux-shell-sidebar-collapsed)!important;}
 .page-shell,.dashboard-shell{padding-inline:var(--ux-space-8)!important;padding-block:var(--ux-space-8)!important;}
 }
-@media(min-width:1440px){.page-shell,.dashboard-shell}
 
 /* Tablet shell */
 @media(min-width:768px) and (max-width:1023px){
