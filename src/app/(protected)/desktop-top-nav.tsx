@@ -35,7 +35,7 @@ export function DesktopTopNav() {
   };
 
   return (
-    <aside id="namaa-desktop-sidebar" data-namaa-side="right" className="desktop-top-nav-wrap namaa-sidebar" dir="rtl">
+    <aside id="namaa-desktop-sidebar" data-namaa-side="right" className="namaa-sidebar" dir="rtl">
       <div className="namaa-sidebar-inner">
         <div className="namaa-sidebar-head">
           <Link href="/dashboard" className="namaa-sidebar-brand" aria-label="نماء — الرئيسية">
