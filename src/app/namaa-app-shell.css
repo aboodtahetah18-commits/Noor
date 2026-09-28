@@ -339,7 +339,7 @@
 
   .mustaqbali-topbar,
   .desktop-top-nav-wrap,
-  .p47-mobile-topbar,
+  .namaa-mobile-topbar,
   .mobile-bottom-nav {
     display:none !important;
   }
@@ -470,7 +470,7 @@
     display:none !important;
   }
 
-  .p47-mobile-topbar.mustaqbali-mobile-header {
+  .namaa-mobile-topbar.mustaqbali-mobile-header {
     display:grid !important;
     grid-template-columns:minmax(0,1fr) auto !important;
     align-items:center;
