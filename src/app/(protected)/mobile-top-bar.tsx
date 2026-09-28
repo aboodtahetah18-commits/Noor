@@ -32,10 +32,10 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
 
   return (
     <>
-      <header className="namaa-mobile-topbar mustaqbali-mobile-header namaa-mobile-header" dir="rtl">
-        <div className="mustaqbali-mobile-brand-zone">
+      <header className="namaa-mobile-topbar namaa-mobile-header namaa-mobile-header" dir="rtl">
+        <div className="namaa-mobile-brand-zone">
           <button
-            className="mustaqbali-mobile-menu-trigger"
+            className="namaa-mobile-menu-trigger"
             type="button"
             onClick={() => setOpen(true)}
             aria-label="فتح القائمة الجانبية"
@@ -44,12 +44,12 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
           >
             <LucideIcon name="menu" size={24} />
           </button>
-          <Link href="/dashboard" className="mustaqbali-mobile-brand" aria-label="نماء — الرئيسية">
+          <Link href="/dashboard" className="namaa-mobile-brand" aria-label="نماء — الرئيسية">
             <BrandLogo surface="auto" priority />
           </Link>
         </div>
 
-        <div className="mustaqbali-mobile-header-actions">
+        <div className="namaa-mobile-header-actions">
           <Link href="/transactions" className="mustaqbali-mobile-search-action" aria-label="البحث في نماء" title="البحث">
             <LucideIcon name="search" size={20} />
           </Link>
