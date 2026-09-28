@@ -4323,17 +4323,6 @@ textarea {
 
 /* NAMA'A IDENTITY CORRECTIONS — single logo, embedded bank chat, strict button contrast */
 @media (min-width:768px){
-  /* لا تكرار للشعار داخل الدرج الجانبي */
-  .namaa-wide-sidebar-head{
-    min-height:66px!important;
-  }
-
-  .namaa-wide-sidebar-title{
-    color:#F5F1E8!important;
-    font-size:18px!important;
-    font-weight:900!important;
-    letter-spacing:0!important;
-  }
 
   /* معاينة دردشة مصغرة داخل بطاقة الفريق بدل زر كبير */
   .namaa-banks-chat-preview{
