@@ -12,17 +12,13 @@ button,input,select,textarea{font:inherit;color:inherit;}
 :focus-visible{outline:var(--ux-border-width-2) var(--ux-border-style-default) var(--ux-focus-ring)!important;outline-offset:var(--ux-border-width-2)!important;}
 .ux-number,.money-cell,[class*="amount"],[class*="balance"],[class*="metric"] strong{font-variant-numeric:tabular-nums;unicode-bidi:isolate;}
 
-/* App shell / P13 + P16 */
-.protected-app-shell{min-height:100dvh;background:var(--ux-surface-canvas);color:var(--ux-text-primary);}
-.protected-app-shell>#main-content{min-width:0;}
+/* Page/container compatibility only; app-shell composition lives in namaa-app-shell.css. */
 .app-page{background:var(--ux-surface-canvas)!important;color:var(--ux-text-primary)!important;padding-block:var(--ux-space-8)!important;}
 .page-shell,.dashboard-shell,.p47-content-shell{width:min(100%,var(--ux-container-content))!important;max-width:var(--ux-container-content)!important;margin-inline:auto!important;padding-inline:var(--ux-space-8)!important;}
 .narrow-shell{width:min(100%,var(--ux-container-form))!important;max-width:var(--ux-container-form)!important;}
-.p47-desktop-sidebar{width:240px!important;background:var(--ux-surface-inverse)!important;box-shadow:var(--ux-shadow-md)!important;}
-@media(min-width:1440px){.desktop-top-nav-wrap.p47-desktop-sidebar{display:block!important;inset-inline-start:0!important;inset-inline-end:auto!important;width:240px!important;background:var(--ux-surface-inverse)!important;}.protected-app-shell>#main-content{margin-inline-start:var(--ux-space-24)!important;}.tablet-top-nav-wrap,.p47-mobile-topbar,.mobile-bottom-nav{display:none!important;}.p47-sidebar-inner{height:100dvh!important;overflow:hidden!important;}.p47-sidebar-nav{overflow-y:auto!important;min-height:0!important;}}
 @media(min-width:1440px){.page-shell,.dashboard-shell,.p47-content-shell{padding-inline:var(--ux-space-10)!important;}}
-@media(min-width:768px) and (max-width:1023px){.desktop-top-nav-wrap,.p47-mobile-topbar,.mobile-bottom-nav{display:none!important;}.tablet-top-nav-wrap{display:block!important;}.page-shell,.dashboard-shell,.p47-content-shell{padding-inline:var(--ux-space-6)!important;}}
-@media(max-width:767px){.desktop-top-nav-wrap,.tablet-top-nav-wrap{display:none!important;}.p47-mobile-topbar,.mobile-bottom-nav{display:flex!important;}.protected-app-shell>#main-content{margin-inline:var(--ux-space-0)!important;padding-block-start:var(--ux-size-14)!important;padding-block-end:calc(var(--ux-space-20) + env(safe-area-inset-bottom))!important;}.app-page{padding-block:var(--ux-space-4)!important;}.page-shell,.dashboard-shell,.p47-content-shell{padding-inline:var(--ux-space-4)!important;}.narrow-shell{max-width:100%!important;}}
+@media(min-width:768px) and (max-width:1023px){.page-shell,.dashboard-shell,.p47-content-shell{padding-inline:var(--ux-space-6)!important;}}
+@media(max-width:767px){.app-page{padding-block:var(--ux-space-4)!important;}.page-shell,.dashboard-shell,.p47-content-shell{padding-inline:var(--ux-space-4)!important;}.narrow-shell{max-width:100%!important;}}
 
 /* Typography / P09 */
 h1,.protected-app-shell h1{font-size:var(--ux-type-page-title-size)!important;line-height:var(--ux-type-page-title-line)!important;font-weight:var(--ux-type-page-title-weight)!important;letter-spacing:0!important;color:var(--ux-text-primary)!important;}
@@ -113,25 +109,6 @@ a,button,input,select,textarea,summary{transition-duration:var(--ux-motion-durat
 
 .ux-section-offset{margin-block-start:var(--ux-space-4)!important;}
 
-
-/* UXP29-20260905-04 — systemic responsive root-cause closure */
-.protected-app-shell,.protected-app-shell>#main-content{min-inline-size:0;max-inline-size:100%;}
-@media(max-width:767px){
-  .desktop-top-nav-wrap,.tablet-top-nav-wrap{display:none!important;}
-  .p47-mobile-topbar.p4913-mobile-topbar{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;inline-size:100%!important;max-inline-size:100vw!important;min-inline-size:0!important;box-sizing:border-box!important;}
-  .mobile-bottom-nav{display:grid!important;}
-  .p47-mobile-brand.p4913-mobile-brand{min-inline-size:0!important;max-inline-size:100%!important;}
-  .p4913-mobile-brand strong{display:block!important;min-inline-size:0!important;max-inline-size:100%!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;}
-  .p47-mobile-top-actions.p4913-mobile-top-actions{min-inline-size:max-content!important;flex:0 0 auto!important;}
-}
-@media(min-width:768px) and (max-width:1023px){
-  .desktop-top-nav-wrap,.p47-mobile-topbar,.mobile-bottom-nav{display:none!important;}
-  .tablet-top-nav-wrap{display:block!important;}
-}
-@media(min-width:1024px){
-  .tablet-top-nav-wrap,.p47-mobile-topbar,.mobile-bottom-nav{display:none!important;}
-  .desktop-top-nav-wrap.p47-desktop-sidebar{display:block!important;}
-}
 
 /* ========================================================================== */
 /* CR-002 — MUSTAQBALI DESIGN-LED PRODUCT RECONSTRUCTION                      */
@@ -981,9 +958,3 @@ html[data-theme="light"] :where(.p55-profile-form,.p60-security-form,.p47-settin
 }
 
 
-/* 2026-09-28 — LEGACY SHELL QUARANTINE
- * uiux-governance.css remains for page/component compatibility only.
- * Shell visibility and structural offsets are owned by namaa-shell-visibility.css
- * and namaa-app-shell.css, which are imported later in the cascade.
- * Do not add new shell composition rules to this legacy file.
- */
