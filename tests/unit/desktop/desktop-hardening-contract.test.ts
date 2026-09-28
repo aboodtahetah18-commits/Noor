@@ -25,6 +25,14 @@ describe('Desktop visual authority contract', () => {
     expect(shell).toContain('/* Mobile <768: light topbar + fixed five-item bottom navigation + shared Drawer. */');
   });
 
+  it('hardens legacy desktop workspaces without touching the modern dashboard module', () => {
+    expect(css).toContain('/* Desktop workspace hardening — legacy p47 pages only.');
+    expect(css).toContain('.protected-app-shell .p47-page>.p47-content-shell');
+    expect(css).toContain('.protected-app-shell .p47-settings-reference-grid');
+    expect(css).toContain('grid-template-columns:repeat(3,minmax(0,1fr))');
+    expect(css).toContain('overscroll-behavior-inline:contain');
+  });
+
   it('retains desktop page density without redefining shell geometry', () => {
     expect(css).toContain('.dashboard-main-grid{grid-template-columns:minmax(0,1.35fr)');
     expect(css).toContain('.transaction-filter-grid{grid-template-columns:repeat(4');
