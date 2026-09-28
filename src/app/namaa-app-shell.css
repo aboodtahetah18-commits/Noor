@@ -48,7 +48,7 @@
     padding-inline-start:var(--ux-shell-sidebar-expanded);
   }
 
-  .desktop-top-nav-wrap.namaa-sidebar {
+  .namaa-sidebar {
     position:fixed;
     inset-block:0;
     inset-inline-start:0;
@@ -61,7 +61,7 @@
     color:var(--ux-text-inverse);
   }
 
-  html[data-sidebar="expanded"] .desktop-top-nav-wrap.namaa-sidebar {
+  html[data-sidebar="expanded"] .namaa-sidebar {
     width:var(--ux-shell-sidebar-expanded);
   }
 
@@ -485,7 +485,7 @@
     background:var(--ux-section-soft-teal);
   }
 
-  .mobile-bottom-nav.namaa-mobile-bottom-nav {
+  .namaa-mobile-bottom-nav {
     grid-template-columns:repeat(5,minmax(0,1fr));
     position:fixed;
     inset-inline:0;
@@ -497,7 +497,7 @@
     box-shadow:var(--ux-shadow-sm);
   }
 
-  .mobile-bottom-nav a {
+  .namaa-mobile-bottom-nav a {
     min-width:0;
     min-height:var(--ux-size-12);
     display:grid;
@@ -512,13 +512,13 @@
     line-height:var(--ux-type-caption-line);
   }
 
-  .mobile-bottom-nav a:hover,
-  .mobile-bottom-nav a:focus-visible {
+  .namaa-mobile-bottom-nav a:hover,
+  .namaa-mobile-bottom-nav a:focus-visible {
     background:var(--ux-section-soft-teal);
     color:var(--ux-text-primary);
   }
 
-  .mobile-bottom-nav a.is-active {
+  .namaa-mobile-bottom-nav a.is-active {
     color:var(--ux-brand-primary);
     background:var(--ux-section-soft-teal);
     font-weight:var(--ux-type-button-weight);
@@ -677,7 +677,7 @@
 }
 
 @media (prefers-reduced-motion:reduce) {
-  .desktop-top-nav-wrap.namaa-sidebar,
+  .namaa-sidebar,
   .namaa-topbar.namaa-topbar {
     transition:none;
   }
