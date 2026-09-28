@@ -4361,33 +4361,10 @@
   .attachButton{
     border:1px solid var(--namaa-border-strong)
   }
-  .composer{
-    position:sticky;
-    bottom:0;
-    z-index:10;
-    flex:0 0 auto;
-    width:100%;
-    margin:var(--ux-space-0);
-    padding:var(--ux-space-2) var(--ux-space-2) calc(var(--ux-space-2) + env(safe-area-inset-bottom));
-    border-radius:var(--ux-radius-0);
-    border-inline:0;
-    border-bottom:0;
-    border-top:1px solid var(--namaa-border-strong);
-    background:var(--namaa-card);
-    box-shadow:var(--ux-shadow-sm);
-    align-items:center
-  }
   .composer textarea{
     flex:1 1 auto;
     align-self:center;
     box-sizing:border-box;
-    min-height:40px;
-    max-height:40dvh;
-    height:40px;
-    padding:var(--ux-space-2) var(--ux-space-3);
-    border:1px solid var(--namaa-border-strong);
-    border-radius:var(--ux-radius-full);
-    background:var(--namaa-card);
     resize:none;
     font-size:var(--ux-type-body-sm-size);
     line-height:1.5;
