@@ -2,10 +2,10 @@
    No visual styling lives here. It prevents cross-device shell components from rendering
    outside their intended viewport while keeping mobile behavior unchanged. */
 
-.desktop-top-nav-wrap,
-.tablet-top-nav-wrap,
+.namaa-sidebar,
+.namaa-tablet-wrap,
 .namaa-mobile-topbar,
-.mobile-bottom-nav {
+.namaa-mobile-bottom-nav {
   display: none;
 }
 
@@ -14,23 +14,23 @@
     display: grid;
   }
 
-  .mobile-bottom-nav {
+  .namaa-mobile-bottom-nav {
     display: grid;
   }
 }
 
 @media (min-width: 768px) and (max-width: 1023px) {
-  .tablet-top-nav-wrap {
+  .namaa-tablet-wrap {
     display: block;
   }
 }
 
 @media (min-width: 1024px) {
-  .desktop-top-nav-wrap {
+  .namaa-sidebar {
     display: block;
   }
 
-  .protected-app-shell:has([data-chat-first-route="true"]) .desktop-top-nav-wrap {
+  .protected-app-shell:has([data-chat-first-route="true"]) .namaa-sidebar {
     display: none;
   }
 }
