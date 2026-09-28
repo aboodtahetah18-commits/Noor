@@ -53,6 +53,14 @@ describe('Desktop visual authority contract', () => {
     expect(css).not.toContain('background:var(--ux-action-primary)!important;color:var(--ux-color-ink)!important');
   });
 
+  it('keeps shared visual tokens contrast-safe at their source', () => {
+    expect(css).not.toContain('.mobile-bottom-nav>a.is-active{color:var(--ux-action-primary);background:var(--ux-action-primary)');
+    expect(css).not.toContain('background:var(--ux-action-primary)!important;color:var(--ux-action-primary)!important');
+    expect(css).toContain('.auth-form-v42 input:focus{outline:var(--ux-border-width-0);border-color:var(--ux-action-primary);background:var(--ux-surface-default);color:var(--ux-text-primary)');
+    expect(css).toContain('.p74-next-step a{display:inline-flex');
+    expect(css).toContain('background:var(--ux-action-primary);color:var(--ux-text-inverse)');
+  });
+
   it('retains desktop page density without redefining shell geometry', () => {
     expect(css).toContain('.dashboard-main-grid{grid-template-columns:minmax(0,1.35fr)');
     expect(css).toContain('.transaction-filter-grid{grid-template-columns:repeat(4');
