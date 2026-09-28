@@ -271,7 +271,7 @@ textarea {
     flex: 1;
   }
 
-  .namaa-wide-sidebar-nav .mustaqbali-nav-section > p {
+  .namaa-wide-sidebar-nav .namaa-nav-section > p {
     color: rgb(226 195 127 / 74%);
     font-size: 12px;
     font-weight: 700;
@@ -279,25 +279,25 @@ textarea {
     margin: 0 0 8px;
   }
 
-  .namaa-wide-sidebar-nav .mustaqbali-nav-section > a {
+  .namaa-wide-sidebar-nav .namaa-nav-section > a {
     min-height: 46px;
     border-radius: 13px;
     color: rgb(232 224 197 / 92%);
     transition: background-color .18s ease, color .18s ease, transform .18s ease;
   }
 
-  .namaa-wide-sidebar-nav .mustaqbali-nav-section > a:hover {
+  .namaa-wide-sidebar-nav .namaa-nav-section > a:hover {
     background: rgb(212 175 107 / 12%);
     color:#ece3c8;
   }
 
-  .namaa-wide-sidebar-nav .mustaqbali-nav-section > a.is-active {
+  .namaa-wide-sidebar-nav .namaa-nav-section > a.is-active {
     background:#D4AF6B;
     color: #163a31;
     box-shadow: 0 8px 22px rgb(0 0 0 / 12%);
   }
 
-  .namaa-wide-sidebar-nav .mustaqbali-nav-icon {
+  .namaa-wide-sidebar-nav .namaa-nav-icon {
     color: currentColor;
   }
 
@@ -371,7 +371,7 @@ textarea {
 @media (min-width: 1024px) {
 
 
-  .namaa-wide-sidebar-nav .mustaqbali-nav-section > a {
+  .namaa-wide-sidebar-nav .namaa-nav-section > a {
     min-height: 48px;
   }
 }
@@ -1773,7 +1773,7 @@ textarea {
 /* Tablet shell isolation: desktop topbar/drawer stay out of the tablet workspace. */
 @media (min-width:768px) and (max-width:1023px) {
   .desktop-top-nav-wrap.namaa-wide-sidebar,
-  .mustaqbali-topbar.namaa-topbar {
+  .namaa-topbar.namaa-topbar {
     display:none!important;
   }
 
@@ -3122,7 +3122,7 @@ textarea {
     background:#FFFFFF!important;
   }
 
-  .mustaqbali-topbar.namaa-topbar{
+  .namaa-topbar.namaa-topbar{
     width:100%!important;
     max-width:none!important;
     margin:0!important;
@@ -3142,14 +3142,14 @@ textarea {
     color:#FFFFFF!important;
   }
 
-  .mustaqbali-topbar-brand-zone{
+  .namaa-topbar-brand-zone{
     display:flex!important;
     align-items:center!important;
     gap:14px!important;
     min-width:0!important;
   }
 
-  .mustaqbali-topbar-menu{
+  .namaa-topbar-menu{
     width:46px!important;
     height:46px!important;
     min-width:46px!important;
@@ -3162,26 +3162,26 @@ textarea {
     cursor:pointer!important;
   }
 
-  .mustaqbali-topbar-menu:hover,
-  .mustaqbali-topbar-menu:focus-visible{
+  .namaa-topbar-menu:hover,
+  .namaa-topbar-menu:focus-visible{
     background:rgb(212 175 107 / 18%)!important;
     border-color:#D4AF6B!important;
   }
 
-  .mustaqbali-topbar-logo{
+  .namaa-topbar-logo{
     display:flex!important;
     align-items:center!important;
     min-width:0!important;
   }
 
-  .mustaqbali-topbar-logo .namaa-brand-logo{
+  .namaa-topbar-logo .namaa-brand-logo{
     width:auto!important;
     height:50px!important;
     max-width:122px!important;
     object-fit:contain!important;
   }
 
-  .mustaqbali-global-search{
+  .namaa-global-search{
     width:min(100%,680px)!important;
     justify-self:center!important;
     min-height:46px!important;
@@ -3195,12 +3195,12 @@ textarea {
     color:#FFFFFF!important;
   }
 
-  .mustaqbali-global-search:focus-within{
+  .namaa-global-search:focus-within{
     border-color:#D4AF6B!important;
     background:rgb(255 255 255 / 13%)!important;
   }
 
-  .mustaqbali-global-search input{
+  .namaa-global-search input{
     width:100%!important;
     border:0!important;
     outline:0!important;
@@ -3208,11 +3208,11 @@ textarea {
     color:#FFFFFF!important;
   }
 
-  .mustaqbali-global-search input::placeholder{
+  .namaa-global-search input::placeholder{
     color:rgb(255 255 255 / 70%)!important;
   }
 
-  .mustaqbali-topbar-actions{
+  .namaa-topbar-actions{
     display:flex!important;
     align-items:center!important;
     justify-content:flex-end!important;
@@ -3220,9 +3220,9 @@ textarea {
     min-width:0!important;
   }
 
-  .mustaqbali-topbar-actions>a,
-  .mustaqbali-topbar-actions>button,
-  .mustaqbali-profile-trigger{
+  .namaa-topbar-actions>a,
+  .namaa-topbar-actions>button,
+  .namaa-profile-trigger{
     width:44px!important;
     height:44px!important;
     min-width:44px!important;
@@ -3236,9 +3236,9 @@ textarea {
     color:#FFFFFF!important;
   }
 
-  .mustaqbali-topbar-actions>a:hover,
-  .mustaqbali-topbar-actions>button:hover,
-  .mustaqbali-profile-trigger:hover{
+  .namaa-topbar-actions>a:hover,
+  .namaa-topbar-actions>button:hover,
+  .namaa-profile-trigger:hover{
     background:rgb(212 175 107 / 18%)!important;
     border-color:#D4AF6B!important;
     color:#FFFFFF!important;
@@ -3311,12 +3311,12 @@ textarea {
     background:rgb(212 175 107 / 16%)!important;
   }
 
-  .namaa-wide-sidebar-nav .mustaqbali-nav-section>p{
+  .namaa-wide-sidebar-nav .namaa-nav-section>p{
     padding:8px 10px 4px!important;
     color:#D4AF6B!important;
   }
 
-  .namaa-wide-sidebar-nav .mustaqbali-nav-section>a{
+  .namaa-wide-sidebar-nav .namaa-nav-section>a{
     min-height:50px!important;
     display:flex!important;
     align-items:center!important;
@@ -3329,19 +3329,19 @@ textarea {
     background:transparent!important;
   }
 
-  .namaa-wide-sidebar-nav .mustaqbali-nav-section>a:hover{
+  .namaa-wide-sidebar-nav .namaa-nav-section>a:hover{
     background:rgb(255 255 255 / 7%)!important;
     border-color:rgb(212 175 107 / 18%)!important;
   }
 
-  .namaa-wide-sidebar-nav .mustaqbali-nav-section>a.is-active{
+  .namaa-wide-sidebar-nav .namaa-nav-section>a.is-active{
     background:#0B6B4F!important;
     border-color:#189F7F!important;
     color:#FFFFFF!important;
     box-shadow:inset -4px 0 0 #D4AF6B!important;
   }
 
-  .namaa-wide-sidebar-nav .mustaqbali-nav-icon{
+  .namaa-wide-sidebar-nav .namaa-nav-icon{
     color:#D4AF6B!important;
   }
 
@@ -4847,13 +4847,13 @@ textarea {
 }
 
 @media (max-width:767px){
-  .mustaqbali-mobile-drawer>header{
+  .namaa-mobile-navigation-drawer>header{
     display:flex!important;
     align-items:center!important;
     justify-content:space-between!important;
   }
 
-  .mustaqbali-drawer-title{
+  .namaa-drawer-title{
     color:inherit!important;
     font-size:18px!important;
     font-weight:900!important;
@@ -4949,15 +4949,15 @@ textarea {
   }
 
   /* 2) موازنة رموز الشريط العلوي */
-  .mustaqbali-topbar-actions{
+  .namaa-topbar-actions{
     display:flex!important;
     align-items:center!important;
     justify-content:flex-end!important;
     gap:10px!important;
   }
-  .mustaqbali-topbar-actions>a,
-  .mustaqbali-topbar-actions>button,
-  .mustaqbali-profile-trigger{
+  .namaa-topbar-actions>a,
+  .namaa-topbar-actions>button,
+  .namaa-profile-trigger{
     width:46px!important;
     height:46px!important;
     min-width:46px!important;
@@ -4967,7 +4967,7 @@ textarea {
     place-items:center!important;
     border-radius:13px!important;
   }
-  .mustaqbali-topbar-actions svg{
+  .namaa-topbar-actions svg{
     width:22px!important;
     height:22px!important;
     stroke-width:2!important;
@@ -5010,7 +5010,7 @@ textarea {
   }
 
   /* 4) عناصر التنقل السفلية تنتقل للقائمة الجانبية على الشاشات الواسعة */
-  .mustaqbali-mobile-bottom-nav,
+  .namaa-mobile-bottom-nav,
   .mobile-bottom-nav{
     display:none!important;
   }
