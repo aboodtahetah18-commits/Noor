@@ -135,7 +135,7 @@ button,input,select,textarea{font-family:inherit!important;}
 .secondary,.secondary-button,.secondary-link,.p47-secondary-action,.p47-quiet-action,.button-link{
   min-height:var(--ux-size-11)!important;background:var(--ux-section-soft-blue)!important;color:var(--ux-brand-primary)!important;border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default)!important;border-radius:var(--ux-radius-md)!important;padding-inline:var(--ux-space-4)!important;font-weight:500!important;box-shadow:var(--ux-shadow-none)!important;
 }
-button,.icon-button,.p47-mobile-top-actions>a,.mustaqbali-mobile-header-actions>a,.mustaqbali-mobile-header-actions>button{min-inline-size:var(--ux-size-11);min-block-size:var(--ux-size-11);}
+button,.icon-button,.p47-mobile-top-actions>a{min-inline-size:var(--ux-size-11);min-block-size:var(--ux-size-11);}
 .danger-button,.destructive-button{background:var(--ux-error)!important;color:var(--ux-white)!important;border-color:var(--ux-error)!important;}
 
 /* Inputs */
