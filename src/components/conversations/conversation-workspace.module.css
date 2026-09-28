@@ -4269,17 +4269,6 @@
   align-items:center;
   gap:var(--ux-space-3)
   }
-  .chatPane{
-    display:flex;
-    flex-direction:column;
-    min-height:0;
-    height:100%;
-    max-height:100%;
-    background:var(--namaa-chat-canvas);
-    overflow:hidden;
-    position:relative;
-    z-index:1
-  }
   .chatIdentity{
     gap:var(--ux-space-2);
   flex:1
@@ -4374,22 +4363,6 @@
     font-size:var(--ux-type-body-sm-size);
     line-height:1.5;
     overflow-y:auto
-  }
-  .chatHeader{
-    height:88px;
-    min-height:88px;
-    padding:var(--ux-space-0) var(--ux-space-3);
-    position:relative;
-    top:var(--ux-space-0);
-    z-index:6;
-    background:var(--namaa-green-900);
-    border-bottom:1px solid var(--namaa-border);
-    border-radius:var(--ux-radius-0) var(--ux-radius-0) var(--ux-radius-3) var(--ux-radius-3)
-  }
-  .centralChatHeader,
-  .centralChatHeader .chatHeaderForeground{
-    min-height:96px;
-    height:96px
   }
   .compactMenuButton,
   .mobileTools button{
