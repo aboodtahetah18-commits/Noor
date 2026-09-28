@@ -813,19 +813,8 @@ label:has(input),label:has(select),label:has(textarea){color:var(--ux-color-ink)
 
 
 
-@media(max-width:767px){
 
 
-
-
-
-
-}
-@media(max-width:767px){
-
-
-
-}
 
 
 
@@ -878,12 +867,12 @@ label:has(input),label:has(select),label:has(textarea){color:var(--ux-color-ink)
 
 
 
-@media(max-width:767px){}
 
 
-@media(max-width:767px){}
-@media(max-width:1023px){}
-@media(max-width:767px){}
+
+
+
+
 
 /* P66 — bank message as a focused global modal */
 .bank-message-dialog-form{display:grid;gap:var(--ux-space-4);}.bank-message-dialog-form label{display:grid;gap:var(--ux-space-2);}.bank-message-dialog-form textarea{min-height:180px;resize:vertical;}.tablet-quick-add,.mobile-quick-add-bank{font:inherit;cursor:pointer;}.mobile-quick-add-bank{width:100%;border:var(--ux-border-width-0);}
@@ -1242,7 +1231,6 @@ label:has(input),label:has(select),label:has(textarea){color:var(--ux-color-ink)
   }
 }
 
-.p72-financial-hero .p72-financial-hero .p72-dashboard-insights .p72-dashboard-insights 
 @media(max-width:767px){
 
 
@@ -1276,19 +1264,16 @@ label:has(input),label:has(select),label:has(textarea){color:var(--ux-color-ink)
 
 
 
-@media(max-width:767px){}
 
 
 
 
 
-@media(max-width:767px){
 
 
-}
 @media(max-width:767px){.page-header{gap:var(--ux-space-2);}.card,.form-card{padding:var(--ux-space-3);}.detail-list{gap:var(--ux-space-2);}}
 @media(min-width:768px) and (max-width:1023px){.page-shell{max-width:940px;}}
-@media(min-width:1024px){}
+
 
 
 
