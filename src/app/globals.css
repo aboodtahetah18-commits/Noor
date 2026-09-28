@@ -609,7 +609,7 @@ summary{cursor:pointer;min-height:var(--ux-size-11);display:flex;align-items:cen
 .p47-empty-shell{display:grid;place-items:center;min-height:calc(100vh - var(--ux-size-10));}.p47-empty-state{max-width:540px;text-align:center;padding:var(--ux-space-12) var(--ux-space-8);border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);border-radius:var(--ux-radius-6);background:var(--ux-surface-default);}.p47-empty-icon{display:grid;place-items:center;width:var(--ux-size-14);height:var(--ux-size-14);margin:var(--ux-space-0) auto var(--ux-space-4);border-radius:var(--ux-radius-4);background:var(--ux-surface-inverse);color:var(--ux-text-inverse);font-weight:700;font-size:var(--ux-type-card-title-size);}.p47-empty-state h1{margin:var(--ux-space-1) var(--ux-space-0) var(--ux-space-2);}.p47-empty-state>p:not(.p47-kicker){color:var(--ux-text-secondary);line-height:var(--ux-type-body-line);margin-bottom:var(--ux-space-5);}
 
 @media(min-width:1024px) and (max-width:1439px){
-  .desktop-top-nav-wrap.p47-desktop-sidebar{width:238px!important;}.protected-app-shell>#main-content{margin-inline-start:var(--ux-space-24);}.p47-content-shell{width:min(100% - var(--ux-size-9),1180px);}.p47-financial-hero{grid-template-columns:1.25fr .75fr;}.p47-command-metrics{grid-template-columns:repeat(2,minmax(0,1fr));}.p47-module-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .p47-content-shell{width:min(100% - var(--ux-size-9),1180px);}.p47-financial-hero{grid-template-columns:1.25fr .75fr;}.p47-command-metrics{grid-template-columns:repeat(2,minmax(0,1fr));}.p47-module-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
 }
 
 @media(min-width:768px) and (max-width:1023px){
@@ -854,7 +854,7 @@ body{
 .page-header .primary-link,.page-header .primary-button,.p47-page-heading .p47-primary-action,.p47-resource-header .p47-primary-action,.p47-flow-header .p47-primary-action,.p47-closure-header .p47-primary-action,.p47-analysis-header .p47-primary-action,.dashboard-header .primary-link,.dashboard-header .primary-button{
   border-color:var(--ux-action-primary)!important;background:var(--ux-action-primary)!important;color:var(--ux-color-ink)!important;box-shadow:var(--ux-shadow-xs)!important;}
 .page-header .secondary-button,.page-header .secondary-link,.p47-page-heading .p47-secondary-action,.p47-resource-header .p47-secondary-action,.dashboard-header .secondary-button{
-  border-color:var(--ux-action-primary)!important;background:var(--ux-action-primary)!important;color:var(--ux-action-primary)!important;}
+  border-color:var(--ux-action-primary)!important;background:var(--ux-surface-default)!important;color:var(--ux-action-primary)!important;}
 
 /* cards and panels: depth + colored identity instead of white-on-white */
 .card,.panel,.form-card,.dashboard-card,.dashboard-kpis article,.p47-panel,.p47-command-panel,.p47-resource-card,.p47-flow-card,.p47-analysis-card,.p47-goal-command-strip article,.p47-funding-kpis>div,.account-card,.account-total,.detail-list,.empty-state,.more-hub-card,.statement-kpis>article,.kpi-grid>article{
@@ -882,12 +882,12 @@ body{
 
 /* buttons become compact, icon-friendly and obviously interactive */
 .primary,.primary-button,.primary-link,.p47-primary-action{
-  background:var(--ux-action-primary)!important;border-color:var(--ux-color-transparent)!important;color:var(--ux-action-primary)!important;
+  background:var(--ux-action-primary)!important;border-color:var(--ux-color-transparent)!important;color:var(--ux-text-inverse)!important;
   box-shadow:var(--ux-shadow-xs)!important;border-radius:var(--ux-radius-3)!important;}
 .primary:hover,.primary-button:hover,.primary-link:hover,.p47-primary-action:hover{
   background:var(--ux-action-primary)!important;transform:translateY(-1px);}
 .secondary-button,.secondary-link,.button-link,.p47-secondary-action,.p49-resource-actions>.p49-modal-trigger,.p49-resource-actions>a{
-  border-color:var(--ux-action-primary)!important;background:var(--ux-action-primary)!important;color:var(--ux-color-ink)!important;border-radius:var(--ux-radius-3)!important;}
+  border-color:var(--ux-action-primary)!important;background:var(--ux-surface-default)!important;color:var(--ux-action-primary)!important;border-radius:var(--ux-radius-3)!important;}
 .danger-button{border-radius:var(--ux-radius-3)!important;background:var(--ux-surface-default)!important;}
 
 /* fields: visible tinted boundaries, focus, and grouped rhythm */
@@ -915,7 +915,7 @@ label:has(input),label:has(select),label:has(textarea){color:var(--ux-color-ink)
   box-shadow:var(--ux-shadow-xs);}
 .p49-tabs-bar button,.p49-form-pages button{border-radius:var(--ux-radius-3)!important;}
 .p49-tabs-bar button.is-active,.p49-form-pages button.is-active{
-  background:var(--ux-action-primary)!important;color:var(--ux-action-primary)!important;box-shadow:var(--ux-shadow-xs)!important;}
+  background:var(--ux-action-primary)!important;color:var(--ux-text-inverse)!important;box-shadow:var(--ux-shadow-xs)!important;}
 .p49-tab-panel{padding-top:var(--ux-space-1);}
 
 /* Desktop sidebar visual authority is canonical in namaa-app-shell.css.
