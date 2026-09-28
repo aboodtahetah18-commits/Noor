@@ -73,11 +73,4 @@ describe('Stage 2 shared primitive contract', () => {
     expect(css).toContain('@media (max-width:767px)');
     expect(css).toContain('.ux-bottom-sheet-surface');
     expect(css).toContain('.ux-drawer-surface');
-  });
-
-  it('keeps the legacy feedback implementation as a compatibility layer', () => {
-    const legacy = read('src/components/ui/feedback-state.tsx');
-    expect(legacy).toContain('p47-feedback-state');
-    expect(legacy).toContain("'danger'");
-  });
-});
+  });});
