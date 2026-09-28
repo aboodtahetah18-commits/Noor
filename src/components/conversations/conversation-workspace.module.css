@@ -9241,20 +9241,11 @@
 /* One authority for tablet/laptop/desktop conversation layout.               */
 /* ========================================================================== */
 @media (min-width:768px){
-  .page{
-    min-height:calc(100dvh - 88px);
-    border-radius:var(--ux-radius-lg);
-    border:1px solid var(--namaa-border);
-    background:var(--namaa-surface-warm);
-    box-shadow:var(--ux-shadow-lg);
-  }
-
   .workspaceHeader{
     display:none!important;
   }
 
   .workspace{
-    min-height:calc(100dvh - 88px);
     display:grid;
     grid-template-columns:minmax(220px,264px) minmax(0,1fr) minmax(220px,280px);
     background:var(--namaa-card);
