@@ -22,17 +22,17 @@
 }
 
 /* Shared page/container composition without altering page-local content. */
-.protected-app-shell :where(.page-shell,.dashboard-shell,.p47-page-stack) {
+.protected-app-shell :where(.page-shell,.dashboard-shell) {
   width:min(100%,var(--ux-container-content));
   max-width:100%;
   margin-inline:auto;
 }
 
-.protected-app-shell :where(.page-header,.p47-page-heading,.p47-resource-header) {
+.protected-app-shell :where(.page-header) {
   min-width:0;
 }
 
-.protected-app-shell :where(.section-title-row,.p47-section-header) {
+.protected-app-shell :where(.section-title-row) {
   min-width:0;
 }
 
@@ -591,19 +591,19 @@
     padding:0;
   }
 
-  .protected-app-shell :where(.page-shell,.dashboard-shell,.p47-page-stack) {
+  .protected-app-shell :where(.page-shell,.dashboard-shell) {
     width:100%;
     max-width:100%;
     min-width:0;
   }
 
-  .protected-app-shell :where(.page-header,.p47-page-heading,.p47-resource-header) {
+  .protected-app-shell :where(.page-header) {
     width:100%;
     max-width:100%;
     min-width:0;
   }
 
-  .protected-app-shell :where(.section-title-row,.p47-section-header) {
+  .protected-app-shell :where(.section-title-row) {
     max-width:100%;
     min-width:0;
   }
