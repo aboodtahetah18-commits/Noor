@@ -10666,6 +10666,25 @@
 /* FINAL MOBILE NAV + PAGE AUTHORITY — grouped drawer and full-page inner screens. */
 @media (max-width:767px){
   .mobileSideSheet{
+    position:fixed!important;
+    inset-block-start:72px!important;
+    inset-inline:0!important;
+    width:100dvw!important;
+    max-width:100dvw!important;
+    height:calc(100dvh - 72px)!important;
+    max-height:calc(100dvh - 72px)!important;
+    margin:0!important;
+    padding:0!important;
+    border:0!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+    background:var(--namaa-card)!important;
+  }
+  .mobileSideSheet .sideBrandRow{
+    margin:0!important;
+    padding:var(--ux-space-2) var(--ux-space-3)!important;
+  }
+  .mobileSideSheet{
     display:block!important;
     overflow-y:auto!important;
     overscroll-behavior:contain!important
