@@ -218,6 +218,54 @@ body { min-height:100vh; }
   .dashboard-shell,.page-shell{max-width:1300px;}
 }
 
+/* Desktop workspace hardening — legacy p47 pages only.
+   Keep the modern Dashboard CSS module authoritative and leave tablet/mobile untouched. */
+@media(min-width:1024px){
+  .protected-app-shell .p47-page>.p47-content-shell,
+  .protected-app-shell .app-page>.page-shell,
+  .protected-app-shell .app-page>.dashboard-shell{
+    width:min(100%,var(--ux-container-content));
+    max-width:100%;
+    margin-inline:auto;
+  }
+
+  .protected-app-shell :where(.p47-page-heading,.p47-resource-header,.p47-section-heading,.dashboard-header,.page-header){
+    min-width:0;
+  }
+
+  .protected-app-shell :where(.p47-command-metrics,.p47-module-grid,.p47-settings-reference-grid,.p47-budget-summary-grid,.p76-route-grid)>*{
+    min-width:0;
+  }
+
+  .protected-app-shell :where(.transaction-table-wrap,.report-table-wrap,.plan-table-wrap){
+    width:100%;
+    max-width:100%;
+    overflow-x:auto;
+    overscroll-behavior-inline:contain;
+  }
+
+  .protected-app-shell :where(.transaction-table,.report-table,.plan-builder-table){
+    width:100%;
+    max-width:none;
+  }
+
+  .protected-app-shell :where(.p47-empty-state,.empty-state){
+    margin-inline:auto;
+  }
+
+  .protected-app-shell .p74-secondary-disclosure{
+    width:100%;
+  }
+
+  .protected-app-shell .p47-settings-reference-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+
+  .protected-app-shell .p76-route-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+}
+
 /* Phase 34 — Tablet Hardening (701px–999px) */
 .tablet-top-nav-wrap{display:none;}
 
