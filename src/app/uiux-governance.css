@@ -15,9 +15,9 @@ button,input,select,textarea{font:inherit;color:inherit;}
 /* App shell / P13 + P16 */
 .protected-app-shell{min-height:100dvh;background:var(--ux-surface-canvas);color:var(--ux-text-primary);}
 .protected-app-shell>#main-content{min-width:0;}
-.app-page{background:var(--ux-surface-canvas)!important;color:var(--ux-text-primary)!important;padding-block:var(--ux-space-8)!important;}
+
 .page-shell,.dashboard-shell{width:min(100%,var(--ux-container-content))!important;max-width:var(--ux-container-content)!important;margin-inline:auto!important;padding-inline:var(--ux-space-8)!important;}
-.narrow-shell{width:min(100%,var(--ux-container-form))!important;max-width:var(--ux-container-form)!important;}
+
 .namaa-sidebar{width:240px!important;background:var(--ux-surface-inverse)!important;box-shadow:var(--ux-shadow-md)!important;}
 @media(min-width:1440px){.protected-app-shell>#main-content{margin-inline-start:var(--ux-space-24)!important;}.namaa-mobile-topbar,.mobile-bottom-nav{display:none!important;}}
 @media(min-width:1440px){.page-shell,.dashboard-shell,.page-shell{padding-inline:var(--ux-space-10)!important;}}
@@ -139,7 +139,7 @@ button,input,select,textarea{font-family:inherit!important;}
 
 /* Core surfaces and hierarchy */
 .protected-app-shell{background:var(--ux-page-bg)!important;min-height:100dvh;}
-.app-page{background:var(--ux-page-bg)!important;color:var(--ux-text-primary)!important;}
+
 .page-shell,.dashboard-shell{max-width:1360px!important;width:100%!important;margin-inline:auto!important;}
 .card,.panel,.dashboard-card,.form-card,.summary-card,.account-card,.account-total,.detail-list,.empty-state,.statement-kpis>div{
   background:var(--ux-card-bg)!important;border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default)!important;border-radius:var(--ux-radius-lg)!important;box-shadow:var(--ux-shadow-s)!important;color:var(--ux-text-primary)!important;
