@@ -29,4 +29,8 @@
   .desktop-top-nav-wrap {
     display: block;
   }
+
+  .protected-app-shell:has([data-chat-first-route="true"]) .desktop-top-nav-wrap {
+    display: none;
+  }
 }
