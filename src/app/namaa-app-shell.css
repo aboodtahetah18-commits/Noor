@@ -48,7 +48,8 @@
     padding-inline-start:var(--ux-shell-sidebar-expanded);
   }
 
-  .desktop-top-nav-wrap.mustaqbali-sidebar {\n    position:fixed;
+  .desktop-top-nav-wrap.mustaqbali-sidebar {
+    position:fixed;
     inset-block:0;
     inset-inline-start:0;
     width:var(--ux-shell-sidebar-collapsed);
@@ -273,7 +274,8 @@
 @media (min-width:1024px) {
   .protected-app-shell:has([data-chat-first-route="true"]) {
     padding-inline-start:0;
-  }\n
+  }
+
   .protected-app-shell:has([data-chat-first-route="true"]) .mustaqbali-topbar.namaa-topbar {
     inset-inline-start:0;
   }
@@ -297,8 +299,10 @@
 @media (min-width:768px) and (max-width:1023px) {
   .protected-app-shell {
     min-height:100dvh;
-  }\n
-  .tablet-top-nav-wrap {\n    position:sticky;
+  }
+
+  .tablet-top-nav-wrap {
+    position:sticky;
     inset-block-start:0;
     z-index:var(--ux-z-sticky);
     border-block-end:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-shell-topbar-border);
@@ -415,8 +419,10 @@
 }
 
 /* Mobile <768: light topbar + fixed five-item bottom navigation + shared Drawer. */
-@media (max-width:767px) {\n
-  .p47-mobile-topbar.mustaqbali-mobile-header {\n    grid-template-columns:minmax(0,1fr) auto !important;
+@media (max-width:767px) {
+
+  .p47-mobile-topbar.mustaqbali-mobile-header {
+    grid-template-columns:minmax(0,1fr) auto !important;
     align-items:center;
     gap:var(--ux-space-2);
     position:sticky;
@@ -478,7 +484,8 @@
     background:var(--ux-section-soft-teal);
   }
 
-  .mobile-bottom-nav.mustaqbali-mobile-bottom-nav {\n    grid-template-columns:repeat(5,minmax(0,1fr));
+  .mobile-bottom-nav.mustaqbali-mobile-bottom-nav {
+    grid-template-columns:repeat(5,minmax(0,1fr));
     position:fixed;
     inset-inline:0;
     inset-block-end:0;
