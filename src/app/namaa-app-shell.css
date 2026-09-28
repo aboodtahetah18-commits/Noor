@@ -152,6 +152,18 @@
     display:none;
   }
 
+  html[data-sidebar="expanded"] .mustaqbali-nav-section > p {
+    display:block;
+  }
+
+  html[data-sidebar="expanded"] .mustaqbali-nav-label {
+    display:block;
+    min-width:0;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+
   .mustaqbali-sidebar-nav a {
     min-height:var(--ux-size-10);
     min-width:0;
@@ -171,8 +183,14 @@
 
   .mustaqbali-sidebar-nav a.is-active {
     background:var(--ux-shell-sidebar-active);
+    color:var(--ux-text-inverse);
     font-weight:var(--ux-type-button-weight);
     border-inline-start:var(--ux-border-width-2) var(--ux-border-style-default) var(--ux-brand-accent);
+  }
+
+  .mustaqbali-sidebar-nav a.is-active .mustaqbali-nav-icon,
+  .mustaqbali-sidebar-nav a.is-active .mustaqbali-nav-label {
+    color:inherit;
   }
 
   html[data-sidebar="collapsed"] .mustaqbali-sidebar-nav a {
@@ -254,9 +272,22 @@
     justify-content:flex-end;
   }
 
+  .mustaqbali-topbar-menu:hover,
+  .mustaqbali-topbar-menu:focus-visible,
   .mustaqbali-topbar-actions > a:hover,
-  .mustaqbali-topbar-actions > button:hover {
+  .mustaqbali-topbar-actions > a:focus-visible,
+  .mustaqbali-topbar-actions > button:hover,
+  .mustaqbali-topbar-actions > button:focus-visible {
     background:var(--ux-section-soft-teal);
+    border-color:var(--ux-border-default);
+    color:var(--ux-brand-primary);
+  }
+
+  .mustaqbali-topbar-menu:focus-visible,
+  .mustaqbali-topbar-actions > a:focus-visible,
+  .mustaqbali-topbar-actions > button:focus-visible {
+    outline:var(--ux-border-width-2) var(--ux-border-style-default) var(--ux-focus-ring);
+    outline-offset:var(--ux-border-width-2);
   }
 
   .namaa-app-main {
