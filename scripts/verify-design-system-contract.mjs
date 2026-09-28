@@ -31,6 +31,7 @@ const layout = read('src/app/layout.tsx');
 const loaded = ['tokens.css','themes.css','typography.css','foundations.css','responsive.css','contracts.css','components.css','interaction-components.css','pages.css','ndos-v1.2.acceptance.css','ndos-v1.2.css','ndos-v1.2.enforcement.css'];
 for (const file of loaded) if (!layout.includes(`../design-system/${file}`)) fail.push(`root layout does not load ${file}`);
 for (const retired of ['experience.css','brand-refresh.css']) if (layout.includes(retired)) fail.push(`root layout still loads retired layer ${retired}`);
+for (const shellLayer of ['./namaa-app-shell.css','./namaa-shell-visibility.css']) if (!layout.includes(shellLayer)) fail.push(`root layout does not load canonical shell layer ${shellLayer}`);
 
 const order = loaded.map((file)=>layout.indexOf(`../design-system/${file}`));
 for (let i=1;i<order.length;i++) if (order[i] <= order[i-1]) fail.push(`design-system import order is invalid around ${loaded[i-1]} -> ${loaded[i]}`);
@@ -68,7 +69,7 @@ const interaction = read('src/design-system/interaction-components.css');
 for (const token of ['.mx-action-rail','touch-action:pan-x','.mx-action-chip']) if (!interaction.includes(token)) fail.push(`interaction component layer missing ${token}`);
 
 const pages = read('src/design-system/pages.css');
-for (const selector of ['.mustaqbali-topbar','.mustaqbali-sidebar','.p47-page-heading','.transaction-table','.p49-dialog-shell','.p55-profile-summary']) {
+for (const selector of ['.p47-page-heading','.transaction-table','.p49-dialog-shell','.p55-profile-summary']) {
   if (!pages.includes(selector)) fail.push(`page identity layer is missing governed surface: ${selector}`);
 }
 
