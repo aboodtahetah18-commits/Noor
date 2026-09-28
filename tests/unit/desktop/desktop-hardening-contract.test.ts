@@ -5,6 +5,7 @@ import path from 'node:path';
 const root = process.cwd();
 const css = fs.readFileSync(path.join(root, 'src/app/globals.css'), 'utf8');
 const shell = fs.readFileSync(path.join(root, 'src/app/namaa-app-shell.css'), 'utf8');
+const governance = fs.readFileSync(path.join(root, 'src/app/uiux-governance.css'), 'utf8');
 const layout = fs.readFileSync(path.join(root, 'src/app/(protected)/layout.tsx'), 'utf8');
 
 describe('Desktop visual authority contract', () => {
@@ -18,6 +19,9 @@ describe('Desktop visual authority contract', () => {
     expect(css).not.toContain('.desktop-top-nav-wrap.p47-desktop-sidebar');
     expect(css).not.toContain('.protected-app-shell>#main-content{margin-inline-start');
     expect(css).not.toContain('/* desktop sidebar */');
+    expect(governance).not.toContain('p47-desktop-sidebar');
+    expect(governance).not.toContain('margin-inline-start:var(--ux-space-24)');
+    expect(governance).toContain('Desktop shell geometry is governed exclusively by namaa-app-shell.css');
     expect(css).not.toContain('background:var(--ux-action-primary)!important;color:var(--ux-action-primary)!important');
   });
 
