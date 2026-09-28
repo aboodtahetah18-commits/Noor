@@ -48,7 +48,7 @@
     padding-inline-start:var(--ux-shell-sidebar-expanded);
   }
 
-  .desktop-top-nav-wrap.mustaqbali-sidebar {
+  .desktop-top-nav-wrap.namaa-sidebar {
     position:fixed;
     inset-block:0;
     inset-inline-start:0;
@@ -61,11 +61,11 @@
     color:var(--ux-text-inverse);
   }
 
-  html[data-sidebar="expanded"] .desktop-top-nav-wrap.mustaqbali-sidebar {
+  html[data-sidebar="expanded"] .desktop-top-nav-wrap.namaa-sidebar {
     width:var(--ux-shell-sidebar-expanded);
   }
 
-  .mustaqbali-sidebar-inner {
+  .namaa-sidebar-inner {
     height:100%;
     min-width:0;
     display:grid;
@@ -99,9 +99,9 @@
   }
 
   .namaa-wide-sidebar-close,
-  .mustaqbali-topbar-menu,
-  .mustaqbali-topbar-actions > a,
-  .mustaqbali-topbar-actions > button {
+  .namaa-topbar-menu,
+  .namaa-topbar-actions > a,
+  .namaa-topbar-actions > button {
     min-width:var(--ux-size-10);
     width:var(--ux-size-10);
     min-height:var(--ux-size-10);
@@ -120,25 +120,25 @@
     background:var(--ux-shell-sidebar-hover);
   }
 
-  .mustaqbali-sidebar-nav {
+  .namaa-sidebar-nav {
     min-width:0;
     overflow-y:auto;
     overflow-x:hidden;
     padding:var(--ux-space-3) var(--ux-space-2) var(--ux-space-6);
   }
 
-  .mustaqbali-nav-section {
+  .namaa-nav-section {
     display:grid;
     gap:var(--ux-space-1);
   }
 
-  .mustaqbali-nav-section + .mustaqbali-nav-section {
+  .namaa-nav-section + .namaa-nav-section {
     margin-block-start:var(--ux-space-4);
     padding-block-start:var(--ux-space-3);
     border-block-start:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-shell-topbar-border);
   }
 
-  .mustaqbali-nav-section > p {
+  .namaa-nav-section > p {
     margin:0;
     padding:var(--ux-space-2) var(--ux-space-3);
     color:var(--ux-text-inverse);
@@ -146,12 +146,12 @@
     font-weight:var(--ux-type-label-weight);
   }
 
-  html[data-sidebar="collapsed"] .mustaqbali-nav-section > p,
-  html[data-sidebar="collapsed"] .mustaqbali-nav-label {
+  html[data-sidebar="collapsed"] .namaa-nav-section > p,
+  html[data-sidebar="collapsed"] .namaa-nav-label {
     display:none;
   }
 
-  .mustaqbali-sidebar-nav a {
+  .namaa-sidebar-nav a {
     min-height:var(--ux-size-10);
     min-width:0;
     display:flex;
@@ -163,29 +163,29 @@
     text-decoration:none;
   }
 
-  .mustaqbali-sidebar-nav a:hover,
-  .mustaqbali-sidebar-nav a:focus-visible {
+  .namaa-sidebar-nav a:hover,
+  .namaa-sidebar-nav a:focus-visible {
     background:var(--ux-shell-sidebar-hover);
   }
 
-  .mustaqbali-sidebar-nav a.is-active {
+  .namaa-sidebar-nav a.is-active {
     background:var(--ux-shell-sidebar-active);
     font-weight:var(--ux-type-button-weight);
     border-inline-start:var(--ux-border-width-2) var(--ux-border-style-default) var(--ux-brand-accent);
   }
 
-  html[data-sidebar="collapsed"] .mustaqbali-sidebar-nav a {
+  html[data-sidebar="collapsed"] .namaa-sidebar-nav a {
     justify-content:center;
     padding-inline:0;
   }
 
-  .mustaqbali-nav-icon {
+  .namaa-nav-icon {
     flex:0 0 auto;
     display:inline-grid;
     place-items:center;
   }
 
-  .mustaqbali-topbar.namaa-topbar {
+  .namaa-topbar.namaa-topbar {
     display:grid;
     grid-template-columns:auto minmax(0,1fr) auto;
     align-items:center;
@@ -203,23 +203,23 @@
     color:var(--ux-text-primary);
   }
 
-  html[data-sidebar="expanded"] .mustaqbali-topbar.namaa-topbar {
+  html[data-sidebar="expanded"] .namaa-topbar.namaa-topbar {
     inset-inline-start:var(--ux-shell-sidebar-expanded);
   }
 
-  .mustaqbali-topbar-brand-zone,
-  .mustaqbali-topbar-actions {
+  .namaa-topbar-brand-zone,
+  .namaa-topbar-actions {
     display:flex;
     align-items:center;
     gap:var(--ux-space-2);
   }
 
-  .mustaqbali-topbar-logo .namaa-brand-logo {
+  .namaa-topbar-logo .namaa-brand-logo {
     width:var(--ux-logo-desktop-width);
     height:auto;
   }
 
-  .mustaqbali-global-search {
+  .namaa-global-search {
     justify-self:center;
     width:min(100%,var(--ux-container-reading));
     min-height:var(--ux-size-10);
@@ -234,7 +234,7 @@
     color:var(--ux-text-secondary);
   }
 
-  .mustaqbali-global-search input {
+  .namaa-global-search input {
     width:100%;
     min-width:0;
     border:0;
@@ -244,17 +244,17 @@
     font:inherit;
   }
 
-  .mustaqbali-global-search:focus-within {
+  .namaa-global-search:focus-within {
     border-color:var(--ux-focus-ring);
     box-shadow:var(--ux-shadow-focus);
   }
 
-  .mustaqbali-topbar-actions {
+  .namaa-topbar-actions {
     justify-content:flex-end;
   }
 
-  .mustaqbali-topbar-actions > a:hover,
-  .mustaqbali-topbar-actions > button:hover {
+  .namaa-topbar-actions > a:hover,
+  .namaa-topbar-actions > button:hover {
     background:var(--ux-section-soft-teal);
   }
 
@@ -276,7 +276,7 @@
     padding-inline-start:0;
   }
 
-  .protected-app-shell:has([data-chat-first-route="true"]) .mustaqbali-topbar.namaa-topbar {
+  .protected-app-shell:has([data-chat-first-route="true"]) .namaa-topbar.namaa-topbar {
     inset-inline-start:0;
   }
 
@@ -309,7 +309,7 @@
     background:var(--ux-shell-topbar-bg);
   }
 
-  .mustaqbali-tablet-topbar {
+  .namaa-tablet-topbar {
     min-height:var(--ux-shell-topbar-height);
     display:grid;
     grid-template-columns:auto minmax(0,1fr) auto;
@@ -319,12 +319,12 @@
     background:var(--ux-shell-topbar-bg);
   }
 
-  .mustaqbali-tablet-brand .namaa-brand-logo {
+  .namaa-tablet-brand .namaa-brand-logo {
     width:var(--ux-logo-tablet-width);
     height:auto;
   }
 
-  .mustaqbali-tablet-search {
+  .namaa-tablet-search {
     min-height:var(--ux-size-10);
     display:grid;
     grid-template-columns:auto minmax(0,1fr);
@@ -337,7 +337,7 @@
     color:var(--ux-text-secondary);
   }
 
-  .mustaqbali-tablet-search input {
+  .namaa-tablet-search input {
     min-width:0;
     width:100%;
     border:0;
@@ -347,19 +347,19 @@
     font:inherit;
   }
 
-  .mustaqbali-tablet-search:focus-within {
+  .namaa-tablet-search:focus-within {
     border-color:var(--ux-focus-ring);
     box-shadow:var(--ux-shadow-focus);
   }
 
-  .mustaqbali-tablet-actions {
+  .namaa-tablet-actions {
     display:flex;
     align-items:center;
     gap:var(--ux-space-2);
   }
 
-  .mustaqbali-tablet-action,
-  .mustaqbali-tablet-actions > button {
+  .namaa-tablet-action,
+  .namaa-tablet-actions > button {
     min-width:var(--ux-size-10);
     width:var(--ux-size-10);
     min-height:var(--ux-size-10);
@@ -370,7 +370,7 @@
     color:var(--ux-text-primary);
   }
 
-  .mustaqbali-tablet-nav {
+  .namaa-tablet-nav {
     display:flex;
     align-items:center;
     gap:var(--ux-space-1);
@@ -381,7 +381,7 @@
     scrollbar-width:thin;
   }
 
-  .mustaqbali-tablet-nav a {
+  .namaa-tablet-nav a {
     flex:0 0 auto;
     min-height:var(--ux-size-9);
     display:inline-flex;
@@ -393,13 +393,13 @@
     white-space:nowrap;
   }
 
-  .mustaqbali-tablet-nav a:hover,
-  .mustaqbali-tablet-nav a:focus-visible {
+  .namaa-tablet-nav a:hover,
+  .namaa-tablet-nav a:focus-visible {
     background:var(--ux-section-soft-teal);
     color:var(--ux-text-primary);
   }
 
-  .mustaqbali-tablet-nav a.is-active {
+  .namaa-tablet-nav a.is-active {
     background:var(--ux-action-primary);
     color:var(--ux-text-inverse);
     font-weight:var(--ux-type-button-weight);
@@ -421,7 +421,7 @@
 /* Mobile <768: light topbar + fixed five-item bottom navigation + shared Drawer. */
 @media (max-width:767px) {
 
-  .p47-mobile-topbar.mustaqbali-mobile-header {
+  .namaa-mobile-topbar.namaa-mobile-header {
     grid-template-columns:minmax(0,1fr) auto;
     align-items:center;
     gap:var(--ux-space-2);
@@ -437,33 +437,33 @@
     color:var(--ux-text-primary);
   }
 
-  .mustaqbali-mobile-brand-zone,
-  .mustaqbali-mobile-header-actions {
+  .namaa-mobile-brand-zone,
+  .namaa-mobile-header-actions {
     min-inline-size:0;
     display:flex;
     align-items:center;
     gap:var(--ux-space-1);
   }
 
-  .mustaqbali-mobile-brand-zone {
+  .namaa-mobile-brand-zone {
     overflow:hidden;
   }
 
-  .mustaqbali-mobile-brand {
+  .namaa-mobile-brand {
     min-width:0;
     display:flex;
     align-items:center;
     overflow:hidden;
   }
 
-  .mustaqbali-mobile-brand .namaa-brand-logo {
+  .namaa-mobile-brand .namaa-brand-logo {
     width:var(--ux-logo-mobile-width);
     height:auto;
   }
 
-  .mustaqbali-mobile-menu-trigger,
-  .mustaqbali-mobile-header-actions > a,
-  .mustaqbali-mobile-header-actions > button {
+  .namaa-mobile-menu-trigger,
+  .namaa-mobile-header-actions > a,
+  .namaa-mobile-header-actions > button {
     flex:0 0 auto;
     min-width:var(--ux-size-10);
     width:var(--ux-size-10);
@@ -478,13 +478,13 @@
     color:var(--ux-text-primary);
   }
 
-  .mustaqbali-mobile-menu-trigger:hover,
-  .mustaqbali-mobile-header-actions > a:hover,
-  .mustaqbali-mobile-header-actions > button:hover {
+  .namaa-mobile-menu-trigger:hover,
+  .namaa-mobile-header-actions > a:hover,
+  .namaa-mobile-header-actions > button:hover {
     background:var(--ux-section-soft-teal);
   }
 
-  .mobile-bottom-nav.mustaqbali-mobile-bottom-nav {
+  .mobile-bottom-nav.namaa-mobile-bottom-nav {
     grid-template-columns:repeat(5,minmax(0,1fr));
     position:fixed;
     inset-inline:0;
@@ -676,8 +676,8 @@
 }
 
 @media (prefers-reduced-motion:reduce) {
-  .desktop-top-nav-wrap.mustaqbali-sidebar,
-  .mustaqbali-topbar.namaa-topbar {
+  .desktop-top-nav-wrap.namaa-sidebar,
+  .namaa-topbar.namaa-topbar {
     transition:none;
   }
 }
