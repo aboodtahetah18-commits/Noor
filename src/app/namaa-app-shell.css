@@ -199,8 +199,8 @@
     z-index:var(--ux-z-sticky);
     padding-inline:var(--ux-space-5);
     border-block-end:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-shell-topbar-border);
-    background:var(--ux-shell-topbar-bg) !important;
-    color:var(--ux-text-primary) !important;
+    background:var(--ux-shell-topbar-bg);
+    color:var(--ux-text-primary);
   }
 
   html[data-sidebar="expanded"] .mustaqbali-topbar.namaa-topbar {
@@ -422,7 +422,7 @@
 @media (max-width:767px) {
 
   .p47-mobile-topbar.mustaqbali-mobile-header {
-    grid-template-columns:minmax(0,1fr) auto !important;
+    grid-template-columns:minmax(0,1fr) auto;
     align-items:center;
     gap:var(--ux-space-2);
     position:sticky;
@@ -430,16 +430,16 @@
     z-index:var(--ux-z-sticky);
     min-height:var(--ux-mobile-header-height);
     width:100%;
-    max-inline-size:100vw !important;
+    max-inline-size:100vw;
     padding-inline:var(--ux-space-3);
     border-block-end:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-shell-topbar-border);
-    background:var(--ux-shell-topbar-bg) !important;
+    background:var(--ux-shell-topbar-bg);
     color:var(--ux-text-primary);
   }
 
   .mustaqbali-mobile-brand-zone,
   .mustaqbali-mobile-header-actions {
-    min-inline-size:0 !important;
+    min-inline-size:0;
     display:flex;
     align-items:center;
     gap:var(--ux-space-1);
@@ -678,6 +678,6 @@
 @media (prefers-reduced-motion:reduce) {
   .desktop-top-nav-wrap.mustaqbali-sidebar,
   .mustaqbali-topbar.namaa-topbar {
-    transition:none !important;
+    transition:none;
   }
 }
