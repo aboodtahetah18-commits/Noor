@@ -4,13 +4,13 @@
 
 .desktop-top-nav-wrap,
 .tablet-top-nav-wrap,
-.p47-mobile-topbar,
+.namaa-mobile-topbar,
 .mobile-bottom-nav {
   display: none;
 }
 
 @media (max-width: 767px) {
-  .p47-mobile-topbar {
+  .namaa-mobile-topbar {
     display: grid;
   }
 
