@@ -4167,17 +4167,6 @@
   align-items:center;
   gap:var(--ux-space-3)
   }
-  .chatPane{
-    display:flex;
-    flex-direction:column;
-    min-height:0;
-    height:100%;
-    max-height:100%;
-    background:var(--namaa-chat-canvas);
-    overflow:hidden;
-    position:relative;
-    z-index:1
-  }
   .chatIdentity{
     gap:var(--ux-space-2);
   flex:1
@@ -4189,18 +4178,6 @@
   .chatIdentity small{
     font-size:var(--ux-type-caption-size);
   line-height:1.35
-  }
-  .messages{
-    flex:1 1 auto;
-    padding:var(--ux-space-3) var(--ux-space-2) calc(var(--ux-space-4) + env(safe-area-inset-bottom));
-    min-height:0;
-    overflow-y:auto;
-    overflow-x:hidden;
-    overscroll-behavior-y:contain;
-    -webkit-overflow-scrolling:touch;
-    touch-action:pan-y;
-    gap:var(--ux-space-3);
-    scroll-padding-bottom:calc(var(--ux-space-16) + env(safe-area-inset-bottom))
   }
   .messages>p{
     flex:0 0 auto
@@ -4259,79 +4236,6 @@
   .onboardingReviewPrompt .secondaryButton{
     flex:0 0 auto;
   white-space:nowrap
-  }
-  .attachButton,.sendButton{
-    width:40px;
-    height:40px;
-    flex:0 0 40px;
-    border-radius:var(--ux-radius-full);
-    flex-basis:40px;
-    box-shadow:var(--ux-shadow-xs)
-  }
-  .attachButton{
-    border:1px solid var(--namaa-border-strong)
-  }
-  .composer{
-    position:sticky;
-    bottom:0;
-    z-index:10;
-    flex:0 0 auto;
-    width:100%;
-    margin:var(--ux-space-0);
-    padding:var(--ux-space-2) var(--ux-space-2) calc(var(--ux-space-2) + env(safe-area-inset-bottom));
-    border-radius:var(--ux-radius-0);
-    border-inline:0;
-    border-bottom:0;
-    border-top:1px solid var(--namaa-border-strong);
-    background:var(--namaa-card);
-    box-shadow:var(--ux-shadow-sm);
-    align-items:center
-  }
-  .composer textarea{
-    flex:1 1 auto;
-    align-self:center;
-    box-sizing:border-box;
-    min-height:40px;
-    max-height:40dvh;
-    height:40px;
-    padding:var(--ux-space-2) var(--ux-space-3);
-    border:1px solid var(--namaa-border-strong);
-    border-radius:var(--ux-radius-full);
-    background:var(--namaa-card);
-    resize:none;
-    font-size:var(--ux-type-body-sm-size);
-    line-height:1.5;
-    overflow-y:auto
-  }
-  .chatHeader{
-    height:88px;
-    min-height:88px;
-    padding:var(--ux-space-0) var(--ux-space-3);
-    position:relative;
-    top:var(--ux-space-0);
-    z-index:6;
-    background:var(--namaa-green-900);
-    border-bottom:1px solid var(--namaa-border);
-    border-radius:var(--ux-radius-0) var(--ux-radius-0) var(--ux-radius-3) var(--ux-radius-3)
-  }
-  .centralChatHeader,
-  .centralChatHeader .chatHeaderForeground{
-    min-height:96px;
-    height:96px
-  }
-  .compactMenuButton,
-  .mobileTools button{
-    width:36px;
-    height:36px;
-    flex:0 0 36px;
-    border:1px solid color-mix(in srgb,var(--namaa-gold-500) 64%,var(--namaa-card));
-    border-radius:var(--ux-radius-full);
-    background:color-mix(in srgb,var(--namaa-card) 18%,transparent);
-    color:var(--ux-text-inverse);
-    display:grid;
-    place-items:center;
-    padding:var(--ux-space-0);
-    box-shadow:var(--ux-shadow-sm)
   }
   .compactMenuButton:focus-visible,
   .mobileTools button:focus-visible{
