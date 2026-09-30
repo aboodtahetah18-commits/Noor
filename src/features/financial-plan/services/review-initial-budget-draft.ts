@@ -13,6 +13,16 @@ export type InitialBudgetReviewIssue={
   itemName?:string;
 };
 
+export type InitialBudgetCorrectionSuggestion={
+  allocationId:string;
+  itemName:string;
+  allocationType:string;
+  currentAmount:number;
+  suggestedAmount:number;
+  reduction:number;
+  reason:string;
+};
+
 export type InitialBudgetReview={
   canApprove:boolean;
   income:number;
@@ -22,6 +32,9 @@ export type InitialBudgetReview={
   remainingAfterPlan:number;
   itemCount:number;
   issues:InitialBudgetReviewIssue[];
+  correctionSuggestions:InitialBudgetCorrectionSuggestion[];
+  suggestedReductionTotal:number;
+  unresolvedGap:number;
 };
 
 function finite(value:unknown){
@@ -47,6 +60,9 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       remainingAfterPlan:0,
       itemCount:0,
       issues:[{code:'NO_ITEMS',severity:'blocker',message:'المسودة غير متاحة للمراجعة قبل الاعتماد.'}],
+      correctionSuggestions:[],
+      suggestedReductionTotal:0,
+      unresolvedGap:0,
     };
   }
 
@@ -85,6 +101,7 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
   const income=expectedIncome>0?expectedIncome:foundationIncome;
 
   const items=allocationRows.map(row=>({
+    allocationId:String(row.id),
     name:String(row.name??'بند'),
     amount:finite(row.planned_amount),
     type:String(row.allocation_type??''),
@@ -106,10 +123,13 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
 
   for(const item of items){
     if(item.amount<=0){
+      const core=item.type==='OBLIGATION'||item.type==='ESSENTIAL';
       issues.push({
         code:'ZERO_OR_MISSING_AMOUNT',
-        severity:'blocker',
-        message:`بند «${item.name}» لا يحتوي على مبلغ صالح أكبر من صفر.`,
+        severity:core?'blocker':'warning',
+        message:core
+          ? `بند «${item.name}» أساسي أو التزام ولا يحتوي على مبلغ صالح أكبر من صفر.`
+          : `بند «${item.name}» قيمته صفر. أبقه بهذه القيمة فقط إذا كنت تريد تعطيله مؤقتًا.`,
         itemName:item.name,
       });
     }
@@ -127,10 +147,39 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
   if(income>0&&total>income&&coreTotal<=income){
     issues.push({
       code:'TOTAL_OVER_INCOME',
-      severity:'warning',
-      message:`إجمالي المسودة أعلى من الدخل الشهري بمقدار ${(total-income).toFixed(2)} ريال. راجع البنود المرنة والادخار والأهداف قبل الاعتماد.`,
+      severity:'blocker',
+      message:`إجمالي المسودة أعلى من الدخل الشهري بمقدار ${(total-income).toFixed(2)} ريال. خفّض البنود غير الأساسية قبل الاعتماد.`,
     });
   }
+
+  const correctionSuggestions:InitialBudgetCorrectionSuggestion[]=[];
+  let remainingGap=income>0?Math.max(0,total-income):0;
+  const correctionPriority=['FLEXIBLE','GOAL','SAVING'];
+  for(const type of correctionPriority){
+    for(const item of items.filter(candidate=>candidate.type===type&&candidate.amount>0)){
+      if(remainingGap<=0) break;
+      const reduction=Math.min(item.amount,remainingGap);
+      if(reduction<=0) continue;
+      const suggestedAmount=Math.max(0,item.amount-reduction);
+      correctionSuggestions.push({
+        allocationId:item.allocationId,
+        itemName:item.name,
+        allocationType:item.type,
+        currentAmount:item.amount,
+        suggestedAmount,
+        reduction,
+        reason:type==='FLEXIBLE'
+          ? 'خفض بند مرن أولًا لأنه الأقل تأثيرًا على الالتزامات الأساسية.'
+          : type==='GOAL'
+            ? 'تخفيف مساهمة الهدف مؤقتًا بعد استنفاد البنود المرنة.'
+            : 'تخفيف الادخار مؤقتًا فقط إذا لم تكفِ البنود المرنة والأهداف.',
+      });
+      remainingGap=Math.max(0,remainingGap-reduction);
+    }
+    if(remainingGap<=0) break;
+  }
+  const suggestedReductionTotal=correctionSuggestions.reduce((sum,item)=>sum+item.reduction,0);
+  const unresolvedGap=remainingGap;
 
   const protectedCount=items.filter(item=>item.type==='SAVING'||item.type==='EMERGENCY').length;
   if(items.length&&protectedCount===0){
@@ -150,5 +199,8 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
     remainingAfterPlan:income-total,
     itemCount:items.length,
     issues,
+    correctionSuggestions,
+    suggestedReductionTotal,
+    unresolvedGap,
   };
 }
