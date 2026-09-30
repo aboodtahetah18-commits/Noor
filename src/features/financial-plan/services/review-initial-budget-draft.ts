@@ -62,6 +62,13 @@ export type TemporaryExtraAmountSuggestion={
   biasAdjustment:number;
   biasApplied:boolean;
   biasLabel:string|null;
+  biasStability:'INSUFFICIENT'|'STABLE_UNDER'|'STABLE_OVER'|'MIXED'|'SHIFTING';
+  recentOutcomeCount:number;
+  recentUnderCount:number;
+  recentOverCount:number;
+  recentMatchCount:number;
+  recentSignedBias:number|null;
+  driftLabel:string|null;
   outcomeLabel:string|null;
   basis:string;
 };
@@ -328,13 +335,14 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
     });
   }
 
-  const temporaryAmountPreferenceByKey=new Map<string,{confirmationCount:number;averagePosition:number;outcomeCount:number;averageErrorRatio:number|null;accuracyWeight:number;underCount:number;overCount:number;matchCount:number;averageSignedBias:number|null;biasAdjustment:number}>();
+  const temporaryAmountPreferenceByKey=new Map<string,{confirmationCount:number;averagePosition:number;outcomeCount:number;averageErrorRatio:number|null;accuracyWeight:number;underCount:number;overCount:number;matchCount:number;averageSignedBias:number|null;biasAdjustment:number;biasStability:'INSUFFICIENT'|'STABLE_UNDER'|'STABLE_OVER'|'MIXED'|'SHIFTING';recentOutcomeCount:number;recentUnderCount:number;recentOverCount:number;recentMatchCount:number;recentSignedBias:number|null}>();
   const temporaryAmountLearningTable=await rawSql`select to_regclass('public.budget_temporary_amount_preferences')::text table_name`;
   if((temporaryAmountLearningTable[0] as Record<string,unknown>|undefined)?.table_name){
     const preferenceRows=await rawSql`
       select normalized_label,context_reason,confirmation_count,average_position::text,
         outcome_count,average_error_ratio::text,accuracy_weight::text,
-        under_count,over_count,match_count,average_signed_bias::text,bias_adjustment::text
+        under_count,over_count,match_count,average_signed_bias::text,bias_adjustment::text,
+        bias_stability,recent_outcome_count,recent_under_count,recent_over_count,recent_match_count,recent_signed_bias::text
       from public.budget_temporary_amount_preferences
       where user_id=${userId}::uuid
     `;
@@ -355,6 +363,14 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
         matchCount:Math.max(0,Number(row.match_count??0)),
         averageSignedBias:row.average_signed_bias==null?null:finite(row.average_signed_bias),
         biasAdjustment:Math.max(-0.25,Math.min(0.25,finite(row.bias_adjustment))),
+        biasStability:['INSUFFICIENT','STABLE_UNDER','STABLE_OVER','MIXED','SHIFTING'].includes(String(row.bias_stability))
+          ? String(row.bias_stability) as 'INSUFFICIENT'|'STABLE_UNDER'|'STABLE_OVER'|'MIXED'|'SHIFTING'
+          : 'INSUFFICIENT',
+        recentOutcomeCount:Math.max(0,Number(row.recent_outcome_count??0)),
+        recentUnderCount:Math.max(0,Number(row.recent_under_count??0)),
+        recentOverCount:Math.max(0,Number(row.recent_over_count??0)),
+        recentMatchCount:Math.max(0,Number(row.recent_match_count??0)),
+        recentSignedBias:row.recent_signed_bias==null?null:finite(row.recent_signed_bias),
       });
     }
   }
@@ -398,7 +414,9 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       personalizationApplied &&
       learned &&
       outcomeTotal>=3 &&
-      Math.max(underShare,overShare)>=0.7
+      Math.max(underShare,overShare)>=0.7 &&
+      learned.biasStability!=='SHIFTING' &&
+      learned.biasStability!=='MIXED'
     );
     const basePosition=personalizationApplied&&learned
       ? 0.5+(learned.averagePosition-0.5)*accuracyWeight
@@ -415,6 +433,11 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
         ? `صحح نماء النطاق للأعلى لأن ${Math.round(underShare*100)}% من النتائج السابقة كانت أعلى من التقدير`
         : `صحح نماء النطاق للأسفل لأن ${Math.round(overShare*100)}% من النتائج السابقة كانت أقل من التقدير`
       : null;
+    const driftLabel=learned?.biasStability==='SHIFTING'
+      ? 'تم تعليق تصحيح الانحياز لأن النتائج الأخيرة تغيّرت عن النمط السابق'
+      : learned?.biasStability==='MIXED'&&learned.recentOutcomeCount>=3
+        ? 'النتائج الأخيرة مختلطة؛ نماء يحافظ على نطاق أوسع بدل دفع التقدير في اتجاه واحد'
+        : null;
     const halfWidthBase=learned&&learned.confirmationCount>=6?0.15:0.25;
     const halfWidth=Math.min(0.4,halfWidthBase+(1-accuracyWeight)*0.2);
     const personalizedMinimum=personalizationApplied&&learned
@@ -467,6 +490,13 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       biasAdjustment:Number((biasApplied&&learned?learned.biasAdjustment:0).toFixed(4)),
       biasApplied,
       biasLabel,
+      biasStability:learned?.biasStability??'INSUFFICIENT',
+      recentOutcomeCount:learned?.recentOutcomeCount??0,
+      recentUnderCount:learned?.recentUnderCount??0,
+      recentOverCount:learned?.recentOverCount??0,
+      recentMatchCount:learned?.recentMatchCount??0,
+      recentSignedBias:learned?.recentSignedBias??null,
+      driftLabel,
       outcomeLabel,
       basis:confidence==='HIGH'
         ? `التقدير مبني على الربع الأعلى من الصرف الشهري الفعلي لهذا البند خلال ${monthly.observedMonths} أشهر مكتملة، بعد استبعاد الشهر الجاري.`
