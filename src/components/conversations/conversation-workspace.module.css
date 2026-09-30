@@ -881,19 +881,6 @@
   cursor:pointer
 }
 
-.mobileSheet{
-  position:absolute;
-  inset-inline:10px;
-  bottom:10px;
-  max-height:min(75dvh,640px);
-  overflow:auto;
-  border-radius:var(--ux-radius-xl);
-  background:var(--namaa-card);
-  border:1px solid var(--namaa-border);
-  box-shadow:var(--ux-shadow-lg);
-  padding:var(--ux-space-3)
-}
-
 .sheetHeader{
   position:sticky;
   top:0;
@@ -11780,10 +11767,19 @@
   box-shadow:var(--ux-shadow-lg)!important;
 }
 
+.mobileFullPageSheet,
 .accountSurfaceSheet{
-  inset-block-start:var(--ux-space-2)!important;
-  inset-block-end:var(--ux-space-2)!important;
-  max-height:none!important;
+  position:fixed!important;
+  inset:0!important;
+  width:100%!important;
+  max-width:none!important;
+  height:100dvh!important;
+  max-height:100dvh!important;
+  margin:0!important;
+  padding:0!important;
+  border-radius:0!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
 }
 
 .sheetHeader{
@@ -11808,10 +11804,17 @@
     border-radius:var(--ux-radius-xl)!important;
   }
 
+  .mobileFullPageSheet,
   .accountSurfaceSheet{
+    position:absolute!important;
+    inset-block:var(--ux-space-4)!important;
     inset-inline:auto var(--ux-space-4)!important;
     width:min(72vw,680px)!important;
     max-width:680px!important;
+    height:auto!important;
+    max-height:calc(100dvh - (var(--ux-space-4) * 2))!important;
+    border-radius:var(--ux-radius-xl)!important;
+    overflow-y:auto!important;
   }
 }
 
