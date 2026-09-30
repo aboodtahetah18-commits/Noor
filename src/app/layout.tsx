@@ -13,7 +13,6 @@ import '../design-system/components.css';
 import '../design-system/interaction-components.css';
 import '../design-system/pages.css';
 import './namaa-responsive-polish.css';
-import '../design-system/ndos-v1.2.acceptance.css';
 import '../design-system/ndos-v1.2.css';
 import '../design-system/ndos-v1.2.enforcement.css';
 import './namaa-app-shell.css';
