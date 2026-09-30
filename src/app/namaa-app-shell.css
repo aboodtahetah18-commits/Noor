@@ -744,3 +744,97 @@
     grid-template-columns:minmax(0,1fr);
   }
 }
+
+
+/* 2026-09-30 — TEMPORARY CONTEXT FUNDING */
+.namaa-budget-context-funding{
+  display:grid;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border-strong);
+  border-radius:var(--ux-radius-4);
+  background:var(--namaa-surface-warm);
+}
+
+.namaa-budget-context-funding-list{
+  display:grid;
+  gap:var(--ux-space-3);
+}
+
+.namaa-budget-context-funding-list>article{
+  display:grid;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-3);
+  border:1px solid var(--ux-border-default);
+  border-radius:var(--ux-radius-4);
+  background:var(--ux-surface-default);
+}
+
+.namaa-budget-context-funding-title{
+  display:flex;
+  justify-content:space-between;
+  gap:var(--ux-space-3);
+  align-items:flex-start;
+}
+
+.namaa-budget-context-funding-title>div{
+  display:grid;
+  gap:var(--ux-space-1);
+}
+
+.namaa-budget-context-funding-title small,
+.namaa-budget-context-funding-summary span,
+.namaa-budget-context-sources span{
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+}
+
+.namaa-budget-context-funding-summary{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:var(--ux-space-2);
+}
+
+.namaa-budget-context-funding-summary span{
+  display:grid;
+  gap:var(--ux-space-1);
+  padding:var(--ux-space-2);
+  border-radius:var(--ux-radius-3);
+  background:var(--ux-surface-canvas);
+}
+
+.namaa-budget-context-funding-summary b{
+  color:var(--ux-text-primary);
+}
+
+.namaa-budget-context-sources{
+  display:grid;
+  gap:var(--ux-space-2);
+}
+
+.namaa-budget-context-sources>div{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto auto;
+  gap:var(--ux-space-2);
+  align-items:center;
+  padding-block:var(--ux-space-2);
+  border-bottom:1px solid var(--ux-border-default);
+}
+
+.namaa-budget-context-sources>div:last-child{
+  border-bottom:0;
+}
+
+@media(max-width:767px){
+  .namaa-budget-context-funding-title{
+    display:grid;
+  }
+
+  .namaa-budget-context-funding-summary{
+    grid-template-columns:1fr;
+  }
+
+  .namaa-budget-context-sources>div{
+    grid-template-columns:1fr;
+  }
+}
