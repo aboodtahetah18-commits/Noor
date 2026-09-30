@@ -25,7 +25,7 @@ export class FinancialPlanRepository {
   return planId;
  }
 
- async createDraftWithManualCategories(userId:string,cycleId:string,items:Array<{name:string;allocationType:AllocationType;plannedAmount:string;recurrenceKind:'MONTHLY'|'EVERY_N_CYCLES'|'ONE_TIME'|'SEASONAL';intervalCycles:number;startCycleDate:string;note?:string}>){
+ async createDraftWithManualCategories(userId:string,cycleId:string,items:Array<{name:string;allocationType:AllocationType;plannedAmount:string;recurrenceKind:'MONTHLY'|'EVERY_N_CYCLES'|'ONE_TIME'|'SEASONAL';intervalCycles:number;startCycleDate:string;note?:string;suggestedPriority?:'NECESSARY'|'IMPORTANT'|'OPTIONAL'|'ENTERTAINMENT'|null}>){
   const planId=randomUUID(), versionId=randomUUID();
   const statements:SqlQuery[]=[
    rawSql`insert into public.financial_plans(id,user_id,cycle_id,status) select ${planId},${userId},id,'PLAN_DRAFT' from public.financial_cycles where id=${cycleId} and user_id=${userId} and status in ('DRAFT','ACTIVE') returning id`,
@@ -38,13 +38,17 @@ export class FinancialPlanRepository {
       select id from public.budget_categories where user_id=${userId} and is_active=true and lower(name)=lower(${item.name}) limit 1
     ), inserted as (
       insert into public.budget_categories(id,user_id,name,category_group,expense_nature_default,is_essential,is_active)
-      select ${categoryId},${userId},${item.name},${item.allocationType},null,${isEssential},true
+      select ${categoryId},${userId},${item.name},${item.allocationType},${item.suggestedPriority??null},${isEssential},true
       where not exists(select 1 from existing)
       returning id
     ), chosen as (
       select id from inserted union all select id from existing limit 1
-    )
-    , allocation as (
+    ), priority_seed as (
+      update public.budget_categories bc
+      set expense_nature_default=coalesce(bc.expense_nature_default,${item.suggestedPriority??null}),updated_at=now()
+      where bc.user_id=${userId} and bc.id in (select id from chosen)
+      returning bc.id
+    ), allocation as (
       insert into public.budget_allocations(id,user_id,plan_version_id,category_id,planned_amount,allocation_type)
       select ${randomUUID()},${userId},${versionId},id,${item.plannedAmount},${item.allocationType} from chosen returning id,category_id
     ), rule_upsert as (
