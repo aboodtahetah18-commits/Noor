@@ -910,8 +910,6 @@
   font-size:var(--ux-type-body-sm-size)
 }
 
-@media(min-width:768px) and (max-width:1023px){.workspace{grid-template-columns:minmax(170px,220px) minmax(390px,1fr)}.contextPane{display:none}.workspace.withoutRooms,.workspace.withoutContext,.workspace.withoutRooms,.workspace.withoutContext,.workspace.withoutRooms.withoutContext{grid-template-columns:minmax(0,1fr)}.headerActions button:last-child{display:none}}
-
 
 /* Chat-first mobile conversation experience — NDOS token-only */
 .personaAvatar{
@@ -11943,6 +11941,109 @@
   .mobileSheet{
     width:min(64vw,520px)!important;
     max-width:520px!important;
+  }
+}
+
+/* 2026-09-30 — UNIFIED MOBILE/TABLET OVERLAY AUTHORITY
+ * One overlay model for phones and tablets; only width/presentation scales.
+ */
+.mobileOverlay{
+  position:fixed!important;
+  inset:0!important;
+  display:block!important;
+  isolation:isolate!important;
+  z-index:var(--ux-z-modal)!important;
+  overflow:hidden!important;
+}
+
+.mobileOverlay>.scrim{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  z-index:1!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  background:color-mix(in srgb,var(--namaa-text) 34%,transparent)!important;
+}
+
+.mobileOverlay>.mobileSideSheet,
+.mobileOverlay>.mobileSheet,
+.mobileOverlay>.userMenuCard{
+  z-index:2!important;
+  pointer-events:auto!important;
+  box-sizing:border-box!important;
+}
+
+.mobileSideSheet{
+  position:absolute!important;
+  inset-block:0!important;
+  inset-inline-start:0!important;
+  width:min(86vw,340px)!important;
+  max-width:340px!important;
+  height:100dvh!important;
+  max-height:100dvh!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  overscroll-behavior:contain!important;
+  padding:var(--ux-space-3)!important;
+  border:0!important;
+  border-inline-end:1px solid var(--namaa-border)!important;
+  border-radius:0!important;
+  background:var(--namaa-card)!important;
+  box-shadow:var(--ux-shadow-lg)!important;
+}
+
+.mobileSheet{
+  position:absolute!important;
+  inset-inline:var(--ux-space-2)!important;
+  inset-block-end:max(var(--ux-space-2),env(safe-area-inset-bottom))!important;
+  width:auto!important;
+  max-width:none!important;
+  max-height:calc(100dvh - var(--ux-space-4) - env(safe-area-inset-bottom))!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  overscroll-behavior:contain!important;
+  padding:var(--ux-space-3) var(--ux-space-3) calc(var(--ux-space-3) + env(safe-area-inset-bottom))!important;
+  border:1px solid var(--namaa-border)!important;
+  border-radius:var(--ux-radius-xl)!important;
+  background:var(--namaa-card)!important;
+  box-shadow:var(--ux-shadow-lg)!important;
+}
+
+.accountSurfaceSheet{
+  inset-block-start:var(--ux-space-2)!important;
+  inset-block-end:var(--ux-space-2)!important;
+  max-height:none!important;
+}
+
+.sheetHeader{
+  position:sticky!important;
+  inset-block-start:0!important;
+  z-index:3!important;
+  background:var(--namaa-card)!important;
+}
+
+@media (min-width:768px){
+  .mobileSideSheet{
+    width:min(46vw,420px)!important;
+    max-width:420px!important;
+  }
+
+  .mobileSheet{
+    inset-inline:auto var(--ux-space-4)!important;
+    inset-block:var(--ux-space-4)!important;
+    width:min(62vw,560px)!important;
+    max-width:560px!important;
+    max-height:calc(100dvh - (var(--ux-space-4) * 2))!important;
+    border-radius:var(--ux-radius-xl)!important;
+  }
+
+  .accountSurfaceSheet{
+    inset-inline:auto var(--ux-space-4)!important;
+    width:min(72vw,680px)!important;
+    max-width:680px!important;
   }
 }
 
