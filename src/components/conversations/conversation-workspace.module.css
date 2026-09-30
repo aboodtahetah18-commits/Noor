@@ -12164,3 +12164,127 @@
   min-height:0!important;
   scroll-padding-block-end:calc(68px + env(safe-area-inset-bottom))!important;
 }
+
+
+/* 2026-09-30 — MULTI-PAYMENT EDITOR */
+.paymentScheduleEditor{
+  grid-column:1/-1;
+  display:grid;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border-strong);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-surface-warm);
+}
+
+.paymentScheduleHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--ux-space-2);
+}
+
+.paymentScheduleHeader>div{
+  display:grid;
+  gap:var(--ux-space-1);
+}
+
+.paymentScheduleHeader strong{
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-body-sm-size);
+}
+
+.paymentScheduleHeader small{
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+}
+
+.paymentScheduleHeader>button{
+  min-height:36px;
+  display:inline-flex;
+  align-items:center;
+  gap:var(--ux-space-1);
+  padding-inline:var(--ux-space-2);
+  border:1px solid var(--namaa-green-700);
+  border-radius:var(--ux-radius-full);
+  background:var(--namaa-card);
+  color:var(--namaa-green-900);
+  font:inherit;
+  font-size:var(--ux-type-caption-size);
+  font-weight:900;
+}
+
+.paymentScheduleList{
+  display:grid;
+  gap:var(--ux-space-2);
+}
+
+.paymentScheduleItem{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:var(--ux-space-2);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-card);
+}
+
+.paymentScheduleItem>header{
+  grid-column:1/-1;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--ux-space-2);
+}
+
+.paymentScheduleItem>header strong{
+  font-size:var(--ux-type-caption-size);
+  color:var(--ux-text-primary);
+}
+
+.paymentScheduleItem>header button{
+  width:32px;
+  height:32px;
+  display:grid;
+  place-items:center;
+  padding:0;
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-2);
+  background:var(--namaa-surface-warm);
+  color:var(--namaa-green-900);
+}
+
+.paymentScheduleItem label{
+  display:grid;
+  gap:var(--ux-space-1);
+}
+
+.paymentScheduleItem label>span{
+  font-size:var(--ux-type-caption-size);
+  font-weight:900;
+  color:var(--ux-text-primary);
+}
+
+.paymentScheduleItem input,
+.paymentScheduleItem select{
+  width:100%;
+  min-height:42px;
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-card);
+  color:var(--ux-text-primary);
+  padding:var(--ux-space-2);
+  font:inherit;
+}
+
+@media (max-width:767px){
+  .paymentScheduleHeader{
+    align-items:flex-start;
+  }
+  .paymentScheduleItem{
+    grid-template-columns:1fr!important;
+  }
+  .paymentScheduleItem>header{
+    grid-column:1!important;
+  }
+}
