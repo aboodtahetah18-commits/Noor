@@ -274,7 +274,9 @@ export async function applyTemporaryBudgetFundingAction(planId:string,targetAllo
   const statements=[] as ReturnType<typeof rawSql>[];
   statements.push(rawSql`
     update public.budget_allocations ba
-    set planned_amount=planned_amount+${fundingPlan.extraAmount},
+    set temporary_baseline_amount=planned_amount,
+        temporary_applied_extra_amount=${fundingPlan.extraAmount},
+        planned_amount=planned_amount+${fundingPlan.extraAmount},
         temporary_extra_amount=null,
         updated_at=now()
     where ba.id=${targetAllocationId}::uuid and ba.user_id=${u.id}::uuid
