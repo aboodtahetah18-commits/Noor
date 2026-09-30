@@ -16,8 +16,7 @@ button,input,select,textarea{font:inherit;color:inherit;}
 .app-page{background:var(--ux-surface-canvas)!important;color:var(--ux-text-primary)!important;padding-block:var(--ux-space-8)!important;}
 .page-shell,.dashboard-shell,.p47-content-shell{width:min(100%,var(--ux-container-content))!important;max-width:var(--ux-container-content)!important;margin-inline:auto!important;padding-inline:var(--ux-space-8)!important;}
 .narrow-shell{width:min(100%,var(--ux-container-form))!important;max-width:var(--ux-container-form)!important;}
-@media(min-width:1440px){.page-shell,.dashboard-shell,.p47-content-shell{padding-inline:var(--ux-space-10)!important;}}
-@media(min-width:768px) and (max-width:1023px){.page-shell,.dashboard-shell,.p47-content-shell{padding-inline:var(--ux-space-6)!important;}}
+@media(min-width:768px){.page-shell,.dashboard-shell,.p47-content-shell{padding-inline:var(--ux-space-6)!important;}}
 @media(max-width:767px){.app-page{padding-block:var(--ux-space-4)!important;}.page-shell,.dashboard-shell,.p47-content-shell{padding-inline:var(--ux-space-4)!important;}.narrow-shell{max-width:100%!important;}}
 
 /* Typography / P09 */
@@ -172,7 +171,7 @@ label>span,.field-label{font-weight:500!important;color:var(--ux-text-primary)!i
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important;animation-duration:var(--ux-motion-duration-0)!important;animation-iteration-count:1!important;transition-duration:var(--ux-motion-duration-0)!important;}
 }
-@media(min-width:1024px){
+@media(min-width:768px){
   .namaa-profile-trigger{width:var(--ux-size-11)!important;height:var(--ux-size-11)!important;min-width:var(--ux-size-11)!important;min-height:var(--ux-size-11)!important;border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default)!important;border-radius:var(--ux-space-3)!important;background:var(--ux-white)!important;color:var(--ux-brand-primary)!important;padding:var(--ux-space-1)!important;display:grid!important;place-items:center!important;}
   .namaa-profile-trigger .p4913-logo-mark{display:grid;place-items:center;width:var(--ux-size-8);height:var(--ux-size-8);border-radius:var(--ux-radius-sm);overflow:hidden;}
   .namaa-profile-trigger svg,.namaa-profile-trigger .p60-avatar-image{width:var(--ux-space-8)!important;height:var(--ux-space-8)!important;}
@@ -505,7 +504,7 @@ html[data-theme="dark"] .namaa-theme-toggle{
 .protected-app-shell :where(.kpi-grid,.p47-kpi-strip,.p47-budget-summary-grid,.statement-kpis,.dashboard-grid)>:nth-child(4n+3){background:var(--ux-soft-orange)!important;border-color:var(--ux-warning)!important;}
 .protected-app-shell :where(.kpi-grid,.p47-kpi-strip,.p47-budget-summary-grid,.statement-kpis,.dashboard-grid)>:nth-child(4n+4){background:var(--ux-soft-purple)!important;border-color:var(--ux-brand-primary)!important;}
 
-/* Header action rows remain on one line on desktop. */
+/* Header action rows stay compact across the mobile/tablet product shell. */
 .protected-app-shell :where(.page-header,.dashboard-header,.p47-page-heading,.p47-resource-header,.p47-flow-header,.p47-analysis-header,.p47-section-header){
   display:flex!important;align-items:center!important;justify-content:space-between!important;gap:var(--ux-space-3)!important;
 }
