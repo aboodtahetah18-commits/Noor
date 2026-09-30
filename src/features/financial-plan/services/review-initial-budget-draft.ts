@@ -310,15 +310,25 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
   }
 
   const temporaryFundingPlans:TemporaryBudgetFundingPlan[]=[];
-  const freeMargin=income>0?Math.max(0,income-total):0;
-  for(const target of items.filter(item=>item.temporaryContextReason&&item.temporaryExtraAmount>0)){
+  let freeMarginRemaining=income>0?Math.max(0,income-total):0;
+  const reservedReductionByAllocation=new Map<string,number>();
+  const contextualTargets=items.filter(item=>item.temporaryContextReason&&item.temporaryExtraAmount>0);
+
+  for(const target of contextualTargets){
     let remaining=target.temporaryExtraAmount;
-    const fundedFromFreeMargin=Math.min(freeMargin,remaining);
+    const availableFromFreeMargin=freeMarginRemaining;
+    const fundedFromFreeMargin=Math.min(freeMarginRemaining,remaining);
+    freeMarginRemaining=Math.max(0,freeMarginRemaining-fundedFromFreeMargin);
     remaining-=fundedFromFreeMargin;
 
     const sourceReductions:TemporaryBudgetFundingSource[]=[];
     const fundingCandidates=items
-      .filter(item=>item.allocationId!==target.allocationId&&item.amount>0&&['FLEXIBLE','GOAL','SAVING'].includes(item.type))
+      .filter(item=>
+        item.allocationId!==target.allocationId &&
+        item.temporaryExtraAmount<=0 &&
+        item.amount>0 &&
+        ['FLEXIBLE','GOAL','SAVING'].includes(item.type)
+      )
       .sort((a,b)=>{
         const rank=(item:typeof items[number])=>{
           if(item.type==='FLEXIBLE'&&item.userPriority==='ENTERTAINMENT') return 0;
@@ -332,6 +342,10 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
 
     for(const source of fundingCandidates){
       if(remaining<=0) break;
+      const alreadyReserved=reservedReductionByAllocation.get(source.allocationId)??0;
+      const effectiveAmount=Math.max(0,source.amount-alreadyReserved);
+      if(effectiveAmount<=0) continue;
+
       const usageRatio=source.amount>0?source.historicalMonthlyAverage/source.amount:0;
       const stableHistory=source.type==='FLEXIBLE'&&source.activeMonths90d>=3&&usageRatio>=0.7;
       const lightHistory=source.type==='FLEXIBLE'&&!stableHistory&&(source.activeMonths90d>0||source.transactionCount90d>0);
@@ -345,15 +359,19 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
         : lightHistory
           ? Math.min(source.amount,source.historicalMonthlyAverage*0.5)
           : 0;
-      const reducible=Math.max(0,source.amount-Math.max(explicitFloor,historyFloor));
+      const protectedFloor=Math.max(explicitFloor,historyFloor);
+      const reducible=Math.max(0,effectiveAmount-protectedFloor);
       const reduction=Math.min(reducible,remaining);
       if(reduction<=0) continue;
+
+      const totalReserved=alreadyReserved+reduction;
+      reservedReductionByAllocation.set(source.allocationId,totalReserved);
       sourceReductions.push({
         allocationId:source.allocationId,
         itemName:source.name,
         allocationType:source.type,
-        currentAmount:source.amount,
-        suggestedAmount:Math.max(0,source.amount-reduction),
+        currentAmount:effectiveAmount,
+        suggestedAmount:Math.max(0,effectiveAmount-reduction),
         reduction,
       });
       remaining-=reduction;
@@ -365,7 +383,7 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       targetItemName:target.name,
       reason:target.temporaryContextReason as TemporaryBudgetFundingPlan['reason'],
       extraAmount:target.temporaryExtraAmount,
-      availableFromFreeMargin:freeMargin,
+      availableFromFreeMargin,
       fundedFromFreeMargin,
       sourceReductions,
       fundedTotal,
