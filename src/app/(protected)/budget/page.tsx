@@ -24,7 +24,7 @@ export default async function BudgetPage({searchParams}:{searchParams:Promise<{e
 
   if(plan.status==='PLAN_DRAFT'){
     const draftRows=await rawSql`
-      select ba.id,ba.category_id,bc.name,bc.expense_nature_default,ba.priority_override,ba.priority_override_scope,ba.planned_amount::text,ba.allocation_type,
+      select ba.id,ba.category_id,bc.name,bc.expense_nature_default,ba.priority_override,ba.priority_override_scope,ba.priority_override_reason,ba.priority_override_note,ba.planned_amount::text,ba.allocation_type,
         r.recurrence_kind,r.interval_cycles,r.note
       from public.plan_versions pv
       join public.budget_allocations ba on ba.plan_version_id=pv.id and ba.user_id=pv.user_id
@@ -78,6 +78,16 @@ export default async function BudgetPage({searchParams}:{searchParams:Promise<{e
                 <option value="THIS_CYCLE">لهذه الميزانية فقط</option>
                 <option value="PERSISTENT">تذكره للمستقبل</option>
               </select></label>
+              <label><span>سبب مؤقت</span><select name="itemPriorityReason" defaultValue={String(row.priority_override_reason??'')}>
+                <option value="">اختر السبب إذا كان التغيير مؤقتًا</option>
+                <option value="TRAVEL">سفر</option>
+                <option value="OCCASION">مناسبة</option>
+                <option value="HEALTH">ظرف صحي</option>
+                <option value="MAINTENANCE">صيانة</option>
+                <option value="UNUSUAL_MONTH">شهر غير اعتيادي</option>
+                <option value="OTHER">سبب آخر</option>
+              </select></label>
+              <label><span>ملاحظة اختيارية</span><input name="itemPriorityNote" maxLength={240} defaultValue={String(row.priority_override_note??'')} placeholder="مثال: سفر لمدة أسبوعين"/></label>
             </div>
           </article>)}
         </div>
