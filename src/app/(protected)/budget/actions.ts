@@ -7,8 +7,10 @@ export async function updateInitialDraftAction(planId:string,fd:FormData){
   const ids=fd.getAll('allocationId').map(String);
   const amounts=fd.getAll('plannedAmount').map(String);
   const types=fd.getAll('allocationType').map(String);
+  const priorities=fd.getAll('itemPriority').map(String);
   const allowed=new Set(['OBLIGATION','ESSENTIAL','SAVING','EMERGENCY','GOAL','FLEXIBLE']);
-  if(!ids.length||ids.length!==amounts.length||ids.length!==types.length){
+  const allowedPriorities=new Set(['NECESSARY','IMPORTANT','OPTIONAL','ENTERTAINMENT','']);
+  if(!ids.length||ids.length!==amounts.length||ids.length!==types.length||ids.length!==priorities.length){
     redirect('/budget?error='+encodeURIComponent('بيانات المسودة غير مكتملة'));
   }
 
@@ -16,12 +18,14 @@ export async function updateInitialDraftAction(planId:string,fd:FormData){
   for(let i=0;i<ids.length;i++){
     const amount=Number(amounts[i]);
     const type=types[i]??'';
-    if(!Number.isFinite(amount)||amount<0||!allowed.has(type)){
+    const priority=priorities[i]??'';
+    if(!Number.isFinite(amount)||amount<0||!allowed.has(type)||!allowedPriorities.has(priority)){
       redirect('/budget?error='+encodeURIComponent('راجع مبالغ وتصنيفات المسودة'));
     }
     statements.push(rawSql`
-      update public.budget_allocations ba
-      set planned_amount=${amount},allocation_type=${type},updated_at=now()
+      with allocation_update as (
+        update public.budget_allocations ba
+        set planned_amount=${amount},allocation_type=${type},updated_at=now()
       where ba.id=${ids[i]}::uuid and ba.user_id=${u.id}::uuid
         and exists(
           select 1
@@ -31,7 +35,14 @@ export async function updateInitialDraftAction(planId:string,fd:FormData){
             and p.id=${planId}::uuid and p.status='PLAN_DRAFT'
             and pv.version_number=1 and pv.approved_at is null
         )
-      returning ba.id
+        returning ba.id,ba.category_id
+      ), category_update as (
+        update public.budget_categories bc
+        set expense_nature_default=nullif(${priority},''),updated_at=now()
+        where bc.user_id=${u.id}::uuid and bc.id in (select category_id from allocation_update)
+        returning bc.id
+      )
+      select id from allocation_update
     `);
   }
 
