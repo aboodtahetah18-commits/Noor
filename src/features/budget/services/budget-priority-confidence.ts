@@ -1,9 +1,11 @@
 import { rawSql } from '@/infrastructure/db/client';
 
 export type BudgetPriorityConfidence={
-  level:'INITIAL'|'MEDIUM'|'HIGH';
-  source:'RULE'|'EXACT_HISTORY'|'PATTERN';
+  level:'INITIAL'|'MEDIUM'|'HIGH'|'MANUAL';
+  source:'RULE'|'EXACT_HISTORY'|'PATTERN'|'UNSTABLE';
   confirmations:number;
+  corrections:number;
+  requiresManualConfirmation:boolean;
   label:string;
 };
 
@@ -29,6 +31,8 @@ export async function getBudgetPriorityConfidence(
       level:'INITIAL',
       source:'RULE',
       confirmations:0,
+      corrections:0,
+      requiresManualConfirmation:false,
       label:'اقتراح أولي — لا توجد بيانات كافية بعد',
     });
   }
@@ -38,21 +42,23 @@ export async function getBudgetPriorityConfidence(
   if(!(table[0] as Record<string,unknown>|undefined)?.table_name) return result;
 
   const rows=await rawSql`
-    select normalized_label,allocation_type,chosen_priority,confirmation_count
+    select normalized_label,allocation_type,chosen_priority,confirmation_count,correction_count
     from public.budget_priority_preferences
     where user_id=${userId}::uuid
   `;
 
-  const exact=new Map<string,{count:number;priority:string}>();
+  const exact=new Map<string,{count:number;corrections:number;priority:string}>();
   const byType=new Map<string,Map<string,number>>();
   for(const row of rows){
     const allocationType=String(row.allocation_type??'');
     const normalizedLabel=String(row.normalized_label??'');
     const priority=String(row.chosen_priority??'');
     const count=Math.max(1,Number(row.confirmation_count??1));
-    exact.set(`${allocationType}:${normalizedLabel}`,{count,priority});
+    const corrections=Math.max(0,Number(row.correction_count??0));
+    exact.set(`${allocationType}:${normalizedLabel}`,{count,corrections,priority});
     const typeMap=byType.get(allocationType)??new Map<string,number>();
-    typeMap.set(priority,(typeMap.get(priority)??0)+count);
+    const stableWeight=corrections>=2&&corrections/count>=0.4?0:count;
+    if(stableWeight>0) typeMap.set(priority,(typeMap.get(priority)??0)+stableWeight);
     byType.set(allocationType,typeMap);
   }
 
@@ -60,11 +66,26 @@ export async function getBudgetPriorityConfidence(
     const key=`${item.allocationType}:${normalizePriorityLabel(item.name)}`;
     const learned=exact.get(key);
     if(learned){
+      const disagreementRate=learned.count>0?learned.corrections/learned.count:0;
+      const unstable=learned.corrections>=2&&disagreementRate>=0.4;
+      if(unstable){
+        result.set(item.id,{
+          level:'MANUAL',
+          source:'UNSTABLE',
+          confirmations:learned.count,
+          corrections:learned.corrections,
+          requiresManualConfirmation:true,
+          label:`تأكيد يدوي مطلوب — غيّرت أولوية هذا البند ${learned.corrections} مرات من أصل ${learned.count} تأكيدات`,
+        });
+        continue;
+      }
       const level=learned.count>=5?'HIGH':learned.count>=2?'MEDIUM':'INITIAL';
       result.set(item.id,{
         level,
         source:'EXACT_HISTORY',
         confirmations:learned.count,
+        corrections:learned.corrections,
+        requiresManualConfirmation:false,
         label:level==='HIGH'
           ? `ثقة عالية — بناءً على ${learned.count} تأكيدات سابقة لهذا البند`
           : level==='MEDIUM'
@@ -84,6 +105,8 @@ export async function getBudgetPriorityConfidence(
         level:'MEDIUM',
         source:'PATTERN',
         confirmations:leader[1],
+        corrections:0,
+        requiresManualConfirmation:false,
         label:`ثقة متوسطة — مستندة إلى نمطك في ${total} اختيارات سابقة مشابهة`,
       });
     }
