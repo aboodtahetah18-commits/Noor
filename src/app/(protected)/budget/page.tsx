@@ -84,7 +84,7 @@ export default async function BudgetPage({searchParams}:{searchParams:Promise<{e
           </div>
           <div className="namaa-budget-correction-list">
             {review.correctionSuggestions.map(suggestion=><article key={suggestion.allocationId}>
-              <div><strong>{suggestion.itemName}</strong><small>{suggestion.reason}</small></div>
+              <div><strong>{suggestion.itemName}</strong><small>{suggestion.reason}</small>{suggestion.allocationType==='FLEXIBLE'&&suggestion.historySignal!=='none'?<span className="namaa-budget-correction-history">متوسط فعلي حديث {formatSar(suggestion.historicalMonthlyAverage.toFixed(2))}{suggestion.activeMonths90d?' · ظهر في '+suggestion.activeMonths90d+' أشهر من آخر 3 أشهر':''}</span>:null}</div>
               <div className="namaa-budget-correction-values">
                 <span>الحالي <b>{formatSar(suggestion.currentAmount.toFixed(2))}</b></span>
                 <span>المقترح <b>{formatSar(suggestion.suggestedAmount.toFixed(2))}</b></span>
