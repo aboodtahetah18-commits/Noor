@@ -9,6 +9,7 @@ import { FocusedNextStep } from '@/components/ux/focused-next-step';
 import { rawSql } from '@/infrastructure/db/client';
 import { reviewInitialBudgetDraft } from '@/features/financial-plan/services/review-initial-budget-draft';
 import { getBudgetPriorityConfidence } from '@/features/budget/services/budget-priority-confidence';
+import { syncTemporaryAmountOutcomes } from '@/features/budget/services/sync-temporary-amount-outcomes';
 
 const labels:Record<string,string>={OBLIGATION:'الالتزامات',ESSENTIAL:'الاحتياجات الأساسية',SAVING:'الادخار',EMERGENCY:'الطوارئ',GOAL:'الأهداف',FLEXIBLE:'المصروف المرن'};
 const planStatus:Record<string,string>={PLAN_DRAFT:'مسودة',ACTIVE_PLAN:'معتمدة',REVISED:'تعديل بانتظار الاعتماد',CLOSED_PLAN:'مغلقة'};
@@ -18,6 +19,7 @@ function pct(v:number|null){return v==null?'—':`${Math.round(v)}%`}
 export default async function BudgetPage({searchParams}:{searchParams:Promise<{error?:string;draft?:string}>}){
   const q=await searchParams;
   const u=await requireAuthenticatedUser();
+  await syncTemporaryAmountOutcomes(u.id);
   const cycle=await getCurrentFinancialCycle(u.id);
   if(!cycle)return <main className="p47-page" dir="rtl"><section className="p47-content-shell p47-empty-shell"><div className="p47-empty-state"><div className="p47-empty-icon">خ</div><p className="p47-kicker">الميزانية</p><h1>لا توجد دورة مالية نشطة</h1><p>ابدأ دورة مالية حتى تتمكن من توزيع الدخل ومتابعة الصرف مقابل الخطة.</p><Link href="/cycles/new" className="p47-primary-action">بدء دورة مالية</Link></div></section></main>;
   const plan=await getFinancialPlanByCycle(u.id,cycle.id);
@@ -122,6 +124,7 @@ export default async function BudgetPage({searchParams}:{searchParams:Promise<{e
                 <small>{temporaryReasonLabels[suggestion.reason]??suggestion.reason}</small>
                 <em className={'namaa-temporary-estimate-confidence is-'+suggestion.confidence.toLowerCase()}>{suggestion.confidenceLabel}</em>
                 {suggestion.personalizationApplied?<em className="namaa-temporary-estimate-personalized">نطاق مخصص — بناءً على {suggestion.learningConfirmations} اختيارات سابقة لك</em>:null}
+                {suggestion.outcomeLabel?<em className="namaa-temporary-estimate-outcome">{suggestion.outcomeLabel} · {suggestion.outcomeCount} نتائج مكتملة</em>:null}
                 <p>{suggestion.basis}</p>
               </div>
               <div className="namaa-budget-context-estimate-values">
