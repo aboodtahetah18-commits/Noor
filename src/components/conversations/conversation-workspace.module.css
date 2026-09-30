@@ -12127,3 +12127,40 @@
     display:block!important;
   }
 }
+
+
+/* 2026-09-30 — EDGE-TO-EDGE CHAT VIEWPORT
+ * Header is the first pixel of app content; composer is the last stable control.
+ * Only messages are allowed to consume/scroll the middle track.
+ */
+.page,
+.workspace,
+.chatPane{
+  margin-block-start:0!important;
+  padding-block-start:0!important;
+}
+
+.chatPane{
+  min-height:0!important;
+  height:100dvh!important;
+  max-height:100dvh!important;
+}
+
+.chatHeader,
+.centralChatHeader{
+  top:0!important;
+  inset-block-start:0!important;
+  margin-block-start:0!important;
+}
+
+.composer{
+  bottom:0!important;
+  inset-block-end:0!important;
+  margin-block-end:0!important;
+  padding-block-end:max(var(--ux-space-2),env(safe-area-inset-bottom))!important;
+}
+
+.messages{
+  min-height:0!important;
+  scroll-padding-block-end:calc(68px + env(safe-area-inset-bottom))!important;
+}
