@@ -126,6 +126,7 @@ export default async function BudgetPage({searchParams}:{searchParams:Promise<{e
                 {suggestion.personalizationApplied?<em className="namaa-temporary-estimate-personalized">نطاق مخصص — بناءً على {suggestion.learningConfirmations} اختيارات سابقة لك</em>:null}
                 {suggestion.outcomeLabel?<em className="namaa-temporary-estimate-outcome">{suggestion.outcomeLabel} · {suggestion.outcomeCount} نتائج مكتملة</em>:null}
                 {suggestion.biasLabel?<em className="namaa-temporary-estimate-bias">{suggestion.biasLabel}</em>:null}
+                {suggestion.driftLabel?<em className="namaa-temporary-estimate-drift">{suggestion.driftLabel}</em>:null}
                 <p>{suggestion.basis}</p>
               </div>
               <div className="namaa-budget-context-estimate-values">
