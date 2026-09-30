@@ -1016,3 +1016,22 @@
   line-height:1.5;
   white-space:normal;
 }
+
+
+/* 2026-09-30 — SYSTEMATIC BIAS CORRECTION */
+.namaa-temporary-estimate-bias{
+  display:inline-flex;
+  width:max-content;
+  max-width:100%;
+  margin-top:var(--ux-space-1);
+  padding:2px 8px;
+  border:1px solid var(--namaa-border-strong);
+  border-radius:var(--ux-radius-full);
+  background:var(--namaa-surface-warm);
+  color:var(--namaa-green-900);
+  font-size:var(--ux-type-caption-size);
+  font-style:normal;
+  font-weight:700;
+  line-height:1.5;
+  white-space:normal;
+}
