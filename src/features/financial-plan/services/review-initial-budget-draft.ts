@@ -75,7 +75,7 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
   const cycleId=String(plan.cycle_id);
   const [allocationRows,incomeRows,foundationRows]=await Promise.all([
     rawSql`
-      select ba.id,ba.category_id,bc.name,bc.expense_nature_default,ba.planned_amount::text,ba.allocation_type,
+      select ba.id,ba.category_id,bc.name,bc.expense_nature_default,ba.priority_override,ba.priority_override_scope,ba.planned_amount::text,ba.allocation_type,
         r.recurrence_kind,r.interval_cycles
       from public.plan_versions pv
       join public.budget_allocations ba on ba.plan_version_id=pv.id and ba.user_id=pv.user_id
@@ -142,7 +142,11 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       historicalMonthlyAverage:history.actual90d/observedMonths,
       activeMonths90d:history.activeMonths90d,
       transactionCount90d:history.transactionCount90d,
-      userPriority:row.expense_nature_default?String(row.expense_nature_default):null,
+      userPriority:row.priority_override
+        ? String(row.priority_override)
+        : row.expense_nature_default
+          ? String(row.expense_nature_default)
+          : null,
     };
   });
 
