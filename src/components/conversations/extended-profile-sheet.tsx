@@ -151,7 +151,7 @@ function applyFlexibleProjection(row:TableRow){
   };
 }
 
-function tableRowsFromFact(section:ExtendedProfileSection|null,fact?:FactEnvelope){
+function tableRowsFromFact(section:ExtendedProfileSection|null,fact?:FactEnvelope):TableRow[]{
   if(!section?.table) return [] as TableRow[];
   const value=fact?.value??{};
   const items=value.items;
@@ -299,11 +299,12 @@ function tableRowsFromFact(section:ExtendedProfileSection|null,fact?:FactEnvelop
         annual>0?`دعم سنوي: ${annual}`:'',
         typeof source.special_needs==='string'?source.special_needs:'',
       ].filter(Boolean).join(' — ');
-      return [{
+      const row:TableRow={
         name:String(source.name??'مستفيد'),
         relationship:String(source.relationship??'أخرى'),
         notes,
-      }];
+      };
+      return [row];
     });
   }
   if(section.key==='renewals_insurance'){
