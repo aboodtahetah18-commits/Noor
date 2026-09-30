@@ -1,5 +1,9 @@
 'use server';
 import { redirect } from 'next/navigation'; import { revalidatePath } from 'next/cache'; import { requireAuthenticatedMutationUser } from '@/auth/require-authenticated-user'; import { createPlanDraft } from '@/features/financial-plan/commands/create-plan-draft'; import { approvePlan } from '@/features/financial-plan/commands/approve-plan'; import { revisePlan } from '@/features/financial-plan/commands/revise-plan'; import { approveRevision } from '@/features/financial-plan/commands/approve-revision'; import { rawSql } from '@/infrastructure/db/client'; import { reviewInitialBudgetDraft } from '@/features/financial-plan/services/review-initial-budget-draft';
+function clamp01(value:number){
+  return Math.max(0,Math.min(1,value));
+}
+
 function normalizePriorityLabel(value:string){
   return value
     .trim()
@@ -207,10 +211,49 @@ export async function confirmTemporaryExtraAmountAction(planId:string,allocation
           and p.id=${planId}::uuid and p.status='PLAN_DRAFT'
           and pv.version_number=1 and pv.approved_at is null
       )
-    returning ba.id
+    returning ba.id,ba.category_id,ba.priority_override_reason
   `;
   if(rows.length!==1){
     redirect('/budget?error='+encodeURIComponent('تعذر حفظ المبلغ النهائي للظرف المؤقت.'));
+  }
+
+  const learningTable=await rawSql`select to_regclass('public.budget_temporary_amount_preferences')::text table_name`;
+  if((learningTable[0] as Record<string,unknown>|undefined)?.table_name){
+    const source=await rawSql`
+      select bc.name,ba.priority_override_reason
+      from public.budget_allocations ba
+      join public.budget_categories bc on bc.id=ba.category_id and bc.user_id=ba.user_id
+      where ba.id=${allocationId}::uuid and ba.user_id=${u.id}::uuid
+      limit 1
+    `;
+    const sourceRow=source[0] as Record<string,unknown>|undefined;
+    const normalizedLabel=normalizePriorityLabel(String(sourceRow?.name??''));
+    const contextReason=String(sourceRow?.priority_override_reason??'');
+    const range=suggestion.suggestedMaximum-suggestion.suggestedMinimum;
+    const position=range>0
+      ? clamp01((amount-suggestion.suggestedMinimum)/range)
+      : 0.5;
+
+    if(normalizedLabel&&['TRAVEL','OCCASION','HEALTH','MAINTENANCE','UNUSUAL_MONTH','OTHER'].includes(contextReason)){
+      await rawSql`
+        insert into public.budget_temporary_amount_preferences(
+          user_id,normalized_label,context_reason,confirmation_count,average_position,last_confirmed_amount,last_confirmed_at
+        ) values(
+          ${u.id}::uuid,${normalizedLabel},${contextReason},1,${position},${amount},now()
+        )
+        on conflict(user_id,normalized_label,context_reason)
+        do update set
+          average_position=(
+            public.budget_temporary_amount_preferences.average_position
+              * public.budget_temporary_amount_preferences.confirmation_count
+            + excluded.average_position
+          )/(public.budget_temporary_amount_preferences.confirmation_count+1),
+          confirmation_count=public.budget_temporary_amount_preferences.confirmation_count+1,
+          last_confirmed_amount=excluded.last_confirmed_amount,
+          last_confirmed_at=now(),
+          updated_at=now()
+      `;
+    }
   }
 
   revalidatePath('/budget');
