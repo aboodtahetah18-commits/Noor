@@ -43,6 +43,40 @@ export async function updateInitialDraftAction(planId:string,fd:FormData){
   redirect('/budget?draft=updated');
 }
 
+export async function applyInitialBudgetCorrectionsAction(planId:string){
+  const u=await requireAuthenticatedMutationUser();
+  const review=await reviewInitialBudgetDraft(u.id,planId);
+  if(!review.correctionSuggestions.length){
+    redirect('/budget?error='+encodeURIComponent('لا توجد اقتراحات تصحيح قابلة للتطبيق على هذه المسودة.'));
+  }
+
+  const statements=[] as ReturnType<typeof rawSql>[];
+  for(const suggestion of review.correctionSuggestions){
+    statements.push(rawSql`
+      update public.budget_allocations ba
+      set planned_amount=${suggestion.suggestedAmount},updated_at=now()
+      where ba.id=${suggestion.allocationId}::uuid and ba.user_id=${u.id}::uuid
+        and exists(
+          select 1
+          from public.plan_versions pv
+          join public.financial_plans p on p.id=pv.plan_id and p.user_id=pv.user_id
+          where pv.id=ba.plan_version_id and pv.user_id=${u.id}::uuid
+            and p.id=${planId}::uuid and p.status='PLAN_DRAFT'
+            and pv.version_number=1 and pv.approved_at is null
+        )
+      returning ba.id
+    `);
+  }
+
+  const results=await rawSql.transaction(statements);
+  if(results.some(result=>result.length!==1)){
+    redirect('/budget?error='+encodeURIComponent('تعذر تطبيق أحد اقتراحات التصحيح.'));
+  }
+
+  revalidatePath('/budget');
+  redirect('/budget?draft=corrected');
+}
+
 export async function approvePlanAction(planId:string){
   const u=await requireAuthenticatedMutationUser();
   const review=await reviewInitialBudgetDraft(u.id,planId);
