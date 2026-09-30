@@ -103,16 +103,6 @@ export async function updateInitialDraftAction(planId:string,fd:FormData){
   redirect('/budget?draft=updated');
 }
 
-/*__LEARNING_INSERT_END__*/
-  }
-
-  const results=await rawSql.transaction(statements);
-  if(results.some(result=>result.length!==1)){
-    redirect('/budget?error='+encodeURIComponent('تعذر تحديث أحد بنود المسودة'));
-  }
-  revalidatePath('/budget');
-  redirect('/budget?draft=updated');
-}
 
 export async function applyInitialBudgetCorrectionsAction(planId:string){
   const u=await requireAuthenticatedMutationUser();
