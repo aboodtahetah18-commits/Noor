@@ -86,7 +86,7 @@ export async function syncTemporaryAmountOutcomes(userId:string){
     if(!inserted.length) continue;
     evaluated+=1;
 
-    await rawSql`
+    const aggregateRows=await rawSql`
       update public.budget_temporary_amount_preferences p
       set outcome_count=p.outcome_count+1,
           average_error_ratio=(
@@ -122,7 +122,10 @@ export async function syncTemporaryAmountOutcomes(userId:string){
       where p.user_id=${userId}::uuid
         and p.normalized_label=${normalizedLabel}
         and p.context_reason=${reason}
+      returning p.average_signed_bias::text
     `;
+
+    const aggregateSignedBias=Number((aggregateRows[0] as Record<string,unknown>|undefined)?.average_signed_bias??0);
 
     const recentRows=await rawSql`
       select direction,
@@ -148,7 +151,7 @@ export async function syncTemporaryAmountOutcomes(userId:string){
       : null;
     const recentUnderShare=recentCount?recentUnder/recentCount:0;
     const recentOverShare=recentCount?recentOver/recentCount:0;
-    const longTermDirection=(signedBias??0)>0?'UNDER':(signedBias??0)<0?'OVER':'MATCH';
+    const longTermDirection=aggregateSignedBias>0?'UNDER':aggregateSignedBias<0?'OVER':'MATCH';
     const recentDirection=recentUnderShare>=0.7?'UNDER':recentOverShare>=0.7?'OVER':'MIXED';
     const biasStability=recentCount<3
       ? 'INSUFFICIENT'
