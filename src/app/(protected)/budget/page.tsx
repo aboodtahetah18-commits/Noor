@@ -24,7 +24,7 @@ export default async function BudgetPage({searchParams}:{searchParams:Promise<{e
 
   if(plan.status==='PLAN_DRAFT'){
     const draftRows=await rawSql`
-      select ba.id,ba.category_id,bc.name,bc.expense_nature_default,ba.planned_amount::text,ba.allocation_type,
+      select ba.id,ba.category_id,bc.name,bc.expense_nature_default,ba.priority_override,ba.priority_override_scope,ba.planned_amount::text,ba.allocation_type,
         r.recurrence_kind,r.interval_cycles,r.note
       from public.plan_versions pv
       join public.budget_allocations ba on ba.plan_version_id=pv.id and ba.user_id=pv.user_id
@@ -66,13 +66,19 @@ export default async function BudgetPage({searchParams}:{searchParams:Promise<{e
               <option value="EMERGENCY">طوارئ</option>
               <option value="GOAL">هدف</option>
             </select></label>
-            <label><span>أولوية البند <small>اقتراح نماء — يتعلم من اختياراتك السابقة ويمكنك تعديله</small>{priorityConfidence.get(String(row.id))?<em className={'namaa-priority-confidence is-'+priorityConfidence.get(String(row.id))!.level.toLowerCase()}>{priorityConfidence.get(String(row.id))!.label}</em>:null}</span><select name="itemPriority" defaultValue={String(row.expense_nature_default??'')}>
-              <option value="">يحددها نماء من الاستخدام</option>
-              <option value="NECESSARY">ضروري جدًا</option>
-              <option value="IMPORTANT">مهم</option>
-              <option value="OPTIONAL">قابل للتخفيض</option>
-              <option value="ENTERTAINMENT">ترفيهي / قابل للتقليل أولًا</option>
-            </select></label>
+            <div className="namaa-budget-priority-controls">
+              <label><span>أولوية البند <small>اقتراح نماء — يتعلم من اختياراتك السابقة ويمكنك تعديله</small>{priorityConfidence.get(String(row.id))?<em className={'namaa-priority-confidence is-'+priorityConfidence.get(String(row.id))!.level.toLowerCase()}>{priorityConfidence.get(String(row.id))!.label}</em>:null}</span><select name="itemPriority" defaultValue={String(row.priority_override??row.expense_nature_default??'')}>
+                <option value="">يحددها نماء من الاستخدام</option>
+                <option value="NECESSARY">ضروري جدًا</option>
+                <option value="IMPORTANT">مهم</option>
+                <option value="OPTIONAL">قابل للتخفيض</option>
+                <option value="ENTERTAINMENT">ترفيهي / قابل للتقليل أولًا</option>
+              </select></label>
+              <label><span>مدة هذا الاختيار</span><select name="itemPriorityScope" defaultValue={String(row.priority_override_scope??'THIS_CYCLE')}>
+                <option value="THIS_CYCLE">لهذه الميزانية فقط</option>
+                <option value="PERSISTENT">تذكره للمستقبل</option>
+              </select></label>
+            </div>
           </article>)}
         </div>
         <div className="namaa-initial-budget-actions">
