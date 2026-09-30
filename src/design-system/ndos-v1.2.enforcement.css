@@ -220,7 +220,7 @@ textarea {
 /* NAMA'A WIDE AUTHORITY — migrated under final NDOS enforcement */
 /*
  * Namaa wide experience contract
- * Scope: tablet (>=768px), laptop and desktop only.
+ * Scope: tablet-stretched experience from 768px upward.
  * Mobile (<768px) is intentionally untouched. Do not place mobile overrides here.
  */
 
@@ -1742,9 +1742,9 @@ textarea {
 }
 
 
-/* Canonical wide baseline.
-   This replaces the removed draft/legacy desktop layers and is the single owner
-   for tablet/laptop/desktop composition from 768px upward. */
+/* Canonical tablet-stretched baseline.
+   This replaces the retired desktop layers and is the single owner
+   for composition from 768px upward. */
 @media (min-width:768px) {
 
   .protected-app-shell .page-shell,
@@ -1863,7 +1863,7 @@ textarea {
 /* ========================================================================== */
 /* Removed obsolete execution palette: canonical white/light variables are defined once at file start. */
 
-/* CANONICAL WIDE FINAL LAYER — tablet/laptop/desktop only                    */
+/* CANONICAL TABLET-STRETCHED FINAL LAYER — 768px and wider                  */
 /* Replaces execution batches 3–8 with one non-conflicting authority layer.   */
 /* ========================================================================== */
 
@@ -3728,18 +3728,7 @@ textarea {
   }
 }
 
-@media (min-width:1024px) and (max-width:1439px){
-  .namaa-investments-header{
-    grid-template-columns:minmax(0,1fr) minmax(360px,560px)!important;
-    align-items:center!important;
-  }
-
-  .namaa-investments-actions{
-    grid-template-columns:repeat(2,minmax(0,1fr))!important;
-  }
-}
-
-@media (min-width:768px) and (max-width:1023px){
+@media (min-width:768px){
   .namaa-investments-header{
     display:flex!important;
     flex-direction:column!important;
