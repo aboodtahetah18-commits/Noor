@@ -943,3 +943,38 @@
     grid-template-columns:1fr;
   }
 }
+
+
+/* 2026-09-30 — MANUAL CONFIRMATION FOR UNCERTAIN TEMPORARY ESTIMATES */
+.namaa-budget-context-estimate-confirm{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:var(--ux-space-2);
+  align-items:end;
+}
+
+.namaa-budget-context-estimate-confirm label{
+  display:grid;
+  gap:var(--ux-space-1);
+  min-width:0;
+}
+
+.namaa-budget-context-estimate-confirm label>span{
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  font-weight:700;
+}
+
+.namaa-budget-context-estimate-confirm input{
+  width:100%;
+}
+
+@media(max-width:767px){
+  .namaa-budget-context-estimate-confirm{
+    grid-template-columns:1fr;
+  }
+
+  .namaa-budget-context-estimate-confirm .p47-secondary-action{
+    width:100%;
+  }
+}
