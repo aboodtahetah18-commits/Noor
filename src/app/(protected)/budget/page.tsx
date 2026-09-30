@@ -4,7 +4,7 @@ import { getCurrentFinancialCycle } from '@/features/cycles/queries/get-current-
 import { getFinancialPlanByCycle } from '@/features/financial-plan/queries/get-financial-plan';
 import { getBudgetCommandCenter } from '@/features/budget/queries/get-budget-command-center';
 import { formatSar } from '@/lib/format-money';
-import { approvePlanAction, approveRevisionAction, updateInitialDraftAction, applyInitialBudgetCorrectionsAction } from './actions';
+import { approvePlanAction, approveRevisionAction, updateInitialDraftAction, applyInitialBudgetCorrectionsAction, applyTemporaryBudgetFundingAction } from './actions';
 import { FocusedNextStep } from '@/components/ux/focused-next-step';
 import { rawSql } from '@/infrastructure/db/client';
 import { reviewInitialBudgetDraft } from '@/features/financial-plan/services/review-initial-budget-draft';
@@ -25,7 +25,7 @@ export default async function BudgetPage({searchParams}:{searchParams:Promise<{e
 
   if(plan.status==='PLAN_DRAFT'){
     const draftRows=await rawSql`
-      select ba.id,ba.category_id,bc.name,bc.expense_nature_default,ba.priority_override,ba.priority_override_scope,ba.priority_override_reason,ba.priority_override_note,ba.planned_amount::text,ba.allocation_type,
+      select ba.id,ba.category_id,bc.name,bc.expense_nature_default,ba.priority_override,ba.priority_override_scope,ba.priority_override_reason,ba.priority_override_note,ba.temporary_extra_amount::text,ba.planned_amount::text,ba.allocation_type,
         r.recurrence_kind,r.interval_cycles,r.note
       from public.plan_versions pv
       join public.budget_allocations ba on ba.plan_version_id=pv.id and ba.user_id=pv.user_id
@@ -49,6 +49,7 @@ export default async function BudgetPage({searchParams}:{searchParams:Promise<{e
       {q.error?<p className="error-banner" role="alert">{q.error}</p>:null}
       {q.draft==='updated'?<p className="success-banner">تم حفظ تعديلات المسودة. لم تعتمد الميزانية بعد.</p>:null}
       {q.draft==='corrected'?<p className="success-banner">تم تطبيق اقتراحات التصحيح على البنود غير الأساسية. راجع الأرقام ثم اعتمد الميزانية إذا أصبحت المراجعة سليمة.</p>:null}
+      {q.draft==='context-funded'?<p className="success-banner">تمت تغطية الزيادة المؤقتة وإعادة توزيع المبلغ دون المساس بالالتزامات أو الاحتياجات الأساسية.</p>:null}
 
       <section className="p47-budget-hero"><div><p className="p47-kicker">إجمالي المسودة</p><strong>{formatSar(total.toFixed(2))}</strong><small>{draftRows.length} بنود تأسيسية</small></div><div><span>الحالة</span><strong>بانتظار مراجعتك</strong><small>لا توجد حركات مالية ناتجة عن هذه المسودة.</small></div></section>
 
@@ -90,6 +91,7 @@ export default async function BudgetPage({searchParams}:{searchParams:Promise<{e
                 <option value="OTHER">سبب آخر</option>
               </select></label>
               <label><span>ملاحظة اختيارية</span><input name="itemPriorityNote" maxLength={240} defaultValue={String(row.priority_override_note??'')} placeholder="مثال: سفر لمدة أسبوعين"/></label>
+              <label><span>زيادة متوقعة لهذا الظرف <small>اختياري — أدخل فقط المبلغ الإضافي فوق ميزانية البند الحالية</small></span><input name="temporaryExtraAmount" type="number" min="0.01" step="0.01" inputMode="decimal" defaultValue={row.temporary_extra_amount?String(row.temporary_extra_amount):''} placeholder="0.00"/></label>
             </div>
           </article>)}
         </div>
@@ -107,6 +109,29 @@ export default async function BudgetPage({searchParams}:{searchParams:Promise<{e
         </div>
         {blockers.length?<div className="namaa-budget-review-issues is-blocking">{blockers.map(issue=><article key={issue.code+(issue.itemName??'')}><strong>يلزم التصحيح</strong><p>{issue.message}</p></article>)}</div>:null}
         {warnings.length?<div className="namaa-budget-review-issues is-warning">{warnings.map(issue=><article key={issue.code+(issue.itemName??'')}><strong>تنبيه للمراجعة</strong><p>{issue.message}</p></article>)}</div>:null}
+
+        {review.temporaryFundingPlans.length?<section className="namaa-budget-context-funding" aria-label="خطط تغطية الظروف المؤقتة">
+          <div className="namaa-budget-correction-head">
+            <div><strong>تغطية الظروف المؤقتة</strong><small>يستخدم نماء الهامش الحر أولًا، ثم البنود المرنة والأهداف والادخار فقط. لا يخفض الالتزامات أو الاحتياجات الأساسية لتغطية ظرف مؤقت.</small></div>
+          </div>
+          <div className="namaa-budget-context-funding-list">
+            {review.temporaryFundingPlans.map(funding=><article key={funding.targetAllocationId}>
+              <div className="namaa-budget-context-funding-title">
+                <div><strong>{funding.targetItemName}</strong><small>{temporaryReasonLabels[funding.reason]??funding.reason}</small></div>
+                <span>زيادة مطلوبة {formatSar(funding.extraAmount.toFixed(2))}</span>
+              </div>
+              <div className="namaa-budget-context-funding-summary">
+                <span>من الهامش الحر <b>{formatSar(funding.fundedFromFreeMargin.toFixed(2))}</b></span>
+                <span>من إعادة التوزيع <b>{formatSar(funding.sourceReductions.reduce((sum,item)=>sum+item.reduction,0).toFixed(2))}</b></span>
+                <span>المغطى إجمالًا <b>{formatSar(funding.fundedTotal.toFixed(2))}</b></span>
+              </div>
+              {funding.sourceReductions.length?<div className="namaa-budget-context-sources">{funding.sourceReductions.map(source=><div key={source.allocationId}><span>{source.itemName}</span><span>{formatSar(source.currentAmount.toFixed(2))} ← {formatSar(source.suggestedAmount.toFixed(2))}</span><b>-{formatSar(source.reduction.toFixed(2))}</b></div>)}</div>:null}
+              {funding.unresolvedAmount>0
+                ? <div className="namaa-budget-correction-residual"><strong>تبقى فجوة دون تغطية آمنة:</strong><span>{formatSar(funding.unresolvedAmount.toFixed(2))}</span><p>لن يقترح نماء أخذ هذا المبلغ من الالتزامات أو الاحتياجات الأساسية. خفّض الزيادة المتوقعة أو عدّل البنود المرنة يدويًا.</p></div>
+                : <form action={applyTemporaryBudgetFundingAction.bind(null,plan.id,funding.targetAllocationId)}><button className="p47-secondary-action">تطبيق خطة التغطية</button></form>}
+            </article>)}
+          </div>
+        </section>:null}
 
         {review.correctionSuggestions.length?<section className="namaa-budget-correction-plan" aria-label="اقتراحات التصحيح">
           <div className="namaa-budget-correction-head">
