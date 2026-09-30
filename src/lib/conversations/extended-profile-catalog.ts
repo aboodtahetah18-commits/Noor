@@ -39,6 +39,9 @@ const flexibleAmountColumns=(amountKey='amount',amountLabel='القيمة'):Exte
   {key:'annual_estimate',label:'الصرف السنوي التقريبي',kind:'number'},
   {key:'occurrences_per_year',label:'عدد المرات المتوقعة سنويًا',kind:'number'},
   {key:'reserve_buffer_percent',label:'هامش الأمان %',kind:'number'},
+  {key:'actual_spend_12m',label:'الصرف الفعلي آخر 12 شهرًا',kind:'number'},
+  {key:'actual_events_12m',label:'عدد الدفعات الفعلية آخر 12 شهرًا',kind:'number'},
+  {key:'learned_annual_estimate',label:'التقدير السنوي المتعلم',kind:'number'},
   {key:'expected_current_month',label:'المتوقع هذا الشهر',kind:'number',mobileVisible:true},
   {key:'monthly_reserve',label:'المخصص الشهري',kind:'number',mobileVisible:true},
 ];
