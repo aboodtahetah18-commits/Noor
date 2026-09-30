@@ -25,7 +25,7 @@ export async function updateInitialDraftAction(planId:string,fd:FormData){
   const priorityNotes=fd.getAll('itemPriorityNote').map(String);
   const allowed=new Set(['OBLIGATION','ESSENTIAL','SAVING','EMERGENCY','GOAL','FLEXIBLE']);
   const allowedPriorities=new Set(['NECESSARY','IMPORTANT','OPTIONAL','ENTERTAINMENT','']);
-  const allowedPriorityScopes=new Set(['THIS_CYCLE','PERSISTENT']);
+  const allowedPriorityScopes=new Set(['AUTO','THIS_CYCLE','PERSISTENT']);
   const allowedPriorityReasons=new Set(['TRAVEL','OCCASION','HEALTH','MAINTENANCE','UNUSUAL_MONTH','OTHER','']);
   if(!ids.length||ids.length!==amounts.length||ids.length!==types.length||ids.length!==priorities.length||ids.length!==priorityScopes.length||ids.length!==priorityReasons.length||ids.length!==priorityNotes.length){
     redirect('/budget?error='+encodeURIComponent('بيانات المسودة غير مكتملة'));
@@ -36,22 +36,22 @@ export async function updateInitialDraftAction(planId:string,fd:FormData){
     const amount=Number(amounts[i]);
     const type=types[i]??'';
     const priority=priorities[i]??'';
-    const priorityScope=priorityScopes[i]??'THIS_CYCLE';
+    const priorityScope=priorityScopes[i]??'AUTO';
     const priorityReason=priorityReasons[i]??'';
     const priorityNote=(priorityNotes[i]??'').trim();
     if(!Number.isFinite(amount)||amount<0||!allowed.has(type)||!allowedPriorities.has(priority)||!allowedPriorityScopes.has(priorityScope)||!allowedPriorityReasons.has(priorityReason)||priorityNote.length>240){
       redirect('/budget?error='+encodeURIComponent('راجع مبالغ وتصنيفات وأسباب المسودة'));
     }
     if(priority&&priorityScope==='THIS_CYCLE'&&!priorityReason){
-      redirect('/budget?error='+encodeURIComponent('راجع مبالغ وتصنيفات المسودة'));
+      redirect('/budget?error='+encodeURIComponent('حدد سبب التغيير المؤقت لهذا البند'));
     }
     statements.push(rawSql`
       with allocation_update as (
         update public.budget_allocations ba
         set planned_amount=${amount},
             allocation_type=${type},
-            priority_override=nullif(${priority},''),
-            priority_override_scope=case when nullif(${priority},'') is null then null else ${priorityScope} end,
+            priority_override=case when ${priorityScope}='AUTO' then null else nullif(${priority},'') end,
+            priority_override_scope=case when ${priorityScope}='AUTO' or nullif(${priority},'') is null then null else ${priorityScope} end,
             priority_override_reason=case when nullif(${priority},'') is null or ${priorityScope}<>'THIS_CYCLE' then null else nullif(${priorityReason},'') end,
             priority_override_note=case when nullif(${priority},'') is null or ${priorityScope}<>'THIS_CYCLE' then null else nullif(${priorityNote},'') end,
             updated_at=now()
@@ -85,7 +85,7 @@ export async function updateInitialDraftAction(planId:string,fd:FormData){
   if((learningTable[0] as Record<string,unknown>|undefined)?.table_name){
     for(let i=0;i<ids.length;i++){
       const priority=priorities[i]??'';
-      const priorityScope=priorityScopes[i]??'THIS_CYCLE';
+      const priorityScope=priorityScopes[i]??'AUTO';
       if(!priority||priorityScope!=='PERSISTENT') continue;
       const row=await rawSql`
         select bc.name,ba.allocation_type
