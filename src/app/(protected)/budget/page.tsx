@@ -75,7 +75,8 @@ export default async function BudgetPage({searchParams}:{searchParams:Promise<{e
                 <option value="OPTIONAL">قابل للتخفيض</option>
                 <option value="ENTERTAINMENT">ترفيهي / قابل للتقليل أولًا</option>
               </select></label>
-              <label><span>مدة هذا الاختيار</span><select name="itemPriorityScope" defaultValue={String(row.priority_override_scope??'THIS_CYCLE')}>
+              <label><span>مدة هذا الاختيار <small>إذا عدّلت الأولوية اختر هل التغيير مؤقت أم دائم</small></span><select name="itemPriorityScope" defaultValue={String(row.priority_override_scope??'AUTO')}>
+                <option value="AUTO">اقتراح نماء فقط — بدون تعلم</option>
                 <option value="THIS_CYCLE">لهذه الميزانية فقط</option>
                 <option value="PERSISTENT">تذكره للمستقبل</option>
               </select></label>
