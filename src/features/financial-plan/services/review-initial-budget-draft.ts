@@ -40,6 +40,10 @@ export type TemporaryExtraAmountSuggestion={
   observedMonths:number;
   historicalMonthlyAverage:number;
   historicalMonthlyP75:number;
+  historicalMonthlyStdDev:number;
+  coefficientOfVariation:number|null;
+  confidence:'LOW'|'MEDIUM'|'HIGH';
+  confidenceLabel:string;
   basis:string;
 };
 
@@ -189,6 +193,7 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
           count(*)::int observed_months,
           avg(month_total)::text monthly_average,
           percentile_cont(0.75) within group(order by month_total)::text monthly_p75,
+          stddev_pop(month_total)::text monthly_stddev,
           max(month_total)::text monthly_max
         from monthly
         group by category_id
@@ -198,6 +203,7 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
     observedMonths:Number(row.observed_months??0),
     monthlyAverage:finite(row.monthly_average),
     monthlyP75:finite(row.monthly_p75),
+    monthlyStdDev:finite(row.monthly_stddev),
     monthlyMax:finite(row.monthly_max),
   }]));
 
@@ -297,6 +303,24 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
     if(!monthly||monthly.observedMonths<2) continue;
     const suggestedExtra=Math.max(0,monthly.monthlyP75-item.amount);
     if(suggestedExtra<=0) continue;
+
+    const coefficientOfVariation=monthly.monthlyAverage>0
+      ? monthly.monthlyStdDev/monthly.monthlyAverage
+      : null;
+    const confidence:TemporaryExtraAmountSuggestion['confidence']=
+      monthly.observedMonths>=5&&coefficientOfVariation!==null&&coefficientOfVariation<=0.35
+        ? 'HIGH'
+        : monthly.observedMonths>=3&&coefficientOfVariation!==null&&coefficientOfVariation<=0.65
+          ? 'MEDIUM'
+          : 'LOW';
+    const confidenceLabel=confidence==='HIGH'
+      ? `ثقة عالية — ${monthly.observedMonths} أشهر مكتملة وتذبذب منخفض نسبيًا`
+      : confidence==='MEDIUM'
+        ? `ثقة متوسطة — ${monthly.observedMonths} أشهر مكتملة مع تذبذب مقبول`
+        : coefficientOfVariation===null
+          ? `ثقة منخفضة — لا توجد بيانات كافية لقياس استقرار الصرف`
+          : `ثقة منخفضة — التاريخ محدود أو الصرف متذبذب بشكل واضح`;
+
     temporaryExtraSuggestions.push({
       allocationId:item.allocationId,
       itemName:item.name,
@@ -305,6 +329,10 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       observedMonths:monthly.observedMonths,
       historicalMonthlyAverage:monthly.monthlyAverage,
       historicalMonthlyP75:monthly.monthlyP75,
+      historicalMonthlyStdDev:monthly.monthlyStdDev,
+      coefficientOfVariation:coefficientOfVariation===null?null:Number(coefficientOfVariation.toFixed(4)),
+      confidence,
+      confidenceLabel,
       basis:`التقدير مبني على الربع الأعلى من الصرف الشهري الفعلي لهذا البند خلال ${monthly.observedMonths} أشهر مكتملة، بعد استبعاد الشهر الجاري.`,
     });
   }
