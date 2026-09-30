@@ -121,6 +121,7 @@ export default async function BudgetPage({searchParams}:{searchParams:Promise<{e
                 <strong>{suggestion.itemName}</strong>
                 <small>{temporaryReasonLabels[suggestion.reason]??suggestion.reason}</small>
                 <em className={'namaa-temporary-estimate-confidence is-'+suggestion.confidence.toLowerCase()}>{suggestion.confidenceLabel}</em>
+                {suggestion.personalizationApplied?<em className="namaa-temporary-estimate-personalized">نطاق مخصص — بناءً على {suggestion.learningConfirmations} اختيارات سابقة لك</em>:null}
                 <p>{suggestion.basis}</p>
               </div>
               <div className="namaa-budget-context-estimate-values">
