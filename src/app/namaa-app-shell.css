@@ -721,3 +721,26 @@
   border-radius:var(--ux-radius-3);
   white-space:normal;
 }
+
+
+/* 2026-09-30 — TEMPORARY VS PERSISTENT PRIORITY */
+.namaa-budget-priority-controls{
+  display:grid;
+  gap:var(--ux-space-2);
+  min-width:0;
+}
+
+.namaa-budget-priority-controls label{
+  min-width:0;
+}
+
+.namaa-budget-priority-controls label>span{
+  display:grid;
+  gap:var(--ux-space-1);
+}
+
+@media(min-width:768px){
+  .namaa-budget-priority-controls{
+    grid-template-columns:minmax(0,1fr);
+  }
+}
