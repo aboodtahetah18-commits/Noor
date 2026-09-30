@@ -4587,16 +4587,7 @@ textarea {
     border-bottom:1.5px solid #C7D5CD!important;
   }
 
-  /* 3) صور مباني البنوك داخل الهيرو */
-  .namaa-banks-hero{
-    grid-template-columns:minmax(280px,.8fr) minmax(420px,1.2fr)!important;
-    align-items:stretch!important;
-  }
-  .namaa-banks-hero-copy{
-    align-self:center!important;
-    z-index:2!important;
-  }
-  .namaa-banks-building,
+  /* 3) Investment building presentation. Bank hero geometry is owned by BANK OPERATIONS below. */
   .namaa-investments-building{
     position:relative!important;
     min-height:210px!important;
@@ -4604,23 +4595,15 @@ textarea {
     border-radius:16px!important;
     border:1px solid rgb(212 175 107 / 38%)!important;
   }
-  .namaa-banks-building img,
   .namaa-investments-building img{
     object-fit:cover!important;
     object-position:center!important;
   }
-  .namaa-banks-building-shade,
   .namaa-investments-building-shade{
     position:absolute!important;
     inset:0!important;
     background:rgb(7 63 49 / 34%)!important;
     pointer-events:none!important;
-  }
-  .namaa-banks-selector{
-    grid-column:1/-1!important;
-    display:flex!important;
-    flex-wrap:nowrap!important;
-    gap:8px!important;
   }
 
   /* 5) أشرطة الإجراءات صف واحد وأزرار مدمجة */
@@ -4827,11 +4810,9 @@ textarea {
 }
 
 @media (min-width:768px) and (max-width:1023px){
-  .namaa-banks-hero,
   .namaa-investments-header{
     grid-template-columns:1fr!important;
   }
-  .namaa-banks-building,
   .namaa-investments-building{
     min-height:190px!important;
   }
@@ -4879,12 +4860,14 @@ textarea {
   }
 
   .namaa-banks-building{
+    position:relative!important;
     grid-column:1!important;
     grid-row:1!important;
     width:100%!important;
     min-width:0!important;
     min-height:220px!important;
     margin:var(--ux-space-0)!important;
+    overflow:hidden!important;
     border:var(--ux-border-width-0) solid transparent!important;
     border-radius:var(--ux-radius-0)!important;
   }
@@ -4896,7 +4879,10 @@ textarea {
   }
 
   .namaa-banks-building-shade{
+    position:absolute!important;
+    inset:0!important;
     background:color-mix(in srgb,var(--namaa-green-900) 12%,transparent)!important;
+    pointer-events:none!important;
   }
 
   .namaa-banks-hero-copy{
