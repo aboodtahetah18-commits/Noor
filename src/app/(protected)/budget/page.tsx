@@ -7,6 +7,7 @@ import { formatSar } from '@/lib/format-money';
 import { approvePlanAction, approveRevisionAction, updateInitialDraftAction } from './actions';
 import { FocusedNextStep } from '@/components/ux/focused-next-step';
 import { rawSql } from '@/infrastructure/db/client';
+import { reviewInitialBudgetDraft } from '@/features/financial-plan/services/review-initial-budget-draft';
 
 const labels:Record<string,string>={OBLIGATION:'الالتزامات',ESSENTIAL:'الاحتياجات الأساسية',SAVING:'الادخار',EMERGENCY:'الطوارئ',GOAL:'الأهداف',FLEXIBLE:'المصروف المرن'};
 const planStatus:Record<string,string>={PLAN_DRAFT:'مسودة',ACTIVE_PLAN:'معتمدة',REVISED:'تعديل بانتظار الاعتماد',CLOSED_PLAN:'مغلقة'};
@@ -33,6 +34,9 @@ export default async function BudgetPage({searchParams}:{searchParams:Promise<{e
       order by case ba.allocation_type when 'OBLIGATION' then 1 when 'ESSENTIAL' then 2 when 'FLEXIBLE' then 3 else 4 end,bc.name
     `;
     const total=draftRows.reduce((sum,row)=>sum+Number(row.planned_amount??0),0);
+    const review=await reviewInitialBudgetDraft(u.id,plan.id);
+    const blockers=review.issues.filter(issue=>issue.severity==='blocker');
+    const warnings=review.issues.filter(issue=>issue.severity==='warning');
     return <main className="p47-page" dir="rtl"><section className="p47-content-shell">
       <header className="p47-page-heading"><div><p className="p47-kicker">الميزانية · {cycle.name}</p><h1>مسودة الميزانية الأولى</h1><p className="p47-cycle-line">بناها نماء من بيانات التأسيس. راجع المبالغ والتصنيفات قبل الاعتماد.</p></div></header>
       {q.error?<p className="error-banner" role="alert">{q.error}</p>:null}
@@ -62,7 +66,19 @@ export default async function BudgetPage({searchParams}:{searchParams:Promise<{e
         </div>
       </form>
 
-      <section className="p47-panel p47-revision-banner"><div><strong>جاهز للاعتماد؟</strong><p>اعتماد المسودة يجعلها الخطة النشطة للدورة. لن يتم تنفيذ أي دفع تلقائيًا.</p></div><form action={approvePlanAction.bind(null,plan.id)}><button className="p47-primary-action">اعتماد الميزانية</button></form></section>
+      <section className="p47-panel namaa-budget-smart-review">
+        <div className="p47-section-heading"><div><p className="p47-kicker">المراجعة الذكية</p><h2>{review.canApprove?'المسودة قابلة للاعتماد':'يلزم معالجة ملاحظات قبل الاعتماد'}</h2></div><span>{review.issues.length} ملاحظات</span></div>
+        <div className="namaa-budget-review-metrics">
+          <article><span>الدخل الشهري المرجعي</span><strong>{formatSar(review.income.toFixed(2))}</strong></article>
+          <article><span>الالتزامات والأساسيات</span><strong>{formatSar(review.coreTotal.toFixed(2))}</strong><small>المتبقي بعدها {formatSar(review.remainingAfterCore.toFixed(2))}</small></article>
+          <article><span>إجمالي المسودة</span><strong>{formatSar(review.total.toFixed(2))}</strong><small>المتبقي بعد الخطة {formatSar(review.remainingAfterPlan.toFixed(2))}</small></article>
+        </div>
+        {blockers.length?<div className="namaa-budget-review-issues is-blocking">{blockers.map(issue=><article key={issue.code+(issue.itemName??'')}><strong>يلزم التصحيح</strong><p>{issue.message}</p></article>)}</div>:null}
+        {warnings.length?<div className="namaa-budget-review-issues is-warning">{warnings.map(issue=><article key={issue.code+(issue.itemName??'')}><strong>تنبيه للمراجعة</strong><p>{issue.message}</p></article>)}</div>:null}
+        {!review.issues.length?<div className="p47-soft-empty is-info"><strong>لم تُكتشف ملاحظات حرجة.</strong><span>يمكنك اعتماد المسودة بعد التأكد النهائي من البنود.</span></div>:null}
+      </section>
+
+      <section className="p47-panel p47-revision-banner"><div><strong>{review.canApprove?'جاهز للاعتماد؟':'الاعتماد متوقف مؤقتًا'}</strong><p>{review.canApprove?'اعتماد المسودة يجعلها الخطة النشطة للدورة. لن يتم تنفيذ أي دفع تلقائيًا.':'عالج الملاحظات الحرجة أعلاه ثم احفظ التعديلات. سيعيد نماء المراجعة تلقائيًا قبل السماح بالاعتماد.'}</p></div><form action={approvePlanAction.bind(null,plan.id)}><button className="p47-primary-action" disabled={!review.canApprove} aria-disabled={!review.canApprove}>{review.canApprove?'اعتماد الميزانية':'عالج الملاحظات أولًا'}</button></form></section>
     </section></main>;
   }
 
