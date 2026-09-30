@@ -12,6 +12,7 @@ import { getBudgetPriorityConfidence } from '@/features/budget/services/budget-p
 
 const labels:Record<string,string>={OBLIGATION:'الالتزامات',ESSENTIAL:'الاحتياجات الأساسية',SAVING:'الادخار',EMERGENCY:'الطوارئ',GOAL:'الأهداف',FLEXIBLE:'المصروف المرن'};
 const planStatus:Record<string,string>={PLAN_DRAFT:'مسودة',ACTIVE_PLAN:'معتمدة',REVISED:'تعديل بانتظار الاعتماد',CLOSED_PLAN:'مغلقة'};
+const temporaryReasonLabels:Record<string,string>={TRAVEL:'سفر',OCCASION:'مناسبة',HEALTH:'ظرف صحي',MAINTENANCE:'صيانة',UNUSUAL_MONTH:'شهر غير اعتيادي',OTHER:'سبب آخر'};
 function pct(v:number|null){return v==null?'—':`${Math.round(v)}%`}
 
 export default async function BudgetPage({searchParams}:{searchParams:Promise<{error?:string;draft?:string}>}){
@@ -113,7 +114,7 @@ export default async function BudgetPage({searchParams}:{searchParams:Promise<{e
           </div>
           <div className="namaa-budget-correction-list">
             {review.correctionSuggestions.map(suggestion=><article key={suggestion.allocationId}>
-              <div><strong>{suggestion.itemName}</strong><small>{suggestion.reason}</small>{suggestion.userPriority?<span className="namaa-budget-correction-history">أولوية المستخدم: {suggestion.userPriority==='NECESSARY'?'ضروري جدًا':suggestion.userPriority==='IMPORTANT'?'مهم':suggestion.userPriority==='OPTIONAL'?'قابل للتخفيض':'ترفيهي / قابل للتقليل أولًا'}</span>:null}{suggestion.allocationType==='FLEXIBLE'&&suggestion.historySignal!=='none'?<span className="namaa-budget-correction-history">متوسط فعلي حديث {formatSar(suggestion.historicalMonthlyAverage.toFixed(2))}{suggestion.activeMonths90d?' · ظهر في '+suggestion.activeMonths90d+' أشهر من آخر 3 أشهر':''}</span>:null}</div>
+              <div><strong>{suggestion.itemName}</strong><small>{suggestion.reason}</small>{suggestion.userPriority?<span className="namaa-budget-correction-history">أولوية المستخدم: {suggestion.userPriority==='NECESSARY'?'ضروري جدًا':suggestion.userPriority==='IMPORTANT'?'مهم':suggestion.userPriority==='OPTIONAL'?'قابل للتخفيض':'ترفيهي / قابل للتقليل أولًا'}</span>:null}{suggestion.temporaryContextReason?<span className="namaa-budget-correction-history">تغيير مؤقت بسبب: {temporaryReasonLabels[suggestion.temporaryContextReason]??suggestion.temporaryContextReason}{suggestion.temporaryContextNote?' · '+suggestion.temporaryContextNote:''}</span>:null}{suggestion.allocationType==='FLEXIBLE'&&suggestion.historySignal!=='none'?<span className="namaa-budget-correction-history">متوسط فعلي حديث {formatSar(suggestion.historicalMonthlyAverage.toFixed(2))}{suggestion.activeMonths90d?' · ظهر في '+suggestion.activeMonths90d+' أشهر من آخر 3 أشهر':''}</span>:null}</div>
               <div className="namaa-budget-correction-values">
                 <span>الحالي <b>{formatSar(suggestion.currentAmount.toFixed(2))}</b></span>
                 <span>المقترح <b>{formatSar(suggestion.suggestedAmount.toFixed(2))}</b></span>
