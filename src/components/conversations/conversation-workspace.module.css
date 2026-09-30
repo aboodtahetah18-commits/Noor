@@ -868,10 +868,6 @@
   margin:var(--ux-space-0)
 }
 
-.mobileOverlay{
-  display:none
-}
-
 .scrim{
   position:absolute;
   inset:0;
