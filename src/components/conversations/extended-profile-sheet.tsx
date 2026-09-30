@@ -60,8 +60,24 @@ function flexibleFinancialProjection(row:TableRow){
       if(monthDistance<=0) return sum;
       return sum+((Number(payment.amount)||0)/monthDistance);
     },0);
-    const reserve=annual>0?annual/12:scheduledReserve;
-    return {expected,reserve};
+    const cutoff=new Date(now);
+    cutoff.setFullYear(cutoff.getFullYear()-1);
+    const paidHistory=parsePayments(row)
+      .filter(payment=>payment.status==='مدفوع'&&payment.date)
+      .map(payment=>({amount:Number(payment.amount)||0,date:new Date(payment.date+'T00:00:00')}))
+      .filter(item=>item.amount>0&&Number.isFinite(item.date.getTime())&&item.date>=cutoff&&item.date<=now)
+      .sort((a,b)=>a.date.getTime()-b.date.getTime());
+    const actual12m=paidHistory.reduce((sum,item)=>sum+item.amount,0);
+    const observedMonths=paidHistory.length
+      ? Math.max(3,Math.min(12,((year-paidHistory[0].date.getFullYear())*12+(month-paidHistory[0].date.getMonth())+1)))
+      : 0;
+    const actualAnnualized=observedMonths?actual12m*(12/observedMonths):0;
+    const learningWeight=paidHistory.length?Math.min(.75,paidHistory.length/8):0;
+    const learnedAnnual=actualAnnualized>0
+      ? (annual>0?annual*(1-learningWeight)+actualAnnualized*learningWeight:actualAnnualized)
+      : annual;
+    const reserve=learnedAnnual>0?learnedAnnual/12:scheduledReserve;
+    return {expected,reserve,actual12m,actualEvents12m:paidHistory.length,learnedAnnual};
   }
 
   const base=amountBasis(row);
