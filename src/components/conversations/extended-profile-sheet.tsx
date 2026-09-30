@@ -52,7 +52,15 @@ function flexibleFinancialProjection(row:TableRow){
         : sum;
     },0);
     const annual=Number(row.annual_estimate)||0;
-    const reserve=annual>0?annual/12:0;
+    const scheduledReserve=parsePayments(row).reduce((sum,payment)=>{
+      if(payment.status==='مدفوع'||payment.status==='مؤجل'||!payment.date) return sum;
+      const date=new Date(payment.date+'T00:00:00');
+      if(!Number.isFinite(date.getTime())) return sum;
+      const monthDistance=(date.getFullYear()-year)*12+(date.getMonth()-month);
+      if(monthDistance<=0) return sum;
+      return sum+((Number(payment.amount)||0)/monthDistance);
+    },0);
+    const reserve=annual>0?annual/12:scheduledReserve;
     return {expected,reserve};
   }
 
@@ -569,7 +577,7 @@ export function ExtendedProfileSheet({
                   : <>
                       <div className={styles.extendedRecordCards} aria-label={'سجلات '+active.title}>
                         {tableRows.map((row,rowIndex)=>{
-                          const cardColumns=displayColumns.filter(column=>column.mobileVisible).slice(0,4);
+                          const cardColumns=displayColumns.filter(column=>column.mobileVisible).slice(0,6);
                           return <article className={styles.extendedRecordCard} key={rowIndex}>
                             <header>
                               <div>
