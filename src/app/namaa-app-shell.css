@@ -900,3 +900,46 @@
     grid-template-columns:1fr;
   }
 }
+
+
+/* 2026-09-30 — TEMPORARY AMOUNT ESTIMATE CONFIDENCE */
+.namaa-temporary-estimate-confidence{
+  display:inline-flex;
+  width:max-content;
+  max-width:100%;
+  margin-top:var(--ux-space-1);
+  padding:2px 8px;
+  border:1px solid var(--ux-border-default);
+  border-radius:var(--ux-radius-full);
+  background:var(--ux-surface-default);
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  font-style:normal;
+  font-weight:700;
+  line-height:1.5;
+  white-space:normal;
+}
+
+.namaa-temporary-estimate-confidence.is-high{
+  color:var(--namaa-green-900);
+  border-color:var(--namaa-border-strong);
+  background:var(--namaa-surface-warm);
+}
+
+.namaa-temporary-estimate-confidence.is-medium{
+  color:var(--ux-text-primary);
+}
+
+.namaa-temporary-estimate-confidence.is-low{
+  opacity:.82;
+}
+
+.namaa-budget-context-estimate-values{
+  grid-template-columns:repeat(4,minmax(0,1fr));
+}
+
+@media(max-width:767px){
+  .namaa-budget-context-estimate-values{
+    grid-template-columns:1fr;
+  }
+}
