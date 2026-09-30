@@ -3056,11 +3056,13 @@ textarea {
     color:var(--namaa-light-text)!important;
   }
 
+  /* Legacy-only surfaces not covered by later section/global/final authorities. */
   html[data-theme="light"] :where(
-    .namaa-wide-card,.namaa-wide-panel,.card,.panel,.dashboard-card,.form-card,.summary-card,
-    .p47-panel,.p47-resource-card,.p47-command-panel,.p47-analysis-card,.detail-list,.empty-state,
-    .namaa-investments-chat,.namaa-investments-dashboard,.namaa-investments-followup,
-    .namaa-banks-team,.namaa-banks-dashboard,.namaa-banks-goals,.namaa-policy-index,.namaa-policy-reader
+    .namaa-banks-team,
+    .namaa-banks-dashboard,
+    .namaa-banks-goals,
+    .namaa-policy-index,
+    .namaa-policy-reader
   ){
     background:var(--namaa-light-card)!important;
     color:var(--namaa-light-text)!important;
