@@ -216,12 +216,24 @@ function tableRowsFromFact(section:ExtendedProfileSection|null,fact?:FactEnvelop
     return Object.values(row).some(Boolean)?[row]:[];
   }
   if(section.key==='housing_details'&&Object.keys(value).length){
-    const amount=value.monthly_housing_cost===undefined?'':String(value.monthly_housing_cost);
+    const amount=value.monthly_housing_cost===undefined||value.monthly_housing_cost===null?'':String(value.monthly_housing_cost);
     const housingType=text('housing_type');
-    const notes=text('maintenance_notes');
+    const notes=text('maintenance_notes')||text('raw');
     const rows:TableRow[]=[];
-    if(housingType||amount) rows.push({category:housingType==='إيجار'?'إيجار':'سكن',name:housingType||'السكن',amount,recurrence:'شهري'});
-    if(notes) rows.push({category:'صيانة',name:'صيانة أو إصلاح معروف',notes});
+    if(housingType||amount){
+      rows.push(applyFlexibleProjection({
+        category:housingType==='إيجار'?'إيجار':'سكن',
+        name:housingType||'السكن',
+        payment_mode:'مبلغ واحد',
+        amount_mode:amount?'مبلغ محدد':'غير معروف الآن',
+        amount,
+        recurrence_mode:amount?'متكرر':'غير منتظم',
+        recurrence_every:amount?'1':'',
+        recurrence_unit:amount?'شهر':'',
+        notes,
+      }));
+    }
+    if(text('maintenance_notes')) rows.push({category:'صيانة',name:'صيانة أو إصلاح معروف',notes:text('maintenance_notes')});
     return rows;
   }
   if(section.key==='travel_profile'&&Object.keys(value).length){
@@ -249,6 +261,48 @@ function tableRowsFromFact(section:ExtendedProfileSection|null,fact?:FactEnvelop
       legacy.category='أخرى';
     }
     return Object.values(legacy).some(Boolean)?[legacy]:[];
+  }
+  if(section.key==='obligations'&&Array.isArray(value.items)){
+    return value.items.flatMap(item=>{
+      if(!item||typeof item!=='object'||Array.isArray(item)) return [];
+      const source=item as Record<string,unknown>;
+      const recurrence=String(source.recurrence??'').toUpperCase();
+      const recurrenceMode=recurrence==='ONE_TIME'?'مرة واحدة':'متكرر';
+      const recurrenceEvery=recurrence==='WEEKLY'?1:recurrence==='YEARLY'?1:1;
+      const recurrenceUnit=recurrence==='WEEKLY'?'أسبوع':recurrence==='YEARLY'?'سنة':'شهر';
+      return [applyFlexibleProjection({
+        name:String(source.name??'التزام'),
+        provider:String(source.provider??''),
+        payment_mode:'مبلغ واحد',
+        amount_mode:'مبلغ محدد',
+        amount:String(source.amount??''),
+        recurrence_mode:recurrenceMode,
+        recurrence_every:String(recurrenceEvery),
+        recurrence_unit:recurrenceUnit,
+        due_day:source.due_day===undefined||source.due_day===null?'':String(source.due_day),
+        remaining_balance:source.remaining_balance===undefined||source.remaining_balance===null?'':String(source.remaining_balance),
+        end_date:String(source.end_date??''),
+        finance_cost:source.finance_cost===undefined||source.finance_cost===null?'':String(source.finance_cost),
+      })];
+    });
+  }
+  if(section.key==='beneficiaries'&&Array.isArray(value.items)){
+    return value.items.flatMap(item=>{
+      if(!item||typeof item!=='object'||Array.isArray(item)) return [];
+      const source=item as Record<string,unknown>;
+      const support=Number(source.monthly_support??0);
+      const annual=Number(source.annual_support??0);
+      const notes=[
+        support>0?`دعم شهري: ${support}`:'',
+        annual>0?`دعم سنوي: ${annual}`:'',
+        typeof source.special_needs==='string'?source.special_needs:'',
+      ].filter(Boolean).join(' — ');
+      return [{
+        name:String(source.name??'مستفيد'),
+        relationship:String(source.relationship??'أخرى'),
+        notes,
+      }];
+    });
   }
   if(section.key==='renewals_insurance'){
     const rows:TableRow[]=[];
