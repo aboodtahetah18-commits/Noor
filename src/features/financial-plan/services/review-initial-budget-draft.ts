@@ -55,6 +55,13 @@ export type TemporaryExtraAmountSuggestion={
   outcomeCount:number;
   averageErrorRatio:number|null;
   accuracyWeight:number;
+  underCount:number;
+  overCount:number;
+  matchCount:number;
+  averageSignedBias:number|null;
+  biasAdjustment:number;
+  biasApplied:boolean;
+  biasLabel:string|null;
   outcomeLabel:string|null;
   basis:string;
 };
@@ -321,11 +328,13 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
     });
   }
 
-  const temporaryAmountPreferenceByKey=new Map<string,{confirmationCount:number;averagePosition:number;outcomeCount:number;averageErrorRatio:number|null;accuracyWeight:number}>();
+  const temporaryAmountPreferenceByKey=new Map<string,{confirmationCount:number;averagePosition:number;outcomeCount:number;averageErrorRatio:number|null;accuracyWeight:number;underCount:number;overCount:number;matchCount:number;averageSignedBias:number|null;biasAdjustment:number}>();
   const temporaryAmountLearningTable=await rawSql`select to_regclass('public.budget_temporary_amount_preferences')::text table_name`;
   if((temporaryAmountLearningTable[0] as Record<string,unknown>|undefined)?.table_name){
     const preferenceRows=await rawSql`
-      select normalized_label,context_reason,confirmation_count,average_position::text,outcome_count,average_error_ratio::text,accuracy_weight::text
+      select normalized_label,context_reason,confirmation_count,average_position::text,
+        outcome_count,average_error_ratio::text,accuracy_weight::text,
+        under_count,over_count,match_count,average_signed_bias::text,bias_adjustment::text
       from public.budget_temporary_amount_preferences
       where user_id=${userId}::uuid
     `;
@@ -341,6 +350,11 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
         outcomeCount:Math.max(0,Number(row.outcome_count??0)),
         averageErrorRatio:row.average_error_ratio==null?null:Math.max(0,finite(row.average_error_ratio)),
         accuracyWeight:Math.max(0.25,Math.min(1,finite(row.accuracy_weight)||1)),
+        underCount:Math.max(0,Number(row.under_count??0)),
+        overCount:Math.max(0,Number(row.over_count??0)),
+        matchCount:Math.max(0,Number(row.match_count??0)),
+        averageSignedBias:row.average_signed_bias==null?null:finite(row.average_signed_bias),
+        biasAdjustment:Math.max(-0.25,Math.min(0.25,finite(row.bias_adjustment))),
       });
     }
   }
@@ -377,9 +391,30 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
     const personalizationApplied=confidence!=='HIGH'&&historicalSpan>0&&Boolean(learned&&learned.confirmationCount>=3);
     const learnedPosition=personalizationApplied&&learned?learned.averagePosition:null;
     const accuracyWeight=learned?.accuracyWeight??1;
-    const blendedPosition=personalizationApplied&&learned
+    const outcomeTotal=learned?.outcomeCount??0;
+    const underShare=outcomeTotal>0?(learned?.underCount??0)/outcomeTotal:0;
+    const overShare=outcomeTotal>0?(learned?.overCount??0)/outcomeTotal:0;
+    const biasApplied=Boolean(
+      personalizationApplied &&
+      learned &&
+      outcomeTotal>=3 &&
+      Math.max(underShare,overShare)>=0.7
+    );
+    const basePosition=personalizationApplied&&learned
       ? 0.5+(learned.averagePosition-0.5)*accuracyWeight
       : 0.5;
+    const blendedPosition=Math.max(
+      0,
+      Math.min(
+        1,
+        basePosition+(biasApplied&&learned?learned.biasAdjustment:0)
+      )
+    );
+    const biasLabel=biasApplied&&learned
+      ? underShare>=0.7
+        ? `صحح نماء النطاق للأعلى لأن ${Math.round(underShare*100)}% من النتائج السابقة كانت أعلى من التقدير`
+        : `صحح نماء النطاق للأسفل لأن ${Math.round(overShare*100)}% من النتائج السابقة كانت أقل من التقدير`
+      : null;
     const halfWidthBase=learned&&learned.confirmationCount>=6?0.15:0.25;
     const halfWidth=Math.min(0.4,halfWidthBase+(1-accuracyWeight)*0.2);
     const personalizedMinimum=personalizationApplied&&learned
@@ -425,6 +460,13 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       outcomeCount:learned?.outcomeCount??0,
       averageErrorRatio:learned?.averageErrorRatio??null,
       accuracyWeight:Number(accuracyWeight.toFixed(4)),
+      underCount:learned?.underCount??0,
+      overCount:learned?.overCount??0,
+      matchCount:learned?.matchCount??0,
+      averageSignedBias:learned?.averageSignedBias??null,
+      biasAdjustment:Number((biasApplied&&learned?learned.biasAdjustment:0).toFixed(4)),
+      biasApplied,
+      biasLabel,
       outcomeLabel,
       basis:confidence==='HIGH'
         ? `التقدير مبني على الربع الأعلى من الصرف الشهري الفعلي لهذا البند خلال ${monthly.observedMonths} أشهر مكتملة، بعد استبعاد الشهر الجاري.`
