@@ -30,6 +30,20 @@ export type ExtendedProfileSection={
   };
 };
 
+const flexibleAmountColumns=(amountKey='amount',amountLabel='القيمة'):ExtendedProfileTableColumn[]=>[
+  {key:'amount_mode',label:'طريقة المبلغ',kind:'select',options:['مبلغ محدد','مبلغ تقريبي','نطاق من–إلى','غير معروف الآن']},
+  {key:amountKey,label:amountLabel,kind:'number',mobileVisible:true},
+  {key:'amount_min',label:'الحد الأدنى',kind:'number'},
+  {key:'amount_max',label:'الحد الأعلى',kind:'number'},
+  {key:'annual_estimate',label:'الصرف السنوي التقريبي',kind:'number'},
+];
+
+const openRecurrenceColumns:ExtendedProfileTableColumn[]=[
+  {key:'recurrence_mode',label:'نمط التكرار',kind:'select',options:['مرة واحدة','متكرر','حسب الحاجة','غير منتظم']},
+  {key:'recurrence_every',label:'يتكرر كل',kind:'number'},
+  {key:'recurrence_unit',label:'وحدة التكرار',kind:'select',options:['يوم','أسبوع','شهر','سنة']},
+];
+
 export const extendedProfileSections:ExtendedProfileSection[]=[
   {
     key:'bills',
@@ -41,8 +55,8 @@ export const extendedProfileSections:ExtendedProfileSection[]=[
       emptyLabel:'لا توجد فواتير مسجلة بعد.',
       columns:[
         {key:'name',label:'الفاتورة',mobileVisible:true},
-        {key:'amount',label:'القيمة',kind:'number',mobileVisible:true},
-        {key:'recurrence',label:'الدورية',kind:'select',options:['شهري','كل شهرين','ربع سنوي','نصف سنوي','سنوي','حسب الاستهلاك','أخرى']},
+        ...flexibleAmountColumns(),
+        ...openRecurrenceColumns,
         {key:'due_day',label:'يوم الاستحقاق',kind:'number'},
       ],
     },
@@ -57,8 +71,8 @@ export const extendedProfileSections:ExtendedProfileSection[]=[
       emptyLabel:'لا توجد اشتراكات مسجلة بعد.',
       columns:[
         {key:'name',label:'الاشتراك',mobileVisible:true},
-        {key:'amount',label:'القيمة',kind:'number',mobileVisible:true},
-        {key:'recurrence',label:'الدورية',kind:'select',options:['شهري','ربع سنوي','نصف سنوي','سنوي','أخرى']},
+        ...flexibleAmountColumns(),
+        ...openRecurrenceColumns,
         {key:'due_day',label:'يوم الاستحقاق',kind:'number'},
       ],
     },
@@ -74,8 +88,8 @@ export const extendedProfileSections:ExtendedProfileSection[]=[
       columns:[
         {key:'category',label:'النوع',kind:'select',options:['سكن','إيجار','مرفق','صيانة','إصلاح','أخرى'],mobileVisible:true},
         {key:'name',label:'البيان',mobileVisible:true},
-        {key:'amount',label:'القيمة',kind:'number',mobileVisible:true},
-        {key:'recurrence',label:'الدورية',kind:'select',options:['شهري','ربع سنوي','نصف سنوي','سنوي','مرة واحدة','عند الحاجة']},
+        ...flexibleAmountColumns(),
+        ...openRecurrenceColumns,
         {key:'due_day',label:'يوم الاستحقاق',kind:'number'},
         {key:'notes',label:'ملاحظات',kind:'textarea'},
       ],
@@ -144,8 +158,8 @@ export const extendedProfileSections:ExtendedProfileSection[]=[
         {key:'category',label:'الإلزام',kind:'select',mobileVisible:true},
         {key:'custom_category',label:'اسم الإلزام الجديد'},
         {key:'vehicle',label:'المركبة',kind:'select',mobileVisible:true},
-        {key:'amount',label:'القيمة',kind:'number',mobileVisible:true},
-        {key:'recurrence',label:'الدورية',kind:'select',options:['شهري','ربع سنوي','نصف سنوي','سنوي','كل سنتين','عند الحاجة']},
+        ...flexibleAmountColumns(),
+        ...openRecurrenceColumns,
         {key:'due_day',label:'يوم الاستحقاق',kind:'number'},
         {key:'notes',label:'ملاحظات',kind:'textarea'},
       ],
@@ -222,8 +236,8 @@ export const extendedProfileSections:ExtendedProfileSection[]=[
       columns:[
         {key:'category',label:'النوع',kind:'select',options:['صحة','تأمين صحي','تعليم','دورة أو تدريب','دعم الأب أو الأم','مصروف أسري','مصاريف أطفال','أخرى'],mobileVisible:true},
         {key:'beneficiary',label:'المستفيد',kind:'select'},
-        {key:'amount',label:'القيمة',kind:'number',mobileVisible:true},
-        {key:'recurrence',label:'الدورية',kind:'select',options:['شهري','ربع سنوي','نصف سنوي','سنوي','موسمي','مرة واحدة','عند الحاجة']},
+        ...flexibleAmountColumns(),
+        ...openRecurrenceColumns,
         {key:'due_day',label:'يوم الاستحقاق',kind:'number'},
         {key:'notes',label:'ملاحظات',kind:'textarea'},
       ],
@@ -241,9 +255,9 @@ export const extendedProfileSections:ExtendedProfileSection[]=[
         {key:'category',label:'النوع',kind:'select',options:['تجديد حكومي','تأمين مركبة','تأمين صحي','تأمين ممتلكات','وثيقة أخرى','مطالبة تأمينية','أخرى'],mobileVisible:true},
         {key:'name',label:'اسم الاستحقاق أو الوثيقة',mobileVisible:true},
         {key:'provider',label:'الجهة أو شركة التأمين'},
-        {key:'amount',label:'القيمة',kind:'number',mobileVisible:true},
+        ...flexibleAmountColumns(),
         {key:'due_date',label:'تاريخ الاستحقاق',kind:'date'},
-        {key:'recurrence',label:'الدورية',kind:'select',options:['شهري','ربع سنوي','نصف سنوي','سنوي','كل سنتين','مرة واحدة','عند الحاجة']},
+        ...openRecurrenceColumns,
         {key:'policy_number',label:'رقم الوثيقة/المرجع'},
         {key:'notes',label:'ملاحظات',kind:'textarea'},
       ],
@@ -290,8 +304,8 @@ export const extendedProfileSections:ExtendedProfileSection[]=[
       columns:[
         {key:'name',label:'الالتزام',mobileVisible:true},
         {key:'provider',label:'الجهة'},
-        {key:'amount',label:'القيمة',kind:'number',mobileVisible:true},
-        {key:'recurrence',label:'الدورية',kind:'select',options:['شهري','كل شهرين','ربع سنوي','نصف سنوي','سنوي','مرة واحدة','أخرى']},
+        ...flexibleAmountColumns(),
+        ...openRecurrenceColumns,
         {key:'due_day',label:'يوم الاستحقاق',kind:'number'},
         {key:'remaining_balance',label:'الرصيد المتبقي',kind:'number'},
         {key:'end_date',label:'تاريخ الانتهاء',kind:'date'},
