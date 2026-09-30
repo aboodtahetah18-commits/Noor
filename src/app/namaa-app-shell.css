@@ -504,3 +504,82 @@
     align-items:stretch;
   }
 }
+
+
+/* 2026-09-30 — SMART BUDGET PRE-APPROVAL REVIEW */
+.namaa-budget-smart-review{
+  display:grid;
+  gap:var(--ux-space-4);
+}
+
+.namaa-budget-review-metrics{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:var(--ux-space-3);
+}
+
+.namaa-budget-review-metrics article{
+  display:grid;
+  gap:var(--ux-space-1);
+  padding:var(--ux-space-3);
+  border:1px solid var(--ux-border-default);
+  border-radius:var(--ux-radius-4);
+  background:var(--ux-surface-default);
+}
+
+.namaa-budget-review-metrics span,
+.namaa-budget-review-metrics small{
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+}
+
+.namaa-budget-review-metrics strong{
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-title-sm-size);
+}
+
+.namaa-budget-review-issues{
+  display:grid;
+  gap:var(--ux-space-2);
+}
+
+.namaa-budget-review-issues article{
+  display:grid;
+  gap:var(--ux-space-1);
+  padding:var(--ux-space-3);
+  border:1px solid var(--ux-border-default);
+  border-radius:var(--ux-radius-3);
+  background:var(--ux-surface-canvas);
+}
+
+.namaa-budget-review-issues article strong{
+  font-size:var(--ux-type-body-sm-size);
+  color:var(--ux-text-primary);
+}
+
+.namaa-budget-review-issues article p{
+  margin:0;
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-body-sm-size);
+  line-height:1.7;
+}
+
+.namaa-budget-review-issues.is-blocking article{
+  border-inline-start:4px solid var(--ux-status-danger-border);
+}
+
+.namaa-budget-review-issues.is-warning article{
+  border-inline-start:4px solid var(--ux-status-warning-border);
+}
+
+.p47-primary-action:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+  pointer-events:none;
+}
+
+@media(max-width:767px){
+  .namaa-budget-review-metrics{
+    grid-template-columns:1fr;
+  }
+}
