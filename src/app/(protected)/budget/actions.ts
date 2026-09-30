@@ -23,11 +23,12 @@ export async function updateInitialDraftAction(planId:string,fd:FormData){
   const priorityScopes=fd.getAll('itemPriorityScope').map(String);
   const priorityReasons=fd.getAll('itemPriorityReason').map(String);
   const priorityNotes=fd.getAll('itemPriorityNote').map(String);
+  const temporaryExtraAmounts=fd.getAll('temporaryExtraAmount').map(String);
   const allowed=new Set(['OBLIGATION','ESSENTIAL','SAVING','EMERGENCY','GOAL','FLEXIBLE']);
   const allowedPriorities=new Set(['NECESSARY','IMPORTANT','OPTIONAL','ENTERTAINMENT','']);
   const allowedPriorityScopes=new Set(['AUTO','THIS_CYCLE','PERSISTENT']);
   const allowedPriorityReasons=new Set(['TRAVEL','OCCASION','HEALTH','MAINTENANCE','UNUSUAL_MONTH','OTHER','']);
-  if(!ids.length||ids.length!==amounts.length||ids.length!==types.length||ids.length!==priorities.length||ids.length!==priorityScopes.length||ids.length!==priorityReasons.length||ids.length!==priorityNotes.length){
+  if(!ids.length||ids.length!==amounts.length||ids.length!==types.length||ids.length!==priorities.length||ids.length!==priorityScopes.length||ids.length!==priorityReasons.length||ids.length!==priorityNotes.length||ids.length!==temporaryExtraAmounts.length){
     redirect('/budget?error='+encodeURIComponent('بيانات المسودة غير مكتملة'));
   }
 
@@ -39,7 +40,9 @@ export async function updateInitialDraftAction(planId:string,fd:FormData){
     const priorityScope=priorityScopes[i]??'AUTO';
     const priorityReason=priorityReasons[i]??'';
     const priorityNote=(priorityNotes[i]??'').trim();
-    if(!Number.isFinite(amount)||amount<0||!allowed.has(type)||!allowedPriorities.has(priority)||!allowedPriorityScopes.has(priorityScope)||!allowedPriorityReasons.has(priorityReason)||priorityNote.length>240){
+    const temporaryExtraRaw=temporaryExtraAmounts[i]??'';
+    const temporaryExtraAmount=temporaryExtraRaw===''?null:Number(temporaryExtraRaw);
+    if(!Number.isFinite(amount)||amount<0||!allowed.has(type)||!allowedPriorities.has(priority)||!allowedPriorityScopes.has(priorityScope)||!allowedPriorityReasons.has(priorityReason)||priorityNote.length>240||(temporaryExtraAmount!==null&&(!Number.isFinite(temporaryExtraAmount)||temporaryExtraAmount<=0))){
       redirect('/budget?error='+encodeURIComponent('راجع مبالغ وتصنيفات وأسباب المسودة'));
     }
     if(priority&&priorityScope==='THIS_CYCLE'&&!priorityReason){
@@ -54,6 +57,7 @@ export async function updateInitialDraftAction(planId:string,fd:FormData){
             priority_override_scope=case when ${priorityScope}='AUTO' or nullif(${priority},'') is null then null else ${priorityScope} end,
             priority_override_reason=case when nullif(${priority},'') is null or ${priorityScope}<>'THIS_CYCLE' then null else nullif(${priorityReason},'') end,
             priority_override_note=case when nullif(${priority},'') is null or ${priorityScope}<>'THIS_CYCLE' then null else nullif(${priorityNote},'') end,
+            temporary_extra_amount=case when ${priorityScope}='THIS_CYCLE' then ${temporaryExtraAmount} else null end,
             updated_at=now()
       where ba.id=${ids[i]}::uuid and ba.user_id=${u.id}::uuid
         and exists(
