@@ -63,6 +63,9 @@ export type TemporaryExtraAmountSuggestion={
   biasApplied:boolean;
   biasLabel:string|null;
   biasStability:'INSUFFICIENT'|'STABLE_UNDER'|'STABLE_OVER'|'MIXED'|'SHIFTING';
+  seasonalityApplied:boolean;
+  seasonalityFactor:number;
+  seasonalityLabel:string|null;
   recentOutcomeCount:number;
   recentUnderCount:number;
   recentOverCount:number;
@@ -222,27 +225,46 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
           where t.user_id=${userId}::uuid
             and t.category_id=any(${categoryIds}::uuid[])
             and t.status='POSTED'
-            and t.transaction_date>=date_trunc('month',current_date)-interval '6 months'
+            and t.transaction_date>=date_trunc('month',current_date)-interval '18 months'
             and t.transaction_date<date_trunc('month',current_date)
             and t.transaction_type in ('EXPENSE','OBLIGATION_PAYMENT','REFUND')
           group by t.category_id,date_trunc('month',t.transaction_date)
+        ),
+        stats as (
+          select category_id,
+            count(*)::int observed_months,
+            avg(month_total)::text monthly_average,
+            percentile_cont(0.75) within group(order by month_total)::text monthly_p75,
+            percentile_cont(0.5) within group(order by month_total)::text monthly_median,
+            stddev_pop(month_total)::text monthly_stddev,
+            max(month_total)::text monthly_max
+          from monthly
+          group by category_id
+        ),
+        seasonal as (
+          select category_id,
+            count(*) filter(
+              where extract(quarter from month_start)=extract(quarter from current_date)
+            )::int season_observed_months,
+            percentile_cont(0.5) within group(order by month_total)
+              filter(where extract(quarter from month_start)=extract(quarter from current_date))::text season_median
+          from monthly
+          group by category_id
         )
-        select category_id,
-          count(*)::int observed_months,
-          avg(month_total)::text monthly_average,
-          percentile_cont(0.75) within group(order by month_total)::text monthly_p75,
-          stddev_pop(month_total)::text monthly_stddev,
-          max(month_total)::text monthly_max
-        from monthly
-        group by category_id
+        select s.*,se.season_observed_months,se.season_median
+        from stats s
+        left join seasonal se on se.category_id=s.category_id
       `
     : [];
   const monthlyContextByCategory=new Map(monthlyContextRows.map(row=>[String(row.category_id),{
     observedMonths:Number(row.observed_months??0),
     monthlyAverage:finite(row.monthly_average),
     monthlyP75:finite(row.monthly_p75),
+    monthlyMedian:finite(row.monthly_median),
     monthlyStdDev:finite(row.monthly_stddev),
     monthlyMax:finite(row.monthly_max),
+    seasonObservedMonths:Number(row.season_observed_months??0),
+    seasonMedian:finite(row.season_median),
   }]));
 
   const items=allocationRows.map(row=>{
@@ -399,8 +421,22 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
           ? `ثقة منخفضة — لا توجد بيانات كافية لقياس استقرار الصرف`
           : `ثقة منخفضة — التاريخ محدود أو الصرف متذبذب بشكل واضح`;
 
+    const rawSeasonalityFactor=monthly.monthlyMedian>0&&monthly.seasonObservedMonths>=3
+      ? monthly.seasonMedian/monthly.monthlyMedian
+      : 1;
+    const seasonalityFactor=Math.max(0.8,Math.min(1.25,rawSeasonalityFactor));
+    const seasonalityApplied=monthly.seasonObservedMonths>=3&&Math.abs(seasonalityFactor-1)>=0.1;
+    const seasonalSuggestedExtra=seasonalityApplied
+      ? Math.max(0,(item.amount+suggestedExtra)*seasonalityFactor-item.amount)
+      : suggestedExtra;
+    const seasonalityLabel=seasonalityApplied
+      ? seasonalityFactor>1
+        ? `الموسم الحالي أعلى من المعتاد تاريخيًا بحوالي ${Math.round((seasonalityFactor-1)*100)}%`
+        : `الموسم الحالي أقل من المعتاد تاريخيًا بحوالي ${Math.round((1-seasonalityFactor)*100)}%`
+      : null;
+
     const historicalMinimum=Math.max(0,monthly.monthlyAverage-item.amount);
-    const historicalMaximum=Math.max(suggestedExtra,monthly.monthlyMax-item.amount);
+    const historicalMaximum=Math.max(seasonalSuggestedExtra,monthly.monthlyMax-item.amount);
     const historicalSpan=Math.max(0,historicalMaximum-historicalMinimum);
     const learningKey=`${normalizeTemporaryAmountLabel(item.name)}:${String(item.temporaryContextReason)}`;
     const learned=temporaryAmountPreferenceByKey.get(learningKey);
@@ -449,7 +485,10 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
     const learnedCenter=personalizationApplied
       ? historicalMinimum+blendedPosition*historicalSpan
       : suggestedExtra;
-    const adjustedSuggested=Math.max(personalizedMinimum,Math.min(personalizedMaximum,learnedCenter));
+    const seasonAdjustedCenter=seasonalityApplied
+      ? Math.max(historicalMinimum,Math.min(historicalMaximum,learnedCenter*seasonalityFactor))
+      : learnedCenter;
+    const adjustedSuggested=Math.max(personalizedMinimum,Math.min(personalizedMaximum,seasonAdjustedCenter));
     const outcomeLabel=learned&&learned.outcomeCount>0
       ? learned.averageErrorRatio!==null&&learned.averageErrorRatio<=0.2
         ? `النتائج السابقة دقيقة نسبيًا — متوسط الخطأ ${Math.round(learned.averageErrorRatio*100)}%`
@@ -491,6 +530,9 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       biasApplied,
       biasLabel,
       biasStability:learned?.biasStability??'INSUFFICIENT',
+      seasonalityApplied,
+      seasonalityFactor:Number(seasonalityFactor.toFixed(4)),
+      seasonalityLabel,
       recentOutcomeCount:learned?.recentOutcomeCount??0,
       recentUnderCount:learned?.recentUnderCount??0,
       recentOverCount:learned?.recentOverCount??0,
