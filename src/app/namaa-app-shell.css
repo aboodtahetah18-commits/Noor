@@ -409,3 +409,98 @@
     margin-block-start:0!important;
   }
 }
+
+
+/* 2026-09-30 — INITIAL BUDGET DRAFT REVIEW */
+.namaa-initial-budget-draft{
+  display:grid;
+  gap:var(--ux-space-4);
+}
+
+.namaa-initial-budget-list{
+  display:grid;
+  gap:var(--ux-space-3);
+}
+
+.namaa-initial-budget-item{
+  display:grid;
+  grid-template-columns:minmax(0,1.4fr) minmax(160px,.6fr) minmax(170px,.7fr);
+  gap:var(--ux-space-3);
+  align-items:end;
+  padding:var(--ux-space-3);
+  border:1px solid var(--ux-border-default);
+  border-radius:var(--ux-radius-4);
+  background:var(--ux-surface-default);
+}
+
+.namaa-initial-budget-item-head{
+  display:flex;
+  align-items:flex-start;
+  gap:var(--ux-space-2);
+  min-width:0;
+}
+
+.namaa-initial-budget-item-head>span{
+  width:30px;
+  height:30px;
+  flex:0 0 30px;
+  display:grid;
+  place-items:center;
+  border-radius:var(--ux-radius-full);
+  background:var(--ux-surface-canvas);
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  font-weight:800;
+}
+
+.namaa-initial-budget-item-head>div{
+  min-width:0;
+  display:grid;
+  gap:var(--ux-space-1);
+}
+
+.namaa-initial-budget-item-head strong{
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-body-sm-size);
+}
+
+.namaa-initial-budget-item-head small{
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  line-height:1.55;
+}
+
+.namaa-initial-budget-item label{
+  display:grid;
+  gap:var(--ux-space-1);
+}
+
+.namaa-initial-budget-item label>span{
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  font-weight:800;
+}
+
+.namaa-initial-budget-item input,
+.namaa-initial-budget-item select{
+  width:100%;
+  min-height:42px;
+  border:1px solid var(--ux-border-default);
+  border-radius:var(--ux-radius-3);
+  background:var(--ux-surface-default);
+  color:var(--ux-text-primary);
+  padding:var(--ux-space-2) var(--ux-space-3);
+  font:inherit;
+}
+
+.namaa-initial-budget-actions{
+  display:flex;
+  justify-content:flex-start;
+}
+
+@media(max-width:767px){
+  .namaa-initial-budget-item{
+    grid-template-columns:1fr;
+    align-items:stretch;
+  }
+}
