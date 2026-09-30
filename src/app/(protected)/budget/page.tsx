@@ -4,7 +4,7 @@ import { getCurrentFinancialCycle } from '@/features/cycles/queries/get-current-
 import { getFinancialPlanByCycle } from '@/features/financial-plan/queries/get-financial-plan';
 import { getBudgetCommandCenter } from '@/features/budget/queries/get-budget-command-center';
 import { formatSar } from '@/lib/format-money';
-import { approvePlanAction, approveRevisionAction, updateInitialDraftAction } from './actions';
+import { approvePlanAction, approveRevisionAction, updateInitialDraftAction, applyInitialBudgetCorrectionsAction } from './actions';
 import { FocusedNextStep } from '@/components/ux/focused-next-step';
 import { rawSql } from '@/infrastructure/db/client';
 import { reviewInitialBudgetDraft } from '@/features/financial-plan/services/review-initial-budget-draft';
@@ -41,6 +41,7 @@ export default async function BudgetPage({searchParams}:{searchParams:Promise<{e
       <header className="p47-page-heading"><div><p className="p47-kicker">الميزانية · {cycle.name}</p><h1>مسودة الميزانية الأولى</h1><p className="p47-cycle-line">بناها نماء من بيانات التأسيس. راجع المبالغ والتصنيفات قبل الاعتماد.</p></div></header>
       {q.error?<p className="error-banner" role="alert">{q.error}</p>:null}
       {q.draft==='updated'?<p className="success-banner">تم حفظ تعديلات المسودة. لم تعتمد الميزانية بعد.</p>:null}
+      {q.draft==='corrected'?<p className="success-banner">تم تطبيق اقتراحات التصحيح على البنود غير الأساسية. راجع الأرقام ثم اعتمد الميزانية إذا أصبحت المراجعة سليمة.</p>:null}
 
       <section className="p47-budget-hero"><div><p className="p47-kicker">إجمالي المسودة</p><strong>{formatSar(total.toFixed(2))}</strong><small>{draftRows.length} بنود تأسيسية</small></div><div><span>الحالة</span><strong>بانتظار مراجعتك</strong><small>لا توجد حركات مالية ناتجة عن هذه المسودة.</small></div></section>
 
@@ -75,6 +76,28 @@ export default async function BudgetPage({searchParams}:{searchParams:Promise<{e
         </div>
         {blockers.length?<div className="namaa-budget-review-issues is-blocking">{blockers.map(issue=><article key={issue.code+(issue.itemName??'')}><strong>يلزم التصحيح</strong><p>{issue.message}</p></article>)}</div>:null}
         {warnings.length?<div className="namaa-budget-review-issues is-warning">{warnings.map(issue=><article key={issue.code+(issue.itemName??'')}><strong>تنبيه للمراجعة</strong><p>{issue.message}</p></article>)}</div>:null}
+
+        {review.correctionSuggestions.length?<section className="namaa-budget-correction-plan" aria-label="اقتراحات التصحيح">
+          <div className="namaa-budget-correction-head">
+            <div><strong>اقتراحات تصحيح تلقائية</strong><small>يبدأ نماء بالبنود المرنة، ثم الأهداف، ثم الادخار. لا يقترح تخفيض الالتزامات أو الاحتياجات الأساسية تلقائيًا.</small></div>
+            <span>خفض مقترح {formatSar(review.suggestedReductionTotal.toFixed(2))}</span>
+          </div>
+          <div className="namaa-budget-correction-list">
+            {review.correctionSuggestions.map(suggestion=><article key={suggestion.allocationId}>
+              <div><strong>{suggestion.itemName}</strong><small>{suggestion.reason}</small></div>
+              <div className="namaa-budget-correction-values">
+                <span>الحالي <b>{formatSar(suggestion.currentAmount.toFixed(2))}</b></span>
+                <span>المقترح <b>{formatSar(suggestion.suggestedAmount.toFixed(2))}</b></span>
+                <span>التخفيض <b>{formatSar(suggestion.reduction.toFixed(2))}</b></span>
+              </div>
+            </article>)}
+          </div>
+          {review.unresolvedGap>0?<div className="namaa-budget-correction-residual"><strong>تبقى فجوة لا يمكن حلها من البنود غير الأساسية:</strong><span>{formatSar(review.unresolvedGap.toFixed(2))}</span><p>راجع تصنيف أو قيمة أحد الالتزامات/الاحتياجات الأساسية أو صحح الدخل المؤكد. لن يخفض نماء هذه البنود تلقائيًا.</p></div>:null}
+          <form action={applyInitialBudgetCorrectionsAction.bind(null,plan.id)}>
+            <button className="p47-secondary-action">تطبيق الاقتراحات على المسودة</button>
+          </form>
+        </section>:null}
+
         {!review.issues.length?<div className="p47-soft-empty is-info"><strong>لم تُكتشف ملاحظات حرجة.</strong><span>يمكنك اعتماد المسودة بعد التأكد النهائي من البنود.</span></div>:null}
       </section>
 
