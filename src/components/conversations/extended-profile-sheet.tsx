@@ -9,6 +9,23 @@ import styles from './conversation-workspace.module.css';
 
 type FactEnvelope={value?:Record<string,unknown>;confidence?:number;verified_at?:string|null;updated_at?:string|null};
 type TableRow=Record<string,string>;
+type PaymentDraft={amount:string;date:string;status:string};
+
+function parsePayments(row:TableRow):PaymentDraft[]{
+  try{
+    const parsed=JSON.parse(row.payments_json||'[]');
+    if(!Array.isArray(parsed)) return [];
+    return parsed.flatMap(item=>{
+      if(!item||typeof item!=='object'||Array.isArray(item)) return [];
+      const source=item as Record<string,unknown>;
+      return [{amount:String(source.amount??''),date:String(source.date??''),status:String(source.status??'متوقع')}];
+    });
+  }catch{return []}
+}
+
+function paymentsTotal(row:TableRow){
+  return parsePayments(row).reduce((sum,item)=>sum+(Number(item.amount)||0),0);
+}
 
 function tableRowsFromFact(section:ExtendedProfileSection|null,fact?:FactEnvelope){
   if(!section?.table) return [] as TableRow[];
@@ -47,6 +64,10 @@ function tableRowsFromFact(section:ExtendedProfileSection|null,fact?:FactEnvelop
           }
         }
         row[column.key]=cell===null||cell===undefined?'':String(cell);
+      }
+      if(Array.isArray(source.payments)){
+        row.payment_mode='عدة دفعات';
+        row.payments_json=JSON.stringify(source.payments);
       }
       if(section.table?.allowCustomCategory&&row.category&&row.category!=='أخرى'&&!section.table.categoryOptions?.includes(row.category)){
         row.custom_category=row.custom_category||row.category;
@@ -132,6 +153,11 @@ function rowLabel(section:ExtendedProfileSection,row:TableRow){
 
 function displayCell(section:ExtendedProfileSection,row:TableRow,column:ExtendedProfileTableColumn){
   if(section.table?.allowCustomCategory&&column.key==='category'&&row.category==='أخرى'&&row.custom_category) return row.custom_category;
+  if(column.key==='payment_mode'&&row.payment_mode==='عدة دفعات') return parsePayments(row).length+' دفعات';
+  if(column.key==='amount'&&row.payment_mode==='عدة دفعات'){
+    const total=paymentsTotal(row);
+    return total?String(total):'—';
+  }
   return row[column.key]||'—';
 }
 
@@ -209,6 +235,7 @@ export function ExtendedProfileSheet({
     const row:TableRow={};
     for(const column of section.table?.columns??[]) row[column.key]='';
     if(section.table?.columns.some(column=>column.key==='recurrence')) row.recurrence='شهري';
+    if(section.table?.columns.some(column=>column.key==='payment_mode')) row.payment_mode='مبلغ واحد';
     if(section.table?.columns.some(column=>column.key==='amount_mode')) row.amount_mode='مبلغ محدد';
     if(section.table?.columns.some(column=>column.key==='recurrence_mode')) row.recurrence_mode='متكرر';
     if(section.table?.columns.some(column=>column.key==='recurrence_every')) row.recurrence_every='1';
@@ -242,6 +269,15 @@ export function ExtendedProfileSheet({
           const n=Number(raw);
           if(Number.isFinite(n)&&n>=0) item[column.key]=n;
         }else item[column.key]=raw;
+      }
+      if(row.payment_mode==='عدة دفعات'){
+        const payments=parsePayments(row)
+          .map(payment=>({amount:Number(payment.amount)||0,date:payment.date,status:payment.status||'متوقع'}))
+          .filter(payment=>payment.amount>0||payment.date);
+        if(payments.length) item.payments=payments;
+        delete item.amount;
+        delete item.amount_min;
+        delete item.amount_max;
       }
       return item;
     }).filter(item=>Object.keys(item).length>0);
@@ -282,6 +318,13 @@ export function ExtendedProfileSheet({
       setError('اكتب اسم النوع الجديد.');
       return false;
     }
+    if(draftRow.payment_mode==='عدة دفعات'){
+      const payments=parsePayments(draftRow);
+      if(!payments.length||payments.some(payment=>!Number(payment.amount)||Number(payment.amount)<0||!payment.date)){
+        setError('أضف لكل دفعة مبلغًا وتاريخًا صحيحين.');
+        return false;
+      }
+    }
     for(const column of active.table.columns){
       const raw=(draftRow[column.key]??'').trim();
       if(!raw||column.kind!=='number') continue;
@@ -302,6 +345,10 @@ export function ExtendedProfileSheet({
     setDraftRow(current=>{
       if(!current) return current;
       const next={...current,[key]:value};
+      if(key==='payment_mode'&&value==='عدة دفعات'&&!parsePayments(next).length){
+        next.payments_json=JSON.stringify([{amount:'',date:'',status:'متوقع'}]);
+      }
+      if(key==='payment_mode'&&value!=='عدة دفعات') next.payments_json='';
       if(active?.key==='budget_behavior'){
         const period=(next.frequency_period||'شهري') as 'يومي'|'أسبوعي'|'شهري';
         next.monthly_total=String(monthlyRecurringTotal(period,Number(next.occurrences||0),Number(next.unit_cost||0),next.spend_context));
@@ -329,6 +376,31 @@ export function ExtendedProfileSheet({
         next.forecast_total=String(forecast.total);
       }
       return next;
+    });
+  }
+
+  function updatePaymentDraft(index:number,key:keyof PaymentDraft,value:string){
+    setDraftRow(current=>{
+      if(!current) return current;
+      const payments=parsePayments(current);
+      const next=payments.map((payment,paymentIndex)=>paymentIndex===index?{...payment,[key]:value}:payment);
+      return {...current,payments_json:JSON.stringify(next)};
+    });
+  }
+
+  function addPaymentDraft(){
+    setDraftRow(current=>{
+      if(!current) return current;
+      const next=[...parsePayments(current),{amount:'',date:'',status:'متوقع'}];
+      return {...current,payments_json:JSON.stringify(next)};
+    });
+  }
+
+  function removePaymentDraft(index:number){
+    setDraftRow(current=>{
+      if(!current) return current;
+      const next=parsePayments(current).filter((_,paymentIndex)=>paymentIndex!==index);
+      return {...current,payments_json:JSON.stringify(next)};
     });
   }
 
@@ -469,6 +541,7 @@ export function ExtendedProfileSheet({
                     <div className={styles.extendedAddForm}>
                       {active.table.columns.map(column=>{
                         if(column.key==='custom_category'&&draftRow.category!=='أخرى') return null;
+                        if(['amount_mode','amount','amount_min','amount_max','annual_estimate'].includes(column.key)&&draftRow.payment_mode==='عدة دفعات') return null;
                         if(column.key==='amount'&&['نطاق من–إلى','غير معروف الآن'].includes(draftRow.amount_mode||'')) return null;
                         if(['amount_min','amount_max'].includes(column.key)&&draftRow.amount_mode!=='نطاق من–إلى') return null;
                         if(column.key==='annual_estimate'&&draftRow.recurrence_mode!=='حسب الحاجة'&&draftRow.amount_mode!=='مبلغ تقريبي') return null;
@@ -507,6 +580,20 @@ export function ExtendedProfileSheet({
                                 />}
                         </label>;
                       })}
+                      {draftRow.payment_mode==='عدة دفعات'&&<section className={styles.paymentScheduleEditor}>
+                        <div className={styles.paymentScheduleHeader}>
+                          <div><strong>جدول الدفعات</strong><small>لكل دفعة مبلغ وتاريخ وحالة مستقلة.</small></div>
+                          <button type="button" onClick={addPaymentDraft}><LucideIcon name="plus" size={16}/><span>إضافة دفعة</span></button>
+                        </div>
+                        <div className={styles.paymentScheduleList}>
+                          {parsePayments(draftRow).map((payment,index)=><article key={index} className={styles.paymentScheduleItem}>
+                            <header><strong>الدفعة {index+1}</strong>{parsePayments(draftRow).length>1&&<button type="button" onClick={()=>removePaymentDraft(index)} aria-label={'حذف الدفعة '+(index+1)}><LucideIcon name="trash2" size={16}/></button>}</header>
+                            <label><span>المبلغ</span><input type="number" min="0" inputMode="decimal" value={payment.amount} onChange={event=>updatePaymentDraft(index,'amount',event.target.value)}/></label>
+                            <label><span>التاريخ</span><input type="date" value={payment.date} onChange={event=>updatePaymentDraft(index,'date',event.target.value)}/></label>
+                            <label><span>الحالة</span><select value={payment.status} onChange={event=>updatePaymentDraft(index,'status',event.target.value)}><option>متوقع</option><option>مستحق</option><option>مدفوع</option><option>مؤجل</option></select></label>
+                          </article>)}
+                        </div>
+                      </section>}
                       {selectedVehicle&&['vehicle_maintenance','vehicle_expenses'].includes(active.key)&&<div className={styles.linkedRecordPreview}>
                         <strong>بيانات المركبة المرتبطة</strong>
                         <span>{selectedVehicle.vehicle_name}</span>
