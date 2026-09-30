@@ -120,11 +120,13 @@ export default async function BudgetPage({searchParams}:{searchParams:Promise<{e
               <div>
                 <strong>{suggestion.itemName}</strong>
                 <small>{temporaryReasonLabels[suggestion.reason]??suggestion.reason}</small>
+                <em className={'namaa-temporary-estimate-confidence is-'+suggestion.confidence.toLowerCase()}>{suggestion.confidenceLabel}</em>
                 <p>{suggestion.basis}</p>
               </div>
               <div className="namaa-budget-context-estimate-values">
                 <span>المتوسط الشهري الفعلي <b>{formatSar(suggestion.historicalMonthlyAverage.toFixed(2))}</b></span>
                 <span>الربع الأعلى التاريخي <b>{formatSar(suggestion.historicalMonthlyP75.toFixed(2))}</b></span>
+                <span>التذبذب الشهري <b>{formatSar(suggestion.historicalMonthlyStdDev.toFixed(2))}</b></span>
                 <span>الزيادة المقترحة <b>{formatSar(suggestion.suggestedExtraAmount.toFixed(2))}</b></span>
               </div>
               <form action={applyTemporaryExtraSuggestionAction.bind(null,plan.id,suggestion.allocationId)}>
