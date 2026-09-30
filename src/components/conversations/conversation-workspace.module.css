@@ -11995,44 +11995,6 @@
 }
 
 @media (max-width:767px){
-  .page,
-  .workspace,
-  .chatPane{
-    width:100dvw!important;
-    max-width:100dvw!important;
-    min-width:0!important;
-    height:100dvh!important;
-    min-height:100dvh!important;
-    margin:0!important;
-    border:0!important;
-    border-radius:0!important;
-    box-shadow:none!important;
-    overflow:hidden!important;
-    background:var(--namaa-card)!important;
-    background-image:none!important;
-  }
-
-  .chatPane{
-    display:flex!important;
-    flex-direction:column!important;
-  }
-
-  .chatHeader,
-  .centralChatHeader{
-    flex:0 0 72px!important;
-    height:72px!important;
-    min-height:72px!important;
-    padding:0 var(--ux-space-3)!important;
-    border:0!important;
-    border-bottom:1px solid color-mix(in srgb,var(--ux-text-inverse) 18%,transparent)!important;
-    border-radius:0!important;
-    background:var(--namaa-green-900)!important;
-    background-image:none!important;
-    color:var(--ux-text-inverse)!important;
-    box-shadow:none!important;
-    overflow:hidden!important;
-  }
-
   .chatHeader::before,
   .chatHeader::after,
   .centralChatHeader::before,
@@ -12042,43 +12004,10 @@
     background-image:none!important;
   }
 
-  .chatHeaderForeground,
-  .desktopChatHeaderForeground{
-    min-height:72px!important;
-    height:72px!important;
-    background:transparent!important;
-  }
-
   .chatHeader .compactRoleTitle strong,
   .chatHeader .entityTitle strong,
   .chatHeader .chatIdentity small{
     color:var(--ux-text-inverse)!important;
-  }
-
-  .chatHeader .mobileTools button,
-  .chatHeader .compactMenuButton{
-    width:40px!important;
-    height:40px!important;
-    min-width:40px!important;
-    min-height:40px!important;
-    border:1px solid color-mix(in srgb,var(--ux-text-inverse) 28%,transparent)!important;
-    border-radius:var(--ux-radius-sm)!important;
-    background:color-mix(in srgb,var(--ux-text-inverse) 8%,transparent)!important;
-    color:var(--ux-text-inverse)!important;
-    box-shadow:none!important;
-  }
-
-  .messages{
-    flex:1 1 auto!important;
-    min-height:0!important;
-    width:100%!important;
-    max-width:100%!important;
-    padding:var(--ux-space-3) var(--ux-space-3) var(--ux-space-4)!important;
-    gap:var(--ux-space-3)!important;
-    overflow-y:auto!important;
-    overflow-x:hidden!important;
-    background:var(--namaa-card)!important;
-    background-image:none!important;
   }
 
   .messages::before,
@@ -12142,51 +12071,10 @@
     color:var(--namaa-info)!important;
   }
 
-  .composer{
-    flex:0 0 auto!important;
-    width:100%!important;
-    max-width:100%!important;
-    min-height:72px!important;
-    margin:0!important;
-    padding:var(--ux-space-2) var(--ux-space-3) calc(var(--ux-space-2) + env(safe-area-inset-bottom))!important;
-    border:0!important;
-    border-top:1px solid var(--namaa-border)!important;
-    border-radius:0!important;
-    background:var(--namaa-card)!important;
-    background-image:none!important;
-    box-shadow:none!important;
-  }
-
-  .composer textarea{
-    min-height:44px!important;
-    max-height:96px!important;
-    border:1px solid var(--namaa-border-strong)!important;
-    border-radius:var(--ux-radius-full)!important;
-    background:var(--namaa-surface-warm)!important;
-    color:var(--ux-text-primary)!important;
-  }
-
   .composer textarea::placeholder{
     color:var(--ux-text-secondary)!important;
   }
 
-  .attachButton,
-  .sendButton{
-    width:44px!important;
-    height:44px!important;
-    min-width:44px!important;
-    min-height:44px!important;
-    padding:0!important;
-    border-radius:var(--ux-radius-full)!important;
-    border:1px solid var(--namaa-green-700)!important;
-    background:var(--namaa-green-900)!important;
-    color:var(--ux-text-inverse)!important;
-    box-shadow:none!important;
-  }
-
-  .sendButton span{
-    display:none!important;
-  }
 }
 
 :global(html[data-theme="dark"]) .chatPane,
