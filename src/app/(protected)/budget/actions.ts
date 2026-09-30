@@ -45,8 +45,11 @@ export async function updateInitialDraftAction(planId:string,fd:FormData){
     if(!Number.isFinite(amount)||amount<0||!allowed.has(type)||!allowedPriorities.has(priority)||!allowedPriorityScopes.has(priorityScope)||!allowedPriorityReasons.has(priorityReason)||priorityNote.length>240||(temporaryExtraAmount!==null&&(!Number.isFinite(temporaryExtraAmount)||temporaryExtraAmount<=0))){
       redirect('/budget?error='+encodeURIComponent('راجع مبالغ وتصنيفات وأسباب المسودة'));
     }
-    if(priority&&priorityScope==='THIS_CYCLE'&&!priorityReason){
+    if(priorityScope==='THIS_CYCLE'&&(priority||temporaryExtraAmount!==null)&&!priorityReason){
       redirect('/budget?error='+encodeURIComponent('حدد سبب التغيير المؤقت لهذا البند'));
+    }
+    if(temporaryExtraAmount!==null&&priorityScope!=='THIS_CYCLE'){
+      redirect('/budget?error='+encodeURIComponent('الزيادة الظرفية يجب أن تكون لهذه الميزانية فقط'));
     }
     statements.push(rawSql`
       with allocation_update as (
@@ -54,9 +57,13 @@ export async function updateInitialDraftAction(planId:string,fd:FormData){
         set planned_amount=${amount},
             allocation_type=${type},
             priority_override=case when ${priorityScope}='AUTO' then null else nullif(${priority},'') end,
-            priority_override_scope=case when ${priorityScope}='AUTO' or nullif(${priority},'') is null then null else ${priorityScope} end,
-            priority_override_reason=case when nullif(${priority},'') is null or ${priorityScope}<>'THIS_CYCLE' then null else nullif(${priorityReason},'') end,
-            priority_override_note=case when nullif(${priority},'') is null or ${priorityScope}<>'THIS_CYCLE' then null else nullif(${priorityNote},'') end,
+            priority_override_scope=case
+              when ${priorityScope}='THIS_CYCLE' and (nullif(${priority},'') is not null or ${temporaryExtraAmount} is not null or nullif(${priorityReason},'') is not null) then 'THIS_CYCLE'
+              when ${priorityScope}='PERSISTENT' and nullif(${priority},'') is not null then 'PERSISTENT'
+              else null
+            end,
+            priority_override_reason=case when ${priorityScope}='THIS_CYCLE' then nullif(${priorityReason},'') else null end,
+            priority_override_note=case when ${priorityScope}='THIS_CYCLE' then nullif(${priorityNote},'') else null end,
             temporary_extra_amount=case when ${priorityScope}='THIS_CYCLE' then ${temporaryExtraAmount} else null end,
             updated_at=now()
       where ba.id=${ids[i]}::uuid and ba.user_id=${u.id}::uuid
