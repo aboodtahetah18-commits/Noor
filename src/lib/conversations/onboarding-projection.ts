@@ -1,5 +1,6 @@
 import { getRawSql } from '@/infrastructure/db/client';
 import { reconcileConfirmedOnboardingAccounts } from '@/lib/conversations/onboarding-account-reconciliation';
+import { financialPlanRepository } from '@/repositories/financial-plan-repository';
 
 type ProjectionSummary = {
   accounts_created:number;
@@ -7,6 +8,9 @@ type ProjectionSummary = {
   obligations_created:number;
   incomes_created:number;
   income_deferred:boolean;
+  budget_draft_created:boolean;
+  budget_draft_id:string|null;
+  budget_draft_items:number;
 };
 
 function normalizeArabicNumber(input:string){
@@ -79,6 +83,58 @@ function rawFact(value:unknown){
   return typeof raw==='string' ? raw.trim() : '';
 }
 
+function positiveNumber(value:unknown){
+  const number=Number(value);
+  return Number.isFinite(number)&&number>0 ? number : 0;
+}
+
+function monthlyAmountFromFlexibleItem(item:Record<string,unknown>){
+  const direct=positiveNumber(item.expected_current_month);
+  if(direct>0) return direct;
+
+  const mode=String(item.amount_mode??'');
+  let amount=positiveNumber(item.amount);
+  if(mode==='نطاق من–إلى'){
+    amount=positiveNumber(item.amount_max)||positiveNumber(item.amount_min);
+  }
+  if(amount<=0) return 0;
+
+  const recurrenceMode=String(item.recurrence_mode??'متكرر');
+  if(recurrenceMode==='مرة واحدة') return amount;
+  if(recurrenceMode==='حسب الحاجة'||recurrenceMode==='غير منتظم'){
+    const reserve=positiveNumber(item.monthly_reserve);
+    const annual=positiveNumber(item.annual_estimate);
+    return reserve||annual/12;
+  }
+
+  const every=Math.max(1,positiveNumber(item.recurrence_every)||1);
+  const unit=String(item.recurrence_unit??'شهر');
+  if(unit==='يوم') return amount*(30/every);
+  if(unit==='أسبوع') return amount*(52/12/every);
+  if(unit==='سنة') return amount/(12*every);
+  return amount/every;
+}
+
+function recurringRuleFromFlexibleItem(item:Record<string,unknown>,cycleStartDate:string){
+  const mode=String(item.recurrence_mode??'متكرر');
+  const every=Math.max(1,Math.round(positiveNumber(item.recurrence_every)||1));
+  const unit=String(item.recurrence_unit??'شهر');
+
+  if(mode==='مرة واحدة'){
+    return {recurrenceKind:'ONE_TIME' as const,intervalCycles:1,startCycleDate:cycleStartDate};
+  }
+  if(mode==='حسب الحاجة'||mode==='غير منتظم'){
+    return {recurrenceKind:'SEASONAL' as const,intervalCycles:1,startCycleDate:cycleStartDate};
+  }
+  if(unit==='شهر'&&every>1){
+    return {recurrenceKind:'EVERY_N_CYCLES' as const,intervalCycles:Math.min(24,every),startCycleDate:cycleStartDate};
+  }
+  if(unit==='سنة'){
+    return {recurrenceKind:'EVERY_N_CYCLES' as const,intervalCycles:Math.min(24,every*12),startCycleDate:cycleStartDate};
+  }
+  return {recurrenceKind:'MONTHLY' as const,intervalCycles:1,startCycleDate:cycleStartDate};
+}
+
 export async function projectConfirmedOnboardingFacts(userId:string):Promise<ProjectionSummary>{
   const sql=getRawSql();
   const facts=await sql`
@@ -86,7 +142,7 @@ export async function projectConfirmedOnboardingFacts(userId:string):Promise<Pro
     from public.user_foundation_facts
     where user_id=${userId}::uuid
       and status='ACTIVE'
-      and fact_key in ('accounts','goals','obligations','income')
+      and fact_key in ('accounts','goals','obligations','income','housing','bills','subscriptions','dependents')
   `;
 
   const byKey=new Map<string,unknown>();
@@ -97,6 +153,9 @@ export async function projectConfirmedOnboardingFacts(userId:string):Promise<Pro
   let obligationsCreated=0;
   let incomesCreated=0;
   let incomeDeferred=false;
+  let budgetDraftCreated=false;
+  let budgetDraftId:string|null=null;
+  let budgetDraftItems=0;
 
   const accountFact=byKey.get('accounts');
   const structuredAccounts=factItems(accountFact);
@@ -270,11 +329,126 @@ export async function projectConfirmedOnboardingFacts(userId:string):Promise<Pro
     }
   }
 
+  const cycleRows=await sql`
+    select id,start_date::text
+    from public.financial_cycles
+    where user_id=${userId}::uuid and status in ('ACTIVE','DRAFT')
+    order by case when status='ACTIVE' then 0 else 1 end,created_at desc
+    limit 1
+  `;
+  const cycle=cycleRows[0] as Record<string,unknown>|undefined;
+
+  if(cycle?.id){
+    const cycleId=String(cycle.id);
+    const cycleStartDate=String(cycle.start_date);
+    const existingPlan=await sql`
+      select id
+      from public.financial_plans
+      where user_id=${userId}::uuid and cycle_id=${cycleId}::uuid
+      limit 1
+    `;
+
+    if(!existingPlan[0]?.id){
+      const items:Array<{
+        name:string;
+        allocationType:'OBLIGATION'|'ESSENTIAL'|'SAVING'|'EMERGENCY'|'GOAL'|'FLEXIBLE';
+        plannedAmount:string;
+        recurrenceKind:'MONTHLY'|'EVERY_N_CYCLES'|'ONE_TIME'|'SEASONAL';
+        intervalCycles:number;
+        startCycleDate:string;
+        note:string;
+      }>=[];
+
+      const housing=factRecord(byKey.get('housing'));
+      if(housing){
+        const housingAmount=positiveNumber(housing.monthly_housing_cost);
+        if(housingAmount>0){
+          items.push({
+            name:String(housing.housing_type||'السكن'),
+            allocationType:'ESSENTIAL',
+            plannedAmount:housingAmount.toFixed(2),
+            recurrenceKind:'MONTHLY',
+            intervalCycles:1,
+            startCycleDate:cycleStartDate,
+            note:'مسودة تأسيسية من بيانات السكن — تحتاج مراجعة قبل الاعتماد.',
+          });
+        }
+      }
+
+      for(const item of factItems(byKey.get('obligations'))){
+        const amount=positiveNumber(item.amount);
+        if(amount<=0) continue;
+        const recurrence=String(item.recurrence??'MONTHLY').toUpperCase();
+        const rule=recurrence==='YEARLY'
+          ? {recurrenceKind:'EVERY_N_CYCLES' as const,intervalCycles:12,startCycleDate:cycleStartDate}
+          : recurrence==='ONE_TIME'
+            ? {recurrenceKind:'ONE_TIME' as const,intervalCycles:1,startCycleDate:cycleStartDate}
+            : {recurrenceKind:'MONTHLY' as const,intervalCycles:1,startCycleDate:cycleStartDate};
+        items.push({
+          name:String(item.name||'التزام'),
+          allocationType:'OBLIGATION',
+          plannedAmount:amount.toFixed(2),
+          ...rule,
+          note:'مسودة تأسيسية من الالتزامات المؤكدة — تحتاج مراجعة قبل الاعتماد.',
+        });
+      }
+
+      for(const [factKey,allocationType] of [['bills','ESSENTIAL'],['subscriptions','FLEXIBLE']] as const){
+        for(const item of factItems(byKey.get(factKey))){
+          const amount=monthlyAmountFromFlexibleItem(item);
+          if(amount<=0) continue;
+          const rule=recurringRuleFromFlexibleItem(item,cycleStartDate);
+          items.push({
+            name:String(item.name|| (factKey==='bills'?'فاتورة':'اشتراك')),
+            allocationType,
+            plannedAmount:amount.toFixed(2),
+            ...rule,
+            note:'مسودة تأسيسية من بيانات '+(factKey==='bills'?'الفواتير':'الاشتراكات')+' — تحتاج مراجعة قبل الاعتماد.',
+          });
+        }
+      }
+
+      const dependentItems=factItems(byKey.get('dependents'));
+      const dependentMonthly=dependentItems.reduce((sum,item)=>{
+        const monthly=positiveNumber(item.monthly_support);
+        const annual=positiveNumber(item.annual_support);
+        return sum+monthly+(annual/12);
+      },0);
+      if(dependentMonthly>0){
+        items.push({
+          name:'دعم الأسرة والمعالين',
+          allocationType:'ESSENTIAL',
+          plannedAmount:dependentMonthly.toFixed(2),
+          recurrenceKind:'MONTHLY',
+          intervalCycles:1,
+          startCycleDate:cycleStartDate,
+          note:'مسودة تأسيسية مجمعة من دعم المعالين — تحتاج مراجعة قبل الاعتماد.',
+        });
+      }
+
+      const deduped=[...new Map(items.map(item=>[
+        item.allocationType+':'+item.name.trim().toLocaleLowerCase('ar'),
+        item,
+      ])).values()];
+
+      if(deduped.length){
+        budgetDraftId=await financialPlanRepository.createDraftWithManualCategories(userId,cycleId,deduped);
+        budgetDraftCreated=true;
+        budgetDraftItems=deduped.length;
+      }
+    }else{
+      budgetDraftId=String(existingPlan[0].id);
+    }
+  }
+
   return {
     accounts_created:accountsCreated,
     goals_created:goalsCreated,
     obligations_created:obligationsCreated,
     incomes_created:incomesCreated,
     income_deferred:incomeDeferred,
+    budget_draft_created:budgetDraftCreated,
+    budget_draft_id:budgetDraftId,
+    budget_draft_items:budgetDraftItems,
   };
 }
