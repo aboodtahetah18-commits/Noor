@@ -8,23 +8,18 @@ import styles from './conversation-workspace.module.css';
 
 type IntakeStep=
   | 'marital_status'|'dependents'|'home_city'|'housing'|'employment'|'work_city'
-  | 'commute'|'income'|'accounts'|'obligations'|'goals'|'statements'|'review';
+  | 'commute'|'income'|'accounts'|'obligations'|'goals'|'bills'|'subscriptions'|'statements'|'review';
 type StructuredIntakeStep='dependents'|'income'|'accounts'|'obligations'|'goals';
 
 const INTAKE_STAGES:Array<{key:IntakeStep;title:string;question:string}>=[
-  {key:'marital_status',title:'الوضع الأسري',question:'ما حالتك الاجتماعية الحالية؟'},
-  {key:'dependents',title:'المعالون',question:'من الأشخاص الذين تعولهم أو تصرف عليهم ماليًا؟'},
-  {key:'home_city',title:'مدينة السكن',question:'في أي مدينة تسكن حاليًا؟'},
-  {key:'housing',title:'السكن',question:'ما وضع السكن الحالي؟ وهل يوجد إيجار شهري؟'},
-  {key:'employment',title:'العمل',question:'ما طبيعة عملك الحالية؟'},
-  {key:'work_city',title:'مدينة العمل',question:'في أي مدينة يقع عملك الأساسي؟'},
-  {key:'commute',title:'التنقل',question:'ما مسافة أو مدة التنقل المعتادة ووسيلته؟'},
   {key:'income',title:'الدخل',question:'ما تفاصيل الراتب والدخل والصافي الفعلي؟'},
   {key:'accounts',title:'الحسابات',question:'ما الحسابات المالية والأرصدة الافتتاحية؟'},
-  {key:'obligations',title:'الالتزامات',question:'ما الالتزامات المالية القائمة؟'},
-  {key:'goals',title:'الأهداف',question:'ما الأهداف المالية والمبالغ والمواعيد؟'},
-  {key:'statements',title:'كشوف الحساب',question:'هل لديك كشوف حساب حديثة للمطابقة؟'},
-  {key:'review',title:'المراجعة النهائية',question:'هل تريد تثبيت ملف التأسيس بعد مراجعته؟'},
+  {key:'housing',title:'السكن',question:'ما وضع السكن الحالي؟ وهل يوجد إيجار أو دفعة سكن مؤثرة الآن؟'},
+  {key:'obligations',title:'الالتزامات',question:'ما الالتزامات المالية القائمة التي تؤثر على ميزانيتك الآن؟'},
+  {key:'dependents',title:'المعالون',question:'هل يوجد أشخاص تعتمد مصروفاتهم عليك ماليًا؟'},
+  {key:'bills',title:'الفواتير',question:'ما الفواتير التي تتوقع سدادها حاليًا؟'},
+  {key:'subscriptions',title:'الاشتراكات',question:'ما الاشتراكات النشطة التي قد تُخصم منك؟'},
+  {key:'review',title:'المراجعة الأساسية',question:'هل تريد تثبيت الحد الأدنى المطلوب للبدء؟'},
 ];
 type MessagePayload={id:string;sender_type:'user'|'agent'|'system';sender_name:string;message_kind:'message'|'risk'|'decision'|'recommendation'|'followup'|'request';body:string;structured_data?:Record<string,unknown>;created_at?:string};
 
@@ -300,7 +295,7 @@ export function GovernorOnboardingIntake({
 
     <section className={styles.onboardingStageOverview} aria-label="مراحل التأسيس">
       <button type="button" className={styles.onboardingStageOverviewHeader} onClick={()=>setStagesOpen(open=>!open)} aria-expanded={stagesOpen}>
-        <span>مراحل التأسيس</span>
+        <span>بيانات البدء الأساسية</span>
         <span className={styles.onboardingStageOverviewMeta}><strong>{currentStageIndex+1}/{INTAKE_STAGES.length}</strong><LucideIcon name={stagesOpen?'chevronUp':'chevronDown'} size={20}/></span>
       </button>
       {stagesOpen&&<ol className={styles.onboardingStageList}>
@@ -325,8 +320,8 @@ export function GovernorOnboardingIntake({
     </section>}
 
     {intakeStep==='review'&&<section className={styles.simpleOnboardingStage}>
-      <strong>المراجعة النهائية</strong>
-      <p>إذا كانت البيانات صحيحة، ثبّت ملف التأسيس. ويمكنك إغلاق الصفحة والعودة للدردشة إذا أردت تعديل معلومة أولًا.</p>
+      <strong>مراجعة بيانات البدء</strong>
+      <p>إذا كانت البيانات الأساسية صحيحة، ثبّت ملف التأسيس وابدأ باستخدام نماء. أما التجديدات والصيانة والتأمينات والسلوك المالي والأهداف وبقية التفاصيل المهمة فسنستكملها لاحقًا تدريجيًا.</p>
     </section>}
 
     {intakeStep==='dependents'&&<div className={styles.desktopStructuredIntake}>
