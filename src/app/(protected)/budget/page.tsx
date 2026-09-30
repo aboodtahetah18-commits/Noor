@@ -8,6 +8,7 @@ import { approvePlanAction, approveRevisionAction, updateInitialDraftAction, app
 import { FocusedNextStep } from '@/components/ux/focused-next-step';
 import { rawSql } from '@/infrastructure/db/client';
 import { reviewInitialBudgetDraft } from '@/features/financial-plan/services/review-initial-budget-draft';
+import { getBudgetPriorityConfidence } from '@/features/budget/services/budget-priority-confidence';
 
 const labels:Record<string,string>={OBLIGATION:'الالتزامات',ESSENTIAL:'الاحتياجات الأساسية',SAVING:'الادخار',EMERGENCY:'الطوارئ',GOAL:'الأهداف',FLEXIBLE:'المصروف المرن'};
 const planStatus:Record<string,string>={PLAN_DRAFT:'مسودة',ACTIVE_PLAN:'معتمدة',REVISED:'تعديل بانتظار الاعتماد',CLOSED_PLAN:'مغلقة'};
@@ -23,7 +24,7 @@ export default async function BudgetPage({searchParams}:{searchParams:Promise<{e
 
   if(plan.status==='PLAN_DRAFT'){
     const draftRows=await rawSql`
-      select ba.id,bc.name,bc.expense_nature_default,ba.planned_amount::text,ba.allocation_type,
+      select ba.id,ba.category_id,bc.name,bc.expense_nature_default,ba.planned_amount::text,ba.allocation_type,
         r.recurrence_kind,r.interval_cycles,r.note
       from public.plan_versions pv
       join public.budget_allocations ba on ba.plan_version_id=pv.id and ba.user_id=pv.user_id
@@ -34,6 +35,11 @@ export default async function BudgetPage({searchParams}:{searchParams:Promise<{e
       order by case ba.allocation_type when 'OBLIGATION' then 1 when 'ESSENTIAL' then 2 when 'FLEXIBLE' then 3 else 4 end,bc.name
     `;
     const total=draftRows.reduce((sum,row)=>sum+Number(row.planned_amount??0),0);
+    const priorityConfidence=await getBudgetPriorityConfidence(u.id,draftRows.map(row=>({
+      id:String(row.id),
+      name:String(row.name),
+      allocationType:String(row.allocation_type),
+    })));
     const review=await reviewInitialBudgetDraft(u.id,plan.id);
     const blockers=review.issues.filter(issue=>issue.severity==='blocker');
     const warnings=review.issues.filter(issue=>issue.severity==='warning');
@@ -60,7 +66,7 @@ export default async function BudgetPage({searchParams}:{searchParams:Promise<{e
               <option value="EMERGENCY">طوارئ</option>
               <option value="GOAL">هدف</option>
             </select></label>
-            <label><span>أولوية البند <small>اقتراح نماء — يتعلم من اختياراتك السابقة ويمكنك تعديله</small></span><select name="itemPriority" defaultValue={String(row.expense_nature_default??'')}>
+            <label><span>أولوية البند <small>اقتراح نماء — يتعلم من اختياراتك السابقة ويمكنك تعديله</small>{priorityConfidence.get(String(row.id))?<em className={'namaa-priority-confidence is-'+priorityConfidence.get(String(row.id))!.level.toLowerCase()}>{priorityConfidence.get(String(row.id))!.label}</em>:null}</span><select name="itemPriority" defaultValue={String(row.expense_nature_default??'')}>
               <option value="">يحددها نماء من الاستخدام</option>
               <option value="NECESSARY">ضروري جدًا</option>
               <option value="IMPORTANT">مهم</option>
