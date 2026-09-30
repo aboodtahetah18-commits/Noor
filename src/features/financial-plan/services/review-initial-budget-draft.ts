@@ -44,6 +44,9 @@ export type TemporaryExtraAmountSuggestion={
   coefficientOfVariation:number|null;
   confidence:'LOW'|'MEDIUM'|'HIGH';
   confidenceLabel:string;
+  suggestedMinimum:number;
+  suggestedMaximum:number;
+  requiresManualAmount:boolean;
   basis:string;
 };
 
@@ -321,6 +324,8 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
           ? `ثقة منخفضة — لا توجد بيانات كافية لقياس استقرار الصرف`
           : `ثقة منخفضة — التاريخ محدود أو الصرف متذبذب بشكل واضح`;
 
+    const historicalMinimum=Math.max(0,monthly.monthlyAverage-item.amount);
+    const historicalMaximum=Math.max(suggestedExtra,monthly.monthlyMax-item.amount);
     temporaryExtraSuggestions.push({
       allocationId:item.allocationId,
       itemName:item.name,
@@ -333,7 +338,12 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       coefficientOfVariation:coefficientOfVariation===null?null:Number(coefficientOfVariation.toFixed(4)),
       confidence,
       confidenceLabel,
-      basis:`التقدير مبني على الربع الأعلى من الصرف الشهري الفعلي لهذا البند خلال ${monthly.observedMonths} أشهر مكتملة، بعد استبعاد الشهر الجاري.`,
+      suggestedMinimum:Number(historicalMinimum.toFixed(2)),
+      suggestedMaximum:Number(historicalMaximum.toFixed(2)),
+      requiresManualAmount:confidence!=='HIGH',
+      basis:confidence==='HIGH'
+        ? `التقدير مبني على الربع الأعلى من الصرف الشهري الفعلي لهذا البند خلال ${monthly.observedMonths} أشهر مكتملة، بعد استبعاد الشهر الجاري.`
+        : `النطاق مبني على متوسطك الشهري الفعلي وحتى أعلى شهر مكتمل مسجل لهذا البند خلال فترة القياس. اختر المبلغ النهائي المناسب للظرف الحالي.`,
     });
   }
 
