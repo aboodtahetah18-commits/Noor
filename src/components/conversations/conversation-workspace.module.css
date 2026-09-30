@@ -4380,19 +4380,6 @@
     border-radius:var(--ux-radius-3);
     line-height:1.45
   }
-  .mobileSideSheet{
-    display:block;
-  position:absolute;
-  inset-block:var(--ux-space-0);
-  inset-inline-start:var(--ux-space-0);
-  width:min(80vw,312px);
-  overflow:auto;
-  z-index:2;
-  background:var(--namaa-card);
-  border-inline-end:1px solid var(--namaa-border);
-  box-shadow:var(--ux-shadow-lg);
-  padding:var(--ux-space-3)
-  }
   .sideBrandRow{
     display:flex;
     align-items:center;
@@ -4519,29 +4506,6 @@
     color:var(--ux-text-primary);
   border-top:1px solid var(--namaa-border);
   border-radius:var(--ux-radius-0)
-  }
-  .mobileSheet{
-    padding-bottom:calc(var(--ux-space-3) + env(safe-area-inset-bottom));
-  inset-inline:var(--ux-space-2);
-  bottom:var(--ux-space-2);
-  max-height:84dvh;
-  border-radius:var(--ux-radius-xl)
-  }
-  .accountSurfaceOverlay{
-    padding:var(--ux-space-2)
-  }
-  .accountSurfaceScrim{
-    background:color-mix(in srgb,var(--namaa-chat-canvas) 10%,transparent)
-  }
-  .accountSurfaceSheet{
-    top:72px;
-    bottom:auto;
-    inset-inline:var(--ux-space-2);
-    max-height:calc(100dvh - 88px);
-    border-radius:var(--ux-radius-xl);
-    border:1px solid var(--namaa-border-strong);
-    box-shadow:var(--ux-shadow-lg);
-    background:var(--namaa-card)
   }
   .attachmentPolicy,.executionNote{
     display:none
@@ -7958,28 +7922,6 @@
   padding-top:var(--ux-space-3)!important
 }
 
-/* Drawer outside-click authority. */
-.mobileOverlay{
-  isolation:isolate!important
-}
-.mobileOverlay>.scrim{
-  position:absolute!important;
-  inset:0!important;
-  z-index:1!important;
-  width:100%!important;
-  height:100%!important
-}
-.mobileOverlay>.mobileSheet,
-.mobileOverlay>.userMenuCard{
-  z-index:2!important;
-  pointer-events:auto!important
-}
-.mobileSideSheet{
-  position:absolute!important;
-  z-index:2!important
-}
-
-
 /* Namaa mobile readability refinement — dashboard, governed pages, chat contrast */
 
 /* Dashboard and governed-page headers use the same approved Namaa identity. */
@@ -8134,10 +8076,6 @@
 
 /* Namaa final mobile refinement — drawer profile, collapsible stages, solid chat bubbles */
 
-/* Keep the user card physically inside the mobile drawer. */
-.mobileSideSheet{
-  position:absolute!important;
-}
 .sideBrandRow{
   position:relative!important;
 }
@@ -11937,11 +11875,6 @@
     padding-inline:var(--ux-space-5)!important;
   }
 
-  .mobileSideSheet,
-  .mobileSheet{
-    width:min(64vw,520px)!important;
-    max-width:520px!important;
-  }
 }
 
 /* 2026-09-30 — UNIFIED MOBILE/TABLET OVERLAY AUTHORITY
