@@ -3787,14 +3787,8 @@ textarea {
     box-shadow:0 8px 24px rgb(31 41 55 / 5%)!important;
   }
 
-  /* الجزء العلوي أغمق قليلًا من جسم البطاقة */
-  html[data-theme="light"] :where(
-    .namaa-governance-library-card>header,
-    .namaa-investments-section-title,
-    .p47-section-header,
-    .p47-section-heading,
-    .namaa-collection-head
-  ){
+  /* Light section-head surfaces are owned by FINAL VISUAL CORRECTION below. */
+  html[data-theme="light"] .namaa-governance-library-card>header{
     background:#F7F8F6!important;
     border-bottom:1px solid #DCE6E0!important;
   }
