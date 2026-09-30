@@ -44,9 +44,14 @@ export type TemporaryExtraAmountSuggestion={
   coefficientOfVariation:number|null;
   confidence:'LOW'|'MEDIUM'|'HIGH';
   confidenceLabel:string;
+  historicalMinimum:number;
+  historicalMaximum:number;
   suggestedMinimum:number;
   suggestedMaximum:number;
   requiresManualAmount:boolean;
+  personalizationApplied:boolean;
+  learningConfirmations:number;
+  learnedPosition:number|null;
   basis:string;
 };
 
@@ -90,6 +95,18 @@ export type InitialBudgetReview={
 function finite(value:unknown){
   const number=Number(value);
   return Number.isFinite(number)?number:0;
+}
+
+function normalizeTemporaryAmountLabel(value:string){
+  return value
+    .trim()
+    .toLocaleLowerCase('ar')
+    .replace(/[أإآ]/g,'ا')
+    .replace(/ى/g,'ي')
+    .replace(/ة/g,'ه')
+    .replace(/[^\p{L}\p{N}\s]/gu,' ')
+    .replace(/\s+/g,' ')
+    .trim();
 }
 
 export async function reviewInitialBudgetDraft(userId:string,planId:string):Promise<InitialBudgetReview>{
@@ -300,6 +317,27 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
     });
   }
 
+  const temporaryAmountPreferenceByKey=new Map<string,{confirmationCount:number;averagePosition:number}>();
+  const temporaryAmountLearningTable=await rawSql`select to_regclass('public.budget_temporary_amount_preferences')::text table_name`;
+  if((temporaryAmountLearningTable[0] as Record<string,unknown>|undefined)?.table_name){
+    const preferenceRows=await rawSql`
+      select normalized_label,context_reason,confirmation_count,average_position::text
+      from public.budget_temporary_amount_preferences
+      where user_id=${userId}::uuid
+    `;
+    for(const row of preferenceRows){
+      const normalizedLabel=String(row.normalized_label??'');
+      const contextReason=String(row.context_reason??'');
+      const confirmationCount=Math.max(0,Number(row.confirmation_count??0));
+      const averagePosition=Math.max(0,Math.min(1,finite(row.average_position)));
+      if(!normalizedLabel||!contextReason||confirmationCount<=0) continue;
+      temporaryAmountPreferenceByKey.set(`${normalizedLabel}:${contextReason}`,{
+        confirmationCount,
+        averagePosition,
+      });
+    }
+  }
+
   const temporaryExtraSuggestions:TemporaryExtraAmountSuggestion[]=[];
   for(const item of items.filter(candidate=>candidate.temporaryContextReason&&candidate.temporaryExtraAmount<=0)){
     const monthly=monthlyContextByCategory.get(item.categoryId);
@@ -326,11 +364,28 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
 
     const historicalMinimum=Math.max(0,monthly.monthlyAverage-item.amount);
     const historicalMaximum=Math.max(suggestedExtra,monthly.monthlyMax-item.amount);
+    const historicalSpan=Math.max(0,historicalMaximum-historicalMinimum);
+    const learningKey=`${normalizeTemporaryAmountLabel(item.name)}:${String(item.temporaryContextReason)}`;
+    const learned=temporaryAmountPreferenceByKey.get(learningKey);
+    const personalizationApplied=confidence!=='HIGH'&&historicalSpan>0&&Boolean(learned&&learned.confirmationCount>=3);
+    const learnedPosition=personalizationApplied&&learned?learned.averagePosition:null;
+    const halfWidth=learned&&learned.confirmationCount>=6?0.15:0.25;
+    const personalizedMinimum=personalizationApplied&&learned
+      ? historicalMinimum+Math.max(0,learned.averagePosition-halfWidth)*historicalSpan
+      : historicalMinimum;
+    const personalizedMaximum=personalizationApplied&&learned
+      ? historicalMinimum+Math.min(1,learned.averagePosition+halfWidth)*historicalSpan
+      : historicalMaximum;
+    const learnedCenter=personalizationApplied&&learned
+      ? historicalMinimum+learned.averagePosition*historicalSpan
+      : suggestedExtra;
+    const adjustedSuggested=Math.max(personalizedMinimum,Math.min(personalizedMaximum,learnedCenter));
+
     temporaryExtraSuggestions.push({
       allocationId:item.allocationId,
       itemName:item.name,
       reason:item.temporaryContextReason as TemporaryExtraAmountSuggestion['reason'],
-      suggestedExtraAmount:Number(suggestedExtra.toFixed(2)),
+      suggestedExtraAmount:Number(adjustedSuggested.toFixed(2)),
       observedMonths:monthly.observedMonths,
       historicalMonthlyAverage:monthly.monthlyAverage,
       historicalMonthlyP75:monthly.monthlyP75,
@@ -338,12 +393,19 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       coefficientOfVariation:coefficientOfVariation===null?null:Number(coefficientOfVariation.toFixed(4)),
       confidence,
       confidenceLabel,
-      suggestedMinimum:Number(historicalMinimum.toFixed(2)),
-      suggestedMaximum:Number(historicalMaximum.toFixed(2)),
+      historicalMinimum:Number(historicalMinimum.toFixed(2)),
+      historicalMaximum:Number(historicalMaximum.toFixed(2)),
+      suggestedMinimum:Number(personalizedMinimum.toFixed(2)),
+      suggestedMaximum:Number(personalizedMaximum.toFixed(2)),
       requiresManualAmount:confidence!=='HIGH',
+      personalizationApplied,
+      learningConfirmations:learned?.confirmationCount??0,
+      learnedPosition:learnedPosition===null?null:Number(learnedPosition.toFixed(4)),
       basis:confidence==='HIGH'
         ? `التقدير مبني على الربع الأعلى من الصرف الشهري الفعلي لهذا البند خلال ${monthly.observedMonths} أشهر مكتملة، بعد استبعاد الشهر الجاري.`
-        : `النطاق مبني على متوسطك الشهري الفعلي وحتى أعلى شهر مكتمل مسجل لهذا البند خلال فترة القياس. اختر المبلغ النهائي المناسب للظرف الحالي.`,
+        : personalizationApplied&&learned
+          ? `خصص نماء النطاق بناءً على ${learned.confirmationCount} اختيارات سابقة لك لنفس البند والظرف، مع إبقائه داخل الحدود التاريخية الفعلية.`
+          : `النطاق مبني على متوسطك الشهري الفعلي وحتى أعلى شهر مكتمل مسجل لهذا البند خلال فترة القياس. اختر المبلغ النهائي المناسب للظرف الحالي.`,
     });
   }
 
