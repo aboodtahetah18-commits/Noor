@@ -59,6 +59,7 @@ export async function syncTemporaryAmountOutcomes(userId:string){
     const actualExtra=Math.max(0,actualSpend-baseline);
     const absoluteError=Math.abs(actualExtra-predicted);
     const errorRatio=predicted>0?absoluteError/predicted:null;
+    const signedBias=predicted>0?(actualExtra-predicted)/predicted:null;
     const tolerance=Math.max(10,predicted*0.05);
     const direction=Math.abs(actualExtra-predicted)<=tolerance
       ? 'MATCH'
@@ -91,6 +92,12 @@ export async function syncTemporaryAmountOutcomes(userId:string){
           average_error_ratio=(
             coalesce(p.average_error_ratio,0)*p.outcome_count + ${errorRatio??0}
           )/(p.outcome_count+1),
+          average_signed_bias=(
+            coalesce(p.average_signed_bias,0)*p.outcome_count + ${signedBias??0}
+          )/(p.outcome_count+1),
+          under_count=p.under_count+case when ${direction}='UNDER' then 1 else 0 end,
+          over_count=p.over_count+case when ${direction}='OVER' then 1 else 0 end,
+          match_count=p.match_count+case when ${direction}='MATCH' then 1 else 0 end,
           accuracy_weight=greatest(
             0.25,
             least(
@@ -99,6 +106,16 @@ export async function syncTemporaryAmountOutcomes(userId:string){
                 (coalesce(p.average_error_ratio,0)*p.outcome_count + ${errorRatio??0})
                 /(p.outcome_count+1)
               )
+            )
+          ),
+          bias_adjustment=greatest(
+            -0.25,
+            least(
+              0.25,
+              (
+                (coalesce(p.average_signed_bias,0)*p.outcome_count + ${signedBias??0})
+                /(p.outcome_count+1)
+              )*0.35
             )
           ),
           updated_at=now()
