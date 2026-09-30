@@ -165,7 +165,30 @@ export function parseOnboardingValue(step:OnboardingStep,text:string){
   }
   if(step==='bills'||step==='subscriptions'){
     if(isNone(raw)) return {raw,items:[]};
-    const items=raw.split(/\n|،/).map(value=>value.trim()).filter(Boolean).map(item=>({raw:item,numbers:extractNumbers(item)}));
+    const items=raw.split(/\n|،/).map(value=>value.trim()).filter(Boolean).map(item=>{
+      const numbers=extractNumbers(item);
+      const name=item
+        .replace(/[\d٠-٩.,٬]+(?:\.\d+)?\s*(?:ريال|ر\.س)?/gi,' ')
+        .replace(/\b(?:شهري|أسبوعي|اسبوعي|سنوي|ربع سنوي|نصف سنوي|كل شهرين|مرة واحدة|حسب الاستهلاك)\b/gi,' ')
+        .replace(/[-—:|]/g,' ')
+        .replace(/\s+/g,' ')
+        .trim();
+      const recurrenceMode=/مرة واحدة/.test(item)?'مرة واحدة':/حسب الاستهلاك/.test(item)?'حسب الحاجة':'متكرر';
+      const recurrenceEvery=/كل شهرين/.test(item)?2:/ربع سنوي/.test(item)?3:/نصف سنوي/.test(item)?6:1;
+      const recurrenceUnit=/أسبوعي|اسبوعي/.test(item)?'أسبوع':/سنوي/.test(item)?'سنة':'شهر';
+      return {
+        name:name||item,
+        payment_mode:'مبلغ واحد',
+        amount_mode:numbers.length>1?'نطاق من–إلى':'مبلغ محدد',
+        amount:numbers.length===1?numbers[0]:undefined,
+        amount_min:numbers.length>1?Math.min(numbers[0]??0,numbers[1]??0):undefined,
+        amount_max:numbers.length>1?Math.max(numbers[0]??0,numbers[1]??0):undefined,
+        recurrence_mode:recurrenceMode,
+        recurrence_every:recurrenceMode==='متكرر'?recurrenceEvery:undefined,
+        recurrence_unit:recurrenceMode==='متكرر'?recurrenceUnit:undefined,
+        notes:item,
+      };
+    });
     return {raw,items};
   }
   if(step==='income'||step==='obligations'||step==='accounts'||step==='goals'||step==='housing'||step==='commute'){
