@@ -209,6 +209,10 @@ export function ExtendedProfileSheet({
     const row:TableRow={};
     for(const column of section.table?.columns??[]) row[column.key]='';
     if(section.table?.columns.some(column=>column.key==='recurrence')) row.recurrence='شهري';
+    if(section.table?.columns.some(column=>column.key==='amount_mode')) row.amount_mode='مبلغ محدد';
+    if(section.table?.columns.some(column=>column.key==='recurrence_mode')) row.recurrence_mode='متكرر';
+    if(section.table?.columns.some(column=>column.key==='recurrence_every')) row.recurrence_every='1';
+    if(section.table?.columns.some(column=>column.key==='recurrence_unit')) row.recurrence_unit='شهر';
     if(section.key==='vehicle_maintenance') row.schedule_pattern='ثابت';
     if(section.key==='budget_behavior'){row.frequency_period='شهري';row.spend_context='جميع الأيام';}
     return row;
@@ -465,6 +469,10 @@ export function ExtendedProfileSheet({
                     <div className={styles.extendedAddForm}>
                       {active.table.columns.map(column=>{
                         if(column.key==='custom_category'&&draftRow.category!=='أخرى') return null;
+                        if(column.key==='amount'&&['نطاق من–إلى','غير معروف الآن'].includes(draftRow.amount_mode||'')) return null;
+                        if(['amount_min','amount_max'].includes(column.key)&&draftRow.amount_mode!=='نطاق من–إلى') return null;
+                        if(column.key==='annual_estimate'&&draftRow.recurrence_mode!=='حسب الحاجة'&&draftRow.amount_mode!=='مبلغ تقريبي') return null;
+                        if(['recurrence_every','recurrence_unit'].includes(column.key)&&draftRow.recurrence_mode!=='متكرر') return null;
                         if(active.key==='assets_investments'&&stockField(column.key)&&draftRow.category!=='أسهم مباشرة') return null;
                         if(active.key==='vehicle_maintenance'&&['alternate_name','alternate_amount'].includes(column.key)&&draftRow.schedule_pattern!=='متناوب') return null;
                         const options=column.key==='vehicle'
