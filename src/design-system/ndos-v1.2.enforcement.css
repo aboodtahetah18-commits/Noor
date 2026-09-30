@@ -340,12 +340,6 @@ textarea {
     color: var(--namaa-wide-muted);
   }
 
-  .namaa-investments-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
   .namaa-investments-actions a,
   .namaa-investments-chat > a {
     min-height: 42px;
@@ -363,13 +357,6 @@ textarea {
     grid-template-columns: minmax(220px, .78fr) minmax(420px, 2fr) minmax(240px, .9fr);
     gap: 18px;
     align-items: stretch;
-  }
-
-  .namaa-investments-chat,
-  .namaa-investments-dashboard,
-  .namaa-investments-followup {
-    padding: 18px;
-    min-height: 520px;
   }
 
   .namaa-investments-section-title {
