@@ -4182,41 +4182,6 @@
   .messages>p{
     flex:0 0 auto
   }
-  .message{
-    max-width:88%;
-    border-radius:var(--ux-radius-4);
-    padding:var(--ux-space-2) var(--ux-space-3);
-    border:1px solid var(--namaa-border-strong);
-    box-shadow:var(--ux-shadow-xs);
-    width:fit-content;
-    min-height:0
-  }
-  .agentMessage{
-    width:fit-content;
-    max-width:84%;
-    align-self:flex-end;
-    border-end-end-radius:var(--ux-radius-2);
-    border-color:var(--namaa-border-strong);
-    background:color-mix(in srgb,var(--namaa-agent-message) 88%,var(--namaa-surface-warm) 12%);
-    margin-left:auto;
-    margin-right:var(--ux-space-0)
-  }
-  .userMessage{
-    width:fit-content;
-    max-width:78%;
-    min-width:0;
-    padding:var(--ux-space-2) var(--ux-space-3);
-    align-self:flex-start;
-    border-end-start-radius:var(--ux-radius-2);
-    border-color:var(--namaa-green-700);
-    background:color-mix(in srgb,var(--namaa-surface-warm) 84%,var(--namaa-card));
-    color:var(--ux-text-primary);
-    box-shadow:var(--ux-shadow-sm);
-    margin-left:var(--ux-space-0);
-    margin-right:auto;
-    box-sizing:border-box;
-    overflow:hidden
-  }
   .userAttachmentCard{grid-template-columns:30px minmax(0,1fr);padding:var(--ux-space-1) var(--ux-space-2)}
   .userAttachmentCard>span{width:30px;height:30px}
   .facts{
@@ -11509,27 +11474,7 @@
 }
 
 
-/* 2026-09-27 — FINAL COMPOSER CONTROL CONTRACT */
-.composer{
-  direction:rtl;
-  align-items:flex-end;
-}
-.composer textarea{
-  order:2;
-}
-.attachButton{
-  order:1;
-  border:1px solid var(--namaa-border-strong);
-  background:var(--namaa-surface-warm);
-  color:var(--namaa-green-900);
-}
-.sendButton{
-  order:3;
-  min-width:76px;
-  justify-content:center;
-  background:var(--namaa-green-900);
-  color:var(--ux-text-inverse);
-}
+/* Composer interaction states — geometry is owned by the final authority below. */
 .composer textarea:focus-visible,
 .attachButton:focus-visible,
 .sendButton:focus-visible{
@@ -11538,40 +11483,11 @@
 }
 .attachButton:disabled,
 .sendButton:disabled{
-  background:var(--namaa-surface-warm);
-  border-color:var(--namaa-border);
-  color:var(--ux-text-muted);
-  opacity:1;
+  background:var(--namaa-surface-warm)!important;
+  border-color:var(--namaa-border)!important;
+  color:var(--ux-text-muted)!important;
+  opacity:1!important;
   cursor:not-allowed;
-}
-@media (max-width:767px){
-  .composer{
-    gap:var(--ux-space-2)!important;
-  }
-  .composer textarea{
-    order:2!important;
-    resize:none!important;
-  }
-  .attachButton{
-    order:1!important;
-    background:var(--namaa-surface-warm)!important;
-    border-color:var(--namaa-border-strong)!important;
-    color:var(--namaa-green-900)!important;
-  }
-  .sendButton{
-    order:3!important;
-    min-width:44px!important;
-    background:var(--namaa-green-900)!important;
-    border-color:var(--namaa-green-900)!important;
-    color:var(--ux-text-inverse)!important;
-  }
-  .attachButton:disabled,
-  .sendButton:disabled{
-    background:var(--namaa-surface-warm)!important;
-    border-color:var(--namaa-border)!important;
-    color:var(--ux-text-muted)!important;
-    opacity:1!important;
-  }
 }
 
 /* 2026-09-30 — MOBILE/TABLET CHAT-FIRST FINAL AUTHORITY
@@ -11696,6 +11612,9 @@
 
 .composer{
   position:relative!important;
+  display:flex!important;
+  direction:rtl!important;
+  align-items:flex-end!important;
   flex:0 0 auto!important;
   width:100%!important;
   max-width:100%!important;
@@ -11716,6 +11635,7 @@
 
 .composer textarea{
   order:2!important;
+  flex:1 1 auto!important;
   min-height:44px!important;
   max-height:96px!important;
   resize:none!important;
@@ -11737,8 +11657,19 @@
   box-shadow:none!important;
 }
 
-.attachButton{order:1!important}
-.sendButton{order:3!important}
+.attachButton{
+  order:1!important;
+  border-color:var(--namaa-border-strong)!important;
+  background:var(--namaa-surface-warm)!important;
+  color:var(--namaa-green-900)!important;
+}
+.sendButton{
+  order:3!important;
+  justify-content:center!important;
+  border-color:var(--namaa-green-900)!important;
+  background:var(--namaa-green-900)!important;
+  color:var(--ux-text-inverse)!important;
+}
 .sendButton span{display:none!important}
 
 /* Tablet is the same product surface, only wider; never switch back to desktop rails. */
