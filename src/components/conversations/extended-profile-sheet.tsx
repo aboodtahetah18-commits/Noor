@@ -67,9 +67,28 @@ function flexibleFinancialProjection(row:TableRow){
   const base=amountBasis(row);
   const occurrences=Math.max(0,Number(row.occurrences_per_year)||0);
   const explicitAnnual=Number(row.annual_estimate)||0;
-  const derivedAnnual=explicitAnnual>0?explicitAnnual:(base>0&&occurrences>0?base*occurrences:0);
+  const manualAnnual=explicitAnnual>0?explicitAnnual:(base>0&&occurrences>0?base*occurrences:0);
+
+  const cutoff=new Date(now);
+  cutoff.setFullYear(cutoff.getFullYear()-1);
+  const paidHistory=parsePayments(row)
+    .filter(payment=>payment.status==='مدفوع'&&payment.date)
+    .map(payment=>({amount:Number(payment.amount)||0,date:new Date(payment.date+'T00:00:00')}))
+    .filter(item=>item.amount>0&&Number.isFinite(item.date.getTime())&&item.date>=cutoff&&item.date<=now)
+    .sort((a,b)=>a.date.getTime()-b.date.getTime());
+
+  const actual12m=paidHistory.reduce((sum,item)=>sum+item.amount,0);
+  const observedMonths=paidHistory.length
+    ? Math.max(3,Math.min(12,((year-paidHistory[0].date.getFullYear())*12+(month-paidHistory[0].date.getMonth())+1)))
+    : 0;
+  const actualAnnualized=observedMonths?actual12m*(12/observedMonths):0;
+  const learningWeight=paidHistory.length?Math.min(.75,paidHistory.length/8):0;
+  const learnedAnnual=actualAnnualized>0
+    ? (manualAnnual>0?manualAnnual*(1-learningWeight)+actualAnnualized*learningWeight:actualAnnualized)
+    : manualAnnual;
+
   const buffer=Math.max(0,Number(row.reserve_buffer_percent)||0);
-  const annualWithBuffer=derivedAnnual>0?derivedAnnual*(1+(buffer/100)):0;
+  const annualWithBuffer=learnedAnnual>0?learnedAnnual*(1+(buffer/100)):0;
   let expected=0;
   let reserve=annualWithBuffer>0?annualWithBuffer/12:0;
 
@@ -98,7 +117,7 @@ function flexibleFinancialProjection(row:TableRow){
     }
   }
 
-  return {expected,reserve};
+  return {expected,reserve,actual12m,actualEvents12m:paidHistory.length,learnedAnnual};
 }
 
 function applyFlexibleProjection(row:TableRow){
@@ -106,6 +125,9 @@ function applyFlexibleProjection(row:TableRow){
   const projection=flexibleFinancialProjection(row);
   return {
     ...row,
+    actual_spend_12m:projection.actual12m?projection.actual12m.toFixed(2).replace(/\.00$/,''):'',
+    actual_events_12m:projection.actualEvents12m?String(projection.actualEvents12m):'',
+    learned_annual_estimate:projection.learnedAnnual?projection.learnedAnnual.toFixed(2).replace(/\.00$/,''):'',
     expected_current_month:projection.expected?projection.expected.toFixed(2).replace(/\.00$/,''):'',
     monthly_reserve:projection.reserve?projection.reserve.toFixed(2).replace(/\.00$/,''):'',
   };
@@ -326,6 +348,9 @@ export function ExtendedProfileSheet({
     if(section.table?.columns.some(column=>column.key==='recurrence_unit')) row.recurrence_unit='شهر';
     if(section.table?.columns.some(column=>column.key==='occurrences_per_year')) row.occurrences_per_year='';
     if(section.table?.columns.some(column=>column.key==='reserve_buffer_percent')) row.reserve_buffer_percent='10';
+    if(section.table?.columns.some(column=>column.key==='actual_spend_12m')) row.actual_spend_12m='';
+    if(section.table?.columns.some(column=>column.key==='actual_events_12m')) row.actual_events_12m='';
+    if(section.table?.columns.some(column=>column.key==='learned_annual_estimate')) row.learned_annual_estimate='';
     if(section.table?.columns.some(column=>column.key==='expected_current_month')) row.expected_current_month='';
     if(section.table?.columns.some(column=>column.key==='monthly_reserve')) row.monthly_reserve='';
     if(section.key==='vehicle_maintenance') row.schedule_pattern='ثابت';
@@ -636,6 +661,7 @@ export function ExtendedProfileSheet({
                         if(column.key==='annual_estimate'&&!['حسب الحاجة','غير منتظم'].includes(draftRow.recurrence_mode||'')&&draftRow.amount_mode!=='مبلغ تقريبي') return null;
                         if(column.key==='occurrences_per_year'&&!['حسب الحاجة','غير منتظم'].includes(draftRow.recurrence_mode||'')) return null;
                         if(column.key==='reserve_buffer_percent'&&!['حسب الحاجة','غير منتظم'].includes(draftRow.recurrence_mode||'')) return null;
+                        if(['actual_spend_12m','actual_events_12m','learned_annual_estimate'].includes(column.key)&&!parsePayments(draftRow).some(payment=>payment.status==='مدفوع')) return null;
                         if(['recurrence_every','recurrence_unit'].includes(column.key)&&draftRow.recurrence_mode!=='متكرر') return null;
                         if(active.key==='assets_investments'&&stockField(column.key)&&draftRow.category!=='أسهم مباشرة') return null;
                         if(active.key==='vehicle_maintenance'&&['alternate_name','alternate_amount'].includes(column.key)&&draftRow.schedule_pattern!=='متناوب') return null;
@@ -646,7 +672,7 @@ export function ExtendedProfileSheet({
                             : column.key==='category'&&categoryOptions.length
                               ? categoryOptions
                               : column.options??[];
-                        const readOnly=['expected_current_month','monthly_reserve'].includes(column.key)
+                        const readOnly=['actual_spend_12m','actual_events_12m','learned_annual_estimate','expected_current_month','monthly_reserve'].includes(column.key)
                           ||(active.key==='assets_investments'&&['total_cost','market_value'].includes(column.key))
                           ||(active.key==='budget_behavior'&&column.key==='monthly_total')
                           ||(active.key==='vehicle_details'&&column.key==='estimated_fuel_cost')
