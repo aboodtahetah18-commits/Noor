@@ -13,13 +13,22 @@ export type OnboardingStep =
   | 'accounts'
   | 'obligations'
   | 'goals'
+  | 'bills'
+  | 'subscriptions'
   | 'statements'
   | 'review'
   | 'complete';
 
 const ORDER: OnboardingStep[] = [
-  'marital_status','dependents','home_city','housing','employment','work_city',
-  'commute','income','accounts','obligations','goals','statements','review','complete',
+  'income',
+  'accounts',
+  'housing',
+  'obligations',
+  'dependents',
+  'bills',
+  'subscriptions',
+  'review',
+  'complete',
 ];
 
 const QUESTIONS: Record<Exclude<OnboardingStep,'complete'>,string> = {
@@ -34,6 +43,8 @@ const QUESTIONS: Record<Exclude<OnboardingStep,'complete'>,string> = {
   accounts:'أضف حساباتك المالية واحدًا واحدًا في المكوّن. يكفيني البنك، نوع الحساب، معرف مختصر إن رغبت، الاستخدام الحالي والرصيد الافتتاحي. لا ترسل كلمة مرور أو رمز تحقق.',
   obligations:'أضف الالتزامات القائمة واحدًا واحدًا في المكوّن، مع المبلغ والتكرار والموعد أو الرصيد المتبقي إن توفر. وإذا لا يوجد أي التزام، أكد ذلك من داخل المكوّن.',
   goals:'أضف أهدافك المالية واحدًا واحدًا في المكوّن، مع المبلغ المستهدف والموعد والأولوية والمرونة والمبلغ المخصص حاليًا إن وجد.',
+  bills:'ما الفواتير التي تتوقع سدادها حاليًا؟ اذكر اسم كل فاتورة ومبلغها التقريبي أو نطاقها ودوريتها، وإذا لا توجد اكتب «لا يوجد».',
+  subscriptions:'ما الاشتراكات النشطة التي قد تُخصم منك؟ اذكر اسم الاشتراك وقيمته ودورية الخصم، وإذا لا توجد اكتب «لا يوجد».',
   statements:'هل لديك كشوف حساب حديثة تساعدني على التحقق من الدخل والمصروفات والأرصدة؟ اكتب «نعم» أو «لا» الآن. لن أعتبر أي كشف حركة مالية منفذة؛ هو مصدر للتحليل والمطابقة فقط.',
   review:'جمعت الحد الأدنى الأساسي. اكتب «تأكيد» إذا تريد تثبيت ملف التأسيس وفتح بقية جهات نماء، أو اذكر المعلومة التي تريد تعديلها.',
 };
@@ -50,6 +61,8 @@ const USES: Record<Exclude<OnboardingStep,'review'|'complete'>,string[]> = {
   accounts:['liquidity','net_worth','statement_matching'],
   obligations:['budget','liquidity','solvency','financing'],
   goals:['goals','budget','asset_planning'],
+  bills:['budget','liquidity','monthly_outflows'],
+  subscriptions:['budget','liquidity','recurring_outflows'],
   statements:['evidence','statement_matching','transaction_classification'],
 };
 
@@ -125,6 +138,12 @@ export function validateOnboardingAnswer(step:OnboardingStep,text:string): strin
     return 'اذكر اسم الهدف والمبلغ المستهدف، أو اكتب «لا يوجد».';
   }
 
+  if((step==='bills'||step==='subscriptions') && !isNone(raw) && extractNumbers(raw).length===0){
+    return step==='bills'
+      ? 'اذكر كل فاتورة مع مبلغ تقريبي أو نطاق، أو اكتب «لا يوجد».'
+      : 'اذكر كل اشتراك مع قيمته، أو اكتب «لا يوجد».';
+  }
+
   if(step==='statements' && !/^(نعم|لا)$/i.test(raw)){
     return 'اكتب «نعم» أو «لا» فقط. إذا قلت نعم سأطلب منك رفع الكشف في خطوة المرفقات.';
   }
@@ -144,6 +163,11 @@ export function parseOnboardingValue(step:OnboardingStep,text:string){
     });
     return {raw,items};
   }
+  if(step==='bills'||step==='subscriptions'){
+    if(isNone(raw)) return {raw,items:[]};
+    const items=raw.split(/\n|،/).map(value=>value.trim()).filter(Boolean).map(item=>({raw:item,numbers:extractNumbers(item)}));
+    return {raw,items};
+  }
   if(step==='income'||step==='obligations'||step==='accounts'||step==='goals'||step==='housing'||step==='commute'){
     return {raw,numbers:extractNumbers(raw)};
   }
@@ -156,7 +180,7 @@ export function getGovernorOnboardingQuestion(step:OnboardingStep){
 
 export function getGovernorWelcome(step:OnboardingStep='marital_status'){
   const question=getGovernorOnboardingQuestion(step);
-  const intro='مرحبًا بك في نماء. أنا محافظ بنك نماء المركزي. مهمتي في البداية أن أتعرف على وضعك المالي والأسري خطوة بخطوة حتى لا تُبنى أي توصية على افتراضات. سأطرح سؤالًا واحدًا في كل مرة، ويمكنك تصحيح أي معلومة لاحقًا.';
+  const intro='مرحبًا بك في نماء. أنا محافظ بنك نماء المركزي. سأجمع منك أولًا البيانات التي نحتاجها لبناء ميزانيتك الحالية فقط، سؤالًا واحدًا في كل مرة. وبعد تثبيت الأساس نكمل بقية التفاصيل المهمة تدريجيًا دون أن نعطلك عن البدء.';
   return question ? `${intro} ${question}` : intro;
 }
 
@@ -168,15 +192,15 @@ export function nextGovernorOnboardingStep(step:OnboardingStep):OnboardingStep{
 export async function getGovernorOnboardingStatus(userId:string){
   const sql=getRawSql();
   await sql`
-    insert into public.user_onboarding_state(user_id)
-    values(${userId}::uuid)
+    insert into public.user_onboarding_state(user_id,current_step)
+    values(${userId}::uuid,'income')
     on conflict(user_id) do nothing
   `;
   const [stateRows,factRows]=await Promise.all([
     sql`select status,current_step,started_at,completed_at,updated_at from public.user_onboarding_state where user_id=${userId}::uuid limit 1`,
     sql`select fact_key,category,value_json,confidence,verified_at,uses from public.user_foundation_facts where user_id=${userId}::uuid and status='ACTIVE' order by created_at asc`,
   ]);
-  const state=stateRows[0] ?? {status:'GATHERING',current_step:'marital_status'};
+  const state=stateRows[0] ?? {status:'GATHERING',current_step:'income'};
   const currentStep=(state.current_step as OnboardingStep) || 'marital_status';
   return {
     status:String(state.status),
@@ -483,7 +507,7 @@ export async function processGovernorOnboardingMessage(userId:string,text:string
         ? ' أبقيت الدخل في ذاكرة التأسيس إلى أن توجد دورة مالية صالحة لربطه بها.'
         : '';
       return {
-        body:`تم تثبيت ملف التأسيس الأساسي. الآن أصبحت بقية جهات نماء متاحة لك.${projectionNote}${incomeNote} سأكمل معك مباشرة أسئلة التشغيل المالي المتبقية مثل المصروفات الشهرية والموسمية، ثم أبني الملخص الأولي وأعرض ما يحتاج مراجعة قبل الاجتماع المالي.`,
+        body:`تم تثبيت ملف التأسيس الأساسي. الآن أصبحت بقية جهات نماء متاحة لك.${projectionNote}${incomeNote} أصبح لدينا ما يكفي لبناء الصورة المالية الحالية. سأعود معك لاحقًا لبقية البيانات المهمة مثل التجديدات والصيانة والتأمينات والسلوك المالي والأهداف، لكن لن أطلبها كلها في جلسة الدخول الأولى.`,
         completed:true,
         current_step:'complete' as OnboardingStep,
         next_question:null,
