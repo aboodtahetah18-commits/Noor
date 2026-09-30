@@ -52,6 +52,10 @@ export type TemporaryExtraAmountSuggestion={
   personalizationApplied:boolean;
   learningConfirmations:number;
   learnedPosition:number|null;
+  outcomeCount:number;
+  averageErrorRatio:number|null;
+  accuracyWeight:number;
+  outcomeLabel:string|null;
   basis:string;
 };
 
@@ -317,11 +321,11 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
     });
   }
 
-  const temporaryAmountPreferenceByKey=new Map<string,{confirmationCount:number;averagePosition:number}>();
+  const temporaryAmountPreferenceByKey=new Map<string,{confirmationCount:number;averagePosition:number;outcomeCount:number;averageErrorRatio:number|null;accuracyWeight:number}>();
   const temporaryAmountLearningTable=await rawSql`select to_regclass('public.budget_temporary_amount_preferences')::text table_name`;
   if((temporaryAmountLearningTable[0] as Record<string,unknown>|undefined)?.table_name){
     const preferenceRows=await rawSql`
-      select normalized_label,context_reason,confirmation_count,average_position::text
+      select normalized_label,context_reason,confirmation_count,average_position::text,outcome_count,average_error_ratio::text,accuracy_weight::text
       from public.budget_temporary_amount_preferences
       where user_id=${userId}::uuid
     `;
@@ -334,6 +338,9 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       temporaryAmountPreferenceByKey.set(`${normalizedLabel}:${contextReason}`,{
         confirmationCount,
         averagePosition,
+        outcomeCount:Math.max(0,Number(row.outcome_count??0)),
+        averageErrorRatio:row.average_error_ratio==null?null:Math.max(0,finite(row.average_error_ratio)),
+        accuracyWeight:Math.max(0.25,Math.min(1,finite(row.accuracy_weight)||1)),
       });
     }
   }
@@ -369,17 +376,31 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
     const learned=temporaryAmountPreferenceByKey.get(learningKey);
     const personalizationApplied=confidence!=='HIGH'&&historicalSpan>0&&Boolean(learned&&learned.confirmationCount>=3);
     const learnedPosition=personalizationApplied&&learned?learned.averagePosition:null;
-    const halfWidth=learned&&learned.confirmationCount>=6?0.15:0.25;
+    const accuracyWeight=learned?.accuracyWeight??1;
+    const blendedPosition=personalizationApplied&&learned
+      ? 0.5+(learned.averagePosition-0.5)*accuracyWeight
+      : 0.5;
+    const halfWidthBase=learned&&learned.confirmationCount>=6?0.15:0.25;
+    const halfWidth=Math.min(0.4,halfWidthBase+(1-accuracyWeight)*0.2);
     const personalizedMinimum=personalizationApplied&&learned
-      ? historicalMinimum+Math.max(0,learned.averagePosition-halfWidth)*historicalSpan
+      ? historicalMinimum+Math.max(0,blendedPosition-halfWidth)*historicalSpan
       : historicalMinimum;
     const personalizedMaximum=personalizationApplied&&learned
-      ? historicalMinimum+Math.min(1,learned.averagePosition+halfWidth)*historicalSpan
+      ? historicalMinimum+Math.min(1,blendedPosition+halfWidth)*historicalSpan
       : historicalMaximum;
-    const learnedCenter=personalizationApplied&&learned
-      ? historicalMinimum+learned.averagePosition*historicalSpan
+    const learnedCenter=personalizationApplied
+      ? historicalMinimum+blendedPosition*historicalSpan
       : suggestedExtra;
     const adjustedSuggested=Math.max(personalizedMinimum,Math.min(personalizedMaximum,learnedCenter));
+    const outcomeLabel=learned&&learned.outcomeCount>0
+      ? learned.averageErrorRatio!==null&&learned.averageErrorRatio<=0.2
+        ? `النتائج السابقة دقيقة نسبيًا — متوسط الخطأ ${Math.round(learned.averageErrorRatio*100)}%`
+        : learned.averageErrorRatio!==null&&learned.averageErrorRatio<=0.5
+          ? `النتائج السابقة متوسطة الدقة — متوسط الخطأ ${Math.round(learned.averageErrorRatio*100)}%`
+          : learned.averageErrorRatio!==null
+            ? `النتائج السابقة متذبذبة — متوسط الخطأ ${Math.round(learned.averageErrorRatio*100)}%`
+            : null
+      : null;
 
     temporaryExtraSuggestions.push({
       allocationId:item.allocationId,
@@ -401,6 +422,10 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       personalizationApplied,
       learningConfirmations:learned?.confirmationCount??0,
       learnedPosition:learnedPosition===null?null:Number(learnedPosition.toFixed(4)),
+      outcomeCount:learned?.outcomeCount??0,
+      averageErrorRatio:learned?.averageErrorRatio??null,
+      accuracyWeight:Number(accuracyWeight.toFixed(4)),
+      outcomeLabel,
       basis:confidence==='HIGH'
         ? `التقدير مبني على الربع الأعلى من الصرف الشهري الفعلي لهذا البند خلال ${monthly.observedMonths} أشهر مكتملة، بعد استبعاد الشهر الجاري.`
         : personalizationApplied&&learned
