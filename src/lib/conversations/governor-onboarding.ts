@@ -191,7 +191,17 @@ export function parseOnboardingValue(step:OnboardingStep,text:string){
     });
     return {raw,items};
   }
-  if(step==='income'||step==='obligations'||step==='accounts'||step==='goals'||step==='housing'||step==='commute'){
+  if(step==='housing'){
+    const numbers=extractNumbers(raw);
+    const housingType=/إيجار|ايجار/.test(raw)?'إيجار':/ملك/.test(raw)?'ملك':/مع العائلة|مع الاهل|مع الأهل/.test(raw)?'مع العائلة':'غير ذلك';
+    return {
+      raw,
+      housing_type:housingType,
+      monthly_housing_cost:housingType==='إيجار'?(numbers[0]??null):null,
+      numbers,
+    };
+  }
+  if(step==='income'||step==='obligations'||step==='accounts'||step==='goals'||step==='commute'){
     return {raw,numbers:extractNumbers(raw)};
   }
   return {raw};
