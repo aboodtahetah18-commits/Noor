@@ -229,9 +229,9 @@ export async function confirmTemporaryExtraAmountAction(planId:string,allocation
     const sourceRow=source[0] as Record<string,unknown>|undefined;
     const normalizedLabel=normalizePriorityLabel(String(sourceRow?.name??''));
     const contextReason=String(sourceRow?.priority_override_reason??'');
-    const range=suggestion.suggestedMaximum-suggestion.suggestedMinimum;
+    const range=suggestion.historicalMaximum-suggestion.historicalMinimum;
     const position=range>0
-      ? clamp01((amount-suggestion.suggestedMinimum)/range)
+      ? clamp01((amount-suggestion.historicalMinimum)/range)
       : 0.5;
 
     if(normalizedLabel&&['TRAVEL','OCCASION','HEALTH','MAINTENANCE','UNUSUAL_MONTH','OTHER'].includes(contextReason)){
