@@ -37,6 +37,8 @@ const flexibleAmountColumns=(amountKey='amount',amountLabel='القيمة'):Exte
   {key:'amount_min',label:'الحد الأدنى',kind:'number'},
   {key:'amount_max',label:'الحد الأعلى',kind:'number'},
   {key:'annual_estimate',label:'الصرف السنوي التقريبي',kind:'number'},
+  {key:'expected_current_month',label:'المتوقع هذا الشهر',kind:'number',mobileVisible:true},
+  {key:'monthly_reserve',label:'المخصص الشهري',kind:'number',mobileVisible:true},
 ];
 
 const openRecurrenceColumns:ExtendedProfileTableColumn[]=[
