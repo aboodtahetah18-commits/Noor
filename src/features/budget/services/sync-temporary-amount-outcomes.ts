@@ -123,6 +123,56 @@ export async function syncTemporaryAmountOutcomes(userId:string){
         and p.normalized_label=${normalizedLabel}
         and p.context_reason=${reason}
     `;
+
+    const recentRows=await rawSql`
+      select direction,
+        case
+          when predicted_extra_amount>0
+            then (actual_extra_amount-predicted_extra_amount)/predicted_extra_amount
+          else 0
+        end::text signed_bias
+      from public.budget_temporary_amount_outcomes
+      where user_id=${userId}::uuid
+        and normalized_label=${normalizedLabel}
+        and context_reason=${reason}
+      order by evaluated_at desc,created_at desc
+      limit 5
+    `;
+
+    const recentCount=recentRows.length;
+    const recentUnder=recentRows.filter(item=>String(item.direction)==='UNDER').length;
+    const recentOver=recentRows.filter(item=>String(item.direction)==='OVER').length;
+    const recentMatch=recentRows.filter(item=>String(item.direction)==='MATCH').length;
+    const recentSignedBias=recentCount
+      ? recentRows.reduce((sum,item)=>sum+Number(item.signed_bias??0),0)/recentCount
+      : null;
+    const recentUnderShare=recentCount?recentUnder/recentCount:0;
+    const recentOverShare=recentCount?recentOver/recentCount:0;
+    const longTermDirection=(signedBias??0)>0?'UNDER':(signedBias??0)<0?'OVER':'MATCH';
+    const recentDirection=recentUnderShare>=0.7?'UNDER':recentOverShare>=0.7?'OVER':'MIXED';
+    const biasStability=recentCount<3
+      ? 'INSUFFICIENT'
+      : recentDirection==='MIXED'
+        ? 'MIXED'
+        : longTermDirection!=='MATCH'&&recentDirection!==longTermDirection
+          ? 'SHIFTING'
+          : recentDirection==='UNDER'
+            ? 'STABLE_UNDER'
+            : 'STABLE_OVER';
+
+    await rawSql`
+      update public.budget_temporary_amount_preferences p
+      set recent_outcome_count=${recentCount},
+          recent_under_count=${recentUnder},
+          recent_over_count=${recentOver},
+          recent_match_count=${recentMatch},
+          recent_signed_bias=${recentSignedBias},
+          bias_stability=${biasStability},
+          updated_at=now()
+      where p.user_id=${userId}::uuid
+        and p.normalized_label=${normalizedLabel}
+        and p.context_reason=${reason}
+    `;
   }
 
   return {evaluated};
