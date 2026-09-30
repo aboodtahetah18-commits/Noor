@@ -3398,8 +3398,6 @@ textarea {
     .namaa-governance-open-library,
     .namaa-governance-portal-footer>a,
     .namaa-wide-action,
-    .p49-action-dialog .primary,
-    .p49-action-dialog .primary-button,
     .p49-action-dialog button[type="submit"]
   ){
     background:var(--namaa-dark-gold)!important;
@@ -3417,8 +3415,6 @@ textarea {
     .namaa-governance-open-library,
     .namaa-governance-portal-footer>a,
     .namaa-wide-action,
-    .p49-action-dialog .primary,
-    .p49-action-dialog .primary-button,
     .p49-action-dialog button[type="submit"]
   ) svg{
     color:var(--namaa-dark-button-text)!important;
@@ -3433,8 +3429,6 @@ textarea {
     .namaa-governance-open-library,
     .namaa-governance-portal-footer>a,
     .namaa-wide-action,
-    .p49-action-dialog .primary,
-    .p49-action-dialog .primary-button,
     .p49-action-dialog button[type="submit"]
   ):hover{
     background:#E1CA93!important;
@@ -3449,8 +3443,6 @@ textarea {
     .p47-secondary-action,
     .p49-modal-trigger,
     .namaa-wide-action-secondary,
-    .p49-action-dialog .secondary-button,
-    .p49-action-dialog .button-link,
     .p49-action-dialog button[type="button"]
   ){
     background:var(--namaa-dark-card-2)!important;
@@ -3465,8 +3457,6 @@ textarea {
     .p47-secondary-action,
     .p49-modal-trigger,
     .namaa-wide-action-secondary,
-    .p49-action-dialog .secondary-button,
-    .p49-action-dialog .button-link,
     .p49-action-dialog button[type="button"]
   ) svg{
     color:var(--namaa-dark-gold)!important;
