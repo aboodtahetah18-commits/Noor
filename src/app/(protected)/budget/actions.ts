@@ -133,6 +133,61 @@ export async function updateInitialDraftAction(planId:string,fd:FormData){
 }
 
 
+export async function applyTemporaryBudgetFundingAction(planId:string,targetAllocationId:string){
+  const u=await requireAuthenticatedMutationUser();
+  const review=await reviewInitialBudgetDraft(u.id,planId);
+  const fundingPlan=review.temporaryFundingPlans.find(plan=>plan.targetAllocationId===targetAllocationId);
+  if(!fundingPlan){
+    redirect('/budget?error='+encodeURIComponent('لم تعد خطة التغطية المؤقتة متاحة. احفظ المسودة وأعد المراجعة.'));
+  }
+  if(fundingPlan.unresolvedAmount>0){
+    redirect('/budget?error='+encodeURIComponent('لا يمكن تطبيق الزيادة المؤقتة قبل تغطية كامل المبلغ دون المساس بالالتزامات الأساسية.'));
+  }
+
+  const statements=[] as ReturnType<typeof rawSql>[];
+  statements.push(rawSql`
+    update public.budget_allocations ba
+    set planned_amount=planned_amount+${fundingPlan.extraAmount},
+        temporary_extra_amount=null,
+        updated_at=now()
+    where ba.id=${targetAllocationId}::uuid and ba.user_id=${u.id}::uuid
+      and exists(
+        select 1
+        from public.plan_versions pv
+        join public.financial_plans p on p.id=pv.plan_id and p.user_id=pv.user_id
+        where pv.id=ba.plan_version_id and pv.user_id=${u.id}::uuid
+          and p.id=${planId}::uuid and p.status='PLAN_DRAFT'
+          and pv.version_number=1 and pv.approved_at is null
+      )
+    returning ba.id
+  `);
+
+  for(const source of fundingPlan.sourceReductions){
+    statements.push(rawSql`
+      update public.budget_allocations ba
+      set planned_amount=${source.suggestedAmount},updated_at=now()
+      where ba.id=${source.allocationId}::uuid and ba.user_id=${u.id}::uuid
+        and exists(
+          select 1
+          from public.plan_versions pv
+          join public.financial_plans p on p.id=pv.plan_id and p.user_id=pv.user_id
+          where pv.id=ba.plan_version_id and pv.user_id=${u.id}::uuid
+            and p.id=${planId}::uuid and p.status='PLAN_DRAFT'
+            and pv.version_number=1 and pv.approved_at is null
+        )
+      returning ba.id
+    `);
+  }
+
+  const results=await rawSql.transaction(statements);
+  if(results.some(result=>result.length!==1)){
+    redirect('/budget?error='+encodeURIComponent('تعذر تطبيق خطة التغطية المؤقتة بالكامل.'));
+  }
+
+  revalidatePath('/budget');
+  redirect('/budget?draft=context-funded');
+}
+
 export async function applyInitialBudgetCorrectionsAction(planId:string){
   const u=await requireAuthenticatedMutationUser();
   const review=await reviewInitialBudgetDraft(u.id,planId);
