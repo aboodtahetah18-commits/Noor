@@ -348,7 +348,8 @@ export async function projectConfirmedOnboardingFacts(userId:string):Promise<Pro
       limit 1
     `;
 
-    if(!existingPlan[0]?.id){
+    const existingPlanRow=existingPlan[0] as Record<string,unknown>|undefined;
+    if(!existingPlanRow?.id){
       const items:Array<{
         name:string;
         allocationType:'OBLIGATION'|'ESSENTIAL'|'SAVING'|'EMERGENCY'|'GOAL'|'FLEXIBLE';
@@ -441,7 +442,7 @@ export async function projectConfirmedOnboardingFacts(userId:string):Promise<Pro
         budgetDraftItems=deduped.length;
       }
     }else{
-      budgetDraftId=String(existingPlan[0].id);
+      budgetDraftId=String(existingPlanRow.id);
     }
   }
 
