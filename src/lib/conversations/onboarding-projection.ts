@@ -426,10 +426,14 @@ export async function projectConfirmedOnboardingFacts(userId:string):Promise<Pro
         });
       }
 
-      const deduped=[...new Map(items.map(item=>[
-        item.allocationType+':'+item.name.trim().toLocaleLowerCase('ar'),
-        item,
-      ])).values()];
+      const priority={OBLIGATION:3,ESSENTIAL:2,FLEXIBLE:1,SAVING:0,EMERGENCY:0,GOAL:0} as const;
+      const byName=new Map<string,(typeof items)[number]>();
+      for(const item of items){
+        const key=item.name.trim().toLocaleLowerCase('ar');
+        const previous=byName.get(key);
+        if(!previous||priority[item.allocationType]>priority[previous.allocationType]) byName.set(key,item);
+      }
+      const deduped=[...byName.values()];
 
       if(deduped.length){
         budgetDraftId=await financialPlanRepository.createDraftWithManualCategories(userId,cycleId,deduped);
