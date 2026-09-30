@@ -353,20 +353,6 @@
   }
 }
 
-/* Wide screens keep the tablet composition centered; no desktop sidebar/topbar is restored. */
-@media (min-width:1024px) {
-  .protected-app-shell {
-    padding-inline:0;
-    padding-block-start:0;
-  }
-
-  .namaa-page-frame {
-    width:min(100%,1024px);
-    max-width:1024px;
-  }
-}
-
-
 /* 2026-09-30 — CONVERSATION ROUTE OWNS ITS CHROME
  * The chat route carries its own fixed header/menu and composer.
  * Hide the global mobile shell bars here so they never cover the composer.
