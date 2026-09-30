@@ -68,8 +68,9 @@ function flexibleFinancialProjection(row:TableRow){
       .filter(item=>item.amount>0&&Number.isFinite(item.date.getTime())&&item.date>=cutoff&&item.date<=now)
       .sort((a,b)=>a.date.getTime()-b.date.getTime());
     const actual12m=paidHistory.reduce((sum,item)=>sum+item.amount,0);
-    const observedMonths=paidHistory.length
-      ? Math.max(3,Math.min(12,((year-paidHistory[0].date.getFullYear())*12+(month-paidHistory[0].date.getMonth())+1)))
+    const firstPaid=paidHistory[0];
+    const observedMonths=firstPaid
+      ? Math.max(3,Math.min(12,((year-firstPaid.date.getFullYear())*12+(month-firstPaid.date.getMonth())+1)))
       : 0;
     const actualAnnualized=observedMonths?actual12m*(12/observedMonths):0;
     const learningWeight=paidHistory.length?Math.min(.75,paidHistory.length/8):0;
@@ -94,8 +95,9 @@ function flexibleFinancialProjection(row:TableRow){
     .sort((a,b)=>a.date.getTime()-b.date.getTime());
 
   const actual12m=paidHistory.reduce((sum,item)=>sum+item.amount,0);
-  const observedMonths=paidHistory.length
-    ? Math.max(3,Math.min(12,((year-paidHistory[0].date.getFullYear())*12+(month-paidHistory[0].date.getMonth())+1)))
+  const firstPaid=paidHistory[0];
+  const observedMonths=firstPaid
+    ? Math.max(3,Math.min(12,((year-firstPaid.date.getFullYear())*12+(month-firstPaid.date.getMonth())+1)))
     : 0;
   const actualAnnualized=observedMonths?actual12m*(12/observedMonths):0;
   const learningWeight=paidHistory.length?Math.min(.75,paidHistory.length/8):0;
