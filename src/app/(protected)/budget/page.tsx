@@ -4,7 +4,7 @@ import { getCurrentFinancialCycle } from '@/features/cycles/queries/get-current-
 import { getFinancialPlanByCycle } from '@/features/financial-plan/queries/get-financial-plan';
 import { getBudgetCommandCenter } from '@/features/budget/queries/get-budget-command-center';
 import { formatSar } from '@/lib/format-money';
-import { approvePlanAction, approveRevisionAction, updateInitialDraftAction, applyInitialBudgetCorrectionsAction, applyTemporaryBudgetFundingAction, applyTemporaryExtraSuggestionAction } from './actions';
+import { approvePlanAction, approveRevisionAction, updateInitialDraftAction, applyInitialBudgetCorrectionsAction, applyTemporaryBudgetFundingAction, applyTemporaryExtraSuggestionAction, confirmTemporaryExtraAmountAction } from './actions';
 import { FocusedNextStep } from '@/components/ux/focused-next-step';
 import { rawSql } from '@/infrastructure/db/client';
 import { reviewInitialBudgetDraft } from '@/features/financial-plan/services/review-initial-budget-draft';
@@ -127,11 +127,18 @@ export default async function BudgetPage({searchParams}:{searchParams:Promise<{e
                 <span>المتوسط الشهري الفعلي <b>{formatSar(suggestion.historicalMonthlyAverage.toFixed(2))}</b></span>
                 <span>الربع الأعلى التاريخي <b>{formatSar(suggestion.historicalMonthlyP75.toFixed(2))}</b></span>
                 <span>التذبذب الشهري <b>{formatSar(suggestion.historicalMonthlyStdDev.toFixed(2))}</b></span>
-                <span>الزيادة المقترحة <b>{formatSar(suggestion.suggestedExtraAmount.toFixed(2))}</b></span>
+                {suggestion.requiresManualAmount
+                  ? <span>النطاق المقترح <b>{formatSar(suggestion.suggestedMinimum.toFixed(2))} – {formatSar(suggestion.suggestedMaximum.toFixed(2))}</b></span>
+                  : <span>الزيادة المقترحة <b>{formatSar(suggestion.suggestedExtraAmount.toFixed(2))}</b></span>}
               </div>
-              <form action={applyTemporaryExtraSuggestionAction.bind(null,plan.id,suggestion.allocationId)}>
-                <button className="p47-secondary-action">استخدام هذا التقدير</button>
-              </form>
+              {suggestion.requiresManualAmount
+                ? <form action={confirmTemporaryExtraAmountAction.bind(null,plan.id,suggestion.allocationId)} className="namaa-budget-context-estimate-confirm">
+                    <label><span>اختر المبلغ النهائي</span><input name="confirmedTemporaryExtraAmount" type="number" min={suggestion.suggestedMinimum||0.01} max={suggestion.suggestedMaximum} step="0.01" inputMode="decimal" defaultValue={suggestion.suggestedExtraAmount.toFixed(2)} required/></label>
+                    <button className="p47-secondary-action">تأكيد المبلغ وبناء خطة التغطية</button>
+                  </form>
+                : <form action={applyTemporaryExtraSuggestionAction.bind(null,plan.id,suggestion.allocationId)}>
+                    <button className="p47-secondary-action">استخدام التقدير عالي الثقة</button>
+                  </form>}
             </article>)}
           </div>
         </section>:null}
