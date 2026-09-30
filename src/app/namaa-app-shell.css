@@ -410,7 +410,7 @@
 
 .namaa-initial-budget-item{
   display:grid;
-  grid-template-columns:minmax(0,1.4fr) minmax(160px,.6fr) minmax(170px,.7fr);
+  grid-template-columns:minmax(0,1.35fr) minmax(150px,.55fr) minmax(165px,.65fr) minmax(190px,.75fr);
   gap:var(--ux-space-3);
   align-items:end;
   padding:var(--ux-space-3);
