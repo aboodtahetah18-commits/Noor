@@ -471,7 +471,7 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
         : `الربع الحالي أقل من المعتاد تاريخيًا بحوالي ${Math.round((1-seasonalityFactor)*100)}%`
       : null;
 
-    const historyEnd=new Date().toISOString().slice(0,10);
+    const historyEnd=cycleStart||new Date().toISOString().slice(0,10);
     const historyStartDate=new Date(`${historyEnd}T12:00:00Z`);
     historyStartDate.setUTCMonth(historyStartDate.getUTCMonth()-36);
     const historyStart=historyStartDate.toISOString().slice(0,10);
@@ -491,8 +491,11 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       ? `${namedSignal.label}: الصرف التاريخي في هذا الموسم ${namedSignal.weightedFactor>1?'أعلى':'أقل'} من المعتاد بحوالي ${Math.round(Math.abs(namedSignal.weightedFactor-1)*100)}% بعد مراعاة مدة تداخل الموسم مع الدورة`
       : quarterSeasonalityLabel;
 
+    const effectiveSeasonalSuggestedExtra=effectiveSeasonalityApplied
+      ? Math.max(0,(item.amount+suggestedExtra)*effectiveSeasonalityFactor-item.amount)
+      : suggestedExtra;
     const historicalMinimum=Math.max(0,monthly.monthlyAverage-item.amount);
-    const historicalMaximum=Math.max(seasonalSuggestedExtra,monthly.monthlyMax-item.amount);
+    const historicalMaximum=Math.max(effectiveSeasonalSuggestedExtra,monthly.monthlyMax-item.amount);
     const historicalSpan=Math.max(0,historicalMaximum-historicalMinimum);
     const learningKey=`${normalizeTemporaryAmountLabel(item.name)}:${String(item.temporaryContextReason)}`;
     const learned=temporaryAmountPreferenceByKey.get(learningKey);
