@@ -1377,21 +1377,6 @@ export function PersistentConversationWorkspace(){
     <Image className={styles.brandWatermark} src="/brand/namaa-leaf.webp" alt="" width={256} height={256} aria-hidden="true" />
     <Image className={`${styles.brandWatermark} ${styles.brandWatermarkSecondary}`} src="/brand/namaa-leaf.webp" alt="" width={220} height={220} aria-hidden="true" />
     <Image className={`${styles.brandWatermark} ${styles.brandWatermarkTertiary}`} src="/brand/namaa-leaf.webp" alt="" width={180} height={180} aria-hidden="true" />
-    <header className={styles.mobileAppBar}>
-      <div className={styles.mobileAppBarPrimary}>
-        <button type="button" className={styles.mobileTopButton} aria-label="فتح القائمة الجانبية" onClick={()=>setRoomsOpen(true)}><LucideIcon name="menu" size={20}/></button>
-        <span className={styles.mobileBrandLogoWrap} aria-label="نماء"><Image className={`${styles.mobileBrandLogo} ${styles.mobileBrandLogoLight}`} src="/brand/ndos/namaa-logo-color-hq.png" alt="" width={112} height={44} priority /><Image className={`${styles.mobileBrandLogo} ${styles.mobileBrandLogoDark}`} src="/brand/ndos/namaa-logo-white-hq.png" alt="" width={112} height={44} priority /></span>
-      </div>
-      <div className={styles.mobileAppBarActions}>
-        <ThemeToggle className={styles.mobileThemeToggle}/>
-        <button type="button" className={styles.mobileUserButton} aria-label="ملف المستخدم" onClick={()=>setUserMenuOpen(true)}>
-          {profile?.image
-            ? <span className={styles.userImage} style={{backgroundImage:`url("${profile.image.replace(/"/g,'')}")`}} aria-hidden="true"/>
-            : <LucideIcon name="circleUserRound" size={24}/>}
-        </button>
-      </div>
-    </header>
-    <header className={styles.workspaceHeader}><div className={styles.headingCopy}><span className={styles.eyebrow}>محادثات نماء</span><h1>مركز الحوار والقرار</h1><p>المحادثات محفوظة في حسابك، وتصل رسالتك إلى الجهة والمتخصصين المرتبطين بالموضوع.</p></div><div className={styles.headerActions}><button type="button" className={styles.secondaryButton} onClick={()=>setDesktopContextVisible(v=>!v)}><LucideIcon name="info" size={16}/><span>{desktopContextVisible?'إخفاء السياق':'إظهار السياق'}</span></button></div></header>
     <div className={`${styles.workspace} ${desktopContextVisible?'':styles.withoutContext}`}>
       <aside className={styles.roomsPane} aria-label="الجهات والمحادثات"><div className={styles.paneTitle}><span>مركز العمل</span><small>3 أقسام</small></div>{onboardingComplete!==false?directoryTabs:null}{directoryContent}</aside>
       <main className={styles.chatPane}><header className={`${styles.chatHeader} ${activeRoom.id==='central'?styles.centralChatHeader:''}`}><div className={styles.chatHeaderShade} aria-hidden="true"/><div className={styles.desktopChatHeaderForeground}><div className={styles.chatIdentity}><RoomPortrait room={activeRoom} size={activeRoom.id==='central'?'lg':'md'}/><div><div className={styles.entityTitle}><strong>{chatRoleTitle(activeRoom)}</strong></div><small>{chatEntityTitle(activeRoom)}</small></div></div><span className={styles.chatHeaderBankMark} aria-hidden="true"><Image src={activeRoom.bankLogo} alt="" fill sizes="56px"/></span></div><div className={styles.chatHeaderForeground}><button type="button" className={styles.compactMenuButton} aria-label="فتح القائمة الجانبية" onClick={()=>setRoomsOpen(true)}><LucideIcon name="menu" size={20}/></button><RoomPortrait room={activeRoom} size="md"/><div className={styles.compactRoleTitle}><strong>{compactChatRoleTitle(activeRoom)}</strong></div><div className={styles.mobileTools}><button type="button" aria-label="لوحة الجهة" onClick={()=>setEntityDashboardRoom(activeRoomId)}><LucideIcon name="chart" size={20}/></button><button type="button" aria-label="معلومات الجهة" onClick={()=>{setDetailRoomId(activeRoomId);setDetailTab('role')}}><LucideIcon name="info" size={20}/></button></div></div></header>
