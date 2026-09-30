@@ -89,6 +89,7 @@ export const extendedProfileSections:ExtendedProfileSection[]=[
   },
   {
     key:'housing_details',
+    foundationFactKey:'housing',
     title:'السكن والمرافق',
     summary:'كل سجل سكن أو مرفق يضاف مرة واحدة ثم يظهر في جدول قابل للتعديل والحذف.',
     fields:[],
@@ -222,6 +223,7 @@ export const extendedProfileSections:ExtendedProfileSection[]=[
   },
   {
     key:'beneficiaries',
+    foundationFactKey:'dependents',
     title:'المستفيدون',
     summary:'أضف الأشخاص الذين ترتبط بهم مصاريف أو دورات أو التزامات، ثم استخدمهم مباشرة من قوائم الاختيار في بقية النماذج.',
     fields:[],
