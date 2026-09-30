@@ -147,6 +147,9 @@ export async function applyTemporaryExtraSuggestionAction(planId:string,allocati
   if(!suggestion){
     redirect('/budget?error='+encodeURIComponent('لا يوجد تقدير تاريخي صالح لهذا البند حاليًا.'));
   }
+  if(suggestion.requiresManualAmount){
+    redirect('/budget?error='+encodeURIComponent('هذا التقدير يحتاج اختيار مبلغ نهائي من النطاق المقترح قبل التطبيق.'));
+  }
 
   const rows=await rawSql`
     update public.budget_allocations ba
@@ -167,6 +170,47 @@ export async function applyTemporaryExtraSuggestionAction(planId:string,allocati
   `;
   if(rows.length!==1){
     redirect('/budget?error='+encodeURIComponent('احفظ سبب الظرف المؤقت أولًا ثم أعد المحاولة.'));
+  }
+
+  revalidatePath('/budget');
+  redirect('/budget?draft=context-estimated');
+}
+
+export async function confirmTemporaryExtraAmountAction(planId:string,allocationId:string,fd:FormData){
+  const u=await requireAuthenticatedMutationUser();
+  const review=await reviewInitialBudgetDraft(u.id,planId);
+  const suggestion=review.temporaryExtraSuggestions.find(item=>item.allocationId===allocationId);
+  if(!suggestion){
+    redirect('/budget?error='+encodeURIComponent('لم يعد نطاق التقدير متاحًا. أعد حفظ الظرف المؤقت ثم حاول مرة أخرى.'));
+  }
+
+  const amount=Number(String(fd.get('confirmedTemporaryExtraAmount')??''));
+  if(!Number.isFinite(amount)||amount<=0){
+    redirect('/budget?error='+encodeURIComponent('أدخل مبلغًا نهائيًا صالحًا للزيادة المؤقتة.'));
+  }
+  if(amount<suggestion.suggestedMinimum||amount>suggestion.suggestedMaximum){
+    redirect('/budget?error='+encodeURIComponent('المبلغ المختار خارج النطاق التاريخي المقترح. عدّل المبلغ أو أدخله يدويًا من بيانات البند.'));
+  }
+
+  const rows=await rawSql`
+    update public.budget_allocations ba
+    set temporary_extra_amount=${amount},
+        priority_override_scope='THIS_CYCLE',
+        updated_at=now()
+    where ba.id=${allocationId}::uuid and ba.user_id=${u.id}::uuid
+      and priority_override_reason is not null
+      and exists(
+        select 1
+        from public.plan_versions pv
+        join public.financial_plans p on p.id=pv.plan_id and p.user_id=pv.user_id
+        where pv.id=ba.plan_version_id and pv.user_id=${u.id}::uuid
+          and p.id=${planId}::uuid and p.status='PLAN_DRAFT'
+          and pv.version_number=1 and pv.approved_at is null
+      )
+    returning ba.id
+  `;
+  if(rows.length!==1){
+    redirect('/budget?error='+encodeURIComponent('تعذر حفظ المبلغ النهائي للظرف المؤقت.'));
   }
 
   revalidatePath('/budget');
