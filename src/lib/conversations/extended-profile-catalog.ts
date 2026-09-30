@@ -31,6 +31,7 @@ export type ExtendedProfileSection={
 };
 
 const flexibleAmountColumns=(amountKey='amount',amountLabel='القيمة'):ExtendedProfileTableColumn[]=>[
+  {key:'payment_mode',label:'طريقة السداد',kind:'select',options:['مبلغ واحد','عدة دفعات'],mobileVisible:true},
   {key:'amount_mode',label:'طريقة المبلغ',kind:'select',options:['مبلغ محدد','مبلغ تقريبي','نطاق من–إلى','غير معروف الآن']},
   {key:amountKey,label:amountLabel,kind:'number',mobileVisible:true},
   {key:'amount_min',label:'الحد الأدنى',kind:'number'},
