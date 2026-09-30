@@ -65,9 +65,13 @@ function flexibleFinancialProjection(row:TableRow){
   }
 
   const base=amountBasis(row);
-  const annual=Number(row.annual_estimate)||0;
+  const occurrences=Math.max(0,Number(row.occurrences_per_year)||0);
+  const explicitAnnual=Number(row.annual_estimate)||0;
+  const derivedAnnual=explicitAnnual>0?explicitAnnual:(base>0&&occurrences>0?base*occurrences:0);
+  const buffer=Math.max(0,Number(row.reserve_buffer_percent)||0);
+  const annualWithBuffer=derivedAnnual>0?derivedAnnual*(1+(buffer/100)):0;
   let expected=0;
-  let reserve=annual>0?annual/12:0;
+  let reserve=annualWithBuffer>0?annualWithBuffer/12:0;
 
   if(row.recurrence_mode==='متكرر'){
     const every=Math.max(1,Number(row.recurrence_every)||1);
@@ -89,6 +93,9 @@ function flexibleFinancialProjection(row:TableRow){
     expected=base;
   }else if(row.recurrence_mode==='حسب الحاجة'||row.recurrence_mode==='غير منتظم'){
     expected=0;
+    if(!reserve&&base>0&&occurrences>0){
+      reserve=(base*occurrences*(1+(buffer/100)))/12;
+    }
   }
 
   return {expected,reserve};
@@ -317,6 +324,8 @@ export function ExtendedProfileSheet({
     if(section.table?.columns.some(column=>column.key==='recurrence_mode')) row.recurrence_mode='متكرر';
     if(section.table?.columns.some(column=>column.key==='recurrence_every')) row.recurrence_every='1';
     if(section.table?.columns.some(column=>column.key==='recurrence_unit')) row.recurrence_unit='شهر';
+    if(section.table?.columns.some(column=>column.key==='occurrences_per_year')) row.occurrences_per_year='';
+    if(section.table?.columns.some(column=>column.key==='reserve_buffer_percent')) row.reserve_buffer_percent='10';
     if(section.table?.columns.some(column=>column.key==='expected_current_month')) row.expected_current_month='';
     if(section.table?.columns.some(column=>column.key==='monthly_reserve')) row.monthly_reserve='';
     if(section.key==='vehicle_maintenance') row.schedule_pattern='ثابت';
@@ -624,7 +633,9 @@ export function ExtendedProfileSheet({
                         if(['amount_mode','amount','amount_min','amount_max','annual_estimate'].includes(column.key)&&draftRow.payment_mode==='عدة دفعات') return null;
                         if(column.key==='amount'&&['نطاق من–إلى','غير معروف الآن'].includes(draftRow.amount_mode||'')) return null;
                         if(['amount_min','amount_max'].includes(column.key)&&draftRow.amount_mode!=='نطاق من–إلى') return null;
-                        if(column.key==='annual_estimate'&&draftRow.recurrence_mode!=='حسب الحاجة'&&draftRow.amount_mode!=='مبلغ تقريبي') return null;
+                        if(column.key==='annual_estimate'&&!['حسب الحاجة','غير منتظم'].includes(draftRow.recurrence_mode||'')&&draftRow.amount_mode!=='مبلغ تقريبي') return null;
+                        if(column.key==='occurrences_per_year'&&!['حسب الحاجة','غير منتظم'].includes(draftRow.recurrence_mode||'')) return null;
+                        if(column.key==='reserve_buffer_percent'&&!['حسب الحاجة','غير منتظم'].includes(draftRow.recurrence_mode||'')) return null;
                         if(['recurrence_every','recurrence_unit'].includes(column.key)&&draftRow.recurrence_mode!=='متكرر') return null;
                         if(active.key==='assets_investments'&&stockField(column.key)&&draftRow.category!=='أسهم مباشرة') return null;
                         if(active.key==='vehicle_maintenance'&&['alternate_name','alternate_amount'].includes(column.key)&&draftRow.schedule_pattern!=='متناوب') return null;
