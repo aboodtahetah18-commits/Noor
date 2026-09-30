@@ -418,18 +418,43 @@ export function ExtendedProfileSheet({
 
                 {tableRows.length===0
                   ? <div className={styles.extendedTableEmpty}><LucideIcon name="receiptText" size={24}/><span>{active.table.emptyLabel}</span></div>
-                  : <div className={styles.extendedDataTableWrap}>
-                      <table className={styles.extendedDataTable}>
-                        <thead><tr>{displayColumns.map(column=><th key={column.key} className={column.mobileVisible?styles.mobileKeepColumn:styles.mobileOptionalColumn}>{column.label}</th>)}<th>الإجراء</th></tr></thead>
-                        <tbody>{tableRows.map((row,rowIndex)=><tr key={rowIndex}>
-                          {displayColumns.map(column=><td key={column.key} className={column.mobileVisible?styles.mobileKeepColumn:styles.mobileOptionalColumn} data-label={column.label}>{displayCell(active,row,column)}</td>)}
-                          <td className={styles.extendedRowActions}>
-                            <button type="button" onClick={()=>openEditModal(rowIndex)} aria-label={'تعديل '+rowLabel(active,row)}><LucideIcon name="pencil" size={16}/></button>
-                            <button type="button" onClick={()=>void removeTableRow(rowIndex)} aria-label={'حذف '+rowLabel(active,row)}><LucideIcon name="trash2" size={16}/></button>
-                          </td>
-                        </tr>)}</tbody>
-                      </table>
-                    </div>}
+                  : <>
+                      <div className={styles.extendedRecordCards} aria-label={'سجلات '+active.title}>
+                        {tableRows.map((row,rowIndex)=>{
+                          const cardColumns=displayColumns.filter(column=>column.mobileVisible).slice(0,4);
+                          return <article className={styles.extendedRecordCard} key={rowIndex}>
+                            <header>
+                              <div>
+                                <small>السجل {rowIndex+1}</small>
+                                <strong>{rowLabel(active,row)}</strong>
+                              </div>
+                              <div className={styles.extendedRecordCardActions}>
+                                <button type="button" onClick={()=>openEditModal(rowIndex)} aria-label={'تعديل '+rowLabel(active,row)}><LucideIcon name="pencil" size={16}/></button>
+                                <button type="button" onClick={()=>void removeTableRow(rowIndex)} aria-label={'حذف '+rowLabel(active,row)}><LucideIcon name="trash2" size={16}/></button>
+                              </div>
+                            </header>
+                            <div className={styles.extendedRecordCardFacts}>
+                              {cardColumns.map(column=><span key={column.key}>
+                                <small>{column.label}</small>
+                                <b>{displayCell(active,row,column)}</b>
+                              </span>)}
+                            </div>
+                          </article>;
+                        })}
+                      </div>
+                      <div className={styles.extendedDataTableWrap}>
+                        <table className={styles.extendedDataTable}>
+                          <thead><tr>{displayColumns.map(column=><th key={column.key} className={column.mobileVisible?styles.mobileKeepColumn:styles.mobileOptionalColumn}>{column.label}</th>)}<th>الإجراء</th></tr></thead>
+                          <tbody>{tableRows.map((row,rowIndex)=><tr key={rowIndex}>
+                            {displayColumns.map(column=><td key={column.key} className={column.mobileVisible?styles.mobileKeepColumn:styles.mobileOptionalColumn} data-label={column.label}>{displayCell(active,row,column)}</td>)}
+                            <td className={styles.extendedRowActions}>
+                              <button type="button" onClick={()=>openEditModal(rowIndex)} aria-label={'تعديل '+rowLabel(active,row)}><LucideIcon name="pencil" size={16}/></button>
+                              <button type="button" onClick={()=>void removeTableRow(rowIndex)} aria-label={'حذف '+rowLabel(active,row)}><LucideIcon name="trash2" size={16}/></button>
+                            </td>
+                          </tr>)}</tbody>
+                        </table>
+                      </div>
+                    </>}
 
                 {draftRow&&<div className={styles.extendedAddModalBackdrop} role="presentation">
                   <section className={styles.extendedAddModal} role="dialog" aria-modal="true" aria-label={active.table.addLabel}>
