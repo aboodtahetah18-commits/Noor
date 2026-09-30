@@ -11818,3 +11818,91 @@
   }
 }
 
+/* 2026-09-30 — FINAL RESPONSIVE DATA TABLE AUTHORITY
+ * Phone: card rows with no horizontal scrolling.
+ * Tablet: semantic table inside an explicit horizontal scroll container.
+ */
+@media (max-width:767px){
+  .extendedDataTableWrap{
+    width:100%!important;
+    max-width:100%!important;
+    margin-inline:0!important;
+    overflow:visible!important;
+    border:0!important;
+    background:transparent!important;
+  }
+
+  .extendedDataTable{
+    width:100%!important;
+    min-width:0!important;
+    display:block!important;
+  }
+
+  .extendedDataTable thead{
+    display:none!important;
+  }
+
+  .extendedDataTable tbody{
+    display:grid!important;
+    gap:var(--ux-space-2)!important;
+  }
+
+  .extendedDataTable tr{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:var(--ux-space-2)!important;
+    width:100%!important;
+    min-width:0!important;
+    padding:var(--ux-space-3)!important;
+    border:1px solid var(--namaa-border)!important;
+    border-radius:var(--ux-radius-3)!important;
+    background:var(--namaa-card)!important;
+    box-shadow:var(--ux-shadow-xs)!important;
+  }
+
+  .extendedDataTable td{
+    display:grid!important;
+    min-width:0!important;
+    gap:var(--ux-space-1)!important;
+    padding:0!important;
+    border:0!important;
+    white-space:normal!important;
+    overflow-wrap:anywhere!important;
+  }
+
+  .extendedDataTable td::before{
+    content:attr(data-label)!important;
+    display:block!important;
+    color:var(--ux-text-secondary)!important;
+    font-size:var(--ux-type-caption-size)!important;
+    font-weight:800!important;
+  }
+
+  .extendedRowActions{
+    width:auto!important;
+    grid-column:1 / -1!important;
+    justify-items:end!important;
+  }
+
+  .extendedRowActions::before{
+    content:none!important;
+    display:none!important;
+  }
+}
+
+@media (min-width:768px){
+  .extendedDataTableWrap{
+    width:100%!important;
+    max-width:100%!important;
+    overflow-x:auto!important;
+    overflow-y:visible!important;
+    overscroll-behavior-inline:contain!important;
+  }
+
+  .extendedDataTable{
+    width:100%!important;
+    min-width:620px!important;
+    display:table!important;
+  }
+}
+
