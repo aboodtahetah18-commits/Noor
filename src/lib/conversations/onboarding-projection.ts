@@ -375,19 +375,28 @@ export async function projectConfirmedOnboardingFacts(userId:string):Promise<Pro
     const priorityTable=await sql`select to_regclass('public.budget_priority_preferences')::text table_name`;
     if((priorityTable[0] as Record<string,unknown>|undefined)?.table_name){
       const preferenceRows=await sql`
-        select normalized_label,allocation_type,chosen_priority,confirmation_count
+        select normalized_label,allocation_type,chosen_priority,confirmation_count,correction_count
         from public.budget_priority_preferences
         where user_id=${userId}::uuid
       `;
       const flexibleCounts=new Map<'NECESSARY'|'IMPORTANT'|'OPTIONAL'|'ENTERTAINMENT',number>();
+      const unstableKeys=new Set<string>();
       for(const row of preferenceRows){
         const allocationType=String(row.allocation_type??'');
         const normalizedLabel=String(row.normalized_label??'');
         const priority=String(row.chosen_priority??'') as 'NECESSARY'|'IMPORTANT'|'OPTIONAL'|'ENTERTAINMENT';
         if(!['NECESSARY','IMPORTANT','OPTIONAL','ENTERTAINMENT'].includes(priority)) continue;
-        learnedPriorityByKey.set(`${allocationType}:${normalizedLabel}`,priority);
+        const confirmations=Math.max(1,Number(row.confirmation_count??1));
+        const corrections=Math.max(0,Number(row.correction_count??0));
+        const unstable=corrections>=2&&corrections/confirmations>=0.4;
+        const key=`${allocationType}:${normalizedLabel}`;
+        if(unstable){
+          unstableKeys.add(key);
+          continue;
+        }
+        learnedPriorityByKey.set(key,priority);
         if(allocationType==='FLEXIBLE'){
-          flexibleCounts.set(priority,(flexibleCounts.get(priority)??0)+Math.max(1,Number(row.confirmation_count??1)));
+          flexibleCounts.set(priority,(flexibleCounts.get(priority)??0)+confirmations);
         }
       }
       const total=[...flexibleCounts.values()].reduce((sum,value)=>sum+value,0);
@@ -396,7 +405,9 @@ export async function projectConfirmedOnboardingFacts(userId:string):Promise<Pro
     }
 
     const resolveSuggestedPriority=(allocationType:'OBLIGATION'|'ESSENTIAL'|'SAVING'|'EMERGENCY'|'GOAL'|'FLEXIBLE',name:string)=>{
-      const exact=learnedPriorityByKey.get(`${allocationType}:${normalizeBudgetPriorityLabel(name)}`);
+      const key=`${allocationType}:${normalizeBudgetPriorityLabel(name)}`;
+      if(unstableKeys.has(key)) return null;
+      const exact=learnedPriorityByKey.get(key);
       if(exact) return exact;
       if(allocationType==='FLEXIBLE'&&learnedFlexiblePriority) return learnedFlexiblePriority;
       return suggestBudgetPriority(allocationType,name);
@@ -411,7 +422,7 @@ export async function projectConfirmedOnboardingFacts(userId:string):Promise<Pro
         intervalCycles:number;
         startCycleDate:string;
         note:string;
-        suggestedPriority:'NECESSARY'|'IMPORTANT'|'OPTIONAL'|'ENTERTAINMENT';
+        suggestedPriority:'NECESSARY'|'IMPORTANT'|'OPTIONAL'|'ENTERTAINMENT'|null;
       }>=[];
 
       const housing=factRecord(byKey.get('housing'));
