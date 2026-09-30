@@ -997,3 +997,22 @@
   line-height:1.5;
   white-space:normal;
 }
+
+
+/* 2026-09-30 — TEMPORARY ESTIMATE OUTCOME ACCURACY */
+.namaa-temporary-estimate-outcome{
+  display:inline-flex;
+  width:max-content;
+  max-width:100%;
+  margin-top:var(--ux-space-1);
+  padding:2px 8px;
+  border:1px solid var(--ux-border-default);
+  border-radius:var(--ux-radius-full);
+  background:var(--ux-surface-default);
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  font-style:normal;
+  font-weight:700;
+  line-height:1.5;
+  white-space:normal;
+}
