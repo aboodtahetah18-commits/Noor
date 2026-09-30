@@ -115,6 +115,18 @@ function monthlyAmountFromFlexibleItem(item:Record<string,unknown>){
   return amount/every;
 }
 
+function normalizeBudgetPriorityLabel(value:string){
+  return value
+    .trim()
+    .toLocaleLowerCase('ar')
+    .replace(/[أإآ]/g,'ا')
+    .replace(/ى/g,'ي')
+    .replace(/ة/g,'ه')
+    .replace(/[^\p{L}\p{N}\s]/gu,' ')
+    .replace(/\s+/g,' ')
+    .trim();
+}
+
 function suggestBudgetPriority(allocationType:'OBLIGATION'|'ESSENTIAL'|'SAVING'|'EMERGENCY'|'GOAL'|'FLEXIBLE',name:string){
   if(allocationType==='OBLIGATION'||allocationType==='ESSENTIAL') return 'NECESSARY' as const;
   if(allocationType==='SAVING'||allocationType==='EMERGENCY'||allocationType==='GOAL') return 'IMPORTANT' as const;
@@ -357,6 +369,39 @@ export async function projectConfirmedOnboardingFacts(userId:string):Promise<Pro
     `;
 
     const existingPlanRow=existingPlan[0] as Record<string,unknown>|undefined;
+
+    const learnedPriorityByKey=new Map<string,'NECESSARY'|'IMPORTANT'|'OPTIONAL'|'ENTERTAINMENT'>();
+    let learnedFlexiblePriority:'NECESSARY'|'IMPORTANT'|'OPTIONAL'|'ENTERTAINMENT'|null=null;
+    const priorityTable=await sql`select to_regclass('public.budget_priority_preferences')::text table_name`;
+    if((priorityTable[0] as Record<string,unknown>|undefined)?.table_name){
+      const preferenceRows=await sql`
+        select normalized_label,allocation_type,chosen_priority,confirmation_count
+        from public.budget_priority_preferences
+        where user_id=${userId}::uuid
+      `;
+      const flexibleCounts=new Map<'NECESSARY'|'IMPORTANT'|'OPTIONAL'|'ENTERTAINMENT',number>();
+      for(const row of preferenceRows){
+        const allocationType=String(row.allocation_type??'');
+        const normalizedLabel=String(row.normalized_label??'');
+        const priority=String(row.chosen_priority??'') as 'NECESSARY'|'IMPORTANT'|'OPTIONAL'|'ENTERTAINMENT';
+        if(!['NECESSARY','IMPORTANT','OPTIONAL','ENTERTAINMENT'].includes(priority)) continue;
+        learnedPriorityByKey.set(`${allocationType}:${normalizedLabel}`,priority);
+        if(allocationType==='FLEXIBLE'){
+          flexibleCounts.set(priority,(flexibleCounts.get(priority)??0)+Math.max(1,Number(row.confirmation_count??1)));
+        }
+      }
+      const total=[...flexibleCounts.values()].reduce((sum,value)=>sum+value,0);
+      const leader=[...flexibleCounts.entries()].sort((a,b)=>b[1]-a[1])[0];
+      if(total>=3&&leader&&leader[1]/total>=0.7) learnedFlexiblePriority=leader[0];
+    }
+
+    const resolveSuggestedPriority=(allocationType:'OBLIGATION'|'ESSENTIAL'|'SAVING'|'EMERGENCY'|'GOAL'|'FLEXIBLE',name:string)=>{
+      const exact=learnedPriorityByKey.get(`${allocationType}:${normalizeBudgetPriorityLabel(name)}`);
+      if(exact) return exact;
+      if(allocationType==='FLEXIBLE'&&learnedFlexiblePriority) return learnedFlexiblePriority;
+      return suggestBudgetPriority(allocationType,name);
+    };
+
     if(!existingPlanRow?.id){
       const items:Array<{
         name:string;
@@ -381,7 +426,7 @@ export async function projectConfirmedOnboardingFacts(userId:string):Promise<Pro
             intervalCycles:1,
             startCycleDate:cycleStartDate,
             note:'مسودة تأسيسية من بيانات السكن — تحتاج مراجعة قبل الاعتماد.',
-            suggestedPriority:suggestBudgetPriority('ESSENTIAL',String(housing.housing_type||'السكن')),
+            suggestedPriority:resolveSuggestedPriority('ESSENTIAL',String(housing.housing_type||'السكن')),
           });
         }
       }
@@ -401,7 +446,7 @@ export async function projectConfirmedOnboardingFacts(userId:string):Promise<Pro
           plannedAmount:amount.toFixed(2),
           ...rule,
           note:'مسودة تأسيسية من الالتزامات المؤكدة — تحتاج مراجعة قبل الاعتماد.',
-          suggestedPriority:suggestBudgetPriority('OBLIGATION',String(item.name||'التزام')),
+          suggestedPriority:resolveSuggestedPriority('OBLIGATION',String(item.name||'التزام')),
         });
       }
 
@@ -416,7 +461,7 @@ export async function projectConfirmedOnboardingFacts(userId:string):Promise<Pro
             plannedAmount:amount.toFixed(2),
             ...rule,
             note:'مسودة تأسيسية من بيانات '+(factKey==='bills'?'الفواتير':'الاشتراكات')+' — تحتاج مراجعة قبل الاعتماد.',
-            suggestedPriority:suggestBudgetPriority(allocationType,String(item.name|| (factKey==='bills'?'فاتورة':'اشتراك'))),
+            suggestedPriority:resolveSuggestedPriority(allocationType,String(item.name|| (factKey==='bills'?'فاتورة':'اشتراك'))),
           });
         }
       }
@@ -436,7 +481,7 @@ export async function projectConfirmedOnboardingFacts(userId:string):Promise<Pro
           intervalCycles:1,
           startCycleDate:cycleStartDate,
           note:'مسودة تأسيسية مجمعة من دعم المعالين — تحتاج مراجعة قبل الاعتماد.',
-          suggestedPriority:suggestBudgetPriority('ESSENTIAL','دعم الأسرة والمعالين'),
+          suggestedPriority:resolveSuggestedPriority('ESSENTIAL','دعم الأسرة والمعالين'),
         });
       }
 
