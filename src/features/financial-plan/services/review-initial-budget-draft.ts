@@ -21,6 +21,9 @@ export type InitialBudgetCorrectionSuggestion={
   suggestedAmount:number;
   reduction:number;
   reason:string;
+  historicalMonthlyAverage:number;
+  activeMonths90d:number;
+  historySignal:'none'|'light'|'stable';
 };
 
 export type InitialBudgetReview={
@@ -69,7 +72,7 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
   const cycleId=String(plan.cycle_id);
   const [allocationRows,incomeRows,foundationRows]=await Promise.all([
     rawSql`
-      select ba.id,bc.name,ba.planned_amount::text,ba.allocation_type,
+      select ba.id,ba.category_id,bc.name,ba.planned_amount::text,ba.allocation_type,
         r.recurrence_kind,r.interval_cycles
       from public.plan_versions pv
       join public.budget_allocations ba on ba.plan_version_id=pv.id and ba.user_id=pv.user_id
@@ -100,13 +103,44 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
     : 0;
   const income=expectedIncome>0?expectedIncome:foundationIncome;
 
-  const items=allocationRows.map(row=>({
-    allocationId:String(row.id),
-    name:String(row.name??'بند'),
-    amount:finite(row.planned_amount),
-    type:String(row.allocation_type??''),
-    recurrenceKind:String(row.recurrence_kind??'MONTHLY'),
-  }));
+  const categoryIds=allocationRows.map(row=>String(row.category_id)).filter(Boolean);
+  const historyRows=categoryIds.length
+    ? await rawSql`
+        select t.category_id,
+          coalesce(sum(case when t.transaction_type in ('EXPENSE','OBLIGATION_PAYMENT') then t.amount else 0 end),0)::text actual_90d,
+          count(distinct date_trunc('month',t.transaction_date))::int active_months_90d,
+          count(*)::int transaction_count_90d
+        from public.transactions t
+        where t.user_id=${userId}::uuid
+          and t.category_id=any(${categoryIds}::uuid[])
+          and t.status='POSTED'
+          and t.transaction_date>=current_date-interval '90 days'
+          and t.transaction_type in ('EXPENSE','OBLIGATION_PAYMENT')
+        group by t.category_id
+      `
+    : [];
+  const historyByCategory=new Map(historyRows.map(row=>[String(row.category_id),{
+    actual90d:finite(row.actual_90d),
+    activeMonths90d:Number(row.active_months_90d??0),
+    transactionCount90d:Number(row.transaction_count_90d??0),
+  }]));
+
+  const items=allocationRows.map(row=>{
+    const categoryId=String(row.category_id);
+    const history=historyByCategory.get(categoryId)??{actual90d:0,activeMonths90d:0,transactionCount90d:0};
+    const observedMonths=Math.max(1,Math.min(3,history.activeMonths90d||3));
+    return {
+      allocationId:String(row.id),
+      categoryId,
+      name:String(row.name??'بند'),
+      amount:finite(row.planned_amount),
+      type:String(row.allocation_type??''),
+      recurrenceKind:String(row.recurrence_kind??'MONTHLY'),
+      historicalMonthlyAverage:history.actual90d/observedMonths,
+      activeMonths90d:history.activeMonths90d,
+      transactionCount90d:history.transactionCount90d,
+    };
+  });
 
   const total=items.reduce((sum,item)=>sum+item.amount,0);
   const coreItems=items.filter(item=>item.type==='OBLIGATION'||item.type==='ESSENTIAL');
@@ -156,10 +190,34 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
   let remainingGap=income>0?Math.max(0,total-income):0;
   const correctionPriority=['FLEXIBLE','GOAL','SAVING'];
   for(const type of correctionPriority){
-    for(const item of items.filter(candidate=>candidate.type===type&&candidate.amount>0)){
+    const candidates=items
+      .filter(candidate=>candidate.type===type&&candidate.amount>0)
+      .sort((a,b)=>{
+        if(type!=='FLEXIBLE') return a.amount-b.amount;
+        const aRatio=a.amount>0?a.historicalMonthlyAverage/a.amount:0;
+        const bRatio=b.amount>0?b.historicalMonthlyAverage/b.amount:0;
+        if(a.activeMonths90d!==b.activeMonths90d) return a.activeMonths90d-b.activeMonths90d;
+        if(aRatio!==bRatio) return aRatio-bRatio;
+        return a.transactionCount90d-b.transactionCount90d;
+      });
+
+    for(const item of candidates){
       if(remainingGap<=0) break;
-      const reduction=Math.min(item.amount,remainingGap);
+
+      const usageRatio=item.amount>0?item.historicalMonthlyAverage/item.amount:0;
+      const stableHistory=type==='FLEXIBLE'&&item.activeMonths90d>=3&&usageRatio>=0.7;
+      const lightHistory=type==='FLEXIBLE'&&!stableHistory&&(item.activeMonths90d>0||item.transactionCount90d>0);
+      const historySignal:InitialBudgetCorrectionSuggestion['historySignal']=stableHistory?'stable':lightHistory?'light':'none';
+
+      const protectedFloor=stableHistory
+        ? Math.min(item.amount,item.historicalMonthlyAverage*0.8)
+        : lightHistory
+          ? Math.min(item.amount,item.historicalMonthlyAverage*0.5)
+          : 0;
+      const reducibleAmount=Math.max(0,item.amount-protectedFloor);
+      const reduction=Math.min(reducibleAmount,remainingGap);
       if(reduction<=0) continue;
+
       const suggestedAmount=Math.max(0,item.amount-reduction);
       correctionSuggestions.push({
         allocationId:item.allocationId,
@@ -168,10 +226,17 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
         currentAmount:item.amount,
         suggestedAmount,
         reduction,
+        historicalMonthlyAverage:item.historicalMonthlyAverage,
+        activeMonths90d:item.activeMonths90d,
+        historySignal,
         reason:type==='FLEXIBLE'
-          ? 'خفض بند مرن أولًا لأنه الأقل تأثيرًا على الالتزامات الأساسية.'
+          ? stableHistory
+            ? 'هذا البند يظهر استخدامًا فعليًا مستقرًا خلال الأشهر الأخيرة؛ لذلك حافظ نماء على حد أدنى قريب من نمط الصرف بدل تصفيره.'
+            : lightHistory
+              ? 'يوجد استخدام فعلي لهذا البند، لذلك اقترح نماء تخفيضًا جزئيًا قبل المساس بالبند بالكامل.'
+              : 'لا يظهر استخدام فعلي حديث لهذا البند، لذلك يُقدَّم كخيار تخفيض أول قبل البنود الأكثر اعتيادًا.'
           : type==='GOAL'
-            ? 'تخفيف مساهمة الهدف مؤقتًا بعد استنفاد البنود المرنة.'
+            ? 'تخفيف مساهمة الهدف مؤقتًا بعد استنفاد البنود المرنة الأقل استخدامًا.'
             : 'تخفيف الادخار مؤقتًا فقط إذا لم تكفِ البنود المرنة والأهداف.',
       });
       remainingGap=Math.max(0,remainingGap-reduction);
