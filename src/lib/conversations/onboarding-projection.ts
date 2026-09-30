@@ -371,6 +371,7 @@ export async function projectConfirmedOnboardingFacts(userId:string):Promise<Pro
     const existingPlanRow=existingPlan[0] as Record<string,unknown>|undefined;
 
     const learnedPriorityByKey=new Map<string,'NECESSARY'|'IMPORTANT'|'OPTIONAL'|'ENTERTAINMENT'>();
+    const unstableKeys=new Set<string>();
     let learnedFlexiblePriority:'NECESSARY'|'IMPORTANT'|'OPTIONAL'|'ENTERTAINMENT'|null=null;
     const priorityTable=await sql`select to_regclass('public.budget_priority_preferences')::text table_name`;
     if((priorityTable[0] as Record<string,unknown>|undefined)?.table_name){
@@ -380,7 +381,6 @@ export async function projectConfirmedOnboardingFacts(userId:string):Promise<Pro
         where user_id=${userId}::uuid
       `;
       const flexibleCounts=new Map<'NECESSARY'|'IMPORTANT'|'OPTIONAL'|'ENTERTAINMENT',number>();
-      const unstableKeys=new Set<string>();
       for(const row of preferenceRows){
         const allocationType=String(row.allocation_type??'');
         const normalizedLabel=String(row.normalized_label??'');
