@@ -682,3 +682,34 @@
     grid-template-columns:1fr;
   }
 }
+
+
+/* 2026-09-30 — BUDGET PRIORITY CONFIDENCE */
+.namaa-priority-confidence{
+  display:inline-flex;
+  width:max-content;
+  margin-top:var(--ux-space-1);
+  padding:2px 8px;
+  border:1px solid var(--ux-border-default);
+  border-radius:var(--ux-radius-full);
+  background:var(--ux-surface-canvas);
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  font-style:normal;
+  font-weight:700;
+  line-height:1.5;
+}
+
+.namaa-priority-confidence.is-high{
+  color:var(--namaa-green-900);
+  border-color:var(--namaa-border-strong);
+  background:var(--namaa-surface-warm);
+}
+
+.namaa-priority-confidence.is-medium{
+  color:var(--ux-text-primary);
+}
+
+.namaa-priority-confidence.is-initial{
+  opacity:.82;
+}
