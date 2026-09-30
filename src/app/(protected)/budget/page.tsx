@@ -23,7 +23,7 @@ export default async function BudgetPage({searchParams}:{searchParams:Promise<{e
 
   if(plan.status==='PLAN_DRAFT'){
     const draftRows=await rawSql`
-      select ba.id,bc.name,ba.planned_amount::text,ba.allocation_type,
+      select ba.id,bc.name,bc.expense_nature_default,ba.planned_amount::text,ba.allocation_type,
         r.recurrence_kind,r.interval_cycles,r.note
       from public.plan_versions pv
       join public.budget_allocations ba on ba.plan_version_id=pv.id and ba.user_id=pv.user_id
@@ -60,6 +60,13 @@ export default async function BudgetPage({searchParams}:{searchParams:Promise<{e
               <option value="EMERGENCY">طوارئ</option>
               <option value="GOAL">هدف</option>
             </select></label>
+            <label><span>أولوية البند</span><select name="itemPriority" defaultValue={String(row.expense_nature_default??'')}>
+              <option value="">يحددها نماء من الاستخدام</option>
+              <option value="NECESSARY">ضروري جدًا</option>
+              <option value="IMPORTANT">مهم</option>
+              <option value="OPTIONAL">قابل للتخفيض</option>
+              <option value="ENTERTAINMENT">ترفيهي / قابل للتقليل أولًا</option>
+            </select></label>
           </article>)}
         </div>
         <div className="namaa-initial-budget-actions">
@@ -84,7 +91,7 @@ export default async function BudgetPage({searchParams}:{searchParams:Promise<{e
           </div>
           <div className="namaa-budget-correction-list">
             {review.correctionSuggestions.map(suggestion=><article key={suggestion.allocationId}>
-              <div><strong>{suggestion.itemName}</strong><small>{suggestion.reason}</small>{suggestion.allocationType==='FLEXIBLE'&&suggestion.historySignal!=='none'?<span className="namaa-budget-correction-history">متوسط فعلي حديث {formatSar(suggestion.historicalMonthlyAverage.toFixed(2))}{suggestion.activeMonths90d?' · ظهر في '+suggestion.activeMonths90d+' أشهر من آخر 3 أشهر':''}</span>:null}</div>
+              <div><strong>{suggestion.itemName}</strong><small>{suggestion.reason}</small>{suggestion.userPriority?<span className="namaa-budget-correction-history">أولوية المستخدم: {suggestion.userPriority==='NECESSARY'?'ضروري جدًا':suggestion.userPriority==='IMPORTANT'?'مهم':suggestion.userPriority==='OPTIONAL'?'قابل للتخفيض':'ترفيهي / قابل للتقليل أولًا'}</span>:null}{suggestion.allocationType==='FLEXIBLE'&&suggestion.historySignal!=='none'?<span className="namaa-budget-correction-history">متوسط فعلي حديث {formatSar(suggestion.historicalMonthlyAverage.toFixed(2))}{suggestion.activeMonths90d?' · ظهر في '+suggestion.activeMonths90d+' أشهر من آخر 3 أشهر':''}</span>:null}</div>
               <div className="namaa-budget-correction-values">
                 <span>الحالي <b>{formatSar(suggestion.currentAmount.toFixed(2))}</b></span>
                 <span>المقترح <b>{formatSar(suggestion.suggestedAmount.toFixed(2))}</b></span>
