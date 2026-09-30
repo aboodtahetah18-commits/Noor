@@ -520,7 +520,6 @@ html[data-theme="dark"] .namaa-theme-toggle{
 .p4913-filter-toggle{width:auto!important;min-width:var(--ux-size-11)!important;min-height:var(--ux-size-11)!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:var(--ux-space-2)!important;padding:var(--ux-space-0) var(--ux-space-3)!important;border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-emphasis)!important;border-radius:var(--ux-radius-md)!important;background:var(--ux-card-bg)!important;color:var(--ux-brand-primary)!important;box-shadow:var(--ux-shadow-s)!important;}
 .p4913-filter-toggle-label{font-size:var(--ux-type-button-size)!important;font-weight:var(--ux-type-button-weight)!important;}
 .p4913-filter-content{position:absolute!important;inset-block-start:calc(100% + var(--ux-space-2))!important;inset-inline-end:var(--ux-space-0)!important;width:min(860px,calc(100vw - var(--ux-space-16)))!important;padding:var(--ux-space-4)!important;border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-emphasis)!important;border-radius:var(--ux-radius-lg)!important;background:var(--ux-card-bg)!important;box-shadow:var(--ux-shadow-l)!important;z-index:var(--ux-z-popover)!important;}
-.p4913-filter-content[hidden]{display:none!important;}
 .p4913-filter-hint{margin:var(--ux-space-0) var(--ux-space-0) var(--ux-space-3)!important;color:var(--ux-text-secondary)!important;font-size:var(--ux-type-caption-size)!important;}
 
 /* Brand logo configuration in Settings. */
@@ -660,14 +659,5 @@ html[data-theme="light"] :where(.p55-profile-form,.p60-security-form,.p47-settin
   border-color:var(--ux-border-emphasis)!important;
 }
 
-/* Compact mobile: no control or dialog may exceed the viewport. */
-@media(max-width:767px){
-  :where(dialog.p49-action-dialog,.p49-dialog-shell,.p49-dialog-body,.p55-profile-dialog,.p4913-filter-content){
-    max-inline-size:calc(100vw - var(--ux-space-4))!important;
-    inline-size:calc(100vw - var(--ux-space-4))!important;
-  }
-  .p4913-filter-content{inset-inline-end:var(--ux-space-0)!important;}
-  .p55-profile-form,.p60-security-form,.p47-settings-form{grid-template-columns:1fr!important;}
-}
 
 
