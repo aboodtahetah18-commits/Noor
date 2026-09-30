@@ -60,7 +60,7 @@ export default async function BudgetPage({searchParams}:{searchParams:Promise<{e
               <option value="EMERGENCY">طوارئ</option>
               <option value="GOAL">هدف</option>
             </select></label>
-            <label><span>أولوية البند <small>اقتراح نماء — عدّله إذا رغبت</small></span><select name="itemPriority" defaultValue={String(row.expense_nature_default??'')}>
+            <label><span>أولوية البند <small>اقتراح نماء — يتعلم من اختياراتك السابقة ويمكنك تعديله</small></span><select name="itemPriority" defaultValue={String(row.expense_nature_default??'')}>
               <option value="">يحددها نماء من الاستخدام</option>
               <option value="NECESSARY">ضروري جدًا</option>
               <option value="IMPORTANT">مهم</option>
