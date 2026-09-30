@@ -280,11 +280,16 @@ function OnboardingMessageContent({message,showStructuredAction,onOpenStructured
   const question=typeof data.next_question==='string'?data.next_question.trim():'';
   const body=message.body.trim();
   const intro=question&&body.endsWith(question)?body.slice(0,Math.max(0,body.length-question.length)).trim():body;
+  const projection=data.onboarding_projection&&typeof data.onboarding_projection==='object'&&!Array.isArray(data.onboarding_projection)
+    ? data.onboarding_projection as Record<string,unknown>
+    : null;
+  const hasBudgetDraft=Boolean(projection?.budget_draft_id);
   return <div className={styles.onboardingMessageContent}>
     {intro&&intro!==question&&<p>{intro}</p>}
     {question&&<p className={styles.onboardingPlainQuestion}>{question}</p>}
     {!question&&<p>{body}</p>}
     {showStructuredAction&&onOpenStructuredIntake&&<button type="button" className={styles.inlineIntakeButton} onClick={onOpenStructuredIntake}><LucideIcon name="listChecks" size={16}/><span>استكمال البيانات</span></button>}
+    {data.onboarding_complete===true&&hasBudgetDraft&&<a className={styles.inlineIntakeButton} href="/budget"><LucideIcon name="chart" size={16}/><span>مراجعة مسودة الميزانية</span></a>}
   </div>;
 }
 
