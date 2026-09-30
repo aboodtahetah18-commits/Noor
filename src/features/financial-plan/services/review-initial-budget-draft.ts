@@ -32,6 +32,17 @@ export type InitialBudgetCorrectionSuggestion={
   temporaryContextNote:string|null;
 };
 
+export type TemporaryExtraAmountSuggestion={
+  allocationId:string;
+  itemName:string;
+  reason:'TRAVEL'|'OCCASION'|'HEALTH'|'MAINTENANCE'|'UNUSUAL_MONTH'|'OTHER';
+  suggestedExtraAmount:number;
+  observedMonths:number;
+  historicalMonthlyAverage:number;
+  historicalMonthlyP75:number;
+  basis:string;
+};
+
 export type TemporaryBudgetFundingSource={
   allocationId:string;
   itemName:string;
@@ -66,6 +77,7 @@ export type InitialBudgetReview={
   suggestedReductionTotal:number;
   unresolvedGap:number;
   temporaryFundingPlans:TemporaryBudgetFundingPlan[];
+  temporaryExtraSuggestions:TemporaryExtraAmountSuggestion[];
 };
 
 function finite(value:unknown){
@@ -95,6 +107,7 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       suggestedReductionTotal:0,
       unresolvedGap:0,
       temporaryFundingPlans:[],
+      temporaryExtraSuggestions:[],
     };
   }
 
@@ -152,6 +165,40 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
     actual90d:finite(row.actual_90d),
     activeMonths90d:Number(row.active_months_90d??0),
     transactionCount90d:Number(row.transaction_count_90d??0),
+  }]));
+
+  const monthlyContextRows=categoryIds.length
+    ? await rawSql`
+        with monthly as (
+          select t.category_id,date_trunc('month',t.transaction_date) month_start,
+            greatest(
+              coalesce(sum(case when t.transaction_type in ('EXPENSE','OBLIGATION_PAYMENT') then t.amount else 0 end),0)
+              - coalesce(sum(case when t.transaction_type='REFUND' then t.amount else 0 end),0),
+              0
+            ) month_total
+          from public.transactions t
+          where t.user_id=${userId}::uuid
+            and t.category_id=any(${categoryIds}::uuid[])
+            and t.status='POSTED'
+            and t.transaction_date>=date_trunc('month',current_date)-interval '6 months'
+            and t.transaction_date<date_trunc('month',current_date)
+            and t.transaction_type in ('EXPENSE','OBLIGATION_PAYMENT','REFUND')
+          group by t.category_id,date_trunc('month',t.transaction_date)
+        )
+        select category_id,
+          count(*)::int observed_months,
+          avg(month_total)::text monthly_average,
+          percentile_cont(0.75) within group(order by month_total)::text monthly_p75,
+          max(month_total)::text monthly_max
+        from monthly
+        group by category_id
+      `
+    : [];
+  const monthlyContextByCategory=new Map(monthlyContextRows.map(row=>[String(row.category_id),{
+    observedMonths:Number(row.observed_months??0),
+    monthlyAverage:finite(row.monthly_average),
+    monthlyP75:finite(row.monthly_p75),
+    monthlyMax:finite(row.monthly_max),
   }]));
 
   const items=allocationRows.map(row=>{
@@ -241,6 +288,24 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       code:'TOTAL_OVER_INCOME',
       severity:'blocker',
       message:`إجمالي المسودة أعلى من الدخل الشهري بمقدار ${(total-income).toFixed(2)} ريال. خفّض البنود غير الأساسية قبل الاعتماد.`,
+    });
+  }
+
+  const temporaryExtraSuggestions:TemporaryExtraAmountSuggestion[]=[];
+  for(const item of items.filter(candidate=>candidate.temporaryContextReason&&candidate.temporaryExtraAmount<=0)){
+    const monthly=monthlyContextByCategory.get(item.categoryId);
+    if(!monthly||monthly.observedMonths<2) continue;
+    const suggestedExtra=Math.max(0,monthly.monthlyP75-item.amount);
+    if(suggestedExtra<=0) continue;
+    temporaryExtraSuggestions.push({
+      allocationId:item.allocationId,
+      itemName:item.name,
+      reason:item.temporaryContextReason as TemporaryExtraAmountSuggestion['reason'],
+      suggestedExtraAmount:Number(suggestedExtra.toFixed(2)),
+      observedMonths:monthly.observedMonths,
+      historicalMonthlyAverage:monthly.monthlyAverage,
+      historicalMonthlyP75:monthly.monthlyP75,
+      basis:`التقدير مبني على الربع الأعلى من الصرف الشهري الفعلي لهذا البند خلال ${monthly.observedMonths} أشهر مكتملة، بعد استبعاد الشهر الجاري.`,
     });
   }
 
@@ -425,5 +490,6 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
     suggestedReductionTotal,
     unresolvedGap,
     temporaryFundingPlans,
+    temporaryExtraSuggestions,
   };
 }
