@@ -12533,3 +12533,221 @@
     opacity:1!important;
   }
 }
+
+/* 2026-09-30 — MOBILE/TABLET CHAT-FIRST FINAL AUTHORITY
+ * One viewport chain only. No internal app bar, no wide three-column switch.
+ */
+.mobileAppBar,
+.workspaceHeader{
+  display:none!important;
+}
+
+.page{
+  width:100%!important;
+  max-width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  overflow:hidden!important;
+}
+
+.workspace,
+.workspace.withoutRooms,
+.workspace.withoutContext,
+.workspace.withoutRooms.withoutContext{
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:hidden!important;
+}
+
+.roomsPane,
+.contextPane{
+  display:none!important;
+}
+
+.chatPane{
+  display:flex!important;
+  flex-direction:column!important;
+  width:100%!important;
+  max-width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  margin:0!important;
+  overflow:hidden!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+}
+
+.chatHeader,
+.centralChatHeader{
+  flex:0 0 64px!important;
+  height:64px!important;
+  min-height:64px!important;
+  padding-inline:var(--ux-space-3)!important;
+  margin:0!important;
+  border:0!important;
+  border-bottom:1px solid color-mix(in srgb,var(--ux-text-inverse) 18%,transparent)!important;
+  border-radius:0!important;
+  background:var(--namaa-green-900)!important;
+  color:var(--ux-text-inverse)!important;
+  box-shadow:none!important;
+}
+
+.chatHeaderForeground{
+  display:flex!important;
+  min-height:64px!important;
+  height:64px!important;
+  align-items:center!important;
+  gap:var(--ux-space-2)!important;
+}
+
+.desktopChatHeaderForeground{
+  display:none!important;
+}
+
+.chatHeader .compactRoleTitle strong,
+.chatHeader .entityTitle strong,
+.chatHeader .chatIdentity small{
+  color:var(--ux-text-inverse)!important;
+}
+
+.chatHeader .compactMenuButton,
+.chatHeader .mobileTools button{
+  width:40px!important;
+  height:40px!important;
+  min-width:40px!important;
+  min-height:40px!important;
+  padding:0!important;
+  border:1px solid color-mix(in srgb,var(--ux-text-inverse) 28%,transparent)!important;
+  border-radius:var(--ux-radius-sm)!important;
+  background:color-mix(in srgb,var(--ux-text-inverse) 8%,transparent)!important;
+  color:var(--ux-text-inverse)!important;
+  box-shadow:none!important;
+}
+
+.routingNote,
+.attachmentPolicy,
+.executionNote{
+  flex:0 0 auto!important;
+}
+
+.specialistRoutingNote:not(.focusedChatBanner){
+  display:none!important;
+}
+
+.messages{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  width:100%!important;
+  max-width:100%!important;
+  margin:0!important;
+  padding:var(--ux-space-3)!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  overscroll-behavior:contain!important;
+  background:var(--namaa-card)!important;
+  background-image:none!important;
+}
+
+.composer{
+  position:relative!important;
+  flex:0 0 auto!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-height:68px!important;
+  margin:0!important;
+  padding:var(--ux-space-2) var(--ux-space-3) calc(var(--ux-space-2) + env(safe-area-inset-bottom))!important;
+  gap:var(--ux-space-2)!important;
+  border:0!important;
+  border-top:1px solid var(--namaa-border)!important;
+  border-radius:0!important;
+  background:var(--namaa-card)!important;
+  box-shadow:none!important;
+}
+
+.composerPolicy{
+  display:none!important;
+}
+
+.composer textarea{
+  order:2!important;
+  min-height:44px!important;
+  max-height:96px!important;
+  resize:none!important;
+  border:1px solid var(--namaa-border-strong)!important;
+  border-radius:var(--ux-radius-full)!important;
+  background:var(--namaa-surface-warm)!important;
+  color:var(--ux-text-primary)!important;
+}
+
+.attachButton,
+.sendButton{
+  flex:0 0 44px!important;
+  width:44px!important;
+  height:44px!important;
+  min-width:44px!important;
+  min-height:44px!important;
+  padding:0!important;
+  border-radius:var(--ux-radius-full)!important;
+  box-shadow:none!important;
+}
+
+.attachButton{order:1!important}
+.sendButton{order:3!important}
+.sendButton span{display:none!important}
+
+/* Tablet is the same product surface, only wider; never switch back to desktop rails. */
+@media (min-width:768px){
+  .page{
+    width:min(100%,1024px)!important;
+    max-width:1024px!important;
+    margin-inline:auto!important;
+  }
+
+  .chatPane{
+    border-inline:1px solid var(--namaa-border)!important;
+  }
+
+  .chatHeader,
+  .centralChatHeader{
+    min-height:72px!important;
+    height:72px!important;
+    flex-basis:72px!important;
+    padding-inline:var(--ux-space-5)!important;
+  }
+
+  .chatHeaderForeground{
+    min-height:72px!important;
+    height:72px!important;
+  }
+
+  .messages{
+    padding:var(--ux-space-5)!important;
+  }
+
+  .message{
+    max-width:min(72%,680px)!important;
+  }
+
+  .composer{
+    min-height:76px!important;
+    padding-inline:var(--ux-space-5)!important;
+  }
+
+  .mobileSideSheet,
+  .mobileSheet{
+    width:min(64vw,520px)!important;
+    max-width:520px!important;
+  }
+}
+
