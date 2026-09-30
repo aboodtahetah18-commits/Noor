@@ -11945,3 +11945,36 @@
   flex-shrink:0!important;
   padding-block-end:max(var(--ux-space-2),env(safe-area-inset-bottom))!important;
 }
+
+
+/* 2026-09-30 — DRAWER TOP-GAP REMOVAL
+ * Keep the governor directory card as high as possible under the drawer
+ * identity row. Remove the historical empty block before the work directory.
+ */
+.mobileSideSheet{
+  padding-block-start:0!important;
+}
+
+.mobileSideSheet .sideBrandRow{
+  margin-block-start:0!important;
+  margin-block-end:0!important;
+}
+
+.mobileSideSheet .sideBrandRow + .sideSection{
+  padding-block-start:0!important;
+  margin-block-start:0!important;
+  border-block-start:0!important;
+}
+
+.mobileSideSheet .sideBrandRow + .sideSection .directoryTabs{
+  margin-block-start:0!important;
+}
+
+.mobileSideSheet .sideBrandRow + .sideSection .roomList{
+  margin-block-start:0!important;
+  padding-block-start:0!important;
+}
+
+.mobileSideSheet .sideBrandRow + .sideSection .roomItemShell:first-child{
+  margin-block-start:0!important;
+}
