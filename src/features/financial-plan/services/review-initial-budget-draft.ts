@@ -27,6 +27,8 @@ export type InitialBudgetCorrectionSuggestion={
   activeMonths90d:number;
   historySignal:'none'|'light'|'stable';
   userPriority:'NECESSARY'|'IMPORTANT'|'OPTIONAL'|'ENTERTAINMENT'|null;
+  temporaryContextReason:'TRAVEL'|'OCCASION'|'HEALTH'|'MAINTENANCE'|'UNUSUAL_MONTH'|'OTHER'|null;
+  temporaryContextNote:string|null;
 };
 
 export type InitialBudgetReview={
@@ -75,7 +77,7 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
   const cycleId=String(plan.cycle_id);
   const [allocationRows,incomeRows,foundationRows]=await Promise.all([
     rawSql`
-      select ba.id,ba.category_id,bc.name,bc.expense_nature_default,ba.priority_override,ba.priority_override_scope,ba.planned_amount::text,ba.allocation_type,
+      select ba.id,ba.category_id,bc.name,bc.expense_nature_default,ba.priority_override,ba.priority_override_scope,ba.priority_override_reason,ba.priority_override_note,ba.planned_amount::text,ba.allocation_type,
         r.recurrence_kind,r.interval_cycles
       from public.plan_versions pv
       join public.budget_allocations ba on ba.plan_version_id=pv.id and ba.user_id=pv.user_id
@@ -147,6 +149,12 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
         : row.expense_nature_default
           ? String(row.expense_nature_default)
           : null,
+      temporaryContextReason:row.priority_override_scope==='THIS_CYCLE'&&row.priority_override_reason
+        ? String(row.priority_override_reason)
+        : null,
+      temporaryContextNote:row.priority_override_scope==='THIS_CYCLE'&&row.priority_override_note
+        ? String(row.priority_override_note)
+        : null,
     };
   });
 
@@ -268,6 +276,8 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
         activeMonths90d:item.activeMonths90d,
         historySignal,
         userPriority:item.userPriority as InitialBudgetCorrectionSuggestion['userPriority'],
+        temporaryContextReason:item.temporaryContextReason as InitialBudgetCorrectionSuggestion['temporaryContextReason'],
+        temporaryContextNote:item.temporaryContextNote,
         reason:type==='FLEXIBLE'
           ? item.userPriority==='NECESSARY'
             ? 'حدد المستخدم هذا البند كضروري جدًا، لذلك لا يقترح نماء تخفيضه تلقائيًا.'
