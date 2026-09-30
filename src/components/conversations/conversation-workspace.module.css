@@ -6,47 +6,6 @@
   overflow:hidden
 }
 
-.workspaceHeader{
-  min-height:96px;
-  padding:var(--ux-space-5) var(--ux-space-6);
-  background:var(--namaa-card);
-  border-bottom:1px solid var(--namaa-border);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:var(--ux-space-5)
-}
-
-.headingCopy{
-  display:grid;
-  gap:var(--ux-space-1)
-}
-
-.eyebrow{
-  font-size:var(--ux-type-caption-size);
-  font-weight:800;
-  color:var(--namaa-green-900)
-}
-
-.headingCopy h1{
-  font-size:var(--ux-type-section-title-size);
-  line-height:1.3;
-  margin:var(--ux-space-0)
-}
-
-.headingCopy p{
-  font-size:var(--ux-type-body-sm-size);
-  color:var(--ux-text-secondary);
-  margin:var(--ux-space-0);
-  max-width:720px
-}
-
-.headerActions{
-  display:flex;
-  gap:var(--ux-space-2);
-  flex-wrap:wrap
-}
-
 .secondaryButton{
   height:40px;
   padding:var(--ux-space-0) var(--ux-space-3);
@@ -1044,10 +1003,7 @@
 }
 
 
-/* Mobile application chrome and onboarding review — NDOS token-only */
-.mobileAppBar{
-  display:none
-}
+/* Mobile application chrome was retired; onboarding review remains below. */
 
 .onboardingReviewPrompt{
   margin:var(--ux-space-0) var(--ux-space-3) var(--ux-space-2);
@@ -4010,9 +3966,6 @@
   .mobileTools button{background:color-mix(in srgb,var(--namaa-cream) 78%,var(--namaa-card));box-shadow:var(--ux-shadow-xs)}
   .messagesBuildingBackdrop{opacity:.05}
 
-  .workspaceHeader{
-    display:none
-  }
   .roomsPane,.contextPane{
     display:none
   }
@@ -4179,59 +4132,6 @@
     position:fixed;
     inset:var(--ux-space-0);
     z-index:var(--ux-z-modal)
-  }
-  .mobileAppBar{
-    display:none;
-    min-height:56px;
-    padding:var(--ux-space-1) var(--ux-space-3);
-    align-items:center;
-    justify-content:space-between;
-    gap:var(--ux-space-3);
-    background:var(--namaa-card);
-    border-bottom:1px solid var(--namaa-border-strong);
-    position:relative;
-    z-index:15;
-    direction:rtl
-  }
-  .mobileAppBarPrimary,.mobileAppBarActions{
-    display:flex;
-    align-items:center;
-    gap:var(--ux-space-2);
-    position:relative;
-    z-index:2
-  }
-  .mobileAppBarPrimary{
-    direction:rtl;
-    flex-direction:row;
-    justify-content:flex-start
-  }
-  .mobileAppBarActions{
-    direction:ltr;
-    justify-content:flex-start
-  }
-    .mobileTopButton,.mobileUserButton{
-    width:40px;
-  height:40px;
-  flex:0 0 40px;
-  border:1px solid var(--namaa-border);
-  border-radius:var(--ux-radius-full);
-  background:transparent;
-  color:var(--namaa-green-900);
-  display:grid;
-  place-items:center;
-  padding:var(--ux-space-0);
-  border-color:var(--namaa-border-strong)
-  }
-  .mobileThemeToggle{
-    width:40px!important;
-  height:40px!important;
-  border-radius:var(--ux-radius-full)!important;
-  background:transparent;
-  color:var(--namaa-green-900);
-  border-color:var(--namaa-border-strong)
-  }
-  .mobileUserButton{
-    overflow:hidden
   }
   .userImage{
     display:block;
@@ -4664,18 +4564,6 @@
     font-variant-numeric:tabular-nums;
     unicode-bidi:plaintext
   }
-  :global(html[data-theme="dark"]) .mobileAppBar{
-    background:var(--namaa-green-900);
-    border-bottom-color:var(--ux-border-emphasis)
-  }
-  :global(html[data-theme="dark"]) .mobileTopButton,
-  :global(html[data-theme="dark"]) .mobileUserButton,
-  :global(html[data-theme="dark"]) .mobileThemeToggle{
-    color:var(--ux-text-inverse);
-    border-color:color-mix(in srgb,var(--ux-text-inverse) 34%,transparent)
-  }
-  :global(html[data-theme="dark"]) .mobileBrandLogoLight{display:none}
-  :global(html[data-theme="dark"]) .mobileBrandLogoDark{display:block}
   :global(html[data-theme="dark"]) .page{
     --namaa-chat-canvas:var(--ux-page-bg);
     --namaa-card:var(--ux-card-bg);
@@ -9422,9 +9310,6 @@
     background:var(--namaa-surface-warm)!important;
   }
 
-  .workspaceHeader{
-    display:none!important;
-  }
 
   .userMessage,
   .activeRoom {
@@ -12353,9 +12238,6 @@
 
 /* 2026-09-27 — CANONICAL CHAT HEADER CONTRACT */
 @media (min-width:768px){
-  .workspaceHeader{min-height:72px;padding:var(--ux-space-3) var(--ux-space-5)}
-  .headingCopy{gap:0}
-  .headingCopy p{display:none}
   .chatHeader,.centralChatHeader{min-height:64px;height:64px;padding-inline:var(--ux-space-4);background:var(--namaa-card)}
   .desktopChatHeaderForeground,.centralChatHeader .desktopChatHeaderForeground{min-height:64px;height:64px}
   .chatIdentity{gap:var(--ux-space-2)}
@@ -12473,11 +12355,6 @@
 /* 2026-09-30 — MOBILE/TABLET CHAT-FIRST FINAL AUTHORITY
  * One viewport chain only. No internal app bar, no wide three-column switch.
  */
-.mobileAppBar,
-.workspaceHeader{
-  display:none!important;
-}
-
 .page{
   width:100%!important;
   max-width:100%!important;
