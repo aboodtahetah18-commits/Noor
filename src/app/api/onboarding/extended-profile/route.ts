@@ -25,6 +25,20 @@ function cleanTableItems(sectionKey:string,value:unknown){
     if(!item||typeof item!=='object'||Array.isArray(item)) return [];
     const row:Record<string,unknown>={};
     for(const [key,raw] of Object.entries(item as Record<string,unknown>)){
+      if(key==='payments'){
+        if(!Array.isArray(raw)) continue;
+        const payments=raw.slice(0,60).flatMap(payment=>{
+          if(!payment||typeof payment!=='object'||Array.isArray(payment)) return [];
+          const source=payment as Record<string,unknown>;
+          const amount=Number(source.amount);
+          const date=typeof source.date==='string'?source.date.trim().slice(0,10):'';
+          const status=typeof source.status==='string'?source.status.trim().slice(0,40):'متوقع';
+          if((!Number.isFinite(amount)||amount<0)&&!date) return [];
+          return [{amount:Number.isFinite(amount)&&amount>=0?amount:0,date,status}];
+        });
+        if(payments.length) row.payments=payments;
+        continue;
+      }
       if(!allowedColumns.has(key)) continue;
       const cleaned=cleanValue(raw);
       if(cleaned!==null&&cleaned!=='') row[key]=cleaned;
