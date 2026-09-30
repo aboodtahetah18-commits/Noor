@@ -3736,7 +3736,9 @@ textarea {
   }
 
   .namaa-investments-actions{
+    width:100%!important;
     max-width:none!important;
+    display:grid!important;
     grid-template-columns:repeat(2,minmax(0,1fr))!important;
   }
 
@@ -3745,18 +3747,15 @@ textarea {
     grid-template-columns:1fr!important;
   }
 
-  .p49-action-dialog :where(
-    .namaa-investment-dialog-full,
-    .full,
-    [data-full-width],
-    fieldset,
-    .p49-dialog-actions,
-    .form-actions
-  ){
+  .p49-action-dialog .namaa-investment-dialog-full,
+  .p49-action-dialog .full,
+  .p49-action-dialog [data-full-width],
+  .p49-action-dialog fieldset,
+  .p49-action-dialog .p49-dialog-actions,
+  .p49-action-dialog .form-actions{
     grid-column:1!important;
   }
 }
-
 
 /* NAMA'A SECTION SURFACE HIERARCHY — unified cards, darker heads, contrasted inner tiles */
 @media (min-width:768px){
