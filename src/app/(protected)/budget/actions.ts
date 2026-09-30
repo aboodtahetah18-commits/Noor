@@ -20,9 +20,11 @@ export async function updateInitialDraftAction(planId:string,fd:FormData){
   const amounts=fd.getAll('plannedAmount').map(String);
   const types=fd.getAll('allocationType').map(String);
   const priorities=fd.getAll('itemPriority').map(String);
+  const priorityScopes=fd.getAll('itemPriorityScope').map(String);
   const allowed=new Set(['OBLIGATION','ESSENTIAL','SAVING','EMERGENCY','GOAL','FLEXIBLE']);
   const allowedPriorities=new Set(['NECESSARY','IMPORTANT','OPTIONAL','ENTERTAINMENT','']);
-  if(!ids.length||ids.length!==amounts.length||ids.length!==types.length||ids.length!==priorities.length){
+  const allowedPriorityScopes=new Set(['THIS_CYCLE','PERSISTENT']);
+  if(!ids.length||ids.length!==amounts.length||ids.length!==types.length||ids.length!==priorities.length||ids.length!==priorityScopes.length){
     redirect('/budget?error='+encodeURIComponent('بيانات المسودة غير مكتملة'));
   }
 
@@ -31,13 +33,18 @@ export async function updateInitialDraftAction(planId:string,fd:FormData){
     const amount=Number(amounts[i]);
     const type=types[i]??'';
     const priority=priorities[i]??'';
-    if(!Number.isFinite(amount)||amount<0||!allowed.has(type)||!allowedPriorities.has(priority)){
+    const priorityScope=priorityScopes[i]??'THIS_CYCLE';
+    if(!Number.isFinite(amount)||amount<0||!allowed.has(type)||!allowedPriorities.has(priority)||!allowedPriorityScopes.has(priorityScope)){
       redirect('/budget?error='+encodeURIComponent('راجع مبالغ وتصنيفات المسودة'));
     }
     statements.push(rawSql`
       with allocation_update as (
         update public.budget_allocations ba
-        set planned_amount=${amount},allocation_type=${type},updated_at=now()
+        set planned_amount=${amount},
+            allocation_type=${type},
+            priority_override=nullif(${priority},''),
+            priority_override_scope=case when nullif(${priority},'') is null then null else ${priorityScope} end,
+            updated_at=now()
       where ba.id=${ids[i]}::uuid and ba.user_id=${u.id}::uuid
         and exists(
           select 1
@@ -50,7 +57,8 @@ export async function updateInitialDraftAction(planId:string,fd:FormData){
         returning ba.id,ba.category_id
       ), category_update as (
         update public.budget_categories bc
-        set expense_nature_default=nullif(${priority},''),updated_at=now()
+        set expense_nature_default=case when ${priorityScope}='PERSISTENT' then nullif(${priority},'') else bc.expense_nature_default end,
+            updated_at=case when ${priorityScope}='PERSISTENT' then now() else bc.updated_at end
         where bc.user_id=${u.id}::uuid and bc.id in (select category_id from allocation_update)
         returning bc.id
       )
@@ -67,7 +75,8 @@ export async function updateInitialDraftAction(planId:string,fd:FormData){
   if((learningTable[0] as Record<string,unknown>|undefined)?.table_name){
     for(let i=0;i<ids.length;i++){
       const priority=priorities[i]??'';
-      if(!priority) continue;
+      const priorityScope=priorityScopes[i]??'THIS_CYCLE';
+      if(!priority||priorityScope!=='PERSISTENT') continue;
       const row=await rawSql`
         select bc.name,ba.allocation_type
         from public.budget_allocations ba
