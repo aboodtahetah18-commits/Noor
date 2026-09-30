@@ -27,6 +27,75 @@ function paymentsTotal(row:TableRow){
   return parsePayments(row).reduce((sum,item)=>sum+(Number(item.amount)||0),0);
 }
 
+function amountBasis(row:TableRow){
+  if(row.payment_mode==='عدة دفعات') return paymentsTotal(row);
+  if(row.amount_mode==='نطاق من–إلى'){
+    const min=Number(row.amount_min)||0;
+    const max=Number(row.amount_max)||0;
+    return max||min;
+  }
+  return Number(row.amount)||0;
+}
+
+function flexibleFinancialProjection(row:TableRow){
+  const now=new Date();
+  const month=now.getMonth();
+  const year=now.getFullYear();
+
+  if(row.payment_mode==='عدة دفعات'){
+    const expected=parsePayments(row).reduce((sum,payment)=>{
+      if(payment.status==='مؤجل'||!payment.date) return sum;
+      const date=new Date(payment.date+'T00:00:00');
+      if(!Number.isFinite(date.getTime())) return sum;
+      return date.getFullYear()===year&&date.getMonth()===month
+        ? sum+(Number(payment.amount)||0)
+        : sum;
+    },0);
+    const annual=Number(row.annual_estimate)||0;
+    const reserve=annual>0?annual/12:0;
+    return {expected,reserve};
+  }
+
+  const base=amountBasis(row);
+  const annual=Number(row.annual_estimate)||0;
+  let expected=0;
+  let reserve=annual>0?annual/12:0;
+
+  if(row.recurrence_mode==='متكرر'){
+    const every=Math.max(1,Number(row.recurrence_every)||1);
+    const unit=row.recurrence_unit||'شهر';
+    if(unit==='يوم'){
+      expected=base*(30/every);
+      if(!reserve) reserve=expected;
+    }else if(unit==='أسبوع'){
+      expected=base*(4.345/every);
+      if(!reserve) reserve=expected;
+    }else if(unit==='شهر'){
+      expected=every===1?base:0;
+      if(!reserve) reserve=base/every;
+    }else if(unit==='سنة'){
+      expected=0;
+      if(!reserve) reserve=base/(12*every);
+    }
+  }else if(row.recurrence_mode==='مرة واحدة'){
+    expected=base;
+  }else if(row.recurrence_mode==='حسب الحاجة'||row.recurrence_mode==='غير منتظم'){
+    expected=0;
+  }
+
+  return {expected,reserve};
+}
+
+function applyFlexibleProjection(row:TableRow){
+  if(!('payment_mode' in row)) return row;
+  const projection=flexibleFinancialProjection(row);
+  return {
+    ...row,
+    expected_current_month:projection.expected?projection.expected.toFixed(2).replace(/\.00$/,''):'',
+    monthly_reserve:projection.reserve?projection.reserve.toFixed(2).replace(/\.00$/,''):'',
+  };
+}
+
 function tableRowsFromFact(section:ExtendedProfileSection|null,fact?:FactEnvelope){
   if(!section?.table) return [] as TableRow[];
   const value=fact?.value??{};
@@ -73,7 +142,7 @@ function tableRowsFromFact(section:ExtendedProfileSection|null,fact?:FactEnvelop
         row.custom_category=row.custom_category||row.category;
         row.category='أخرى';
       }
-      return [row];
+      return [applyFlexibleProjection(row)];
     });
   }
 
@@ -240,6 +309,8 @@ export function ExtendedProfileSheet({
     if(section.table?.columns.some(column=>column.key==='recurrence_mode')) row.recurrence_mode='متكرر';
     if(section.table?.columns.some(column=>column.key==='recurrence_every')) row.recurrence_every='1';
     if(section.table?.columns.some(column=>column.key==='recurrence_unit')) row.recurrence_unit='شهر';
+    if(section.table?.columns.some(column=>column.key==='expected_current_month')) row.expected_current_month='';
+    if(section.table?.columns.some(column=>column.key==='monthly_reserve')) row.monthly_reserve='';
     if(section.key==='vehicle_maintenance') row.schedule_pattern='ثابت';
     if(section.key==='budget_behavior'){row.frequency_period='شهري';row.spend_context='جميع الأيام';}
     return row;
@@ -344,7 +415,7 @@ export function ExtendedProfileSheet({
   function updateDraftValue(key:string,value:string){
     setDraftRow(current=>{
       if(!current) return current;
-      const next={...current,[key]:value};
+      let next={...current,[key]:value};
       if(key==='payment_mode'&&value==='عدة دفعات'&&!parsePayments(next).length){
         next.payments_json=JSON.stringify([{amount:'',date:'',status:'متوقع'}]);
       }
@@ -375,6 +446,7 @@ export function ExtendedProfileSheet({
         next.forecast_occurrences=String(forecast.occurrences);
         next.forecast_total=String(forecast.total);
       }
+      next=applyFlexibleProjection(next);
       return next;
     });
   }
@@ -384,7 +456,7 @@ export function ExtendedProfileSheet({
       if(!current) return current;
       const payments=parsePayments(current);
       const next=payments.map((payment,paymentIndex)=>paymentIndex===index?{...payment,[key]:value}:payment);
-      return {...current,payments_json:JSON.stringify(next)};
+      return applyFlexibleProjection({...current,payments_json:JSON.stringify(next)});
     });
   }
 
@@ -392,7 +464,7 @@ export function ExtendedProfileSheet({
     setDraftRow(current=>{
       if(!current) return current;
       const next=[...parsePayments(current),{amount:'',date:'',status:'متوقع'}];
-      return {...current,payments_json:JSON.stringify(next)};
+      return applyFlexibleProjection({...current,payments_json:JSON.stringify(next)});
     });
   }
 
@@ -400,7 +472,7 @@ export function ExtendedProfileSheet({
     setDraftRow(current=>{
       if(!current) return current;
       const next=parsePayments(current).filter((_,paymentIndex)=>paymentIndex!==index);
-      return {...current,payments_json:JSON.stringify(next)};
+      return applyFlexibleProjection({...current,payments_json:JSON.stringify(next)});
     });
   }
 
@@ -555,7 +627,8 @@ export function ExtendedProfileSheet({
                             : column.key==='category'&&categoryOptions.length
                               ? categoryOptions
                               : column.options??[];
-                        const readOnly=(active.key==='assets_investments'&&['total_cost','market_value'].includes(column.key))
+                        const readOnly=['expected_current_month','monthly_reserve'].includes(column.key)
+                          ||(active.key==='assets_investments'&&['total_cost','market_value'].includes(column.key))
                           ||(active.key==='budget_behavior'&&column.key==='monthly_total')
                           ||(active.key==='vehicle_details'&&column.key==='estimated_fuel_cost')
                           ||(active.key==='vehicle_maintenance'&&['forecast_occurrences','forecast_total'].includes(column.key));
