@@ -85,15 +85,21 @@ export async function updateInitialDraftAction(planId:string,fd:FormData){
       if(!normalizedLabel||!allocationType) continue;
       await rawSql`
         insert into public.budget_priority_preferences(
-          user_id,normalized_label,allocation_type,chosen_priority,confirmation_count,last_confirmed_at
+          user_id,normalized_label,allocation_type,chosen_priority,confirmation_count,correction_count,last_confirmed_at,last_corrected_at
         ) values(
-          ${u.id}::uuid,${normalizedLabel},${allocationType},${priority},1,now()
+          ${u.id}::uuid,${normalizedLabel},${allocationType},${priority},1,0,now(),null
         )
         on conflict(user_id,normalized_label,allocation_type)
         do update set
+          correction_count=public.budget_priority_preferences.correction_count
+            + case when public.budget_priority_preferences.chosen_priority<>excluded.chosen_priority then 1 else 0 end,
           chosen_priority=excluded.chosen_priority,
           confirmation_count=public.budget_priority_preferences.confirmation_count+1,
           last_confirmed_at=now(),
+          last_corrected_at=case
+            when public.budget_priority_preferences.chosen_priority<>excluded.chosen_priority then now()
+            else public.budget_priority_preferences.last_corrected_at
+          end,
           updated_at=now()
       `;
     }
