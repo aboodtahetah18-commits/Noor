@@ -9,7 +9,8 @@ export type InitialBudgetReviewIssue={
     | 'ZERO_OR_MISSING_AMOUNT'
     | 'TOTAL_OVER_INCOME'
     | 'NO_EMERGENCY_OR_SAVING'
-    | 'PRIORITY_CONFIRMATION_REQUIRED';
+    | 'PRIORITY_CONFIRMATION_REQUIRED'
+    | 'TEMPORARY_NEED_UNFUNDED';
   severity:'blocker'|'warning';
   message:string;
   itemName?:string;
@@ -304,6 +305,17 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       sourceReductions,
       fundedTotal,
       unresolvedAmount:Math.max(0,remaining),
+    });
+  }
+
+  for(const plan of temporaryFundingPlans){
+    issues.push({
+      code:'TEMPORARY_NEED_UNFUNDED',
+      severity:'blocker',
+      message:plan.unresolvedAmount>0
+        ? `بند «${plan.targetItemName}» يحتاج زيادة مؤقتة قدرها ${plan.extraAmount.toFixed(2)} ريال، وما زال ${plan.unresolvedAmount.toFixed(2)} ريال بلا تغطية آمنة.`
+        : `بند «${plan.targetItemName}» لديه زيادة مؤقتة قدرها ${plan.extraAmount.toFixed(2)} ريال. راجع خطة التغطية وطبّقها قبل اعتماد الميزانية.`,
+      itemName:plan.targetItemName,
     });
   }
 
