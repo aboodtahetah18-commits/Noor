@@ -838,3 +838,65 @@
     grid-template-columns:1fr;
   }
 }
+
+
+/* 2026-09-30 — HISTORY-BASED TEMPORARY ESTIMATES */
+.namaa-budget-context-estimates{
+  display:grid;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-3);
+  border:1px solid var(--ux-border-default);
+  border-radius:var(--ux-radius-4);
+  background:var(--ux-surface-default);
+}
+
+.namaa-budget-context-estimate-list{
+  display:grid;
+  gap:var(--ux-space-3);
+}
+
+.namaa-budget-context-estimate-list>article{
+  display:grid;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-3);
+  border:1px solid var(--ux-border-default);
+  border-radius:var(--ux-radius-4);
+  background:var(--ux-surface-canvas);
+}
+
+.namaa-budget-context-estimate-list>article>div:first-child{
+  display:grid;
+  gap:var(--ux-space-1);
+}
+
+.namaa-budget-context-estimate-list p,
+.namaa-budget-context-estimate-list small{
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+}
+
+.namaa-budget-context-estimate-values{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:var(--ux-space-2);
+}
+
+.namaa-budget-context-estimate-values span{
+  display:grid;
+  gap:var(--ux-space-1);
+  padding:var(--ux-space-2);
+  border-radius:var(--ux-radius-3);
+  background:var(--ux-surface-default);
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+}
+
+.namaa-budget-context-estimate-values b{
+  color:var(--ux-text-primary);
+}
+
+@media(max-width:767px){
+  .namaa-budget-context-estimate-values{
+    grid-template-columns:1fr;
+  }
+}
