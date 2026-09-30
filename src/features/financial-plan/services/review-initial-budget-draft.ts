@@ -1,5 +1,6 @@
 import { rawSql } from '@/infrastructure/db/client';
 import { getBudgetPriorityConfidence } from '@/features/budget/services/budget-priority-confidence';
+import { namedSeasonSignal, type NamedBudgetSeason } from '@/features/budget/services/named-seasonality';
 
 export type InitialBudgetReviewIssue={
   code:
@@ -66,6 +67,11 @@ export type TemporaryExtraAmountSuggestion={
   seasonalityApplied:boolean;
   seasonalityFactor:number;
   seasonalityLabel:string|null;
+  namedSeason:NamedBudgetSeason|null;
+  namedSeasonLabel:string|null;
+  namedSeasonCoverage:number|null;
+  namedSeasonHistoricalOccurrences:number;
+  namedSeasonApplied:boolean;
   recentOutcomeCount:number;
   recentUnderCount:number;
   recentOverCount:number;
@@ -132,8 +138,9 @@ function normalizeTemporaryAmountLabel(value:string){
 
 export async function reviewInitialBudgetDraft(userId:string,planId:string):Promise<InitialBudgetReview>{
   const planRows=await rawSql`
-    select p.id,p.cycle_id,p.status
+    select p.id,p.cycle_id,p.status,c.start_date::text cycle_start,c.expected_next_income_date::text cycle_end
     from public.financial_plans p
+    join public.financial_cycles c on c.id=p.cycle_id and c.user_id=p.user_id
     where p.id=${planId}::uuid and p.user_id=${userId}::uuid
     limit 1
   `;
@@ -157,6 +164,8 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
   }
 
   const cycleId=String(plan.cycle_id);
+  const cycleStart=String(plan.cycle_start??'');
+  const cycleEnd=String(plan.cycle_end??'');
   const [allocationRows,incomeRows,foundationRows]=await Promise.all([
     rawSql`
       select ba.id,ba.category_id,bc.name,bc.expense_nature_default,ba.priority_override,ba.priority_override_scope,ba.priority_override_reason,ba.priority_override_note,ba.temporary_extra_amount::text,ba.planned_amount::text,ba.allocation_type,
@@ -211,6 +220,33 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
     activeMonths90d:Number(row.active_months_90d??0),
     transactionCount90d:Number(row.transaction_count_90d??0),
   }]));
+
+  const dailyNamedSeasonRows=categoryIds.length
+    ? await rawSql`
+        select t.category_id,t.transaction_date::text spend_date,
+          greatest(
+            coalesce(sum(case when t.transaction_type in ('EXPENSE','OBLIGATION_PAYMENT') then t.amount else 0 end),0)
+            - coalesce(sum(case when t.transaction_type='REFUND' then t.amount else 0 end),0),
+            0
+          )::text daily_total
+        from public.transactions t
+        where t.user_id=${userId}::uuid
+          and t.category_id=any(${categoryIds}::uuid[])
+          and t.status='POSTED'
+          and t.transaction_date>=current_date-interval '36 months'
+          and t.transaction_date<current_date
+          and t.transaction_type in ('EXPENSE','OBLIGATION_PAYMENT','REFUND')
+        group by t.category_id,t.transaction_date
+        order by t.transaction_date
+      `
+    : [];
+  const dailyNamedSeasonByCategory=new Map<string,{date:string;amount:number}[]>();
+  for(const row of dailyNamedSeasonRows){
+    const key=String(row.category_id);
+    const list=dailyNamedSeasonByCategory.get(key)??[];
+    list.push({date:String(row.spend_date),amount:finite(row.daily_total)});
+    dailyNamedSeasonByCategory.set(key,list);
+  }
 
   const monthlyContextRows=categoryIds.length
     ? await rawSql`
@@ -429,11 +465,31 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
     const seasonalSuggestedExtra=seasonalityApplied
       ? Math.max(0,(item.amount+suggestedExtra)*seasonalityFactor-item.amount)
       : suggestedExtra;
-    const seasonalityLabel=seasonalityApplied
+    const quarterSeasonalityLabel=seasonalityApplied
       ? seasonalityFactor>1
-        ? `الموسم الحالي أعلى من المعتاد تاريخيًا بحوالي ${Math.round((seasonalityFactor-1)*100)}%`
-        : `الموسم الحالي أقل من المعتاد تاريخيًا بحوالي ${Math.round((1-seasonalityFactor)*100)}%`
+        ? `الربع الحالي أعلى من المعتاد تاريخيًا بحوالي ${Math.round((seasonalityFactor-1)*100)}%`
+        : `الربع الحالي أقل من المعتاد تاريخيًا بحوالي ${Math.round((1-seasonalityFactor)*100)}%`
       : null;
+
+    const historyEnd=new Date().toISOString().slice(0,10);
+    const historyStartDate=new Date(`${historyEnd}T12:00:00Z`);
+    historyStartDate.setUTCMonth(historyStartDate.getUTCMonth()-36);
+    const historyStart=historyStartDate.toISOString().slice(0,10);
+    const namedSignal=cycleStart&&cycleEnd
+      ? namedSeasonSignal({
+          cycleStart,
+          cycleEnd,
+          dailySpend:dailyNamedSeasonByCategory.get(item.categoryId)??[],
+          historyStart,
+          historyEnd,
+        })
+      : null;
+    const namedSeasonApplied=Boolean(namedSignal);
+    const effectiveSeasonalityFactor=namedSignal?.weightedFactor??seasonalityFactor;
+    const effectiveSeasonalityApplied=namedSeasonApplied||seasonalityApplied;
+    const seasonalityLabel=namedSignal
+      ? `${namedSignal.label}: الصرف التاريخي في هذا الموسم ${namedSignal.weightedFactor>1?'أعلى':'أقل'} من المعتاد بحوالي ${Math.round(Math.abs(namedSignal.weightedFactor-1)*100)}% بعد مراعاة مدة تداخل الموسم مع الدورة`
+      : quarterSeasonalityLabel;
 
     const historicalMinimum=Math.max(0,monthly.monthlyAverage-item.amount);
     const historicalMaximum=Math.max(seasonalSuggestedExtra,monthly.monthlyMax-item.amount);
@@ -485,8 +541,8 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
     const learnedCenter=personalizationApplied
       ? historicalMinimum+blendedPosition*historicalSpan
       : suggestedExtra;
-    const seasonAdjustedCenter=seasonalityApplied
-      ? Math.max(historicalMinimum,Math.min(historicalMaximum,learnedCenter*seasonalityFactor))
+    const seasonAdjustedCenter=effectiveSeasonalityApplied
+      ? Math.max(historicalMinimum,Math.min(historicalMaximum,learnedCenter*effectiveSeasonalityFactor))
       : learnedCenter;
     const adjustedSuggested=Math.max(personalizedMinimum,Math.min(personalizedMaximum,seasonAdjustedCenter));
     const outcomeLabel=learned&&learned.outcomeCount>0
@@ -530,9 +586,14 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       biasApplied,
       biasLabel,
       biasStability:learned?.biasStability??'INSUFFICIENT',
-      seasonalityApplied,
-      seasonalityFactor:Number(seasonalityFactor.toFixed(4)),
+      seasonalityApplied:effectiveSeasonalityApplied,
+      seasonalityFactor:Number(effectiveSeasonalityFactor.toFixed(4)),
       seasonalityLabel,
+      namedSeason:namedSignal?.season??null,
+      namedSeasonLabel:namedSignal?.label??null,
+      namedSeasonCoverage:namedSignal?Number(namedSignal.coverage.toFixed(4)):null,
+      namedSeasonHistoricalOccurrences:namedSignal?.historicalSeasonOccurrences??0,
+      namedSeasonApplied,
       recentOutcomeCount:learned?.recentOutcomeCount??0,
       recentUnderCount:learned?.recentUnderCount??0,
       recentOverCount:learned?.recentOverCount??0,
