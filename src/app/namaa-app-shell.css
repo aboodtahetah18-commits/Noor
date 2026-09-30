@@ -296,6 +296,17 @@
   }
 }
 
+/* Retired legacy per-page navigation shells: the global mobile/tablet shell is authoritative. */
+.protected-app-shell :where(
+  .p47-mobile-topbar.mustaqbali-mobile-header,
+  .p47-sidebar,
+  .p47-sidebar-shell,
+  .mustaqbali-tablet-header,
+  .mustaqbali-desktop-header
+) {
+  display:none!important;
+}
+
 /* Canonical mobile/tablet-only visibility.
    Desktop and legacy tablet shells are retired; one shell stretches responsively. */
 .namaa-sidebar,
