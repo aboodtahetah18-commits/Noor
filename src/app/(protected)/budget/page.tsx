@@ -4,19 +4,68 @@ import { getCurrentFinancialCycle } from '@/features/cycles/queries/get-current-
 import { getFinancialPlanByCycle } from '@/features/financial-plan/queries/get-financial-plan';
 import { getBudgetCommandCenter } from '@/features/budget/queries/get-budget-command-center';
 import { formatSar } from '@/lib/format-money';
-import { approvePlanAction, approveRevisionAction } from './actions';
+import { approvePlanAction, approveRevisionAction, updateInitialDraftAction } from './actions';
 import { FocusedNextStep } from '@/components/ux/focused-next-step';
+import { rawSql } from '@/infrastructure/db/client';
 
 const labels:Record<string,string>={OBLIGATION:'الالتزامات',ESSENTIAL:'الاحتياجات الأساسية',SAVING:'الادخار',EMERGENCY:'الطوارئ',GOAL:'الأهداف',FLEXIBLE:'المصروف المرن'};
 const planStatus:Record<string,string>={PLAN_DRAFT:'مسودة',ACTIVE_PLAN:'معتمدة',REVISED:'تعديل بانتظار الاعتماد',CLOSED_PLAN:'مغلقة'};
 function pct(v:number|null){return v==null?'—':`${Math.round(v)}%`}
 
-export default async function BudgetPage(){
+export default async function BudgetPage({searchParams}:{searchParams:Promise<{error?:string;draft?:string}>}){
+  const q=await searchParams;
   const u=await requireAuthenticatedUser();
   const cycle=await getCurrentFinancialCycle(u.id);
   if(!cycle)return <main className="p47-page" dir="rtl"><section className="p47-content-shell p47-empty-shell"><div className="p47-empty-state"><div className="p47-empty-icon">خ</div><p className="p47-kicker">الميزانية</p><h1>لا توجد دورة مالية نشطة</h1><p>ابدأ دورة مالية حتى تتمكن من توزيع الدخل ومتابعة الصرف مقابل الخطة.</p><Link href="/cycles/new" className="p47-primary-action">بدء دورة مالية</Link></div></section></main>;
   const plan=await getFinancialPlanByCycle(u.id,cycle.id);
   if(!plan)return <main className="p47-page" dir="rtl"><section className="p47-content-shell"><header className="p47-page-heading"><div><p className="p47-kicker">الميزانية · {cycle.name}</p><h1>أنشئ خطة الدورة</h1><p className="p47-cycle-line">لا توجد تخصيصات مالية معتمدة لهذه الدورة بعد.</p></div><Link href={`/budget/new?cycle=${cycle.id}`} className="p47-primary-action">إنشاء الخطة</Link></header><section className="p47-panel"><div className="p47-soft-empty is-info"><strong>ابدأ من توزيع الدخل</strong><span>وزع الدخل على الالتزامات والاحتياجات والادخار والطوارئ والأهداف والمصروف المرن، ثم راجع الخطة قبل اعتمادها.</span></div></section></section></main>;
+
+  if(plan.status==='PLAN_DRAFT'){
+    const draftRows=await rawSql`
+      select ba.id,bc.name,ba.planned_amount::text,ba.allocation_type,
+        r.recurrence_kind,r.interval_cycles,r.note
+      from public.plan_versions pv
+      join public.budget_allocations ba on ba.plan_version_id=pv.id and ba.user_id=pv.user_id
+      join public.budget_categories bc on bc.id=ba.category_id and bc.user_id=ba.user_id
+      left join public.plan_item_rules r on r.user_id=ba.user_id and r.category_id=ba.category_id and r.is_active=true
+      where pv.user_id=${u.id}::uuid and pv.plan_id=${plan.id}::uuid
+        and pv.version_number=1 and pv.approved_at is null
+      order by case ba.allocation_type when 'OBLIGATION' then 1 when 'ESSENTIAL' then 2 when 'FLEXIBLE' then 3 else 4 end,bc.name
+    `;
+    const total=draftRows.reduce((sum,row)=>sum+Number(row.planned_amount??0),0);
+    return <main className="p47-page" dir="rtl"><section className="p47-content-shell">
+      <header className="p47-page-heading"><div><p className="p47-kicker">الميزانية · {cycle.name}</p><h1>مسودة الميزانية الأولى</h1><p className="p47-cycle-line">بناها نماء من بيانات التأسيس. راجع المبالغ والتصنيفات قبل الاعتماد.</p></div></header>
+      {q.error?<p className="error-banner" role="alert">{q.error}</p>:null}
+      {q.draft==='updated'?<p className="success-banner">تم حفظ تعديلات المسودة. لم تعتمد الميزانية بعد.</p>:null}
+
+      <section className="p47-budget-hero"><div><p className="p47-kicker">إجمالي المسودة</p><strong>{formatSar(total.toFixed(2))}</strong><small>{draftRows.length} بنود تأسيسية</small></div><div><span>الحالة</span><strong>بانتظار مراجعتك</strong><small>لا توجد حركات مالية ناتجة عن هذه المسودة.</small></div></section>
+
+      <form action={updateInitialDraftAction.bind(null,plan.id)} className="p47-panel namaa-initial-budget-draft">
+        <div className="p47-section-heading"><div><p className="p47-kicker">المراجعة</p><h2>عدّل قبل الاعتماد</h2></div><span>{draftRows.length} بنود</span></div>
+        <div className="namaa-initial-budget-list">
+          {draftRows.map((row,index)=><article key={String(row.id)} className="namaa-initial-budget-item">
+            <div className="namaa-initial-budget-item-head"><span>{index+1}</span><div><strong>{String(row.name)}</strong><small>{String(row.note??'بند من بيانات التأسيس')}</small></div></div>
+            <input type="hidden" name="allocationId" value={String(row.id)}/>
+            <label><span>المبلغ المخطط</span><input name="plannedAmount" type="number" min="0" step="0.01" defaultValue={String(row.planned_amount)} inputMode="decimal" required/></label>
+            <label><span>التصنيف</span><select name="allocationType" defaultValue={String(row.allocation_type)}>
+              <option value="OBLIGATION">التزام</option>
+              <option value="ESSENTIAL">احتياج أساسي</option>
+              <option value="FLEXIBLE">مصروف مرن</option>
+              <option value="SAVING">ادخار</option>
+              <option value="EMERGENCY">طوارئ</option>
+              <option value="GOAL">هدف</option>
+            </select></label>
+          </article>)}
+        </div>
+        <div className="namaa-initial-budget-actions">
+          <button type="submit" className="p47-secondary-action">حفظ التعديلات</button>
+        </div>
+      </form>
+
+      <section className="p47-panel p47-revision-banner"><div><strong>جاهز للاعتماد؟</strong><p>اعتماد المسودة يجعلها الخطة النشطة للدورة. لن يتم تنفيذ أي دفع تلقائيًا.</p></div><form action={approvePlanAction.bind(null,plan.id)}><button className="p47-primary-action">اعتماد الميزانية</button></form></section>
+    </section></main>;
+  }
+
   const center=await getBudgetCommandCenter(u.id,cycle.id);
   const view=plan.pendingRevision??plan.currentVersion;
   return <main className="p47-page" dir="rtl"><section className="p47-content-shell">
