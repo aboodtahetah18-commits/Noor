@@ -365,3 +365,15 @@
     max-width:1024px;
   }
 }
+
+
+/* 2026-09-30 — CONVERSATION ROUTE OWNS ITS CHROME
+ * The chat route carries its own fixed header/menu and composer.
+ * Hide the global mobile shell bars here so they never cover the composer.
+ */
+@media (min-width:0px){
+  .protected-app-shell:has([data-chat-first-route="true"]) > .namaa-mobile-topbar,
+  .protected-app-shell:has([data-chat-first-route="true"]) > .namaa-mobile-bottom-nav{
+    display:none!important;
+  }
+}
