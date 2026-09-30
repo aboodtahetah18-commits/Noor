@@ -9506,20 +9506,10 @@
 }
 
 
-/* Wide identity hard guard — no white/near-white surfaces in conversations. */
+/* Tablet onboarding / record-editor identity.
+ * Conversation chrome is owned exclusively by the mobile/tablet chat authority below.
+ */
 @media (min-width:768px){
-  .page,
-  .workspace,
-  .roomsPane,
-  .contextPane,
-  .chatPane,
-  .chatHeader,
-  .paneTitle,
-  .composer,
-  .contextCard,
-  .agentMessage,
-  .roomItemShell,
-  .roomItem,
   .desktopIntakeTableShell,
   .desktopIntakeTableWrap,
   .desktopIntakeTable,
@@ -9537,54 +9527,11 @@
     color:var(--namaa-wide-text)!important;
   }
 
-  .chatPane,
-  .messages,
   .onboardingIntake,
   .desktopIntakeTableShell,
   .simpleOnboardingStage,
   .incomeReconciliation{
     background:var(--namaa-wide-surface)!important;
-  }
-
-  .page .chatHeader{
-    background:var(--namaa-wide-card-strong)!important;
-  }
-
-  .page .message{
-    color:var(--namaa-wide-text)!important;
-    border-color:var(--namaa-wide-border)!important;
-  }
-
-  .page .agentMessage{
-    background:color-mix(in srgb,var(--namaa-gold-500) 58%,var(--namaa-wide-card));
-    border-color:color-mix(in srgb,var(--namaa-gold-500) 72%,var(--namaa-wide-border));
-    color:var(--namaa-wide-text);
-  }
-
-  .page .userMessage{
-    background:color-mix(in srgb,var(--namaa-green-700) 10%,var(--namaa-wide-card));
-    border-color:color-mix(in srgb,var(--namaa-green-700) 42%,var(--namaa-wide-border));
-    color:var(--namaa-wide-text);
-  }
-
-  html[data-theme="dark"] .userMessage{
-    background:var(--ux-shell-sidebar-bg);
-  }
-
-  .activeRoom{
-    background:var(--namaa-gold-500)!important;
-    border-color:var(--namaa-gold-500)!important;
-  }
-
-  html[data-theme="dark"] .activeRoom{
-    background:var(--ux-shell-sidebar-bg)!important;
-    border-color:var(--namaa-gold-500)!important;
-  }
-
-  .routingNote{
-    background:var(--namaa-wide-card-strong)!important;
-    border-color:var(--namaa-wide-border)!important;
-    color:var(--namaa-wide-muted)!important;
   }
 
   .desktopIntakeTable th{
@@ -9600,11 +9547,13 @@
     background:var(--ux-alpha-overlay)!important;
   }
 
-  .mobileRecordEditorHeader{
+  .mobileRecordEditorHeader,
+  .mobileRecordEditorActions{
     background:var(--namaa-wide-card-strong)!important;
   }
 
-  .mobileRecordEditorHeader button{
+  .mobileRecordEditorHeader button,
+  .mobileRecordEditorActions button:first-child{
     background:var(--namaa-wide-input)!important;
     color:var(--namaa-wide-text)!important;
   }
@@ -9617,147 +9566,17 @@
     border-color:var(--namaa-wide-border)!important;
   }
 
-  .mobileRecordEditorActions{
-    background:var(--namaa-wide-card-strong)!important;
-  }
-
-  .mobileRecordEditorActions button:first-child{
-    background:var(--namaa-wide-input)!important;
-    color:var(--namaa-wide-text)!important;
-  }
-
   .mobileRecordEditorActions button:last-child{
     background:var(--namaa-wide-green-deep)!important;
     color:var(--namaa-wide-inverse)!important;
   }
 
-  .roomCopy,
-  .roomCopy strong,
-  .roomCopy small,
-  .entityTitle,
-  .entityTitle strong,
-  .contextCard,
-  .contextCard strong,
-  .contextCard span,
-  .message,
-  .message strong,
-  .message p,
-  .message span{
-    min-width:0!important;
-    max-width:100%!important;
-    overflow-wrap:anywhere!important;
-    white-space:normal!important;
-  }
-
-  .roomItem,
-  .contextCard,
-  .page .message{
-    overflow:hidden!important;
-  }
-}
-
-
-/* Final wide dark pass for work center only. */
-@media (min-width:768px){
-  :global(html[data-theme="dark"]) .page,
-  :global(html[data-theme="dark"]) .workspace,
-  :global(html[data-theme="dark"]) .roomsPane,
-  :global(html[data-theme="dark"]) .contextPane,
-  :global(html[data-theme="dark"]) .chatPane,
-  :global(html[data-theme="dark"]) .messages{
-    background:var(--namaa-wide-surface)!important;
-    color:var(--namaa-wide-text)!important;
-  }
-
-  :global(html[data-theme="dark"]) .chatHeader,
-  :global(html[data-theme="dark"]) .paneTitle,
-  :global(html[data-theme="dark"]) .composer,
-  :global(html[data-theme="dark"]) .contextCard,
-  :global(html[data-theme="dark"]) .roomItemShell,
-  :global(html[data-theme="dark"]) .roomItem{
-    background:var(--namaa-wide-card);
-    color:var(--namaa-wide-text);
-    border-color:var(--namaa-wide-border);
-  }
-
-  :global(html[data-theme="dark"]) .page .agentMessage{
-    background:color-mix(in srgb,var(--namaa-green-900) 82%,var(--ux-shell-sidebar-bg));
-    border-color:var(--namaa-green-700);
-    color:var(--ux-text-inverse);
-  }
-
-  :global(html[data-theme="dark"]) .chatHeader{
-    background:var(--namaa-wide-card-strong)!important;
-  }
-
-  :global(html[data-theme="dark"]) .page .userMessage{
-    background:color-mix(in srgb,var(--namaa-gold-500) 16%,var(--ux-shell-sidebar-bg));
-    color:var(--ux-text-inverse);
-    border-color:color-mix(in srgb,var(--namaa-gold-500) 58%,var(--namaa-green-700));
-  }
-
-  :global(html[data-theme="dark"]) .routingNote{
-    background:var(--ux-shell-sidebar-bg)!important;
-    color:var(--ux-border-default)!important;
-    border-color:var(--namaa-green-700)!important;
-  }
-
-  :global(html[data-theme="dark"]) .message,
-  :global(html[data-theme="dark"]) .message *{
-    color:inherit!important;
-  }
-
-  :global(html[data-theme="dark"]) .messageIdentity,
-  :global(html[data-theme="dark"]) .messageMeta{
-    color:var(--ux-border-default)!important;
-  }
-
-  :global(html[data-theme="dark"]) .composer textarea,
-  :global(html[data-theme="dark"]) .mobileRecordEditorBody input,
-  :global(html[data-theme="dark"]) .mobileRecordEditorBody select,
-  :global(html[data-theme="dark"]) .mobileRecordEditorBody textarea{
-    background:var(--namaa-wide-input)!important;
-    color:var(--namaa-wide-text)!important;
-    border-color:var(--namaa-wide-border)!important;
-  }
-
-  :global(html[data-theme="dark"]) .attachButton,
-  :global(html[data-theme="dark"]) .secondaryButton,
-  :global(html[data-theme="dark"]) .roomDetailButton{
-    background:var(--ux-shell-sidebar-bg)!important;
-    color:var(--namaa-gold-500)!important;
-    border-color:var(--namaa-green-700)!important;
-  }
-
-  :global(html[data-theme="dark"]) .sendButton{
-    background:var(--ux-shell-sidebar-bg)!important;
-    color:var(--namaa-gold-500)!important;
-    border-color:var(--namaa-green-700)!important;
-  }
-
-  :global(html[data-theme="dark"]) .desktopIntakeTable th{
-    background:var(--ux-shell-sidebar-bg)!important;
-    color:var(--namaa-gold-500)!important;
-  }
-
-  :global(html[data-theme="dark"]) .desktopIntakeTable td{
-    background:var(--ux-shell-sidebar-bg)!important;
-    color:var(--namaa-gold-500)!important;
-  }
-
-  :global(html[data-theme="dark"]) .desktopIntakeTable tbody tr:hover td{
-    background:var(--ux-shell-sidebar-bg)!important;
-  }
-
+  :global(html[data-theme="dark"]) .desktopIntakeTable th,
+  :global(html[data-theme="dark"]) .desktopIntakeTable td,
   :global(html[data-theme="dark"]) .mobileRecordEditorSheet,
+  :global(html[data-theme="dark"]) .mobileRecordEditorHeader,
   :global(html[data-theme="dark"]) .mobileRecordEditorBody,
   :global(html[data-theme="dark"]) .mobileRecordEditorActions{
-    background:var(--ux-shell-sidebar-bg)!important;
-    color:var(--namaa-gold-500)!important;
-    border-color:var(--namaa-green-700)!important;
-  }
-
-  :global(html[data-theme="dark"]) .mobileRecordEditorHeader{
     background:var(--ux-shell-sidebar-bg)!important;
     color:var(--namaa-gold-500)!important;
     border-color:var(--namaa-green-700)!important;
