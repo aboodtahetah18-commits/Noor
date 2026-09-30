@@ -682,3 +682,37 @@
     transition:none;
   }
 }
+
+/* Canonical shell visibility — consolidated from namaa-shell-visibility.css. */
+.namaa-sidebar,
+.namaa-tablet-wrap,
+.namaa-mobile-topbar,
+.namaa-mobile-bottom-nav {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .namaa-mobile-topbar {
+    display: grid;
+  }
+
+  .namaa-mobile-bottom-nav {
+    display: grid;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .namaa-tablet-wrap {
+    display: block;
+  }
+}
+
+@media (min-width: 1024px) {
+  .namaa-sidebar {
+    display: block;
+  }
+
+  .protected-app-shell:has([data-chat-first-route="true"]) .namaa-sidebar {
+    display: none;
+  }
+}
