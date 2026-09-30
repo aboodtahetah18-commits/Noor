@@ -55,6 +55,7 @@ const openRecurrenceColumns:ExtendedProfileTableColumn[]=[
 export const extendedProfileSections:ExtendedProfileSection[]=[
   {
     key:'bills',
+    foundationFactKey:'bills',
     title:'الفواتير',
     summary:'سجل الفواتير التي تسددها فعليًا. أدخل قيمة الفاتورة نفسها ودورية الاستحقاق، وليس متوسطًا تقديريًا.',
     fields:[],
@@ -71,6 +72,7 @@ export const extendedProfileSections:ExtendedProfileSection[]=[
   },
   {
     key:'subscriptions',
+    foundationFactKey:'subscriptions',
     title:'الاشتراكات',
     summary:'سجل كل اشتراك متكرر كمبلغ مستقل، مع دورية السداد.',
     fields:[],
