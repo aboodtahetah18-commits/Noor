@@ -1,4 +1,5 @@
 import { rawSql } from '@/infrastructure/db/client';
+import { getBudgetPriorityConfidence } from '@/features/budget/services/budget-priority-confidence';
 
 export type InitialBudgetReviewIssue={
   code:
@@ -7,7 +8,8 @@ export type InitialBudgetReviewIssue={
     | 'CORE_OVER_INCOME'
     | 'ZERO_OR_MISSING_AMOUNT'
     | 'TOTAL_OVER_INCOME'
-    | 'NO_EMERGENCY_OR_SAVING';
+    | 'NO_EMERGENCY_OR_SAVING'
+    | 'PRIORITY_CONFIRMATION_REQUIRED';
   severity:'blocker'|'warning';
   message:string;
   itemName?:string;
@@ -144,6 +146,12 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
     };
   });
 
+  const priorityConfidence=await getBudgetPriorityConfidence(userId,items.map(item=>({
+    id:item.allocationId,
+    name:item.name,
+    allocationType:item.type,
+  })));
+
   const total=items.reduce((sum,item)=>sum+item.amount,0);
   const coreItems=items.filter(item=>item.type==='OBLIGATION'||item.type==='ESSENTIAL');
   const coreTotal=coreItems.reduce((sum,item)=>sum+item.amount,0);
@@ -158,6 +166,15 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
   }
 
   for(const item of items){
+    const confidence=priorityConfidence.get(item.allocationId);
+    if(confidence?.requiresManualConfirmation&&!item.userPriority){
+      issues.push({
+        code:'PRIORITY_CONFIRMATION_REQUIRED',
+        severity:'blocker',
+        message:`بند «${item.name}» تغيّرت أولويته عدة مرات سابقًا. اختر أولوية هذا البند يدويًا واحفظ المسودة قبل الاعتماد.`,
+        itemName:item.name,
+      });
+    }
     if(item.amount<=0){
       const core=item.type==='OBLIGATION'||item.type==='ESSENTIAL';
       issues.push({
