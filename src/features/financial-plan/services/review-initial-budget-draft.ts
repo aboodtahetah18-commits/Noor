@@ -31,6 +31,27 @@ export type InitialBudgetCorrectionSuggestion={
   temporaryContextNote:string|null;
 };
 
+export type TemporaryBudgetFundingSource={
+  allocationId:string;
+  itemName:string;
+  allocationType:string;
+  currentAmount:number;
+  suggestedAmount:number;
+  reduction:number;
+};
+
+export type TemporaryBudgetFundingPlan={
+  targetAllocationId:string;
+  targetItemName:string;
+  reason:'TRAVEL'|'OCCASION'|'HEALTH'|'MAINTENANCE'|'UNUSUAL_MONTH'|'OTHER';
+  extraAmount:number;
+  availableFromFreeMargin:number;
+  fundedFromFreeMargin:number;
+  sourceReductions:TemporaryBudgetFundingSource[];
+  fundedTotal:number;
+  unresolvedAmount:number;
+};
+
 export type InitialBudgetReview={
   canApprove:boolean;
   income:number;
@@ -43,6 +64,7 @@ export type InitialBudgetReview={
   correctionSuggestions:InitialBudgetCorrectionSuggestion[];
   suggestedReductionTotal:number;
   unresolvedGap:number;
+  temporaryFundingPlans:TemporaryBudgetFundingPlan[];
 };
 
 function finite(value:unknown){
@@ -71,13 +93,14 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       correctionSuggestions:[],
       suggestedReductionTotal:0,
       unresolvedGap:0,
+      temporaryFundingPlans:[],
     };
   }
 
   const cycleId=String(plan.cycle_id);
   const [allocationRows,incomeRows,foundationRows]=await Promise.all([
     rawSql`
-      select ba.id,ba.category_id,bc.name,bc.expense_nature_default,ba.priority_override,ba.priority_override_scope,ba.priority_override_reason,ba.priority_override_note,ba.planned_amount::text,ba.allocation_type,
+      select ba.id,ba.category_id,bc.name,bc.expense_nature_default,ba.priority_override,ba.priority_override_scope,ba.priority_override_reason,ba.priority_override_note,ba.temporary_extra_amount::text,ba.planned_amount::text,ba.allocation_type,
         r.recurrence_kind,r.interval_cycles
       from public.plan_versions pv
       join public.budget_allocations ba on ba.plan_version_id=pv.id and ba.user_id=pv.user_id
@@ -155,6 +178,9 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       temporaryContextNote:row.priority_override_scope==='THIS_CYCLE'&&row.priority_override_note
         ? String(row.priority_override_note)
         : null,
+      temporaryExtraAmount:row.priority_override_scope==='THIS_CYCLE'
+        ? finite(row.temporary_extra_amount)
+        : 0,
     };
   });
 
@@ -214,6 +240,70 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       code:'TOTAL_OVER_INCOME',
       severity:'blocker',
       message:`إجمالي المسودة أعلى من الدخل الشهري بمقدار ${(total-income).toFixed(2)} ريال. خفّض البنود غير الأساسية قبل الاعتماد.`,
+    });
+  }
+
+  const temporaryFundingPlans:TemporaryBudgetFundingPlan[]=[];
+  const freeMargin=income>0?Math.max(0,income-total):0;
+  for(const target of items.filter(item=>item.temporaryContextReason&&item.temporaryExtraAmount>0)){
+    let remaining=target.temporaryExtraAmount;
+    const fundedFromFreeMargin=Math.min(freeMargin,remaining);
+    remaining-=fundedFromFreeMargin;
+
+    const sourceReductions:TemporaryBudgetFundingSource[]=[];
+    const fundingCandidates=items
+      .filter(item=>item.allocationId!==target.allocationId&&item.amount>0&&['FLEXIBLE','GOAL','SAVING'].includes(item.type))
+      .sort((a,b)=>{
+        const rank=(item:typeof items[number])=>{
+          if(item.type==='FLEXIBLE'&&item.userPriority==='ENTERTAINMENT') return 0;
+          if(item.type==='FLEXIBLE'&&item.userPriority==='OPTIONAL') return 1;
+          if(item.type==='FLEXIBLE') return 2;
+          if(item.type==='GOAL') return 3;
+          return 4;
+        };
+        return rank(a)-rank(b)||a.amount-b.amount;
+      });
+
+    for(const source of fundingCandidates){
+      if(remaining<=0) break;
+      const usageRatio=source.amount>0?source.historicalMonthlyAverage/source.amount:0;
+      const stableHistory=source.type==='FLEXIBLE'&&source.activeMonths90d>=3&&usageRatio>=0.7;
+      const lightHistory=source.type==='FLEXIBLE'&&!stableHistory&&(source.activeMonths90d>0||source.transactionCount90d>0);
+      const explicitFloor=source.userPriority==='NECESSARY'
+        ? source.amount
+        : source.userPriority==='IMPORTANT'
+          ? source.amount*0.6
+          : 0;
+      const historyFloor=stableHistory
+        ? Math.min(source.amount,source.historicalMonthlyAverage*0.8)
+        : lightHistory
+          ? Math.min(source.amount,source.historicalMonthlyAverage*0.5)
+          : 0;
+      const reducible=Math.max(0,source.amount-Math.max(explicitFloor,historyFloor));
+      const reduction=Math.min(reducible,remaining);
+      if(reduction<=0) continue;
+      sourceReductions.push({
+        allocationId:source.allocationId,
+        itemName:source.name,
+        allocationType:source.type,
+        currentAmount:source.amount,
+        suggestedAmount:Math.max(0,source.amount-reduction),
+        reduction,
+      });
+      remaining-=reduction;
+    }
+
+    const fundedTotal=target.temporaryExtraAmount-remaining;
+    temporaryFundingPlans.push({
+      targetAllocationId:target.allocationId,
+      targetItemName:target.name,
+      reason:target.temporaryContextReason as TemporaryBudgetFundingPlan['reason'],
+      extraAmount:target.temporaryExtraAmount,
+      availableFromFreeMargin:freeMargin,
+      fundedFromFreeMargin,
+      sourceReductions,
+      fundedTotal,
+      unresolvedAmount:Math.max(0,remaining),
     });
   }
 
@@ -322,5 +412,6 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
     correctionSuggestions,
     suggestedReductionTotal,
     unresolvedGap,
+    temporaryFundingPlans,
   };
 }
