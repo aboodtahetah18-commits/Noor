@@ -115,6 +115,14 @@ function monthlyAmountFromFlexibleItem(item:Record<string,unknown>){
   return amount/every;
 }
 
+function suggestBudgetPriority(allocationType:'OBLIGATION'|'ESSENTIAL'|'SAVING'|'EMERGENCY'|'GOAL'|'FLEXIBLE',name:string){
+  if(allocationType==='OBLIGATION'||allocationType==='ESSENTIAL') return 'NECESSARY' as const;
+  if(allocationType==='SAVING'||allocationType==='EMERGENCY'||allocationType==='GOAL') return 'IMPORTANT' as const;
+  const normalized=name.trim().toLocaleLowerCase('ar');
+  if(/ترفيه|سينما|ألعاب|العاب|منصة مشاهدة|نتفلكس|شاهد|سبوتيفاي/.test(normalized)) return 'ENTERTAINMENT' as const;
+  return 'OPTIONAL' as const;
+}
+
 function recurringRuleFromFlexibleItem(item:Record<string,unknown>,cycleStartDate:string){
   const mode=String(item.recurrence_mode??'متكرر');
   const every=Math.max(1,Math.round(positiveNumber(item.recurrence_every)||1));
@@ -358,6 +366,7 @@ export async function projectConfirmedOnboardingFacts(userId:string):Promise<Pro
         intervalCycles:number;
         startCycleDate:string;
         note:string;
+        suggestedPriority:'NECESSARY'|'IMPORTANT'|'OPTIONAL'|'ENTERTAINMENT';
       }>=[];
 
       const housing=factRecord(byKey.get('housing'));
@@ -372,6 +381,7 @@ export async function projectConfirmedOnboardingFacts(userId:string):Promise<Pro
             intervalCycles:1,
             startCycleDate:cycleStartDate,
             note:'مسودة تأسيسية من بيانات السكن — تحتاج مراجعة قبل الاعتماد.',
+            suggestedPriority:suggestBudgetPriority('ESSENTIAL',String(housing.housing_type||'السكن')),
           });
         }
       }
@@ -391,6 +401,7 @@ export async function projectConfirmedOnboardingFacts(userId:string):Promise<Pro
           plannedAmount:amount.toFixed(2),
           ...rule,
           note:'مسودة تأسيسية من الالتزامات المؤكدة — تحتاج مراجعة قبل الاعتماد.',
+          suggestedPriority:suggestBudgetPriority('OBLIGATION',String(item.name||'التزام')),
         });
       }
 
@@ -405,6 +416,7 @@ export async function projectConfirmedOnboardingFacts(userId:string):Promise<Pro
             plannedAmount:amount.toFixed(2),
             ...rule,
             note:'مسودة تأسيسية من بيانات '+(factKey==='bills'?'الفواتير':'الاشتراكات')+' — تحتاج مراجعة قبل الاعتماد.',
+            suggestedPriority:suggestBudgetPriority(allocationType,String(item.name|| (factKey==='bills'?'فاتورة':'اشتراك'))),
           });
         }
       }
@@ -424,6 +436,7 @@ export async function projectConfirmedOnboardingFacts(userId:string):Promise<Pro
           intervalCycles:1,
           startCycleDate:cycleStartDate,
           note:'مسودة تأسيسية مجمعة من دعم المعالين — تحتاج مراجعة قبل الاعتماد.',
+          suggestedPriority:suggestBudgetPriority('ESSENTIAL','دعم الأسرة والمعالين'),
         });
       }
 
