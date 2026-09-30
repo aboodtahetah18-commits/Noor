@@ -713,3 +713,11 @@
 .namaa-priority-confidence.is-initial{
   opacity:.82;
 }
+
+
+.namaa-priority-confidence.is-manual{
+  color:var(--ux-text-primary);
+  border-inline-start:4px solid var(--ux-status-warning-border);
+  border-radius:var(--ux-radius-3);
+  white-space:normal;
+}
