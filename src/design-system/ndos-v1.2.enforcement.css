@@ -309,11 +309,7 @@ textarea {
   }
 
   .namaa-investments-header {
-    padding: 22px;
-    display: flex;
-    align-items: flex-end;
     justify-content: space-between;
-    gap: 24px;
   }
 
   .namaa-investments-header p,
@@ -428,8 +424,6 @@ textarea {
 
   .namaa-investments-dashboard-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
   }
 
   .namaa-investments-dashboard-grid article,
@@ -457,11 +451,6 @@ textarea {
 @media (min-width: 768px) and (max-width: 1023px) {
   .namaa-investments-page {
     padding: 16px;
-  }
-
-  .namaa-investments-header {
-    align-items: stretch;
-    flex-direction: column;
   }
 
   .namaa-investments-grid {
@@ -1385,12 +1374,6 @@ textarea {
     color:var(--namaa-wide-muted);
   }
 
-  .namaa-banks-selector {
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
-  }
-
   .namaa-banks-selector a {
     min-height:40px;
     padding:0 14px;
@@ -1399,15 +1382,7 @@ textarea {
     text-decoration:none;
     border:1px solid var(--namaa-wide-border);
     border-radius:12px;
-    color:var(--namaa-wide-text);
-    background:var(--namaa-wide-card);
     font-weight:800;
-  }
-
-  .namaa-banks-selector a.is-active {
-    color:#163a31;
-    border-color:rgb(212 175 107 / 70%);
-    background:#FFF7E6;
   }
 
   .namaa-banks-layout {
