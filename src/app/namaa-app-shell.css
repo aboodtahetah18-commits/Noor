@@ -569,3 +569,116 @@
     grid-template-columns:1fr;
   }
 }
+
+
+/* 2026-09-30 — SMART BUDGET CORRECTION PLAN */
+.namaa-budget-correction-plan{
+  display:grid;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-3);
+  border:1px solid var(--ux-border-default);
+  border-radius:var(--ux-radius-4);
+  background:var(--ux-surface-canvas);
+}
+
+.namaa-budget-correction-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:var(--ux-space-3);
+}
+
+.namaa-budget-correction-head>div{
+  display:grid;
+  gap:var(--ux-space-1);
+}
+
+.namaa-budget-correction-head strong{
+  color:var(--ux-text-primary);
+}
+
+.namaa-budget-correction-head small{
+  color:var(--ux-text-secondary);
+  line-height:1.6;
+}
+
+.namaa-budget-correction-head>span{
+  white-space:nowrap;
+  font-weight:900;
+  color:var(--ux-text-primary);
+}
+
+.namaa-budget-correction-list{
+  display:grid;
+  gap:var(--ux-space-2);
+}
+
+.namaa-budget-correction-list article{
+  display:grid;
+  grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);
+  gap:var(--ux-space-3);
+  align-items:center;
+  padding:var(--ux-space-3);
+  border:1px solid var(--ux-border-default);
+  border-radius:var(--ux-radius-3);
+  background:var(--ux-surface-default);
+}
+
+.namaa-budget-correction-list article>div:first-child{
+  display:grid;
+  gap:var(--ux-space-1);
+}
+
+.namaa-budget-correction-list article small{
+  color:var(--ux-text-secondary);
+  line-height:1.55;
+}
+
+.namaa-budget-correction-values{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:var(--ux-space-2);
+}
+
+.namaa-budget-correction-values span{
+  display:grid;
+  gap:var(--ux-space-1);
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+}
+
+.namaa-budget-correction-values b{
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-body-sm-size);
+}
+
+.namaa-budget-correction-residual{
+  display:grid;
+  gap:var(--ux-space-1);
+  padding:var(--ux-space-3);
+  border:1px solid var(--ux-border-default);
+  border-inline-start:4px solid var(--ux-status-danger-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--ux-surface-default);
+}
+
+.namaa-budget-correction-residual p{
+  margin:0;
+  color:var(--ux-text-secondary);
+  line-height:1.65;
+}
+
+@media(max-width:767px){
+  .namaa-budget-correction-head,
+  .namaa-budget-correction-list article{
+    grid-template-columns:1fr;
+  }
+
+  .namaa-budget-correction-head{
+    display:grid;
+  }
+
+  .namaa-budget-correction-values{
+    grid-template-columns:1fr;
+  }
+}
