@@ -24,6 +24,7 @@ export type InitialBudgetCorrectionSuggestion={
   historicalMonthlyAverage:number;
   activeMonths90d:number;
   historySignal:'none'|'light'|'stable';
+  userPriority:'NECESSARY'|'IMPORTANT'|'OPTIONAL'|'ENTERTAINMENT'|null;
 };
 
 export type InitialBudgetReview={
@@ -72,7 +73,7 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
   const cycleId=String(plan.cycle_id);
   const [allocationRows,incomeRows,foundationRows]=await Promise.all([
     rawSql`
-      select ba.id,ba.category_id,bc.name,ba.planned_amount::text,ba.allocation_type,
+      select ba.id,ba.category_id,bc.name,bc.expense_nature_default,ba.planned_amount::text,ba.allocation_type,
         r.recurrence_kind,r.interval_cycles
       from public.plan_versions pv
       join public.budget_allocations ba on ba.plan_version_id=pv.id and ba.user_id=pv.user_id
@@ -139,6 +140,7 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       historicalMonthlyAverage:history.actual90d/observedMonths,
       activeMonths90d:history.activeMonths90d,
       transactionCount90d:history.transactionCount90d,
+      userPriority:row.expense_nature_default?String(row.expense_nature_default):null,
     };
   });
 
@@ -194,6 +196,15 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       .filter(candidate=>candidate.type===type&&candidate.amount>0)
       .sort((a,b)=>{
         if(type!=='FLEXIBLE') return a.amount-b.amount;
+        const priorityRank=(value:string|null)=>{
+          if(value==='ENTERTAINMENT') return 0;
+          if(value==='OPTIONAL') return 1;
+          if(value==='IMPORTANT') return 2;
+          if(value==='NECESSARY') return 3;
+          return 1;
+        };
+        const priorityDiff=priorityRank(a.userPriority)-priorityRank(b.userPriority);
+        if(priorityDiff!==0) return priorityDiff;
         const aRatio=a.amount>0?a.historicalMonthlyAverage/a.amount:0;
         const bRatio=b.amount>0?b.historicalMonthlyAverage/b.amount:0;
         if(a.activeMonths90d!==b.activeMonths90d) return a.activeMonths90d-b.activeMonths90d;
@@ -209,11 +220,17 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       const lightHistory=type==='FLEXIBLE'&&!stableHistory&&(item.activeMonths90d>0||item.transactionCount90d>0);
       const historySignal:InitialBudgetCorrectionSuggestion['historySignal']=stableHistory?'stable':lightHistory?'light':'none';
 
-      const protectedFloor=stableHistory
+      const explicitFloor=item.userPriority==='NECESSARY'
+        ? item.amount
+        : item.userPriority==='IMPORTANT'
+          ? item.amount*0.6
+          : 0;
+      const historyFloor=stableHistory
         ? Math.min(item.amount,item.historicalMonthlyAverage*0.8)
         : lightHistory
           ? Math.min(item.amount,item.historicalMonthlyAverage*0.5)
           : 0;
+      const protectedFloor=Math.max(explicitFloor,historyFloor);
       const reducibleAmount=Math.max(0,item.amount-protectedFloor);
       const reduction=Math.min(reducibleAmount,remainingGap);
       if(reduction<=0) continue;
@@ -229,12 +246,19 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
         historicalMonthlyAverage:item.historicalMonthlyAverage,
         activeMonths90d:item.activeMonths90d,
         historySignal,
+        userPriority:item.userPriority as InitialBudgetCorrectionSuggestion['userPriority'],
         reason:type==='FLEXIBLE'
-          ? stableHistory
-            ? 'هذا البند يظهر استخدامًا فعليًا مستقرًا خلال الأشهر الأخيرة؛ لذلك حافظ نماء على حد أدنى قريب من نمط الصرف بدل تصفيره.'
-            : lightHistory
-              ? 'يوجد استخدام فعلي لهذا البند، لذلك اقترح نماء تخفيضًا جزئيًا قبل المساس بالبند بالكامل.'
-              : 'لا يظهر استخدام فعلي حديث لهذا البند، لذلك يُقدَّم كخيار تخفيض أول قبل البنود الأكثر اعتيادًا.'
+          ? item.userPriority==='NECESSARY'
+            ? 'حدد المستخدم هذا البند كضروري جدًا، لذلك لا يقترح نماء تخفيضه تلقائيًا.'
+            : item.userPriority==='IMPORTANT'
+              ? 'حدد المستخدم هذا البند كمهم، لذلك يحافظ نماء على معظم المبلغ ولا يخفض إلا الجزء القابل للمرونة.'
+              : item.userPriority==='OPTIONAL'||item.userPriority==='ENTERTAINMENT'
+                ? 'حدد المستخدم هذا البند كقابل للتخفيض، لذلك يقدمه نماء قبل البنود الأعلى أولوية.'
+                : stableHistory
+                  ? 'هذا البند يظهر استخدامًا فعليًا مستقرًا خلال الأشهر الأخيرة؛ لذلك حافظ نماء على حد أدنى قريب من نمط الصرف بدل تصفيره.'
+                  : lightHistory
+                    ? 'يوجد استخدام فعلي لهذا البند، لذلك اقترح نماء تخفيضًا جزئيًا قبل المساس بالبند بالكامل.'
+                    : 'لا يظهر استخدام فعلي حديث لهذا البند، لذلك يُقدَّم كخيار تخفيض أول قبل البنود الأكثر اعتيادًا.'
           : type==='GOAL'
             ? 'تخفيف مساهمة الهدف مؤقتًا بعد استنفاد البنود المرنة الأقل استخدامًا.'
             : 'تخفيف الادخار مؤقتًا فقط إذا لم تكفِ البنود المرنة والأهداف.',
