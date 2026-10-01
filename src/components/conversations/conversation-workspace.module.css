@@ -27,55 +27,8 @@
 }
 
 .workspace{
-  display:grid;
-  grid-template-columns:minmax(190px,248px) minmax(420px,1fr) minmax(190px,248px);
   min-height:0;
   background:var(--namaa-card)
-}
-
-.workspace.withoutRooms{
-  grid-template-columns:minmax(420px,1fr) minmax(190px,248px)
-}
-
-.workspace.withoutContext{
-  grid-template-columns:minmax(190px,248px) minmax(420px,1fr)
-}
-
-.workspace.withoutRooms.withoutContext{
-  grid-template-columns:minmax(0,1fr)
-}
-
-.roomsPane,.contextPane{
-  background:var(--namaa-card);
-  min-width:0;
-  padding:var(--ux-space-4);
-  border-inline-end:1px solid var(--namaa-border)
-}
-
-.contextPane{
-  border-inline-end:0;
-  border-inline-start:1px solid var(--namaa-border);
-  display:flex;
-  flex-direction:column;
-  gap:var(--ux-space-3)
-}
-
-.paneTitle{
-  height:40px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:var(--ux-space-2)
-}
-
-.paneTitle>span{
-  font-size:var(--ux-type-body-sm-size);
-  font-weight:900
-}
-
-.paneTitle small{
-  font-size:var(--ux-type-caption-size);
-  color:var(--ux-text-secondary)
 }
 
 .roomList{
@@ -3850,9 +3803,6 @@
   .mobileTools button{background:color-mix(in srgb,var(--namaa-cream) 78%,var(--namaa-card));box-shadow:var(--ux-shadow-xs)}
 
 
-  .roomsPane,.contextPane{
-    display:none
-  }
   .chatHeader .entityAvatar{
     width:32px;
   height:32px;
@@ -4026,7 +3976,7 @@
   background-size:cover;
   background-repeat:no-repeat
   }
-  .workspace,.workspace.withoutRooms,.workspace.withoutContext,.workspace.withoutRooms.withoutContext{
+  .workspace{
     display:block;
     width:100%;
     max-width:100%;
@@ -11313,10 +11263,7 @@
   overflow:hidden!important;
 }
 
-.workspace,
-.workspace.withoutRooms,
-.workspace.withoutContext,
-.workspace.withoutRooms.withoutContext{
+.workspace{
   display:block!important;
   width:100%!important;
   max-width:100%!important;
@@ -11325,11 +11272,6 @@
   margin:0!important;
   padding:0!important;
   overflow:hidden!important;
-}
-
-.roomsPane,
-.contextPane{
-  display:none!important;
 }
 
 .chatPane{
