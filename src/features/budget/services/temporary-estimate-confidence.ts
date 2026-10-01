@@ -116,10 +116,10 @@ export function evaluateTemporaryEstimateConfidence(
         : 'LOW';
 
   const label=level==='HIGH'
-    ? `ثقة نهائية عالية · ${score}/100`
+    ? 'ثقة نهائية عالية'
     : level==='MEDIUM'
-      ? `ثقة نهائية متوسطة · ${score}/100`
-      : `ثقة نهائية منخفضة · ${score}/100`;
+      ? 'ثقة نهائية متوسطة'
+      : 'ثقة نهائية منخفضة';
 
   const summary=level==='HIGH'
     ? 'يمكن استخدام التقدير مباشرة؛ التاريخ والنتائج السابقة متسقة بما يكفي.'
