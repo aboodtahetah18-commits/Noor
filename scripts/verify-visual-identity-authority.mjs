@@ -21,12 +21,11 @@ assert(workspace.includes('/brand/ndos/namaa-logo-white-transparent.png'),'Mobil
 assert(!workspace.includes('mobileBrandLockup'),'Do not redraw Namaa with text + symbol composition.');
 assert(!/filter\s*:\s*(?:brightness|invert|hue-rotate|sepia|saturate)/i.test(chatCss),'Brand assets must not be recolored with CSS filters.');
 assert(chatCss.includes('.mobileBrandLogo'),'Governed mobile logo class is missing.');
-assert(chatCss.includes('position:static')&&chatCss.includes('transform:none')&&chatCss.includes('.mobileAppBarPrimary{\n    direction:rtl;\n    flex-direction:row')&&chatCss.includes('.mobileAppBarActions{\n    direction:ltr'),'Mobile header must keep menu and logo together on the right, with utility actions on the far left.');
+assert(chatCss.includes('.chatHeaderForeground{')&&chatCss.includes('direction:rtl')&&chatCss.includes('.chatHeaderForeground .mobileTools{\n  margin-inline-start:auto!important;'),'Mobile/tablet chat header must keep the primary identity on the RTL start edge and utility actions on the far left.');
 assert(chatCss.includes('min-width:88px'),'Mobile full logo must never render below 88px.');
 assert(authShell.includes('styles.mobileHeroLogoLight')&&authShell.includes('styles.mobileHeroLogoDark'),'Public auth mobile hero must render explicit official light and dark logo variants.');
-assert((authCss.match(/@media\(max-width:1023px\)\{/g)||[]).length===1,'Mobile auth must use exactly one unified max-width:1023px responsive source.');
-assert(!authCss.includes('@media(max-width:767px){'),'Legacy max-width:767px auth source must remain removed.');
-assert(!authCss.includes('@media(min-width:768px) and (max-width:1023px){'),'Legacy 768-1023px auth source must remain removed.');
+assert((authCss.match(/@media\(max-width:767px\), \(min-width:768px\)\{/g)||[]).length===1,'Public auth must use the governed mobile/tablet two-state source.');
+assert(!authCss.includes('1023px')&&!authCss.includes('1024px'),'Public auth must not reintroduce retired desktop breakpoints.');
 assert(authCss.includes(':global(html[data-theme="dark"]) .page,\n  :global(html[data-theme="dark"]) .shell,\n  :global(html[data-theme="dark"]) .mobileHero,\n  :global(html[data-theme="dark"]) .panel{\n    background:var(--ux-page-bg);'),'Dark mobile auth must use one coordinated page-wide dark surface.');
 assert(authCss.includes('.mobileHeroLogoDark{display:none}')&&authCss.includes(':global(html[data-theme="dark"]) .mobileHeroLogoLight{display:none}')&&authCss.includes(':global(html[data-theme="dark"]) .mobileHeroLogoDark{display:block}'),'Public auth mobile logo must switch by CSS theme state.');
 assert(authCss.includes('.mobileHero::before,\n  .mobileHero::after{')&&authCss.includes('border-radius:var(--ux-radius-full) var(--ux-radius-0) var(--ux-radius-full) var(--ux-radius-0)')&&authCss.includes('border-radius:var(--ux-radius-0) var(--ux-radius-full) var(--ux-radius-0) var(--ux-radius-full)'),'Mobile auth hero must retain the two-leaf identity composition.');
