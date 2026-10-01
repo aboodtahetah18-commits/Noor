@@ -127,7 +127,7 @@ export default async function BudgetPage({searchParams}:{searchParams:Promise<{e
                     <em>{suggestion.confidenceLabel}</em>
                     <p>{suggestion.confidenceSummary}</p>
                   </div>
-                  <strong>{suggestion.confidenceScore}</strong>
+                  <strong>{suggestion.confidenceScore}/100</strong>
                 </div>
                 <details className="namaa-temporary-confidence-details">
                   <summary>لماذا هذه الدرجة؟</summary>
