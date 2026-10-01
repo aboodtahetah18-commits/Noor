@@ -37,7 +37,7 @@ export async function updateInitialDraftAction(planId:string,fd:FormData){
   }
 
   const previousPriorityRows=await rawSql`
-    select ba.id,ba.priority_override,ba.priority_override_scope
+    select ba.id,ba.priority_override,ba.priority_override_scope,ba.allocation_type
     from public.budget_allocations ba
     join public.plan_versions pv on pv.id=ba.plan_version_id and pv.user_id=ba.user_id
     join public.financial_plans p on p.id=pv.plan_id and p.user_id=pv.user_id
@@ -53,6 +53,7 @@ export async function updateInitialDraftAction(planId:string,fd:FormData){
     {
       priority:row.priority_override?String(row.priority_override):null,
       scope:row.priority_override_scope?String(row.priority_override_scope):null,
+      allocationType:String(row.allocation_type??''),
     },
   ]));
 
@@ -123,7 +124,12 @@ export async function updateInitialDraftAction(planId:string,fd:FormData){
       const priorityScope=priorityScopes[i]??'AUTO';
       if(!priority||priorityScope!=='PERSISTENT') continue;
       const previousDecision=previousPriorityByAllocation.get(ids[i]??'');
-      if(previousDecision?.scope==='PERSISTENT'&&previousDecision.priority===priority) continue;
+      const nextAllocationType=types[i]??'';
+      if(
+        previousDecision?.scope==='PERSISTENT' &&
+        previousDecision.priority===priority &&
+        previousDecision.allocationType===nextAllocationType
+      ) continue;
       const row=await rawSql`
         select bc.name,ba.allocation_type
         from public.budget_allocations ba
