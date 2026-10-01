@@ -523,6 +523,7 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       : null;
 
     const unifiedConfidence=evaluateTemporaryEstimateConfidence({
+      observedMonths:monthly.observedMonths,
       coefficientOfVariation,
       outcomeCount:learned?.outcomeCount??0,
       averageErrorRatio:learned?.averageErrorRatio??null,
@@ -539,7 +540,6 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       itemName:item.name,
       reason:item.temporaryContextReason as TemporaryExtraAmountSuggestion['reason'],
       suggestedExtraAmount:Number(adjustedSuggested.toFixed(2)),
-      observedMonths:monthly.observedMonths,
       historicalMonthlyAverage:monthly.monthlyAverage,
       historicalMonthlyP75:monthly.monthlyP75,
       historicalMonthlyStdDev:monthly.monthlyStdDev,
