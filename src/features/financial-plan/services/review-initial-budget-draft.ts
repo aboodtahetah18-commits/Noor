@@ -1,6 +1,7 @@
 import { rawSql } from '@/infrastructure/db/client';
 import { getBudgetPriorityConfidence } from '@/features/budget/services/budget-priority-confidence';
 import { namedSeasonSignal, type NamedBudgetSeason } from '@/features/budget/services/named-seasonality';
+import { evaluateTemporaryEstimateConfidence } from '@/features/budget/services/temporary-estimate-confidence';
 
 export type InitialBudgetReviewIssue={
   code:
@@ -45,6 +46,9 @@ export type TemporaryExtraAmountSuggestion={
   coefficientOfVariation:number|null;
   confidence:'LOW'|'MEDIUM'|'HIGH';
   confidenceLabel:string;
+  confidenceScore:number;
+  confidenceSummary:string;
+  confidenceEvidence:string[];
   historicalMinimum:number;
   historicalMaximum:number;
   suggestedMinimum:number;
@@ -558,6 +562,19 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
             : null
       : null;
 
+    const unifiedConfidence=evaluateTemporaryEstimateConfidence({
+      observedMonths:monthly.observedMonths,
+      coefficientOfVariation,
+      outcomeCount:learned?.outcomeCount??0,
+      averageErrorRatio:learned?.averageErrorRatio??null,
+      learningConfirmations:learned?.confirmationCount??0,
+      biasStability:learned?.biasStability??'INSUFFICIENT',
+      biasApplied,
+      seasonalityApplied:effectiveSeasonalityApplied,
+      namedSeasonApplied,
+      namedSeasonHistoricalOccurrences:namedSignal?.historicalSeasonOccurrences??0,
+    });
+
     temporaryExtraSuggestions.push({
       allocationId:item.allocationId,
       itemName:item.name,
@@ -568,13 +585,16 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       historicalMonthlyP75:monthly.monthlyP75,
       historicalMonthlyStdDev:monthly.monthlyStdDev,
       coefficientOfVariation:coefficientOfVariation===null?null:Number(coefficientOfVariation.toFixed(4)),
-      confidence,
-      confidenceLabel,
+      confidence:unifiedConfidence.level,
+      confidenceLabel:unifiedConfidence.label,
+      confidenceScore:unifiedConfidence.score,
+      confidenceSummary:unifiedConfidence.summary,
+      confidenceEvidence:unifiedConfidence.evidence,
       historicalMinimum:Number(historicalMinimum.toFixed(2)),
       historicalMaximum:Number(historicalMaximum.toFixed(2)),
       suggestedMinimum:Number(personalizedMinimum.toFixed(2)),
       suggestedMaximum:Number(personalizedMaximum.toFixed(2)),
-      requiresManualAmount:confidence!=='HIGH',
+      requiresManualAmount:unifiedConfidence.requiresManualAmount,
       personalizationApplied,
       learningConfirmations:learned?.confirmationCount??0,
       learnedPosition:learnedPosition===null?null:Number(learnedPosition.toFixed(4)),
