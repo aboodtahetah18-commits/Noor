@@ -11407,7 +11407,7 @@
   opacity:.045;pointer-events:none;z-index:1
 }
 @media (max-width:767px){
-  .chatHeader::after{inset-inline-end:52px;width:88px;height:88px;opacity:.055;filter:brightness(0) invert(1)}
+  .chatHeader::after{inset-inline-end:52px;width:88px;height:88px;opacity:.055}
 }
 
 
@@ -11530,6 +11530,10 @@
   height:64px!important;
   align-items:center!important;
   gap:var(--ux-space-2)!important;
+}
+
+.chatHeaderForeground .mobileTools{
+  margin-inline-start:auto!important;
 }
 
 .desktopChatHeaderForeground{
