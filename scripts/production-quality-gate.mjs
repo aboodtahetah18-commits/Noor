@@ -29,6 +29,7 @@ const steps = [
   ['dependency policy','node',['scripts/verify-dependency-policy.mjs']],
   ['database provider policy','node',['scripts/verify-database-provider-policy.mjs']],
   ['budget learning migration contract','node',['scripts/verify-budget-learning-migrations.mjs']],
+  ['budget learning integrity','node',['scripts/verify-budget-learning-integrity.mjs']],
   ['algorithm governance schema contract','node',['scripts/verify-algorithm-governance-schema-contract.mjs']],
   ['financial responsibility roles contract','node',['scripts/verify-financial-responsibility-roles.mjs']],
   ['entity operational dashboard contract','node',['scripts/verify-entity-operational-dashboard.mjs']],
