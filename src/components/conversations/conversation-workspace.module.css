@@ -798,13 +798,8 @@
   transform:rotate(24deg)
 }
 
-.chatBrandBar{
-  display:none;
-  background:var(--namaa-card);
-  border-bottom:1px solid var(--namaa-border)
-}
 
-.chatBrandBar img,
+
 .persona_sm{
   width:38px;
   height:38px;
@@ -840,9 +835,7 @@
 
 
 
-.mobileBack{
-  display:none
-}
+
 
 
 /* Mobile application chrome was retired; onboarding review remains below. */
@@ -3816,19 +3809,6 @@
   justify-content:center
   }
 
-  .mobileListHeader>div{
-    display:grid;
-  gap:var(--ux-space-1)
-  }
-  .mobileListHeader strong{
-    font-size:var(--ux-type-section-title-size);
-  line-height:1.25;
-  color:var(--ux-text-primary)
-  }
-  .mobileListHeader small{
-    font-size:var(--ux-type-caption-size);
-  color:var(--ux-text-secondary)
-  }
 
 
 
@@ -3836,27 +3816,12 @@
 
 
 
-  .mobileChatHidden{
-    display:none!important
-  }
-  .chatBrandBar{
-    display:flex;
-  align-items:center;
-  justify-content:flex-start;
-  padding:calc(var(--ux-space-2) + env(safe-area-inset-top)) var(--ux-space-3) var(--ux-space-1)
-  }
-  .mobileBack{
-    display:grid;
-  place-items:center;
-  width:36px;
-  height:36px;
-  flex:0 0 36px;
-  border:0;
-  border-radius:var(--ux-radius-full);
-  background:transparent;
-  color:var(--ux-text-primary);
-  padding:var(--ux-space-0)
-  }
+
+
+
+
+
+
   .entityTitle{
     gap:var(--ux-space-1)
   }
@@ -3958,18 +3923,7 @@
     overflow:hidden
   }
 
-  .mobileListHeader{
-    min-height:68px;
-  padding:var(--ux-space-3) var(--ux-space-4);
-  position:sticky;
-  top:var(--ux-space-0);
-  z-index:5;
-  background:var(--namaa-card);
-  border-bottom:1px solid var(--namaa-border);
-  display:flex;
-  align-items:center;
-  gap:var(--ux-space-3)
-  }
+
 
   .entityTitle strong{
     font-size:var(--ux-type-body-sm-size);
