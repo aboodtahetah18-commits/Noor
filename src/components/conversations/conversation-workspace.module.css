@@ -11304,7 +11304,7 @@
     min-width:0!important;
     padding:var(--ux-space-2) var(--ux-space-3)!important;
     border-radius:var(--ux-radius-md)!important;
-    box-shadow:none!important;
+    box-shadow:var(--ux-shadow-none)!important;
   }
 
   .agentMessage{
@@ -11472,7 +11472,7 @@
   padding:0!important;
   border:0!important;
   border-radius:0!important;
-  box-shadow:none!important;
+  box-shadow:var(--ux-shadow-none)!important;
   overflow:hidden!important;
 }
 
@@ -11506,7 +11506,7 @@
   overflow:hidden!important;
   border:0!important;
   border-radius:0!important;
-  box-shadow:none!important;
+  box-shadow:var(--ux-shadow-none)!important;
 }
 
 .chatHeader,
@@ -11521,7 +11521,7 @@
   border-radius:0!important;
   background:var(--namaa-green-900)!important;
   color:var(--ux-text-inverse)!important;
-  box-shadow:none!important;
+  box-shadow:var(--ux-shadow-none)!important;
 }
 
 .chatHeaderForeground{
@@ -11557,7 +11557,7 @@
   border-radius:var(--ux-radius-sm)!important;
   background:color-mix(in srgb,var(--ux-text-inverse) 8%,transparent)!important;
   color:var(--ux-text-inverse)!important;
-  box-shadow:none!important;
+  box-shadow:var(--ux-shadow-none)!important;
 }
 
 .routingNote,
@@ -11600,7 +11600,7 @@
   border-top:1px solid var(--namaa-border)!important;
   border-radius:0!important;
   background:var(--namaa-card)!important;
-  box-shadow:none!important;
+  box-shadow:var(--ux-shadow-none)!important;
 }
 
 .composerPolicy{
@@ -11628,7 +11628,7 @@
   min-height:44px!important;
   padding:0!important;
   border-radius:var(--ux-radius-full)!important;
-  box-shadow:none!important;
+  box-shadow:var(--ux-shadow-none)!important;
 }
 
 .attachButton{
@@ -12153,7 +12153,7 @@
 
 .messages{
   min-height:0!important;
-  scroll-padding-block-end:calc(68px + env(safe-area-inset-bottom))!important;
+  scroll-padding-block-end:calc(var(--ux-space-16) + var(--ux-space-1) + env(safe-area-inset-bottom))!important;
 }
 
 
