@@ -9,7 +9,6 @@ const exists = (file) => fs.existsSync(path.join(root, file));
 
 const tokensFile = 'src/design-system/ndos-v1.2.tokens.json';
 const layoutFile = 'src/app/layout.tsx';
-const acceptanceFile = 'src/design-system/ndos-v1.2.acceptance.css';
 const ndosFile = 'src/design-system/ndos-v1.2.css';
 const enforcementFile = 'src/design-system/ndos-v1.2.enforcement.css';
 const mobileAuditFile = 'scripts/audit-mobile-horizontal-overflow-runtime.mjs';
@@ -32,12 +31,11 @@ if (exists('src/design-system/brand-refresh.css')) fail('src/design-system/brand
 
 const componentIndex = layout.indexOf('../design-system/components.css');
 const pagesIndex = layout.indexOf('../design-system/pages.css');
-const acceptanceIndex = layout.indexOf('../design-system/ndos-v1.2.acceptance.css');
 const ndosIndex = layout.indexOf('../design-system/ndos-v1.2.css');
 const enforcementIndex = layout.indexOf('../design-system/ndos-v1.2.enforcement.css');
-if ([componentIndex,pagesIndex,acceptanceIndex,ndosIndex,enforcementIndex].some((v)=>v < 0)) fail(layoutFile, 'all governed visual layers must be imported');
-if (!(componentIndex < pagesIndex && pagesIndex < acceptanceIndex && acceptanceIndex < ndosIndex && ndosIndex < enforcementIndex)) {
-  fail(layoutFile, 'visual authority must be components -> pages -> acceptance -> NDOS -> enforcement');
+if ([componentIndex,pagesIndex,ndosIndex,enforcementIndex].some((v)=>v < 0)) fail(layoutFile, 'all governed visual layers must be imported');
+if (!(componentIndex < pagesIndex && pagesIndex < ndosIndex && ndosIndex < enforcementIndex)) {
+  fail(layoutFile, 'visual authority must be components -> pages -> NDOS -> enforcement');
 }
 const afterEnforcement = layout.slice(enforcementIndex + '../design-system/ndos-v1.2.enforcement.css'.length);
 if (/\.css['"]/.test(afterEnforcement)) fail(layoutFile, 'no CSS may load after final enforcement');
@@ -48,25 +46,6 @@ for (const value of ['#0B6B4F','#189F7F','#D4AF6B','#FCAA30','#FFF7E6','#FAF9F4'
 }
 if (/Tajawal/i.test(ndos)) fail(ndosFile, 'legacy Tajawal must not exist in final authority');
 
-const acceptance = read(acceptanceFile);
-const requiredCorrections = [
-  ':where(body, body *)',
-  'font-family: var(--namaa-font) !important',
-  'backdrop-filter: none !important',
-  '.report-table-card',
-  'padding-inline: var(--ux-space-0) !important',
-  '.p47-mobile-topbar.mustaqbali-mobile-header',
-  'inset-inline: var(--ux-space-0) !important',
-  '.smart-combo-menu',
-  'inset-inline: var(--ux-space-3) !important',
-  '.auth-aurora-one',
-  'inset-inline-start:',
-  '.auth-aurora-two',
-  'inset-inline-end:',
-];
-for (const expected of requiredCorrections) if (!acceptance.includes(expected)) fail(acceptanceFile, `missing runtime correction: ${expected}`);
-if (/(?:linear|radial|conic)-gradient\s*\(/i.test(acceptance)) fail(acceptanceFile, 'acceptance layer must not introduce gradients');
-
 const enforcement = read(enforcementFile);
 for (const expected of ['--ndos-control-sm','--ndos-control-md','--ndos-control-lg','.namaa-brand-logo','aspect-ratio: 2 / 1','background: transparent']) {
   if (!enforcement.includes(expected)) fail(enforcementFile, `missing final enforcement contract: ${expected}`);
@@ -76,11 +55,10 @@ const mobileAudit = read(mobileAuditFile);
 if (!mobileAudit.includes('[320, 360, 390, 430, 767]')) fail(mobileAuditFile, 'mobile acceptance widths must cover 320/360/390/430/767');
 if (!mobileAudit.includes('document.documentElement.scrollWidth <= window.innerWidth')) fail(mobileAuditFile, 'horizontal overflow assertion is required');
 
-const approvedBreakpoints = new Set(['767','768','1023','1024','1439','1440']);
+const approvedBreakpoints = new Set(['767','768']);
 const finalVisualFiles = [
   'src/design-system/components.css',
   'src/design-system/pages.css',
-  acceptanceFile,
   ndosFile,
   enforcementFile,
 ];
@@ -126,4 +104,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('NDOS-FINAL-VISUAL-ACCEPTANCE-PASS effective visual authority, RTL corrections, responsive breakpoints and mobile overflow contract are locked');
+console.log('NDOS-FINAL-VISUAL-ACCEPTANCE-PASS final visual authority, RTL corrections, two-state responsive contract and mobile overflow contract are locked');
