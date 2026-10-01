@@ -122,14 +122,24 @@ export default async function BudgetPage({searchParams}:{searchParams:Promise<{e
               <div>
                 <strong>{suggestion.itemName}</strong>
                 <small>{temporaryReasonLabels[suggestion.reason]??suggestion.reason}</small>
-                <em className={'namaa-temporary-estimate-confidence is-'+suggestion.confidence.toLowerCase()}>{suggestion.confidenceLabel}</em>
-                {suggestion.personalizationApplied?<em className="namaa-temporary-estimate-personalized">نطاق مخصص — بناءً على {suggestion.learningConfirmations} اختيارات سابقة لك</em>:null}
-                {suggestion.outcomeLabel?<em className="namaa-temporary-estimate-outcome">{suggestion.outcomeLabel} · {suggestion.outcomeCount} نتائج مكتملة</em>:null}
-                {suggestion.biasLabel?<em className="namaa-temporary-estimate-bias">{suggestion.biasLabel}</em>:null}
-                {suggestion.driftLabel?<em className="namaa-temporary-estimate-drift">{suggestion.driftLabel}</em>:null}
-                {suggestion.seasonalityLabel?<em className="namaa-temporary-estimate-seasonality">{suggestion.seasonalityLabel}{suggestion.namedSeasonApplied&&suggestion.namedSeasonHistoricalOccurrences?' · '+suggestion.namedSeasonHistoricalOccurrences+' مواسم تاريخية':''}</em>:null}
-                {suggestion.namedSeason==='BACK_TO_SCHOOL'?<small className="namaa-seasonality-note">موسم العودة للدراسة هنا نطاق تقريبي (15 أغسطس–15 سبتمبر)، وليس تقويمًا دراسيًا رسميًا.</small>:null}
-                <p>{suggestion.basis}</p>
+                <div className={'namaa-temporary-confidence-summary is-'+suggestion.confidence.toLowerCase()}>
+                  <div>
+                    <em>{suggestion.confidenceLabel}</em>
+                    <p>{suggestion.confidenceSummary}</p>
+                  </div>
+                  <strong>{suggestion.confidenceScore}</strong>
+                </div>
+                <details className="namaa-temporary-confidence-details">
+                  <summary>لماذا هذه الدرجة؟</summary>
+                  <ul>{suggestion.confidenceEvidence.map(item=><li key={item}>{item}</li>)}</ul>
+                  {suggestion.personalizationApplied?<p>النطاق مخصص بناءً على {suggestion.learningConfirmations} اختيارات سابقة لك.</p>:null}
+                  {suggestion.outcomeLabel?<p>{suggestion.outcomeLabel} · {suggestion.outcomeCount} نتائج مكتملة.</p>:null}
+                  {suggestion.biasLabel?<p>{suggestion.biasLabel}</p>:null}
+                  {suggestion.driftLabel?<p>{suggestion.driftLabel}</p>:null}
+                  {suggestion.seasonalityLabel?<p>{suggestion.seasonalityLabel}{suggestion.namedSeasonApplied&&suggestion.namedSeasonHistoricalOccurrences?' · '+suggestion.namedSeasonHistoricalOccurrences+' مواسم تاريخية':''}</p>:null}
+                  {suggestion.namedSeason==='BACK_TO_SCHOOL'?<p>موسم العودة للدراسة هنا نطاق تقريبي (15 أغسطس–15 سبتمبر)، وليس تقويمًا دراسيًا رسميًا.</p>:null}
+                  <p>{suggestion.basis}</p>
+                </details>
               </div>
               <div className="namaa-budget-context-estimate-values">
                 <span>المتوسط الشهري الفعلي <b>{formatSar(suggestion.historicalMonthlyAverage.toFixed(2))}</b></span>
