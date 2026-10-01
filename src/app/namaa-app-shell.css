@@ -1084,3 +1084,99 @@
   font-size:var(--ux-type-caption-size);
   line-height:1.6;
 }
+
+
+/* 2026-10-01 — UNIFIED TEMPORARY ESTIMATE CONFIDENCE */
+.namaa-temporary-confidence-summary{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:var(--ux-space-3);
+  align-items:center;
+  margin-top:var(--ux-space-1);
+  padding:var(--ux-space-3);
+  border:1px solid var(--ux-border-default);
+  border-radius:var(--ux-radius-4);
+  background:var(--ux-surface-default);
+}
+
+.namaa-temporary-confidence-summary>div{
+  display:grid;
+  gap:var(--ux-space-1);
+  min-width:0;
+}
+
+.namaa-temporary-confidence-summary em{
+  color:var(--ux-text-primary);
+  font-style:normal;
+  font-weight:800;
+}
+
+.namaa-temporary-confidence-summary p{
+  margin:0;
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  line-height:1.6;
+}
+
+.namaa-temporary-confidence-summary>strong{
+  min-width:64px;
+  text-align:center;
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-title-sm-size);
+}
+
+.namaa-temporary-confidence-summary.is-high{
+  border-color:var(--namaa-border-strong);
+  background:var(--namaa-surface-warm);
+}
+
+.namaa-temporary-confidence-summary.is-high>strong,
+.namaa-temporary-confidence-summary.is-high em{
+  color:var(--namaa-green-900);
+}
+
+.namaa-temporary-confidence-summary.is-low{
+  opacity:.88;
+}
+
+.namaa-temporary-confidence-details{
+  margin-top:var(--ux-space-2);
+  padding:var(--ux-space-2) var(--ux-space-3);
+  border:1px solid var(--ux-border-default);
+  border-radius:var(--ux-radius-3);
+  background:var(--ux-surface-default);
+}
+
+.namaa-temporary-confidence-details summary{
+  cursor:pointer;
+  color:var(--ux-text-primary);
+  font-size:var(--ux-type-caption-size);
+  font-weight:800;
+}
+
+.namaa-temporary-confidence-details ul{
+  display:grid;
+  gap:var(--ux-space-1);
+  margin:var(--ux-space-2) 0 0;
+  padding-inline-start:1.25rem;
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  line-height:1.6;
+}
+
+.namaa-temporary-confidence-details p{
+  margin:var(--ux-space-2) 0 0;
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  line-height:1.6;
+}
+
+@media(max-width:767px){
+  .namaa-temporary-confidence-summary{
+    grid-template-columns:1fr;
+  }
+
+  .namaa-temporary-confidence-summary>strong{
+    text-align:start;
+  }
+}
