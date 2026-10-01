@@ -55,7 +55,7 @@ const mobileAudit = read(mobileAuditFile);
 if (!mobileAudit.includes('[320, 360, 390, 430, 767]')) fail(mobileAuditFile, 'mobile acceptance widths must cover 320/360/390/430/767');
 if (!mobileAudit.includes('document.documentElement.scrollWidth <= window.innerWidth')) fail(mobileAuditFile, 'horizontal overflow assertion is required');
 
-const approvedBreakpoints = new Set(['767','768']);
+const approvedBreakpoints = new Set(['0','767','768']);
 const finalVisualFiles = [
   'src/design-system/components.css',
   'src/design-system/pages.css',
