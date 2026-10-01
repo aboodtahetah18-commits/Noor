@@ -428,9 +428,6 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       : 1;
     const seasonalityFactor=Math.max(0.8,Math.min(1.25,rawSeasonalityFactor));
     const seasonalityApplied=monthly.seasonObservedMonths>=3&&Math.abs(seasonalityFactor-1)>=0.1;
-    const seasonalSuggestedExtra=seasonalityApplied
-      ? Math.max(0,(item.amount+suggestedExtra)*seasonalityFactor-item.amount)
-      : suggestedExtra;
     const quarterSeasonalityLabel=seasonalityApplied
       ? seasonalityFactor>1
         ? `الربع الحالي أعلى من المعتاد تاريخيًا بحوالي ${Math.round((seasonalityFactor-1)*100)}%`
@@ -470,7 +467,6 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       coefficientOfVariation===null ||
       coefficientOfVariation>0.35;
     const personalizationApplied=historySupportsPersonalization&&historicalSpan>0&&Boolean(learned&&learned.confirmationCount>=3);
-    const learnedPosition=personalizationApplied&&learned?learned.averagePosition:null;
     const accuracyWeight=learned?.accuracyWeight??1;
     const outcomeTotal=learned?.outcomeCount??0;
     const underShare=outcomeTotal>0?(learned?.underCount??0)/outcomeTotal:0;
@@ -532,8 +528,11 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       observedMonths:monthly.observedMonths,
       coefficientOfVariation,
       outcomeCount:learned?.outcomeCount??0,
+      averageErrorRatio:learned?.averageErrorRatio??null,
       learningConfirmations:learned?.confirmationCount??0,
+      biasStability:learned?.biasStability??'INSUFFICIENT',
       biasApplied,
+      seasonalityApplied:effectiveSeasonalityApplied,
       namedSeasonApplied,
       namedSeasonHistoricalOccurrences:namedSignal?.historicalSeasonOccurrences??0,
     });
@@ -560,11 +559,8 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       personalizationApplied,
       learningConfirmations:learned?.confirmationCount??0,
       outcomeCount:learned?.outcomeCount??0,
-      averageErrorRatio:learned?.averageErrorRatio??null,
       biasApplied,
       biasLabel,
-      biasStability:learned?.biasStability??'INSUFFICIENT',
-      seasonalityApplied:effectiveSeasonalityApplied,
       seasonalityLabel,
       namedSeason:namedSignal?.season??null,
       namedSeasonHistoricalOccurrences:namedSignal?.historicalSeasonOccurrences??0,
