@@ -51,20 +51,18 @@ for(const path of [
 const rawHex=[...chatCss.matchAll(/#[0-9A-Fa-f]{6}\b/g)].map(match=>match[0]);
 assert(rawHex.length===0,'Conversation UI must use governed design tokens, not raw hex colors: '+rawHex.join(', '));
 
+const loginPage = read('src/app/(public)/login/page.tsx');
+const loginCss = read('src/app/(public)/login/login.module.css');
+assert(loginPage.includes("import { BrandLogo } from '@/components/brand/brand-logo';")&&loginPage.includes('<BrandLogo surface="dark"'),'Actual /login page must use the governed BrandLogo component on its dark brand surface.');
+assert((loginCss.match(/@media\(max-width:767px\)\{/g)||[]).length===1,'Actual /login page must keep exactly one governed phone breakpoint.');
+assert(!loginCss.includes('1023px')&&!loginCss.includes('1024px'),'Actual /login page must not reintroduce retired desktop breakpoints.');
+assert(!loginCss.includes('@media(max-width:767px) and (max-height:680px){'),'Legacy short-screen /login responsive source must remain removed.');
+assert(loginCss.includes('height:100dvh')&&loginCss.includes('overflow:hidden'),'Actual /login mobile layout must remain viewport-stable.');
+
 if(fail.length){
   console.error('VISUAL-IDENTITY-AUTHORITY-FAIL '+fail.length+' issue(s)');
   for(const item of fail) console.error('- '+item);
   process.exit(1);
 }
 
-const loginPage = read('src/app/(public)/login/page.tsx');
-const loginCss = read('src/app/(public)/login/login.module.css');
-assert(loginPage.includes('styles.logoLight')&&loginPage.includes('styles.logoDark'),'Actual /login page must render explicit light and dark official logo variants.');
-assert((loginCss.match(/@media\\(max-width:1023px\\)\\{/g)||[]).length===1,'Actual /login page must use one unified max-width:1023px responsive source.');
-assert(!loginCss.includes('@media(max-width:767px){'),'Legacy /login max-width:767px responsive source must remain removed.');
-assert(!loginCss.includes('@media(max-width:767px) and (max-height:680px){'),'Legacy short-screen /login responsive source must remain removed.');
-assert(!loginCss.includes('@media(min-width:768px) and (max-width:1023px){'),'Legacy tablet /login responsive source must remain removed.');
-assert(loginCss.includes(':global(html[data-theme="dark"]) .page,')&&loginCss.includes(':global(html[data-theme="dark"]) .visual,')&&loginCss.includes(':global(html[data-theme="dark"]) .panel{\\n    background:var(--ux-page-bg);'),'Actual /login dark theme must coordinate the whole mobile page surface.');
-assert(loginCss.includes('.logoLight{display:block}')&&loginCss.includes('.logoDark{display:none}')&&loginCss.includes(':global(html[data-theme="dark"]) .logoLight{display:none}')&&loginCss.includes(':global(html[data-theme="dark"]) .logoDark{display:block}'),'Actual /login logo must switch directly with theme CSS.');
-
-console.log('VISUAL-IDENTITY-AUTHORITY-PASS logo=official placement=menu-adjacent-right font=NotoSansArabic colors=tokens-only');
+console.log('VISUAL-IDENTITY-AUTHORITY-PASS logo=official placement=rtl-start font=NotoSansArabic colors=tokens-only responsive=mobile-tablet');
