@@ -1682,3 +1682,68 @@ label:has(input),label:has(select),label:has(textarea){color:var(--ux-color-ink)
   .account-form-actions{width:100%!important}
   .account-form-actions .primary-button{width:100%!important;min-height:52px!important}
 }
+
+/* 2026-10-01 — TABLET-STRETCHED PAGE AUTHORITY
+ * Budget and transactions keep a tablet composition on every viewport >=768px.
+ * Phone-specific rules below 768px remain authoritative for compact layouts.
+ */
+@media (min-width:768px){
+  .p47-budget-hero{
+    grid-template-columns:1fr!important;
+    gap:var(--ux-space-3)!important;
+  }
+
+  .p47-budget-summary-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+
+  .p47-budget-item-values{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+
+  .p47-filter-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+
+  .p47-filter-grid .is-search{
+    grid-column:1 / -1!important;
+  }
+
+  .p47-filter-actions{
+    grid-column:1 / -1!important;
+    justify-content:flex-start!important;
+  }
+
+  .p47-transaction-row{
+    grid-template-columns:minmax(0,1fr) auto!important;
+    grid-template-areas:
+      "main amount"
+      "kind state"!important;
+    gap:var(--ux-space-2) var(--ux-space-3)!important;
+    align-items:center!important;
+    padding:var(--ux-space-3)!important;
+  }
+
+  .p47-transaction-main{
+    grid-area:main!important;
+  }
+
+  .p47-transaction-kind{
+    grid-area:kind!important;
+  }
+
+  .p47-transaction-state{
+    grid-area:state!important;
+    text-align:end!important;
+  }
+
+  .p47-transaction-amount{
+    grid-area:amount!important;
+    text-align:end!important;
+  }
+
+  .p47-transaction-kpis{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+}
+
