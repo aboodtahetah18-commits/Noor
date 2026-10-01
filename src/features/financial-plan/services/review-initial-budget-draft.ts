@@ -39,7 +39,6 @@ export type TemporaryExtraAmountSuggestion={
   itemName:string;
   reason:'TRAVEL'|'OCCASION'|'HEALTH'|'MAINTENANCE'|'UNUSUAL_MONTH'|'OTHER';
   suggestedExtraAmount:number;
-  observedMonths:number;
   historicalMonthlyAverage:number;
   historicalMonthlyP75:number;
   historicalMonthlyStdDev:number;
@@ -56,7 +55,6 @@ export type TemporaryExtraAmountSuggestion={
   personalizationApplied:boolean;
   learningConfirmations:number;
   outcomeCount:number;
-  biasApplied:boolean;
   biasLabel:string|null;
   seasonalityLabel:string|null;
   namedSeason:NamedBudgetSeason|null;
@@ -525,7 +523,6 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       : null;
 
     const unifiedConfidence=evaluateTemporaryEstimateConfidence({
-      observedMonths:monthly.observedMonths,
       coefficientOfVariation,
       outcomeCount:learned?.outcomeCount??0,
       averageErrorRatio:learned?.averageErrorRatio??null,
@@ -559,7 +556,6 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       personalizationApplied,
       learningConfirmations:learned?.confirmationCount??0,
       outcomeCount:learned?.outcomeCount??0,
-      biasApplied,
       biasLabel,
       seasonalityLabel,
       namedSeason:namedSignal?.season??null,
