@@ -79,7 +79,6 @@ export type TemporaryBudgetFundingPlan={
   targetItemName:string;
   reason:'TRAVEL'|'OCCASION'|'HEALTH'|'MAINTENANCE'|'UNUSUAL_MONTH'|'OTHER';
   extraAmount:number;
-  availableFromFreeMargin:number;
   fundedFromFreeMargin:number;
   sourceReductions:TemporaryBudgetFundingSource[];
   fundedTotal:number;
@@ -151,12 +150,10 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
   const cycleEnd=String(plan.cycle_end??'');
   const [allocationRows,incomeRows,foundationRows]=await Promise.all([
     rawSql`
-      select ba.id,ba.category_id,bc.name,bc.expense_nature_default,ba.priority_override,ba.priority_override_scope,ba.priority_override_reason,ba.priority_override_note,ba.temporary_extra_amount::text,ba.planned_amount::text,ba.allocation_type,
-        r.recurrence_kind,r.interval_cycles
+      select ba.id,ba.category_id,bc.name,bc.expense_nature_default,ba.priority_override,ba.priority_override_scope,ba.priority_override_reason,ba.priority_override_note,ba.temporary_extra_amount::text,ba.planned_amount::text,ba.allocation_type
       from public.plan_versions pv
       join public.budget_allocations ba on ba.plan_version_id=pv.id and ba.user_id=pv.user_id
       join public.budget_categories bc on bc.id=ba.category_id and bc.user_id=ba.user_id
-      left join public.plan_item_rules r on r.user_id=ba.user_id and r.category_id=ba.category_id and r.is_active=true
       where pv.user_id=${userId}::uuid and pv.plan_id=${planId}::uuid
         and pv.version_number=1 and pv.approved_at is null
       order by bc.name
@@ -303,7 +300,6 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       name:String(row.name??'بند'),
       amount:finite(row.planned_amount),
       type:String(row.allocation_type??''),
-      recurrenceKind:String(row.recurrence_kind??'MONTHLY'),
       historicalMonthlyAverage:history.actual90d/observedMonths,
       activeMonths90d:history.activeMonths90d,
       transactionCount90d:history.transactionCount90d,
@@ -585,7 +581,6 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
 
   for(const target of contextualTargets){
     let remaining=target.temporaryExtraAmount;
-    const availableFromFreeMargin=freeMarginRemaining;
     const fundedFromFreeMargin=Math.min(freeMarginRemaining,remaining);
     freeMarginRemaining=Math.max(0,freeMarginRemaining-fundedFromFreeMargin);
     remaining-=fundedFromFreeMargin;
@@ -652,7 +647,6 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       targetItemName:target.name,
       reason:target.temporaryContextReason as TemporaryBudgetFundingPlan['reason'],
       extraAmount:target.temporaryExtraAmount,
-      availableFromFreeMargin,
       fundedFromFreeMargin,
       sourceReductions,
       fundedTotal,
