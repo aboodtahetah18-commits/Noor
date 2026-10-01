@@ -1,5 +1,16 @@
 begin;
 
+create or replace function public.set_updated_at()
+returns trigger
+language plpgsql
+as $
+begin
+  new.updated_at=now();
+  return new;
+end;
+$;
+
+
 create table if not exists public.budget_priority_preferences (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.profiles(id) on delete cascade,
@@ -20,6 +31,7 @@ create table if not exists public.budget_priority_preferences (
 create index if not exists budget_priority_preferences_type_idx
   on public.budget_priority_preferences(user_id,allocation_type,chosen_priority);
 
+drop trigger if exists budget_priority_preferences_updated_at on public.budget_priority_preferences;
 create trigger budget_priority_preferences_updated_at
   before update on public.budget_priority_preferences
   for each row execute function public.set_updated_at();
