@@ -1,3 +1,4 @@
+await import('./verify-budget-learning-integrity.mjs');
 await import('./verify-budget-learning-migrations.mjs');
 
 import process from 'node:process';
