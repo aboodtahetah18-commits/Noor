@@ -490,7 +490,11 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
     const historicalSpan=Math.max(0,historicalMaximum-historicalMinimum);
     const learningKey=`${normalizeTemporaryAmountLabel(item.name)}:${String(item.temporaryContextReason)}`;
     const learned=temporaryAmountPreferenceByKey.get(learningKey);
-    const personalizationApplied=confidence!=='HIGH'&&historicalSpan>0&&Boolean(learned&&learned.confirmationCount>=3);
+    const historySupportsPersonalization=
+      monthly.observedMonths<5 ||
+      coefficientOfVariation===null ||
+      coefficientOfVariation>0.35;
+    const personalizationApplied=historySupportsPersonalization&&historicalSpan>0&&Boolean(learned&&learned.confirmationCount>=3);
     const learnedPosition=personalizationApplied&&learned?learned.averagePosition:null;
     const accuracyWeight=learned?.accuracyWeight??1;
     const outcomeTotal=learned?.outcomeCount??0;
@@ -611,7 +615,7 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       recentSignedBias:learned?.recentSignedBias??null,
       driftLabel,
       outcomeLabel,
-      basis:confidence==='HIGH'
+      basis:unifiedConfidence.level==='HIGH'
         ? `التقدير مبني على الربع الأعلى من الصرف الشهري الفعلي لهذا البند خلال ${monthly.observedMonths} أشهر مكتملة، بعد استبعاد الشهر الجاري.`
         : personalizationApplied&&learned
           ? `خصص نماء النطاق بناءً على ${learned.confirmationCount} اختيارات سابقة لك لنفس البند والظرف، مع إبقائه داخل الحدود التاريخية الفعلية.`
