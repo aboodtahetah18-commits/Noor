@@ -1862,3 +1862,75 @@ label:has(input),label:has(select),label:has(textarea){color:var(--ux-color-ink)
   }
 }
 
+/* 2026-10-01 — PROTECTED APP LEGACY TABLET PARITY
+ * Preserve phone inheritance from historical <=1023px rules while carrying the
+ * same protected-app tablet behavior forward from 768px with no 1024px mode switch.
+ */
+@media (min-width:768px){
+  .transaction-filter-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+
+  .dashboard-kpis{grid-template-columns:repeat(2,minmax(0,1fr));}.dashboard-main-grid{grid-template-columns:1fr;}.dashboard-triple-grid{grid-template-columns:1fr 1fr;}.dashboard-hero{align-items:stretch;flex-direction:column;}.dashboard-hero-side{min-width:0;}
+
+  .bank-operations-page .statement-kpis{grid-template-columns:repeat(2,minmax(0,1fr));}
+
+  .dashboard-module-grid{grid-template-columns:repeat(2,minmax(0,1fr));}.workspace-status-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+
+  .dashboard-module-grid{grid-template-columns:repeat(2,minmax(0,1fr));}.workspace-status-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+
+  .p47-budget-hero{grid-template-columns:1fr;padding:var(--ux-space-5);}.p47-budget-summary-grid{grid-template-columns:1fr 1fr;}.p47-revision-banner{display:grid;}.p47-budget-item-values{grid-template-columns:1fr 1fr;}.p47-transaction-kpis{grid-template-columns:1fr 1fr;}.p47-filter-grid{grid-template-columns:1fr 1fr;}.p47-filter-grid .is-search{grid-column:1/-1;}.p47-filter-actions{grid-column:1/-1;}.p47-transaction-row{grid-template-columns:62px minmax(0,1fr) auto;}.p47-transaction-state{display:none;}.p47-transaction-amount{grid-column:3;}.p47-bank-journey{grid-template-columns:1fr 1fr;}.p47-bank-entry{grid-template-columns:1fr;padding:var(--ux-space-5);}.p47-bank-entry form{grid-template-columns:1fr;}.p47-bank-entry .is-message{grid-row:auto;}.p47-bank-entry .p47-primary-action{width:100%;}.p47-review-head{display:grid;}.p47-review-head b{justify-self:start;}
+
+  .p47-section-header{align-items:stretch;}.p47-goal-command-strip,.p47-funding-kpis{grid-template-columns:1fr 1fr;}.p47-cycle-context{grid-template-columns:1fr;gap:var(--ux-space-2);}.p47-goal-portfolio,.p47-funding-case-list{grid-template-columns:1fr;}.p47-goal-card{padding:var(--ux-space-4);}.p47-goal-card-head,.p47-funding-case-head{display:grid;}.p47-goal-balance,.p47-funding-case-head>div:last-child{text-align:right;}.p47-goal-funding-track{grid-template-columns:1fr 1fr;}.p47-goal-funding-track>div:last-child{grid-column:1/-1;}.p47-goal-commitment{grid-template-columns:1fr;}.p47-goal-commitment .p47-primary-action{width:100%;}.p47-goal-card-footer{align-items:flex-start;}.p47-goal-timeline>.kpi-grid{grid-template-columns:1fr 1fr;}.p47-funding-create .form-grid{grid-template-columns:1fr 1fr;}.p47-funding-case-metrics{grid-template-columns:1fr 1fr;}.p47-funding-case-metrics>span:last-child{grid-column:1/-1;}
+
+  .p47-analysis-kpis{grid-template-columns:repeat(2,minmax(0,1fr));}.p47-advisor-item-body{grid-template-columns:1fr;}.p47-filter-grid{grid-template-columns:1fr 1fr;}.p47-filter-grid label:nth-child(3){grid-column:1/-1;}.p47-decision-item{grid-template-columns:82px minmax(0,1fr);}.p47-decision-impact{grid-column:2;text-align:right;display:flex;gap:var(--ux-space-2);}
+
+  .p47-resource-kpis{grid-template-columns:repeat(2,minmax(0,1fr));}.p47-account-map{grid-template-columns:1fr 1fr;}.p47-settings-hub{grid-template-columns:1fr;}.p47-settings-reference-grid{grid-template-columns:1fr 1fr;}
+
+  .p47-flow-page{max-width:760px;}.p47-flow-form,.p47-flow-page .form-grid,.p47-flow-page .account-form{grid-template-columns:1fr 1fr;}
+
+  .p47-closure-header{display:grid;}.p47-closure-page .statement-kpis{grid-template-columns:repeat(2,minmax(0,1fr));}.p47-closure-page .workspace-module-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+
+  .p47-mobile-topbar,.mobile-top-bar{background:var(--ux-surface-default)!important;color:var(--ux-text-primary)!important;border-bottom:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default)!important;}
+
+  /* Compact page rhythm everywhere */
+    .p47-content-shell,.protected-app-shell>.page-shell,.protected-app-shell>main.page-shell,.protected-app-shell>.app-page{padding-top:var(--ux-space-3)!important;padding-bottom:var(--ux-space-4)!important;}
+    .page-header,.p47-page-heading,.p47-resource-header,.p47-flow-header,.p47-closure-header,.p47-analysis-header,.dashboard-header,.p47-section-header{margin-bottom:var(--ux-space-2)!important;padding:var(--ux-space-3) var(--ux-space-3)!important;gap:var(--ux-space-2)!important;border-radius:var(--ux-radius-4)!important;}
+    .page-header h1,.p47-page-heading h1,.p47-resource-header h1,.p47-flow-header h1,.p47-closure-header h1,.p47-analysis-header h1,.dashboard-header h1,.p47-section-header h1{font-size:var(--ux-type-page-title-size)!important;line-height:var(--ux-type-page-title-line)!important;}
+    .page-header p,.p47-page-heading p,.p47-resource-header p,.p47-flow-header p,.p47-analysis-header p,.dashboard-header p{font-size:var(--ux-type-caption-size)!important;line-height:var(--ux-type-body-line)!important;margin-block:var(--ux-space-0)!important;}
+    .title-with-help{gap:var(--ux-space-1)!important;}
+  
+    /* Preserve two-column data entry rather than turning every field into a tall row. */
+    .form-grid,.p47-flow-form,.p47-flow-page .form-grid,.p47-flow-page .account-form,.account-form,.p49-form-page{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:var(--ux-space-2)!important;}
+    .form-grid>label,.p47-flow-form>label,.p47-flow-page .form-grid>label,.p47-flow-page .account-form>label,.account-form>label,.p49-form-page>label{min-width:0!important;gap:var(--ux-space-1)!important;font-size:var(--ux-type-caption-size)!important;}
+    .form-grid .full,.p47-flow-form .full,.p47-flow-page .form-grid .full,.p49-form-page .full,.form-grid>label:has(textarea),.p47-flow-form>label:has(textarea),.account-form>label:has(textarea),.form-grid>fieldset,.p47-flow-form>fieldset,.account-form>fieldset{grid-column:1/-1!important;}
+    .form-grid>button,.p47-flow-form>button,.account-form>button,.p49-form-page>button,.p47-flow-actions,.p49-dialog-actions{grid-column:1/-1!important;}
+    .protected-app-shell :where(input,select,textarea){min-height:var(--ux-size-11)!important;padding:var(--ux-space-2) var(--ux-space-2)!important;}.protected-app-shell textarea{min-height:92px!important;}
+  
+    /* Actions stay in one useful horizontal strip; secondary actions may scroll rather than stack. */
+    .actions-row,.inline-actions,.dashboard-header-actions,.p47-inline-actions,.p47-page-actions,.p47-header-actions,.p49-action-row,.p49-resource-actions,.p47-flow-actions{display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;align-items:center!important;gap:var(--ux-space-1)!important;width:100%!important;overflow-x:auto!important;scrollbar-width:none;padding-bottom:var(--ux-space-0);}.actions-row::-webkit-scrollbar,.inline-actions::-webkit-scrollbar,.dashboard-header-actions::-webkit-scrollbar,.p47-inline-actions::-webkit-scrollbar,.p47-page-actions::-webkit-scrollbar,.p47-header-actions::-webkit-scrollbar,.p49-action-row::-webkit-scrollbar,.p49-resource-actions::-webkit-scrollbar,.p47-flow-actions::-webkit-scrollbar{display:none;}
+    .actions-row>* ,.inline-actions>* ,.dashboard-header-actions>* ,.p47-inline-actions>* ,.p47-page-actions>* ,.p47-header-actions>* ,.p49-action-row>* ,.p49-resource-actions>* ,.p47-flow-actions>*{width:auto!important;min-width:max-content!important;flex:0 0 auto!important;margin:var(--ux-space-0)!important;}
+    .p47-primary-action,.p47-secondary-action,.p47-quiet-action,.primary,.primary-button,.secondary-button,.secondary-link,.button-link{min-height:var(--ux-size-10)!important;padding:var(--ux-space-2) var(--ux-space-3)!important;font-size:var(--ux-type-button-size)!important;border-radius:var(--ux-radius-2)!important;}
+  
+    /* Dense cards and KPI grids: two-up by default, three-up when they are naturally small. */
+    .card,.panel,.form-card,.dashboard-card,.p47-panel,.p47-command-panel,.p47-resource-card,.p47-flow-card,.p47-analysis-card,.account-card,.more-hub-card{padding:var(--ux-space-3)!important;margin-bottom:var(--ux-space-2)!important;border-radius:var(--ux-radius-4)!important;}
+    .dashboard-kpis,.p47-kpi-strip,.p47-transaction-kpis,.p47-resource-kpis,.statement-kpis,.kpi-grid,.p47-analysis-kpis{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:var(--ux-space-2)!important;margin-block:var(--ux-space-2)!important;}
+    .dashboard-kpis article,.p47-kpi-strip article,.p47-transaction-kpis article,.p47-resource-kpis>article,.statement-kpis>article,.kpi-grid>article,.p47-analysis-kpis>article{min-height:84px!important;padding:var(--ux-space-3)!important;gap:var(--ux-space-1)!important;}
+    .dashboard-kpis strong,.p47-kpi-strip strong,.p47-transaction-kpis strong,.p47-resource-kpis strong,.statement-kpis strong,.kpi-grid strong,.p47-analysis-kpis strong{font-size:var(--ux-type-button-size)!important;}
+    .section-title-row,.p47-section-heading,.dashboard-card-head{margin-bottom:var(--ux-space-2)!important;gap:var(--ux-space-2)!important;align-items:center!important;flex-direction:row!important;}.section-title-row h2,.p47-section-heading h2,.dashboard-card-head h2{font-size:var(--ux-type-section-title-size)!important;}
+    .more-hub-group{margin-top:var(--ux-space-3)!important;}.more-hub-grid,.p47-module-grid,.workspace-module-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:var(--ux-space-2)!important;}.more-hub-card,.workspace-module-card{min-height:var(--ux-size-16)!important;padding:var(--ux-space-3)!important;}
+  
+    /* Global mobile bottom navigation: five equal, correctly linked tabs. */
+    
+    
+    
+    
+    
+  
+    /* Collapsible filters */
+    .p4913-filter-shell{margin-bottom:var(--ux-space-2);border-radius:var(--ux-radius-4);}.p4913-filter-toggle{min-height:var(--ux-size-11);padding:var(--ux-space-2) var(--ux-space-2);}.p4913-filter-content{padding:var(--ux-space-2);}
+    .p4913-filter-content .p47-filter-grid{margin:var(--ux-space-0)!important;}
+    .p4913-advisor-filter .p47-filter-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:var(--ux-space-2)!important;align-items:end!important;}.p4913-advisor-filter .p47-filter-grid>label{grid-column:auto!important;min-width:0!important;}.p4913-advisor-filter .p47-filter-actions{grid-column:1/-1!important;display:grid!important;grid-template-columns:1fr 1fr!important;gap:var(--ux-space-2)!important;}.p4913-advisor-filter .p47-filter-actions>*{width:100%!important;min-width:0!important;}
+    .p4913-ledger-filter{grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:var(--ux-space-2)!important;align-items:end!important;}.p4913-ledger-filter .is-search{grid-column:1/-1!important;}.p4913-ledger-filter .is-type,.p4913-ledger-filter .is-account,.p4913-ledger-filter .is-category{grid-column:span 2!important;}.p4913-ledger-filter .is-from,.p4913-ledger-filter .is-to{grid-column:span 3!important;}.p4913-ledger-filter .is-sort{grid-column:span 3!important;}.p4913-ledger-filter .p47-filter-actions{grid-column:span 3!important;display:grid!important;grid-template-columns:1fr 1fr!important;gap:var(--ux-space-1)!important;}.p4913-ledger-filter label{min-width:0!important;}.p4913-ledger-filter label>span{font-size:var(--ux-type-caption-size)!important;}.p4913-ledger-filter input,.p4913-ledger-filter select{width:100%!important;min-width:0!important;font-size:var(--ux-type-caption-size)!important;padding-inline:var(--ux-space-1)!important;}
+
+  .p61-security-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+
