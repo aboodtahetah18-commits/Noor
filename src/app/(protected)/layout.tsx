@@ -18,7 +18,7 @@ export default async function ProtectedLayout({ children }: Readonly<{ children:
   };
 
   return (
-    <div className="protected-app-shell" data-responsive-platform="full">
+    <div className="protected-app-shell" data-responsive-platform="mobile-tablet">
       <FinancialFormIntelligence />
       <a className="skip-link" href="#main-content">تجاوز إلى المحتوى الرئيسي</a>
 
