@@ -186,15 +186,22 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
   const historyRows=categoryIds.length
     ? await rawSql`
         select t.category_id,
-          coalesce(sum(case when t.transaction_type in ('EXPENSE','OBLIGATION_PAYMENT') then t.amount else 0 end),0)::text actual_90d,
-          count(distinct date_trunc('month',t.transaction_date))::int active_months_90d,
-          count(*)::int transaction_count_90d
+          greatest(
+            coalesce(sum(case when t.transaction_type in ('EXPENSE','OBLIGATION_PAYMENT') then t.amount else 0 end),0)
+            - coalesce(sum(case when t.transaction_type='REFUND' then t.amount else 0 end),0),
+            0
+          )::text actual_90d,
+          count(distinct date_trunc('month',t.transaction_date))
+            filter(where t.transaction_type in ('EXPENSE','OBLIGATION_PAYMENT'))::int active_months_90d,
+          count(*)
+            filter(where t.transaction_type in ('EXPENSE','OBLIGATION_PAYMENT'))::int transaction_count_90d
         from public.transactions t
         where t.user_id=${userId}::uuid
           and t.category_id=any(${categoryIds}::uuid[])
           and t.status='POSTED'
-          and t.transaction_date>=current_date-interval '90 days'
-          and t.transaction_type in ('EXPENSE','OBLIGATION_PAYMENT')
+          and t.transaction_date>=${cycleStart}::date-interval '90 days'
+          and t.transaction_date<${cycleStart}::date
+          and t.transaction_type in ('EXPENSE','OBLIGATION_PAYMENT','REFUND')
         group by t.category_id
       `
     : [];
@@ -216,8 +223,8 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
         where t.user_id=${userId}::uuid
           and t.category_id=any(${categoryIds}::uuid[])
           and t.status='POSTED'
-          and t.transaction_date>=current_date-interval '36 months'
-          and t.transaction_date<current_date
+          and t.transaction_date>=${cycleStart}::date-interval '36 months'
+          and t.transaction_date<${cycleStart}::date
           and t.transaction_type in ('EXPENSE','OBLIGATION_PAYMENT','REFUND')
         group by t.category_id,t.transaction_date
         order by t.transaction_date
@@ -244,8 +251,8 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
           where t.user_id=${userId}::uuid
             and t.category_id=any(${categoryIds}::uuid[])
             and t.status='POSTED'
-            and t.transaction_date>=date_trunc('month',current_date)-interval '18 months'
-            and t.transaction_date<date_trunc('month',current_date)
+            and t.transaction_date>=date_trunc('month',${cycleStart}::date)-interval '18 months'
+            and t.transaction_date<date_trunc('month',${cycleStart}::date)
             and t.transaction_type in ('EXPENSE','OBLIGATION_PAYMENT','REFUND')
           group by t.category_id,date_trunc('month',t.transaction_date)
         ),
@@ -263,10 +270,10 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
         seasonal as (
           select category_id,
             count(*) filter(
-              where extract(quarter from month_start)=extract(quarter from current_date)
+              where extract(quarter from month_start)=extract(quarter from ${cycleStart}::date)
             )::int season_observed_months,
             percentile_cont(0.5) within group(order by month_total)
-              filter(where extract(quarter from month_start)=extract(quarter from current_date))::text season_median
+              filter(where extract(quarter from month_start)=extract(quarter from ${cycleStart}::date))::text season_median
           from monthly
           group by category_id
         )
