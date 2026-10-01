@@ -62,7 +62,7 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
       </header>
 
       <Drawer open={open} onOpenChange={setOpen} title="القائمة" side="start" className="namaa-mobile-navigation-drawer">
-        <nav className="namaa-mobile-drawer-nav" aria-label="التنقل الثانوي للجوال">
+        <nav className="namaa-mobile-drawer-nav" aria-label="التنقل الثانوي للجوال والتابلت">
           {secondary.map(({ href, label, icon }) => {
             const active = pathname === href || pathname.startsWith(`${href}/`);
             return (
