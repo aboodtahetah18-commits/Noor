@@ -34,7 +34,8 @@ requireText('components.css', components, '.ux-button[data-size="lg"]');
 requireText('components.css', components, 'textarea.ux-control { min-height:calc(var(--ux-size-12) * 2);');
 requireText('components.css', components, '.ux-dialog-actions > [data-block-mobile="true"] { width:100%; }');
 
-requireText('pages.css', pages, '.mustaqbali-sidebar,\n.mustaqbali-mobile-drawer {\n  background:var(--ux-shell-sidebar-bg) !important;');
+requireText('pages.css', pages, '.page-shell { width:min(100%,var(--ux-container-content)); }');
+forbid('pages.css', pages, /\.mustaqbali-(?:sidebar|mobile-drawer)\b/);
 requireText('pages.css', pages, '.p49-action-dialog::backdrop { background:rgb(31 41 55 / .42) !important; }');
 requireText('pages.css', pages, 'html[data-theme="dark"] .page-header');
 requireText('pages.css', pages, 'background:var(--ux-card-bg) !important;');
