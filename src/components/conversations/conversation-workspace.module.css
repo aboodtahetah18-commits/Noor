@@ -253,13 +253,6 @@
   color:var(--ux-text-primary)
 }
 
-.messages{
-  display:flex;
-  flex-direction:column;
-  gap:var(--ux-space-4);
-  position:relative
-}
-
 
 
 
@@ -11412,30 +11405,41 @@
 }
 
 .messages{
-  flex:1 1 auto!important;
+  position:relative!important;
+  display:flex!important;
+  flex-direction:column!important;
+  flex:1 1 0!important;
   min-height:0!important;
   width:100%!important;
   max-width:100%!important;
   margin:0!important;
   padding:var(--ux-space-3)!important;
+  gap:var(--ux-space-4)!important;
   overflow-y:auto!important;
   overflow-x:hidden!important;
   overscroll-behavior:contain!important;
+  overscroll-behavior-y:contain!important;
+  scroll-padding-block-end:calc(var(--ux-space-16) + var(--ux-space-1) + env(safe-area-inset-bottom))!important;
   background:var(--namaa-card)!important;
   background-image:none!important;
 }
 
 .composer{
-  position:relative!important;
+  position:sticky!important;
+  bottom:0!important;
+  inset-block-end:0!important;
+  z-index:20!important;
   display:flex!important;
   direction:rtl!important;
   align-items:flex-end!important;
   flex:0 0 auto!important;
+  flex-shrink:0!important;
   width:100%!important;
   max-width:100%!important;
   min-height:68px!important;
   margin:0!important;
-  padding:var(--ux-space-2) var(--ux-space-3) calc(var(--ux-space-2) + env(safe-area-inset-bottom))!important;
+  margin-block-end:0!important;
+  padding:var(--ux-space-2) var(--ux-space-3) max(var(--ux-space-2),env(safe-area-inset-bottom))!important;
   gap:var(--ux-space-2)!important;
   border:0!important;
   border-top:1px solid var(--namaa-border)!important;
@@ -11570,7 +11574,7 @@
   overflow-y:auto!important;
   overflow-x:hidden!important;
   overscroll-behavior:contain!important;
-  padding:var(--ux-space-3)!important;
+  padding:0 var(--ux-space-3) var(--ux-space-3)!important;
   border:0!important;
   border-inline-end:1px solid var(--namaa-border)!important;
   border-radius:0!important;
@@ -11763,32 +11767,10 @@
   place-items:center!important;
 }
 
-.messages{
-  flex:1 1 0!important;
-  min-height:0!important;
-  overflow-y:auto!important;
-  overscroll-behavior-y:contain!important;
-}
-
-.composer{
-  position:sticky!important;
-  bottom:0!important;
-  inset-block-end:0!important;
-  z-index:20!important;
-  flex-shrink:0!important;
-  margin-block-end:0!important;
-  padding-block-end:max(var(--ux-space-2),env(safe-area-inset-bottom))!important;
-}
-
-
 /* 2026-09-30 — DRAWER TOP-GAP REMOVAL
  * Keep the governor directory card as high as possible under the drawer
  * identity row. Remove the historical empty block before the work directory.
  */
-.mobileSideSheet{
-  padding-block-start:0!important;
-}
-
 .mobileSideSheet .sideBrandRow{
   margin-block-start:0!important;
   margin-block-end:0!important;
@@ -11986,11 +11968,6 @@
   inset-block-start:0!important;
   margin-block-start:0!important;
 }
-
-.messages{
-  scroll-padding-block-end:calc(var(--ux-space-16) + var(--ux-space-1) + env(safe-area-inset-bottom))!important;
-}
-
 
 /* 2026-09-30 — MULTI-PAYMENT EDITOR */
 .paymentScheduleEditor{
