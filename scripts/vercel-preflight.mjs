@@ -1,3 +1,5 @@
+await import('./verify-budget-learning-migrations.mjs');
+
 import process from 'node:process';
 
 const errors=[];
