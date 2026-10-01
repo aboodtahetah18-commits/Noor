@@ -9233,7 +9233,9 @@
   }
 }
 
-@media (min-width:768px) and (max-width:1023px){
+
+/* Tablet-stretched onboarding/editor continuity from 768px upward. */
+@media (min-width:768px){
   .desktopIntakeTableHeader{
     align-items:stretch!important;
     flex-direction:column!important;
@@ -9243,12 +9245,17 @@
     justify-content:flex-start!important;
   }
 
+  .mobileRecordEditorOverlay{
+    padding:var(--ux-space-2)!important;
+  }
+
   .mobileRecordEditorSheet,
   .mobileRecordEditorSheetCompact{
-    width:calc(100vw - 24px)!important;
-    height:calc(100dvh - 24px)!important;
-    max-height:calc(100dvh - 24px)!important;
-    border-radius:var(--ux-radius-xl)!important;
+    width:calc(100vw - 20px)!important;
+    max-width:calc(100vw - 20px)!important;
+    height:calc(100dvh - 20px)!important;
+    max-height:calc(100dvh - 20px)!important;
+    border-radius:var(--ux-radius-lg)!important;
   }
 
   .mobileRecordEditorBody{
@@ -9260,8 +9267,16 @@
   .mobileRecordEditorBody .intakeCheckbox{
     grid-column:auto!important;
   }
-}
 
+  .desktopIntakeTableWrap{
+    max-height:210px!important;
+  }
+
+  .mobileRecordEditorActions button{
+    flex:1 1 0!important;
+    max-width:none!important;
+  }
+}
 
 /* Tablet onboarding / record-editor identity.
  * Conversation chrome is owned exclusively by the mobile/tablet chat authority below.
@@ -9446,22 +9461,6 @@
   }
 }
 
-@media (min-width:768px) and (max-width:1023px){
-  .mobileRecordEditorOverlay{
-    padding:var(--ux-space-2)!important;
-  }
-
-  .mobileRecordEditorSheet,
-  .mobileRecordEditorSheetCompact{
-    width:calc(100vw - 20px)!important;
-    max-width:calc(100vw - 20px)!important;
-    height:calc(100dvh - 20px)!important;
-    max-height:calc(100dvh - 20px)!important;
-    border-radius:var(--ux-radius-lg)!important;
-  }
-}
-
-
 /* ========================================================================== */
 /* SPEC BATCH 3 — compact onboarding cards + non-white wide conversation UI   */
 /* ========================================================================== */
@@ -9625,18 +9624,6 @@
   :global(html[data-theme="dark"]) .composer textarea{background:var(--ux-shell-sidebar-bg)!important;color:var(--namaa-gold-500)!important;border-color:var(--namaa-green-700)!important;}
   :global(html[data-theme="dark"]) .composer textarea::placeholder{color:var(--ux-border-default)!important;}
 }
-
-@media (min-width:768px) and (max-width:1023px){
-  .desktopIntakeTableWrap{
-    max-height:210px!important;
-  }
-
-  .mobileRecordEditorActions button{
-    flex:1 1 0!important;
-    max-width:none!important;
-  }
-}
-
 
 /* Financial profile — compact institutional layout with dedicated bill/subscription tables. */
 .extendedProfileSheet{
