@@ -447,20 +447,6 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
     const coefficientOfVariation=monthly.monthlyAverage>0
       ? monthly.monthlyStdDev/monthly.monthlyAverage
       : null;
-    const confidence:TemporaryExtraAmountSuggestion['confidence']=
-      monthly.observedMonths>=5&&coefficientOfVariation!==null&&coefficientOfVariation<=0.35
-        ? 'HIGH'
-        : monthly.observedMonths>=3&&coefficientOfVariation!==null&&coefficientOfVariation<=0.65
-          ? 'MEDIUM'
-          : 'LOW';
-    const confidenceLabel=confidence==='HIGH'
-      ? `ثقة عالية — ${monthly.observedMonths} أشهر مكتملة وتذبذب منخفض نسبيًا`
-      : confidence==='MEDIUM'
-        ? `ثقة متوسطة — ${monthly.observedMonths} أشهر مكتملة مع تذبذب مقبول`
-        : coefficientOfVariation===null
-          ? `ثقة منخفضة — لا توجد بيانات كافية لقياس استقرار الصرف`
-          : `ثقة منخفضة — التاريخ محدود أو الصرف متذبذب بشكل واضح`;
-
     const rawSeasonalityFactor=monthly.monthlyMedian>0&&monthly.seasonObservedMonths>=3
       ? monthly.seasonMedian/monthly.monthlyMedian
       : 1;
