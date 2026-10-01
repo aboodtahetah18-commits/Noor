@@ -293,14 +293,13 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
   const items=allocationRows.map(row=>{
     const categoryId=String(row.category_id);
     const history=historyByCategory.get(categoryId)??{actual90d:0,activeMonths90d:0,transactionCount90d:0};
-    const observedMonths=Math.max(1,Math.min(3,history.activeMonths90d||3));
     return {
       allocationId:String(row.id),
       categoryId,
       name:String(row.name??'بند'),
       amount:finite(row.planned_amount),
       type:String(row.allocation_type??''),
-      historicalMonthlyAverage:history.actual90d/observedMonths,
+      historicalMonthlyAverage:history.actual90d/3,
       activeMonths90d:history.activeMonths90d,
       transactionCount90d:history.transactionCount90d,
       userPriority:row.priority_override
