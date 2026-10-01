@@ -838,9 +838,7 @@
   flex:0 0 auto
 }
 
-.mobileConversationList{
-  display:none
-}
+
 
 .mobileBack{
   display:none
@@ -3799,7 +3797,7 @@
 
 
 
-  .chatBankMark{width:36px;height:36px;flex-basis:36px}
+
   .mobileTools button{background:color-mix(in srgb,var(--namaa-cream) 78%,var(--namaa-card));box-shadow:var(--ux-shadow-xs)}
 
 
@@ -3817,9 +3815,7 @@
   padding:var(--ux-space-0);
   justify-content:center
   }
-  .mobileConversationListVisible{
-    display:block
-  }
+
   .mobileListHeader>div{
     display:grid;
   gap:var(--ux-space-1)
@@ -3833,37 +3829,13 @@
     font-size:var(--ux-type-caption-size);
   color:var(--ux-text-secondary)
   }
-  .mobileConversationList .roomList{
-    display:block
-  }
-  .mobileConversationList .roomItem{
-    min-height:76px;
-  border:0;
-  border-bottom:1px solid var(--namaa-border);
-  border-radius:var(--ux-radius-0);
-  padding:var(--ux-space-3) var(--ux-space-4);
-  background:var(--namaa-card);
-  gap:var(--ux-space-3)
-  }
-  .mobileConversationList .roomItem:hover,
-  .mobileConversationList .activeRoom{
-    background:var(--namaa-surface-warm);
-  border-color:var(--namaa-border)
-  }
-  .mobileConversationList .roomCopy{
-    gap:var(--ux-space-1);
-  flex:1
-  }
-  .mobileConversationList .roomCopy strong{
-    font-size:var(--ux-type-body-sm-size)
-  }
-  .mobileConversationList .roomCopy small{
-    font-size:var(--ux-type-caption-size);
-  color:var(--ux-text-secondary)
-  }
-  .mobileConversationList .roomCopy em{
-    font-size:var(--ux-type-caption-size)
-  }
+
+
+
+
+
+
+
   .mobileChatHidden{
     display:none!important
   }
@@ -3985,12 +3957,7 @@
     margin:0;
     overflow:hidden
   }
-  .mobileConversationList{
-    display:none;
-  height:100dvh;
-  background:var(--namaa-card);
-  overflow:auto
-  }
+
   .mobileListHeader{
     min-height:68px;
   padding:var(--ux-space-3) var(--ux-space-4);
@@ -4318,32 +4285,26 @@
   height:32px;
   flex-basis:32px
   }
-  .mobileConversationList .roomItemShell,
   .mobileSideSheet .roomItemShell{
     min-height:72px;
   border-radius:var(--ux-radius-4);
   margin-bottom:var(--ux-space-1)
   }
-  .mobileConversationList .roomItem,
   .mobileSideSheet .roomItem{
     min-height:70px;
   padding:var(--ux-space-2);
   gap:var(--ux-space-3)
   }
-  .mobileConversationList .roomItem .personaAvatar,
   .mobileSideSheet .roomItem .personaAvatar{
     width:54px;
   height:54px;
   flex-basis:54px
   }
-  .mobileConversationList .roomCopy strong,
   .mobileSideSheet .roomCopy strong{
     font-size:var(--ux-type-body-sm-size);
   white-space:normal;
   line-height:1.4
   }
-  .mobileConversationList .roomCopy small,
-  .mobileConversationList .roomCopy em,
   .mobileSideSheet .roomCopy small,
   .mobileSideSheet .roomCopy em{
     display:none
