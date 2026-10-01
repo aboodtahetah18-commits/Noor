@@ -9942,6 +9942,59 @@
   line-height:1.5
 }
 
+
+.meetingDetailsBody{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:var(--ux-space-3)!important
+}
+.meetingDetailsBody>section{
+  display:grid;
+  gap:var(--ux-space-2);
+  padding:var(--ux-space-3);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-3);
+  background:var(--namaa-surface-warm)
+}
+.meetingDetailsHeading{
+  display:flex;
+  align-items:center;
+  gap:var(--ux-space-2)
+}
+.meetingDetailsHeading svg{
+  color:var(--namaa-green-900)
+}
+.meetingDetailsBody ul{
+  margin:var(--ux-space-0);
+  padding-inline-start:var(--ux-space-5);
+  display:grid;
+  gap:var(--ux-space-1)
+}
+.meetingDetailsBody li,
+.meetingDetailsBody p{
+  margin:var(--ux-space-0);
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  line-height:1.65
+}
+.meetingDocumentList{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:var(--ux-space-2)!important
+}
+.meetingDocumentList>span{
+  display:grid;
+  gap:var(--ux-space-1);
+  padding:var(--ux-space-2);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-2);
+  background:var(--namaa-card)
+}
+.meetingDocumentList small{
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size)
+}
+
 /* Final polish for accounts and meeting actions — NDOS tokens only. */
 .accountSyncStatus{
   display:flex;
