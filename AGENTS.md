@@ -29,13 +29,13 @@ A route must not create a new visual language, breakpoint system, spacing scale,
 The only governed viewport bands are:
 
 - Mobile: `< 768px`
-- Transitional/tablet: `768px–1023px`
-- Desktop: `1024px–1439px`
-- Wide desktop: `>= 1440px`
+- Tablet / stretched tablet: `>= 768px`
 
-Do not create page-local breakpoints. If a new breakpoint is genuinely required, change the central responsive contract first and add regression coverage before consuming it.
+Desktop and wide-desktop presentation modes are retired. Large screens keep the tablet composition and may stretch only within governed container limits.
 
-Complex mobile screens and desktop screens may use different composition components. They must share business logic and design-system primitives, not necessarily the same DOM layout.
+Do not create page-local breakpoint modes. If a new breakpoint is genuinely required, change the central responsive contract first and add regression coverage before consuming it.
+
+Mobile and tablet compositions may differ where necessary, but they must share business logic and design-system primitives.
 
 ## 4. Mobile rules
 
@@ -47,12 +47,12 @@ Complex mobile screens and desktop screens may use different composition compone
 - Bottom navigation and safe-area insets must never cover actionable content.
 - Touch targets, text, controls, and financial values must remain readable without zoom.
 
-## 5. Desktop rules
+## 5. Tablet / large-screen rules
 
-- Desktop navigation and content shells are independent from mobile navigation composition.
-- Desktop layouts must use the governed content/container widths.
-- Do not fix desktop defects with mobile overrides or vice versa.
-- Wide desktop must remain bounded and readable; do not allow uncontrolled line length or stretched forms.
+- Tablet composition is authoritative from 768px upward.
+- Large screens must use governed content/container widths without introducing a third desktop composition.
+- Do not fix tablet defects with phone-only overrides or vice versa.
+- Large screens must remain bounded and readable; forms and long text must not stretch without governed limits.
 
 ## 6. Design-token rules
 
@@ -118,7 +118,7 @@ Every visual/product UI change follows this order:
 1. Confirm product requirement.
 2. Reuse or define the governed UX pattern.
 3. Reuse or implement design-system component(s).
-4. Implement desktop composition.
+4. Implement tablet / stretched-tablet composition.
 5. Implement mobile composition.
 6. Implement loading/empty/error/success states.
 7. Verify RTL and accessibility.
@@ -146,7 +146,7 @@ Effective immediately:
 A UI change is complete only when:
 - it follows the approved Namaa visual identity source dated 2026-09-22 or a newer approved replacement;
 - no unauthorized brand/font/style is introduced;
-- mobile and desktop both satisfy their layout contracts;
+- mobile and tablet/stretched-tablet both satisfy their layout contracts;
 - required states are covered;
 - no new legacy CSS repair layer is added;
 - all mandatory quality gates pass.
