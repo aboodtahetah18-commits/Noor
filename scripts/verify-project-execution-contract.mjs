@@ -20,9 +20,8 @@ const contract = fs.readFileSync(path.join(root, 'AGENTS.md'), 'utf8');
 for (const phrase of [
   'Pages do not own the design system.',
   'Mobile: `< 768px`',
-  'Transitional/tablet: `768px–1023px`',
-  'Desktop: `1024px–1439px`',
-  'Wide desktop: `>= 1440px`',
+  'Tablet / stretched tablet: `>= 768px`',
+  'Desktop and wide-desktop presentation modes are retired.',
   'no new "Build XX fix"',
 ]) {
   if (!contract.includes(phrase)) fail.push(`execution contract missing invariant: ${phrase}`);
