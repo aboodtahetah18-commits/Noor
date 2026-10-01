@@ -43,7 +43,6 @@ export type TemporaryExtraAmountSuggestion={
   historicalMonthlyAverage:number;
   historicalMonthlyP75:number;
   historicalMonthlyStdDev:number;
-  coefficientOfVariation:number|null;
   confidence:'LOW'|'MEDIUM'|'HIGH';
   confidenceLabel:string;
   confidenceScore:number;
@@ -56,31 +55,13 @@ export type TemporaryExtraAmountSuggestion={
   requiresManualAmount:boolean;
   personalizationApplied:boolean;
   learningConfirmations:number;
-  learnedPosition:number|null;
   outcomeCount:number;
-  averageErrorRatio:number|null;
-  accuracyWeight:number;
-  underCount:number;
-  overCount:number;
-  matchCount:number;
-  averageSignedBias:number|null;
-  biasAdjustment:number;
   biasApplied:boolean;
   biasLabel:string|null;
-  biasStability:'INSUFFICIENT'|'STABLE_UNDER'|'STABLE_OVER'|'MIXED'|'SHIFTING';
-  seasonalityApplied:boolean;
-  seasonalityFactor:number;
   seasonalityLabel:string|null;
   namedSeason:NamedBudgetSeason|null;
-  namedSeasonLabel:string|null;
-  namedSeasonCoverage:number|null;
   namedSeasonHistoricalOccurrences:number;
   namedSeasonApplied:boolean;
-  recentOutcomeCount:number;
-  recentUnderCount:number;
-  recentOverCount:number;
-  recentMatchCount:number;
-  recentSignedBias:number|null;
   driftLabel:string|null;
   outcomeLabel:string|null;
   basis:string;
@@ -398,14 +379,14 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
     });
   }
 
-  const temporaryAmountPreferenceByKey=new Map<string,{confirmationCount:number;averagePosition:number;outcomeCount:number;averageErrorRatio:number|null;accuracyWeight:number;underCount:number;overCount:number;matchCount:number;averageSignedBias:number|null;biasAdjustment:number;biasStability:'INSUFFICIENT'|'STABLE_UNDER'|'STABLE_OVER'|'MIXED'|'SHIFTING';recentOutcomeCount:number;recentUnderCount:number;recentOverCount:number;recentMatchCount:number;recentSignedBias:number|null}>();
+  const temporaryAmountPreferenceByKey=new Map<string,{confirmationCount:number;averagePosition:number;outcomeCount:number;averageErrorRatio:number|null;accuracyWeight:number;underCount:number;overCount:number;biasAdjustment:number;biasStability:'INSUFFICIENT'|'STABLE_UNDER'|'STABLE_OVER'|'MIXED'|'SHIFTING';recentOutcomeCount:number}>();
   const temporaryAmountLearningTable=await rawSql`select to_regclass('public.budget_temporary_amount_preferences')::text table_name`;
   if((temporaryAmountLearningTable[0] as Record<string,unknown>|undefined)?.table_name){
     const preferenceRows=await rawSql`
       select normalized_label,context_reason,confirmation_count,average_position::text,
         outcome_count,average_error_ratio::text,accuracy_weight::text,
-        under_count,over_count,match_count,average_signed_bias::text,bias_adjustment::text,
-        bias_stability,recent_outcome_count,recent_under_count,recent_over_count,recent_match_count,recent_signed_bias::text
+        under_count,over_count,bias_adjustment::text,
+        bias_stability,recent_outcome_count
       from public.budget_temporary_amount_preferences
       where user_id=${userId}::uuid
     `;
@@ -423,17 +404,11 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
         accuracyWeight:Math.max(0.25,Math.min(1,finite(row.accuracy_weight)||1)),
         underCount:Math.max(0,Number(row.under_count??0)),
         overCount:Math.max(0,Number(row.over_count??0)),
-        matchCount:Math.max(0,Number(row.match_count??0)),
-        averageSignedBias:row.average_signed_bias==null?null:finite(row.average_signed_bias),
         biasAdjustment:Math.max(-0.25,Math.min(0.25,finite(row.bias_adjustment))),
         biasStability:['INSUFFICIENT','STABLE_UNDER','STABLE_OVER','MIXED','SHIFTING'].includes(String(row.bias_stability))
           ? String(row.bias_stability) as 'INSUFFICIENT'|'STABLE_UNDER'|'STABLE_OVER'|'MIXED'|'SHIFTING'
           : 'INSUFFICIENT',
         recentOutcomeCount:Math.max(0,Number(row.recent_outcome_count??0)),
-        recentUnderCount:Math.max(0,Number(row.recent_under_count??0)),
-        recentOverCount:Math.max(0,Number(row.recent_over_count??0)),
-        recentMatchCount:Math.max(0,Number(row.recent_match_count??0)),
-        recentSignedBias:row.recent_signed_bias==null?null:finite(row.recent_signed_bias),
       });
     }
   }
@@ -557,11 +532,8 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       observedMonths:monthly.observedMonths,
       coefficientOfVariation,
       outcomeCount:learned?.outcomeCount??0,
-      averageErrorRatio:learned?.averageErrorRatio??null,
       learningConfirmations:learned?.confirmationCount??0,
-      biasStability:learned?.biasStability??'INSUFFICIENT',
       biasApplied,
-      seasonalityApplied:effectiveSeasonalityApplied,
       namedSeasonApplied,
       namedSeasonHistoricalOccurrences:namedSignal?.historicalSeasonOccurrences??0,
     });
@@ -575,7 +547,6 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       historicalMonthlyAverage:monthly.monthlyAverage,
       historicalMonthlyP75:monthly.monthlyP75,
       historicalMonthlyStdDev:monthly.monthlyStdDev,
-      coefficientOfVariation:coefficientOfVariation===null?null:Number(coefficientOfVariation.toFixed(4)),
       confidence:unifiedConfidence.level,
       confidenceLabel:unifiedConfidence.label,
       confidenceScore:unifiedConfidence.score,
@@ -588,31 +559,16 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
       requiresManualAmount:unifiedConfidence.requiresManualAmount,
       personalizationApplied,
       learningConfirmations:learned?.confirmationCount??0,
-      learnedPosition:learnedPosition===null?null:Number(learnedPosition.toFixed(4)),
       outcomeCount:learned?.outcomeCount??0,
       averageErrorRatio:learned?.averageErrorRatio??null,
-      accuracyWeight:Number(accuracyWeight.toFixed(4)),
-      underCount:learned?.underCount??0,
-      overCount:learned?.overCount??0,
-      matchCount:learned?.matchCount??0,
-      averageSignedBias:learned?.averageSignedBias??null,
-      biasAdjustment:Number((biasApplied&&learned?learned.biasAdjustment:0).toFixed(4)),
       biasApplied,
       biasLabel,
       biasStability:learned?.biasStability??'INSUFFICIENT',
       seasonalityApplied:effectiveSeasonalityApplied,
-      seasonalityFactor:Number(effectiveSeasonalityFactor.toFixed(4)),
       seasonalityLabel,
       namedSeason:namedSignal?.season??null,
-      namedSeasonLabel:namedSignal?.label??null,
-      namedSeasonCoverage:namedSignal?Number(namedSignal.coverage.toFixed(4)):null,
       namedSeasonHistoricalOccurrences:namedSignal?.historicalSeasonOccurrences??0,
       namedSeasonApplied,
-      recentOutcomeCount:learned?.recentOutcomeCount??0,
-      recentUnderCount:learned?.recentUnderCount??0,
-      recentOverCount:learned?.recentOverCount??0,
-      recentMatchCount:learned?.recentMatchCount??0,
-      recentSignedBias:learned?.recentSignedBias??null,
       driftLabel,
       outcomeLabel,
       basis:unifiedConfidence.level==='HIGH'
