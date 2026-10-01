@@ -62,7 +62,8 @@
     "verify:personas": "node scripts/verify-persona-identity-contract.mjs",
     "verify:governed-documents": "node scripts/verify-governed-document-contract.mjs",
     "verify:final-ui-authority": "node scripts/verify-final-ui-authority.mjs",
-    "verify:mobile-stability": "node scripts/verify-mobile-stability-contract.mjs"
+    "verify:mobile-stability": "node scripts/verify-mobile-stability-contract.mjs",
+    "verify:budget-migrations": "node scripts/verify-budget-learning-migrations.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "1.0.1",
