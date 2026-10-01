@@ -16,7 +16,6 @@ const required = [
   'src/design-system/components.css',
   'src/design-system/interaction-components.css',
   'src/design-system/pages.css',
-  'src/design-system/ndos-v1.2.acceptance.css',
   'src/design-system/ndos-v1.2.css',
   'src/design-system/ndos-v1.2.enforcement.css',
   'src/design-system/ndos-v1.2.tokens.json',
@@ -28,10 +27,10 @@ for (const retired of ['src/design-system/experience.css','src/design-system/bra
 }
 
 const layout = read('src/app/layout.tsx');
-const loaded = ['tokens.css','themes.css','typography.css','foundations.css','responsive.css','contracts.css','components.css','interaction-components.css','pages.css','ndos-v1.2.acceptance.css','ndos-v1.2.css','ndos-v1.2.enforcement.css'];
+const loaded = ['tokens.css','themes.css','typography.css','foundations.css','responsive.css','contracts.css','components.css','interaction-components.css','pages.css','ndos-v1.2.css','ndos-v1.2.enforcement.css'];
 for (const file of loaded) if (!layout.includes(`../design-system/${file}`)) fail.push(`root layout does not load ${file}`);
 for (const retired of ['experience.css','brand-refresh.css']) if (layout.includes(retired)) fail.push(`root layout still loads retired layer ${retired}`);
-for (const shellLayer of ['./namaa-app-shell.css','./namaa-shell-visibility.css']) if (!layout.includes(shellLayer)) fail.push(`root layout does not load canonical shell layer ${shellLayer}`);
+for (const shellLayer of ['./namaa-app-shell.css']) if (!layout.includes(shellLayer)) fail.push(`root layout does not load canonical shell layer ${shellLayer}`);
 
 const order = loaded.map((file)=>layout.indexOf(`../design-system/${file}`));
 for (let i=1;i<order.length;i++) if (order[i] <= order[i-1]) fail.push(`design-system import order is invalid around ${loaded[i-1]} -> ${loaded[i]}`);
@@ -41,8 +40,11 @@ if (!layout.includes('dir="rtl"')) fail.push('root layout must keep RTL as the p
 if (!layout.includes('lang="ar"')) fail.push('root layout must keep Arabic as the primary language');
 
 const responsive = read('src/design-system/responsive.css');
-for (const boundary of ['max-width:767px','min-width:768px','max-width:1023px','min-width:1024px','max-width:1439px','min-width:1440px']) {
+for (const boundary of ['max-width:767px','min-width:768px']) {
   if (!responsive.includes(boundary)) fail.push(`responsive contract missing governed boundary: ${boundary}`);
+}
+for (const retiredBoundary of ['max-width:1023px','min-width:1024px','max-width:1439px','min-width:1440px']) {
+  if (responsive.includes(retiredBoundary)) fail.push(`responsive contract still contains retired desktop boundary: ${retiredBoundary}`);
 }
 
 const frozen = JSON.parse(read('src/design-system/ndos-v1.2.tokens.json'));
