@@ -167,7 +167,7 @@
   font-weight:var(--ux-type-button-weight);
 }
 
-@media(max-width:1023px){
+@media(max-width:767px), (min-width:768px){
   .page{
     min-height:100dvh;
     display:block;
