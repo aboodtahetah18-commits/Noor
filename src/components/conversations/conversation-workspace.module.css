@@ -11632,13 +11632,13 @@
 }
 
 .attachButton{
-  order:1!important;
+  order:3!important;
   border-color:var(--namaa-border-strong)!important;
   background:var(--namaa-surface-warm)!important;
   color:var(--namaa-green-900)!important;
 }
 .sendButton{
-  order:3!important;
+  order:1!important;
   justify-content:center!important;
   border-color:var(--namaa-green-900)!important;
   background:var(--namaa-green-900)!important;
