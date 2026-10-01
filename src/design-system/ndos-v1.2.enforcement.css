@@ -2206,7 +2206,7 @@ textarea {
   }
 }
 
-@media (min-width:768px) and (max-width:1023px){
+@media (min-width:768px){
   .namaa-data-table{min-width:780px!important;}
 }
 
