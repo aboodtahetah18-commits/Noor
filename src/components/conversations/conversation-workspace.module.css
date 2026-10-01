@@ -254,17 +254,10 @@
 }
 
 .messages{
-  flex:1 1 auto;
-  min-height:0;
-  padding:var(--ux-space-4) var(--ux-space-4) var(--ux-space-5);
-  overflow-y:auto;
-  overflow-x:hidden;
-  overscroll-behavior:contain;
   display:flex;
   flex-direction:column;
   gap:var(--ux-space-4);
-  position:relative;
-  background:var(--namaa-chat-canvas)
+  position:relative
 }
 
 
@@ -489,21 +482,6 @@
 
 .hiddenFileInput{
   display:none
-}
-
-.composer{
-  position:relative;
-  z-index:3;
-  flex:0 0 auto;
-  margin:var(--ux-space-0) var(--ux-space-3) var(--ux-space-3);
-  padding:var(--ux-space-2);
-  background:var(--namaa-card);
-  border:1px solid var(--namaa-border);
-  border-radius:var(--ux-radius-4);
-  display:flex;
-  gap:var(--ux-space-2);
-  align-items:flex-end;
-  box-shadow:var(--ux-shadow-sm)
 }
 
 .composer textarea{
@@ -9711,11 +9689,6 @@
 
 /* FINAL MOBILE NAV + PAGE AUTHORITY — grouped drawer and full-page inner screens. */
 @media (max-width:767px){
-  .mobileSideSheet{
-    display:block!important;
-    overflow-y:auto!important;
-    overscroll-behavior:contain!important
-  }
   .mobileSideSheet .sideSection{
     display:grid!important;
     gap:var(--ux-space-2)!important;
@@ -11799,9 +11772,11 @@
 
 .composer{
   position:sticky!important;
+  bottom:0!important;
   inset-block-end:0!important;
   z-index:20!important;
   flex-shrink:0!important;
+  margin-block-end:0!important;
   padding-block-end:max(var(--ux-space-2),env(safe-area-inset-bottom))!important;
 }
 
@@ -12012,15 +11987,7 @@
   margin-block-start:0!important;
 }
 
-.composer{
-  bottom:0!important;
-  inset-block-end:0!important;
-  margin-block-end:0!important;
-  padding-block-end:max(var(--ux-space-2),env(safe-area-inset-bottom))!important;
-}
-
 .messages{
-  min-height:0!important;
   scroll-padding-block-end:calc(var(--ux-space-16) + var(--ux-space-1) + env(safe-area-inset-bottom))!important;
 }
 
