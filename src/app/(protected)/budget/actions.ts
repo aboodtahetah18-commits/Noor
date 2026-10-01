@@ -36,6 +36,26 @@ export async function updateInitialDraftAction(planId:string,fd:FormData){
     redirect('/budget?error='+encodeURIComponent('بيانات المسودة غير مكتملة'));
   }
 
+  const previousPriorityRows=await rawSql`
+    select ba.id,ba.priority_override,ba.priority_override_scope
+    from public.budget_allocations ba
+    join public.plan_versions pv on pv.id=ba.plan_version_id and pv.user_id=ba.user_id
+    join public.financial_plans p on p.id=pv.plan_id and p.user_id=pv.user_id
+    where ba.user_id=${u.id}::uuid
+      and ba.id=any(${ids}::uuid[])
+      and p.id=${planId}::uuid
+      and p.status='PLAN_DRAFT'
+      and pv.version_number=1
+      and pv.approved_at is null
+  `;
+  const previousPriorityByAllocation=new Map(previousPriorityRows.map(row=>[
+    String(row.id),
+    {
+      priority:row.priority_override?String(row.priority_override):null,
+      scope:row.priority_override_scope?String(row.priority_override_scope):null,
+    },
+  ]));
+
   const statements=[] as ReturnType<typeof rawSql>[];
   for(let i=0;i<ids.length;i++){
     const amount=Number(amounts[i]);
@@ -102,6 +122,8 @@ export async function updateInitialDraftAction(planId:string,fd:FormData){
       const priority=priorities[i]??'';
       const priorityScope=priorityScopes[i]??'AUTO';
       if(!priority||priorityScope!=='PERSISTENT') continue;
+      const previousDecision=previousPriorityByAllocation.get(ids[i]??'');
+      if(previousDecision?.scope==='PERSISTENT'&&previousDecision.priority===priority) continue;
       const row=await rawSql`
         select bc.name,ba.allocation_type
         from public.budget_allocations ba
