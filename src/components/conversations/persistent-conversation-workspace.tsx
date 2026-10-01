@@ -31,16 +31,6 @@ type UserProfile = { id:string; name:string; email:string|null; image:string|nul
 type OnboardingReviewFact = { key:string; label:string; raw:string; verified_at?:string; confidence:number };
 type ConversationAttachment = { id:string; message_id?:string|null; file_name:string; content_type?:string|null; verification_status?:string|null; created_at?:string };
 type ChatFontSize='small'|'medium'|'large';
-const PLATFORM_NAV: ReadonlyArray<{href:string;label:string;icon:LucideIconName}> = [
-  {href:'/dashboard',label:'الرئيسية',icon:'house'},
-  {href:'/accounts',label:'الحسابات',icon:'creditCard'},
-  {href:'/transactions',label:'العمليات',icon:'repeat2'},
-  {href:'/budget',label:'الميزانية',icon:'chart'},
-  {href:'/bank-operations',label:'البنوك',icon:'landmark'},
-  {href:'/investments',label:'الاستثمارات',icon:'chart'},
-  {href:'/reports',label:'التقارير',icon:'receiptText'},
-  {href:'/alerts',label:'التنبيهات',icon:'bell'},
-];
 type FocusedChat={kind:'role';key:string;title:string;roomId:RoomKey}|{kind:'meeting';key:string;title:string;roomId:'council'};
 type FocusedChatIndexItem={
   room_key:RoomKey;
@@ -1502,7 +1492,16 @@ export function PersistentConversationWorkspace(){
     {roomsOpen&&<div className={styles.mobileOverlay} role="dialog" aria-modal="true" aria-label="القائمة الجانبية"><button type="button" className={styles.scrim} aria-label="إغلاق القائمة الجانبية" onClick={()=>setRoomsOpen(false)}/><aside className={styles.mobileSideSheet}><div className={styles.sideBrandRow}><span className={styles.sideBrandLogoWrap} aria-label="نماء"><Image className={`${styles.sideBrandLogo} ${styles.sideBrandLogoLight}`} src="/brand/ndos/namaa-logo-color-transparent.png" alt="" width={96} height={38}/><Image className={`${styles.sideBrandLogo} ${styles.sideBrandLogoDark}`} src="/brand/ndos/namaa-logo-white-transparent.png" alt="" width={96} height={38}/></span><ThemeToggle className={styles.sideThemeToggle}/><button type="button" className={styles.sideUserButton} aria-label="ملف المستخدم" aria-expanded={userMenuOpen} onClick={()=>setUserMenuOpen(open=>!open)}>{profile?.image?<span className={styles.userImage} style={{backgroundImage:`url("${profile.image.replace(/"/g,'')}")`}} aria-hidden="true"/>:<LucideIcon name="circleUserRound" size={20}/>}</button>{userMenuOpen&&<div className={styles.drawerUserMenu} role="dialog" aria-label="ملف المستخدم"><div className={styles.userMenuIdentity}><button type="button" className={styles.userMenuAvatar} aria-label="صورة المستخدم">{profile?.image?<span className={styles.userImage} style={{backgroundImage:`url("${profile.image.replace(/"/g,'')}")`}}/>:<LucideIcon name="circleUserRound" size={32}/>}</button><div><strong>{profile?.name||'المستخدم'}</strong><small>{profile?.email||''}</small></div></div><button type="button" onClick={()=>{setRoomsOpen(false);setUserMenuOpen(false);setProfileOpen(true)}}><LucideIcon name="pencil" size={20}/><span>الملف الشخصي وتعديل البيانات</span></button><button type="button" onClick={()=>{setRoomsOpen(false);setUserMenuOpen(false);setSettingsSection('general');setSettingsOpen(true)}}><LucideIcon name="settings" size={20}/><span>الإعدادات</span></button><button type="button" className={styles.logoutButton} onClick={()=>void logout()}><LucideIcon name="logOut" size={20}/><span>تسجيل الخروج</span></button></div>}</div>
       <div className={styles.sideSection}>
         <small>التنقل في المنصة</small>
-        <div className={styles.sideUtilityList}>{PLATFORM_NAV.map(item=><button type="button" key={item.href} onClick={()=>{setRoomsOpen(false);router.push(item.href)}}><LucideIcon name={item.icon} size={20}/><span>{item.label}</span></button>)}</div>
+        <div className={styles.sideUtilityList}>
+          <button type="button" onClick={()=>{setRoomsOpen(false);router.push('/dashboard')}}><LucideIcon name="house" size={20}/><span>الرئيسية</span></button>
+          <button type="button" onClick={()=>{setRoomsOpen(false);router.push('/accounts')}}><LucideIcon name="creditCard" size={20}/><span>الحسابات</span></button>
+          <button type="button" onClick={()=>{setRoomsOpen(false);router.push('/transactions')}}><LucideIcon name="repeat2" size={20}/><span>العمليات</span></button>
+          <button type="button" onClick={()=>{setRoomsOpen(false);router.push('/budget')}}><LucideIcon name="chart" size={20}/><span>الميزانية</span></button>
+          <button type="button" onClick={()=>{setRoomsOpen(false);router.push('/bank-operations')}}><LucideIcon name="landmark" size={20}/><span>البنوك</span></button>
+          <button type="button" onClick={()=>{setRoomsOpen(false);router.push('/investments')}}><LucideIcon name="chart" size={20}/><span>الاستثمارات</span></button>
+          <button type="button" onClick={()=>{setRoomsOpen(false);router.push('/reports')}}><LucideIcon name="receiptText" size={20}/><span>التقارير</span></button>
+          <button type="button" onClick={()=>{setRoomsOpen(false);router.push('/alerts')}}><LucideIcon name="bell" size={20}/><span>التنبيهات</span></button>
+        </div>
       </div>
       <div className={styles.sideSection}><small>مركز العمل والمحادثات</small>{onboardingComplete!==false?directoryTabs:null}{mobileDirectoryContent}</div>
       <div className={styles.sideSection}>
