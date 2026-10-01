@@ -10729,13 +10729,15 @@
 /* Tablet is the same product surface, only wider; never switch back to desktop rails. */
 @media (min-width:768px){
   .page{
-    width:min(100%,1024px)!important;
-    max-width:1024px!important;
-    margin-inline:auto!important;
+    width:100%!important;
+    max-width:none!important;
+    margin:0!important;
   }
 
   .chatPane{
-    border-inline:1px solid var(--namaa-border)!important;
+    width:100%!important;
+    max-width:none!important;
+    border-inline:0!important;
   }
 
   .chatHeader,
@@ -11326,3 +11328,70 @@
     grid-column:1!important;
   }
 }
+
+/* 2026-10-01 — CHAT TABLET WIDTH + UNIFIED HEADER/DRAWER FINAL AUTHORITY */
+.page,
+.workspace,
+.chatPane{
+  width:100%!important;
+  max-width:none!important;
+  margin-inline:0!important;
+}
+
+.chatHeaderForeground{
+  width:100%!important;
+  max-width:none!important;
+}
+
+.chatHeaderForeground .mobileTools{
+  display:flex!important;
+  align-items:center!important;
+  gap:var(--ux-space-2)!important;
+  margin-inline-start:auto!important;
+  flex:0 0 auto!important;
+}
+
+.chatHeader .compactMenuButton{
+  position:relative!important;
+  z-index:22!important;
+  display:grid!important;
+  place-items:center!important;
+  pointer-events:auto!important;
+  cursor:pointer!important;
+}
+
+.chatHeader .mobileTools button{
+  display:grid!important;
+  place-items:center!important;
+  pointer-events:auto!important;
+  cursor:pointer!important;
+}
+
+.mobileOverlay{
+  z-index:9999!important;
+  pointer-events:auto!important;
+}
+
+.mobileOverlay>.scrim{
+  pointer-events:auto!important;
+}
+
+.mobileOverlay>.mobileSideSheet{
+  pointer-events:auto!important;
+}
+
+@media (min-width:768px){
+  .page,
+  .workspace,
+  .chatPane{
+    width:100%!important;
+    max-width:none!important;
+    margin-inline:0!important;
+  }
+
+  .mobileSideSheet{
+    width:min(52vw,440px)!important;
+    max-width:440px!important;
+  }
+}
+
