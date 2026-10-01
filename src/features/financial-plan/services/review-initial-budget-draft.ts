@@ -326,6 +326,7 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
         : row.expense_nature_default
           ? String(row.expense_nature_default)
           : null,
+      hasExplicitPriorityDecision:Boolean(row.priority_override&&row.priority_override_scope),
       temporaryContextReason:row.priority_override_scope==='THIS_CYCLE'&&row.priority_override_reason
         ? String(row.priority_override_reason)
         : null,
@@ -359,7 +360,7 @@ export async function reviewInitialBudgetDraft(userId:string,planId:string):Prom
 
   for(const item of items){
     const confidence=priorityConfidence.get(item.allocationId);
-    if(confidence?.requiresManualConfirmation&&!item.userPriority){
+    if(confidence?.requiresManualConfirmation&&!item.hasExplicitPriorityDecision){
       issues.push({
         code:'PRIORITY_CONFIRMATION_REQUIRED',
         severity:'blocker',
