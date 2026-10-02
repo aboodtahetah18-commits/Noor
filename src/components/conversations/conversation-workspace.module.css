@@ -376,8 +376,11 @@
 }
 
 .messages{
+  flex:1 1 auto;
+  min-height:0;
   padding:var(--ux-space-4) var(--ux-space-4) var(--ux-space-5);
-  overflow:auto;
+  overflow-y:auto;
+  overscroll-behavior:contain;
   display:flex;
   flex-direction:column;
   gap:var(--ux-space-4);
@@ -12521,13 +12524,6 @@
   .desktopHeaderTools>button:hover,
   .desktopHeaderTools>button:focus-visible{
     background:color-mix(in srgb,var(--ux-text-inverse) 12%,transparent);
-  }
-
-  .messages{
-    flex:1 1 auto!important;
-    min-height:0!important;
-    overflow-y:auto!important;
-    overscroll-behavior:contain;
   }
 
   .composer{
