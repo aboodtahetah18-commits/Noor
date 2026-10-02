@@ -18,7 +18,6 @@ describe('Phase 32 mobile hardening contract', () => {
   });
 
   it('uses safe-area padding and >=44px touch targets', () => {
-    const css = read('src/app/globals.css');
     const shell = read('src/app/namaa-app-shell.css');
     expect(shell).toContain('env(safe-area-inset-bottom)');
     expect(shell).toContain('min-height:var(--ux-size-12);');
