@@ -7762,7 +7762,7 @@
   box-sizing:border-box!important
 }
 .governedQuickActions>button{
-  min-height:72px!important;
+  min-height:64px!important;
   justify-content:center!important;
   overflow:hidden!important
 }
@@ -9655,8 +9655,8 @@
   }
 
   .mobileRecordEditorHeader button svg{
-    width:26px!important;
-    height:26px!important;
+    width:20px!important;
+    height:20px!important;
   }
 
   .mobileRecordEditorBody{
@@ -12483,11 +12483,6 @@
 
 /* 2026-10-02 — PINNED CHAT CHROME + HEADER CONTROLS */
 @media (min-width:768px){
-  .page{
-    padding-block-start:var(--ux-space-2)!important;
-    height:calc(100% - var(--ux-space-2))!important;
-  }
-
   .attachmentPolicy,
   .executionNote{
     display:none!important;
@@ -12583,8 +12578,8 @@
   }
 
   .page .composer textarea{
-    min-height:56px!important;
-    height:56px!important;
+    min-height:var(--ux-size-12)!important;
+    height:var(--ux-size-12)!important;
     max-height:144px!important;
     padding:var(--ux-space-3) var(--ux-space-4)!important;
     border:1px solid var(--namaa-border-strong)!important;
@@ -12599,11 +12594,11 @@
   }
 
   .page .attachButton{
-    width:56px!important;
-    height:56px!important;
-    min-width:56px!important;
-    min-height:56px!important;
-    flex:0 0 56px!important;
+    width:var(--ux-size-12)!important;
+    height:var(--ux-size-12)!important;
+    min-width:var(--ux-size-12)!important;
+    min-height:var(--ux-size-12)!important;
+    flex:0 0 var(--ux-size-12)!important;
     padding:0!important;
     border:1px solid color-mix(in srgb,var(--ux-text-inverse) 42%,transparent)!important;
     border-radius:var(--ux-radius-4)!important;
@@ -12612,15 +12607,15 @@
   }
 
   .page .attachButton svg{
-    width:28px!important;
-    height:28px!important;
+    width:20px!important;
+    height:20px!important;
   }
 
   .page .sendButton{
-    min-width:132px!important;
-    height:56px!important;
-    min-height:56px!important;
-    padding:0 var(--ux-space-5)!important;
+    min-width:112px!important;
+    height:var(--ux-size-12)!important;
+    min-height:var(--ux-size-12)!important;
+    padding:0 var(--ux-space-4)!important;
     justify-content:center!important;
     border:1px solid var(--namaa-border)!important;
     border-radius:var(--ux-radius-4)!important;
