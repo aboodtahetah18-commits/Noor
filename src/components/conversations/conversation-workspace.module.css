@@ -12481,6 +12481,34 @@
 
 /* 2026-10-02 — PINNED CHAT CHROME + HEADER CONTROLS */
 @media (min-width:768px){
+  .page{
+    height:calc(100dvh - var(--ux-shell-topbar-height) - (var(--ux-space-4) * 2))!important;
+    min-height:0!important;
+    overflow:hidden!important;
+  }
+
+  .workspace,
+  .workspace.withoutContext,
+  .workspace.withoutRooms,
+  .workspace.withoutRooms.withoutContext{
+    height:100%!important;
+    min-height:0!important;
+    overflow:hidden!important;
+  }
+
+  .roomsPane,
+  .contextPane{
+    height:100%!important;
+    min-height:0!important;
+    overflow-y:auto!important;
+    overscroll-behavior:contain;
+  }
+
+  .chatPane{
+    height:100%!important;
+    min-height:0!important;
+    overflow:hidden!important;
+  }
   .chatHeader,
   .centralChatHeader{
     position:sticky!important;
