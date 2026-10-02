@@ -300,22 +300,9 @@
 }
 
 
-/* Stage 4.7 — desktop chat-first alignment.
-   The conversation workspace already owns its left/right contextual rails, so the global
-   desktop sidebar must not reserve an additional RTL gutter on this route. */
+/* Desktop chat-first route keeps the primary Namaa navigation shell visible.
+   The conversation workspace may collapse its own contextual rail independently. */
 @media (min-width:1024px) {
-  .protected-app-shell:has([data-chat-first-route="true"]) {
-    padding-inline-start:0;
-  }
-
-  .protected-app-shell:has([data-chat-first-route="true"]) .desktop-top-nav-wrap.namaa-sidebar {
-    display:none;
-  }
-
-  .protected-app-shell:has([data-chat-first-route="true"]) .namaa-topbar.namaa-topbar {
-    inset-inline-start:0;
-  }
-
   .protected-app-shell:has([data-chat-first-route="true"]) .namaa-app-main {
     width:100%;
     max-width:100%;
