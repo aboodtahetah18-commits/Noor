@@ -63,7 +63,7 @@ export function BrandLogo({
           sizes="(max-width: 767px) 96px, (max-width: 1023px) 112px, 128px"
           priority={priority}
           draggable={false}
-          style={{ objectFit:'contain', clipPath:'inset(0 0 0 65%)' }}
+          style={{ objectFit:'contain', clipPath:'inset(0 0 0 58%)' }}
         />
       </span>
     );
