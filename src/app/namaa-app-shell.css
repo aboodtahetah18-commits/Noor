@@ -48,6 +48,10 @@
     padding-inline-start:var(--ux-shell-sidebar-expanded);
   }
 
+  .namaa-desktop-sidebar-scrim {
+    display:none;
+  }
+
   .desktop-top-nav-wrap.namaa-sidebar {
     display:block;
     position:fixed;
@@ -300,9 +304,40 @@
 }
 
 
-/* Desktop chat-first route keeps the primary Namaa navigation shell visible.
-   The conversation workspace may collapse its own contextual rail independently. */
+/* Conversations use the primary Namaa navigation as an overlay drawer on wide screens.
+   It never reserves a blank rail in the conversation workspace. */
 @media (min-width:1024px) {
+  .protected-app-shell:has([data-chat-first-route="true"]),
+  html[data-sidebar="expanded"] .protected-app-shell:has([data-chat-first-route="true"]) {
+    padding-inline-start:0;
+  }
+
+  .protected-app-shell:has([data-chat-first-route="true"]) .namaa-topbar.namaa-topbar,
+  html[data-sidebar="expanded"] .protected-app-shell:has([data-chat-first-route="true"]) .namaa-topbar.namaa-topbar {
+    inset-inline-start:0;
+  }
+
+  html[data-sidebar="collapsed"] .protected-app-shell:has([data-chat-first-route="true"]) .desktop-top-nav-wrap.namaa-sidebar {
+    display:none;
+  }
+
+  html[data-sidebar="expanded"] .protected-app-shell:has([data-chat-first-route="true"]) .desktop-top-nav-wrap.namaa-sidebar {
+    display:block;
+    width:var(--ux-shell-sidebar-expanded);
+    box-shadow:var(--ux-shadow-lg);
+  }
+
+  html[data-sidebar="expanded"] .protected-app-shell:has([data-chat-first-route="true"]) .namaa-desktop-sidebar-scrim {
+    display:block;
+    position:fixed;
+    inset:0;
+    z-index:calc(var(--ux-z-navigation) - 1);
+    border:0;
+    padding:0;
+    background:color-mix(in srgb,var(--ux-shell-sidebar-bg) 34%,transparent);
+    cursor:pointer;
+  }
+
   .protected-app-shell:has([data-chat-first-route="true"]) .namaa-app-main {
     width:100%;
     max-width:100%;
