@@ -35,7 +35,9 @@ export function DesktopTopNav() {
   };
 
   return (
-    <aside id="namaa-desktop-sidebar" data-namaa-side="right" className="desktop-top-nav-wrap namaa-sidebar namaa-wide-sidebar" dir="rtl">
+    <>
+      <button type="button" className="namaa-desktop-sidebar-scrim" aria-label="إغلاق القائمة الجانبية" onClick={collapseSidebar} />
+      <aside id="namaa-desktop-sidebar" data-namaa-side="right" className="desktop-top-nav-wrap namaa-sidebar namaa-wide-sidebar" dir="rtl">
       <div className="namaa-sidebar-inner namaa-wide-sidebar-inner">
         <div className="namaa-wide-sidebar-head">
           <Link href="/dashboard" className="namaa-wide-sidebar-brand" aria-label="نماء — الرئيسية">
@@ -52,7 +54,7 @@ export function DesktopTopNav() {
             {pages.map((item) => {
               const active = isPrimaryNavigationItemActive(pathname, item.href);
               return (
-                <Link key={item.href} href={item.href} className={active ? 'is-active' : ''} aria-current={active ? 'page' : undefined}>
+                <Link key={item.href} href={item.href} onClick={collapseSidebar} className={active ? 'is-active' : ''} aria-current={active ? 'page' : undefined}>
                   <span className="namaa-nav-icon"><LucideIcon name={item.icon} size={20} /></span>
                   <span className="namaa-nav-label">{item.label}</span>
                 </Link>
@@ -65,7 +67,7 @@ export function DesktopTopNav() {
             {financePages.map((item) => {
               const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
               return (
-                <Link key={item.href} href={item.href} className={active ? 'is-active' : ''} aria-current={active ? 'page' : undefined}>
+                <Link key={item.href} href={item.href} onClick={collapseSidebar} className={active ? 'is-active' : ''} aria-current={active ? 'page' : undefined}>
                   <span className="namaa-nav-icon"><LucideIcon name={item.icon} size={20} /></span>
                   <span className="namaa-nav-label">{item.label}</span>
                 </Link>
@@ -75,5 +77,6 @@ export function DesktopTopNav() {
         </nav>
       </div>
     </aside>
+    </>
   );
 }
