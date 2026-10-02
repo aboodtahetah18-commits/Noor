@@ -12470,3 +12470,83 @@
   }
 }
 
+/* 2026-10-02 — PINNED CHAT CHROME + HEADER CONTROLS */
+@media (min-width:768px){
+  .chatPane{
+    position:relative!important;
+    display:flex!important;
+    flex-direction:column!important;
+    min-height:0!important;
+    overflow:hidden!important;
+  }
+
+  .chatHeader,
+  .centralChatHeader{
+    position:sticky!important;
+    inset-block-start:0!important;
+    z-index:20!important;
+    flex:0 0 auto!important;
+  }
+
+  .centralChatHeader{
+    min-height:calc(var(--ux-space-16) + var(--ux-space-8))!important;
+  }
+
+  .centralChatHeader .desktopChatHeaderForeground{
+    min-height:calc(var(--ux-space-16) + var(--ux-space-8))!important;
+  }
+
+  .centralChatHeader .persona_lg{
+    width:var(--ux-space-16)!important;
+    height:var(--ux-space-16)!important;
+    flex-basis:var(--ux-space-16)!important;
+  }
+
+  .desktopHeaderTools{
+    display:flex;
+    align-items:center;
+    gap:var(--ux-space-2);
+    margin-inline-start:auto;
+  }
+
+  .desktopHeaderTools>button{
+    width:var(--ux-size-10);
+    height:var(--ux-size-10);
+    min-width:var(--ux-size-10);
+    min-height:var(--ux-size-10);
+    display:grid;
+    place-items:center;
+    padding:0;
+    border:0;
+    border-radius:var(--ux-radius-full);
+    background:transparent;
+    color:var(--ux-text-inverse);
+    cursor:pointer;
+  }
+
+  .desktopHeaderTools>button:hover,
+  .desktopHeaderTools>button:focus-visible{
+    background:color-mix(in srgb,var(--ux-text-inverse) 12%,transparent);
+  }
+
+  .messages{
+    flex:1 1 auto!important;
+    min-height:0!important;
+    overflow-y:auto!important;
+    overscroll-behavior:contain;
+  }
+
+  .composer{
+    position:sticky!important;
+    inset-block-end:0!important;
+    z-index:20!important;
+    flex:0 0 auto!important;
+  }
+
+  .contextCollapseButton,
+  .contextRestoreButton,
+  .algorithmMessageAccent{
+    display:none!important;
+  }
+}
+
