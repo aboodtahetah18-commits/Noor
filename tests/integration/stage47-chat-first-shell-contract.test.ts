@@ -15,14 +15,13 @@ describe('Stage 4.7 chat-first mobile shell contract', () => {
     expect(shell).toContain('height:100dvh');
   });
 
-  it('removes the unused desktop sidebar reservation from the chat-first route', () => {
+  it('keeps the primary desktop navigation visible on the chat-first route', () => {
     const shell = read('src/app/namaa-app-shell.css');
 
-    expect(shell).toContain('Stage 4.7 — desktop chat-first alignment');
-    expect(shell).toContain('.protected-app-shell:has([data-chat-first-route="true"]) {');
-    expect(shell).toContain('padding-inline-start:0;');
-    expect(shell).toContain('.desktop-top-nav-wrap.namaa-sidebar');
-    expect(shell).toContain('inset-inline-start:0;');
+    expect(shell).toContain('Desktop chat-first route keeps the primary Namaa navigation shell visible.');
+    expect(shell).toContain('.desktop-top-nav-wrap.namaa-sidebar {');
+    expect(shell).toContain('html[data-sidebar="expanded"] .desktop-top-nav-wrap.namaa-sidebar {');
+    expect(shell).not.toContain(':has([data-chat-first-route="true"]) .desktop-top-nav-wrap.namaa-sidebar {\n    display:none;');
     expect(shell).toContain('max-width:100%;');
   });
 
