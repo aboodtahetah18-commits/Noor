@@ -1138,17 +1138,6 @@ export function PersistentConversationWorkspace(){
     setAccountReconciliation(data.reconciliation??null);
   }
 
-  async function openAccountsSettings(){
-    setRoomsOpen(false);
-    setSettingsSection('accounts');
-    setSettingsOpen(true);
-    setAccountEditor(null);
-    try{
-      await loadManagedAccounts();
-    }catch{
-      setError('تعذر تحميل الحسابات الآن.');
-    }
-  }
 
   async function saveManagedAccount(){
     if(!accountEditor||accountSaving)return;
