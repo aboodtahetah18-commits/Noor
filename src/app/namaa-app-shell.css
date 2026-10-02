@@ -323,6 +323,8 @@
 
   html[data-sidebar="expanded"] .protected-app-shell:has([data-chat-first-route="true"]) .desktop-top-nav-wrap.namaa-sidebar {
     display:block;
+    inset-block-start:var(--ux-shell-topbar-height);
+    height:calc(100dvh - var(--ux-shell-topbar-height));
     width:var(--ux-shell-sidebar-expanded);
     box-shadow:var(--ux-shadow-lg);
   }
@@ -330,11 +332,13 @@
   html[data-sidebar="expanded"] .protected-app-shell:has([data-chat-first-route="true"]) .namaa-desktop-sidebar-scrim {
     display:block;
     position:fixed;
-    inset:0;
+    inset-inline:0;
+    inset-block-start:var(--ux-shell-topbar-height);
+    inset-block-end:0;
     z-index:calc(var(--ux-z-navigation) - 1);
     border:0;
     padding:0;
-    background:color-mix(in srgb,var(--ux-shell-sidebar-bg) 34%,transparent);
+    background:transparent;
     cursor:pointer;
   }
 
