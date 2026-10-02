@@ -309,6 +309,7 @@
 @media (min-width:1024px) {
   .protected-app-shell:has([data-chat-first-route="true"]),
   html[data-sidebar="expanded"] .protected-app-shell:has([data-chat-first-route="true"]) {
+    box-sizing:border-box;
     height:100dvh;
     min-height:100dvh;
     padding-inline-start:0;
