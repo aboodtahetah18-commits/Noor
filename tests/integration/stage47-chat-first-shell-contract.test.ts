@@ -21,7 +21,7 @@ describe('Stage 4.7 chat-first mobile shell contract', () => {
     expect(shell).toContain('Stage 4.7 — desktop chat-first alignment');
     expect(shell).toContain('.protected-app-shell:has([data-chat-first-route="true"]) {');
     expect(shell).toContain('padding-inline-start:0;');
-    expect(shell).toContain('.desktop-top-nav-wrap.mustaqbali-sidebar');
+    expect(shell).toContain('.desktop-top-nav-wrap.namaa-sidebar');
     expect(shell).toContain('inset-inline-start:0;');
     expect(shell).toContain('max-width:100%;');
   });
