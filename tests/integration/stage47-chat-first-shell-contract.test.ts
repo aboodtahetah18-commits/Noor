@@ -15,14 +15,16 @@ describe('Stage 4.7 chat-first mobile shell contract', () => {
     expect(shell).toContain('height:100dvh');
   });
 
-  it('keeps the primary desktop navigation visible on the chat-first route', () => {
+  it('uses the primary desktop navigation as an overlay drawer on the chat-first route', () => {
     const shell = read('src/app/namaa-app-shell.css');
+    const nav = read('src/app/(protected)/desktop-top-nav.tsx');
 
-    expect(shell).toContain('Desktop chat-first route keeps the primary Namaa navigation shell visible.');
-    expect(shell).toContain('.desktop-top-nav-wrap.namaa-sidebar {');
-    expect(shell).toContain('html[data-sidebar="expanded"] .desktop-top-nav-wrap.namaa-sidebar {');
-    expect(shell).not.toContain(':has([data-chat-first-route="true"]) .desktop-top-nav-wrap.namaa-sidebar {\n    display:none;');
-    expect(shell).toContain('max-width:100%;');
+    expect(shell).toContain('Conversations use the primary Namaa navigation as an overlay drawer on wide screens.');
+    expect(shell).toContain('html[data-sidebar="collapsed"] .protected-app-shell:has([data-chat-first-route="true"]) .desktop-top-nav-wrap.namaa-sidebar');
+    expect(shell).toContain('html[data-sidebar="expanded"] .protected-app-shell:has([data-chat-first-route="true"]) .namaa-desktop-sidebar-scrim');
+    expect(shell).toContain('padding-inline-start:0;');
+    expect(nav).toContain('namaa-desktop-sidebar-scrim');
+    expect(nav).toContain('onClick={collapseSidebar}');
   });
 
   it('keeps desktop chat centered and agent/user bubbles visually distinct', () => {
