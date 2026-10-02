@@ -25,7 +25,7 @@ export function TabletTopNav({ profile }: { profile: HeaderProfile }) {
     <header className="tablet-top-nav-wrap namaa-tablet-wrap namaa-tablet-wrap namaa-wide-tablet" dir="rtl">
       <div className="namaa-tablet-topbar">
         <Link href="/dashboard" className="namaa-tablet-brand" aria-label="نماء — الرئيسية">
-          <BrandLogo surface="auto" priority />
+          <BrandLogo surface="dark" priority />
         </Link>
 
         <form action="/transactions" method="get" className="namaa-tablet-search" role="search">
