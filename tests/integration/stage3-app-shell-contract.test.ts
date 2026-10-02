@@ -41,7 +41,7 @@ describe('Stage 3 responsive full-platform app shell', () => {
     expect(css).toContain('@media (max-width:767px)');
     expect(css).toContain('position:fixed');
     expect(css).toContain('.tablet-top-nav-wrap');
-    expect(css).toContain('.mobile-bottom-nav.mustaqbali-mobile-bottom-nav');
+    expect(css).toContain('.mobile-bottom-nav.namaa-mobile-bottom-nav');
     expect(css).toContain('grid-template-columns:repeat(5,minmax(0,1fr))');
     expect(css).toContain('overflow-x:clip');
   });
