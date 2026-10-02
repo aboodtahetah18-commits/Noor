@@ -640,6 +640,10 @@
 }
 
 .composer{
+  position:sticky;
+  inset-block-end:0;
+  z-index:20;
+  flex:0 0 auto;
   margin:var(--ux-space-0) var(--ux-space-3) var(--ux-space-3);
   padding:var(--ux-space-2);
   background:var(--namaa-card);
@@ -12524,13 +12528,6 @@
   .desktopHeaderTools>button:hover,
   .desktopHeaderTools>button:focus-visible{
     background:color-mix(in srgb,var(--ux-text-inverse) 12%,transparent);
-  }
-
-  .composer{
-    position:sticky!important;
-    inset-block-end:0!important;
-    z-index:20!important;
-    flex:0 0 auto!important;
   }
 
   .contextCollapseButton,
