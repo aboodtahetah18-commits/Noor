@@ -12437,10 +12437,10 @@
   }
 
   .responsibilityOwnerList>button{
-    grid-template-columns:var(--ux-space-16) minmax(0,1fr) auto!important;
+    grid-template-columns:var(--ux-size-12) minmax(0,1fr) auto!important;
     align-items:center!important;
-    gap:var(--ux-space-3)!important;
-    min-height:calc(var(--ux-space-16) + var(--ux-space-4))!important;
+    gap:var(--ux-space-2)!important;
+    min-height:calc(var(--ux-size-12) + var(--ux-space-3))!important;
     padding:var(--ux-space-2) var(--ux-space-3)!important;
     background:var(--namaa-card)!important;
     border-color:var(--namaa-border)!important;
@@ -12449,9 +12449,9 @@
   .responsibilityOwnerList .ownerDirectoryPortrait{
     position:relative!important;
     display:block!important;
-    width:var(--ux-space-16)!important;
-    height:var(--ux-space-16)!important;
-    min-width:var(--ux-space-16)!important;
+    width:var(--ux-size-12)!important;
+    height:var(--ux-size-12)!important;
+    min-width:var(--ux-size-12)!important;
     overflow:hidden!important;
     border:1px solid var(--namaa-border)!important;
     border-radius:var(--ux-radius-full)!important;
@@ -12470,7 +12470,7 @@
 
   .responsibilityOwnerList .ownerDirectoryCopy strong{
     color:var(--ux-text-primary)!important;
-    font-size:var(--ux-type-body-sm-size)!important;
+    font-size:var(--ux-type-caption-size)!important;
     line-height:1.45!important;
   }
 
@@ -12481,6 +12481,16 @@
 
 /* 2026-10-02 — PINNED CHAT CHROME + HEADER CONTROLS */
 @media (min-width:768px){
+  .page{
+    padding-block-start:var(--ux-space-2)!important;
+    height:calc(100% - var(--ux-space-2))!important;
+  }
+
+  .attachmentPolicy,
+  .executionNote{
+    display:none!important;
+  }
+
   .page{
     height:100%!important;
     min-height:0!important;
