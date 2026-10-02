@@ -5,10 +5,12 @@ const root = process.cwd();
 const componentsPath = path.join(root, 'src/design-system/components.css');
 const pagesPath = path.join(root, 'src/design-system/pages.css');
 const enforcementPath = path.join(root, 'src/design-system/ndos-v1.2.enforcement.css');
+const shellPath = path.join(root, 'src/app/namaa-app-shell.css');
 
 const components = fs.readFileSync(componentsPath, 'utf8');
 const pages = fs.readFileSync(pagesPath, 'utf8');
 const enforcement = fs.readFileSync(enforcementPath, 'utf8');
+const shell = fs.readFileSync(shellPath, 'utf8');
 const failures = [];
 
 function requireText(label, text, needle) {
@@ -34,7 +36,10 @@ requireText('components.css', components, '.ux-button[data-size="lg"]');
 requireText('components.css', components, 'textarea.ux-control { min-height:calc(var(--ux-size-12) * 2);');
 requireText('components.css', components, '.ux-dialog-actions > [data-block-mobile="true"] { width:100%; }');
 
-requireText('pages.css', pages, '.mustaqbali-sidebar,\n.mustaqbali-mobile-drawer {\n  background:var(--ux-shell-sidebar-bg) !important;');
+requireText('namaa-app-shell.css', shell, '.desktop-top-nav-wrap.namaa-sidebar {');
+requireText('namaa-app-shell.css', shell, 'background:var(--ux-shell-sidebar-bg);');
+requireText('namaa-app-shell.css', shell, '.namaa-mobile-navigation-drawer {');
+requireText('namaa-app-shell.css', shell, 'background:var(--ux-card-bg);');
 requireText('pages.css', pages, '.p49-action-dialog::backdrop { background:rgb(31 41 55 / .42) !important; }');
 requireText('pages.css', pages, 'html[data-theme="dark"] .page-header');
 requireText('pages.css', pages, 'background:var(--ux-card-bg) !important;');
