@@ -12482,8 +12482,10 @@
 /* 2026-10-02 — PINNED CHAT CHROME + HEADER CONTROLS */
 @media (min-width:768px){
   .page{
-    height:calc(100dvh - var(--ux-shell-topbar-height) - (var(--ux-space-4) * 2))!important;
+    height:100%!important;
     min-height:0!important;
+    margin:0!important;
+    border-radius:0!important;
     overflow:hidden!important;
   }
 
@@ -12556,6 +12558,81 @@
   .desktopHeaderTools>button:hover,
   .desktopHeaderTools>button:focus-visible{
     background:color-mix(in srgb,var(--ux-text-inverse) 12%,transparent);
+  }
+
+  .page .composer{
+    width:100%!important;
+    max-width:100%!important;
+    min-height:72px!important;
+    margin:0!important;
+    padding:var(--ux-space-2) var(--ux-space-3)!important;
+    gap:var(--ux-space-2)!important;
+    align-items:stretch!important;
+    border:0!important;
+    border-top:1px solid var(--namaa-green-700)!important;
+    border-radius:0!important;
+    background:var(--namaa-green-900)!important;
+    box-shadow:none!important;
+  }
+
+  .page .composer textarea{
+    min-height:56px!important;
+    height:56px!important;
+    max-height:144px!important;
+    padding:var(--ux-space-3) var(--ux-space-4)!important;
+    border:1px solid var(--namaa-border-strong)!important;
+    border-radius:var(--ux-radius-4)!important;
+    background:var(--namaa-card)!important;
+    color:var(--ux-text-primary)!important;
+  }
+
+  .page .composer textarea::placeholder{
+    color:var(--ux-text-secondary)!important;
+    opacity:1!important;
+  }
+
+  .page .attachButton{
+    width:56px!important;
+    height:56px!important;
+    min-width:56px!important;
+    min-height:56px!important;
+    flex:0 0 56px!important;
+    padding:0!important;
+    border:1px solid color-mix(in srgb,var(--ux-text-inverse) 42%,transparent)!important;
+    border-radius:var(--ux-radius-4)!important;
+    background:color-mix(in srgb,var(--ux-text-inverse) 10%,transparent)!important;
+    color:var(--ux-text-inverse)!important;
+  }
+
+  .page .attachButton svg{
+    width:28px!important;
+    height:28px!important;
+  }
+
+  .page .sendButton{
+    min-width:132px!important;
+    height:56px!important;
+    min-height:56px!important;
+    padding:0 var(--ux-space-5)!important;
+    justify-content:center!important;
+    border:1px solid var(--namaa-border)!important;
+    border-radius:var(--ux-radius-4)!important;
+    background:var(--namaa-card)!important;
+    color:var(--namaa-green-900)!important;
+    box-shadow:var(--ux-shadow-xs)!important;
+  }
+
+  .page .sendButton svg{
+    width:26px!important;
+    height:26px!important;
+  }
+
+  .page .sendButton span{
+    display:inline!important;
+  }
+
+  .page .sendButton:disabled{
+    opacity:.62!important;
   }
 
   .contextCollapseButton,
