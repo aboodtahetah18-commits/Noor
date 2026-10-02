@@ -349,7 +349,7 @@
   .protected-app-shell:has([data-chat-first-route="true"]) .namaa-app-main {
     width:100%;
     max-width:100%;
-    height:calc(100dvh - var(--ux-shell-topbar-height));
+    height:100%;
     min-height:0;
     padding:0;
     overflow:hidden;
