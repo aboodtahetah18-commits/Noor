@@ -440,7 +440,7 @@
   border:1px solid var(--namaa-border);
   border-radius:var(--ux-radius-full);
   background:var(--namaa-surface-warm);
-  font-size:14px;
+  font-size:var(--ux-type-caption-size);
   line-height:1;
   box-shadow:var(--ux-shadow-xs)
 }
