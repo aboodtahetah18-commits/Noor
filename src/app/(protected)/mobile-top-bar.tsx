@@ -45,7 +45,7 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
             <LucideIcon name="menu" size={24} />
           </button>
           <Link href="/dashboard" className="namaa-mobile-brand" aria-label="نماء — الرئيسية">
-            <BrandLogo surface="auto" priority />
+            <BrandLogo surface="dark" priority />
           </Link>
         </div>
 
