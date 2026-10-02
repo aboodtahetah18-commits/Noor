@@ -217,14 +217,6 @@ function messageKindIcon(kind:MessageKind):LucideIconName{
   if(kind==='request')return 'upload';
   return 'info';
 }
-function algorithmMessageEmoji(kind:MessageKind){
-  if(kind==='risk')return '⚠️';
-  if(kind==='decision')return '✅';
-  if(kind==='recommendation')return '✨';
-  if(kind==='followup')return '📌';
-  if(kind==='request')return '📎';
-  return '💬';
-}
 function roomTitle(value:unknown){if(typeof value!=='string')return null;return rooms.find(room=>room.id===value)?.title??null}
 function chatRoleTitle(room:Room){return room.id==='central'?'محافظ بنك نماء المركزي':room.lead}
 function compactChatRoleTitle(room:Room){
