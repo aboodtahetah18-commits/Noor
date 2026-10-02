@@ -103,6 +103,34 @@
   gap:var(--ux-space-3)
 }
 
+.contextPaneTitle{
+  grid-template-columns:minmax(0,1fr) auto
+}
+
+.contextCollapseButton,
+.contextRestoreButton{
+  display:none;
+  width:36px;
+  height:36px;
+  min-width:36px;
+  min-height:36px;
+  place-items:center;
+  padding:0;
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-2);
+  background:var(--namaa-card);
+  color:var(--namaa-green-900);
+  box-shadow:var(--ux-shadow-xs);
+  cursor:pointer
+}
+
+.contextRestoreButton{
+  position:absolute;
+  inset-block-start:calc(var(--ux-space-2) + 72px);
+  inset-inline-end:var(--ux-space-2);
+  z-index:12
+}
+
 .paneTitle{
   height:40px;
   display:flex;
@@ -400,6 +428,21 @@
   min-width:96px;
   background:var(--namaa-user-message);
   border-color:var(--namaa-green-700)
+}
+
+.algorithmMessageAccent{
+  width:26px;
+  height:26px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin-block-end:var(--ux-space-2);
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-full);
+  background:var(--namaa-surface-warm);
+  font-size:14px;
+  line-height:1;
+  box-shadow:var(--ux-shadow-xs)
 }
 
 .message>p{
@@ -11560,11 +11603,12 @@
 }
 .responsibilityOwnerList>button{
   display:grid;
-  grid-template-columns:minmax(0,1fr) auto;
+  grid-template-columns:56px minmax(0,1fr) auto;
   align-items:center;
-  gap:var(--ux-space-2);
+  gap:var(--ux-space-3);
   width:100%;
-  padding:var(--ux-space-3);
+  min-height:72px;
+  padding:var(--ux-space-2) var(--ux-space-3);
   border:1px solid var(--namaa-border);
   border-radius:var(--ux-radius-3);
   background:var(--namaa-card);
@@ -11573,7 +11617,7 @@
   font:inherit;
   cursor:pointer
 }
-.responsibilityOwnerList>button>span{
+.responsibilityOwnerList>button>.ownerDirectoryCopy{
   min-width:0;
   display:grid;
   gap:var(--ux-space-1)
@@ -11797,7 +11841,17 @@
 
 
 /* Mobile-only corrections for finance rows, work-directory owners, and grouped meetings. */
-.ownerDirectoryPortrait{display:none}
+.ownerDirectoryPortrait{
+  position:relative;
+  width:56px;
+  height:56px;
+  display:block;
+  overflow:hidden;
+  border:1px solid var(--namaa-border);
+  border-radius:var(--ux-radius-full);
+  background:var(--namaa-surface-warm)
+}
+.ownerDirectoryPortrait img{object-fit:cover}
 .ownerDirectoryCopy{min-width:0;display:grid;gap:var(--ux-space-1)}
 .directoryMeetingGroups{display:grid;gap:var(--ux-space-2)}
 .directoryMeetingGroup{
@@ -12336,6 +12390,11 @@
     width:100%!important;
     max-width:none!important;
     margin-inline:0!important;
+  }
+
+  .contextCollapseButton,
+  .contextRestoreButton{
+    display:grid;
   }
 
   .mobileSideSheet{
