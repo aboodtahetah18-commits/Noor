@@ -12403,3 +12403,70 @@
   }
 }
 
+/* 2026-10-02 — FINAL WIDE CHAT CONTRAST + OWNER DIRECTORY AUTHORITY */
+@media (min-width:768px){
+  .page .centralChatHeader,
+  .centralChatHeader{
+    background:var(--namaa-green-900)!important;
+    border-bottom-color:var(--namaa-green-700)!important;
+    color:var(--ux-text-inverse)!important;
+  }
+
+  .centralChatHeader .desktopChatHeaderForeground,
+  .centralChatHeader .chatHeaderForeground{
+    background:transparent!important;
+  }
+
+  .centralChatHeader .entityTitle strong,
+  .centralChatHeader .chatIdentity small,
+  .centralChatHeader .compactRoleTitle strong{
+    color:var(--ux-text-inverse)!important;
+  }
+
+  .centralChatHeader .chatIdentity small{
+    opacity:.9!important;
+  }
+
+  .responsibilityOwnerList>button{
+    grid-template-columns:var(--ux-space-16) minmax(0,1fr) auto!important;
+    align-items:center!important;
+    gap:var(--ux-space-3)!important;
+    min-height:calc(var(--ux-space-16) + var(--ux-space-4))!important;
+    padding:var(--ux-space-2) var(--ux-space-3)!important;
+    background:var(--namaa-card)!important;
+    border-color:var(--namaa-border)!important;
+  }
+
+  .responsibilityOwnerList .ownerDirectoryPortrait{
+    position:relative!important;
+    display:block!important;
+    width:var(--ux-space-16)!important;
+    height:var(--ux-space-16)!important;
+    min-width:var(--ux-space-16)!important;
+    overflow:hidden!important;
+    border:1px solid var(--namaa-border)!important;
+    border-radius:var(--ux-radius-full)!important;
+    background:var(--namaa-surface-warm)!important;
+  }
+
+  .responsibilityOwnerList .ownerDirectoryPortrait img{
+    object-fit:cover!important;
+  }
+
+  .responsibilityOwnerList .ownerDirectoryCopy{
+    display:grid!important;
+    min-width:0!important;
+    align-content:center!important;
+  }
+
+  .responsibilityOwnerList .ownerDirectoryCopy strong{
+    color:var(--ux-text-primary)!important;
+    font-size:var(--ux-type-body-sm-size)!important;
+    line-height:1.45!important;
+  }
+
+  .responsibilityOwnerList small{
+    display:none!important;
+  }
+}
+
