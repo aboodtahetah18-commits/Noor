@@ -12282,8 +12282,7 @@
 
 /* 2026-10-01 — CHAT TABLET WIDTH + UNIFIED HEADER/DRAWER FINAL AUTHORITY */
 .page,
-.workspace,
-.chatPane{
+.workspace{
   width:100%!important;
   max-width:none!important;
   margin-inline:0!important;
@@ -12333,8 +12332,7 @@
 
 @media (min-width:768px){
   .page,
-  .workspace,
-  .chatPane{
+  .workspace{
     width:100%!important;
     max-width:none!important;
     margin-inline:0!important;
