@@ -27,6 +27,7 @@ const financePages = [
 
 export function DesktopTopNav() {
   const pathname = usePathname();
+  const isConversationRoute = pathname === '/conversations' || pathname.startsWith('/conversations/');
 
   const collapseSidebar = () => {
     window.localStorage.setItem('sidebarState', 'collapsed');
@@ -40,9 +41,9 @@ export function DesktopTopNav() {
       <aside id="namaa-desktop-sidebar" data-namaa-side="right" className="desktop-top-nav-wrap namaa-sidebar namaa-wide-sidebar" dir="rtl">
       <div className="namaa-sidebar-inner namaa-wide-sidebar-inner">
         <div className="namaa-wide-sidebar-head">
-          <Link href="/dashboard" className="namaa-wide-sidebar-brand" aria-label="نماء — الرئيسية">
+          {!isConversationRoute&&<Link href="/dashboard" className="namaa-wide-sidebar-brand" aria-label="نماء — الرئيسية">
             <BrandLogo surface="dark" priority />
-          </Link>
+          </Link>}
           <button type="button" className="namaa-wide-sidebar-close" onClick={collapseSidebar} aria-label="طي القائمة الجانبية">
             <LucideIcon name="x" size={24} />
           </button>
