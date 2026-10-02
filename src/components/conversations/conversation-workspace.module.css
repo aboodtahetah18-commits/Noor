@@ -642,8 +642,8 @@
 }
 
 .composer{
-  position:sticky;
-  inset-block-end:0;
+  position:relative;
+  inset-block-end:auto;
   z-index:20;
   flex:0 0 auto;
   margin:var(--ux-space-0) var(--ux-space-3) var(--ux-space-3);
@@ -12515,8 +12515,8 @@
 
   .chatHeader,
   .centralChatHeader{
-    position:sticky!important;
-    inset-block-start:0!important;
+    position:relative!important;
+    inset-block-start:auto!important;
     z-index:20!important;
     flex:0 0 auto!important;
   }
