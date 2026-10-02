@@ -215,8 +215,10 @@
 
 .chatPane{
   min-width:0;
-  display:grid;
-  grid-template-rows:auto auto minmax(240px,1fr) auto auto auto;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
   background:var(--namaa-chat-canvas);
   position:relative;
   isolation:isolate
@@ -12472,14 +12474,6 @@
 
 /* 2026-10-02 — PINNED CHAT CHROME + HEADER CONTROLS */
 @media (min-width:768px){
-  .chatPane{
-    position:relative!important;
-    display:flex!important;
-    flex-direction:column!important;
-    min-height:0!important;
-    overflow:hidden!important;
-  }
-
   .chatHeader,
   .centralChatHeader{
     position:sticky!important;
