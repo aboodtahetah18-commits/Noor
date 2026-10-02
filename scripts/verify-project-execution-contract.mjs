@@ -38,7 +38,7 @@ else {
     const expected = baseline[file];
     const actualHash = sha256(content);
     if (!expected || expected.sha256 !== actualHash) {
-      fail.push(`${file} changed after legacy-CSS freeze. Migrate the change into src/design-system or shared components instead.`);
+      fail.push(`${file} changed after legacy-CSS freeze. expected=${expected?.sha256??'missing'} actual=${actualHash} bytes=${content.byteLength}. Migrate the change into src/design-system or shared components instead.`);
     }
   }
 }
