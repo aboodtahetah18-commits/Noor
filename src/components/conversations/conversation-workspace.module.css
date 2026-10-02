@@ -12572,7 +12572,7 @@
     border-top:1px solid var(--namaa-green-700)!important;
     border-radius:0!important;
     background:var(--namaa-green-900)!important;
-    box-shadow:none!important;
+    box-shadow:var(--ux-shadow-none)!important;
   }
 
   .page .composer textarea{
