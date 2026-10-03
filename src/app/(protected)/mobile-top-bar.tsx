@@ -28,7 +28,6 @@ function currentPageTitle(pathname:string){
 
 export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
   const pathname = usePathname();
-  const chatFirst = pathname === '/conversations' || pathname.startsWith('/conversations/');
   const [open, setOpen] = useState(false);
   const pageTitle=currentPageTitle(pathname);
 
@@ -42,8 +41,7 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
 
   return (
     <>
-      {!chatFirst && (
-        <header className="namaa-mobile-topbar namaa-mobile-header namaa-responsive-topbar" dir="rtl">
+      <header className="namaa-mobile-topbar namaa-mobile-header namaa-responsive-topbar" dir="rtl">
           <div className="namaa-responsive-topbar-start">
             <button
               className="namaa-mobile-menu-trigger"
@@ -70,7 +68,6 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
             <ProfileTrigger profile={profile} className="namaa-mobile-profile-trigger" />
           </div>
         </header>
-      )}
 
       <Drawer
         open={open}
