@@ -15,9 +15,10 @@ type Props = {
   triggerTitle?: string;
   defaultOpen?: boolean;
   printable?: boolean;
+  presentation?: 'dialog' | 'page';
 };
 
-export function ActionDialog({ trigger, title, description, children, size = 'md', triggerClassName, triggerAriaLabel, triggerTitle, defaultOpen = false, printable }: Props) {
+export function ActionDialog({ trigger, title, description, children, size = 'md', triggerClassName, triggerAriaLabel, triggerTitle, defaultOpen = false, printable, presentation = 'dialog' }: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const titleId = useId();
@@ -57,7 +58,7 @@ export function ActionDialog({ trigger, title, description, children, size = 'md
     <button ref={triggerRef} type="button" className={triggerClassName ?? 'p49-modal-trigger'} aria-haspopup="dialog" aria-label={triggerAriaLabel} title={triggerTitle} onClick={() => setOpen(true)}>{textTrigger ? <span className="p49-trigger-content"><ActionIcon name={icon} /><span>{trigger}</span></span> : trigger}</button>
     <dialog
       ref={dialogRef}
-      className={`p49-action-dialog is-${size}`}
+      className={`p49-action-dialog is-${size} ${presentation === 'page' ? 'is-page' : ''}`}
       aria-modal="true"
       aria-labelledby={titleId}
       onClick={handleBackdropClick}

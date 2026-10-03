@@ -909,3 +909,284 @@
     color:inherit!important;
   }
 }
+
+
+/* 2026-10-03 — ACCOUNT WINDOWS PAGE-LIKE PASS */
+.p49-action-dialog.is-page{
+  margin:auto!important;
+}
+
+.p49-action-dialog.is-page .p49-dialog-shell{
+  width:100%!important;
+  height:min(86dvh,820px)!important;
+  max-height:min(86dvh,820px)!important;
+  display:grid!important;
+  grid-template-rows:auto minmax(0,1fr)!important;
+  overflow:hidden!important;
+  border-radius:var(--ux-radius-lg)!important;
+}
+
+.p49-action-dialog.is-page .p49-dialog-header{
+  min-height:72px!important;
+  padding:var(--ux-space-4) var(--ux-space-5)!important;
+  align-items:center!important;
+  background:var(--ux-brand-primary)!important;
+  color:var(--ux-text-inverse)!important;
+  border-bottom:0!important;
+}
+
+.p49-action-dialog.is-page .p49-dialog-header::after{
+  display:none!important;
+}
+
+.p49-action-dialog.is-page .p49-dialog-title-block{
+  align-items:center!important;
+}
+
+.p49-action-dialog.is-page .p49-dialog-title-icon{
+  background:color-mix(in srgb,var(--ux-text-inverse) 12%,transparent)!important;
+  color:var(--ux-text-inverse)!important;
+  border-color:color-mix(in srgb,var(--ux-text-inverse) 28%,transparent)!important;
+}
+
+.p49-action-dialog.is-page .p49-dialog-header h2,
+.p49-action-dialog.is-page .p49-dialog-header p{
+  color:var(--ux-text-inverse)!important;
+  -webkit-text-fill-color:var(--ux-text-inverse)!important;
+}
+
+.p49-action-dialog.is-page .p49-dialog-header p{
+  opacity:.85!important;
+}
+
+.p49-action-dialog.is-page .p49-dialog-close{
+  background:color-mix(in srgb,var(--ux-text-inverse) 10%,transparent)!important;
+  color:var(--ux-text-inverse)!important;
+  border-color:color-mix(in srgb,var(--ux-text-inverse) 28%,transparent)!important;
+}
+
+.p49-action-dialog.is-page .p49-dialog-tools .print-button{
+  display:none!important;
+}
+
+.p49-action-dialog.is-page .p49-dialog-body{
+  max-height:none!important;
+  min-height:0!important;
+  overflow:auto!important;
+  padding:var(--ux-space-5)!important;
+  background:var(--ux-page-bg)!important;
+}
+
+.p49-action-dialog.is-page .detail-list{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:var(--ux-space-3)!important;
+  padding:var(--ux-space-3)!important;
+  background:var(--ux-card-bg)!important;
+  border:1px solid var(--ux-border-default)!important;
+  border-radius:var(--ux-radius-md)!important;
+  box-shadow:var(--ux-shadow-xs)!important;
+}
+
+.p49-action-dialog.is-page .detail-list>div{
+  min-width:0!important;
+  padding:var(--ux-space-3)!important;
+  border:1px solid var(--ux-border-default)!important;
+  border-radius:var(--ux-radius-sm)!important;
+  background:var(--ux-surface-default)!important;
+}
+
+.p49-action-dialog.is-page .namaa-account-edit-section{
+  margin-top:var(--ux-space-4)!important;
+  padding:var(--ux-space-4)!important;
+  border:1px solid var(--ux-border-default)!important;
+  border-radius:var(--ux-radius-md)!important;
+  background:var(--ux-card-bg)!important;
+}
+
+.p49-action-dialog.is-page .namaa-account-edit-section .form-grid{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:var(--ux-space-3)!important;
+}
+
+.p49-action-dialog.is-page .namaa-account-edit-section .form-grid>label{
+  min-width:0!important;
+}
+
+.p49-action-dialog.is-page .namaa-account-edit-section .primary-button{
+  grid-column:1/-1!important;
+  min-height:48px!important;
+  position:sticky!important;
+  bottom:0!important;
+  z-index:2!important;
+}
+
+.namaa-section-kicker{
+  margin:calc(var(--ux-space-2) * -1) 0 var(--ux-space-2)!important;
+  color:var(--ux-text-secondary)!important;
+  font-size:var(--ux-type-caption-size)!important;
+}
+
+.namaa-account-wizard{
+  min-height:100%!important;
+  display:grid!important;
+  grid-template-rows:auto minmax(0,1fr) auto!important;
+  gap:var(--ux-space-4)!important;
+}
+
+.namaa-wizard-progress{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:var(--ux-space-2)!important;
+}
+
+.namaa-wizard-progress button{
+  min-height:48px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:var(--ux-space-2)!important;
+  padding:var(--ux-space-2) var(--ux-space-3)!important;
+  border:1px solid var(--ux-border-default)!important;
+  border-radius:var(--ux-radius-md)!important;
+  background:var(--ux-card-bg)!important;
+  color:var(--ux-text-secondary)!important;
+}
+
+.namaa-wizard-progress button span{
+  width:28px!important;
+  height:28px!important;
+  display:grid!important;
+  place-items:center!important;
+  border-radius:999px!important;
+  background:var(--ux-section-soft-teal)!important;
+  color:var(--ux-brand-primary)!important;
+  font-weight:800!important;
+}
+
+.namaa-wizard-progress button.is-active{
+  border-color:var(--ux-brand-primary)!important;
+  color:var(--ux-brand-primary)!important;
+  box-shadow:var(--ux-shadow-xs)!important;
+}
+
+.namaa-wizard-page{
+  min-height:0!important;
+  display:grid!important;
+  align-content:start!important;
+}
+
+.namaa-wizard-page[hidden]{
+  display:none!important;
+}
+
+.namaa-account-wizard .account-form-primary-grid,
+.namaa-account-wizard .onboarding-optional-grid{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:var(--ux-space-3)!important;
+}
+
+.namaa-wizard-hint{
+  margin:var(--ux-space-3) 0 0!important;
+  color:var(--ux-text-secondary)!important;
+  font-size:var(--ux-type-body-sm-size)!important;
+}
+
+.namaa-wizard-actions{
+  position:sticky!important;
+  bottom:0!important;
+  z-index:3!important;
+  margin:0 calc(var(--ux-space-5) * -1) calc(var(--ux-space-5) * -1)!important;
+  padding:var(--ux-space-3) var(--ux-space-5) max(var(--ux-space-3),env(safe-area-inset-bottom))!important;
+  display:flex!important;
+  justify-content:flex-end!important;
+  gap:var(--ux-space-2)!important;
+  background:var(--ux-card-bg)!important;
+  border-top:1px solid var(--ux-border-default)!important;
+}
+
+.namaa-wizard-actions .primary-button,
+.namaa-wizard-actions .secondary-button{
+  min-height:48px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:var(--ux-space-2)!important;
+}
+
+@media (max-width:767px){
+  dialog.p49-action-dialog.is-page,
+  dialog.p49-action-dialog.is-page.is-lg,
+  dialog.p49-action-dialog.is-page.is-xl{
+    width:100vw!important;
+    max-width:100vw!important;
+    inline-size:100vw!important;
+    max-inline-size:100vw!important;
+    height:100dvh!important;
+    max-height:100dvh!important;
+    margin:0!important;
+    padding:0!important;
+  }
+
+  .p49-action-dialog.is-page .p49-dialog-shell{
+    width:100%!important;
+    height:100dvh!important;
+    max-height:100dvh!important;
+    border-radius:0!important;
+    border:0!important;
+  }
+
+  .p49-action-dialog.is-page .p49-dialog-header{
+    min-height:64px!important;
+    padding:var(--ux-space-3)!important;
+  }
+
+  .p49-action-dialog.is-page .p49-dialog-title-icon{
+    display:none!important;
+  }
+
+  .p49-action-dialog.is-page .p49-dialog-header p{
+    display:none!important;
+  }
+
+  .p49-action-dialog.is-page .p49-dialog-body{
+    width:100%!important;
+    max-width:100%!important;
+    padding:var(--ux-space-3)!important;
+  }
+
+  .p49-action-dialog.is-page .detail-list,
+  .p49-action-dialog.is-page .namaa-account-edit-section .form-grid,
+  .namaa-account-wizard .account-form-primary-grid,
+  .namaa-account-wizard .onboarding-optional-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+
+  .p49-action-dialog.is-page .detail-list>div{
+    padding:var(--ux-space-2)!important;
+  }
+
+  .namaa-wizard-actions{
+    margin:0 calc(var(--ux-space-3) * -1) calc(var(--ux-space-3) * -1)!important;
+    padding:var(--ux-space-3)!important;
+  }
+
+  .namaa-wizard-actions>*{
+    flex:1 1 0!important;
+  }
+}
+
+@media (max-width:430px){
+  .p49-action-dialog.is-page .detail-list,
+  .p49-action-dialog.is-page .namaa-account-edit-section .form-grid,
+  .namaa-account-wizard .account-form-primary-grid,
+  .namaa-account-wizard .onboarding-optional-grid{
+    grid-template-columns:1fr!important;
+  }
+
+  .namaa-wizard-progress button strong{
+    font-size:var(--ux-type-caption-size)!important;
+  }
+}
