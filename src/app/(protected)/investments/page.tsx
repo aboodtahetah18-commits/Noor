@@ -86,6 +86,27 @@ export default function InvestmentsPage() {
           </aside>
         </div>
       </section>
+      <section className="namaa-mobile-only namaa-investments-mobile">
+        <header className="p47-page-heading">
+          <div>
+            <p className="p47-kicker">بنك الأصول الاستثمارية</p>
+            <h1>الاستثمارات</h1>
+            <p className="p47-cycle-line">إدارة المحافظ والمنتجات الاستثمارية ومراجعة الأداء والمخاطر.</p>
+          </div>
+        </header>
+        <section className="p47-panel">
+          <div className="p47-section-heading">
+            <div><p className="p47-kicker">المحفظة الحالية</p><h2>لم يتم اختيار محفظة</h2></div>
+          </div>
+          <div className="p47-soft-empty is-info">
+            <strong>ابدأ بإضافة محفظة أو منتج استثماري</strong>
+            <span>بعد الإضافة ستظهر هنا مؤشرات الأداء والمخاطر والسيولة والتوصيات المرتبطة بها.</span>
+          </div>
+          <div className="p47-inline-actions">
+            <Link href="/conversations" className="p47-secondary-action">فتح فريق المحفظة</Link>
+          </div>
+        </section>
+      </section>
     </main>
   );
 }
