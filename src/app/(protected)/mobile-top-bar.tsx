@@ -7,6 +7,7 @@ import { LucideIcon, type LucideIconName } from '@/components/ui/lucide-icon';
 import { Drawer } from '@/components/ui';
 import { ThemeToggle } from '../theme-toggle';
 import { ProfileTrigger, type HeaderProfile } from './profile-trigger';
+import { BrandLogo } from '@/components/brand/brand-logo';
 
 const systemPages: ReadonlyArray<{ href:string; label:string; icon:LucideIconName }> = [
   { href:'/dashboard', label:'الرئيسية', icon:'house' },
