@@ -863,7 +863,7 @@ export function PersistentConversationWorkspace(){
   const [error,setError]=useState('');
   const [roomsOpen,setRoomsOpen]=useState(false);
   const [directoryTab,setDirectoryTab]=useState<'entities'|'owners'|'meetings'>('entities');
-  const [responsiveDirectoryOpen,setResponsiveDirectoryOpen]=useState(true);
+  const [responsiveDirectoryOpen,setResponsiveDirectoryOpen]=useState(false);
   const [contextOpen,setContextOpen]=useState(false);
   const [onboardingComplete,setOnboardingComplete]=useState<boolean|null>(null);
   const [onboardingStep,setOnboardingStep]=useState<string|null>(null);
