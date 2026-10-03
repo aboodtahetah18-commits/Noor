@@ -8,6 +8,7 @@ import { OBLIGATION_STATUS_LABELS, financialStatusLabel } from '@/lib/financial-
 import { BankMessageDialogTrigger } from '@/components/bank-message-dialog';
 import { Button } from '@/components/ui';
 import { LucideIcon } from '@/components/ui/lucide-icon';
+import { BrandLogo } from '@/components/brand/brand-logo';
 import styles from './dashboard.module.css';
 
 function metricValue(value: string | null, blockedLabel = 'غير متاح بعد') {
@@ -45,6 +46,7 @@ export default async function DashboardPage() {
     <main className={styles.page} dir="rtl">
       <section className={styles.hero}>
         <div className={styles.heroCopy}>
+          <div className={styles.heroBrand}><BrandLogo surface="dark" priority /></div>
           <span className={styles.brandKicker}>نماء</span>
           <h1>مرحبًا {user.name ? user.name.split(' ')[0] : ''}</h1>
           <p>هنا نظرة سريعة على وضعك المالي اليوم</p>
