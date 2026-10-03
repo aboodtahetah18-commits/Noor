@@ -49,6 +49,10 @@ export function Drawer({
     if (!shell || !shell.contains(event.target as Node)) close();
   };
 
+  // Closed navigation is removed from the DOM entirely so no legacy dialog
+  // styling can expose it before the user explicitly opens the menu.
+  if (!open) return null;
+
   return (
     <dialog
       ref={ref}
