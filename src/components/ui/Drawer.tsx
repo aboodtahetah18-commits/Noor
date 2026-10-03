@@ -46,6 +46,10 @@ export function Drawer({
     if (event.target === ref.current) close();
   };
 
+  // A closed drawer must not exist in the DOM. This prevents any legacy
+  // dialog/sheet CSS from making navigation visible before the user opens it.
+  if (!open) return null;
+
   return (
     <dialog
       ref={ref}
