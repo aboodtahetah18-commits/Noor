@@ -1639,3 +1639,173 @@ dialog.p49-action-dialog.is-page.is-xl{
     grid-column:auto!important;
   }
 }
+
+
+/* 2026-10-03 — ACCOUNT DETAILS SYSTEM + ACTIVITY */
+.namaa-account-copy h3{
+  color:var(--ux-text-primary)!important;
+}
+
+.namaa-bank-name,
+.namaa-bank-value{
+  color:#2563eb!important;
+  font-weight:800!important;
+}
+
+.namaa-account-balance-block strong,
+.namaa-detail-balance{
+  color:var(--ux-brand-primary)!important;
+}
+
+.namaa-account-detail-system{
+  width:min(100%,920px)!important;
+  margin-inline:auto!important;
+  display:grid!important;
+  gap:0!important;
+}
+
+.namaa-detail-tabs-three{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+}
+
+.namaa-detail-tabs-three button{
+  min-width:0!important;
+  padding-inline:var(--ux-space-2)!important;
+  white-space:nowrap!important;
+}
+
+.namaa-overview-wide{
+  grid-column:1/-1!important;
+}
+
+.namaa-account-activity-head{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:var(--ux-space-3)!important;
+  margin-bottom:var(--ux-space-3)!important;
+}
+
+.namaa-account-activity-head>div{
+  display:grid!important;
+  gap:var(--ux-space-1)!important;
+  padding:var(--ux-space-3)!important;
+  border:1px solid var(--ux-border-default)!important;
+  background:var(--ux-card-bg)!important;
+}
+
+.namaa-account-activity-head span{
+  color:var(--ux-text-secondary)!important;
+}
+
+.namaa-activity-period-grid{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:var(--ux-space-3)!important;
+}
+
+.namaa-activity-period-card{
+  min-width:0!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  grid-template-areas:
+    "label count"
+    "net net"!important;
+  gap:var(--ux-space-2)!important;
+  padding:var(--ux-space-3)!important;
+  border:1px solid var(--ux-border-default)!important;
+  background:var(--ux-card-bg)!important;
+}
+
+.namaa-activity-period-card>span{grid-area:label!important;color:var(--ux-text-secondary)!important;}
+.namaa-activity-period-card>strong{grid-area:count!important;color:var(--ux-text-primary)!important;}
+
+.namaa-activity-period-card>div{
+  grid-area:net!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:var(--ux-space-1)!important;
+  font-size:var(--ux-type-card-title-size)!important;
+}
+
+.namaa-activity-period-card>div.is-positive{color:var(--ux-brand-primary)!important;}
+.namaa-activity-period-card>div.is-negative{color:var(--ux-danger)!important;}
+.namaa-activity-period-card>div.is-neutral{color:var(--ux-text-secondary)!important;}
+
+.namaa-management-card{
+  display:grid!important;
+  gap:var(--ux-space-2)!important;
+  padding:var(--ux-space-4)!important;
+  margin-bottom:var(--ux-space-3)!important;
+  border:1px solid var(--ux-border-default)!important;
+  background:var(--ux-card-bg)!important;
+}
+
+.namaa-management-card>div{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:var(--ux-space-3)!important;
+}
+
+.namaa-management-card>div strong{
+  color:var(--ux-brand-primary)!important;
+}
+
+.namaa-management-card p{
+  margin:0!important;
+  color:var(--ux-text-secondary)!important;
+}
+
+.namaa-delete-policy{
+  display:grid!important;
+  gap:var(--ux-space-1)!important;
+  margin-top:var(--ux-space-3)!important;
+  padding:var(--ux-space-3)!important;
+  border:1px dashed var(--ux-border-default)!important;
+  background:var(--ux-surface-default)!important;
+}
+
+.namaa-delete-policy span{
+  color:var(--ux-text-secondary)!important;
+}
+
+@media (max-width:767px){
+  .namaa-account-detail-system{
+    width:100%!important;
+  }
+
+  .namaa-detail-tabs-three{
+    position:sticky!important;
+    top:0!important;
+    z-index:4!important;
+    background:var(--ux-page-bg)!important;
+  }
+
+  .namaa-detail-tabs-three button{
+    min-height:46px!important;
+    font-size:var(--ux-type-body-sm-size)!important;
+  }
+
+  .namaa-account-overview-grid,
+  .namaa-account-activity-head,
+  .namaa-activity-period-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+}
+
+@media (max-width:420px){
+  .namaa-detail-tabs-three button{
+    font-size:var(--ux-type-caption-size)!important;
+    padding-inline:var(--ux-space-1)!important;
+  }
+
+  .namaa-account-overview-grid,
+  .namaa-account-activity-head,
+  .namaa-activity-period-grid{
+    grid-template-columns:1fr!important;
+  }
+
+  .namaa-overview-wide{
+    grid-column:auto!important;
+  }
+}
