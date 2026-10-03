@@ -54,7 +54,7 @@ export function GlobalTopBar({ profile }: { profile: HeaderProfile }) {
           <LucideIcon name="menu" size={20} />
         </button>
         <Link href="/dashboard" className="namaa-topbar-logo" aria-label="نماء — الرئيسية">
-          <BrandLogo surface="auto" priority />
+          <BrandLogo surface="dark" priority />
         </Link>
       </div>
 

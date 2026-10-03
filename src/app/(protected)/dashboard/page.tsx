@@ -30,13 +30,9 @@ export default async function DashboardPage() {
 
   if (!dashboard) {
     return (
-      <main className={styles.page} dir="rtl">
+      <main className={`${styles.page} ${styles.emptyPage}`} dir="rtl">
         <div className={styles.container}>
           <section className={styles.emptyState} aria-labelledby="dashboard-empty-title">
-            <div className={styles.emptyIcon} aria-hidden="true">
-              <LucideIcon name="walletCards" size={24} />
-            </div>
-            <p className={styles.eyebrow}>مستقبلي</p>
             <h1 id="dashboard-empty-title">ابدأ دورتك المالية الأولى</h1>
             <p>أنشئ دورة مالية حتى يبدأ النظام في حساب وضعك المالي الحقيقي وعرض الإجراء التالي المناسب.</p>
             <Link className={styles.primaryLink} href="/cycles/new">بدء دورة مالية</Link>

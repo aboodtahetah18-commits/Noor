@@ -7,6 +7,7 @@ const tablet = readFileSync('src/app/(protected)/tablet-top-nav.tsx', 'utf8');
 const desktop = readFileSync('src/app/(protected)/desktop-top-nav.tsx', 'utf8');
 const dialog = readFileSync('src/components/overlays/action-dialog.tsx', 'utf8');
 const css = readFileSync('src/app/globals.css', 'utf8');
+const shell = readFileSync('src/app/namaa-app-shell.css', 'utf8');
 
 describe('P57 responsive accessibility closure', () => {
   it('keeps dedicated navigation shells for all three viewport classes', () => {
@@ -34,7 +35,8 @@ describe('P57 responsive accessibility closure', () => {
   });
 
   it('retains 44px minimum mobile interaction targets and safe-area handling', () => {
-    expect(css).toContain('min-height:44px');
-    expect(css).toContain('env(safe-area-inset-bottom)');
+    expect(shell).toContain('width:44px;');
+    expect(shell).toContain('height:44px;');
+    expect(shell).toContain('env(safe-area-inset-bottom)');
   });
 });

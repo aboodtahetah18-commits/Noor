@@ -12,6 +12,7 @@ export type DrawerProps = {
   side?: 'start' | 'end';
   closeLabel?: string;
   className?: string;
+  showCloseButton?: boolean;
 };
 
 export function Drawer({
@@ -24,6 +25,7 @@ export function Drawer({
   side = 'end',
   closeLabel = 'إغلاق اللوحة',
   className = '',
+  showCloseButton = true,
 }: DrawerProps) {
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
@@ -43,12 +45,18 @@ export function Drawer({
 
   const close = () => onOpenChange(false);
   const onBackdrop = (event: MouseEvent<HTMLDialogElement>) => {
-    if (event.target === ref.current) close();
+    const shell = ref.current?.querySelector('.ux-overlay-shell');
+    if (!shell || !shell.contains(event.target as Node)) close();
   };
+
+  // Closed navigation is removed from the DOM entirely so no legacy dialog
+  // styling can expose it before the user explicitly opens the menu.
+  if (!open) return null;
 
   return (
     <dialog
       ref={ref}
+      dir="rtl"
       className={`ux-drawer-surface ${className}`.trim()}
       data-side={side}
       aria-modal="true"
@@ -64,7 +72,7 @@ export function Drawer({
             <h2 id={titleId}>{title}</h2>
             {description ? <p id={descriptionId}>{description}</p> : null}
           </div>
-          <button type="button" className="ux-dialog-close" aria-label={closeLabel} onClick={close}>×</button>
+          {showCloseButton ? <button type="button" className="ux-dialog-close" aria-label={closeLabel} onClick={close}>×</button> : null}
         </header>
         <div className="ux-dialog-body">{children}</div>
         {footer ? <footer className="ux-dialog-actions">{footer}</footer> : null}

@@ -1,32 +1,21 @@
 /* Canonical shell visibility only.
-   No visual styling lives here. It prevents cross-device shell components from rendering
-   outside their intended viewport while keeping mobile behavior unchanged. */
+   Mobile and tablet share one responsive topbar. Retired tablet/bottom navigation stay hidden. */
 
 .desktop-top-nav-wrap,
 .tablet-top-nav-wrap,
 .namaa-mobile-topbar,
 .mobile-bottom-nav {
-  display: none;
+  display:none;
 }
 
-@media (max-width: 767px) {
+@media (max-width:1023px) {
   .namaa-mobile-topbar {
-    display: grid;
-  }
-
-  .mobile-bottom-nav {
-    display: grid;
+    display:grid;
   }
 }
 
-@media (min-width: 768px) and (max-width: 1023px) {
-  .tablet-top-nav-wrap {
-    display: block;
-  }
-}
-
-@media (min-width: 1024px) {
+@media (min-width:1024px) {
   .desktop-top-nav-wrap {
-    display: block;
+    display:block;
   }
 }

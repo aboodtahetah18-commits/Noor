@@ -4,6 +4,7 @@ import path from 'node:path';
 
 const root = process.cwd();
 const css = fs.readFileSync(path.join(root, 'src/app/globals.css'), 'utf8');
+const shell = fs.readFileSync(path.join(root, 'src/app/namaa-app-shell.css'), 'utf8');
 const layout = fs.readFileSync(path.join(root, 'src/app/(protected)/layout.tsx'), 'utf8');
 const nav = fs.readFileSync(path.join(root, 'src/app/(protected)/desktop-top-nav.tsx'), 'utf8');
 
@@ -11,8 +12,8 @@ describe('Phase 33 desktop hardening contract', () => {
   it('adds a desktop-only navigation shell without removing mobile navigation', () => {
     expect(layout).toContain('<DesktopTopNav />');
     expect(layout).toContain('<MobileBottomNav />');
-    expect(css).toContain('@media(min-width:1024px)');
-    expect(css).toContain('.desktop-top-nav-wrap');
+    expect(shell).toContain('@media (min-width:1024px)');
+    expect(shell).toContain('.desktop-top-nav-wrap.namaa-sidebar');
     expect(nav).toContain('التنقل الرئيسي للكمبيوتر');
   });
 
