@@ -13092,3 +13092,140 @@
   }
 }
 
+
+
+/* 2026-10-03 — RESPONSIVE DIRECTORY FINAL GEOMETRY */
+@media (max-width:1023px){
+  /* Chat owns the viewport: no historical shell/header reserve may create a top gap. */
+  .page{
+    position:fixed!important;
+    inset:0!important;
+    width:100vw!important;
+    max-width:100vw!important;
+    height:100dvh!important;
+    min-height:100dvh!important;
+    margin:0!important;
+    padding:0!important;
+    z-index:20!important;
+    overflow:hidden!important;
+  }
+
+  .responsiveDirectoryPage{
+    position:absolute!important;
+    inset:0!important;
+    width:100%!important;
+    max-width:100%!important;
+    height:100%!important;
+    min-height:0!important;
+    margin:0!important;
+    padding:0!important;
+  }
+
+  /* Approved dark-green title bar with white text. */
+  .responsiveDirectoryHeader{
+    min-height:72px!important;
+    margin:0!important;
+    padding:var(--ux-space-3)!important;
+    background:var(--namaa-green-900)!important;
+    border-bottom:1px solid var(--namaa-green-700)!important;
+    color:var(--ux-text-inverse)!important;
+  }
+
+  .responsiveDirectoryHeader>button{
+    order:-1!important;
+    flex:0 0 var(--ux-size-10)!important;
+    background:transparent!important;
+    color:var(--ux-text-inverse)!important;
+    border-color:color-mix(in srgb,var(--ux-text-inverse) 36%,transparent)!important;
+  }
+
+  .responsiveDirectoryHeader>div{
+    flex:1 1 auto!important;
+    min-width:0!important;
+    text-align:right!important;
+  }
+
+  .responsiveDirectoryHeader span,
+  .responsiveDirectoryHeader strong{
+    color:var(--ux-text-inverse)!important;
+    -webkit-text-fill-color:var(--ux-text-inverse)!important;
+  }
+
+  /* Entity cards: one fixed portrait column on the physical right,
+     copy in the middle, info control on the left. */
+  .responsiveDirectoryContent .roomItemShell{
+    width:100%!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) 44px!important;
+    align-items:center!important;
+    gap:var(--ux-space-2)!important;
+    direction:rtl!important;
+    padding:var(--ux-space-1)!important;
+  }
+
+  .responsiveDirectoryContent .roomItem{
+    width:100%!important;
+    min-width:0!important;
+    display:grid!important;
+    grid-template-columns:56px minmax(0,1fr)!important;
+    align-items:center!important;
+    gap:var(--ux-space-3)!important;
+    direction:rtl!important;
+    text-align:right!important;
+  }
+
+  .responsiveDirectoryContent .roomItem .personaAvatar{
+    grid-column:1!important;
+    justify-self:center!important;
+    width:56px!important;
+    height:56px!important;
+    min-width:56px!important;
+    flex-basis:56px!important;
+  }
+
+  .responsiveDirectoryContent .roomItem .roomCopy{
+    grid-column:2!important;
+    min-width:0!important;
+    width:100%!important;
+    text-align:right!important;
+  }
+
+  .responsiveDirectoryContent .roomDetailButton{
+    width:40px!important;
+    height:40px!important;
+    margin:0!important;
+    justify-self:center!important;
+  }
+
+  /* Owner portraits use the same single vertical column. */
+  .responsiveDirectoryContent .responsibilityOwnerList>button{
+    width:100%!important;
+    display:grid!important;
+    grid-template-columns:56px minmax(0,1fr) 24px!important;
+    align-items:center!important;
+    gap:var(--ux-space-3)!important;
+    direction:rtl!important;
+    text-align:right!important;
+    padding:var(--ux-space-2) var(--ux-space-3)!important;
+  }
+
+  .responsiveDirectoryContent .responsibilityOwnerList .ownerDirectoryPortrait{
+    grid-column:1!important;
+    justify-self:center!important;
+    width:56px!important;
+    height:56px!important;
+    min-width:56px!important;
+  }
+
+  .responsiveDirectoryContent .responsibilityOwnerList .ownerDirectoryCopy{
+    grid-column:2!important;
+    min-width:0!important;
+    width:100%!important;
+    text-align:right!important;
+  }
+
+  .responsiveDirectoryContent .responsibilityOwnerList>button>svg{
+    grid-column:3!important;
+    justify-self:center!important;
+  }
+}
