@@ -93,10 +93,22 @@ export default async function TransactionsPage({searchParams}:{searchParams:Sear
   return <main className="p47-page namaa-transactions-page" dir="rtl"><section className="p47-content-shell">
 
     <section className="namaa-transactions-summary" aria-label="ملخص العمليات">
-      <div className="namaa-summary-metric is-count"><span>العمليات</span><strong>{summary.totalItems}</strong></div>
-      <div className="namaa-summary-metric is-inflow"><span>الداخل</span><strong><TransactionAmount value={summary.inflow}/></strong></div>
-      <div className="namaa-summary-metric is-outflow"><span>الخارج</span><strong><TransactionAmount value={summary.outflow}/></strong></div>
-      <div className={`namaa-summary-metric ${netTone}`}><span>الصافي</span><strong><TransactionAmount value={summary.net}/></strong></div>
+      <div className="namaa-summary-metric is-count">
+        <span className="namaa-summary-icon"><LucideIcon name="receiptText" size={20}/></span>
+        <div className="namaa-summary-copy"><span>العمليات</span><strong>{summary.totalItems}</strong></div>
+      </div>
+      <div className="namaa-summary-metric is-inflow">
+        <span className="namaa-summary-icon"><LucideIcon name="arrowDown" size={20}/></span>
+        <div className="namaa-summary-copy"><span>الداخل</span><strong><TransactionAmount value={summary.inflow}/></strong></div>
+      </div>
+      <div className="namaa-summary-metric is-outflow">
+        <span className="namaa-summary-icon"><LucideIcon name="arrowUp" size={20}/></span>
+        <div className="namaa-summary-copy"><span>الخارج</span><strong><TransactionAmount value={summary.outflow}/></strong></div>
+      </div>
+      <div className={`namaa-summary-metric ${netTone}`}>
+        <span className="namaa-summary-icon"><LucideIcon name="chart" size={20}/></span>
+        <div className="namaa-summary-copy"><span>الصافي</span><strong><TransactionAmount value={summary.net}/></strong></div>
+      </div>
     </section>
 
     <section className="p47-panel namaa-transactions-panel">
@@ -106,7 +118,7 @@ export default async function TransactionsPage({searchParams}:{searchParams:Sear
           <a className="namaa-square-action" href={queryString(current,{page:input.page})} aria-label="تحديث" title="تحديث"><LucideIcon name="refreshCw" size={20}/></a>
           {filterPanel}
           <details className="namaa-transaction-add-menu">
-            <summary className="namaa-square-action is-primary" aria-label="إضافة عملية" title="إضافة عملية"><LucideIcon name="receiptText" size={20}/></summary>
+            <summary className="namaa-square-action is-primary" aria-label="إضافة عملية" title="إضافة عملية"><LucideIcon name="plus" size={20}/></summary>
             <div className="namaa-transaction-add-options">
               {cycle?<ActionDialog presentation="page" trigger={<span className="namaa-action-label"><LucideIcon name="plus" size={20}/><span>دخل</span></span>} title="إضافة دخل" size="lg">
                 <form className="form-grid p73-entry-form namaa-income-entry-form" action={recordIncomeAction.bind(null,cycle.id)}>

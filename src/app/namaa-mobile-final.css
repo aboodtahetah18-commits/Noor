@@ -3002,3 +3002,158 @@ dialog.p49-action-dialog.is-page.is-xl{
     min-height:48px!important;
   }
 }
+
+
+/* 2026-10-03 — TRANSACTIONS GOLD ICON HIERARCHY */
+.namaa-transactions-summary{
+  gap:4px!important;
+}
+
+.namaa-summary-metric{
+  position:relative!important;
+  min-height:62px!important;
+  display:grid!important;
+  grid-template-columns:36px minmax(0,1fr)!important;
+  align-items:center!important;
+  justify-content:stretch!important;
+  gap:8px!important;
+  padding:7px 8px!important;
+  text-align:right!important;
+  overflow:hidden!important;
+}
+
+.namaa-summary-metric::before{
+  content:""!important;
+  position:absolute!important;
+  inset-inline-start:0!important;
+  top:0!important;
+  bottom:0!important;
+  width:3px!important;
+  background:#D4AF6B!important;
+  opacity:.9!important;
+}
+
+.namaa-summary-metric.is-inflow::before{
+  background:#189F7F!important;
+}
+
+.namaa-summary-icon{
+  width:34px!important;
+  height:34px!important;
+  display:grid!important;
+  place-items:center!important;
+  border:1px solid rgba(212,175,107,.42)!important;
+  border-radius:10px!important;
+  background:#FFF7E6!important;
+  color:#D4AF6B!important;
+}
+
+.namaa-summary-copy{
+  min-width:0!important;
+  display:grid!important;
+  gap:3px!important;
+  justify-items:start!important;
+  text-align:right!important;
+}
+
+.namaa-summary-copy>span{
+  color:var(--ux-text-secondary)!important;
+  font-size:11px!important;
+  line-height:1.1!important;
+}
+
+.namaa-summary-copy>strong{
+  width:100%!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  color:var(--ux-text-primary)!important;
+  font-size:15px!important;
+  line-height:1.1!important;
+  font-weight:900!important;
+  white-space:nowrap!important;
+}
+
+.namaa-summary-metric.is-count .namaa-summary-copy>strong,
+.namaa-summary-metric.is-inflow .namaa-summary-copy>strong,
+.namaa-summary-metric.is-inflow .namaa-transaction-money{
+  color:var(--ux-brand-primary)!important;
+}
+
+.namaa-summary-metric.is-outflow .namaa-summary-copy>strong,
+.namaa-summary-metric.is-outflow .namaa-transaction-money{
+  color:var(--ux-danger)!important;
+}
+
+.namaa-summary-metric .namaa-transaction-money{
+  justify-content:flex-start!important;
+  gap:3px!important;
+}
+
+.namaa-transactions-toolbar-actions{
+  display:flex!important;
+  align-items:center!important;
+  gap:5px!important;
+}
+
+.namaa-square-action,
+.namaa-transactions-toolbar .p4913-filter-toggle,
+.namaa-transaction-add-menu>summary{
+  border:1px solid rgba(212,175,107,.48)!important;
+  background:#FFF7E6!important;
+  color:#D4AF6B!important;
+  box-shadow:none!important;
+}
+
+.namaa-square-action.is-primary,
+.namaa-transaction-add-menu>summary{
+  border-color:#0B6B4F!important;
+  background:#0B6B4F!important;
+  color:#D4AF6B!important;
+}
+
+.namaa-square-action svg,
+.namaa-transactions-toolbar .p4913-filter-toggle svg,
+.namaa-transaction-add-menu>summary svg{
+  color:currentColor!important;
+  stroke:currentColor!important;
+}
+
+.namaa-transaction-add-options{
+  border-color:rgba(212,175,107,.42)!important;
+}
+
+.namaa-transaction-add-options>.namaa-add-option svg,
+.namaa-transaction-add-options>.p49-modal-trigger svg,
+.namaa-transaction-add-options .p49-modal-trigger svg{
+  color:#D4AF6B!important;
+  stroke:#D4AF6B!important;
+}
+
+@media (max-width:520px){
+  .namaa-summary-metric{
+    min-height:58px!important;
+    grid-template-columns:30px minmax(0,1fr)!important;
+    gap:5px!important;
+    padding:5px 6px!important;
+  }
+
+  .namaa-summary-icon{
+    width:30px!important;
+    height:30px!important;
+    border-radius:9px!important;
+  }
+
+  .namaa-summary-icon svg{
+    width:18px!important;
+    height:18px!important;
+  }
+
+  .namaa-summary-copy>span{
+    font-size:9px!important;
+  }
+
+  .namaa-summary-copy>strong{
+    font-size:13px!important;
+  }
+}
