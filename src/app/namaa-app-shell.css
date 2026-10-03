@@ -371,626 +371,144 @@
   }
 }
 
-/* Tablet 768–1023: independent two-row shell, no desktop sidebar. */
-@media (min-width:768px) and (max-width:1023px) {
+/* Responsive shell authority — mobile + tablet share one chrome and navigation model. */
+@media (max-width:1023px) {
   .protected-app-shell {
+    width:100%;
     min-height:100dvh;
-  }
-
-  .namaa-topbar,
-  .desktop-top-nav-wrap,
-  .mobile-bottom-nav {
-    display:none !important;
-  }
-
-  .tablet-top-nav-wrap {
-    display:block !important;
-    position:sticky;
-    inset-block-start:0;
-    z-index:var(--ux-z-sticky);
-    border-block-end:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-shell-topbar-border);
-    background:var(--ux-shell-topbar-bg);
-  }
-
-  .namaa-tablet-topbar {
-    min-height:var(--ux-shell-topbar-height);
-    display:grid;
-    grid-template-columns:auto minmax(0,1fr) auto;
-    align-items:center;
-    gap:var(--ux-space-3);
-    padding-inline:var(--ux-space-5);
-    background:var(--ux-shell-topbar-bg);
-  }
-
-  .namaa-tablet-brand .namaa-brand-logo {
-    width:var(--ux-logo-tablet-width);
-    height:auto;
-  }
-
-  .namaa-tablet-search {
-    min-height:var(--ux-size-10);
-    display:grid;
-    grid-template-columns:auto minmax(0,1fr);
-    align-items:center;
-    gap:var(--ux-space-2);
-    padding-inline:var(--ux-space-3);
-    border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);
-    border-radius:var(--ux-radius-sm);
-    background:var(--ux-card-bg);
-    color:var(--ux-text-secondary);
-  }
-
-  .namaa-tablet-search input {
-    min-width:0;
-    width:100%;
-    border:0;
-    outline:0;
-    background:transparent;
-    color:var(--ux-text-primary);
-    font:inherit;
-  }
-
-  .namaa-tablet-search:focus-within {
-    border-color:var(--ux-focus-ring);
-    box-shadow:var(--ux-shadow-focus);
-  }
-
-  .namaa-tablet-actions {
-    display:flex;
-    align-items:center;
-    gap:var(--ux-space-2);
-  }
-
-  .namaa-tablet-action,
-  .namaa-tablet-actions > button {
-    min-width:var(--ux-size-10);
-    width:var(--ux-size-10);
-    min-height:var(--ux-size-10);
-    height:var(--ux-size-10);
-    display:inline-grid;
-    place-items:center;
-    border-radius:var(--ux-radius-sm);
-    color:var(--ux-text-primary);
-  }
-
-  .namaa-tablet-nav {
-    display:flex;
-    align-items:center;
-    gap:var(--ux-space-1);
-    overflow-x:auto;
-    overscroll-behavior-inline:contain;
-    padding:var(--ux-space-2) var(--ux-space-5);
-    border-block-start:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-shell-topbar-border);
-    scrollbar-width:thin;
-  }
-
-  .namaa-tablet-nav a {
-    flex:0 0 auto;
-    min-height:var(--ux-size-9);
-    display:inline-flex;
-    align-items:center;
-    padding-inline:var(--ux-space-3);
-    border-radius:var(--ux-radius-sm);
-    color:var(--ux-text-secondary);
-    text-decoration:none;
-    white-space:nowrap;
-  }
-
-  .namaa-tablet-nav a:hover,
-  .namaa-tablet-nav a:focus-visible {
-    background:var(--ux-section-soft-teal);
-    color:var(--ux-text-primary);
-  }
-
-  .namaa-tablet-nav a.is-active {
-    background:var(--ux-action-primary);
-    color:var(--ux-text-inverse);
-    font-weight:var(--ux-type-button-weight);
-  }
-
-  .namaa-app-main {
-    padding:var(--ux-space-5) var(--ux-space-6) var(--ux-space-8);
-  }
-
-  .namaa-page-frame {
-    width:min(100%,var(--ux-container-content));
-  }
-
-  .protected-app-shell :where(.ux-responsive-grid,.dashboard-main-grid,.dashboard-triple-grid) {
-    grid-template-columns:repeat(2,minmax(0,1fr));
-  }
-}
-
-/* Mobile <768: light topbar + fixed five-item bottom navigation + shared Drawer. */
-@media (max-width:767px) {
-  .namaa-topbar,
-  .desktop-top-nav-wrap,
-  .tablet-top-nav-wrap {
-    display:none !important;
-  }
-
-  .namaa-mobile-topbar.namaa-mobile-header {
-    display:grid !important;
-    grid-template-columns:minmax(0,1fr) auto !important;
-    align-items:center;
-    gap:var(--ux-space-2);
-    position:sticky;
-    inset-block-start:0;
-    z-index:var(--ux-z-sticky);
-    min-height:var(--ux-mobile-header-height);
-    width:100%;
-    max-inline-size:100vw !important;
-    padding-inline:var(--ux-space-3);
-    border-block-end:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-shell-topbar-border);
-    background:var(--ux-shell-topbar-bg) !important;
-    color:var(--ux-text-primary);
-  }
-
-  .namaa-mobile-brand-zone,
-  .namaa-mobile-header-actions {
-    min-inline-size:0 !important;
-    display:flex;
-    align-items:center;
-    gap:var(--ux-space-1);
-  }
-
-  .namaa-mobile-brand-zone {
-    overflow:hidden;
-  }
-
-  .namaa-mobile-brand {
-    min-width:0;
-    display:flex;
-    align-items:center;
-    overflow:hidden;
-  }
-
-  .namaa-mobile-brand .namaa-brand-logo {
-    width:var(--ux-logo-mobile-width);
-    height:auto;
-  }
-
-  .namaa-mobile-menu-trigger,
-  .namaa-mobile-header-actions > a,
-  .namaa-mobile-header-actions > button {
-    flex:0 0 auto;
-    min-width:var(--ux-size-10);
-    width:var(--ux-size-10);
-    min-height:var(--ux-size-10);
-    height:var(--ux-size-10);
-    display:inline-grid;
-    place-items:center;
-    padding:0;
-    border:0;
-    border-radius:var(--ux-radius-sm);
-    background:transparent;
-    color:var(--ux-text-primary);
-  }
-
-  .namaa-mobile-menu-trigger:hover,
-  .namaa-mobile-header-actions > a:hover,
-  .namaa-mobile-header-actions > button:hover {
-    background:var(--ux-section-soft-teal);
-  }
-
-  .mobile-bottom-nav.namaa-mobile-bottom-nav {
-    display:grid !important;
-    grid-template-columns:repeat(5,minmax(0,1fr));
-    position:fixed;
-    inset-inline:0;
-    inset-block-end:0;
-    z-index:var(--ux-z-navigation);
-    padding:var(--ux-space-1) var(--ux-space-2) max(var(--ux-space-1),env(safe-area-inset-bottom));
-    border-block-start:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);
-    background:var(--ux-card-bg);
-    box-shadow:var(--ux-shadow-sm);
-  }
-
-  .mobile-bottom-nav a {
-    min-width:0;
-    min-height:var(--ux-size-12);
-    display:grid;
-    place-items:center;
-    align-content:center;
-    gap:var(--ux-space-1);
-    padding:var(--ux-space-1);
-    border-radius:var(--ux-radius-sm);
-    color:var(--ux-text-secondary);
-    text-decoration:none;
-    font-size:var(--ux-type-caption-size);
-    line-height:var(--ux-type-caption-line);
-  }
-
-  .mobile-bottom-nav a:hover,
-  .mobile-bottom-nav a:focus-visible {
-    background:var(--ux-section-soft-teal);
-    color:var(--ux-text-primary);
-  }
-
-  .mobile-bottom-nav a.is-active {
-    color:var(--ux-brand-primary);
-    background:var(--ux-section-soft-teal);
-    font-weight:var(--ux-type-button-weight);
-  }
-
-  .mobile-nav-icon {
-    display:inline-grid;
-    place-items:center;
-  }
-
-  .namaa-app-main {
-    width:100%;
-    min-width:0;
-    padding:0;
-  }
-
-  .namaa-page-frame {
-    width:100%;
-    min-width:0;
-    padding:0;
-  }
-
-  .protected-app-shell :where(.page-shell,.dashboard-shell) {
-    width:100%;
     max-width:100%;
-    min-width:0;
-  }
-
-  .protected-app-shell :where(.page-header) {
-    width:100%;
-    max-width:100%;
-    min-width:0;
-  }
-
-  .protected-app-shell :where(.section-title-row) {
-    max-width:100%;
-    min-width:0;
-  }
-
-  .namaa-mobile-navigation-drawer .ux-dialog-body {
-    padding:var(--ux-space-3);
-  }
-
-  .namaa-mobile-drawer-nav {
-    display:grid;
-    grid-template-columns:1fr;
-    gap:var(--ux-space-2);
-  }
-
-  .namaa-mobile-drawer-nav a {
-    min-height:56px;
-    display:grid;
-    grid-template-columns:44px minmax(0,1fr);
-    align-items:center;
-    gap:var(--ux-space-3);
-    padding:var(--ux-space-2);
-    border:1px solid var(--ux-border-default);
-    border-radius:var(--ux-radius-md);
-    background:var(--ux-card-bg);
-    color:var(--ux-text-primary);
-    text-decoration:none;
-  }
-
-  .namaa-mobile-drawer-icon {
-    width:44px;
-    height:44px;
-    display:grid;
-    place-items:center;
-    border-radius:var(--ux-radius-sm);
-    background:var(--ux-section-soft-teal);
-    color:var(--ux-brand-primary);
-  }
-
-  .namaa-mobile-drawer-nav a:hover,
-  .namaa-mobile-drawer-nav a:focus-visible {
-    background:var(--ux-section-soft-teal);
-  }
-
-  .namaa-mobile-drawer-nav a.is-active {
-    background:var(--ux-section-soft-teal);
-    border-color:var(--ux-brand-secondary);
-    color:var(--ux-brand-primary);
-    font-weight:var(--ux-type-button-weight);
-  }
-
-  .namaa-mobile-drawer-nav a.is-active .namaa-mobile-drawer-icon {
-    background:var(--ux-brand-primary);
-    color:var(--ux-text-inverse);
-  }
-}
-
-
-/* Stage 4.7 — chat-first mobile geometry.
-   Conversations own the mobile viewport and internal navigation on this route only. */
-@media (max-width:767px) {
-  .protected-app-shell:has([data-chat-first-route="true"]) {
-    width:100dvw;
-    max-width:100dvw;
-    min-height:100dvh;
-    margin:0;
-    overflow:hidden;
+    padding:0!important;
+    overflow-x:clip;
     background:var(--ux-page-bg);
   }
 
-  .protected-app-shell:has([data-chat-first-route="true"]) .namaa-app-main {
-    width:100dvw;
-    max-width:100dvw;
-    height:100dvh;
-    min-height:100dvh;
-    margin:0;
-    padding:0;
-    overflow:hidden;
-  }
-
-  .protected-app-shell:has([data-chat-first-route="true"]) .namaa-page-frame,
-  .protected-app-shell:has([data-chat-first-route="true"]) [data-chat-first-route="true"] {
-    width:100%;
-    max-width:none;
-    height:100%;
-    min-height:0;
-    margin:0;
-    padding:0;
-    overflow:hidden;
-  }
-}
-
-@media (prefers-reduced-motion:reduce) {
-  .desktop-top-nav-wrap.namaa-sidebar,
-  .namaa-topbar.namaa-topbar {
-    transition:none !important;
-  }
-}
-
-/* 2026-10-03 — MOBILE + TABLET SINGLE NAVIGATION AUTHORITY
-   Mobile and tablet share one navigation system; only geometry scales. */
-@media (max-width:1023px) {
+  .namaa-topbar,
+  .desktop-top-nav-wrap,
   .tablet-top-nav-wrap,
   .namaa-tablet-wrap,
   .namaa-tablet-nav,
   .mobile-bottom-nav,
-  .namaa-mobile-bottom-nav {
+  .namaa-mobile-bottom-nav,
+  .mobile-bottom-nav.namaa-mobile-bottom-nav {
     display:none!important;
   }
 
+  .namaa-mobile-topbar.namaa-mobile-header,
   .protected-app-shell .namaa-responsive-topbar {
-    display:grid!important;
-    grid-template-columns:minmax(0,1fr) auto!important;
-    align-items:center!important;
-    gap:var(--ux-space-3)!important;
-    width:100%!important;
-    min-height:var(--ux-shell-topbar-height)!important;
-    padding-inline:var(--ux-space-3)!important;
-    border-block-end:1px solid var(--ux-shell-topbar-border)!important;
-    background:var(--ux-shell-topbar-bg)!important;
-    color:var(--ux-text-inverse)!important;
+    display:block!important;
     position:sticky!important;
     inset-block-start:0!important;
     z-index:var(--ux-z-sticky)!important;
+    width:100%!important;
+    height:var(--ux-mobile-header-height)!important;
+    min-height:var(--ux-mobile-header-height)!important;
+    margin:0!important;
+    padding:0!important;
+    border-block-end:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-shell-topbar-border)!important;
+    background:var(--ux-shell-topbar-bg)!important;
+    color:var(--ux-text-inverse)!important;
   }
 
-  .namaa-responsive-topbar .namaa-mobile-brand-zone,
-  .namaa-responsive-topbar .namaa-mobile-header-actions {
+  .namaa-responsive-topbar-start {
+    position:absolute!important;
+    inset-inline:auto!important;
+    right:var(--ux-space-2)!important;
+    top:50%!important;
+    transform:translateY(-50%)!important;
     display:flex!important;
     align-items:center!important;
-    gap:var(--ux-space-2)!important;
+    gap:var(--ux-space-1)!important;
+    margin:0!important;
   }
 
-  .namaa-responsive-topbar .namaa-mobile-header-actions {
-    justify-content:flex-end!important;
+  .namaa-responsive-page-title {
+    position:absolute!important;
+    left:50%!important;
+    top:50%!important;
+    width:min(46vw,var(--ux-container-form))!important;
+    transform:translate(-50%,-50%)!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    white-space:nowrap!important;
+    color:var(--ux-text-inverse)!important;
+    font-size:var(--ux-type-body-sm-size)!important;
+    font-weight:var(--ux-type-section-title-weight)!important;
+    line-height:var(--ux-type-body-line)!important;
+    text-align:center!important;
   }
 
-  .namaa-responsive-topbar .namaa-mobile-menu-trigger,
-  .namaa-responsive-topbar .namaa-mobile-header-actions>a,
-  .namaa-responsive-topbar .namaa-mobile-header-actions>button {
-    width:var(--ux-size-10)!important;
-    height:var(--ux-size-10)!important;
-    min-width:var(--ux-size-10)!important;
-    min-height:var(--ux-size-10)!important;
+  .namaa-mobile-header-actions {
+    position:absolute!important;
+    inset-inline:auto!important;
+    left:var(--ux-space-2)!important;
+    top:50%!important;
+    transform:translateY(-50%)!important;
+    display:flex!important;
+    align-items:center!important;
+    gap:var(--ux-space-1)!important;
+    margin:0!important;
+  }
+
+  .namaa-mobile-menu-trigger,
+  .namaa-mobile-header-actions>a,
+  .namaa-mobile-header-actions>button {
+    width:var(--ux-size-9)!important;
+    height:var(--ux-size-9)!important;
+    min-width:var(--ux-size-9)!important;
+    min-height:var(--ux-size-9)!important;
     display:grid!important;
     place-items:center!important;
-    border:1px solid color-mix(in srgb,var(--ux-text-inverse) 26%,transparent)!important;
+    padding:0!important;
+    border:var(--ux-border-width-1) var(--ux-border-style-default) color-mix(in srgb,var(--ux-text-inverse) 24%,transparent)!important;
     border-radius:var(--ux-radius-sm)!important;
     background:color-mix(in srgb,var(--ux-text-inverse) 8%,transparent)!important;
     color:var(--ux-text-inverse)!important;
   }
 
-  .namaa-responsive-drawer-nav {
+  .namaa-mobile-brand-mark {
+    width:var(--ux-size-8)!important;
+    height:var(--ux-size-8)!important;
+    min-width:var(--ux-size-8)!important;
     display:grid!important;
-    gap:var(--ux-space-2)!important;
-  }
-
-  .namaa-responsive-drawer-nav a {
-    min-height:var(--ux-size-12);
-    display:grid;
-    grid-template-columns:var(--ux-size-10) minmax(0,1fr);
-    align-items:center;
-    gap:var(--ux-space-3);
-    padding:var(--ux-space-2) var(--ux-space-3);
-    border:1px solid var(--ux-border-default);
-    border-radius:var(--ux-radius-md);
-    background:var(--ux-card-bg);
-    color:var(--ux-text-primary);
-    text-decoration:none;
-  }
-
-  .namaa-responsive-drawer-nav a.is-active {
-    border-color:var(--ux-brand-secondary);
-    background:var(--ux-section-soft-teal);
-    color:var(--ux-brand-primary);
-    font-weight:var(--ux-type-button-weight);
-  }
-
-  .protected-app-shell:has([data-chat-first-route="true"]) {
-    width:100%;
-    height:100dvh;
-    min-height:100dvh;
-    margin:0;
-    padding:0!important;
-    overflow:hidden;
-  }
-
-  .protected-app-shell:has([data-chat-first-route="true"]) .namaa-app-main,
-  .protected-app-shell:has([data-chat-first-route="true"]) .namaa-page-frame,
-  .protected-app-shell:has([data-chat-first-route="true"]) [data-chat-first-route="true"] {
-    width:100%!important;
-    max-width:100%!important;
-    height:100dvh!important;
-    min-height:0!important;
-    margin:0!important;
-    padding:0!important;
-    overflow:hidden!important;
-  }
-}
-
-@media (min-width:768px) and (max-width:1023px) {
-  .protected-app-shell:not(:has([data-chat-first-route="true"])) .namaa-app-main {
-    padding:0 var(--ux-space-4) var(--ux-space-4)!important;
-  }
-}
-
-@media (max-width:767px) {
-  .protected-app-shell:not(:has([data-chat-first-route="true"])) .namaa-app-main {
-    padding:0 var(--ux-space-3) var(--ux-space-3)!important;
-  }
-}
-
-/* 2026-10-03 — RESPONSIVE DRAWER SINGLE AUTHORITY */
-@media (max-width:1023px) {
-  .namaa-responsive-navigation-drawer {
-    width:min(54vw,320px)!important;
-    max-width:54vw!important;
-    height:100dvh!important;
-    max-height:100dvh!important;
-    margin-block:0!important;
-    padding:0!important;
+    place-items:center!important;
+    overflow:visible!important;
     border-radius:0!important;
-    background:transparent!important;
-    overflow:hidden!important;
   }
 
-  .namaa-responsive-navigation-drawer .ux-overlay-shell {
+  .namaa-mobile-brand-mark img {
     width:100%!important;
     height:100%!important;
-    min-height:100%!important;
-    display:flex!important;
-    flex-direction:column!important;
-    border-radius:0!important;
-    background:var(--ux-card-bg)!important;
-    overflow:hidden!important;
+    display:block!important;
+    object-fit:contain!important;
+    object-position:center!important;
   }
 
-  .namaa-responsive-navigation-drawer .ux-dialog-header {
-    flex:0 0 auto!important;
-    min-height:64px!important;
-    display:flex!important;
-    align-items:center!important;
-    justify-content:flex-start!important;
-    padding:var(--ux-space-3) var(--ux-space-4)!important;
-    border:0!important;
-    border-block-end:1px solid color-mix(in srgb,var(--ux-text-inverse) 18%,transparent)!important;
-    background:var(--ux-shell-topbar-bg)!important;
-    color:var(--ux-text-inverse)!important;
-  }
-
-  .namaa-responsive-navigation-drawer .ux-dialog-header h2,
-  .namaa-responsive-navigation-drawer .ux-dialog-header p {
+  .namaa-app-main {
+    width:100%!important;
+    min-width:0!important;
     margin:0!important;
-    color:var(--ux-text-inverse)!important;
+    padding:0 var(--ux-space-3) var(--ux-space-3)!important;
   }
 
-  .namaa-responsive-navigation-drawer .ux-dialog-header h2 {
-    font-size:var(--ux-type-section-title-size)!important;
-    font-weight:var(--ux-type-section-title-weight)!important;
+  .namaa-page-frame,
+  .protected-app-shell :where(.page-shell,.dashboard-shell) {
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    margin-block-start:0!important;
+    padding-block-start:0!important;
   }
 
-  .namaa-responsive-navigation-drawer .ux-dialog-close {
-    display:none!important;
+  .protected-app-shell :where(.page-shell,.dashboard-shell)>:first-child,
+  .protected-app-shell :where(.page-header,.section-title-row,.dashboard-header) {
+    margin-block-start:0!important;
   }
 
-  .namaa-responsive-navigation-drawer .ux-dialog-body {
-    flex:1 1 auto!important;
-    min-height:0!important;
-    overflow-y:auto!important;
-    overscroll-behavior:contain!important;
-    padding:var(--ux-space-3)!important;
-    background:var(--ux-card-bg)!important;
-  }
-
-  .namaa-responsive-drawer-nav {
-    display:grid!important;
-    gap:var(--ux-space-2)!important;
-  }
-
-  .namaa-responsive-drawer-nav a {
-    min-height:var(--ux-size-12)!important;
-    display:grid!important;
-    grid-template-columns:var(--ux-size-10) minmax(0,1fr)!important;
-    align-items:center!important;
-    gap:var(--ux-space-2)!important;
-    padding:var(--ux-space-2)!important;
-    border:1px solid var(--ux-border-default)!important;
-    border-radius:var(--ux-radius-md)!important;
-    background:var(--ux-card-bg)!important;
-    color:var(--ux-text-primary)!important;
-    text-decoration:none!important;
-  }
-
-  .namaa-responsive-drawer-nav a.is-active {
-    border-color:var(--ux-brand-secondary)!important;
-    background:var(--ux-brand-primary)!important;
-    color:var(--ux-text-inverse)!important;
-  }
-
-  .namaa-responsive-drawer-nav a.is-active .namaa-mobile-drawer-icon {
-    background:color-mix(in srgb,var(--ux-text-inverse) 12%,transparent)!important;
-    color:var(--ux-text-inverse)!important;
-  }
-
-  .namaa-responsive-drawer-nav a:not(.is-active) .namaa-mobile-drawer-icon {
-    background:var(--ux-section-soft-teal)!important;
-    color:var(--ux-brand-primary)!important;
-  }
-}
-
-@media (min-width:768px) and (max-width:1023px) {
-  .namaa-responsive-navigation-drawer {
-    width:50vw!important;
-    max-width:50vw!important;
-  }
-}
-
-@media (max-width:767px) {
-  .namaa-responsive-navigation-drawer {
-    width:54vw!important;
-    max-width:54vw!important;
-  }
-
-  .protected-app-shell:not(:has([data-chat-first-route="true"])) .namaa-app-main {
-    padding:0!important;
-  }
-}
-
-/* Mobile/tablet window-title contrast authority. */
-@media (max-width:1023px) {
-  .protected-app-shell .ux-dialog-header {
-    background:var(--ux-shell-topbar-bg)!important;
-    color:var(--ux-text-inverse)!important;
-    border-block-end-color:color-mix(in srgb,var(--ux-text-inverse) 18%,transparent)!important;
-  }
-
-  .protected-app-shell .ux-dialog-header :where(h1,h2,h3,p,span) {
-    color:var(--ux-text-inverse)!important;
-  }
-}
-
-/* Mobile/tablet primary page-title contrast authority. */
-@media (max-width:1023px) {
   .protected-app-shell :where(.page-header,.section-title-row) {
     width:100%!important;
     max-width:100%!important;
-    margin-block-start:0!important;
     padding:var(--ux-space-3) var(--ux-space-4)!important;
-    border:1px solid var(--ux-shell-topbar-border)!important;
+    border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-shell-topbar-border)!important;
     border-radius:var(--ux-radius-md)!important;
     background:var(--ux-shell-topbar-bg)!important;
     color:var(--ux-text-inverse)!important;
@@ -1000,159 +518,207 @@
     color:var(--ux-text-inverse)!important;
   }
 
-  .protected-app-shell :where(.page-shell,.dashboard-shell)>:first-child {
-    margin-block-start:0!important;
-  }
-}
-
-/* 2026-10-03 — RESPONSIVE TOPBAR + COMPACT DRAWER AUTHORITY */
-
-  .namaa-responsive-navigation-drawer[data-side="start"] {
+  dialog.ux-drawer-surface.namaa-responsive-navigation-drawer {
+    position:fixed!important;
+    inset:0 0 0 auto!important;
     right:0!important;
     left:auto!important;
-    inset-inline-start:auto!important;
-    inset-inline-end:auto!important;
-  }
-
-  .protected-app-shell:has([data-chat-first-route="true"]) {
-    height:100dvh!important;
-    min-height:100dvh!important;
-  }
-
-  .protected-app-shell:has([data-chat-first-route="true"]) .namaa-app-main {
-    height:calc(100dvh - var(--ux-mobile-header-height))!important;
-    min-height:0!important;
-  }
-
-  .protected-app-shell:has([data-chat-first-route="true"]) .namaa-page-frame,
-  .protected-app-shell:has([data-chat-first-route="true"]) [data-chat-first-route="true"] {
-    height:100%!important;
-    min-height:0!important;
-  }
-
-@media (max-width:1023px) {
-  .protected-app-shell .namaa-responsive-topbar {
-    grid-template-columns:auto minmax(0,1fr) auto!important;
-    min-height:var(--ux-mobile-header-height)!important;
-    height:var(--ux-mobile-header-height)!important;
-    padding-inline:var(--ux-space-2)!important;
-    gap:var(--ux-space-2)!important;
-  }
-
-  .namaa-responsive-topbar-start {
-    display:flex!important;
-    align-items:center!important;
-    gap:var(--ux-space-1)!important;
-    justify-self:start!important;
-  }
-
-  .namaa-responsive-page-title {
-    min-width:0;
-    justify-self:center;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-    color:var(--ux-text-inverse)!important;
-    font-size:var(--ux-type-body-sm-size)!important;
-    font-weight:var(--ux-type-section-title-weight)!important;
-    text-align:center;
-  }
-
-  .namaa-mobile-brand-mark {
-    width:var(--ux-size-8);
-    height:var(--ux-size-8);
-    display:grid;
-    place-items:center;
-    overflow:hidden;
-    border-radius:var(--ux-radius-sm);
-  }
-
-  .namaa-mobile-brand-mark img {
-    width:var(--ux-size-8)!important;
-    height:var(--ux-size-8)!important;
-    object-fit:contain!important;
-    display:block!important;
-  }
-
-  .namaa-responsive-topbar .namaa-mobile-menu-trigger,
-  .namaa-responsive-topbar .namaa-mobile-header-actions>a,
-  .namaa-responsive-topbar .namaa-mobile-header-actions>button {
-    width:var(--ux-size-9)!important;
-    height:var(--ux-size-9)!important;
-    min-width:var(--ux-size-9)!important;
-    min-height:var(--ux-size-9)!important;
-  }
-
-  .namaa-responsive-topbar .namaa-mobile-header-actions {
-    justify-self:end!important;
-    gap:var(--ux-space-1)!important;
-  }
-
-  .namaa-responsive-navigation-drawer {
     width:min(52vw,var(--ux-drawer-max-width))!important;
     max-width:52vw!important;
+    height:100dvh!important;
+    max-height:100dvh!important;
+    margin:0!important;
+    padding:0!important;
+    border:0!important;
+    border-radius:0!important;
+    background:transparent!important;
+    direction:rtl!important;
+    overflow:hidden!important;
   }
 
-  .namaa-responsive-navigation-drawer .ux-dialog-header {
-    min-height:var(--ux-size-12)!important;
-    padding:var(--ux-space-2) var(--ux-space-3)!important;
-  }
-
-  .namaa-responsive-navigation-drawer .ux-dialog-header h2 {
-    font-size:var(--ux-type-body-sm-size)!important;
-  }
-
-  .namaa-responsive-navigation-drawer .ux-dialog-body {
-    padding:var(--ux-space-2)!important;
-  }
-
-  .namaa-responsive-drawer-nav {
-    gap:var(--ux-space-1)!important;
-  }
-
-  .namaa-responsive-drawer-nav a {
-    min-height:var(--ux-size-10)!important;
-    grid-template-columns:var(--ux-size-8) minmax(0,1fr)!important;
-    gap:var(--ux-space-2)!important;
-    padding:var(--ux-space-1) var(--ux-space-2)!important;
-    border-radius:var(--ux-radius-sm)!important;
-    font-size:var(--ux-type-body-sm-size)!important;
-    line-height:1.3!important;
-  }
-
-  .namaa-responsive-drawer-nav .namaa-mobile-drawer-icon {
-    width:var(--ux-size-8)!important;
-    height:var(--ux-size-8)!important;
-    min-width:var(--ux-size-8)!important;
-  }
-
-  .namaa-responsive-drawer-nav .namaa-mobile-drawer-icon svg {
-    width:18px!important;
-    height:18px!important;
+  dialog.ux-drawer-surface.namaa-responsive-navigation-drawer[data-side="start"] {
+    inset:0 0 0 auto!important;
+    right:0!important;
+    left:auto!important;
   }
 
   .namaa-responsive-navigation-drawer .ux-overlay-shell {
-    height:100dvh!important;
+    width:100%!important;
+    height:100%!important;
+    min-height:100%!important;
+    max-height:100%!important;
+    display:flex!important;
+    flex-direction:column!important;
+    border-radius:0!important;
+    background:var(--ux-card-bg)!important;
+    overflow:hidden!important;
+  }
+
+  .namaa-responsive-navigation-drawer .ux-dialog-header {
+    flex:0 0 auto!important;
+    min-height:var(--ux-size-12)!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    padding:var(--ux-space-2) var(--ux-space-3)!important;
+    border:0!important;
+    border-block-end:var(--ux-border-width-1) var(--ux-border-style-default) color-mix(in srgb,var(--ux-text-inverse) 18%,transparent)!important;
+    background:var(--ux-shell-topbar-bg)!important;
+    color:var(--ux-text-inverse)!important;
+  }
+
+  .namaa-responsive-navigation-drawer .ux-dialog-header h2,
+  .namaa-responsive-navigation-drawer .ux-dialog-header p {
+    margin:0!important;
+    color:var(--ux-text-inverse)!important;
+    font-size:var(--ux-type-body-sm-size)!important;
+  }
+
+  .namaa-responsive-navigation-drawer .ux-dialog-close {
+    display:none!important;
   }
 
   .namaa-responsive-navigation-drawer .ux-dialog-body {
+    flex:1 1 auto!important;
+    min-height:0!important;
+    padding:var(--ux-space-2)!important;
     overflow-y:auto!important;
+    overscroll-behavior:contain!important;
     scrollbar-width:none!important;
+    background:var(--ux-card-bg)!important;
   }
 
   .namaa-responsive-navigation-drawer .ux-dialog-body::-webkit-scrollbar {
     display:none;
   }
 
-  .protected-app-shell:not(:has([data-chat-first-route="true"])) .namaa-app-main {
-    padding-block-start:0!important;
+  .namaa-responsive-drawer-nav,
+  .namaa-mobile-drawer-nav {
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:var(--ux-space-1)!important;
+  }
+
+  .namaa-responsive-drawer-nav a,
+  .namaa-mobile-drawer-nav a {
+    min-height:var(--ux-size-10)!important;
+    display:grid!important;
+    grid-template-columns:var(--ux-size-8) minmax(0,1fr)!important;
+    align-items:center!important;
+    gap:var(--ux-space-2)!important;
+    padding:var(--ux-space-1) var(--ux-space-2)!important;
+    border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default)!important;
+    border-radius:var(--ux-radius-sm)!important;
+    background:var(--ux-card-bg)!important;
+    color:var(--ux-text-primary)!important;
+    text-decoration:none!important;
+    font-size:var(--ux-type-label-size)!important;
+    line-height:var(--ux-type-label-line)!important;
+  }
+
+  .namaa-mobile-drawer-icon {
+    width:var(--ux-size-8)!important;
+    height:var(--ux-size-8)!important;
+    min-width:var(--ux-size-8)!important;
+    display:grid!important;
+    place-items:center!important;
+    border-radius:var(--ux-radius-sm)!important;
+    background:var(--ux-section-soft-teal)!important;
+    color:var(--ux-brand-primary)!important;
+  }
+
+  .namaa-responsive-drawer-nav a.is-active,
+  .namaa-mobile-drawer-nav a.is-active {
+    border-color:var(--ux-brand-secondary)!important;
+    background:var(--ux-brand-primary)!important;
+    color:var(--ux-text-inverse)!important;
+    font-weight:var(--ux-type-button-weight)!important;
+  }
+
+  .namaa-responsive-drawer-nav a.is-active .namaa-mobile-drawer-icon,
+  .namaa-mobile-drawer-nav a.is-active .namaa-mobile-drawer-icon {
+    background:color-mix(in srgb,var(--ux-text-inverse) 12%,transparent)!important;
+    color:var(--ux-text-inverse)!important;
+  }
+
+  .protected-app-shell .ux-dialog-header {
+    background:var(--ux-shell-topbar-bg)!important;
+    color:var(--ux-text-inverse)!important;
+  }
+
+  .protected-app-shell .ux-dialog-header :where(h1,h2,h3,p,span) {
+    color:var(--ux-text-inverse)!important;
+  }
+
+  .protected-app-shell:has([data-chat-first-route="true"]) {
+    width:100%!important;
+    height:100dvh!important;
+    min-height:100dvh!important;
+    margin:0!important;
+    padding:0!important;
+    overflow:hidden!important;
+  }
+
+  .protected-app-shell:has([data-chat-first-route="true"]) .namaa-app-main {
+    width:100%!important;
+    max-width:100%!important;
+    height:calc(100dvh - var(--ux-mobile-header-height))!important;
+    min-height:0!important;
+    margin:0!important;
+    padding:0!important;
+    overflow:hidden!important;
+  }
+
+  .protected-app-shell:has([data-chat-first-route="true"]) .namaa-page-frame,
+  .protected-app-shell:has([data-chat-first-route="true"]) [data-chat-first-route="true"] {
+    width:100%!important;
+    max-width:100%!important;
+    height:100%!important;
+    min-height:0!important;
+    margin:0!important;
+    padding:0!important;
+    overflow:hidden!important;
+  }
+
+  .mobile-bottom-nav.namaa-mobile-bottom-nav {
+    padding-bottom:max(var(--ux-space-1),env(safe-area-inset-bottom));
   }
 }
 
 @media (min-width:768px) and (max-width:1023px) {
+  .tablet-top-nav-wrap {
+    display:none!important;
+  }
+
   .namaa-responsive-navigation-drawer {
     width:44vw!important;
     max-width:var(--ux-drawer-max-width)!important;
   }
+
+  .protected-app-shell :where(.ux-responsive-grid,.dashboard-main-grid,.dashboard-triple-grid) {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
 }
 
+@media (max-width:767px) {
+  .mobile-bottom-nav.namaa-mobile-bottom-nav {
+    display:none!important;
+    grid-template-columns:repeat(5,minmax(0,1fr));
+  }
+
+  .namaa-responsive-navigation-drawer {
+    width:52vw!important;
+    max-width:52vw!important;
+  }
+
+  .namaa-app-main {
+    padding-inline:var(--ux-space-3)!important;
+  }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  .desktop-top-nav-wrap.namaa-sidebar,
+  .namaa-topbar.namaa-topbar {
+    transition:none!important;
+  }
+}
