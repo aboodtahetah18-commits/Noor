@@ -21,8 +21,8 @@ button,input,select,textarea{font:inherit;color:inherit;}
 .namaa-sidebar{width:240px!important;background:var(--ux-surface-inverse)!important;box-shadow:var(--ux-shadow-md)!important;}
 @media(min-width:1440px){.namaa-mobile-topbar{display:none!important;}.namaa-sidebar-inner{height:100dvh!important;overflow:hidden!important;}.namaa-sidebar-nav{overflow-y:auto!important;min-height:0!important;}}
 @media(min-width:1440px){.dashboard-shell{padding-inline:var(--ux-space-10)!important;}}
-@media(min-width:768px) and (max-width:1023px){.namaa-mobile-topbar{display:none!important;}.dashboard-shell{padding-inline:var(--ux-space-6)!important;}}
-@media(max-width:767px){.namaa-mobile-topbar{display:flex!important;}.dashboard-shell{padding-inline:var(--ux-space-4)!important;}.narrow-shell{max-width:100%!important;}}
+@media(min-width:768px) and (max-width:1023px){.dashboard-shell{padding-inline:var(--ux-space-6)!important;}}
+@media(max-width:767px){.dashboard-shell{padding-inline:var(--ux-space-4)!important;}.narrow-shell{max-width:100%!important;}}
 
 /* Typography / P09 */
 h1,.protected-app-shell h1{font-size:var(--ux-type-page-title-size)!important;line-height:var(--ux-type-page-title-line)!important;font-weight:var(--ux-type-page-title-weight)!important;letter-spacing:0!important;color:var(--ux-text-primary)!important;}
@@ -241,15 +241,6 @@ label>span,.field-label{font-weight:500!important;color:var(--ux-text-primary)!i
   
   
 
-  .namaa-drawer-backdrop{position:fixed;inset:0;z-index:var(--ux-z-modal);background:var(--ux-alpha-overlay);display:flex;justify-content:flex-start;}
-  .namaa-mobile-navigation-drawer{width:min(84vw,var(--ux-drawer-max-width));height:100dvh;background:var(--ux-white);border-inline-end:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);box-shadow:var(--ux-shadow-lg);padding:calc(var(--ux-space-3) + env(safe-area-inset-top)) var(--ux-space-4) calc(var(--ux-space-4) + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:var(--ux-space-4);}
-  .namaa-mobile-navigation-drawer>header{display:flex;align-items:center;justify-content:space-between;min-height:var(--ux-size-12);border-bottom:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);}
-  .namaa-mobile-navigation-drawer>header strong{font-size:var(--ux-type-card-title-size);color:var(--ux-brand-primary);}
-  .namaa-mobile-navigation-drawer>header button{width:var(--ux-size-11);height:var(--ux-size-11);border:var(--ux-border-width-0);border-radius:var(--ux-radius-md);background:var(--ux-section-soft-blue);color:var(--ux-brand-primary);}
-  .namaa-mobile-navigation-drawer nav{display:grid;gap:var(--ux-space-1);}
-  .namaa-mobile-navigation-drawer nav a{min-height:var(--ux-size-11);display:flex;align-items:center;padding-inline:var(--ux-space-3);border-radius:var(--ux-radius-md);text-decoration:none;color:var(--ux-text-primary);font-weight:500;}
-  .namaa-mobile-navigation-drawer nav a.is-active{background:var(--ux-section-soft-teal);color:var(--ux-brand-primary);border-inline-start:var(--ux-space-1) var(--ux-border-style-default) var(--ux-brand-secondary);}
-  .namaa-drawer-descriptor{margin-top:auto;color:var(--ux-text-muted);font-size:var(--ux-type-caption-size);}
 
   /* Adaptive 1–2 column forms: short fields pair, long text/search remain full width. */
   .form-grid,.account-form,.transaction-filter-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;column-gap:var(--ux-space-3)!important;row-gap:var(--ux-space-3)!important;}
@@ -427,24 +418,6 @@ label>span,.field-label{font-weight:500!important;color:var(--ux-text-primary)!i
   .cycle-create-form{grid-template-columns:repeat(2,minmax(0,1fr))!important;padding:var(--ux-space-4)!important;gap:var(--ux-space-3)!important;}
   .cycle-field-full{grid-column:1/-1!important;}
   .cycle-create-actions{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
-}
-
-/* Mobile header and bottom navigation always keep brand contrast. */
-@media(max-width:767px){
-  .namaa-mobile-topbar.namaa-mobile-header{
-    background:var(--ux-white)!important;
-    color:var(--ux-brand-primary)!important;
-    border-color:var(--ux-shell-topbar-border)!important;
-  }
-  .namaa-mobile-header-actions>a,.namaa-mobile-header-actions>button{
-    background:var(--ux-section-soft-blue)!important;
-    color:var(--ux-brand-primary)!important;
-    border-color:var(--ux-border-default)!important;
-  }
-  
-  
-  
-  
 }
 
 /* Legacy OS-driven dark-mode overrides removed in Build 12. */
