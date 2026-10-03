@@ -8,7 +8,6 @@ import { CYCLE_STATUS_LABELS, OBLIGATION_STATUS_LABELS, financialStatusLabel } f
 import { BankMessageDialogTrigger } from '@/components/bank-message-dialog';
 import { Card, StatusBadge, FeedbackState, Button, ActionIcon } from '@/components/ui';
 import { LucideIcon } from '@/components/ui/lucide-icon';
-import { BrandLogo } from '@/components/brand/brand-logo';
 import styles from './dashboard.module.css';
 
 function metricValue(value: string | null, blockedLabel = 'غير متاح بعد') {
@@ -34,11 +33,6 @@ export default async function DashboardPage() {
       <main className={styles.page} dir="rtl">
         <div className={styles.container}>
           <section className={styles.emptyState} aria-labelledby="dashboard-empty-title">
-            <BrandLogo surface="light" priority className={styles.homeLogo} />
-            <div className={styles.emptyIcon} aria-hidden="true">
-              <LucideIcon name="walletCards" size={24} />
-            </div>
-            <p className={styles.eyebrow}>مستقبلي</p>
             <h1 id="dashboard-empty-title">ابدأ دورتك المالية الأولى</h1>
             <p>أنشئ دورة مالية حتى يبدأ النظام في حساب وضعك المالي الحقيقي وعرض الإجراء التالي المناسب.</p>
             <Link className={styles.primaryLink} href="/cycles/new">بدء دورة مالية</Link>
@@ -77,7 +71,6 @@ export default async function DashboardPage() {
       <div className={styles.container}>
         <header className={styles.header}>
           <div className={styles.headerCopy}>
-            <BrandLogo surface="light" priority className={styles.homeLogo} />
             <p className={styles.eyebrow}>ملخص مالي سريع</p>
             <h1>لوحة التحكم</h1>
             <div className={styles.cycleMeta}>
