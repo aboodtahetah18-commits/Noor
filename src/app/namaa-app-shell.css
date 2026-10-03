@@ -21,6 +21,10 @@
   margin-inline:auto;
 }
 
+.namaa-mobile-navigation-drawer {
+  z-index:var(--ux-z-modal);
+}
+
 /* Shared page/container composition without altering page-local content. */
 .protected-app-shell :where(.page-shell,.dashboard-shell) {
   width:min(100%,var(--ux-container-content));
