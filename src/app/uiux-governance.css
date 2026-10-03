@@ -241,15 +241,8 @@ label>span,.field-label{font-weight:500!important;color:var(--ux-text-primary)!i
   
   
 
-  .namaa-drawer-backdrop{position:fixed;inset:0;z-index:var(--ux-z-modal);background:var(--ux-alpha-overlay);display:flex;justify-content:flex-start;}
-  .namaa-mobile-navigation-drawer{width:min(84vw,var(--ux-drawer-max-width));height:100dvh;background:var(--ux-white);border-inline-end:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);box-shadow:var(--ux-shadow-lg);padding:calc(var(--ux-space-3) + env(safe-area-inset-top)) var(--ux-space-4) calc(var(--ux-space-4) + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:var(--ux-space-4);}
-  .namaa-mobile-navigation-drawer>header{display:flex;align-items:center;justify-content:space-between;min-height:var(--ux-size-12);border-bottom:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);}
-  .namaa-mobile-navigation-drawer>header strong{font-size:var(--ux-type-card-title-size);color:var(--ux-brand-primary);}
-  .namaa-mobile-navigation-drawer>header button{width:var(--ux-size-11);height:var(--ux-size-11);border:var(--ux-border-width-0);border-radius:var(--ux-radius-md);background:var(--ux-section-soft-blue);color:var(--ux-brand-primary);}
-  .namaa-mobile-navigation-drawer nav{display:grid;gap:var(--ux-space-1);}
-  .namaa-mobile-navigation-drawer nav a{min-height:var(--ux-size-11);display:flex;align-items:center;padding-inline:var(--ux-space-3);border-radius:var(--ux-radius-md);text-decoration:none;color:var(--ux-text-primary);font-weight:500;}
-  .namaa-mobile-navigation-drawer nav a.is-active{background:var(--ux-section-soft-teal);color:var(--ux-brand-primary);border-inline-start:var(--ux-space-1) var(--ux-border-style-default) var(--ux-brand-secondary);}
-  .namaa-drawer-descriptor{margin-top:auto;color:var(--ux-text-muted);font-size:var(--ux-type-caption-size);}
+  /* Retired legacy mobile drawer implementation.
+     Responsive navigation geometry now lives only in namaa-app-shell.css. */
 
   /* Adaptive 1–2 column forms: short fields pair, long text/search remain full width. */
   .form-grid,.account-form,.transaction-filter-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;column-gap:var(--ux-space-3)!important;row-gap:var(--ux-space-3)!important;}
