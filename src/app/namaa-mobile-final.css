@@ -454,3 +454,267 @@
     display:none!important;
   }
 }
+
+
+/* 2026-10-03 — ACCOUNTS PAGE SHELL */
+.namaa-accounts-page{
+  width:min(100%,var(--ux-container-content));
+  margin-inline:auto;
+}
+
+.namaa-accounts-header{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:end;
+  gap:var(--ux-space-4);
+  padding:var(--ux-space-5);
+  margin-bottom:var(--ux-space-4);
+  border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);
+  border-radius:var(--ux-radius-lg);
+  background:var(--ux-card-bg);
+  box-shadow:var(--ux-shadow-xs);
+}
+
+.namaa-accounts-header>div{
+  min-width:0;
+  display:grid;
+  gap:var(--ux-space-2);
+}
+
+.namaa-accounts-header .eyebrow{
+  color:var(--ux-brand-primary);
+  font-weight:700;
+}
+
+.namaa-accounts-header h1{
+  margin:0;
+}
+
+.namaa-accounts-header .primary-link{
+  min-height:46px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding-inline:var(--ux-space-4);
+  border-radius:var(--ux-radius-md);
+  background:var(--ux-brand-primary);
+  color:var(--ux-text-inverse);
+  text-decoration:none;
+  font-weight:800;
+  white-space:nowrap;
+}
+
+.namaa-accounts-summary{
+  border-color:color-mix(in srgb,var(--ux-brand-primary) 24%,var(--ux-border-default));
+  background:var(--ux-section-soft-teal);
+}
+
+.namaa-accounts-summary strong{
+  color:var(--ux-brand-primary);
+}
+
+.namaa-account-card{
+  position:relative;
+  overflow:hidden;
+}
+
+.namaa-account-copy{
+  min-width:0;
+}
+
+.namaa-account-bank-line{
+  color:var(--ux-brand-primary);
+  font-weight:650;
+}
+
+.namaa-account-balance-block strong{
+  color:var(--ux-brand-primary);
+  font-variant-numeric:tabular-nums;
+}
+
+@media (max-width:1023px){
+  .namaa-accounts-page{
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+    padding:var(--ux-space-3)!important;
+  }
+
+  .namaa-accounts-header{
+    width:100%!important;
+    margin:0 0 var(--ux-space-3)!important;
+    padding:var(--ux-space-4)!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    align-items:center!important;
+    gap:var(--ux-space-3)!important;
+    border-radius:var(--ux-radius-lg)!important;
+  }
+
+  .namaa-accounts-header>div{
+    gap:var(--ux-space-1)!important;
+  }
+
+  .namaa-accounts-header .eyebrow{
+    font-size:var(--ux-type-caption-size)!important;
+  }
+
+  .namaa-accounts-header h1{
+    font-size:var(--ux-type-page-title-size)!important;
+  }
+
+  .namaa-accounts-header>div>p:last-child{
+    margin:0!important;
+    color:var(--ux-text-secondary)!important;
+    font-size:var(--ux-type-body-sm-size)!important;
+  }
+
+  .namaa-accounts-header .primary-link{
+    width:auto!important;
+    min-width:44px!important;
+    min-height:44px!important;
+    padding:0 var(--ux-space-3)!important;
+  }
+
+  .namaa-accounts-summary{
+    margin:0 0 var(--ux-space-4)!important;
+    padding:var(--ux-space-4)!important;
+    border-width:1px!important;
+  }
+
+  .namaa-accounts-summary>div{
+    width:100%!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    align-items:center!important;
+  }
+
+  .namaa-accounts-summary strong{
+    font-size:var(--ux-type-page-title-size)!important;
+    line-height:1!important;
+  }
+
+  .namaa-accounts-mobile-card{
+    margin:0!important;
+    padding:0!important;
+    border:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+  }
+
+  .namaa-accounts-mobile-card>.p47-section-heading{
+    margin-bottom:var(--ux-space-3)!important;
+    padding-inline:var(--ux-space-1)!important;
+  }
+
+  .p47-account-map{
+    gap:var(--ux-space-3)!important;
+  }
+
+  .namaa-account-card{
+    min-height:0!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:var(--ux-space-3)!important;
+    padding:var(--ux-space-4)!important;
+    border:1.5px solid color-mix(in srgb,var(--ux-brand-primary) 18%,var(--ux-border-default))!important;
+    border-radius:var(--ux-radius-lg)!important;
+    background:var(--ux-card-bg)!important;
+    box-shadow:var(--ux-shadow-xs)!important;
+  }
+
+  .namaa-account-card::before{
+    content:"";
+    position:absolute;
+    inset-block:0;
+    inset-inline-start:0;
+    width:4px;
+    background:var(--ux-brand-primary);
+    opacity:.85;
+  }
+
+  .namaa-account-copy{
+    display:grid!important;
+    gap:var(--ux-space-2)!important;
+    padding-inline-end:54px!important;
+  }
+
+  .namaa-account-copy .p47-account-type{
+    width:max-content!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    min-height:28px!important;
+    padding:0 var(--ux-space-2)!important;
+    border-radius:999px!important;
+    background:var(--ux-section-soft-teal)!important;
+    color:var(--ux-brand-primary)!important;
+    font-size:var(--ux-type-caption-size)!important;
+    font-weight:750!important;
+  }
+
+  .namaa-account-copy h3{
+    margin:0!important;
+    color:var(--ux-text-primary)!important;
+    font-size:var(--ux-type-section-title-size)!important;
+    line-height:1.3!important;
+  }
+
+  .namaa-account-bank-line{
+    display:block!important;
+    margin:0!important;
+    color:var(--ux-brand-primary)!important;
+    font-weight:700!important;
+    font-size:var(--ux-type-body-sm-size)!important;
+  }
+
+  .namaa-account-balance-block{
+    min-width:0!important;
+    display:flex!important;
+    align-items:flex-end!important;
+    justify-content:space-between!important;
+    gap:var(--ux-space-3)!important;
+    padding-top:var(--ux-space-3)!important;
+    border-top:1px solid var(--ux-border-default)!important;
+  }
+
+  .namaa-account-balance-block span{
+    color:var(--ux-text-secondary)!important;
+    font-size:var(--ux-type-body-sm-size)!important;
+  }
+
+  .namaa-account-balance-block strong{
+    color:var(--ux-brand-primary)!important;
+    font-size:var(--ux-type-section-title-size)!important;
+    line-height:1!important;
+    font-weight:850!important;
+  }
+
+  .namaa-account-card .mx-action-rail{
+    position:absolute!important;
+    top:var(--ux-space-4)!important;
+    left:var(--ux-space-4)!important;
+    right:auto!important;
+    width:44px!important;
+    margin:0!important;
+  }
+
+  .namaa-account-card .mx-action-rail>.p49-modal-trigger{
+    border:1px solid color-mix(in srgb,var(--ux-brand-primary) 28%,var(--ux-border-default))!important;
+    background:var(--ux-card-bg)!important;
+    color:var(--ux-brand-primary)!important;
+    box-shadow:none!important;
+  }
+}
+
+@media (max-width:520px){
+  .namaa-accounts-header{
+    grid-template-columns:minmax(0,1fr) auto!important;
+  }
+
+  .namaa-accounts-header .primary-link .namaa-action-label>span{
+    display:none!important;
+  }
+
+  .namaa-accounts-header .primary-link{
+    width:44px!important;
+    padding:0!important;
+  }
+}
