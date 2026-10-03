@@ -1,13 +1,13 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { LucideIcon, type LucideIconName } from '@/components/ui/lucide-icon';
 import { Drawer } from '@/components/ui';
 import { ThemeToggle } from '../theme-toggle';
 import { ProfileTrigger, type HeaderProfile } from './profile-trigger';
-import { BrandLogo } from '@/components/brand/brand-logo';
 
 const systemPages: ReadonlyArray<{ href:string; label:string; icon:LucideIconName }> = [
   { href:'/dashboard', label:'الرئيسية', icon:'house' },
@@ -60,8 +60,8 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
           >
             <LucideIcon name="menu" size={20} />
           </button>
-            <Link href="/dashboard" className="namaa-mobile-brand-logo" aria-label="نماء — الرئيسية">
-              <BrandLogo surface="dark" priority />
+            <Link href="/dashboard" className="namaa-mobile-brand-logo namaa-mobile-brand-mark-only" aria-label="نماء — الرئيسية">
+              <Image src="/brand/ndos/namaa-mark.svg" alt="" width={34} height={38} priority unoptimized />
             </Link>
           </div>
 

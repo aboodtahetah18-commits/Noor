@@ -718,3 +718,104 @@
     padding:0!important;
   }
 }
+
+
+/* 2026-10-03 — ACCOUNTS COMPACT TOP PASS */
+.namaa-accounts-overview{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:var(--ux-space-3);
+  margin-bottom:var(--ux-space-3);
+}
+
+.namaa-accounts-overview>div{
+  min-width:0;
+}
+
+.namaa-accounts-overview .primary-link{
+  min-height:46px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding-inline:var(--ux-space-4);
+  border-radius:var(--ux-radius-md);
+  background:var(--ux-brand-primary);
+  color:var(--ux-text-inverse);
+  text-decoration:none;
+  font-weight:800;
+}
+
+.namaa-mobile-brand-mark-only{
+  width:44px!important;
+  min-width:44px!important;
+  height:44px!important;
+  display:grid!important;
+  place-items:center!important;
+  overflow:visible!important;
+}
+
+.namaa-mobile-brand-mark-only img{
+  width:34px!important;
+  height:38px!important;
+  object-fit:contain!important;
+}
+
+@media (max-width:1023px){
+  .namaa-accounts-page{
+    padding:var(--ux-space-2) var(--ux-space-3) var(--ux-space-3)!important;
+  }
+
+  .namaa-accounts-overview{
+    width:100%!important;
+    margin:0 0 var(--ux-space-3)!important;
+    padding:var(--ux-space-3)!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    gap:var(--ux-space-2)!important;
+  }
+
+  .namaa-accounts-overview>div{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    grid-template-areas:
+      "label value"
+      "count value"!important;
+    align-items:center!important;
+    gap:var(--ux-space-1) var(--ux-space-3)!important;
+  }
+
+  .namaa-accounts-overview>div>span{grid-area:label!important;}
+  .namaa-accounts-overview>div>strong{grid-area:value!important;}
+  .namaa-accounts-overview>div>small{grid-area:count!important;}
+
+  .namaa-accounts-overview .primary-link{
+    width:44px!important;
+    min-width:44px!important;
+    height:44px!important;
+    min-height:44px!important;
+    padding:0!important;
+  }
+
+  .namaa-accounts-overview .primary-link .namaa-action-label>span{
+    display:none!important;
+  }
+
+  .namaa-accounts-mobile-card{
+    margin:0!important;
+  }
+
+  .namaa-accounts-mobile-card>.p47-account-map{
+    margin-top:0!important;
+  }
+
+  .namaa-mobile-brand-mark-only{
+    width:42px!important;
+    min-width:42px!important;
+    height:42px!important;
+  }
+
+  .namaa-mobile-brand-mark-only img{
+    width:32px!important;
+    height:36px!important;
+  }
+}
