@@ -42,7 +42,7 @@ export function AccountForm({ accountNames, bankNames }: { accountNames: string[
 
       <section className="namaa-wizard-page" hidden={step !== 2}>
         <div className="namaa-wizard-fields">
-          <label><span className="field-title">IBAN</span><input name="iban" dir="ltr" autoCapitalize="characters" autoComplete="off" placeholder="SA00 0000 0000 0000 0000 0000" /></label>
+          <label className="namaa-field-wide"><span className="field-title">IBAN</span><input name="iban" dir="ltr" autoCapitalize="characters" autoComplete="off" placeholder="SA00 0000 0000 0000 0000 0000" /></label>
           <label><span className="field-title">آخر 4 أرقام</span><input name="cardLast4" inputMode="numeric" maxLength={4} autoComplete="off" placeholder="1234" /></label>
         </div>
         <p className="namaa-wizard-hint">هذه البيانات اختيارية وتساعد على المطابقة البنكية لاحقًا.</p>
