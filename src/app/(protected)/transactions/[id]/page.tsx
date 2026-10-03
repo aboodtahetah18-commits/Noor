@@ -114,7 +114,7 @@ export default async function TransactionDetailsPage({
       <section className="namaa-detail-section namaa-detail-management">
         <h2>الإدارة</h2>
         <details>
-          <summary><LucideIcon name="refreshCw" size={18}/> عكس العملية</summary>
+          <summary><LucideIcon name="refreshCw" size={20}/> عكس العملية</summary>
           <form action={reverseTransactionAction}>
             <input type="hidden" name="transactionId" value={transaction.id}/>
             <input type="hidden" name="idempotencyKey" value={`reverse-${randomUUID()}`}/>
