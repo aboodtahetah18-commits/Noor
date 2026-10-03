@@ -13,8 +13,8 @@ import { ActionDialog } from '@/components/overlays/action-dialog';
 import { CompactFilterPanel } from '@/components/ui/compact-filter-panel';
 import { LucideIcon } from '@/components/ui/lucide-icon';
 import { recordExpenseAction } from '../expenses/actions';
-import { transferAction } from '../transfers/actions';
 import { recordRefundAction } from '../refunds/new/actions';
+import { recordIncomeAction } from '../income/actions';
 import { transactionHistoryFiltersSchema } from '@/features/transactions/schemas/transaction-history';
 
 const TYPE_LABELS:Record<string,string>={INCOME:'دخل',EXPENSE:'مصروف',TRANSFER:'تحويل',REFUND:'استرداد',SAVING_TRANSFER:'تحويل للادخار',EMERGENCY_CONTRIBUTION:'مساهمة طوارئ',EMERGENCY_WITHDRAWAL:'سحب طارئ',GOAL_CONTRIBUTION:'مساهمة هدف',OBLIGATION_PAYMENT:'سداد التزام'};
@@ -108,8 +108,23 @@ export default async function TransactionsPage({searchParams}:{searchParams:Sear
           <details className="namaa-transaction-add-menu">
             <summary className="namaa-square-action is-primary" aria-label="إضافة عملية" title="إضافة عملية"><LucideIcon name="receiptText" size={20}/></summary>
             <div className="namaa-transaction-add-options">
-              <Link href="/income/new" className="namaa-add-option"><LucideIcon name="plus" size={20}/><span>دخل</span></Link>
-              {cycle?<ActionDialog trigger={<span className="namaa-action-label"><LucideIcon name="plus" size={20}/><span>مصروف</span></span>} title="إضافة مصروف" size="lg">
+              {cycle?<ActionDialog presentation="page" trigger={<span className="namaa-action-label"><LucideIcon name="plus" size={20}/><span>دخل</span></span>} title="إضافة دخل" size="lg">
+                <form className="form-grid p73-entry-form namaa-income-entry-form" action={recordIncomeAction.bind(null,cycle.id)}>
+                  <input type="hidden" name="idempotencyKey" value={randomUUID()}/>
+                  <label>المبلغ<input name="amount" inputMode="decimal" required placeholder="0.00"/></label>
+                  <label>التاريخ<input name="transactionDate" type="date" defaultValue={today} required/></label>
+                  <label className="full">مصدر الدخل<input name="sourceName" list="namaa-income-source-presets" required placeholder="راتب، صندوق استثماري، محفظة استثمارية"/></label>
+                  <datalist id="namaa-income-source-presets">
+                    <option value="راتب"/><option value="دخل إضافي"/><option value="مكافأة"/><option value="أرباح استثمارية"/><option value="عوائد صندوق استثماري"/><option value="عوائد محفظة استثمارية"/><option value="توزيعات أسهم"/><option value="عائد ادخاري"/><option value="دخل أعمال حرة"/>
+                  </datalist>
+                  <label>التصنيف<select name="incomeKind" defaultValue="ADDITIONAL_INCOME"><option value="SALARY">راتب</option><option value="ADDITIONAL_INCOME">دخل إضافي / استثماري</option><option value="BONUS">مكافأة</option><option value="OTHER">أخرى</option></select></label>
+                  <label>الحساب<select name="accountId" required defaultValue=""><option value="" disabled>اختر الحساب</option>{accounts.filter(a=>a.isActive).map(a=><option key={a.id} value={a.id}>{a.name}</option>)}</select></label>
+                  <input type="hidden" name="expectedIncomeId" value=""/>
+                  <label className="full">الوصف<input name="description" maxLength={500}/></label>
+                  <button className="primary-button full" type="submit">تسجيل الدخل</button>
+                </form>
+              </ActionDialog>:null}
+              {cycle?<ActionDialog presentation="page" trigger={<span className="namaa-action-label"><LucideIcon name="plus" size={20}/><span>مصروف</span></span>} title="إضافة مصروف" size="lg">
                 <form action={recordExpenseAction} className="form-grid p73-entry-form p73-expense-form">
                   <input type="hidden" name="cycleId" value={cycle.id}/><input type="hidden" name="idempotencyKey" value={randomUUID()}/>
                   <label>المبلغ<input name="amount" inputMode="decimal" required/></label>
@@ -122,18 +137,7 @@ export default async function TransactionsPage({searchParams}:{searchParams:Sear
                   <button className="primary-button" type="submit">تسجيل</button>
                 </form>
               </ActionDialog>:null}
-              {cycle?<ActionDialog trigger={<span className="namaa-action-label"><LucideIcon name="repeat2" size={20}/><span>تحويل</span></span>} title="تحويل" size="lg">
-                <form className="p47-flow-form p73-entry-form p73-transfer-form" action={transferAction}>
-                  <input type="hidden" name="cycleId" value={cycle.id}/><input type="hidden" name="idempotencyKey" value={randomUUID()}/>
-                  <label>من الحساب<select name="fromAccountId" required defaultValue=""><option value="" disabled>اختر الحساب</option>{accounts.map(a=><option key={a.id} value={a.id}>{a.name}</option>)}</select></label>
-                  <label>إلى الحساب<select name="toAccountId" required defaultValue=""><option value="" disabled>اختر الحساب</option>{accounts.map(a=><option key={a.id} value={a.id}>{a.name}</option>)}</select></label>
-                  <label>المبلغ<input name="amount" inputMode="decimal" required/></label>
-                  <label>التاريخ<input name="transactionDate" type="date" defaultValue={today} required/></label>
-                  <label>الوصف<input name="description"/></label>
-                  <button className="primary-button" type="submit">تنفيذ</button>
-                </form>
-              </ActionDialog>:null}
-              <ActionDialog trigger={<span className="namaa-action-label"><LucideIcon name="refreshCw" size={20}/><span>استرداد</span></span>} title="استرداد" size="lg">
+              <ActionDialog presentation="page" trigger={<span className="namaa-action-label"><LucideIcon name="refreshCw" size={20}/><span>استرداد</span></span>} title="استرداد" size="lg">
                 <form className="p47-flow-form form-grid p73-entry-form p73-refund-form" action={recordRefundAction}>
                   <input type="hidden" name="idempotencyKey" value={randomUUID()}/>
                   <label className="full">المصروف<select name="originalTransactionId" required><option value="">اختر المصروف</option>{refundCandidates.items.filter(e=>e.status==='POSTED').map(e=><option key={e.id} value={e.id}>{e.transactionDate} · {e.categoryName??e.description??'مصروف'} · {e.amount} ريال</option>)}</select></label>
