@@ -6,49 +6,59 @@ const root = process.cwd();
 const read = (file: string) => fs.readFileSync(path.join(root, file), 'utf8');
 
 describe('Stage 3 responsive full-platform app shell', () => {
-  it('keeps authenticated shell structure and enables full mobile route rendering', () => {
+  it('keeps authenticated shell structure and one shared mobile/tablet header', () => {
     const layout = read('src/app/(protected)/layout.tsx');
+    const tablet = read('src/app/(protected)/tablet-top-nav.tsx');
+    const bottom = read('src/app/(protected)/mobile-bottom-nav.tsx');
+
     expect(layout).toContain('data-responsive-platform="full"');
     expect(layout).toContain('<DesktopTopNav />');
-    expect(layout).toContain('<TabletTopNav profile={profile} />');
+    expect(layout).toContain('<TabletTopNav />');
     expect(layout).toContain('<MobileTopBar profile={profile} />');
     expect(layout).toContain('<MobileBottomNav />');
 
+    expect(tablet).toContain('return null');
+    expect(bottom).toContain('return null');
     expect(layout).not.toContain('MobileConversationGate');
     expect(layout).not.toContain('router.replace');
-    expect(layout).not.toContain('matchMedia');
   });
 
-  it('keeps a five-destination mobile bottom navigation and secondary routes in the shared drawer', () => {
-    const bottom = read('src/app/(protected)/mobile-bottom-nav.tsx');
+  it('keeps direct system destinations in the shared responsive drawer', () => {
     const top = read('src/app/(protected)/mobile-top-bar.tsx');
 
-    for (const route of ['/dashboard', '/accounts', '/transactions', '/budget', '/more']) {
-      expect(bottom).toContain(`href: '${route}'`);
-    }
-
     expect(top).toContain("import { Drawer } from '@/components/ui'");
-    for (const route of ['/conversations','/bank-operations','/investments','/governance','/cases','/reports','/advisor','/internal-funding','/workspace','/alerts','/settings']) {
-      expect(top).toContain(`'${route}'`);
+    for (const route of [
+      '/dashboard',
+      '/conversations',
+      '/accounts',
+      '/transactions',
+      '/budget',
+      '/bank-operations',
+      '/investments',
+      '/reports',
+      '/settings',
+    ]) {
+      expect(top).toContain(`href:'${route}'`);
     }
+    expect(top).toContain('side="start"');
+    expect(top).toContain('showCloseButton={false}');
   });
 
-  it('keeps dedicated desktop, tablet and mobile viewport compositions', () => {
+  it('keeps desktop isolated while mobile and tablet share one responsive authority', () => {
     const css = read('src/app/namaa-app-shell.css');
 
     expect(css).toContain('@media (min-width:1024px)');
+    expect(css).toContain('@media (max-width:1023px)');
     expect(css).toContain('@media (min-width:768px) and (max-width:1023px)');
     expect(css).toContain('@media (max-width:767px)');
-    expect(css).toContain('position:fixed');
-    expect(css).toContain('.tablet-top-nav-wrap');
-    expect(css).toContain('.mobile-bottom-nav.namaa-mobile-bottom-nav');
-    expect(css).toContain('grid-template-columns:repeat(5,minmax(0,1fr))');
+    expect(css).toContain('.namaa-responsive-topbar');
+    expect(css).toContain('dialog.ux-drawer-surface.namaa-responsive-navigation-drawer');
+    expect(css).toContain('right:0!important');
     expect(css).toContain('overflow-x:clip');
   });
 
-  it('keeps global search and utility placement available outside mobile', () => {
+  it('keeps desktop search and responsive utility placement available', () => {
     const desktop = read('src/app/(protected)/global-top-bar.tsx');
-    const tablet = read('src/app/(protected)/tablet-top-nav.tsx');
     const mobile = read('src/app/(protected)/mobile-top-bar.tsx');
 
     expect(desktop).toContain('role="search"');
@@ -56,16 +66,13 @@ describe('Stage 3 responsive full-platform app shell', () => {
     expect(desktop).toContain('ThemeToggle');
     expect(desktop).toContain('href="/alerts"');
 
-    expect(tablet).toContain('role="search"');
-    expect(tablet).toContain('ProfileTrigger');
-    expect(tablet).toContain('ThemeToggle');
-
-    expect(mobile).toContain('aria-label="البحث في نماء"');
     expect(mobile).toContain('ProfileTrigger');
     expect(mobile).toContain('ThemeToggle');
+    expect(mobile).toContain('href="/alerts"');
+    expect(mobile).toContain('namaa-responsive-page-title');
   });
 
-  it('uses existing frozen token variables instead of raw palette values in the shell authority', () => {
+  it('uses frozen token variables instead of raw palette values in shell authority', () => {
     const css = read('src/app/namaa-app-shell.css');
     expect(css).not.toMatch(/#[0-9a-f]{3,8}\b/i);
     expect(css).toContain('var(--ux-shell-sidebar-bg)');
