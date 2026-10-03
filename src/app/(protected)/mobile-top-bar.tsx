@@ -30,6 +30,7 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const pageTitle=currentPageTitle(pathname);
+  const chatFirst = pathname === '/conversations' || pathname.startsWith('/conversations/');
 
   useEffect(() => {
     const openNavigation = () => setOpen(true);
@@ -37,11 +38,15 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
     return () => window.removeEventListener('namaa:open-responsive-navigation', openNavigation);
   }, []);
 
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
   const closeNavigation = () => setOpen(false);
 
   return (
     <>
-      <header className="namaa-mobile-topbar namaa-mobile-header namaa-responsive-topbar" dir="rtl">
+      {!chatFirst ? <header className="namaa-mobile-topbar namaa-mobile-header namaa-responsive-topbar" dir="rtl">
           <div className="namaa-responsive-topbar-start">
             <button
               className="namaa-mobile-menu-trigger"
@@ -67,7 +72,7 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
             <ThemeToggle />
             <ProfileTrigger profile={profile} className="namaa-mobile-profile-trigger" />
           </div>
-        </header>
+        </header> : null}
 
       <Drawer
         open={open}
