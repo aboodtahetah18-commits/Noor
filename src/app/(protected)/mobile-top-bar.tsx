@@ -22,6 +22,7 @@ const systemPages: ReadonlyArray<{ href:string; label:string; icon:LucideIconNam
 ];
 
 function currentPageTitle(pathname:string){
+  if(pathname==='/dashboard') return '';
   if(pathname==='/cycles/new'||pathname.startsWith('/cycles/new/')) return 'بداية الدورة';
   const item=systemPages.find(({href})=>pathname===href||pathname.startsWith(`${href}/`));
   return item?.label ?? 'نماء';
@@ -64,7 +65,7 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
             </Link>
           </div>
 
-          <strong className="namaa-responsive-page-title">{pageTitle}</strong>
+          {pageTitle ? <strong className="namaa-responsive-page-title">{pageTitle}</strong> : null}
 
           <div className="namaa-mobile-header-actions">
             <Link href="/alerts" className="namaa-responsive-alert" aria-label="التنبيهات" title="التنبيهات">
