@@ -29,14 +29,13 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
   const [mode, setMode] = useState<NavigationMode>(chatFirst ? 'chat' : 'system');
 
   useEffect(() => {
-    setMode(chatFirst ? 'chat' : 'system');
-  }, [chatFirst]);
-
-  useEffect(() => {
-    const openNavigation = () => setOpen(true);
+    const openNavigation = () => {
+      if (chatFirst) setMode('chat');
+      setOpen(true);
+    };
     window.addEventListener('namaa:open-responsive-navigation', openNavigation);
     return () => window.removeEventListener('namaa:open-responsive-navigation', openNavigation);
-  }, []);
+  }, [chatFirst]);
 
   const handleModeChange = (next: NavigationMode) => {
     setMode(next);
