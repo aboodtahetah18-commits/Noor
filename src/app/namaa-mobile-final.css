@@ -162,3 +162,157 @@
   .protected-app-shell:not(:has([data-chat-first-route="true"])) .namaa-responsive-page-title{max-width:28%!important;}
   .protected-app-shell:not(:has([data-chat-first-route="true"])) .namaa-mobile-header-actions>a:first-child{display:none!important;}
 }
+
+
+/* 2026-10-03 — MOBILE PAGE CONSISTENCY PASS */
+@media (max-width:1023px){
+  /* Drawer: physical right, with logical coordinates aligned for RTL. */
+  dialog.ux-drawer-surface.namaa-responsive-navigation-drawer,
+  dialog.ux-drawer-surface.namaa-responsive-navigation-drawer[data-side="start"],
+  dialog.ux-drawer-surface.namaa-responsive-navigation-drawer[data-side="end"]{
+    right:0!important;
+    left:auto!important;
+    inset-inline-start:0!important;
+    inset-inline-end:auto!important;
+    margin:0!important;
+  }
+
+  /* Shared protected pages should begin immediately under the fixed topbar. */
+  .protected-app-shell:not(:has([data-chat-first-route="true"])) .namaa-app-main{
+    padding-top:64px!important;
+  }
+
+  .protected-app-shell:not(:has([data-chat-first-route="true"])) .namaa-page-frame{
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+    padding:0!important;
+  }
+
+  .protected-app-shell :where(.p47-page,.page-shell,.app-page,.reports-page,.namaa-investments-page){
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+    padding:0!important;
+    box-sizing:border-box!important;
+  }
+
+  .protected-app-shell :where(.p47-content-shell,.p47-analysis-shell){
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+    padding:var(--ux-space-4) var(--ux-space-3)!important;
+    box-sizing:border-box!important;
+  }
+
+  .protected-app-shell :where(.p47-page-heading,.p47-resource-header,.p47-section-heading){
+    align-items:flex-start!important;
+    gap:var(--ux-space-3)!important;
+  }
+
+  .protected-app-shell :where(.p47-page-heading h1,.p47-resource-header h1,.p47-section-heading h2){
+    margin:0!important;
+    line-height:1.25!important;
+  }
+
+  /* Empty states should read as complete cards, not loose text fragments. */
+  .p47-empty-shell{
+    min-height:calc(100dvh - 64px)!important;
+    display:grid!important;
+    place-items:center!important;
+  }
+
+  .p47-empty-state,
+  .empty-state{
+    width:min(100%,720px)!important;
+    margin:auto!important;
+    padding:var(--ux-space-6) var(--ux-space-4)!important;
+    display:grid!important;
+    justify-items:center!important;
+    gap:var(--ux-space-3)!important;
+    text-align:center!important;
+    border:1px solid var(--ux-border-default)!important;
+    border-radius:var(--ux-radius-lg)!important;
+    background:var(--ux-card-bg)!important;
+    box-shadow:var(--ux-shadow-xs)!important;
+  }
+
+  .p47-empty-icon{display:none!important;}
+
+  .p47-empty-state .p47-primary-action,
+  .empty-state .primary-link{
+    min-width:180px!important;
+    min-height:48px!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    padding-inline:var(--ux-space-4)!important;
+    border-radius:var(--ux-radius-md)!important;
+    background:var(--ux-brand-primary)!important;
+    color:var(--ux-text-inverse)!important;
+    text-decoration:none!important;
+    font-weight:800!important;
+  }
+
+  /* Bank operations journey: restore a clean numbered sequence. */
+  .p47-bank-journey{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:var(--ux-space-2)!important;
+    margin:0 0 var(--ux-space-4)!important;
+  }
+
+  .p47-bank-journey>div{
+    min-height:44px!important;
+    display:grid!important;
+    grid-template-columns:32px minmax(0,1fr)!important;
+    align-items:center!important;
+    gap:var(--ux-space-2)!important;
+    padding:var(--ux-space-2) var(--ux-space-3)!important;
+    border:1px solid var(--ux-border-default)!important;
+    border-radius:var(--ux-radius-sm)!important;
+    background:var(--ux-card-bg)!important;
+  }
+
+  .p47-bank-journey b{
+    width:28px!important;
+    height:28px!important;
+    display:grid!important;
+    place-items:center!important;
+    border-radius:var(--ux-radius-full)!important;
+    background:var(--ux-section-soft-teal)!important;
+    color:var(--ux-brand-primary)!important;
+  }
+
+  /* Settings: technical identity governance belongs to desktop administration, not mobile end-user flow. */
+  .namaa-settings-legacy .brand-logo-settings{
+    display:none!important;
+  }
+
+  /* Mobile resource cards: prevent oversized sparse cards. */
+  .p47-account-map{
+    display:grid!important;
+    gap:var(--ux-space-2)!important;
+  }
+
+  .p47-account-tile{
+    min-height:0!important;
+    padding:var(--ux-space-4)!important;
+    gap:var(--ux-space-3)!important;
+  }
+
+  .p47-account-tile :where(h3,strong,span,small){
+    overflow-wrap:anywhere!important;
+  }
+
+  .p47-transaction-row{
+    padding:var(--ux-space-3)!important;
+    gap:var(--ux-space-2)!important;
+  }
+
+  .p47-panel,
+  .p74-focus-summary{
+    border-radius:var(--ux-radius-lg)!important;
+  }
+}
