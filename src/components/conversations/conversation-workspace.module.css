@@ -11395,3 +11395,39 @@
   }
 }
 
+
+
+/* 2026-10-03 — CHAT VIEWPORT HARD RESET
+ * Conversations own the visual viewport. No historical shell/header spacer may
+ * reserve a blank strip above the chat surface.
+ */
+.page{
+  position:fixed!important;
+  inset:0!important;
+  width:100vw!important;
+  max-width:100vw!important;
+  height:100dvh!important;
+  min-height:100dvh!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:hidden!important;
+}
+
+.workspace,
+.chatPane{
+  position:relative!important;
+  inset:0!important;
+  width:100%!important;
+  max-width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+}
+
+.chatHeader,
+.centralChatHeader{
+  margin-block-start:0!important;
+  inset-block-start:0!important;
+}
+
