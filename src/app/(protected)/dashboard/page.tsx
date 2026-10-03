@@ -30,7 +30,7 @@ export default async function DashboardPage() {
 
   if (!dashboard) {
     return (
-      <main className={styles.page} dir="rtl">
+      <main className={`${styles.page} ${styles.emptyPage}`} dir="rtl">
         <div className={styles.container}>
           <section className={styles.emptyState} aria-labelledby="dashboard-empty-title">
             <h1 id="dashboard-empty-title">ابدأ دورتك المالية الأولى</h1>
