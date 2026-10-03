@@ -8,7 +8,19 @@ import { deactivateAccountAction, updateAccountAction } from './actions';
 
 type AccountType = 'BANK'|'SAVINGS'|'CASH'|'OTHER';
 type ActivityPeriod = { key:string; label:string; count:number; net:string; };
-type ActivitySummary = { totalTransactions:number; firstTransactionDate:string|null; periods:ActivityPeriod[]; };
+type ActivitySummary = {
+  totalTransactions:number;
+  firstTransactionDate:string|null;
+  totalInflow:string;
+  totalOutflow:string;
+  monthInflow:string;
+  monthOutflow:string;
+  monthNet:string;
+  dominantCategory:string|null;
+  status:'NO_DATA'|'STABLE'|'WATCH';
+  challenge:string;
+  periods:ActivityPeriod[];
+};
 
 type Props = {
   account: {
@@ -102,24 +114,41 @@ export function AccountDetailsFlow({ account, editable, accountNames, bankNames,
     </section>
 
     <section className="namaa-detail-page" hidden={tab!=='activity'}>
-      <div className="namaa-account-activity-head">
-        <div><span>إجمالي العمليات</span><strong>{activity?.totalTransactions??0}</strong></div>
-        <div><span>أول حركة</span><strong>{activity?.firstTransactionDate??'لا توجد حركات'}</strong></div>
-      </div>
-      <div className="namaa-activity-period-grid">
-        {(activity?.periods??[]).map(period=>{
-          const net=Number(period.net||0);
-          return <article key={period.key} className="namaa-activity-period-card">
-            <span>{period.label}</span>
-            <strong>{period.count} عملية</strong>
-            <div className={net>0?'is-positive':net<0?'is-negative':'is-neutral'}>
-              <Image src="/brand/saudi-riyal-symbol.png" alt="" width={16} height={16} unoptimized/>
-              <b>{money(period.net)}</b>
-            </div>
-          </article>;
-        })}
-        {!activity?.periods?.length?<div className="p47-soft-empty"><strong>لا توجد حركة مالية حتى الآن</strong><span>ستظهر المؤشرات هنا بعد تسجيل أول عملية على الحساب.</span></div>:null}
-      </div>
+      {activity ? <>
+        <div className="namaa-account-activity-head namaa-account-activity-head-rich">
+          <div><span>إجمالي العمليات</span><strong>{activity.totalTransactions}</strong></div>
+          <div><span>إجمالي الداخل</span><strong className="is-positive"><Image src="/brand/saudi-riyal-symbol.png" alt="" width={16} height={16} unoptimized/>{money(activity.totalInflow)}</strong></div>
+          <div><span>إجمالي الخارج</span><strong className="is-negative"><Image src="/brand/saudi-riyal-symbol.png" alt="" width={16} height={16} unoptimized/>{money(activity.totalOutflow)}</strong></div>
+          <div><span>صافي هذا الشهر</span><strong className={Number(activity.monthNet)>=0?'is-positive':'is-negative'}><Image src="/brand/saudi-riyal-symbol.png" alt="" width={16} height={16} unoptimized/>{money(activity.monthNet)}</strong></div>
+        </div>
+
+        <section className="namaa-activity-assessment">
+          <div><span>حالة الحساب</span><strong className={activity.status==='STABLE'?'is-stable':activity.status==='WATCH'?'is-watch':'is-neutral'}>{activity.status==='STABLE'?'مستقر':activity.status==='WATCH'?'يحتاج متابعة':'بيانات غير كافية'}</strong></div>
+          <div><span>البند المرتبط الأكثر استخدامًا</span><strong>{activity.dominantCategory??'غير محدد'}</strong></div>
+          <div className="is-wide"><span>الملاحظة</span><strong>{activity.challenge}</strong></div>
+        </section>
+
+        <div className="namaa-activity-period-grid">
+          {activity.periods.map(period=>{
+            const net=Number(period.net||0);
+            return <article key={period.key} className="namaa-activity-period-card">
+              <span>{period.label}</span>
+              <strong>{period.count} عملية</strong>
+              <div className={net>0?'is-positive':net<0?'is-negative':'is-neutral'}>
+                <Image src="/brand/saudi-riyal-symbol.png" alt="" width={16} height={16} unoptimized/>
+                <b>{money(period.net)}</b>
+              </div>
+            </article>;
+          })}
+        </div>
+
+        <div className="namaa-activity-footnote">
+          <span>أول حركة</span><strong>{activity.firstTransactionDate??'—'}</strong>
+        </div>
+      </> : <div className="namaa-activity-empty" role="status">
+        <strong>لا توجد حركة مالية حتى الآن</strong>
+        <span>ستظهر هنا المبالغ، المؤشرات، حالة الحساب، والبند المرتبط بعد تسجيل أول عملية على هذا الحساب.</span>
+      </div>}
     </section>
 
     <section className="namaa-detail-page" hidden={tab!=='manage'}>
