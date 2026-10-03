@@ -57,22 +57,28 @@ const legacySmokeCommands=Object.keys(pkg.scripts??{}).filter(name=>name.include
 if(build.includes('namaa:final-ui:materialize')) errors.push('Vercel build must not materialize the legacy Namaa P0.4.30 artifact.');
 if(build.includes('apps/namaa-final-ui') && !build.includes('rmSync')) errors.push('Vercel build must not build the generated legacy apps/namaa-final-ui runtime.');
 if(vercel.outputDirectory!=='.next') errors.push(`Vercel outputDirectory must be .next, got ${vercel.outputDirectory}`);
+const approvedPreviewBranches=new Set([
+  'deploy/vercel-preview-20260920',
+  'prod/chat-tablet-drawer-fix-20261001',
+]);
 const isApprovedPreview=
   process.env.VERCEL_ENV==='preview' &&
-  process.env.VERCEL_GIT_COMMIT_REF==='deploy/vercel-preview-20260920';
+  approvedPreviewBranches.has(process.env.VERCEL_GIT_COMMIT_REF??'');
 const isApprovedProductionRelease=
   (process.env.VERCEL_ENV==='production' && process.env.VERCEL_GIT_COMMIT_REF==='main') ||
   (process.env.GITHUB_ACTIONS==='true' && process.env.GITHUB_REF_NAME==='main');
 const gitDeploymentConfig=vercel.git?.deploymentEnabled;
-const isMainOnlyGitDeployment=
+const approvedAutoDeployBranches=new Set(['main','prod/chat-tablet-drawer-fix-20261001']);
+const isApprovedGitDeployment=
   gitDeploymentConfig!==null &&
   typeof gitDeploymentConfig==='object' &&
   gitDeploymentConfig['*']===false &&
   gitDeploymentConfig.main===true &&
   Object.entries(gitDeploymentConfig).every(([branch,enabled])=>
-    (branch==='main'&&enabled===true)||(branch==='*'&&enabled===false)
+    (branch==='*'&&enabled===false) ||
+    (approvedAutoDeployBranches.has(branch)&&enabled===true)
   );
-if(gitDeploymentConfig!==false && !isMainOnlyGitDeployment && !isApprovedPreview && !isApprovedProductionRelease){
+if(gitDeploymentConfig!==false && !isApprovedGitDeployment && !isApprovedPreview && !isApprovedProductionRelease){
   errors.push('Vercel Git auto-deployments must stay disabled, or be enabled for main only with all other branches disabled.');
 }
 if(!build.includes('npm run build')) errors.push('Vercel build must compile the repository root Next.js application.');
