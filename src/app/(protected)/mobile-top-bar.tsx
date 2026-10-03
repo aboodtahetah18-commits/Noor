@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { LucideIcon, type LucideIconName } from '@/components/ui/lucide-icon';
@@ -55,7 +56,7 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
               <LucideIcon name="menu" size={20} />
             </button>
             <Link href="/dashboard" className="namaa-mobile-brand-mark" aria-label="نماء — الرئيسية">
-              <span aria-hidden="true" />
+              <Image src="/brand/ndos/namaa-mark.svg" alt="" width={30} height={34} priority unoptimized />
             </Link>
           </div>
 
