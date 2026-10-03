@@ -52,6 +52,7 @@ export function Drawer({
   return (
     <dialog
       ref={ref}
+      dir="rtl"
       className={`ux-drawer-surface ${className}`.trim()}
       data-side={side}
       aria-modal="true"
