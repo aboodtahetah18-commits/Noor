@@ -12893,7 +12893,7 @@
     margin:var(--ux-space-2) var(--ux-space-3) 0!important;
   }
 
-  .messages{
+  .chatBody .messages{
     flex:1 1 auto!important;
     min-height:0!important;
     overflow-y:auto!important;
@@ -12907,7 +12907,7 @@
     display:none!important;
   }
 
-  .composer{
+  .page .composer{
     position:relative!important;
     inset:auto!important;
     flex:0 0 auto!important;
