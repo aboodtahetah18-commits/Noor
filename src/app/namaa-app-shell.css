@@ -768,3 +768,177 @@
     transition:none !important;
   }
 }
+
+/* 2026-10-03 — MOBILE + TABLET SINGLE NAVIGATION AUTHORITY
+   Mobile and tablet share one navigation system; only geometry scales. */
+@media (max-width:1023px) {
+  .tablet-top-nav-wrap,
+  .namaa-tablet-wrap,
+  .namaa-tablet-nav,
+  .mobile-bottom-nav,
+  .namaa-mobile-bottom-nav {
+    display:none!important;
+  }
+
+  .protected-app-shell .namaa-responsive-topbar {
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    align-items:center!important;
+    gap:var(--ux-space-3)!important;
+    width:100%!important;
+    min-height:var(--ux-shell-topbar-height)!important;
+    padding-inline:var(--ux-space-3)!important;
+    border-block-end:1px solid var(--ux-shell-topbar-border)!important;
+    background:var(--ux-shell-topbar-bg)!important;
+    color:var(--ux-text-inverse)!important;
+    position:sticky!important;
+    inset-block-start:0!important;
+    z-index:var(--ux-z-sticky)!important;
+  }
+
+  .namaa-responsive-topbar .namaa-mobile-brand-zone,
+  .namaa-responsive-topbar .namaa-mobile-header-actions {
+    display:flex!important;
+    align-items:center!important;
+    gap:var(--ux-space-2)!important;
+  }
+
+  .namaa-responsive-topbar .namaa-mobile-header-actions {
+    justify-content:flex-end!important;
+  }
+
+  .namaa-responsive-topbar .namaa-mobile-menu-trigger,
+  .namaa-responsive-topbar .namaa-mobile-header-actions>a,
+  .namaa-responsive-topbar .namaa-mobile-header-actions>button {
+    width:var(--ux-size-10)!important;
+    height:var(--ux-size-10)!important;
+    min-width:var(--ux-size-10)!important;
+    min-height:var(--ux-size-10)!important;
+    display:grid!important;
+    place-items:center!important;
+    border:1px solid color-mix(in srgb,var(--ux-text-inverse) 26%,transparent)!important;
+    border-radius:var(--ux-radius-sm)!important;
+    background:color-mix(in srgb,var(--ux-text-inverse) 8%,transparent)!important;
+    color:var(--ux-text-inverse)!important;
+  }
+
+  .namaa-responsive-navigation-drawer {
+    width:min(72vw,360px)!important;
+    max-width:72vw!important;
+  }
+
+  .namaa-responsive-navigation-content {
+    display:grid;
+    gap:var(--ux-space-4);
+  }
+
+  .namaa-navigation-mode {
+    display:grid;
+    gap:var(--ux-space-2);
+    padding-block-end:var(--ux-space-3);
+    border-block-end:1px solid var(--ux-border-default);
+  }
+
+  .namaa-navigation-mode>span {
+    color:var(--ux-text-secondary);
+    font-size:var(--ux-type-caption-size);
+    font-weight:var(--ux-type-label-weight);
+  }
+
+  .namaa-navigation-mode select {
+    width:100%;
+    min-height:var(--ux-size-10);
+    padding-inline:var(--ux-space-3);
+    border:1px solid var(--ux-border-default);
+    border-radius:var(--ux-radius-sm);
+    background:var(--ux-card-bg);
+    color:var(--ux-text-primary);
+    font:inherit;
+  }
+
+  .namaa-responsive-drawer-nav {
+    display:grid!important;
+    gap:var(--ux-space-2)!important;
+  }
+
+  .namaa-responsive-drawer-nav a,
+  .namaa-chat-navigation-entry>a {
+    min-height:var(--ux-size-12);
+    display:grid;
+    grid-template-columns:var(--ux-size-10) minmax(0,1fr);
+    align-items:center;
+    gap:var(--ux-space-3);
+    padding:var(--ux-space-2) var(--ux-space-3);
+    border:1px solid var(--ux-border-default);
+    border-radius:var(--ux-radius-md);
+    background:var(--ux-card-bg);
+    color:var(--ux-text-primary);
+    text-decoration:none;
+  }
+
+  .namaa-responsive-drawer-nav a.is-active {
+    border-color:var(--ux-brand-secondary);
+    background:var(--ux-section-soft-teal);
+    color:var(--ux-brand-primary);
+    font-weight:var(--ux-type-button-weight);
+  }
+
+  .namaa-chat-navigation-entry span:last-child {
+    min-width:0;
+    display:grid;
+    gap:var(--ux-space-1);
+  }
+
+  .namaa-chat-navigation-entry strong {
+    font-size:var(--ux-type-body-sm-size);
+  }
+
+  .namaa-chat-navigation-entry small {
+    color:var(--ux-text-secondary);
+    font-size:var(--ux-type-caption-size);
+  }
+
+  .protected-app-shell:has([data-chat-first-route="true"]) {
+    width:100%;
+    height:100dvh;
+    min-height:100dvh;
+    margin:0;
+    padding:0!important;
+    overflow:hidden;
+  }
+
+  .protected-app-shell:has([data-chat-first-route="true"]) .namaa-app-main,
+  .protected-app-shell:has([data-chat-first-route="true"]) .namaa-page-frame,
+  .protected-app-shell:has([data-chat-first-route="true"]) [data-chat-first-route="true"] {
+    width:100%!important;
+    max-width:100%!important;
+    height:100dvh!important;
+    min-height:0!important;
+    margin:0!important;
+    padding:0!important;
+    overflow:hidden!important;
+  }
+}
+
+@media (min-width:768px) and (max-width:1023px) {
+  .namaa-responsive-navigation-drawer {
+    width:min(50vw,420px)!important;
+    max-width:50vw!important;
+  }
+
+  .protected-app-shell:not(:has([data-chat-first-route="true"])) .namaa-app-main {
+    padding:var(--ux-space-4)!important;
+  }
+}
+
+@media (max-width:767px) {
+  .namaa-responsive-navigation-drawer {
+    width:min(72vw,360px)!important;
+    max-width:72vw!important;
+  }
+
+  .protected-app-shell:not(:has([data-chat-first-route="true"])) .namaa-app-main {
+    padding:var(--ux-space-3)!important;
+  }
+}
+
