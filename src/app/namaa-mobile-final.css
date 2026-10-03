@@ -1190,3 +1190,285 @@
     font-size:var(--ux-type-caption-size)!important;
   }
 }
+
+
+/* 2026-10-03 — ACCOUNT WINDOWS STRUCTURE FIX */
+.p49-action-dialog.is-page .p49-dialog-shell{
+  border-radius:0!important;
+}
+
+.p49-action-dialog.is-page .p49-dialog-body{
+  display:block!important;
+}
+
+.namaa-account-wizard{
+  width:min(100%,760px)!important;
+  min-height:100%!important;
+  margin-inline:auto!important;
+  display:grid!important;
+  grid-template-rows:auto minmax(0,1fr) auto!important;
+  gap:0!important;
+}
+
+.namaa-wizard-progress{
+  width:100%!important;
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:0!important;
+  margin:0!important;
+  border:1px solid var(--ux-border-default)!important;
+  border-radius:0!important;
+  overflow:hidden!important;
+}
+
+.namaa-wizard-progress button{
+  min-width:0!important;
+  width:100%!important;
+  min-height:52px!important;
+  margin:0!important;
+  padding:var(--ux-space-2) var(--ux-space-3)!important;
+  border:0!important;
+  border-inline-start:1px solid var(--ux-border-default)!important;
+  border-radius:0!important;
+  background:var(--ux-card-bg)!important;
+  color:var(--ux-text-secondary)!important;
+}
+
+.namaa-wizard-progress button:last-child{
+  border-inline-start:0!important;
+}
+
+.namaa-wizard-progress button.is-active{
+  background:var(--ux-section-soft-teal)!important;
+  color:var(--ux-brand-primary)!important;
+  box-shadow:inset 0 -3px 0 var(--ux-brand-primary)!important;
+}
+
+.namaa-wizard-page{
+  width:100%!important;
+  min-width:0!important;
+  padding:var(--ux-space-4) 0!important;
+  display:block!important;
+}
+
+.namaa-wizard-page[hidden]{display:none!important;}
+
+.namaa-wizard-fields{
+  width:100%!important;
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:var(--ux-space-3)!important;
+}
+
+.namaa-wizard-fields>label{
+  width:100%!important;
+  min-width:0!important;
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:var(--ux-space-2)!important;
+  margin:0!important;
+  writing-mode:horizontal-tb!important;
+  white-space:normal!important;
+}
+
+.namaa-wizard-fields :is(input,select,.smart-combo-input,.smart-combo-shell,.money-field){
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+}
+
+.namaa-field-wide{
+  grid-column:1/-1!important;
+}
+
+.namaa-wizard-actions{
+  width:100%!important;
+  margin:0!important;
+  padding:var(--ux-space-3) 0 0!important;
+  border-top:1px solid var(--ux-border-default)!important;
+  background:var(--ux-page-bg)!important;
+}
+
+.namaa-account-detail-flow{
+  width:min(100%,900px)!important;
+  min-height:100%!important;
+  margin-inline:auto!important;
+  display:grid!important;
+  grid-template-rows:auto minmax(0,1fr)!important;
+}
+
+.namaa-detail-tabs{
+  width:100%!important;
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:0!important;
+  border:1px solid var(--ux-border-default)!important;
+  border-radius:0!important;
+  overflow:hidden!important;
+}
+
+.namaa-detail-tabs button{
+  min-height:50px!important;
+  border:0!important;
+  border-inline-start:1px solid var(--ux-border-default)!important;
+  border-radius:0!important;
+  background:var(--ux-card-bg)!important;
+  color:var(--ux-text-secondary)!important;
+  font-weight:800!important;
+}
+
+.namaa-detail-tabs button:last-child{
+  border-inline-start:0!important;
+}
+
+.namaa-detail-tabs button.is-active{
+  background:var(--ux-section-soft-teal)!important;
+  color:var(--ux-brand-primary)!important;
+  box-shadow:inset 0 -3px 0 var(--ux-brand-primary)!important;
+}
+
+.namaa-detail-page{
+  width:100%!important;
+  min-width:0!important;
+  padding:var(--ux-space-4) 0!important;
+}
+
+.namaa-detail-page[hidden]{display:none!important;}
+
+.namaa-account-overview-grid{
+  width:100%!important;
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:var(--ux-space-3)!important;
+}
+
+.namaa-account-overview-grid>div{
+  min-width:0!important;
+  padding:var(--ux-space-4)!important;
+  border:1px solid var(--ux-border-default)!important;
+  border-radius:var(--ux-radius-sm)!important;
+  background:var(--ux-card-bg)!important;
+}
+
+.namaa-account-overview-grid span{
+  display:block!important;
+  color:var(--ux-text-secondary)!important;
+  margin-bottom:var(--ux-space-1)!important;
+}
+
+.namaa-account-overview-grid strong{
+  color:var(--ux-text-primary)!important;
+}
+
+.namaa-detail-balance{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:var(--ux-space-1)!important;
+  color:var(--ux-brand-primary)!important;
+}
+
+.namaa-detail-page-actions{
+  display:flex!important;
+  justify-content:flex-end!important;
+  padding-top:var(--ux-space-4)!important;
+}
+
+.namaa-account-edit-form{
+  width:100%!important;
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:var(--ux-space-3)!important;
+}
+
+.namaa-account-edit-form>label{
+  width:100%!important;
+  min-width:0!important;
+  display:grid!important;
+  gap:var(--ux-space-2)!important;
+}
+
+.namaa-account-edit-form :is(input,select,.smart-combo-input,.smart-combo-shell){
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+}
+
+.namaa-detail-sticky-actions{
+  grid-column:1/-1!important;
+  position:sticky!important;
+  bottom:0!important;
+  z-index:3!important;
+  display:grid!important;
+  grid-template-columns:auto minmax(0,1fr)!important;
+  gap:var(--ux-space-2)!important;
+  padding-top:var(--ux-space-3)!important;
+  background:var(--ux-page-bg)!important;
+}
+
+.namaa-detail-sticky-actions .primary-button,
+.namaa-detail-sticky-actions .secondary-button{
+  min-height:48px!important;
+}
+
+.namaa-account-detail-flow .namaa-account-danger-section{
+  margin-top:var(--ux-space-4)!important;
+}
+
+@media (max-width:767px){
+  .p49-action-dialog.is-page .p49-dialog-shell{
+    border-radius:0!important;
+  }
+
+  .p49-action-dialog.is-page .p49-dialog-body{
+    padding:var(--ux-space-3)!important;
+  }
+
+  .namaa-account-wizard,
+  .namaa-account-detail-flow{
+    width:100%!important;
+    max-width:100%!important;
+  }
+
+  .namaa-wizard-progress button,
+  .namaa-detail-tabs button{
+    min-height:48px!important;
+    padding-inline:var(--ux-space-2)!important;
+  }
+
+  .namaa-wizard-progress button strong{
+    font-size:var(--ux-type-body-sm-size)!important;
+    white-space:nowrap!important;
+  }
+
+  .namaa-wizard-fields,
+  .namaa-account-overview-grid,
+  .namaa-account-edit-form{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+}
+
+@media (max-width:560px){
+  .namaa-wizard-fields,
+  .namaa-account-overview-grid,
+  .namaa-account-edit-form{
+    grid-template-columns:1fr!important;
+  }
+
+  .namaa-field-wide{
+    grid-column:auto!important;
+  }
+
+  .namaa-wizard-progress button{
+    gap:var(--ux-space-1)!important;
+  }
+
+  .namaa-wizard-progress button strong{
+    font-size:var(--ux-type-caption-size)!important;
+  }
+
+  .namaa-detail-sticky-actions{
+    grid-template-columns:1fr 2fr!important;
+  }
+}

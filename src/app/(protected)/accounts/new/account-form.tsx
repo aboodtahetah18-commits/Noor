@@ -13,27 +13,35 @@ export function AccountForm({ accountNames, bankNames }: { accountNames: string[
   const today = new Date().toISOString().slice(0, 10);
 
   return (
-    <form action={action} className="account-form account-form-v2 smart-account-form namaa-account-wizard">
-      <div className="namaa-wizard-progress" aria-label="خطوات إضافة الحساب">
-        <button type="button" className={step === 1 ? 'is-active' : ''} onClick={() => setStep(1)}>
+    <form action={action} className="account-form namaa-account-wizard">
+      <nav className="namaa-wizard-progress" aria-label="خطوات إضافة الحساب">
+        <button type="button" className={step === 1 ? 'is-active' : ''} onClick={() => setStep(1)} aria-current={step === 1 ? 'step' : undefined}>
           <span>1</span><strong>البيانات الأساسية</strong>
         </button>
-        <button type="button" className={step === 2 ? 'is-active' : ''} onClick={() => setStep(2)}>
+        <button type="button" className={step === 2 ? 'is-active' : ''} onClick={() => setStep(2)} aria-current={step === 2 ? 'step' : undefined}>
           <span>2</span><strong>المطابقة البنكية</strong>
         </button>
-      </div>
+      </nav>
 
       <section className="namaa-wizard-page" hidden={step !== 1}>
-        <div className="account-form-primary-grid">
-          <label className="account-form-name"><span className="field-title">اسم الحساب</span><SmartComboInput name="name" options={accountNames} required maxLength={120} placeholder="اسم الحساب" ariaLabel="اسم الحساب" /></label>
-          <label className="account-form-bank"><span className="field-title">البنك أو الجهة</span><SmartComboInput name="bankName" options={bankNames} maxLength={120} placeholder="البنك أو الجهة" ariaLabel="البنك أو الجهة" /></label>
-          <label className="account-form-balance"><span className="field-title">الرصيد الافتتاحي</span><div className="money-field"><input name="openingBalance" inputMode="decimal" defaultValue="0.00" required /><span>ريال</span></div></label>
-          <label className="account-form-date"><span className="field-title">تاريخ الرصيد</span><input name="effectiveDate" type="date" defaultValue={today} required /></label>
+        <div className="namaa-wizard-fields">
+          <label><span className="field-title">اسم الحساب</span><SmartComboInput name="name" options={accountNames} required maxLength={120} placeholder="اسم الحساب" ariaLabel="اسم الحساب" /></label>
+          <label><span className="field-title">نوع الحساب</span>
+            <select name="accountType" defaultValue="BANK">
+              <option value="BANK">حساب جاري</option>
+              <option value="SAVINGS">ادخار</option>
+              <option value="CASH">نقدي</option>
+              <option value="OTHER">أخرى</option>
+            </select>
+          </label>
+          <label><span className="field-title">البنك أو الجهة</span><SmartComboInput name="bankName" options={bankNames} maxLength={120} placeholder="البنك أو الجهة" ariaLabel="البنك أو الجهة" /></label>
+          <label><span className="field-title">الرصيد الافتتاحي</span><div className="money-field"><input name="openingBalance" inputMode="decimal" defaultValue="0.00" required /><span>ريال</span></div></label>
+          <label className="namaa-field-wide"><span className="field-title">تاريخ الرصيد</span><input name="effectiveDate" type="date" defaultValue={today} required /></label>
         </div>
       </section>
 
       <section className="namaa-wizard-page" hidden={step !== 2}>
-        <div className="form-grid smart-account-form onboarding-optional-grid">
+        <div className="namaa-wizard-fields">
           <label><span className="field-title">IBAN</span><input name="iban" dir="ltr" autoCapitalize="characters" autoComplete="off" placeholder="SA00 0000 0000 0000 0000 0000" /></label>
           <label><span className="field-title">آخر 4 أرقام</span><input name="cardLast4" inputMode="numeric" maxLength={4} autoComplete="off" placeholder="1234" /></label>
         </div>
