@@ -27,7 +27,7 @@ export default async function ProtectedLayout({ children }: Readonly<{ children:
 
       <DesktopTopNav />
       <GlobalTopBar profile={profile} />
-      <TabletTopNav profile={profile} />
+      <TabletTopNav />
       <MobileTopBar profile={profile} />
 
       <main id="main-content" tabIndex={-1} className="namaa-app-main main-content-focus-target">
