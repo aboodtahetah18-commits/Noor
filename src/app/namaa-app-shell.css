@@ -980,3 +980,25 @@
   }
 }
 
+/* Mobile/tablet primary page-title contrast authority. */
+@media (max-width:1023px) {
+  .protected-app-shell :where(.page-header,.section-title-row) {
+    width:100%!important;
+    max-width:100%!important;
+    margin-block-start:0!important;
+    padding:var(--ux-space-3) var(--ux-space-4)!important;
+    border:1px solid var(--ux-shell-topbar-border)!important;
+    border-radius:var(--ux-radius-md)!important;
+    background:var(--ux-shell-topbar-bg)!important;
+    color:var(--ux-text-inverse)!important;
+  }
+
+  .protected-app-shell :where(.page-header,.section-title-row) :where(h1,h2,h3,p,small,strong,span) {
+    color:var(--ux-text-inverse)!important;
+  }
+
+  .protected-app-shell :where(.page-shell,.dashboard-shell)>:first-child {
+    margin-block-start:0!important;
+  }
+}
+
