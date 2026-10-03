@@ -666,7 +666,7 @@ summary{cursor:pointer;min-height:var(--ux-size-11);display:flex;align-items:cen
 @media(max-width:767px){
   
   
-  .protected-app-shell{padding-top:var(--ux-space-16)!important;padding-bottom:calc(var(--ux-space-20) + env(safe-area-inset-bottom))!important;background:var(--ux-surface-canvas)!important;}
+  .protected-app-shell{background:var(--ux-surface-canvas)!important;}
   
   
   
