@@ -22,6 +22,7 @@ const systemPages: ReadonlyArray<{ href:string; label:string; icon:LucideIconNam
 ];
 
 function currentPageTitle(pathname:string){
+  if(pathname==='/cycles/new'||pathname.startsWith('/cycles/new/')) return 'بداية الدورة';
   const item=systemPages.find(({href})=>pathname===href||pathname.startsWith(`${href}/`));
   return item?.label ?? 'نماء';
 }
