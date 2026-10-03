@@ -219,7 +219,7 @@
   min-width:0;
   min-height:0;
   display:grid;
-  grid-template-rows:calc(var(--ux-space-24) + var(--ux-space-4)) minmax(0,1fr) auto;
+  grid-template-rows:var(--ux-size-24) minmax(0,1fr) auto;
   overflow:hidden;
   background:var(--namaa-chat-canvas);
   position:relative;
@@ -12497,27 +12497,35 @@
 @media (min-width:768px){
   .desktopGovernorHeader{
     width:100%;
-    height:calc(var(--ux-space-24) + var(--ux-space-4));
-    min-height:calc(var(--ux-space-24) + var(--ux-space-4));
-    display:flex!important;
-    align-items:center;
-    justify-content:space-between;
+    height:var(--ux-size-24)!important;
+    min-height:var(--ux-size-24)!important;
+    max-height:var(--ux-size-24)!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto;
+    align-items:center!important;
     gap:var(--ux-space-4);
-    padding:var(--ux-space-3) var(--ux-space-4);
-    box-sizing:border-box;
-    overflow:visible;
+    padding:var(--ux-space-3) var(--ux-space-4)!important;
+    box-sizing:border-box!important;
+    overflow:hidden!important;
     border-bottom:1px solid var(--namaa-green-700);
     background:var(--namaa-green-900);
     color:var(--ux-text-inverse);
-    position:relative;
+    position:relative!important;
+    inset:auto!important;
+    transform:none!important;
     z-index:20;
   }
 
   .desktopGovernorIdentity{
     min-width:0;
-    display:flex;
-    align-items:center;
+    min-height:0;
+    display:flex!important;
+    align-items:center!important;
+    align-self:center!important;
     gap:var(--ux-space-3);
+    margin:0!important;
+    inset:auto!important;
+    transform:none!important;
   }
 
   .desktopGovernorIdentity .personaAvatar{
@@ -12551,10 +12559,14 @@
   }
 
   .desktopGovernorActions{
-    display:flex;
-    align-items:center;
+    display:flex!important;
+    align-items:center!important;
+    align-self:center!important;
     gap:var(--ux-space-2);
     flex:0 0 auto;
+    margin:0!important;
+    inset:auto!important;
+    transform:none!important;
   }
 
   .desktopGovernorActions>button{
