@@ -52,7 +52,7 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
               aria-haspopup="dialog"
               aria-expanded={open}
             >
-              <LucideIcon name="menu" size={22} />
+              <LucideIcon name="menu" size={20} />
             </button>
             <Link href="/dashboard" className="namaa-mobile-brand-mark" aria-label="نماء — الرئيسية">
               <span aria-hidden="true" />
@@ -63,7 +63,7 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
 
           <div className="namaa-mobile-header-actions">
             <Link href="/alerts" className="namaa-responsive-alert" aria-label="التنبيهات" title="التنبيهات">
-              <LucideIcon name="bell" size={19} />
+              <LucideIcon name="bell" size={20} />
             </Link>
             <ThemeToggle />
             <ProfileTrigger profile={profile} className="namaa-mobile-profile-trigger" />
@@ -98,7 +98,7 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
                 aria-current={active ? 'page' : undefined}
               >
                 <span className="namaa-mobile-drawer-icon" aria-hidden="true">
-                  <LucideIcon name={icon} size={18}/>
+                  <LucideIcon name={icon} size={20}/>
                 </span>
                 <span>{label}</span>
               </Link>
