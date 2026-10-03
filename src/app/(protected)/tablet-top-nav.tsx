@@ -1,7 +1,5 @@
 'use client';
 
-import type { HeaderProfile } from './profile-trigger';
-
-export function TabletTopNav({ profile: _profile }: { profile: HeaderProfile }) {
+export function TabletTopNav() {
   return null;
 }
