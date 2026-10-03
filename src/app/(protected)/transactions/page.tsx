@@ -77,7 +77,7 @@ export default async function TransactionsPage({searchParams}:{searchParams:Sear
   const current=Object.fromEntries(Object.entries(raw).map(([k,v])=>[k,one(v)]));
   const netTone=Number(summary.net)>0?'is-inflow':Number(summary.net)<0?'is-outflow':'is-neutral';
 
-  const filterPanel=<CompactFilterPanel title="تصفية" className="p47-filter-panel namaa-toolbar-filter">
+  const filterPanel=<CompactFilterPanel title="تصفية" iconName="search" className="p47-filter-panel namaa-toolbar-filter">
     <form method="get" className="p47-filter-grid p4913-ledger-filter">
       <label className="is-search"><span>بحث</span><input name="search" defaultValue={input.search} placeholder="الوصف، الحساب أو البند"/></label>
       <label className="is-type"><span>النوع</span><select name="transactionType" defaultValue={input.transactionType??''}><option value="">الكل</option>{Object.entries(TYPE_LABELS).map(([v,l])=><option key={v} value={v}>{l}</option>)}</select></label>
@@ -106,7 +106,7 @@ export default async function TransactionsPage({searchParams}:{searchParams:Sear
           <a className="namaa-square-action" href={queryString(current,{page:input.page})} aria-label="تحديث" title="تحديث"><LucideIcon name="refreshCw" size={20}/></a>
           {filterPanel}
           <details className="namaa-transaction-add-menu">
-            <summary className="namaa-square-action is-primary" aria-label="إضافة عملية" title="إضافة عملية"><LucideIcon name="plus" size={20}/></summary>
+            <summary className="namaa-square-action is-primary" aria-label="إضافة عملية" title="إضافة عملية"><LucideIcon name="receiptText" size={20}/></summary>
             <div className="namaa-transaction-add-options">
               <Link href="/income/new" className="namaa-add-option"><LucideIcon name="plus" size={20}/><span>دخل</span></Link>
               {cycle?<ActionDialog trigger={<span className="namaa-action-label"><LucideIcon name="plus" size={20}/><span>مصروف</span></span>} title="إضافة مصروف" size="lg">
