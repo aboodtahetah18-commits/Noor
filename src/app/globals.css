@@ -107,12 +107,7 @@ body { min-height:100vh; }
 .protected-app-shell :where(h1,h2,h3,p,strong,span,dd,dt,a){overflow-wrap:anywhere;}
 
 @media(max-width:767px){
-  html{scroll-padding-bottom:var(--ux-space-24);}
-  .protected-app-shell{padding-bottom:calc(var(--ux-space-20) + env(safe-area-inset-bottom));}
-  
-  .protected-app-shell>main.page-shell{width:100%;padding:var(--ux-space-4) var(--ux-space-4) var(--ux-space-2);margin:var(--ux-space-0) auto;}
-  
-  
+
   .protected-app-shell :where(input,select,textarea){font-size:var(--ux-type-body-size);min-height:var(--ux-size-12);}
   .protected-app-shell textarea{min-height:120px;resize:vertical;}
   .protected-app-shell :where(button,.primary,.primary-link,.primary-button,.secondary-button,.secondary-link,.button-link,.danger-button){min-height:var(--ux-size-12);padding-block:var(--ux-space-3);}
