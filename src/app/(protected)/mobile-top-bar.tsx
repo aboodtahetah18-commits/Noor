@@ -6,7 +6,6 @@ import { usePathname } from 'next/navigation';
 import { LucideIcon, type LucideIconName } from '@/components/ui/lucide-icon';
 import { Drawer } from '@/components/ui';
 import { ThemeToggle } from '../theme-toggle';
-import { BrandLogo } from '@/components/brand/brand-logo';
 import { ProfileTrigger, type HeaderProfile } from './profile-trigger';
 
 const systemPages: ReadonlyArray<{ href:string; label:string; icon:LucideIconName }> = [
@@ -21,10 +20,16 @@ const systemPages: ReadonlyArray<{ href:string; label:string; icon:LucideIconNam
   { href:'/settings', label:'الإعدادات', icon:'settings' },
 ];
 
+function currentPageTitle(pathname:string){
+  const item=systemPages.find(({href})=>pathname===href||pathname.startsWith(`${href}/`));
+  return item?.label ?? 'نماء';
+}
+
 export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
   const pathname = usePathname();
   const chatFirst = pathname === '/conversations' || pathname.startsWith('/conversations/');
   const [open, setOpen] = useState(false);
+  const pageTitle=currentPageTitle(pathname);
 
   useEffect(() => {
     const openNavigation = () => setOpen(true);
@@ -38,7 +43,7 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
     <>
       {!chatFirst && (
         <header className="namaa-mobile-topbar namaa-mobile-header namaa-responsive-topbar" dir="rtl">
-          <div className="namaa-mobile-brand-zone">
+          <div className="namaa-responsive-topbar-start">
             <button
               className="namaa-mobile-menu-trigger"
               type="button"
@@ -47,16 +52,18 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
               aria-haspopup="dialog"
               aria-expanded={open}
             >
-              <LucideIcon name="menu" size={24} />
+              <LucideIcon name="menu" size={22} />
             </button>
-            <Link href="/dashboard" className="namaa-mobile-brand" aria-label="نماء — الرئيسية">
-              <BrandLogo surface="dark" priority />
+            <Link href="/dashboard" className="namaa-mobile-brand-mark" aria-label="نماء — الرئيسية">
+              <span aria-hidden="true" />
             </Link>
           </div>
 
+          <strong className="namaa-responsive-page-title">{pageTitle}</strong>
+
           <div className="namaa-mobile-header-actions">
             <Link href="/alerts" className="namaa-responsive-alert" aria-label="التنبيهات" title="التنبيهات">
-              <LucideIcon name="bell" size={20} />
+              <LucideIcon name="bell" size={19} />
             </Link>
             <ThemeToggle />
             <ProfileTrigger profile={profile} className="namaa-mobile-profile-trigger" />
@@ -68,7 +75,7 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
         open={open}
         onOpenChange={setOpen}
         title="قائمة المنصة"
-        side="start"
+        side="end"
         className="namaa-mobile-navigation-drawer namaa-responsive-navigation-drawer"
         showCloseButton={false}
       >
@@ -91,7 +98,7 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
                 aria-current={active ? 'page' : undefined}
               >
                 <span className="namaa-mobile-drawer-icon" aria-hidden="true">
-                  <LucideIcon name={icon} size={20}/>
+                  <LucideIcon name={icon} size={18}/>
                 </span>
                 <span>{label}</span>
               </Link>
