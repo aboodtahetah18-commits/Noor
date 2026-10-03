@@ -80,7 +80,7 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
         open={open}
         onOpenChange={setOpen}
         title="قائمة المنصة"
-        side="start"
+        side="end"
         className="namaa-mobile-navigation-drawer namaa-responsive-navigation-drawer"
         showCloseButton={false}
       >
