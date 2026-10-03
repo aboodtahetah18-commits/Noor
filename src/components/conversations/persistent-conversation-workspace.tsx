@@ -863,6 +863,7 @@ export function PersistentConversationWorkspace(){
   const [error,setError]=useState('');
   const [roomsOpen,setRoomsOpen]=useState(false);
   const [directoryTab,setDirectoryTab]=useState<'entities'|'owners'|'meetings'>('entities');
+  const [responsiveDirectoryOpen,setResponsiveDirectoryOpen]=useState(true);
   const [contextOpen,setContextOpen]=useState(false);
   const [onboardingComplete,setOnboardingComplete]=useState<boolean|null>(null);
   const [onboardingStep,setOnboardingStep]=useState<string|null>(null);
@@ -1000,7 +1001,7 @@ export function PersistentConversationWorkspace(){
     } })
     .catch(()=>{ if(!cancelled){ setError('تعذر تحميل المحادثة الآن. حاول مرة أخرى.'); setLoadedRoomId(activeRoomId); } }); return()=>{cancelled=true}; },[activeRoomId]);
 
-  function chooseRoom(id:RoomKey){if(onboardingComplete===false&&id!=='central')return;setError('');setFocusedChat(null);setActiveRoomId(id);setRoomsOpen(false)}
+  function chooseRoom(id:RoomKey){if(onboardingComplete===false&&id!=='central')return;setError('');setFocusedChat(null);setActiveRoomId(id);setRoomsOpen(false);setResponsiveDirectoryOpen(false)}
 
   function openRoleChat(role:AlgorithmRoleRef){
     const roomId=role.homeRoom as RoomKey;
@@ -1008,6 +1009,7 @@ export function PersistentConversationWorkspace(){
     setError('');setActiveAlgorithmRole(null);setDetailRoomId(null);setRoomsOpen(false);
     setFocusedChat({kind:'role',key:role.key,title:role.name,roomId});
     setActiveRoomId(roomId);
+    setResponsiveDirectoryOpen(false);
   }
 
   function openMeetingChat(meeting:{id:string;title:string}){
@@ -1015,6 +1017,7 @@ export function PersistentConversationWorkspace(){
     setError('');setGovernanceMode(null);setRoomsOpen(false);
     setFocusedChat({kind:'meeting',key:meeting.id,title:meeting.title,roomId:'council'});
     setActiveRoomId('council');
+    setResponsiveDirectoryOpen(false);
   }
 
   function openSavedFocusedChat(item:FocusedChatIndexItem){
@@ -1023,10 +1026,12 @@ export function PersistentConversationWorkspace(){
     if(item.scope_kind==='meeting'){
       setFocusedChat({kind:'meeting',key:item.scope_key,title:item.scope_title||'دردشة الاجتماع',roomId:'council'});
       setActiveRoomId('council');
+      setResponsiveDirectoryOpen(false);
       return;
     }
     setFocusedChat({kind:'role',key:item.scope_key,title:item.scope_title||'دردشة المسؤول',roomId:item.room_key});
     setActiveRoomId(item.room_key);
+    setResponsiveDirectoryOpen(false);
   }
 
   async function refreshActiveRoom(){
@@ -1370,7 +1375,29 @@ export function PersistentConversationWorkspace(){
 
   const contextCards=<><section className={styles.contextCard}><small>الجهة الحالية</small><strong>{activeRoom.title}</strong><p>{activeRoom.lead} · {activeRoom.subtitle}</p></section><section className={styles.contextCard}><small>المشاركون الفعليون</small><strong>{participants.length?`${participants.length} اختصاصيين`:'اختصاصيون حسب الموضوع'}</strong><p>{participants.length?participants.map(p=>p.display_name).join('، '):activeRoom.specialists}. لا تُستدعى جميع الجهات تلقائيًا.</p></section><section className={styles.contextCard}><small>حد التنفيذ</small><strong>توصية ومتابعة فقط</strong><p>لا تحويل، لا سداد، ولا إجراء مالي خارجي يُعد منفذًا من المنصة.</p></section></>;
 
+  const responsiveDirectoryScreen=<section className={styles.responsiveDirectoryPage} aria-label="دليل الدردشة">
+    <header className={styles.responsiveDirectoryHeader}>
+      <div>
+        <span>الدردشة</span>
+        <strong>جهات الاتصال ومراكز العمل</strong>
+      </div>
+      <button type="button" onClick={openPrimarySidebar} aria-label="فتح التنقل بين المنصة"><LucideIcon name="menu" size={20}/></button>
+    </header>
+    <label className={styles.responsiveDirectorySelector}>
+      <span>عرض</span>
+      <select value={directoryTab} onChange={event=>setDirectoryTab(event.target.value as 'entities'|'owners'|'meetings')} aria-label="اختيار قسم الدردشة">
+        <option value="entities">الإدارة والبنوك</option>
+        <option value="owners">مسؤولو البنود</option>
+        <option value="meetings">الاجتماعات</option>
+      </select>
+    </label>
+    <div className={styles.responsiveDirectoryContent}>
+      {mobileDirectoryContent}
+    </div>
+  </section>;
+
   return <section className={`${styles.page} ${styles[`chatFont_${chatFontSize}`]}`} dir="rtl" aria-label="محادثات نماء">
+    {responsiveDirectoryOpen&&responsiveDirectoryScreen}
     <Image className={styles.brandWatermark} src="/brand/namaa-leaf.webp" alt="" width={256} height={256} aria-hidden="true" />
     <Image className={`${styles.brandWatermark} ${styles.brandWatermarkSecondary}`} src="/brand/namaa-leaf.webp" alt="" width={220} height={220} aria-hidden="true" />
     <Image className={`${styles.brandWatermark} ${styles.brandWatermarkTertiary}`} src="/brand/namaa-leaf.webp" alt="" width={180} height={180} aria-hidden="true" />
@@ -1389,7 +1416,7 @@ export function PersistentConversationWorkspace(){
       </div>
     </header>
     <header className={styles.workspaceHeader}><div className={styles.headingCopy}><span className={styles.eyebrow}>محادثات نماء</span><h1>مركز الحوار والقرار</h1><p>المحادثات محفوظة في حسابك، وتصل رسالتك إلى الجهة والمتخصصين المرتبطين بالموضوع.</p></div><div className={styles.headerActions}><button type="button" className={styles.secondaryButton} onClick={()=>setDesktopContextVisible(v=>!v)}><LucideIcon name="info" size={16}/><span>{desktopContextVisible?'إخفاء السياق':'إظهار السياق'}</span></button></div></header>
-    <div className={`${styles.workspace} ${desktopContextVisible?'':styles.withoutContext} ${desktopRoomsVisible?'':styles.withoutRooms}`}>
+    <div className={`${styles.workspace} ${desktopContextVisible?'':styles.withoutContext} ${desktopRoomsVisible?'':styles.withoutRooms} ${responsiveDirectoryOpen?styles.responsiveChatHidden:''}`}>
       {desktopRoomsVisible&&<aside className={styles.roomsPane} aria-label="الجهات والمحادثات"><div className={styles.paneTitle}><span>مركز العمل</span><small>3 أقسام</small></div>{onboardingComplete!==false?directoryTabs:null}{directoryContent}</aside>}
       <main className={styles.chatPane}>
         <header className={styles.desktopGovernorHeader}>
@@ -1409,7 +1436,7 @@ export function PersistentConversationWorkspace(){
           </div>
         </header>
         <header className={`${styles.chatHeader} ${activeRoom.id==='central'?styles.centralChatHeader:''}`}>
-          <div className={styles.chatHeaderForeground}><button type="button" className={styles.compactMenuButton} aria-label="فتح التنقل بين المنصة" onClick={openPrimarySidebar}><LucideIcon name="menu" size={20}/></button><RoomPortrait room={activeRoom} size="md"/><div className={styles.compactRoleTitle}><strong>{compactChatRoleTitle(activeRoom)}</strong></div><div className={styles.mobileTools}><button type="button" aria-label="لوحة الجهة" onClick={()=>setEntityDashboardRoom(activeRoomId)}><LucideIcon name="chart" size={20}/></button><button type="button" aria-label="معلومات الجهة" onClick={()=>{setDetailRoomId(activeRoomId);setDetailTab('role')}}><LucideIcon name="info" size={20}/></button></div></div>
+          <div className={styles.chatHeaderForeground}><button type="button" className={styles.responsiveDirectoryBackButton} aria-label="الرجوع إلى جهات الاتصال" onClick={()=>setResponsiveDirectoryOpen(true)}><LucideIcon name="chevronRight" size={20}/></button><button type="button" className={styles.compactMenuButton} aria-label="فتح التنقل بين المنصة" onClick={openPrimarySidebar}><LucideIcon name="menu" size={20}/></button><RoomPortrait room={activeRoom} size="md"/><div className={styles.compactRoleTitle}><strong>{compactChatRoleTitle(activeRoom)}</strong></div><div className={styles.mobileTools}><button type="button" aria-label="لوحة الجهة" onClick={()=>setEntityDashboardRoom(activeRoomId)}><LucideIcon name="chart" size={20}/></button><button type="button" aria-label="معلومات الجهة" onClick={()=>{setDetailRoomId(activeRoomId);setDetailTab('role')}}><LucideIcon name="info" size={20}/></button></div></div>
         </header>
         <div className={styles.chatBody}>
         {focusedChat?<div className={`${styles.routingNote} ${styles.specialistRoutingNote} ${styles.focusedChatBanner}`}><LucideIcon name={focusedChat.kind==='meeting'?'calendarDays':'messageSquareText'} size={16}/><span><strong>{focusedChat.title}</strong><small>{focusedChat.kind==='meeting'?'دردشة الاجتماع — محفوظة بشكل مستقل عن دردشة المجلس العامة':'دردشة مباشرة — تستخدم الذاكرة المشتركة دون خلطها بدردشة البنك العامة'}</small></span><button type="button" onClick={()=>setFocusedChat(null)} aria-label="العودة إلى دردشة الجهة"><LucideIcon name="x" size={16}/></button></div>:<div className={`${styles.routingNote} ${styles.specialistRoutingNote}`}><LucideIcon name="sparkles" size={16}/><span>{activeRoom.specialists}</span></div>}
