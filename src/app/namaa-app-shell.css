@@ -755,3 +755,124 @@
     inset-inline-end:0!important;
   }
 }
+
+
+/* 2026-10-03 — RESPONSIVE PAGE HEADER SINGLE AUTHORITY */
+@media (max-width:1023px){
+  /* Every non-chat protected page starts with one visible dark-green header. */
+  .protected-app-shell:not(:has([data-chat-first-route="true"])) .namaa-mobile-topbar.namaa-responsive-topbar{
+    position:sticky!important;
+    inset-block-start:0!important;
+    width:100%!important;
+    height:64px!important;
+    min-height:64px!important;
+    margin:0!important;
+    padding:0!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    background:var(--namaa-green-900)!important;
+    border:0!important;
+    border-bottom:1px solid var(--namaa-green-700)!important;
+    color:var(--ux-text-inverse)!important;
+    box-shadow:var(--ux-shadow-none)!important;
+    z-index:var(--ux-z-sticky)!important;
+    overflow:visible!important;
+  }
+
+  .protected-app-shell:not(:has([data-chat-first-route="true"])) .namaa-mobile-menu-trigger{
+    position:absolute!important;
+    right:var(--ux-space-3)!important;
+    left:auto!important;
+    inset-inline:auto!important;
+    width:42px!important;
+    height:42px!important;
+    min-width:42px!important;
+    min-height:42px!important;
+    margin:0!important;
+    padding:0!important;
+    display:grid!important;
+    place-items:center!important;
+    border:1px solid color-mix(in srgb,var(--ux-text-inverse) 34%,transparent)!important;
+    border-radius:var(--ux-radius-sm)!important;
+    background:color-mix(in srgb,var(--ux-text-inverse) 8%,transparent)!important;
+    color:var(--ux-text-inverse)!important;
+  }
+
+  .protected-app-shell:not(:has([data-chat-first-route="true"])) .namaa-responsive-page-title{
+    display:block!important;
+    min-width:0!important;
+    max-width:calc(100% - 260px)!important;
+    margin:0!important;
+    padding:0!important;
+    color:var(--ux-text-inverse)!important;
+    -webkit-text-fill-color:var(--ux-text-inverse)!important;
+    font-size:var(--ux-type-body-size)!important;
+    font-weight:900!important;
+    line-height:1.2!important;
+    text-align:center!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+
+  .protected-app-shell:not(:has([data-chat-first-route="true"])) .namaa-mobile-header-actions{
+    position:absolute!important;
+    left:var(--ux-space-3)!important;
+    right:auto!important;
+    inset-inline:auto!important;
+    display:flex!important;
+    align-items:center!important;
+    gap:var(--ux-space-1)!important;
+    margin:0!important;
+  }
+
+  .protected-app-shell:not(:has([data-chat-first-route="true"])) .namaa-mobile-header-actions>a,
+  .protected-app-shell:not(:has([data-chat-first-route="true"])) .namaa-mobile-header-actions>button{
+    width:36px!important;
+    height:36px!important;
+    min-width:36px!important;
+    min-height:36px!important;
+    margin:0!important;
+    padding:0!important;
+    border-color:color-mix(in srgb,var(--ux-text-inverse) 28%,transparent)!important;
+    background:transparent!important;
+    color:var(--ux-text-inverse)!important;
+  }
+
+  /* The page content begins immediately after the header; no historical top reserve. */
+  .protected-app-shell:not(:has([data-chat-first-route="true"])) .namaa-app-main{
+    width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+    padding:0 var(--ux-space-3) var(--ux-space-3)!important;
+  }
+
+  .protected-app-shell:not(:has([data-chat-first-route="true"])) .namaa-page-frame,
+  .protected-app-shell:not(:has([data-chat-first-route="true"])) .namaa-page-frame>main,
+  .protected-app-shell:not(:has([data-chat-first-route="true"])) .namaa-page-frame>:first-child{
+    margin-block-start:0!important;
+    padding-block-start:0!important;
+  }
+
+  /* Responsive platform drawer and its trigger are both physically on the right. */
+  dialog.ux-drawer-surface.namaa-responsive-navigation-drawer,
+  dialog.ux-drawer-surface.namaa-responsive-navigation-drawer[data-side="start"],
+  dialog.ux-drawer-surface.namaa-responsive-navigation-drawer[data-side="end"]{
+    right:0!important;
+    left:auto!important;
+    inset-inline-start:auto!important;
+    inset-inline-end:0!important;
+  }
+}
+
+@media (max-width:480px){
+  .protected-app-shell:not(:has([data-chat-first-route="true"])) .namaa-responsive-page-title{
+    max-width:calc(100% - 200px)!important;
+    font-size:var(--ux-type-body-sm-size)!important;
+  }
+
+  .protected-app-shell:not(:has([data-chat-first-route="true"])) .namaa-mobile-header-actions>a:nth-child(1){
+    display:none!important;
+  }
+}
