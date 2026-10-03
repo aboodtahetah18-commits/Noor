@@ -123,7 +123,7 @@ export default async function TransactionsPage({searchParams}:{searchParams:Sear
                   <label className="full">الوصف<input name="description" maxLength={500}/></label>
                   <button className="primary-button full" type="submit">تسجيل الدخل</button>
                 </form>
-              </ActionDialog>:null}
+              </ActionDialog>:<Link href="/cycles/new" className="namaa-add-option"><LucideIcon name="plus" size={20}/><span>دخل</span></Link>}
               {cycle?<ActionDialog presentation="page" trigger={<span className="namaa-action-label"><LucideIcon name="plus" size={20}/><span>مصروف</span></span>} title="إضافة مصروف" size="lg">
                 <form action={recordExpenseAction} className="form-grid p73-entry-form p73-expense-form">
                   <input type="hidden" name="cycleId" value={cycle.id}/><input type="hidden" name="idempotencyKey" value={randomUUID()}/>
@@ -136,7 +136,7 @@ export default async function TransactionsPage({searchParams}:{searchParams:Sear
                   <input type="hidden" name="planningStatus" value="PLANNED"/>
                   <button className="primary-button" type="submit">تسجيل</button>
                 </form>
-              </ActionDialog>:null}
+              </ActionDialog>:<Link href="/cycles/new" className="namaa-add-option"><LucideIcon name="plus" size={20}/><span>مصروف</span></Link>}
               <ActionDialog presentation="page" trigger={<span className="namaa-action-label"><LucideIcon name="refreshCw" size={20}/><span>استرداد</span></span>} title="استرداد" size="lg">
                 <form className="p47-flow-form form-grid p73-entry-form p73-refund-form" action={recordRefundAction}>
                   <input type="hidden" name="idempotencyKey" value={randomUUID()}/>
