@@ -819,3 +819,93 @@
     height:36px!important;
   }
 }
+
+
+/* 2026-10-03 — ACCOUNTS COLOR + RIYAL PASS */
+.namaa-money-value{
+  display:inline-flex;
+  align-items:center;
+  gap:var(--ux-space-1);
+  direction:ltr;
+  unicode-bidi:isolate;
+  font-variant-numeric:tabular-nums;
+}
+
+.namaa-money-value img{
+  width:18px!important;
+  height:18px!important;
+  object-fit:contain!important;
+  flex:0 0 18px!important;
+}
+
+.namaa-accounts-overview .primary-link,
+.namaa-accounts-overview .primary-link .namaa-action-label,
+.namaa-accounts-overview .primary-link svg{
+  color:var(--ux-text-inverse)!important;
+  -webkit-text-fill-color:var(--ux-text-inverse)!important;
+  stroke:currentColor!important;
+}
+
+.namaa-account-bank-line{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  align-items:center!important;
+  gap:var(--ux-space-1)!important;
+}
+
+.namaa-bank-name{
+  color:#2563eb!important;
+  font-weight:800!important;
+}
+
+.namaa-card-last4{
+  color:var(--ux-text-secondary)!important;
+  font-weight:650!important;
+}
+
+.namaa-account-copy .p47-account-type{
+  background:#eef2ff!important;
+  color:#4338ca!important;
+}
+
+.namaa-account-balance-block strong,
+.namaa-account-balance-block .namaa-money-value{
+  color:var(--ux-brand-primary)!important;
+}
+
+.namaa-account-card::before{
+  background:var(--account-bank-accent,var(--ux-brand-primary))!important;
+  opacity:1!important;
+}
+
+.namaa-account-card.is-bank-alinma{--account-bank-accent:#7a5b2e;}
+.namaa-account-card.is-bank-meem{--account-bank-accent:#6d28d9;}
+.namaa-account-card.is-bank-albilad{--account-bank-accent:#7c3aed;}
+.namaa-account-card.is-bank-alrajhi{--account-bank-accent:#0f766e;}
+.namaa-account-card.is-bank-snb{--account-bank-accent:#0a7c66;}
+.namaa-account-card.is-bank-riyad{--account-bank-accent:#7a1f2b;}
+.namaa-account-card.is-bank-sab{--account-bank-accent:#0b5a78;}
+.namaa-account-card.is-bank-anb{--account-bank-accent:#8a6a1f;}
+.namaa-account-card.is-bank-bsf{--account-bank-accent:#1d4ed8;}
+.namaa-account-card.is-bank-saib{--account-bank-accent:#7c2d12;}
+.namaa-account-card.is-bank-aljazira{--account-bank-accent:#8b1e3f;}
+.namaa-account-card.is-bank-stc{--account-bank-accent:#5b21b6;}
+.namaa-account-card.is-bank-d360{--account-bank-accent:#0f766e;}
+.namaa-account-card.is-bank-default{--account-bank-accent:var(--ux-brand-primary);}
+
+@media (max-width:1023px){
+  .namaa-accounts-overview .primary-link{
+    background:var(--ux-brand-primary)!important;
+    border-color:var(--ux-brand-primary)!important;
+  }
+
+  .namaa-account-balance-block .namaa-money-value img{
+    width:20px!important;
+    height:20px!important;
+    flex-basis:20px!important;
+  }
+
+  .namaa-account-bank-line{
+    color:inherit!important;
+  }
+}
