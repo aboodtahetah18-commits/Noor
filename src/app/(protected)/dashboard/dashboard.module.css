@@ -27,6 +27,14 @@
   gap:var(--ux-space-2);
 }
 
+.homeLogo {
+  width:112px!important;
+  height:auto!important;
+  display:block!important;
+  object-fit:contain!important;
+  object-position:right center!important;
+}
+
 .header h1,
 .sectionHeader h2 {
   margin:0;
