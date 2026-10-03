@@ -316,3 +316,141 @@
     border-radius:var(--ux-radius-lg)!important;
   }
 }
+
+
+/* 2026-10-03 — ACTION HIERARCHY + ACCOUNT DETAILS */
+.namaa-action-label{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:var(--ux-space-2);
+  white-space:nowrap;
+}
+
+.namaa-account-detail-stack{
+  display:grid;
+  gap:var(--ux-space-4);
+}
+
+.namaa-account-edit-section{
+  display:grid;
+  gap:var(--ux-space-3);
+  padding-top:var(--ux-space-3);
+  border-top:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);
+}
+
+.namaa-account-edit-section h3{
+  margin:0;
+  font-size:var(--ux-type-card-title-size);
+}
+
+.namaa-account-edit-section .primary-button{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:var(--ux-space-2);
+}
+
+.namaa-account-danger-section{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-3);
+  border:var(--ux-border-width-1) var(--ux-border-style-default) color-mix(in srgb,var(--ux-danger) 28%,var(--ux-border-default));
+  border-radius:var(--ux-radius-md);
+  background:color-mix(in srgb,var(--ux-danger) 5%,var(--ux-card-bg));
+}
+
+.namaa-account-danger-section>div{
+  min-width:0;
+  display:grid;
+  gap:var(--ux-space-1);
+}
+
+.namaa-account-danger-section>div>span{
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-body-sm-size);
+}
+
+.namaa-account-danger-section .danger-button{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:var(--ux-space-2);
+  white-space:nowrap;
+}
+
+@media (max-width:1023px){
+  /* One visible action per account card; secondary and destructive actions live inside details. */
+  .p47-account-tile .mx-action-rail{
+    width:auto!important;
+    display:flex!important;
+    justify-content:flex-end!important;
+    align-items:center!important;
+    gap:0!important;
+    margin:0!important;
+  }
+
+  .p47-account-tile .mx-action-rail>.p49-modal-trigger{
+    width:44px!important;
+    height:44px!important;
+    min-width:44px!important;
+    min-height:44px!important;
+    display:grid!important;
+    place-items:center!important;
+    padding:0!important;
+    border-radius:var(--ux-radius-sm)!important;
+  }
+
+  .p47-account-tile .namaa-action-label{
+    gap:0!important;
+  }
+
+  .p47-account-tile .namaa-action-label>span{
+    display:none!important;
+  }
+
+  .namaa-account-danger-section{
+    align-items:stretch!important;
+    flex-direction:column!important;
+  }
+
+  .namaa-account-danger-section form,
+  .namaa-account-danger-section .danger-button{
+    width:100%!important;
+  }
+
+  /* Generic action hierarchy for dense mobile rows. */
+  .mx-action-rail{
+    display:flex!important;
+    flex-wrap:wrap!important;
+    align-items:center!important;
+    gap:var(--ux-space-1)!important;
+  }
+
+  .mx-action-chip,
+  .mx-action-rail>.p49-modal-trigger{
+    min-height:40px!important;
+  }
+
+  .p47-inline-actions,
+  .p49-action-row{
+    display:flex!important;
+    flex-wrap:wrap!important;
+    align-items:center!important;
+    gap:var(--ux-space-2)!important;
+  }
+}
+
+@media (max-width:520px){
+  .p47-inline-actions>.p49-modal-trigger,
+  .p49-action-row>.p49-modal-trigger{
+    min-width:40px!important;
+  }
+
+  .p47-inline-actions>.p49-modal-trigger .p49-trigger-content>span:last-child,
+  .p49-action-row>.p49-modal-trigger .p49-trigger-content>span:last-child{
+    display:none!important;
+  }
+}
