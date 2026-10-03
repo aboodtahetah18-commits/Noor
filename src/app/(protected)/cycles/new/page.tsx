@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { LucideIcon } from '@/components/ui/lucide-icon';
 import { createCycleAction } from '../actions';
 
 export default function NewCyclePage(){
@@ -7,9 +6,6 @@ export default function NewCyclePage(){
     <div className="page-shell narrow-shell cycle-create-focus-shell">
       <section className="card cycle-create-card cycle-create-card--focused" aria-labelledby="new-cycle-title">
         <header className="cycle-create-minimal-header">
-          <Link href="/budget" className="cycle-create-close" aria-label="العودة إلى التخطيط والميزانية">
-            <LucideIcon name="x" size={20}/>
-          </Link>
           <h1 id="new-cycle-title">بداية الدورة</h1>
         </header>
 
