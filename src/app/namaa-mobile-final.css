@@ -1472,3 +1472,170 @@
     grid-template-columns:1fr 2fr!important;
   }
 }
+
+
+/* 2026-10-03 — ACCOUNT WINDOWS FINAL SIMPLIFICATION */
+dialog.p49-action-dialog.is-page,
+dialog.p49-action-dialog.is-page.is-lg,
+dialog.p49-action-dialog.is-page.is-xl{
+  border-radius:0!important;
+}
+
+.p49-action-dialog.is-page .p49-dialog-shell{
+  border-radius:0!important;
+}
+
+.namaa-account-wizard{
+  grid-template-columns:1fr!important;
+}
+
+.namaa-account-wizard>*{
+  grid-column:1/-1!important;
+  min-width:0!important;
+}
+
+.namaa-wizard-progress{
+  width:100%!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+}
+
+.namaa-wizard-progress button{
+  width:100%!important;
+  min-width:0!important;
+  border-radius:0!important;
+}
+
+.namaa-wizard-fields{
+  width:100%!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+}
+
+.namaa-wizard-fields>.namaa-field-wide{
+  grid-column:1/-1!important;
+}
+
+.namaa-account-edit-page{
+  width:min(100%,900px)!important;
+  margin-inline:auto!important;
+  display:grid!important;
+  gap:var(--ux-space-4)!important;
+}
+
+.namaa-account-edit-form-v2{
+  width:100%!important;
+  display:grid!important;
+  gap:var(--ux-space-4)!important;
+}
+
+.namaa-edit-section{
+  width:100%!important;
+  padding:var(--ux-space-4)!important;
+  border:1px solid var(--ux-border-default)!important;
+  border-radius:0!important;
+  background:var(--ux-card-bg)!important;
+}
+
+.namaa-edit-section-head{
+  margin-bottom:var(--ux-space-3)!important;
+  padding-bottom:var(--ux-space-2)!important;
+  border-bottom:1px solid var(--ux-border-default)!important;
+}
+
+.namaa-edit-section-head h3{
+  margin:0!important;
+  color:var(--ux-text-primary)!important;
+  font-size:var(--ux-type-card-title-size)!important;
+}
+
+.namaa-edit-grid{
+  width:100%!important;
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:var(--ux-space-3)!important;
+}
+
+.namaa-edit-grid>label,
+.namaa-edit-grid>.namaa-current-balance{
+  min-width:0!important;
+  width:100%!important;
+}
+
+.namaa-edit-grid>label{
+  display:grid!important;
+  gap:var(--ux-space-2)!important;
+}
+
+.namaa-edit-grid .namaa-field-wide{
+  grid-column:1/-1!important;
+}
+
+.namaa-edit-grid :is(input,select,.smart-combo-input,.smart-combo-shell){
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+}
+
+.namaa-current-balance{
+  min-height:76px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:var(--ux-space-3)!important;
+  padding:var(--ux-space-3)!important;
+  border:1px solid var(--ux-border-default)!important;
+  background:var(--ux-section-soft-teal)!important;
+}
+
+.namaa-current-balance>span{
+  color:var(--ux-text-secondary)!important;
+}
+
+.namaa-current-balance strong{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:var(--ux-space-1)!important;
+  color:var(--ux-brand-primary)!important;
+  font-size:var(--ux-type-card-title-size)!important;
+}
+
+.namaa-detail-sticky-actions{
+  grid-column:1/-1!important;
+  grid-template-columns:1fr!important;
+}
+
+.namaa-detail-sticky-actions .primary-button{
+  width:100%!important;
+}
+
+@media (max-width:767px){
+  .namaa-wizard-fields{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:var(--ux-space-2)!important;
+  }
+
+  .namaa-edit-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:var(--ux-space-2)!important;
+  }
+
+  .namaa-edit-section{
+    padding:var(--ux-space-3)!important;
+  }
+
+  .namaa-account-edit-page{
+    gap:var(--ux-space-3)!important;
+  }
+}
+
+@media (max-width:360px){
+  .namaa-wizard-fields,
+  .namaa-edit-grid{
+    grid-template-columns:1fr!important;
+  }
+
+  .namaa-wizard-fields>.namaa-field-wide,
+  .namaa-edit-grid .namaa-field-wide{
+    grid-column:auto!important;
+  }
+}

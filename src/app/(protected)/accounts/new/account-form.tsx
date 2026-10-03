@@ -25,7 +25,7 @@ export function AccountForm({ accountNames, bankNames }: { accountNames: string[
 
       <section className="namaa-wizard-page" hidden={step !== 1}>
         <div className="namaa-wizard-fields">
-          <label><span className="field-title">اسم الحساب</span><SmartComboInput name="name" options={accountNames} required maxLength={120} placeholder="اسم الحساب" ariaLabel="اسم الحساب" /></label>
+          <label className="namaa-field-wide"><span className="field-title">اسم الحساب</span><SmartComboInput name="name" options={accountNames} required maxLength={120} placeholder="اسم الحساب" ariaLabel="اسم الحساب" /></label>
           <label><span className="field-title">نوع الحساب</span>
             <select name="accountType" defaultValue="BANK">
               <option value="BANK">حساب جاري</option>
@@ -36,7 +36,7 @@ export function AccountForm({ accountNames, bankNames }: { accountNames: string[
           </label>
           <label><span className="field-title">البنك أو الجهة</span><SmartComboInput name="bankName" options={bankNames} maxLength={120} placeholder="البنك أو الجهة" ariaLabel="البنك أو الجهة" /></label>
           <label><span className="field-title">الرصيد الافتتاحي</span><div className="money-field"><input name="openingBalance" inputMode="decimal" defaultValue="0.00" required /><span>ريال</span></div></label>
-          <label className="namaa-field-wide"><span className="field-title">تاريخ الرصيد</span><input name="effectiveDate" type="date" defaultValue={today} required /></label>
+          <label><span className="field-title">تاريخ الرصيد</span><input name="effectiveDate" type="date" defaultValue={today} required /></label>
         </div>
       </section>
 

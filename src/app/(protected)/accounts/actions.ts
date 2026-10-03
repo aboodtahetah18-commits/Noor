@@ -13,12 +13,10 @@ export async function createAccountAction(_previousState: { error?: string }, fo
   const name = String(formData.get('name') ?? '').trim();
   const bankNameInput = String(formData.get('bankName') ?? '').trim();
   const bank = bankByName(bankNameInput);
-  const accountTypeInput = String(formData.get('accountType') ?? '').trim();
-  const accountType = ['BANK','SAVINGS','CASH','OTHER'].includes(accountTypeInput) ? accountTypeInput as 'BANK'|'SAVINGS'|'CASH'|'OTHER' : deriveAccountType(name);
   const iban = String(formData.get('iban') ?? '').replace(/\s+/g, '').toUpperCase();
   const result = await createAccount(user.id, {
     name,
-    accountType,
+    accountType: deriveAccountType(name),
     openingBalance: formData.get('openingBalance'),
     effectiveDate: formData.get('effectiveDate'),
     bankCode: bank?.code,
@@ -48,8 +46,6 @@ export async function updateAccountAction(formData:FormData){
   const name=String(formData.get('name')??'').trim();
   const bankNameInput=String(formData.get('bankName')??'').trim();
   const bank=bankByName(bankNameInput);
-  const accountTypeInput=String(formData.get('accountType')??'').trim();
-  const accountType=['BANK','SAVINGS','CASH','OTHER'].includes(accountTypeInput)?accountTypeInput as 'BANK'|'SAVINGS'|'CASH'|'OTHER':deriveAccountType(name);
   const iban=String(formData.get('iban')??'').replace(/\s+/g,'').toUpperCase();
   const cardLast4=String(formData.get('cardLast4')??'').trim();
   const openingBalance=String(formData.get('openingBalance')??'').trim();
@@ -60,7 +56,7 @@ export async function updateAccountAction(formData:FormData){
   const { rawSql }=await import('@/infrastructure/db/client');
   try{
     await rawSql`with updated_account as (
-      update public.accounts set name=${name},account_type=${accountType},bank_code=${bank?.code??null},bank_name=${bank?.name??(bankNameInput||null)},account_number=${iban?iban.slice(6):null},iban=${iban||null},card_last4=${cardLast4||null},updated_at=now()
+      update public.accounts set name=${name},account_type=${deriveAccountType(name)},bank_code=${bank?.code??null},bank_name=${bank?.name??(bankNameInput||null)},account_number=${iban?iban.slice(6):null},iban=${iban||null},card_last4=${cardLast4||null},updated_at=now()
       where id=${accountId} and user_id=${user.id} and is_active=true returning id
     ) update public.account_opening_balances set amount=${openingBalance},effective_date=${effectiveDate}
       where account_id in(select id from updated_account) and user_id=${user.id}`;
