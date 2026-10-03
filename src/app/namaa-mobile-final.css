@@ -4,7 +4,7 @@
   .protected-app-shell{margin-top:0!important;padding-top:0!important;padding-block-start:0!important;}
 
   .protected-app-shell:not(:has([data-chat-first-route="true"])) .namaa-mobile-topbar.namaa-responsive-topbar{
-    position:sticky!important;
+    position:fixed!important;
     top:0!important;
     inset-block-start:0!important;
     width:100%!important;
@@ -91,7 +91,12 @@
     margin:0!important;
   }
 
-  .protected-app-shell:not(:has([data-chat-first-route="true"])) .namaa-app-main,
+  .protected-app-shell:not(:has([data-chat-first-route="true"])) .namaa-app-main{
+    margin-top:0!important;
+    padding-top:64px!important;
+    padding-block-start:64px!important;
+  }
+
   .protected-app-shell:not(:has([data-chat-first-route="true"])) .namaa-page-frame{
     margin-top:0!important;
     padding-top:0!important;
