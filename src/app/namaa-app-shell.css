@@ -660,8 +660,8 @@
   .protected-app-shell:has([data-chat-first-route="true"]) .namaa-app-main {
     width:100%!important;
     max-width:100%!important;
-    height:calc(100dvh - var(--ux-mobile-header-height))!important;
-    min-height:0!important;
+    height:100dvh!important;
+    min-height:100dvh!important;
     margin:0!important;
     padding:0!important;
     overflow:hidden!important;
@@ -711,3 +711,34 @@
     transition:none!important;
   }
 }
+
+
+/* 2026-10-03 — CHAT ROUTE ZERO-RESERVE FINAL AUTHORITY */
+@media (max-width:1023px){
+  .protected-app-shell:has([data-chat-first-route="true"]){
+    width:100%!important;
+    height:100dvh!important;
+    min-height:100dvh!important;
+    margin:0!important;
+    padding:0!important;
+    overflow:hidden!important;
+  }
+
+  .protected-app-shell:has([data-chat-first-route="true"]) .namaa-responsive-topbar{
+    display:none!important;
+  }
+
+  .protected-app-shell:has([data-chat-first-route="true"]) .namaa-app-main,
+  .protected-app-shell:has([data-chat-first-route="true"]) .namaa-page-frame,
+  .protected-app-shell:has([data-chat-first-route="true"]) [data-chat-first-route="true"]{
+    width:100%!important;
+    max-width:100%!important;
+    height:100dvh!important;
+    min-height:100dvh!important;
+    margin:0!important;
+    padding:0!important;
+    inset:0!important;
+    overflow:hidden!important;
+  }
+}
+
