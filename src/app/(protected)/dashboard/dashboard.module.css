@@ -1,6 +1,6 @@
 .page{width:100%;min-width:0;background:var(--ux-page-bg);color:var(--ux-text-primary)}
 .hero{min-height:220px;padding:var(--ux-space-7) var(--ux-space-6) var(--ux-space-7);display:flex;align-items:flex-end;justify-content:space-between;gap:var(--ux-space-5);background:var(--ux-brand-primary);color:var(--ux-text-inverse);border-radius:0 0 var(--ux-radius-xl) var(--ux-radius-xl)}
-.heroCopy{display:grid;gap:var(--ux-space-2)}.brandKicker{font-weight:900;color:var(--ux-brand-accent)}.hero h1{margin:0;font-size:var(--ux-type-page-title-size);line-height:1.1;color:var(--ux-text-inverse)}.hero p{margin:0;color:var(--ux-text-inverse);opacity:.9}
+.heroCopy{display:grid;gap:var(--ux-space-2)}.heroBrand{display:flex;align-items:center;min-height:52px}.heroBrand :global(.namaa-brand-logo){width:116px;height:auto;object-fit:contain}.brandKicker{font-weight:900;color:var(--ux-brand-accent)}.hero h1{margin:0;font-size:var(--ux-type-page-title-size);line-height:1.1;color:var(--ux-text-inverse)}.hero p{margin:0;color:var(--ux-text-inverse);opacity:.9}
 .heroTools{display:flex;gap:var(--ux-space-2)}.heroTools a{width:44px;height:44px;display:grid;place-items:center;border:1px solid color-mix(in srgb,var(--ux-text-inverse) 28%,transparent);border-radius:var(--ux-radius-full);color:var(--ux-text-inverse);background:color-mix(in srgb,var(--ux-text-inverse) 8%,transparent)}
 .content{width:min(100%,1480px);margin-inline:auto;padding:0 var(--ux-space-5) var(--ux-space-8);display:grid;gap:var(--ux-space-4)}
 .cycleCard{margin-top:calc(var(--ux-space-5) * -1);position:relative;z-index:2;display:grid;grid-template-columns:auto minmax(0,1fr) minmax(180px,360px);gap:var(--ux-space-4);align-items:center;padding:var(--ux-space-5);border:1px solid var(--ux-border-emphasis);border-radius:var(--ux-radius-xl);background:var(--ux-card-bg);box-shadow:var(--ux-shadow-lg)}
@@ -37,6 +37,7 @@
 
 @media(max-width:767px){
   .hero{min-height:190px;padding:var(--ux-space-5) var(--ux-space-4) var(--ux-space-7);align-items:flex-end}
+  .heroBrand :global(.namaa-brand-logo){width:104px}
   .hero h1{font-size:var(--ux-type-page-title-size)}.heroTools{align-self:flex-start}
   .content{padding:0 var(--ux-space-3) calc(var(--ux-size-16) + var(--ux-space-6));gap:var(--ux-space-3)}
   .cycleCard{margin-top:calc(var(--ux-space-6) * -1);grid-template-columns:auto 1fr;padding:var(--ux-space-4);border-radius:var(--ux-radius-lg)}
