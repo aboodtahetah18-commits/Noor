@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { LucideIcon, type LucideIconName } from '@/components/ui/lucide-icon';
@@ -47,21 +46,16 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
   return (
     <>
       {!chatFirst ? <header className="namaa-mobile-topbar namaa-mobile-header namaa-responsive-topbar" dir="rtl">
-          <div className="namaa-responsive-topbar-start">
-            <button
-              className="namaa-mobile-menu-trigger"
-              type="button"
-              onClick={() => setOpen(true)}
-              aria-label="فتح قائمة المنصة"
-              aria-haspopup="dialog"
-              aria-expanded={open}
-            >
-              <LucideIcon name="menu" size={20} />
-            </button>
-            <Link href="/dashboard" className="namaa-mobile-brand-mark" aria-label="نماء — الرئيسية">
-              <Image src="/brand/ndos/namaa-mark.svg" alt="" width={30} height={34} priority unoptimized />
-            </Link>
-          </div>
+          <button
+            className="namaa-mobile-menu-trigger"
+            type="button"
+            onClick={() => setOpen(true)}
+            aria-label="فتح قائمة المنصة"
+            aria-haspopup="dialog"
+            aria-expanded={open}
+          >
+            <LucideIcon name="menu" size={22} />
+          </button>
 
           <strong className="namaa-responsive-page-title">{pageTitle}</strong>
 
