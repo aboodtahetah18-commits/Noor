@@ -1007,6 +1007,30 @@
 }
 
 /* 2026-10-03 — RESPONSIVE TOPBAR + COMPACT DRAWER AUTHORITY */
+
+  .namaa-responsive-navigation-drawer[data-side="start"] {
+    right:0!important;
+    left:auto!important;
+    inset-inline-start:auto!important;
+    inset-inline-end:auto!important;
+  }
+
+  .protected-app-shell:has([data-chat-first-route="true"]) {
+    height:100dvh!important;
+    min-height:100dvh!important;
+  }
+
+  .protected-app-shell:has([data-chat-first-route="true"]) .namaa-app-main {
+    height:calc(100dvh - 56px)!important;
+    min-height:0!important;
+  }
+
+  .protected-app-shell:has([data-chat-first-route="true"]) .namaa-page-frame,
+  .protected-app-shell:has([data-chat-first-route="true"]) [data-chat-first-route="true"] {
+    height:100%!important;
+    min-height:0!important;
+  }
+
 @media (max-width:1023px) {
   .protected-app-shell .namaa-responsive-topbar {
     grid-template-columns:auto minmax(0,1fr) auto!important;
@@ -1038,19 +1062,17 @@
   .namaa-mobile-brand-mark {
     width:34px;
     height:34px;
-    display:block;
+    display:grid;
+    place-items:center;
     overflow:hidden;
     border-radius:var(--ux-radius-sm);
-    position:relative;
   }
 
-  .namaa-mobile-brand-mark>span {
-    position:absolute;
-    inset:0;
-    background-image:url('/brand/ndos/namaa-logo-color-transparent.png');
-    background-repeat:no-repeat;
-    background-position:right center;
-    background-size:auto 34px;
+  .namaa-mobile-brand-mark img {
+    width:30px!important;
+    height:34px!important;
+    object-fit:contain!important;
+    display:block!important;
   }
 
   .namaa-responsive-topbar .namaa-mobile-menu-trigger,
