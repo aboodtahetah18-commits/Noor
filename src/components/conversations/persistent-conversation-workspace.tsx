@@ -931,6 +931,10 @@ export function PersistentConversationWorkspace(){
   }
 
   function openPrimarySidebar(){
+    if(window.matchMedia('(max-width:1023px)').matches){
+      window.dispatchEvent(new Event('namaa:open-responsive-navigation'));
+      return;
+    }
     window.localStorage.setItem('sidebarState','expanded');
     document.documentElement.dataset.sidebar='expanded';
     window.dispatchEvent(new Event('mustaqbali:sidebar-state'));
@@ -1372,7 +1376,7 @@ export function PersistentConversationWorkspace(){
     <Image className={`${styles.brandWatermark} ${styles.brandWatermarkTertiary}`} src="/brand/namaa-leaf.webp" alt="" width={180} height={180} aria-hidden="true" />
     <header className={styles.mobileAppBar}>
       <div className={styles.mobileAppBarPrimary}>
-        <button type="button" className={styles.mobileTopButton} aria-label="فتح القائمة الجانبية" onClick={()=>setRoomsOpen(true)}><LucideIcon name="menu" size={20}/></button>
+        <button type="button" className={styles.mobileTopButton} aria-label="فتح التنقل بين المنصة" onClick={openPrimarySidebar}><LucideIcon name="menu" size={20}/></button>
         <span className={styles.mobileBrandLogoWrap} aria-label="نماء"><Image className={`${styles.mobileBrandLogo} ${styles.mobileBrandLogoLight}`} src="/brand/ndos/namaa-logo-color-hq.png" alt="" width={112} height={44} priority /><Image className={`${styles.mobileBrandLogo} ${styles.mobileBrandLogoDark}`} src="/brand/ndos/namaa-logo-white-hq.png" alt="" width={112} height={44} priority /></span>
       </div>
       <div className={styles.mobileAppBarActions}>
@@ -1405,7 +1409,7 @@ export function PersistentConversationWorkspace(){
           </div>
         </header>
         <header className={`${styles.chatHeader} ${activeRoom.id==='central'?styles.centralChatHeader:''}`}>
-          <div className={styles.chatHeaderForeground}><button type="button" className={styles.compactMenuButton} aria-label="فتح القائمة الجانبية" onClick={()=>setRoomsOpen(true)}><LucideIcon name="menu" size={20}/></button><RoomPortrait room={activeRoom} size="md"/><div className={styles.compactRoleTitle}><strong>{compactChatRoleTitle(activeRoom)}</strong></div><div className={styles.mobileTools}><button type="button" aria-label="لوحة الجهة" onClick={()=>setEntityDashboardRoom(activeRoomId)}><LucideIcon name="chart" size={20}/></button><button type="button" aria-label="معلومات الجهة" onClick={()=>{setDetailRoomId(activeRoomId);setDetailTab('role')}}><LucideIcon name="info" size={20}/></button></div></div>
+          <div className={styles.chatHeaderForeground}><button type="button" className={styles.compactMenuButton} aria-label="فتح التنقل بين المنصة" onClick={openPrimarySidebar}><LucideIcon name="menu" size={20}/></button><RoomPortrait room={activeRoom} size="md"/><div className={styles.compactRoleTitle}><strong>{compactChatRoleTitle(activeRoom)}</strong></div><div className={styles.mobileTools}><button type="button" aria-label="لوحة الجهة" onClick={()=>setEntityDashboardRoom(activeRoomId)}><LucideIcon name="chart" size={20}/></button><button type="button" aria-label="معلومات الجهة" onClick={()=>{setDetailRoomId(activeRoomId);setDetailTab('role')}}><LucideIcon name="info" size={20}/></button></div></div>
         </header>
         <div className={styles.chatBody}>
         {focusedChat?<div className={`${styles.routingNote} ${styles.specialistRoutingNote} ${styles.focusedChatBanner}`}><LucideIcon name={focusedChat.kind==='meeting'?'calendarDays':'messageSquareText'} size={16}/><span><strong>{focusedChat.title}</strong><small>{focusedChat.kind==='meeting'?'دردشة الاجتماع — محفوظة بشكل مستقل عن دردشة المجلس العامة':'دردشة مباشرة — تستخدم الذاكرة المشتركة دون خلطها بدردشة البنك العامة'}</small></span><button type="button" onClick={()=>setFocusedChat(null)} aria-label="العودة إلى دردشة الجهة"><LucideIcon name="x" size={16}/></button></div>:<div className={`${styles.routingNote} ${styles.specialistRoutingNote}`}><LucideIcon name="sparkles" size={16}/><span>{activeRoom.specialists}</span></div>}
