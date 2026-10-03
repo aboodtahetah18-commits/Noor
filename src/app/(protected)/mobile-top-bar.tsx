@@ -9,10 +9,9 @@ import { ThemeToggle } from '../theme-toggle';
 import { BrandLogo } from '@/components/brand/brand-logo';
 import { ProfileTrigger, type HeaderProfile } from './profile-trigger';
 
-type NavigationMode = 'system' | 'chat';
-
 const systemPages: ReadonlyArray<{ href:string; label:string; icon:LucideIconName }> = [
   { href:'/dashboard', label:'الرئيسية', icon:'house' },
+  { href:'/conversations', label:'مركز المحادثات', icon:'messageSquareText' },
   { href:'/accounts', label:'الحسابات', icon:'creditCard' },
   { href:'/transactions', label:'العمليات', icon:'repeat2' },
   { href:'/budget', label:'الميزانية', icon:'chart' },
@@ -26,20 +25,14 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
   const pathname = usePathname();
   const chatFirst = pathname === '/conversations' || pathname.startsWith('/conversations/');
   const [open, setOpen] = useState(false);
-  const [mode, setMode] = useState<NavigationMode>(chatFirst ? 'chat' : 'system');
 
   useEffect(() => {
-    const openNavigation = () => {
-      if (chatFirst) setMode('chat');
-      setOpen(true);
-    };
+    const openNavigation = () => setOpen(true);
     window.addEventListener('namaa:open-responsive-navigation', openNavigation);
     return () => window.removeEventListener('namaa:open-responsive-navigation', openNavigation);
-  }, [chatFirst]);
+  }, []);
 
-  const handleModeChange = (next: NavigationMode) => {
-    setMode(next);
-  };
+  const closeNavigation = () => setOpen(false);
 
   return (
     <>
@@ -50,7 +43,7 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
               className="namaa-mobile-menu-trigger"
               type="button"
               onClick={() => setOpen(true)}
-              aria-label="فتح التنقل بين المنصة"
+              aria-label="فتح قائمة المنصة"
               aria-haspopup="dialog"
               aria-expanded={open}
             >
@@ -74,57 +67,37 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
       <Drawer
         open={open}
         onOpenChange={setOpen}
-        title="التنقل بين المنصة"
+        title="قائمة المنصة"
         side="start"
         className="namaa-mobile-navigation-drawer namaa-responsive-navigation-drawer"
+        showCloseButton={false}
       >
-        <div className="namaa-responsive-navigation-content" dir="rtl">
-          <label className="namaa-navigation-mode">
-            <span>التنقل بين المنصة</span>
-            <select
-              value={mode}
-              onChange={(event) => handleModeChange(event.target.value as NavigationMode)}
-              aria-label="اختيار نوع التنقل"
-            >
-              <option value="system">صفحات النظام</option>
-              <option value="chat">الدردشة</option>
-            </select>
-          </label>
-
-          {mode === 'system' ? (
-            <nav className="namaa-mobile-drawer-nav namaa-responsive-drawer-nav" aria-label="صفحات النظام">
-              {systemPages.map(({ href, label, icon }) => {
-                const active = pathname === href || pathname.startsWith(`${href}/`);
-                return (
-                  <Link
-                    key={href}
-                    href={href}
-                    onClick={() => setOpen(false)}
-                    className={active ? 'is-active' : ''}
-                    aria-current={active ? 'page' : undefined}
-                  >
-                    <span className="namaa-mobile-drawer-icon" aria-hidden="true">
-                      <LucideIcon name={icon} size={20}/>
-                    </span>
-                    <span>{label}</span>
-                  </Link>
-                );
-              })}
-            </nav>
-          ) : (
-            <div className="namaa-chat-navigation-entry">
-              <Link href="/conversations" onClick={() => setOpen(false)}>
+        <nav
+          className="namaa-mobile-drawer-nav namaa-responsive-drawer-nav"
+          aria-label="صفحات النظام"
+          onClickCapture={(event) => {
+            const target = event.target as HTMLElement;
+            if (target.closest('a')) closeNavigation();
+          }}
+        >
+          {systemPages.map(({ href, label, icon }) => {
+            const active = pathname === href || pathname.startsWith(`${href}/`);
+            return (
+              <Link
+                key={href}
+                href={href}
+                onClick={closeNavigation}
+                className={active ? 'is-active' : ''}
+                aria-current={active ? 'page' : undefined}
+              >
                 <span className="namaa-mobile-drawer-icon" aria-hidden="true">
-                  <LucideIcon name="messageSquareText" size={20}/>
+                  <LucideIcon name={icon} size={20}/>
                 </span>
-                <span>
-                  <strong>الدردشة</strong>
-                  <small>جهات الاتصال ومراكز العمل</small>
-                </span>
+                <span>{label}</span>
               </Link>
-            </div>
-          )}
-        </div>
+            );
+          })}
+        </nav>
       </Drawer>
     </>
   );
