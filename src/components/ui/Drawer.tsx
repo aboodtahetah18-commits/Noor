@@ -45,7 +45,8 @@ export function Drawer({
 
   const close = () => onOpenChange(false);
   const onBackdrop = (event: MouseEvent<HTMLDialogElement>) => {
-    if (event.target === ref.current) close();
+    const shell = ref.current?.querySelector('.ux-overlay-shell');
+    if (!shell || !shell.contains(event.target as Node)) close();
   };
 
   return (
