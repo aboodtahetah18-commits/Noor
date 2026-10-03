@@ -2828,3 +2828,177 @@ dialog.p49-action-dialog.is-page.is-xl{
     font-size:var(--ux-type-body-sm-size)!important;
   }
 }
+
+
+/* 2026-10-03 — TRANSACTIONS ZERO-WASTE SPACING */
+.namaa-transactions-page{
+  width:100%!important;
+  max-width:100%!important;
+  margin:0!important;
+  padding:0!important;
+}
+
+.namaa-transactions-page>.p47-content-shell{
+  width:100%!important;
+  max-width:100%!important;
+  margin:0!important;
+  padding:0!important;
+}
+
+.namaa-transactions-summary{
+  margin:0!important;
+  gap:4px!important;
+  padding:0!important;
+}
+
+.namaa-summary-metric{
+  min-height:58px!important;
+  margin:0!important;
+  padding:6px!important;
+  gap:3px!important;
+  border-radius:10px!important;
+  box-shadow:none!important;
+}
+
+.namaa-summary-metric>span{
+  margin:0!important;
+  line-height:1.1!important;
+}
+
+.namaa-summary-metric>strong{
+  margin:0!important;
+  line-height:1.05!important;
+}
+
+.namaa-transactions-panel{
+  width:100%!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+
+.namaa-transactions-toolbar{
+  min-height:40px!important;
+  margin:4px 0!important;
+  padding:0!important;
+  gap:4px!important;
+}
+
+.namaa-transactions-toolbar-actions{
+  gap:4px!important;
+  margin:0!important;
+}
+
+.namaa-square-action,
+.namaa-transactions-toolbar .p4913-filter-toggle,
+.namaa-transaction-add-menu>summary{
+  width:38px!important;
+  height:38px!important;
+  min-width:38px!important;
+  min-height:38px!important;
+  border-radius:10px!important;
+}
+
+.namaa-transaction-list{
+  gap:4px!important;
+  margin:0!important;
+  padding:0!important;
+}
+
+.namaa-transaction-card{
+  margin:0!important;
+  padding:8px 10px!important;
+  gap:6px!important;
+  border-radius:10px!important;
+  box-shadow:none!important;
+}
+
+.namaa-transactions-empty{
+  min-height:56px!important;
+  height:auto!important;
+  margin:0!important;
+  padding:8px!important;
+  display:grid!important;
+  place-items:center!important;
+  border-radius:10px!important;
+  box-shadow:none!important;
+}
+
+.namaa-transactions-empty strong{
+  margin:0!important;
+  line-height:1.2!important;
+}
+
+.namaa-transactions-page .p47-pagination{
+  margin:4px 0 0!important;
+  padding:0!important;
+}
+
+@media (max-width:1023px){
+  .namaa-transactions-page{
+    padding:0 6px 6px!important;
+  }
+
+  .namaa-transactions-summary{
+    gap:3px!important;
+  }
+
+  .namaa-summary-metric{
+    min-height:54px!important;
+    padding:5px!important;
+    gap:2px!important;
+  }
+
+  .namaa-transactions-toolbar{
+    min-height:38px!important;
+    margin:3px 0!important;
+  }
+
+  .namaa-square-action,
+  .namaa-transactions-toolbar .p4913-filter-toggle,
+  .namaa-transaction-add-menu>summary{
+    width:36px!important;
+    height:36px!important;
+    min-width:36px!important;
+    min-height:36px!important;
+  }
+
+  .namaa-transaction-card{
+    padding:7px 8px!important;
+    gap:5px!important;
+  }
+
+  .namaa-transactions-empty{
+    min-height:52px!important;
+    padding:6px!important;
+  }
+}
+
+@media (max-width:520px){
+  .namaa-transactions-page{
+    padding:0 4px 4px!important;
+  }
+
+  .namaa-summary-metric{
+    min-height:50px!important;
+    padding:4px!important;
+  }
+
+  .namaa-summary-metric>span{
+    font-size:9px!important;
+  }
+
+  .namaa-summary-metric>strong{
+    font-size:13px!important;
+  }
+
+  .namaa-transactions-toolbar h2{
+    font-size:18px!important;
+  }
+
+  .namaa-transactions-empty{
+    min-height:48px!important;
+  }
+}
