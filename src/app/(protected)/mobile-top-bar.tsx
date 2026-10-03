@@ -54,7 +54,7 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
             aria-haspopup="dialog"
             aria-expanded={open}
           >
-            <LucideIcon name="menu" size={22} />
+            <LucideIcon name="menu" size={20} />
           </button>
 
           <strong className="namaa-responsive-page-title">{pageTitle}</strong>
