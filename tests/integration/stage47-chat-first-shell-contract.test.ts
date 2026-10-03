@@ -5,17 +5,18 @@ import { describe, expect, it } from 'vitest';
 const root = process.cwd();
 const read = (file: string) => fs.readFileSync(path.join(root, file), 'utf8');
 
-describe('Stage 4.7 chat-first mobile shell contract', () => {
-  it('marks the conversation route as the mobile viewport owner', () => {
+describe('Stage 4.7 chat-first responsive shell contract', () => {
+  it('marks the conversation route as the responsive viewport owner', () => {
     const page = read('src/app/(protected)/conversations/page.tsx');
     const shell = read('src/app/namaa-app-shell.css');
 
     expect(page).toContain('data-chat-first-route="true"');
     expect(shell).toContain(':has([data-chat-first-route="true"]) .namaa-app-main');
-    expect(shell).toContain('height:100dvh');
+    expect(shell).toContain('height:100dvh!important');
+    expect(shell).toContain('width:100%!important');
   });
 
-  it('uses the primary desktop navigation as an overlay drawer on the chat-first route', () => {
+  it('uses the primary desktop navigation as an overlay drawer on wide screens', () => {
     const shell = read('src/app/namaa-app-shell.css');
     const nav = read('src/app/(protected)/desktop-top-nav.tsx');
 
@@ -39,21 +40,20 @@ describe('Stage 4.7 chat-first mobile shell contract', () => {
     expect(css).not.toMatch(/\.agentMessage\{[^}]*!important|\.userMessage\{[^}]*!important/s);
   });
 
-  it('removes duplicate global mobile chrome only while conversations own the viewport', () => {
+  it('keeps one shared responsive topbar and no duplicate bottom navigation', () => {
     const top = read('src/app/(protected)/mobile-top-bar.tsx');
     const bottom = read('src/app/(protected)/mobile-bottom-nav.tsx');
 
-    expect(top).toContain("pathname === '/conversations'");
-    expect(top).toContain('if (chatFirst) return null');
-    expect(bottom).toContain("pathname === '/conversations'");
-    expect(bottom).toContain('if (chatFirst) return null');
+    expect(top).toContain('namaa-responsive-topbar');
+    expect(top).toContain('namaa-responsive-page-title');
+    expect(top).toContain('namaa:open-responsive-navigation');
+    expect(bottom).toContain('return null');
   });
 
-  it('keeps the existing five-destination mobile navigation for non-chat routes', () => {
-    const bottom = read('src/app/(protected)/mobile-bottom-nav.tsx');
-    for (const route of ['/dashboard', '/accounts', '/transactions', '/budget', '/more']) {
-      expect(bottom).toContain(`href: '${route}'`);
-    }
+  it('keeps conversations as a direct responsive navigation destination', () => {
+    const top = read('src/app/(protected)/mobile-top-bar.tsx');
+    expect(top).toContain("href:'/conversations'");
+    expect(top).toContain("label:'مركز المحادثات'");
   });
 
   it('stabilizes conversation geometry without raw palette values', () => {
