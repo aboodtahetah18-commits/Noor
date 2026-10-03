@@ -48,6 +48,7 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
   return (
     <>
       {!chatFirst ? <header className="namaa-mobile-topbar namaa-mobile-header namaa-responsive-topbar" dir="rtl">
+          <div className="namaa-responsive-topbar-start">
           <button
             className="namaa-mobile-menu-trigger"
             type="button"
@@ -58,6 +59,10 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
           >
             <LucideIcon name="menu" size={20} />
           </button>
+            <Link href="/dashboard" className="namaa-mobile-brand-logo" aria-label="نماء — الرئيسية">
+              <BrandLogo surface="dark" priority />
+            </Link>
+          </div>
 
           <strong className="namaa-responsive-page-title">{pageTitle}</strong>
 
