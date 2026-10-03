@@ -6,22 +6,29 @@ const root = process.cwd();
 const read = (p: string) => fs.readFileSync(path.join(root, p), 'utf8');
 
 describe('Phase 32 mobile hardening contract', () => {
-  it('mounts a dedicated mobile bottom navigation in the protected layout', () => {
+  it('uses the shared responsive drawer and retires duplicate bottom navigation', () => {
     const layout = read('src/app/(protected)/layout.tsx');
-    const nav = read('src/app/(protected)/mobile-bottom-nav.tsx');
+    const bottom = read('src/app/(protected)/mobile-bottom-nav.tsx');
+    const top = read('src/app/(protected)/mobile-top-bar.tsx');
+
+    expect(layout).toContain('<MobileTopBar profile={profile} />');
     expect(layout).toContain('<MobileBottomNav />');
-    expect(nav).toContain('aria-label="التنقل الرئيسي للجوال"');
-    expect(nav).toContain("'/dashboard'");
-    expect(nav).toContain("'/transactions'");
-    expect(nav).toContain("'/budget'");
-    expect(nav).toContain("'/more'");
+    expect(bottom).toContain('return null');
+
+    expect(top).toContain("'/dashboard'");
+    expect(top).toContain("'/conversations'");
+    expect(top).toContain("'/transactions'");
+    expect(top).toContain("'/budget'");
+    expect(top).toContain('side="start"');
   });
 
-  it('uses safe-area padding and >=44px touch targets', () => {
+  it('keeps compact touch controls and full-height drawer geometry', () => {
     const shell = read('src/app/namaa-app-shell.css');
-    expect(shell).toContain('env(safe-area-inset-bottom)');
-    expect(shell).toContain('min-height:var(--ux-size-12);');
-    expect(shell).toContain('.mobile-bottom-nav.namaa-mobile-bottom-nav');
+    expect(shell).toContain('height:100dvh!important');
+    expect(shell).toContain('var(--ux-size-9)');
+    expect(shell).toContain('var(--ux-size-10)');
+    expect(shell).toContain('dialog.ux-drawer-surface.namaa-responsive-navigation-drawer');
+    expect(shell).toContain('right:0!important');
   });
 
   it('converts financial tables to labeled mobile cards instead of horizontal tables', () => {
