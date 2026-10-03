@@ -12,6 +12,7 @@ export type DrawerProps = {
   side?: 'start' | 'end';
   closeLabel?: string;
   className?: string;
+  showCloseButton?: boolean;
 };
 
 export function Drawer({
@@ -24,6 +25,7 @@ export function Drawer({
   side = 'end',
   closeLabel = 'إغلاق اللوحة',
   className = '',
+  showCloseButton = true,
 }: DrawerProps) {
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
@@ -64,7 +66,7 @@ export function Drawer({
             <h2 id={titleId}>{title}</h2>
             {description ? <p id={descriptionId}>{description}</p> : null}
           </div>
-          <button type="button" className="ux-dialog-close" aria-label={closeLabel} onClick={close}>×</button>
+          {showCloseButton ? <button type="button" className="ux-dialog-close" aria-label={closeLabel} onClick={close}>×</button> : null}
         </header>
         <div className="ux-dialog-body">{children}</div>
         {footer ? <footer className="ux-dialog-actions">{footer}</footer> : null}
