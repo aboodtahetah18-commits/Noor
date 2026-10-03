@@ -50,6 +50,9 @@ export type TransactionHistoryPage = {
 
 export type TransactionDetails = TransactionHistoryItem & {
   cycleName: string | null;
+  accountLast4: string | null;
+  accountBalanceBefore: string | null;
+  accountBalanceAfter: string | null;
   reversedAt: string | null;
   reversalReason: string | null;
   obligation: null | {
