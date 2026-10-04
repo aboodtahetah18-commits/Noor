@@ -3796,3 +3796,242 @@ dialog.p49-action-dialog.is-page.is-xl{
     min-height:360px;
   }
 }
+
+
+/* 2026-10-04 — GLOBAL FOCUSED PAGE CONTRACT */
+/* قاعدة عامة: كل صفحة كبيرة = رأس مختصر + تبويبات + لوحة واحدة مرئية.
+   يمنع تكديس أقسام طويلة متتالية عندما يمكن تقسيمها منطقيًا. */
+.namaa-focus-page{
+  width:min(100%,1540px)!important;
+  max-width:1540px!important;
+  margin-inline:auto!important;
+  padding:8px 12px 18px!important;
+  color:var(--ux-text-primary)!important;
+}
+.namaa-focus-hero{
+  position:relative!important;
+  min-height:138px!important;
+  margin:0 0 7px!important;
+  overflow:hidden!important;
+  border:1px solid var(--ux-border-default)!important;
+  border-radius:14px!important;
+  background:var(--ux-card-bg)!important;
+  box-shadow:none!important;
+}
+.namaa-focus-tabs{
+  width:100%!important;
+  display:grid!important;
+  grid-auto-flow:column!important;
+  grid-auto-columns:minmax(0,1fr)!important;
+  gap:5px!important;
+  margin:0 0 7px!important;
+  padding:5px!important;
+  border:1px solid var(--ux-border-default)!important;
+  border-radius:11px!important;
+  background:var(--ux-card-bg)!important;
+}
+.namaa-focus-tabs a{
+  min-width:0!important;
+  min-height:36px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:5px 8px!important;
+  border:1px solid transparent!important;
+  border-radius:8px!important;
+  color:var(--ux-text-secondary)!important;
+  text-decoration:none!important;
+  text-align:center!important;
+  font-size:11px!important;
+  font-weight:850!important;
+}
+.namaa-focus-tabs a.is-active{
+  border-color:#E7CF9D!important;
+  background:#FFF8EA!important;
+  color:#0B6B4F!important;
+  box-shadow:inset 0 -2px 0 #D4AF6B!important;
+}
+.namaa-focus-panel{
+  min-width:0!important;
+  display:grid!important;
+  gap:7px!important;
+  padding:10px!important;
+  border:1px solid var(--ux-border-default)!important;
+  border-radius:13px!important;
+  background:var(--ux-card-bg)!important;
+  box-shadow:none!important;
+}
+.namaa-focus-panel-head{
+  min-width:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:10px!important;
+  padding-bottom:7px!important;
+  border-bottom:1px solid var(--ux-border-default)!important;
+}
+.namaa-focus-panel-head>div{min-width:0!important;}
+.namaa-focus-panel-head span{color:#D4AF6B!important;font-size:10px!important;font-weight:850!important;}
+.namaa-focus-panel-head h2{margin:2px 0!important;font-size:17px!important;}
+.namaa-focus-panel-head p{margin:0!important;color:var(--ux-text-secondary)!important;font-size:10px!important;line-height:1.45!important;}
+.namaa-focus-panel-head>a{
+  flex:0 0 auto!important;
+  min-height:34px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:5px 9px!important;
+  border:1px solid #E7CF9D!important;
+  border-radius:8px!important;
+  background:#FFF8EA!important;
+  color:#0B6B4F!important;
+  text-decoration:none!important;
+  font-size:10px!important;
+  font-weight:850!important;
+}
+.namaa-focus-metrics{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:6px!important;
+}
+.namaa-focus-metrics article{
+  min-width:0!important;
+  min-height:72px!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:7px!important;
+  padding:8px 9px!important;
+  border:1px solid var(--ux-border-default)!important;
+  border-radius:10px!important;
+  background:var(--ux-surface-default)!important;
+}
+.namaa-focus-metrics article>div{min-width:0!important;display:grid!important;gap:3px!important;}
+.namaa-focus-metrics span,.namaa-focus-metrics small{color:var(--ux-text-secondary)!important;font-size:10px!important;}
+.namaa-focus-metrics strong{justify-self:end!important;color:#0B6B4F!important;font-size:16px!important;white-space:nowrap!important;}
+.namaa-focus-empty{
+  min-height:82px!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:10px!important;
+  padding:10px!important;
+  border:1px dashed #C9D8D1!important;
+  border-radius:10px!important;
+  background:#FAF9F4!important;
+}
+.namaa-focus-empty svg{color:#0B6B4F!important;}
+.namaa-focus-empty div{display:grid!important;gap:2px!important;}
+.namaa-focus-empty span{color:var(--ux-text-secondary)!important;font-size:10px!important;}
+.namaa-focus-action-grid{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:6px!important;
+}
+.namaa-focus-action-grid>article{
+  min-width:0!important;
+  min-height:96px!important;
+  display:grid!important;
+  grid-template-columns:auto minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:9px!important;
+  padding:9px!important;
+  border:1px solid var(--ux-border-default)!important;
+  border-radius:10px!important;
+  background:#FAF9F4!important;
+}
+.namaa-focus-action-grid>article>svg{color:#D4AF6B!important;}
+.namaa-focus-action-grid>article>div{display:grid!important;gap:3px!important;}
+.namaa-focus-action-grid>article span{color:var(--ux-text-secondary)!important;font-size:10px!important;}
+.namaa-focus-action-grid>article>a{
+  color:#0B6B4F!important;
+  font-size:10px!important;
+  font-weight:850!important;
+}
+.namaa-focus-list{display:grid!important;gap:6px!important;}
+.namaa-focus-list article{
+  min-width:0!important;
+  min-height:52px!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:8px!important;
+  padding:8px 9px!important;
+  border:1px solid var(--ux-border-default)!important;
+  border-radius:10px!important;
+  background:#FAF9F4!important;
+}
+.namaa-focus-list span{color:var(--ux-text-secondary)!important;font-size:10px!important;}
+.namaa-focus-team-grid{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:6px!important;
+}
+.namaa-focus-team-grid article{
+  min-width:0!important;
+  min-height:68px!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:8px!important;
+  padding:8px!important;
+  border:1px solid #D8ECE4!important;
+  border-radius:10px!important;
+  background:#FAF9F4!important;
+}
+.namaa-focus-team-grid article>span{
+  position:relative!important;
+  width:46px!important;
+  height:46px!important;
+  flex:0 0 46px!important;
+  overflow:hidden!important;
+  border:2px solid #E7CF9D!important;
+  border-radius:50%!important;
+  background:#FFF8EA!important;
+}
+.namaa-focus-team-grid img{object-fit:cover!important;object-position:center top!important;}
+.namaa-focus-primary-action{
+  width:100%!important;
+  min-height:40px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:7px!important;
+  padding:7px 10px!important;
+  border:1px solid #0B6B4F!important;
+  border-radius:9px!important;
+  background:#0B6B4F!important;
+  color:#E7CF9D!important;
+  text-decoration:none!important;
+  font-size:11px!important;
+  font-weight:850!important;
+}
+
+@media(max-width:767px){
+  .namaa-focus-page{width:100%!important;padding:0 5px 10px!important;}
+  .namaa-focus-hero{min-height:112px!important;margin-bottom:5px!important;border-radius:11px!important;}
+  .namaa-focus-tabs{
+    position:sticky!important;
+    top:0!important;
+    z-index:6!important;
+    grid-auto-flow:row!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:4px!important;
+    margin-bottom:5px!important;
+    padding:4px!important;
+  }
+  .namaa-focus-tabs a{min-height:32px!important;padding:4px!important;font-size:9px!important;}
+  .namaa-focus-panel{gap:5px!important;padding:7px!important;border-radius:10px!important;}
+  .namaa-focus-panel-head{gap:6px!important;padding-bottom:5px!important;}
+  .namaa-focus-panel-head h2{font-size:15px!important;}
+  .namaa-focus-panel-head p{font-size:9px!important;}
+  .namaa-focus-metrics{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:5px!important;}
+  .namaa-focus-metrics article{min-height:62px!important;padding:6px!important;}
+  .namaa-focus-metrics strong{font-size:14px!important;}
+  .namaa-focus-action-grid{grid-template-columns:1fr!important;gap:5px!important;}
+  .namaa-focus-action-grid>article{min-height:78px!important;padding:7px!important;}
+  .namaa-focus-team-grid{grid-template-columns:1fr!important;}
+}
+
+/* صفحة الاستثمارات أصبحت واجهة واحدة؛ لا نسختين mobile/wide */
+.namaa-investments-page>.namaa-investments-shell,
+.namaa-investments-page>.namaa-investments-mobile{display:none!important;}
+.namaa-investments-page.namaa-focus-page>.namaa-investments-header{display:grid!important;}
