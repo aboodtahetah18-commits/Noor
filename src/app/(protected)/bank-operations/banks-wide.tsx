@@ -87,7 +87,7 @@ export function BanksWide({selected,selectedTab,pendingReviewCount,pendingItems,
 
     <section className="namaa-bank-tab-panel">
       {selectedTab==='overview'&&<>
-        <div className="namaa-bank-panel-head"><div><span>الوضع الحالي</span><h2>{bank.name}</h2></div><div className="namaa-bank-head-tools"><InfoNote>{bank.focus}</InfoNote><LucideIcon name="chart" size={20}/></div></div>
+        <div className="namaa-bank-panel-head"><div><span>الوضع الحالي</span><div className="namaa-bank-title-row"><h2>{bank.name}</h2><InfoNote>{bank.focus}</InfoNote></div></div><LucideIcon name="chart" size={20}/></div>
         <div className="namaa-banks-kpis namaa-banks-kpis-dashboard">
           <article><div><span>إجمالي السيولة</span><small>{dashboardData.activeAccountCount} حساب نشط</small></div><strong><Sar value={dashboardData.totalLiquidity}/></strong></article>
           <article><div><span>عمليات تحتاج مراجعة</span><small><Sar value={pendingValue}/> قيمة معلقة</small></div><strong>{pendingReviewCount}</strong></article>

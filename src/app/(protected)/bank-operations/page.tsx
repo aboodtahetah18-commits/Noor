@@ -56,7 +56,7 @@ export default async function BankOperationsPage({searchParams}:{searchParams:Pr
     bufferPolicy:bufferPolicy?{mode:bufferPolicy.mode,fixedAmount:bufferPolicy.fixedAmount,percentBps:bufferPolicy.percentBps,updatedAt:bufferPolicy.updatedAt}:null,
   };
 
-  return <main className="p47-page" dir="rtl">
+  return <main className="p47-page namaa-banks-root-page" dir="rtl">
     <BanksWide selected={selected} selectedTab={selectedTab} pendingReviewCount={center.pendingReviewCount} pendingItems={center.pendingItems} dashboardData={dashboardData}/>
   </main>;
 }
