@@ -43,16 +43,16 @@ export default async function InvestmentsPage({searchParams}:{searchParams:Promi
             <article><div><span>السيولة الاستثمارية</span><small>بحسب الأصول القابلة للتسييل</small></div><strong>—</strong></article>
             <article><div><span>تنبيهات المخاطر</span><small>تظهر عند وجود حالة فعلية</small></div><strong>0</strong></article>
           </div>
-          <div className="namaa-focus-empty"><LucideIcon name="landmark" size={26}/><div><strong>لا توجد محفظة مختارة حاليًا</strong><span>استخدم تبويب المحافظ والأصول لإضافة أو ربط البيانات عند توفر مصدر فعلي.</span></div></div>
+          <div className="namaa-focus-empty"><LucideIcon name="landmark" size={24}/><div><strong>لا توجد محفظة مختارة حاليًا</strong><span>استخدم تبويب المحافظ والأصول لإضافة أو ربط البيانات عند توفر مصدر فعلي.</span></div></div>
         </>}
 
         {active==='portfolio'&&<>
           <div className="namaa-focus-panel-head"><div><span>المحافظ والأصول</span><h2>إدارة المحفظة</h2><p>إضافة المحفظة أو الوصول إلى الحسابات والاستثمارات المرتبطة.</p></div></div>
           <div className="namaa-focus-action-grid">
-            <article><LucideIcon name="walletCards" size={22}/><div><strong>المحافظ الاستثمارية</strong><span>تعريف المحفظة وبياناتها الأساسية.</span></div><InvestmentActionDialogs/></article>
-            <article><LucideIcon name="landmark" size={22}/><div><strong>الحسابات المرتبطة</strong><span>أضف أو عدّل الحساب الذي يغذي الاستثمار.</span></div><Link href="/accounts">فتح الحسابات</Link></article>
-            <article><LucideIcon name="target" size={22}/><div><strong>الأهداف المالية</strong><span>اربط الاستثمار بهدف مالي قابل للقياس.</span></div><Link href="/goals">فتح الأهداف</Link></article>
-            <article><LucideIcon name="chart" size={22}/><div><strong>السجل المالي</strong><span>راجع التدفقات الداخلة والخارجة المرتبطة.</span></div><Link href="/transactions">فتح العمليات</Link></article>
+            <article><LucideIcon name="walletCards" size={20}/><div><strong>المحافظ الاستثمارية</strong><span>تعريف المحفظة وبياناتها الأساسية.</span></div><InvestmentActionDialogs/></article>
+            <article><LucideIcon name="landmark" size={20}/><div><strong>الحسابات المرتبطة</strong><span>أضف أو عدّل الحساب الذي يغذي الاستثمار.</span></div><Link href="/accounts">فتح الحسابات</Link></article>
+            <article><LucideIcon name="target" size={20}/><div><strong>الأهداف المالية</strong><span>اربط الاستثمار بهدف مالي قابل للقياس.</span></div><Link href="/goals">فتح الأهداف</Link></article>
+            <article><LucideIcon name="chart" size={20}/><div><strong>السجل المالي</strong><span>راجع التدفقات الداخلة والخارجة المرتبطة.</span></div><Link href="/transactions">فتح العمليات</Link></article>
           </div>
         </>}
 
@@ -64,7 +64,7 @@ export default async function InvestmentsPage({searchParams}:{searchParams:Promi
             <article><div><span>السيولة</span><small>حسب الأصول القابلة للتسييل</small></div><strong>—</strong></article>
             <article><div><span>التوصيات</span><small>تحتاج اعتماد المستخدم</small></div><strong>0</strong></article>
           </div>
-          <div className="namaa-focus-empty"><LucideIcon name="chart" size={26}/><div><strong>لا توجد بيانات محفظة كافية للتحليل</strong><span>لن نعرض أداءً أو مخاطرة افتراضية قبل وجود بيانات فعلية.</span></div></div>
+          <div className="namaa-focus-empty"><LucideIcon name="chart" size={24}/><div><strong>لا توجد بيانات محفظة كافية للتحليل</strong><span>لن نعرض أداءً أو مخاطرة افتراضية قبل وجود بيانات فعلية.</span></div></div>
         </>}
 
         {active==='followup'&&<>
