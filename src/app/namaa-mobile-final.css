@@ -4035,3 +4035,278 @@ dialog.p49-action-dialog.is-page.is-xl{
 .namaa-investments-page>.namaa-investments-shell,
 .namaa-investments-page>.namaa-investments-mobile{display:none!important;}
 .namaa-investments-page.namaa-focus-page>.namaa-investments-header{display:grid!important;}
+
+
+/* 2026-10-04 — DENSE VIEWPORT + HORIZONTAL NAV CONTRACT */
+/* القاعدة العامة: التنقل الداخلي في صف واحد قابل للسحب أفقيًا. */
+.namaa-bank-tabs,
+.namaa-focus-tabs{
+  display:flex!important;
+  flex-wrap:nowrap!important;
+  align-items:center!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  overscroll-behavior-inline:contain!important;
+  scrollbar-width:none!important;
+  -webkit-overflow-scrolling:touch!important;
+}
+.namaa-bank-tabs::-webkit-scrollbar,
+.namaa-focus-tabs::-webkit-scrollbar,
+.namaa-banks-selector::-webkit-scrollbar{display:none!important;}
+.namaa-bank-tabs>a,
+.namaa-focus-tabs>a{
+  flex:0 0 auto!important;
+  min-width:max-content!important;
+  white-space:nowrap!important;
+}
+
+/* البنوك نفسها صف واحد قابل للسحب بدل 2×2. */
+.namaa-banks-selector{
+  display:flex!important;
+  flex-wrap:nowrap!important;
+  align-items:center!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  scrollbar-width:none!important;
+  -webkit-overflow-scrolling:touch!important;
+}
+.namaa-banks-selector>a{
+  flex:0 0 auto!important;
+  min-width:148px!important;
+  white-space:nowrap!important;
+}
+
+/* استغلال فراغ الهيرو بدل ترك الصورة فارغة. */
+.namaa-banks-hero{position:relative!important;}
+.namaa-banks-hero-stats{
+  position:absolute!important;
+  inset-inline-end:14px!important;
+  inset-block-end:14px!important;
+  z-index:3!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:5px!important;
+  direction:rtl!important;
+}
+.namaa-banks-hero-stats>span{
+  min-width:92px!important;
+  min-height:48px!important;
+  display:grid!important;
+  align-content:center!important;
+  gap:2px!important;
+  padding:6px 8px!important;
+  border:1px solid rgba(231,207,157,.52)!important;
+  border-radius:10px!important;
+  background:rgba(250,249,244,.93)!important;
+  backdrop-filter:blur(8px)!important;
+  box-shadow:none!important;
+}
+.namaa-banks-hero-stats small{
+  color:var(--ux-text-secondary)!important;
+  font-size:9px!important;
+  line-height:1!important;
+}
+.namaa-banks-hero-stats strong{
+  color:#0B6B4F!important;
+  font-size:12px!important;
+  line-height:1.15!important;
+}
+
+/* شرح اختياري فقط عند الطلب. */
+.namaa-bank-head-tools,
+.namaa-bank-head-actions{
+  display:flex!important;
+  align-items:center!important;
+  gap:6px!important;
+  flex:0 0 auto!important;
+}
+.namaa-inline-info{
+  position:relative!important;
+  flex:0 0 auto!important;
+}
+.namaa-inline-info>summary{
+  width:32px!important;
+  height:32px!important;
+  display:grid!important;
+  place-items:center!important;
+  list-style:none!important;
+  cursor:pointer!important;
+  border:1px solid #E7CF9D!important;
+  border-radius:50%!important;
+  background:#FFF8EA!important;
+  color:#0B6B4F!important;
+}
+.namaa-inline-info>summary::-webkit-details-marker{display:none!important;}
+.namaa-inline-info>div{
+  position:absolute!important;
+  inset-inline-end:0!important;
+  top:calc(100% + 6px)!important;
+  z-index:40!important;
+  width:min(280px,calc(100vw - 28px))!important;
+  padding:8px 10px!important;
+  border:1px solid var(--ux-border-default)!important;
+  border-radius:9px!important;
+  background:var(--ux-card-bg)!important;
+  color:var(--ux-text-secondary)!important;
+  box-shadow:var(--ux-shadow-lg)!important;
+  font-size:10px!important;
+  line-height:1.6!important;
+}
+
+/* رمز الريال الجديد كأصل بصري، لمنع ظهور مربع بديل من الخط. */
+.namaa-sar-value{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:4px!important;
+  direction:ltr!important;
+  unicode-bidi:isolate!important;
+  white-space:nowrap!important;
+  font-variant-numeric:tabular-nums!important;
+}
+.namaa-sar-value img{
+  width:15px!important;
+  height:15px!important;
+  object-fit:contain!important;
+  flex:0 0 15px!important;
+}
+
+/* النظرة العامة = أرقام وحالات فقط؛ الرسوم التشغيلية انتقلت لتبويبها. */
+.namaa-bank-tab-panel .namaa-banks-health-grid{
+  margin:0!important;
+}
+.namaa-bank-operations-visuals{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:6px!important;
+}
+.namaa-bank-operations-visuals>article{
+  min-height:122px!important;
+  margin:0!important;
+}
+.namaa-bank-goal-progress{
+  min-height:86px!important;
+  margin:0!important;
+}
+.namaa-bank-head-actions>a,
+.namaa-bank-mini-action{
+  min-height:34px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:5px!important;
+  padding:5px 9px!important;
+  border:1px solid #E7CF9D!important;
+  border-radius:8px!important;
+  background:#FFF8EA!important;
+  color:#0B6B4F!important;
+  text-decoration:none!important;
+  font-size:10px!important;
+  font-weight:850!important;
+}
+.namaa-bank-mini-action>span{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:5px!important;
+}
+
+/* كثافة أعلى على الشاشات الصغيرة: أكبر قدر من البيانات في نفس الشاشة. */
+@media(max-width:767px){
+  .namaa-banks-hero{
+    min-height:0!important;
+    margin-bottom:5px!important;
+  }
+  .namaa-banks-building{
+    height:104px!important;
+  }
+  .namaa-banks-hero-copy{
+    top:8px!important;
+    inset-inline-start:8px!important;
+    inset-inline-end:auto!important;
+    max-width:62%!important;
+    padding:6px 8px!important;
+  }
+  .namaa-banks-hero-copy h1{font-size:17px!important;}
+  .namaa-banks-hero-copy span{font-size:9px!important;}
+  .namaa-banks-hero-stats{
+    inset-inline-start:8px!important;
+    inset-inline-end:auto!important;
+    inset-block-end:7px!important;
+    gap:4px!important;
+  }
+  .namaa-banks-hero-stats>span{
+    min-width:62px!important;
+    min-height:36px!important;
+    padding:4px 5px!important;
+    border-radius:8px!important;
+  }
+  .namaa-banks-hero-stats small{font-size:8px!important;}
+  .namaa-banks-hero-stats strong{font-size:10px!important;}
+  .namaa-banks-hero-stats .namaa-sar-value img{width:11px!important;height:11px!important;flex-basis:11px!important;}
+
+  .namaa-banks-selector{
+    padding:4px!important;
+    gap:4px!important;
+  }
+  .namaa-banks-selector>a{
+    min-width:132px!important;
+    min-height:34px!important;
+    padding:5px 8px!important;
+    font-size:10px!important;
+  }
+  .namaa-bank-tabs,
+  .namaa-focus-tabs{
+    grid-template-columns:none!important;
+    grid-auto-flow:unset!important;
+    gap:4px!important;
+    margin-bottom:5px!important;
+    padding:4px!important;
+  }
+  .namaa-bank-tabs>a,
+  .namaa-focus-tabs>a{
+    min-width:max-content!important;
+    min-height:32px!important;
+    padding:4px 9px!important;
+    font-size:9px!important;
+  }
+  .namaa-bank-tab-panel{
+    gap:5px!important;
+    padding:7px!important;
+  }
+  .namaa-bank-panel-head h2{font-size:15px!important;}
+  .namaa-bank-panel-head>div>span{font-size:9px!important;}
+  .namaa-inline-info>summary{
+    width:28px!important;
+    height:28px!important;
+  }
+  .namaa-banks-kpis{
+    gap:5px!important;
+    margin-bottom:5px!important;
+  }
+  .namaa-banks-kpis article{
+    min-height:58px!important;
+    padding:6px!important;
+  }
+  .namaa-banks-kpis-dashboard article>strong{font-size:13px!important;}
+  .namaa-banks-health-grid{
+    gap:5px!important;
+  }
+  .namaa-banks-health-grid article{
+    min-height:58px!important;
+    padding:6px!important;
+  }
+  .namaa-bank-operations-visuals{
+    grid-template-columns:1fr!important;
+    gap:5px!important;
+  }
+  .namaa-bank-operations-visuals>article{
+    min-height:102px!important;
+  }
+  .namaa-bank-goal-progress{
+    min-height:78px!important;
+  }
+  .namaa-sar-value img{
+    width:13px!important;
+    height:13px!important;
+    flex-basis:13px!important;
+  }
+}
