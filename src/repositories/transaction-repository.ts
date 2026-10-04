@@ -104,7 +104,10 @@ export class TransactionRepository {
         t.transaction_date::text,t.description,t.planning_status,t.expense_nature,
         t.income_source_name,t.income_kind,t.posted_at::text,t.reversed_at::text,
         t.reversal_reason,t.created_at::text,
-        coalesce(a.card_last4,right(regexp_replace(coalesce(a.account_number,a.iban,''),'\\s','','g'),4)) account_last4,
+        coalesce(
+          nullif(right(regexp_replace(coalesce(a.account_number,''),'\\s','','g'),4),''),
+          nullif(right(regexp_replace(coalesce(a.iban,''),'\\s','','g'),4),'')
+        ) account_last4,
         (
           coalesce(ob.amount,0)
           + coalesce((

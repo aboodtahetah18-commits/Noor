@@ -35,7 +35,8 @@ function sign(type:string,direction:string|null){
   return '';
 }
 function amountTone(type:string,direction:string|null){
-  if(type==='INCOME'||type==='REFUND'||direction==='IN')return 'is-inflow';
+  if(type==='REFUND')return 'is-refund';
+  if(type==='INCOME'||direction==='IN')return 'is-inflow';
   if(type==='EXPENSE'||type==='OBLIGATION_PAYMENT'||direction==='OUT')return 'is-outflow';
   return 'is-neutral';
 }
@@ -105,7 +106,7 @@ export default async function TransactionsPage({searchParams}:{searchParams:Sear
         <span className="namaa-summary-icon"><LucideIcon name="arrowUp" size={20}/></span>
         <div className="namaa-summary-copy"><span>الخارج</span><strong><TransactionAmount value={summary.outflow}/></strong></div>
       </div>
-      <div className={`namaa-summary-metric ${netTone}`}>
+      <div className="namaa-summary-metric is-net">
         <span className="namaa-summary-icon"><LucideIcon name="chart" size={20}/></span>
         <div className="namaa-summary-copy"><span>الصافي</span><strong><TransactionAmount value={summary.net}/></strong></div>
       </div>
