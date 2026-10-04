@@ -4697,3 +4697,47 @@ html[data-theme="dark"]{color-scheme:light!important;}
     margin-top:-7px!important;
   }
 }
+
+
+/* 2026-10-04 — APPROVED BANKS NUMBER SCALE REFINEMENT */
+/* تصغير طفيف للأرقام مع الحفاظ على بروز القيم ومنع تزاحم رمز الريال. */
+.namaa-banks-hero-stats strong{
+  font-size:12px!important;
+}
+.namaa-banks-kpis-dashboard article>strong{
+  font-size:16px!important;
+}
+.namaa-banks-health-grid article>strong{
+  font-size:15px!important;
+}
+.namaa-bank-operations-summary strong,
+.namaa-bank-goal-metrics strong{
+  font-size:15px!important;
+}
+.namaa-sar-value{
+  gap:3px!important;
+}
+.namaa-sar-value img{
+  width:14px!important;
+  height:14px!important;
+  flex-basis:14px!important;
+}
+
+@media(max-width:767px){
+  .namaa-banks-hero-stats strong{
+    font-size:9px!important;
+  }
+  .namaa-banks-kpis-dashboard article>strong,
+  .namaa-banks-health-grid article>strong{
+    font-size:13px!important;
+  }
+  .namaa-bank-operations-summary strong,
+  .namaa-bank-goal-metrics strong{
+    font-size:13px!important;
+  }
+  .namaa-sar-value img{
+    width:12px!important;
+    height:12px!important;
+    flex-basis:12px!important;
+  }
+}
