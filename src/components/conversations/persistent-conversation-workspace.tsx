@@ -850,9 +850,9 @@ function StructuredFacts({data}:{data?:Record<string,unknown>}){
   </div>;
 }
 
-export function PersistentConversationWorkspace(){
+export function PersistentConversationWorkspace({initialRoom='central'}:{initialRoom?:RoomKey}){
   const router=useRouter();
-  const [activeRoomId,setActiveRoomId]=useState<RoomKey>('central');
+  const [activeRoomId,setActiveRoomId]=useState<RoomKey>(initialRoom);
   const [loadedRoomId,setLoadedRoomId]=useState<RoomKey|null>(null);
   const [messages,setMessages]=useState<Message[]>([]);
   const [participants,setParticipants]=useState<Participant[]>([]);
