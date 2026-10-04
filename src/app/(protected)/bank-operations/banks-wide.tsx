@@ -77,7 +77,6 @@ export function BanksWide({selected,selectedTab,pendingReviewCount,pendingItems,
         <span><small>مراجعة</small><strong>{pendingReviewCount}</strong></span>
         <span><small>قرارات</small><strong>{dashboardData.decisionCount}</strong></span>
       </div>
-      <span className="namaa-banks-building" aria-hidden="true"><Image src={bank.building} alt="" fill priority quality={92} unoptimized sizes="(min-width: 1024px) 72vw, 100vw"/><span className="namaa-banks-building-shade"/></span>
       <div className="namaa-banks-selector">{Object.entries(banks).map(([key,item])=><Link key={key} href={hrefFor(key as BankKey,'overview')} className={selected===key?'is-active':''}>{item.name}</Link>)}</div>
     </header>
 
@@ -89,17 +88,17 @@ export function BanksWide({selected,selectedTab,pendingReviewCount,pendingItems,
       {selectedTab==='overview'&&<>
         <div className="namaa-bank-panel-head"><div><span>الوضع الحالي</span><div className="namaa-bank-title-row"><h2>{bank.name}</h2><InfoNote>{bank.focus}</InfoNote></div></div><LucideIcon name="chart" size={20}/></div>
         <div className="namaa-banks-kpis namaa-banks-kpis-dashboard">
-          <article><div><span>إجمالي السيولة</span><small>{dashboardData.activeAccountCount} حساب نشط</small></div><strong><Sar value={dashboardData.totalLiquidity}/></strong></article>
-          <article><div><span>عمليات تحتاج مراجعة</span><small><Sar value={pendingValue}/> قيمة معلقة</small></div><strong>{pendingReviewCount}</strong></article>
-          <article><div><span>صندوق الطوارئ</span><small>{emergencyProgress==null?'التغطية غير مكتملة':emergencyProgress+'٪ من الهدف'}</small></div><strong><Sar value={dashboardData.emergencyBalance}/></strong></article>
-          <article><div><span>الأهداف النشطة</span><small><Sar value={dashboardData.goalsRemaining}/> متبقي</small></div><strong>{dashboardData.activeGoalCount}</strong></article>
-          <article><div><span>الادخار المحول</span><small>{savingsProgress==null?'لا يوجد مخصص حالي':savingsProgress+'٪ من المخصص'}</small></div><strong><Sar value={dashboardData.savingsActual}/></strong></article>
-          <article><div><span>قرارات مسجلة</span><small>آخر نشاطات الحوكمة البنكية</small></div><strong>{dashboardData.decisionCount}</strong></article>
+          <article className="is-money"><div><span>إجمالي السيولة</span><small>{dashboardData.activeAccountCount} حساب نشط</small></div><strong><Sar value={dashboardData.totalLiquidity}/></strong></article>
+          <article className="is-count"><div><span>عمليات تحتاج مراجعة</span><small>{pendingReviewCount===1?'عملية واحدة':'عدد العمليات'}</small></div><strong>{pendingReviewCount}</strong></article>
+          <article className="is-money"><div><span>صندوق الطوارئ</span><small>{emergencyProgress==null?'التغطية غير مكتملة':emergencyProgress+'٪ من الهدف'}</small></div><strong><Sar value={dashboardData.emergencyBalance}/></strong></article>
+          <article className="is-count"><div><span>الأهداف النشطة</span><small>هدف مالي جارٍ</small></div><strong>{dashboardData.activeGoalCount}</strong></article>
+          <article className="is-money"><div><span>الادخار المحول</span><small>{savingsProgress==null?'لا يوجد مخصص حالي':savingsProgress+'٪ من المخصص'}</small></div><strong><Sar value={dashboardData.savingsActual}/></strong></article>
+          <article className="is-count"><div><span>قرارات مسجلة</span><small>آخر نشاطات الحوكمة البنكية</small></div><strong>{dashboardData.decisionCount}</strong></article>
         </div>
         <div className="namaa-banks-health-grid">
           <article><span>تكرارات محتملة</span><strong>{dashboardData.duplicateCandidatesCount}</strong><small>قيد المراجعة</small></article>
           <article><span>عمليات غير مصنفة</span><strong>{dashboardData.unclassifiedCount}</strong><small>تحتاج بندًا</small></article>
-          <article><span>آخر عمليات معتمدة</span><strong>{dashboardData.recentApproved.length}</strong><small><Sar value={recentApprovedValue}/></small></article>
+          <article className="is-money"><span>آخر عمليات معتمدة</span><strong><Sar value={recentApprovedValue}/></strong><small>{dashboardData.recentApproved.length} عملية</small></article>
           <article><span>تمويل داخلي نشط</span><strong>{dashboardData.activeFundingCount}</strong><small>{dashboardData.pendingImportsCount} كشف/دفعة للمراجعة</small></article>
         </div>
       </>}

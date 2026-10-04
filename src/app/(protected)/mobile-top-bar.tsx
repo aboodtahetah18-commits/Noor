@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { LucideIcon, type LucideIconName } from '@/components/ui/lucide-icon';
 import { Drawer } from '@/components/ui';
-import { ThemeToggle } from '../theme-toggle';
 import { ProfileTrigger, type HeaderProfile } from './profile-trigger';
 
 const systemPages: ReadonlyArray<{ href:string; label:string; icon:LucideIconName }> = [
@@ -71,7 +70,6 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
             <Link href="/alerts" className="namaa-responsive-alert" aria-label="التنبيهات" title="التنبيهات">
               <LucideIcon name="bell" size={20} />
             </Link>
-            <ThemeToggle />
             <ProfileTrigger profile={profile} className="namaa-mobile-profile-trigger" />
           </div>
         </header> : null}

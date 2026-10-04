@@ -4467,3 +4467,233 @@ dialog.p49-action-dialog.is-page.is-xl{
     height:24px!important;
   }
 }
+
+
+/* 2026-10-04 — APPROVED BANKS PATTERN + KPI HIERARCHY */
+/* الهيرو المعتمد: نقش فقط، بلا صورة، وكل شيء داخل الإطار. */
+.namaa-banks-hero{
+  display:grid!important;
+  grid-template-columns:minmax(0,1.25fr) minmax(260px,.9fr)!important;
+  grid-template-areas:
+    "copy stats"
+    "selector selector"!important;
+  align-items:center!important;
+  gap:6px 10px!important;
+  padding:10px 10px 6px!important;
+  overflow:hidden!important;
+  background:
+    linear-gradient(rgba(250,249,244,.94),rgba(250,249,244,.94)),
+    repeating-linear-gradient(45deg,rgba(11,107,79,.07) 0 1px,transparent 1px 14px),
+    repeating-linear-gradient(-45deg,rgba(212,175,107,.06) 0 1px,transparent 1px 14px)!important;
+}
+.namaa-banks-hero::before,
+.namaa-banks-hero::after{
+  content:""!important;
+  position:absolute!important;
+  width:120px!important;
+  height:120px!important;
+  border:1px solid rgba(11,107,79,.06)!important;
+  transform:rotate(45deg)!important;
+  pointer-events:none!important;
+}
+.namaa-banks-hero::before{inset-inline-start:-54px!important;top:-58px!important;}
+.namaa-banks-hero::after{inset-inline-end:-58px!important;bottom:-62px!important;}
+
+.namaa-banks-hero-copy{
+  grid-area:copy!important;
+  position:relative!important;
+  inset:auto!important;
+  z-index:2!important;
+  width:auto!important;
+  max-width:none!important;
+  margin:0!important;
+  padding:6px 8px!important;
+  justify-self:start!important;
+  align-self:center!important;
+  border:0!important;
+  border-radius:10px!important;
+  background:rgba(255,255,255,.60)!important;
+  box-shadow:none!important;
+  backdrop-filter:blur(2px)!important;
+}
+.namaa-banks-hero-copy p{margin:0 0 2px!important;}
+.namaa-banks-hero-copy h1{margin:0!important;}
+.namaa-banks-hero-copy span{display:block!important;margin-top:2px!important;}
+
+.namaa-banks-hero-stats{
+  grid-area:stats!important;
+  position:relative!important;
+  inset:auto!important;
+  transform:none!important;
+  z-index:2!important;
+  width:100%!important;
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:5px!important;
+  align-self:center!important;
+  justify-self:stretch!important;
+}
+.namaa-banks-hero-stats>span{
+  min-width:0!important;
+  width:100%!important;
+  min-height:58px!important;
+  padding:7px 8px!important;
+  display:grid!important;
+  align-content:center!important;
+  justify-items:start!important;
+  gap:3px!important;
+  border:1px solid var(--ux-border-default)!important;
+  border-radius:10px!important;
+  box-shadow:none!important;
+}
+.namaa-banks-hero-stats>span:nth-child(1){background:#EAF8F3!important;border-color:#CFE9DC!important;}
+.namaa-banks-hero-stats>span:nth-child(2){background:#FFF7E6!important;border-color:#EBDCB8!important;}
+.namaa-banks-hero-stats>span:nth-child(3){background:#F4F0FF!important;border-color:#DED5F4!important;}
+.namaa-banks-hero-stats small{font-size:9px!important;}
+.namaa-banks-hero-stats strong{
+  display:flex!important;
+  align-items:center!important;
+  min-width:0!important;
+  font-size:13px!important;
+  font-weight:900!important;
+  line-height:1.1!important;
+}
+.namaa-banks-selector{
+  grid-area:selector!important;
+  position:relative!important;
+  z-index:2!important;
+  width:100%!important;
+  margin:0!important;
+  padding:3px 0 0!important;
+  background:transparent!important;
+}
+
+/* KPI المعتمد: النص يمين، القيمة البارزة يسار، ولا قيم ثانوية مربكة. */
+.namaa-banks-kpis-dashboard article,
+.namaa-banks-health-grid article{
+  min-height:82px!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  grid-template-areas:"copy value"!important;
+  align-items:center!important;
+  gap:8px!important;
+}
+.namaa-banks-kpis-dashboard article>div{
+  grid-area:copy!important;
+  min-width:0!important;
+  display:grid!important;
+  gap:4px!important;
+}
+.namaa-banks-kpis-dashboard article>strong{
+  grid-area:value!important;
+  justify-self:start!important;
+  align-self:center!important;
+  min-width:fit-content!important;
+  margin:0!important;
+  font-size:18px!important;
+  font-weight:900!important;
+  line-height:1!important;
+}
+.namaa-banks-kpis-dashboard article.is-count>strong{
+  min-width:30px!important;
+  text-align:center!important;
+}
+.namaa-banks-kpis-dashboard article.is-money>strong{
+  text-align:left!important;
+}
+.namaa-banks-kpis-dashboard article>div>span,
+.namaa-banks-kpis-dashboard article>div>small{
+  text-align:right!important;
+}
+
+.namaa-banks-health-grid article>span{
+  grid-area:copy!important;
+  align-self:start!important;
+}
+.namaa-banks-health-grid article>strong{
+  grid-area:value!important;
+  justify-self:start!important;
+  align-self:center!important;
+  margin:0!important;
+  font-size:17px!important;
+  font-weight:900!important;
+}
+.namaa-banks-health-grid article>small{
+  grid-column:1/-1!important;
+  margin-top:-10px!important;
+  color:var(--ux-text-secondary)!important;
+}
+.namaa-banks-health-grid article.is-money>small{
+  margin-top:-8px!important;
+}
+
+/* رمز الريال دائمًا ملاصق للمبلغ على يساره. */
+.namaa-sar-value{
+  display:inline-flex!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:4px!important;
+  direction:ltr!important;
+  white-space:nowrap!important;
+}
+.namaa-sar-value img{
+  order:0!important;
+  margin:0!important;
+}
+.namaa-sar-value>span{
+  order:1!important;
+  line-height:1!important;
+}
+
+/* المظهر الداكن ملغى من الواجهة، والصفحة ثابتة على النظام الفاتح. */
+html{color-scheme:light!important;}
+html[data-theme="dark"]{color-scheme:light!important;}
+
+@media(max-width:767px){
+  .namaa-banks-hero{
+    grid-template-columns:minmax(0,1.1fr) minmax(150px,.9fr)!important;
+    gap:5px 7px!important;
+    padding:7px 7px 4px!important;
+    min-height:0!important;
+  }
+  .namaa-banks-hero-copy{
+    padding:5px 6px!important;
+  }
+  .namaa-banks-hero-copy h1{
+    font-size:16px!important;
+  }
+  .namaa-banks-hero-copy p,
+  .namaa-banks-hero-copy span{
+    font-size:8px!important;
+  }
+  .namaa-banks-hero-stats{
+    gap:3px!important;
+  }
+  .namaa-banks-hero-stats>span{
+    min-height:50px!important;
+    padding:5px!important;
+    border-radius:8px!important;
+  }
+  .namaa-banks-hero-stats small{font-size:7px!important;}
+  .namaa-banks-hero-stats strong{font-size:10px!important;}
+  .namaa-banks-hero-stats .namaa-sar-value img{
+    width:10px!important;
+    height:10px!important;
+    flex-basis:10px!important;
+  }
+
+  .namaa-banks-kpis-dashboard article,
+  .namaa-banks-health-grid article{
+    min-height:72px!important;
+    gap:5px!important;
+    padding:7px!important;
+  }
+  .namaa-banks-kpis-dashboard article>strong,
+  .namaa-banks-health-grid article>strong{
+    font-size:15px!important;
+  }
+  .namaa-banks-health-grid article>small{
+    margin-top:-7px!important;
+  }
+}
