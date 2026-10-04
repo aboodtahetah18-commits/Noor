@@ -2550,3 +2550,375 @@ dialog.p49-action-dialog.is-page.is-xl{
 /* deployment-trigger: 2026-10-03-publish-now */
 
 /* deployment-trigger: 2026-10-04-publish-after-fix */
+
+
+/* 2026-10-04 — BANKS UNIFIED RESPONSIVE PAGE */
+.namaa-banks-wide{
+  --banks-green:#0B6B4F;
+  --banks-green-2:#189F7F;
+  --banks-gold:#D4AF6B;
+  --banks-gold-soft:#FFF7E6;
+  --banks-blue:#2563EB;
+  width:min(100%,1540px);
+  margin-inline:auto;
+  color:var(--ux-text-primary);
+}
+
+@media (max-width:767px){
+  .namaa-banks-wide{
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+    padding:0 6px 10px!important;
+    display:block!important;
+  }
+
+  .namaa-banks-hero{
+    position:relative!important;
+    overflow:hidden!important;
+    min-height:0!important;
+    margin:0 0 8px!important;
+    padding:0!important;
+    border:1px solid var(--ux-border-default)!important;
+    border-radius:14px!important;
+    background:var(--ux-card-bg)!important;
+    box-shadow:none!important;
+  }
+
+  .namaa-banks-building{
+    position:relative!important;
+    display:block!important;
+    width:100%!important;
+    height:118px!important;
+    margin:0!important;
+    overflow:hidden!important;
+  }
+
+  .namaa-banks-building img{
+    object-fit:cover!important;
+    object-position:center!important;
+  }
+
+  .namaa-banks-building-shade{
+    position:absolute!important;
+    inset:0!important;
+    background:linear-gradient(90deg,rgba(11,107,79,.04),rgba(11,107,79,.28))!important;
+  }
+
+  .namaa-banks-hero-copy{
+    position:absolute!important;
+    inset-inline:10px!important;
+    top:10px!important;
+    z-index:2!important;
+    width:auto!important;
+    padding:8px 10px!important;
+    border-radius:10px!important;
+    background:rgba(250,249,244,.92)!important;
+    backdrop-filter:blur(8px)!important;
+  }
+
+  .namaa-banks-hero-copy p{
+    margin:0 0 2px!important;
+    color:var(--banks-gold)!important;
+    font-size:10px!important;
+    font-weight:800!important;
+  }
+
+  .namaa-banks-hero-copy h1{
+    margin:0!important;
+    color:var(--banks-green)!important;
+    font-size:20px!important;
+    line-height:1.2!important;
+  }
+
+  .namaa-banks-selector{
+    width:100%!important;
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:5px!important;
+    padding:6px!important;
+  }
+
+  .namaa-banks-selector a{
+    min-width:0!important;
+    min-height:38px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    padding:6px 8px!important;
+    border:1px solid var(--ux-border-default)!important;
+    border-radius:10px!important;
+    background:var(--ux-card-bg)!important;
+    color:var(--ux-text-primary)!important;
+    text-decoration:none!important;
+    text-align:center!important;
+    font-size:11px!important;
+    font-weight:800!important;
+  }
+
+  .namaa-banks-selector a.is-active{
+    border-color:color-mix(in srgb,var(--banks-gold) 55%,white)!important;
+    background:var(--banks-gold-soft)!important;
+    color:var(--banks-green)!important;
+  }
+
+  .namaa-banks-layout{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:7px!important;
+  }
+
+  .namaa-banks-dashboard{order:1!important;}
+  .namaa-banks-team{order:2!important;}
+  .namaa-banks-goals{order:3!important;}
+
+  .namaa-banks-team,
+  .namaa-banks-dashboard,
+  .namaa-banks-goals{
+    min-height:0!important;
+    margin:0!important;
+    padding:10px!important;
+    border:1px solid var(--ux-border-default)!important;
+    border-radius:12px!important;
+    background:var(--ux-card-bg)!important;
+    box-shadow:none!important;
+  }
+
+  .namaa-investments-section-title{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:8px!important;
+    margin:0 0 7px!important;
+  }
+
+  .namaa-investments-section-title p{
+    margin:0!important;
+    color:var(--ux-text-secondary)!important;
+    font-size:10px!important;
+  }
+
+  .namaa-investments-section-title h2{
+    margin:1px 0 0!important;
+    color:var(--ux-text-primary)!important;
+    font-size:16px!important;
+  }
+
+  .namaa-banks-subtitle{
+    margin:0 0 8px!important;
+    color:var(--ux-text-secondary)!important;
+    font-size:11px!important;
+    line-height:1.5!important;
+  }
+
+  .namaa-banks-kpis{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:6px!important;
+    margin:0 0 7px!important;
+  }
+
+  .namaa-banks-kpis article{
+    min-width:0!important;
+    min-height:70px!important;
+    padding:8px!important;
+    border:1px solid var(--ux-border-default)!important;
+    border-radius:10px!important;
+    background:var(--ux-surface-default)!important;
+  }
+
+  .namaa-banks-kpis article:nth-child(1){border-inline-start:3px solid var(--banks-green)!important;}
+  .namaa-banks-kpis article:nth-child(2){border-inline-start:3px solid #C2413A!important;}
+  .namaa-banks-kpis article:nth-child(3){border-inline-start:3px solid var(--banks-blue)!important;}
+  .namaa-banks-kpis article:nth-child(4){border-inline-start:3px solid var(--banks-gold)!important;}
+  .namaa-banks-kpis article:nth-child(5){border-inline-start:3px solid var(--banks-green-2)!important;}
+  .namaa-banks-kpis article:nth-child(6){border-inline-start:3px solid #7C3AED!important;}
+
+  .namaa-banks-kpis span,
+  .namaa-banks-kpis small{
+    display:block!important;
+    color:var(--ux-text-secondary)!important;
+    font-size:10px!important;
+    line-height:1.35!important;
+  }
+
+  .namaa-banks-kpis strong{
+    display:block!important;
+    margin:3px 0!important;
+    color:var(--ux-text-primary)!important;
+    font-size:15px!important;
+    line-height:1.2!important;
+  }
+
+  .namaa-banks-visual-dashboard{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:6px!important;
+  }
+
+  .namaa-bank-donut-card,
+  .namaa-bank-progress-card,
+  .namaa-bank-bars-card{
+    min-width:0!important;
+    padding:9px!important;
+    border:1px solid var(--ux-border-default)!important;
+    border-radius:10px!important;
+    background:var(--ux-card-bg)!important;
+  }
+
+  .namaa-bank-donut-card{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    align-items:center!important;
+    gap:8px!important;
+  }
+
+  .namaa-bank-donut{
+    width:62px!important;
+    height:62px!important;
+    flex:0 0 62px!important;
+  }
+
+  .namaa-bank-progress-card>div:first-child>span,
+  .namaa-bank-donut-card>div:first-child>span,
+  .namaa-bank-bars-card>div:first-child>span{
+    color:var(--ux-text-secondary)!important;
+    font-size:10px!important;
+  }
+
+  .namaa-bank-progress-card strong,
+  .namaa-bank-donut-card strong,
+  .namaa-bank-bars-card strong{
+    display:block!important;
+    margin:2px 0!important;
+    font-size:14px!important;
+  }
+
+  .namaa-bank-progress-card small,
+  .namaa-bank-donut-card small,
+  .namaa-bank-bars-card small{
+    color:var(--ux-text-secondary)!important;
+    font-size:10px!important;
+    line-height:1.4!important;
+  }
+
+  .namaa-banks-health-grid{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:6px!important;
+    margin-top:7px!important;
+  }
+
+  .namaa-banks-health-grid article{
+    min-width:0!important;
+    padding:8px!important;
+    border:1px solid var(--ux-border-default)!important;
+    border-radius:10px!important;
+    background:var(--ux-surface-default)!important;
+  }
+
+  .namaa-banks-health-grid span,
+  .namaa-banks-health-grid small{
+    display:block!important;
+    color:var(--ux-text-secondary)!important;
+    font-size:10px!important;
+  }
+
+  .namaa-banks-health-grid strong{
+    display:block!important;
+    margin:3px 0!important;
+    font-size:14px!important;
+  }
+
+  .namaa-banks-pending{
+    margin-top:7px!important;
+    padding-top:7px!important;
+    border-top:1px solid var(--ux-border-default)!important;
+  }
+
+  .namaa-banks-pending-list{
+    display:grid!important;
+    gap:5px!important;
+  }
+
+  .namaa-banks-pending-list article{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    gap:5px 8px!important;
+    padding:8px!important;
+    border:1px solid var(--ux-border-default)!important;
+    border-radius:10px!important;
+    background:var(--ux-card-bg)!important;
+  }
+
+  .namaa-banks-pending-list article>div:last-child{
+    grid-column:1/-1!important;
+    display:flex!important;
+    flex-wrap:wrap!important;
+    gap:5px!important;
+  }
+
+  .namaa-banks-pending-list article>div:first-child span{
+    display:block!important;
+    color:var(--ux-text-secondary)!important;
+    font-size:10px!important;
+  }
+
+  .namaa-banks-team-list,
+  .namaa-banks-goals-list{
+    display:grid!important;
+    gap:5px!important;
+    margin:0 0 7px!important;
+  }
+
+  .namaa-banks-team-list article,
+  .namaa-banks-goals-list article{
+    min-height:48px!important;
+    display:flex!important;
+    align-items:center!important;
+    gap:8px!important;
+    padding:7px 8px!important;
+    border:1px solid var(--ux-border-default)!important;
+    border-radius:10px!important;
+    background:var(--ux-surface-default)!important;
+  }
+
+  .namaa-banks-persona{
+    position:relative!important;
+    width:38px!important;
+    height:38px!important;
+    flex:0 0 38px!important;
+    overflow:hidden!important;
+    border-radius:50%!important;
+    background:var(--banks-gold-soft)!important;
+  }
+
+  .namaa-banks-persona img{object-fit:cover!important;}
+
+  .namaa-banks-team-list strong,
+  .namaa-banks-goals-list strong{
+    font-size:12px!important;
+  }
+
+  .namaa-banks-goals-list small{
+    display:none!important;
+  }
+
+  .namaa-banks-chat-link,
+  .namaa-banks-goals>a{
+    width:100%!important;
+    min-height:40px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:7px!important;
+    padding:8px 10px!important;
+    border:1px solid color-mix(in srgb,var(--banks-gold) 40%,white)!important;
+    border-radius:10px!important;
+    background:var(--banks-green)!important;
+    color:color-mix(in srgb,var(--banks-gold) 72%,white)!important;
+    text-decoration:none!important;
+    font-size:12px!important;
+    font-weight:800!important;
+  }
+}
