@@ -876,3 +876,54 @@
     display:none!important;
   }
 }
+
+
+/* 2026-10-06 — DESKTOP SIDEBAR FIT-ONE-VIEW AUTHORITY */
+@media (min-width:1024px){
+  .desktop-top-nav-wrap.namaa-sidebar{
+    overflow:hidden!important;
+  }
+  .namaa-sidebar-inner{
+    height:100dvh!important;
+    min-height:0!important;
+    overflow:hidden!important;
+  }
+  .namaa-sidebar-nav{
+    min-height:0!important;
+    overflow:hidden!important;
+    overscroll-behavior:none!important;
+    scrollbar-width:none!important;
+    padding:8px 6px 10px!important;
+  }
+  .namaa-sidebar-nav::-webkit-scrollbar{display:none!important;width:0!important;height:0!important;}
+  .namaa-nav-section{
+    gap:2px!important;
+  }
+  .namaa-nav-section + .namaa-nav-section{
+    margin-block-start:6px!important;
+    padding-block-start:6px!important;
+  }
+  .namaa-nav-section>p{
+    margin:0!important;
+    padding:3px 7px!important;
+    font-size:10px!important;
+    line-height:1.2!important;
+  }
+  .namaa-sidebar-nav a{
+    min-height:34px!important;
+    height:34px!important;
+    padding-inline:8px!important;
+    gap:8px!important;
+    border-radius:8px!important;
+  }
+  .namaa-nav-icon svg{
+    width:18px!important;
+    height:18px!important;
+  }
+  html[data-sidebar="collapsed"] .namaa-sidebar-nav a{
+    width:34px!important;
+    min-width:34px!important;
+    padding:0!important;
+    margin-inline:auto!important;
+  }
+}

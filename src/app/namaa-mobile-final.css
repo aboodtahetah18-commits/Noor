@@ -5002,3 +5002,110 @@ html[data-theme="dark"]{color-scheme:light!important;}
     flex-basis:11px!important;
   }
 }
+
+
+/* 2026-10-06 — CYCLE DETAIL COMPACT AUTHORITY */
+.namaa-cycle-detail-page{
+  width:min(100%,1120px)!important;
+  max-width:1120px!important;
+  min-height:0!important;
+  margin:0 auto!important;
+  padding:12px!important;
+  display:grid!important;
+  align-content:start!important;
+  gap:10px!important;
+}
+.namaa-cycle-detail-card{
+  width:100%!important;
+  max-width:none!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:18px!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  gap:14px!important;
+  border:1px solid var(--ux-border-default)!important;
+  border-radius:14px!important;
+  background:var(--ux-card-bg)!important;
+  box-shadow:none!important;
+}
+.namaa-cycle-detail-head{
+  min-width:0!important;
+  display:flex!important;
+  align-items:end!important;
+  justify-content:space-between!important;
+  gap:16px!important;
+  padding-bottom:10px!important;
+  border-bottom:1px solid var(--ux-border-default)!important;
+}
+.namaa-cycle-detail-head .eyebrow{margin:0!important;color:var(--ux-text-secondary)!important;}
+.namaa-cycle-detail-head h1{margin:0!important;font-size:28px!important;line-height:1.2!important;}
+.namaa-cycle-detail-grid{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  gap:10px!important;
+}
+.namaa-cycle-detail-dates,
+.namaa-cycle-detail-links{
+  min-width:0!important;
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:8px!important;
+}
+.namaa-cycle-detail-dates article,
+.namaa-cycle-detail-links a{
+  min-width:0!important;
+  min-height:64px!important;
+  display:grid!important;
+  align-content:center!important;
+  gap:4px!important;
+  padding:10px 12px!important;
+  border:1px solid var(--ux-border-default)!important;
+  border-radius:10px!important;
+  background:var(--ux-surface-default)!important;
+  text-decoration:none!important;
+}
+.namaa-cycle-detail-dates span{color:var(--ux-text-secondary)!important;font-size:11px!important;}
+.namaa-cycle-detail-dates strong{color:var(--ux-text-primary)!important;font-size:15px!important;}
+.namaa-cycle-detail-links a{
+  color:var(--ux-brand-primary)!important;
+  font-size:12px!important;
+  font-weight:800!important;
+}
+.namaa-cycle-detail-actions{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  align-items:center!important;
+  gap:8px!important;
+  padding-top:4px!important;
+}
+.namaa-cycle-status-note{
+  min-height:38px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  padding:7px 10px!important;
+  border:1px solid var(--ux-border-default)!important;
+  border-radius:9px!important;
+  background:var(--ux-surface-default)!important;
+  color:var(--ux-text-secondary)!important;
+  font-size:11px!important;
+}
+.namaa-cycle-detail-page>.p74-next-step{
+  position:static!important;
+  inset:auto!important;
+  width:100%!important;
+  max-width:none!important;
+  margin:0!important;
+}
+
+@media(max-width:767px){
+  .namaa-cycle-detail-page{padding:6px!important;gap:6px!important;}
+  .namaa-cycle-detail-card{padding:10px!important;gap:9px!important;border-radius:11px!important;}
+  .namaa-cycle-detail-head{align-items:center!important;gap:8px!important;padding-bottom:7px!important;}
+  .namaa-cycle-detail-head h1{font-size:20px!important;}
+  .namaa-cycle-detail-grid{grid-template-columns:1fr!important;gap:6px!important;}
+  .namaa-cycle-detail-dates,
+  .namaa-cycle-detail-links{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:5px!important;}
+  .namaa-cycle-detail-dates article,
+  .namaa-cycle-detail-links a{min-height:54px!important;padding:7px!important;border-radius:8px!important;}
+}
