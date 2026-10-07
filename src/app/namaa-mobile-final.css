@@ -6189,3 +6189,199 @@ html[data-theme="dark"]{color-scheme:light!important;}
   .namaa-reports-history-actions a{min-height:58px!important;padding:7px!important;}
   .namaa-reports-empty{grid-template-columns:1fr!important;text-align:center!important;justify-items:center!important;}
 }
+
+
+/* 2026-10-07 — REPORTS INTERNAL HISTORY REFRESH */
+.namaa-report-subpage{
+  width:100%!important;
+  max-width:none!important;
+  margin:0!important;
+  padding:4px 6px 10px!important;
+}
+.namaa-report-subpage-shell{
+  width:100%!important;
+  max-width:none!important;
+  margin:0!important;
+  display:grid!important;
+  gap:6px!important;
+}
+.namaa-report-subpage-head{
+  min-height:78px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:10px!important;
+  padding:9px 11px!important;
+  border:1px solid var(--ux-border-default)!important;
+  border-radius:11px!important;
+  background:
+    linear-gradient(rgba(250,249,244,.96),rgba(250,249,244,.96)),
+    repeating-linear-gradient(45deg,rgba(11,107,79,.07) 0 1px,transparent 1px 14px),
+    repeating-linear-gradient(-45deg,rgba(212,175,107,.06) 0 1px,transparent 1px 14px)!important;
+}
+.namaa-report-subpage-head p{
+  margin:0 0 2px!important;
+  color:#D4AF6B!important;
+  font-size:9px!important;
+  font-weight:850!important;
+}
+.namaa-report-subpage-head h1{
+  margin:0!important;
+  color:#0B6B4F!important;
+  font-size:21px!important;
+  line-height:1.2!important;
+}
+.namaa-report-subpage-actions{
+  display:flex!important;
+  flex-wrap:nowrap!important;
+  gap:4px!important;
+}
+.namaa-report-subpage-actions a{
+  min-height:32px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:4px 8px!important;
+  border:1px solid var(--ux-border-default)!important;
+  border-radius:8px!important;
+  background:#FFFFFF!important;
+  color:#61758A!important;
+  text-decoration:none!important;
+  font-size:9px!important;
+  font-weight:850!important;
+  white-space:nowrap!important;
+}
+.namaa-report-subpage-actions a.is-active{
+  border-color:#E7CF9D!important;
+  background:#FFF8EA!important;
+  color:#0B6B4F!important;
+}
+.namaa-report-note{
+  min-height:52px!important;
+  display:grid!important;
+  gap:2px!important;
+  padding:8px 10px!important;
+  border:1px solid #EBDCB8!important;
+  border-radius:9px!important;
+  background:#FFF7E6!important;
+}
+.namaa-report-note strong{font-size:11px!important;color:#8A641F!important;}
+.namaa-report-note span{font-size:9px!important;color:#61758A!important;}
+
+.namaa-report-history-kpis,
+.namaa-report-history-trends{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:6px!important;
+}
+.namaa-report-history-card,
+.namaa-report-history-trends>article{
+  min-width:0!important;
+  min-height:76px!important;
+  display:grid!important;
+  align-content:center!important;
+  gap:4px!important;
+  padding:8px!important;
+  border:1px solid var(--ux-border-default)!important;
+  border-radius:10px!important;
+  background:#FAF9F4!important;
+}
+.namaa-report-history-kpis .namaa-report-history-card:nth-child(1){background:#EAF8F3!important;border-color:#CFE9DC!important;}
+.namaa-report-history-kpis .namaa-report-history-card:nth-child(2){background:#FFF0EF!important;border-color:#F0D4D1!important;}
+.namaa-report-history-kpis .namaa-report-history-card:nth-child(3){background:#EFF6FF!important;border-color:#D8E5FA!important;}
+.namaa-report-history-kpis .namaa-report-history-card:nth-child(4){background:#FFF7E6!important;border-color:#EBDCB8!important;}
+.namaa-report-history-card span,
+.namaa-report-history-trends span{font-size:10px!important;color:#61758A!important;}
+.namaa-report-history-card strong,
+.namaa-report-history-trends strong{font-size:15px!important;color:#1F2937!important;font-weight:900!important;}
+.namaa-report-history-trends small{font-size:9px!important;color:#61758A!important;}
+
+.namaa-report-history-section{
+  display:grid!important;
+  gap:6px!important;
+  padding:8px!important;
+  border:1px solid var(--ux-border-default)!important;
+  border-radius:10px!important;
+  background:var(--ux-card-bg)!important;
+}
+.namaa-report-history-section h2{
+  margin:0!important;
+  font-size:15px!important;
+  color:#1F2937!important;
+}
+.namaa-report-history-section>p{
+  margin:0!important;
+  color:#61758A!important;
+  font-size:10px!important;
+  line-height:1.6!important;
+}
+
+.namaa-report-table-card{overflow:hidden!important;}
+.namaa-report-table-wrap{
+  width:100%!important;
+  overflow:auto!important;
+  border:1px solid var(--ux-border-default)!important;
+  border-radius:9px!important;
+  background:#FFFFFF!important;
+}
+.namaa-report-table{
+  width:100%!important;
+  border-collapse:collapse!important;
+  min-width:720px!important;
+  font-size:10px!important;
+}
+.namaa-report-table th{
+  padding:7px 8px!important;
+  background:#F7F8F6!important;
+  color:#0B6B4F!important;
+  text-align:right!important;
+  font-size:9px!important;
+  white-space:nowrap!important;
+}
+.namaa-report-table td{
+  padding:7px 8px!important;
+  border-top:1px solid var(--ux-border-default)!important;
+  color:#1F2937!important;
+  vertical-align:top!important;
+  white-space:nowrap!important;
+}
+.namaa-report-table td small{
+  display:block!important;
+  margin-top:2px!important;
+  color:#61758A!important;
+  font-size:8px!important;
+}
+.namaa-report-table td a{color:#0B6B4F!important;font-weight:850!important;text-decoration:none!important;}
+
+@media(max-width:767px){
+  .namaa-report-subpage{padding:2px 3px 7px!important;}
+  .namaa-report-subpage-head{
+    min-height:70px!important;
+    gap:6px!important;
+    padding:7px!important;
+  }
+  .namaa-report-subpage-head h1{font-size:18px!important;}
+  .namaa-report-subpage-actions{
+    max-width:56%!important;
+    overflow-x:auto!important;
+    scrollbar-width:none!important;
+  }
+  .namaa-report-subpage-actions::-webkit-scrollbar{display:none!important;}
+  .namaa-report-subpage-actions a{
+    min-height:30px!important;
+    padding:3px 7px!important;
+    font-size:8px!important;
+  }
+  .namaa-report-history-kpis,
+  .namaa-report-history-trends{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:5px!important;
+  }
+  .namaa-report-history-card,
+  .namaa-report-history-trends>article{
+    min-height:68px!important;
+    padding:7px!important;
+  }
+  .namaa-report-history-section{padding:6px!important;gap:5px!important;}
+  .namaa-report-table{min-width:660px!important;}
+}
