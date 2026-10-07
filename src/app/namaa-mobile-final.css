@@ -5885,3 +5885,307 @@ html[data-theme="dark"]{color-scheme:light!important;}
 
 
 /* deployment-trigger: investments-refresh-20261007 */
+
+
+/* 2026-10-07 — REPORTS FULL RESPONSIVE REFRESH */
+.namaa-reports-page{
+  width:100%!important;
+  max-width:none!important;
+  margin:0!important;
+  padding:4px 6px 10px!important;
+  color:var(--ux-text-primary)!important;
+}
+.namaa-reports-hero{
+  min-height:88px!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:10px!important;
+  margin:0 0 5px!important;
+  padding:11px 13px!important;
+  overflow:hidden!important;
+  border:1px solid var(--ux-border-default)!important;
+  border-radius:12px!important;
+  background:
+    linear-gradient(rgba(250,249,244,.96),rgba(250,249,244,.96)),
+    repeating-linear-gradient(45deg,rgba(11,107,79,.07) 0 1px,transparent 1px 14px),
+    repeating-linear-gradient(-45deg,rgba(212,175,107,.06) 0 1px,transparent 1px 14px)!important;
+}
+.namaa-reports-hero-copy{min-width:0!important;}
+.namaa-reports-hero-copy p{
+  margin:0 0 2px!important;
+  color:#D4AF6B!important;
+  font-size:10px!important;
+  font-weight:850!important;
+}
+.namaa-reports-hero-copy h1{
+  margin:0!important;
+  color:#0B6B4F!important;
+  font-size:23px!important;
+  line-height:1.2!important;
+}
+.namaa-reports-hero-copy span{
+  display:block!important;
+  margin-top:2px!important;
+  color:#61758A!important;
+  font-size:10px!important;
+}
+.namaa-reports-hero-actions a,
+.namaa-reports-panel-head>a{
+  min-height:34px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:5px 9px!important;
+  border:1px solid #E7CF9D!important;
+  border-radius:8px!important;
+  background:#FFF8EA!important;
+  color:#0B6B4F!important;
+  text-decoration:none!important;
+  font-size:10px!important;
+  font-weight:850!important;
+}
+.namaa-reports-tabs{
+  display:flex!important;
+  flex-wrap:nowrap!important;
+  gap:4px!important;
+  margin:0 0 5px!important;
+  padding:4px!important;
+  overflow-x:auto!important;
+  scrollbar-width:none!important;
+  border:1px solid var(--ux-border-default)!important;
+  border-radius:10px!important;
+  background:var(--ux-card-bg)!important;
+}
+.namaa-reports-tabs::-webkit-scrollbar{display:none!important;}
+.namaa-reports-tabs a{
+  flex:0 0 auto!important;
+  min-height:32px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:4px 10px!important;
+  border:1px solid transparent!important;
+  border-radius:8px!important;
+  color:#61758A!important;
+  text-decoration:none!important;
+  white-space:nowrap!important;
+  font-size:10px!important;
+  font-weight:850!important;
+}
+.namaa-reports-tabs a.is-active{
+  border-color:#E7CF9D!important;
+  background:#FFF8EA!important;
+  color:#0B6B4F!important;
+  box-shadow:inset 0 -2px 0 #D4AF6B!important;
+}
+.namaa-reports-panel{
+  display:grid!important;
+  gap:6px!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:8px!important;
+  border:1px solid var(--ux-border-default)!important;
+  border-radius:11px!important;
+  background:var(--ux-card-bg)!important;
+}
+.namaa-reports-panel-head{
+  min-height:40px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:8px!important;
+  padding:3px 3px 6px!important;
+  border-bottom:1px solid var(--ux-border-default)!important;
+}
+.namaa-reports-panel-head>div{min-width:0!important;}
+.namaa-reports-panel-head span{
+  color:#D4AF6B!important;
+  font-size:9px!important;
+  font-weight:850!important;
+}
+.namaa-reports-panel-head h2{
+  margin:1px 0 0!important;
+  font-size:17px!important;
+  line-height:1.2!important;
+}
+.namaa-reports-kpis{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:6px!important;
+}
+.namaa-reports-kpis article{
+  min-width:0!important;
+  min-height:82px!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:7px!important;
+  padding:9px!important;
+  border:1px solid var(--ux-border-default)!important;
+  border-radius:10px!important;
+}
+.namaa-reports-kpis article.is-green{background:#EAF8F3!important;border-color:#CFE9DC!important;}
+.namaa-reports-kpis article.is-red{background:#FFF0EF!important;border-color:#F0D4D1!important;}
+.namaa-reports-kpis article.is-blue{background:#EFF6FF!important;border-color:#D8E5FA!important;}
+.namaa-reports-kpis article.is-gold{background:#FFF7E6!important;border-color:#EBDCB8!important;}
+.namaa-reports-kpis article>div{min-width:0!important;display:grid!important;gap:4px!important;}
+.namaa-reports-kpis span{color:#334155!important;font-size:11px!important;font-weight:800!important;}
+.namaa-reports-kpis small{color:#61758A!important;font-size:9px!important;}
+.namaa-reports-kpis strong{
+  justify-self:end!important;
+  color:#1F2937!important;
+  font-size:17px!important;
+  font-weight:900!important;
+  white-space:nowrap!important;
+}
+.namaa-report-sar{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:4px!important;
+  direction:ltr!important;
+  white-space:nowrap!important;
+  font-variant-numeric:tabular-nums!important;
+}
+.namaa-report-sar img{width:15px!important;height:15px!important;flex:0 0 15px!important;}
+.namaa-reports-summary-grid,
+.namaa-reports-compare-grid{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:6px!important;
+}
+.namaa-reports-summary-grid article,
+.namaa-reports-compare-grid article{
+  min-width:0!important;
+  min-height:82px!important;
+  display:grid!important;
+  align-content:center!important;
+  gap:4px!important;
+  padding:9px!important;
+  border:1px solid var(--ux-border-default)!important;
+  border-radius:10px!important;
+  background:#FAF9F4!important;
+}
+.namaa-reports-compare-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;}
+.namaa-reports-summary-grid span,
+.namaa-reports-compare-grid span{color:#61758A!important;font-size:10px!important;}
+.namaa-reports-summary-grid strong,
+.namaa-reports-compare-grid strong{color:#1F2937!important;font-size:15px!important;font-weight:900!important;}
+.namaa-reports-summary-grid strong.is-risk{color:#C2413A!important;}
+.namaa-reports-summary-grid small,
+.namaa-reports-compare-grid small{color:#61758A!important;font-size:9px!important;}
+.namaa-reports-periods{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:5px!important;
+}
+.namaa-reports-periods span{
+  min-height:34px!important;
+  display:grid!important;
+  place-items:center!important;
+  border:1px solid var(--ux-border-default)!important;
+  border-radius:8px!important;
+  background:#FAF9F4!important;
+  color:#61758A!important;
+  font-size:10px!important;
+  font-weight:800!important;
+}
+.namaa-reports-risk-list{display:grid!important;gap:6px!important;}
+.namaa-reports-risk-list article{
+  min-width:0!important;
+  min-height:64px!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto auto!important;
+  align-items:center!important;
+  gap:8px!important;
+  padding:8px 9px!important;
+  border:1px solid var(--ux-border-default)!important;
+  border-radius:10px!important;
+  background:#FAF9F4!important;
+}
+.namaa-reports-risk-list article.is-warning{background:#FFF7E6!important;border-color:#EBDCB8!important;}
+.namaa-reports-risk-list article.is-ok{background:#EAF8F3!important;border-color:#CFE9DC!important;}
+.namaa-reports-risk-list article>div{min-width:0!important;display:grid!important;gap:3px!important;}
+.namaa-reports-risk-list strong{font-size:12px!important;color:#1F2937!important;}
+.namaa-reports-risk-list span{font-size:9px!important;color:#61758A!important;}
+.namaa-reports-risk-list b{font-size:11px!important;color:#C2413A!important;white-space:nowrap!important;}
+.namaa-reports-risk-list a{color:#0B6B4F!important;font-size:10px!important;font-weight:850!important;}
+.namaa-reports-history-actions{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:6px!important;
+}
+.namaa-reports-history-actions a{
+  min-height:72px!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:8px!important;
+  padding:9px!important;
+  border:1px solid var(--ux-border-default)!important;
+  border-radius:10px!important;
+  background:#FAF9F4!important;
+  color:#1F2937!important;
+  text-decoration:none!important;
+  font-size:11px!important;
+  font-weight:850!important;
+}
+.namaa-reports-history-actions svg{color:#D4AF6B!important;}
+.namaa-reports-empty{
+  min-height:120px!important;
+  display:grid!important;
+  grid-template-columns:auto minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:10px!important;
+  padding:12px!important;
+  border:1px dashed #C9D8D1!important;
+  border-radius:10px!important;
+  background:#FAF9F4!important;
+}
+.namaa-reports-empty>div{display:grid!important;gap:3px!important;}
+.namaa-reports-empty strong{font-size:14px!important;}
+.namaa-reports-empty span{font-size:10px!important;color:#61758A!important;}
+.namaa-reports-empty>a{
+  min-height:34px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:5px 9px!important;
+  border-radius:8px!important;
+  background:#0B6B4F!important;
+  color:#F1D8A4!important;
+  text-decoration:none!important;
+  font-size:10px!important;
+  font-weight:850!important;
+}
+.namaa-reports-page,
+.namaa-reports-page *{
+  box-shadow:none!important;
+  backdrop-filter:none!important;
+  filter:none!important;
+}
+
+@media(max-width:767px){
+  .namaa-reports-page{padding:2px 3px 7px!important;}
+  .namaa-reports-hero{min-height:76px!important;padding:8px!important;gap:6px!important;}
+  .namaa-reports-hero-copy h1{font-size:20px!important;}
+  .namaa-reports-hero-copy p{font-size:8px!important;}
+  .namaa-reports-hero-copy span{font-size:9px!important;}
+  .namaa-reports-hero-actions a{min-height:32px!important;padding:4px 7px!important;font-size:9px!important;}
+  .namaa-reports-tabs{margin-bottom:4px!important;padding:3px!important;}
+  .namaa-reports-tabs a{min-height:30px!important;padding:3px 8px!important;font-size:9px!important;}
+  .namaa-reports-panel{padding:6px!important;gap:5px!important;}
+  .namaa-reports-kpis{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:5px!important;}
+  .namaa-reports-kpis article{min-height:76px!important;padding:7px!important;}
+  .namaa-reports-kpis strong{font-size:15px!important;}
+  .namaa-reports-kpis .namaa-report-sar{font-size:14px!important;}
+  .namaa-reports-kpis .namaa-report-sar img{width:13px!important;height:13px!important;flex-basis:13px!important;}
+  .namaa-reports-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:5px!important;}
+  .namaa-reports-summary-grid article{min-height:72px!important;padding:7px!important;}
+  .namaa-reports-compare-grid{grid-template-columns:1fr!important;gap:5px!important;}
+  .namaa-reports-compare-grid article{min-height:66px!important;padding:7px!important;}
+  .namaa-reports-risk-list article{grid-template-columns:minmax(0,1fr) auto!important;gap:6px!important;}
+  .namaa-reports-risk-list article>a{grid-column:1/-1!important;justify-self:start!important;}
+  .namaa-reports-history-actions{grid-template-columns:1fr!important;gap:5px!important;}
+  .namaa-reports-history-actions a{min-height:58px!important;padding:7px!important;}
+  .namaa-reports-empty{grid-template-columns:1fr!important;text-align:center!important;justify-items:center!important;}
+}
