@@ -4,10 +4,9 @@ import Link from 'next/link';
 import { ActionDialog } from '@/components/overlays/action-dialog';
 import { LucideIcon } from '@/components/ui/lucide-icon';
 
-export function InvestmentActionDialogs() {
+export function AddInvestmentPortfolioDialog() {
   return (
-    <div className="namaa-investments-actions" aria-label="إجراءات الاستثمار">
-      <ActionDialog title="إضافة محفظة استثمارية" description="أدخل تعريف المحفظة وبياناتها الأساسية دون مغادرة صفحة الاستثمارات." size="xl" triggerClassName="namaa-wide-action-secondary" trigger={<span className="namaa-top-action-content"><LucideIcon name="plus" size={20}/><span>إضافة محفظة</span></span>}>
+    <ActionDialog title="إضافة محفظة استثمارية" description="أدخل تعريف المحفظة وبياناتها الأساسية دون مغادرة صفحة الاستثمارات." size="xl" triggerClassName="namaa-wide-action-secondary" trigger={<span className="namaa-top-action-content"><LucideIcon name="plus" size={20}/><span>إضافة محفظة</span></span>}>
         <div className="namaa-investment-dialog-content">
           <form className="form-grid" onSubmit={(event)=>event.preventDefault()}>
             <label>اسم المحفظة<input name="portfolioName" placeholder="مثال: محفظة النمو طويلة الأجل" /></label>
@@ -23,7 +22,12 @@ export function InvestmentActionDialogs() {
           </form>
         </div>
       </ActionDialog>
+  );
+}
 
+export function InvestmentActionDialogs() {
+  return (
+    <div className="namaa-investments-actions" aria-label="إجراءات الاستثمار">
       <ActionDialog title="طلب تحليل استثماري" description="حدد ما تريد تحليله قبل إرسال الطلب إلى فريق التحليل." size="lg" triggerClassName="namaa-wide-action-secondary" trigger={<span className="namaa-top-action-content"><LucideIcon name="chart" size={20}/><span>طلب تحليل</span></span>}>
         <div className="namaa-investment-dialog-content">
           <form className="form-grid" onSubmit={(event)=>event.preventDefault()}>

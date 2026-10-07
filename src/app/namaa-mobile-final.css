@@ -5584,3 +5584,301 @@ html[data-theme="dark"]{color-scheme:light!important;}
   .namaa-banks-empty strong{font-size:15px!important;}
   .namaa-banks-empty p{font-size:10px!important;}
 }
+
+
+/* 2026-10-07 — INVESTMENTS FULL REFRESH */
+/* صفحة الاستثمار تستخدم كامل الشاشة تقريبًا بلا حدود مهدرة. */
+.namaa-investments-page{
+  width:100%!important;
+  max-width:none!important;
+  margin:0!important;
+  padding:4px 6px 10px!important;
+  box-sizing:border-box!important;
+}
+.namaa-investments-page>*{
+  box-sizing:border-box!important;
+}
+.namaa-investments-header{
+  min-height:96px!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:12px!important;
+  margin:0 0 5px!important;
+  padding:12px 14px!important;
+  overflow:hidden!important;
+  border-radius:12px!important;
+  background:
+    linear-gradient(rgba(250,249,244,.96),rgba(250,249,244,.96)),
+    repeating-linear-gradient(45deg,rgba(11,107,79,.07) 0 1px,transparent 1px 14px),
+    repeating-linear-gradient(-45deg,rgba(212,175,107,.06) 0 1px,transparent 1px 14px)!important;
+}
+.namaa-investments-header::before,
+.namaa-investments-header::after{
+  content:""!important;
+  position:absolute!important;
+  width:96px!important;
+  height:96px!important;
+  border:1px solid rgba(11,107,79,.05)!important;
+  transform:rotate(45deg)!important;
+  pointer-events:none!important;
+}
+.namaa-investments-header::before{inset-inline-start:-48px!important;top:-48px!important;}
+.namaa-investments-header::after{inset-inline-end:-48px!important;bottom:-48px!important;}
+.namaa-investments-hero-copy{
+  position:relative!important;
+  z-index:1!important;
+  min-width:0!important;
+  padding:0!important;
+}
+.namaa-investments-hero-copy p{
+  margin:0 0 2px!important;
+  color:#D4AF6B!important;
+  font-size:10px!important;
+  font-weight:850!important;
+}
+.namaa-investments-hero-copy h1{
+  margin:0!important;
+  color:#0B6B4F!important;
+  font-size:24px!important;
+  line-height:1.2!important;
+}
+.namaa-investments-hero-copy span{
+  display:block!important;
+  margin-top:3px!important;
+  color:#61758A!important;
+  font-size:11px!important;
+}
+.namaa-investments-hero-actions{
+  position:relative!important;
+  z-index:2!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+}
+
+/* زر الإضافة الرئيسي */
+.namaa-investments-page .namaa-wide-action-secondary{
+  min-height:38px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:6px!important;
+  padding:7px 11px!important;
+  border:1px solid #0B6B4F!important;
+  border-radius:9px!important;
+  background:#0B6B4F!important;
+  color:#F1D8A4!important;
+  box-shadow:none!important;
+  font-size:11px!important;
+  font-weight:850!important;
+}
+.namaa-investments-page .namaa-wide-action-secondary svg{
+  stroke:currentColor!important;
+}
+
+/* التبويبات مضغوطة وملاصقة للمحتوى */
+.namaa-investments-page>.namaa-focus-tabs{
+  width:100%!important;
+  margin:0 0 5px!important;
+  padding:4px!important;
+  gap:4px!important;
+  border-radius:10px!important;
+}
+.namaa-investments-page>.namaa-focus-tabs>a{
+  min-height:32px!important;
+  padding:4px 9px!important;
+  font-size:10px!important;
+}
+
+/* اللوحة لا تفرض ارتفاعًا أو فراغًا إضافيًا */
+.namaa-investments-page>.namaa-focus-panel{
+  width:100%!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:8px!important;
+  gap:6px!important;
+  border-radius:11px!important;
+}
+.namaa-investments-page .namaa-focus-panel-head{
+  min-height:42px!important;
+  padding:3px 3px 6px!important;
+}
+.namaa-investments-page .namaa-focus-panel-head h2{
+  font-size:17px!important;
+}
+.namaa-investments-page .namaa-focus-panel-head>div>span{
+  font-size:9px!important;
+}
+.namaa-investments-page .namaa-focus-panel-head>a{
+  min-height:32px!important;
+  padding:5px 8px!important;
+}
+
+/* مؤشرات الاستثمار بألوان واضحة ومقاس موحد */
+.namaa-investments-page .namaa-focus-metrics{
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:6px!important;
+}
+.namaa-investments-page .namaa-focus-metrics article{
+  min-width:0!important;
+  min-height:78px!important;
+  padding:9px!important;
+  border-radius:10px!important;
+}
+.namaa-investments-page .namaa-focus-metrics article:nth-child(1){
+  background:#EAF8F3!important;
+  border-color:#CFE9DC!important;
+}
+.namaa-investments-page .namaa-focus-metrics article:nth-child(2){
+  background:#FFF7E6!important;
+  border-color:#EBDCB8!important;
+}
+.namaa-investments-page .namaa-focus-metrics article:nth-child(3){
+  background:#EFF6FF!important;
+  border-color:#D8E5FA!important;
+}
+.namaa-investments-page .namaa-focus-metrics article:nth-child(4){
+  background:#F4F0FF!important;
+  border-color:#DFD5F5!important;
+}
+.namaa-investments-page .namaa-focus-metrics article>div>span{
+  color:#334155!important;
+  font-size:11px!important;
+  font-weight:800!important;
+}
+.namaa-investments-page .namaa-focus-metrics article>div>small{
+  color:#61758A!important;
+  font-size:9px!important;
+}
+.namaa-investments-page .namaa-focus-metrics article>strong{
+  color:#1F2937!important;
+  font-size:18px!important;
+  font-weight:900!important;
+}
+.namaa-investments-page .namaa-focus-metrics article:nth-child(1)>strong{color:#0B6B4F!important;}
+.namaa-investments-page .namaa-focus-metrics article:nth-child(2)>strong{color:#9A6B11!important;}
+.namaa-investments-page .namaa-focus-metrics article:nth-child(3)>strong{color:#2563EB!important;}
+.namaa-investments-page .namaa-focus-metrics article:nth-child(4)>strong{color:#6D4CC2!important;}
+
+/* بطاقات الإدارة */
+.namaa-investments-page .namaa-focus-action-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:6px!important;
+}
+.namaa-investments-page .namaa-focus-action-grid>article{
+  min-height:88px!important;
+  padding:9px!important;
+  border-radius:10px!important;
+}
+.namaa-investments-page .namaa-focus-action-grid>article.is-green{
+  background:#EAF8F3!important;
+  border-color:#CFE9DC!important;
+}
+.namaa-investments-page .namaa-focus-action-grid>article.is-gold{
+  background:#FFF7E6!important;
+  border-color:#EBDCB8!important;
+}
+.namaa-investments-page .namaa-focus-action-grid>article.is-blue{
+  background:#EFF6FF!important;
+  border-color:#D8E5FA!important;
+}
+.namaa-investments-page .namaa-focus-action-grid>article.is-purple{
+  background:#F4F0FF!important;
+  border-color:#DFD5F5!important;
+}
+.namaa-investments-page .namaa-focus-action-grid>article>svg{
+  color:#D4AF6B!important;
+}
+.namaa-investments-page .namaa-focus-action-grid>article strong{
+  color:#1F2937!important;
+  font-size:12px!important;
+}
+.namaa-investments-page .namaa-focus-action-grid>article span{
+  font-size:9px!important;
+}
+
+/* الفراغات الوصفية تكون قصيرة وواضحة */
+.namaa-investments-page .namaa-focus-empty{
+  min-height:68px!important;
+  padding:9px!important;
+  border-radius:10px!important;
+  background:#FAF9F4!important;
+}
+.namaa-investments-page .namaa-focus-empty strong{
+  font-size:13px!important;
+}
+.namaa-investments-page .namaa-focus-empty span{
+  font-size:9px!important;
+}
+
+/* تقليل تكلفة الرسم: لا صورة هيرو، لا blur ولا shadows ثقيلة في صفحة الاستثمار. */
+.namaa-investments-page,
+.namaa-investments-page *{
+  box-shadow:none!important;
+}
+.namaa-investments-page .namaa-investments-header,
+.namaa-investments-page .namaa-focus-panel,
+.namaa-investments-page .namaa-focus-tabs{
+  backdrop-filter:none!important;
+  filter:none!important;
+}
+
+@media(max-width:767px){
+  .namaa-investments-page{
+    padding:2px 3px 7px!important;
+  }
+  .namaa-investments-header{
+    min-height:80px!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    gap:7px!important;
+    padding:8px!important;
+    margin-bottom:4px!important;
+  }
+  .namaa-investments-hero-copy h1{
+    font-size:20px!important;
+  }
+  .namaa-investments-hero-copy p{
+    font-size:8px!important;
+  }
+  .namaa-investments-hero-copy span{
+    font-size:9px!important;
+  }
+  .namaa-investments-page .namaa-wide-action-secondary{
+    min-height:34px!important;
+    padding:5px 8px!important;
+    font-size:9px!important;
+  }
+  .namaa-investments-page>.namaa-focus-tabs{
+    margin-bottom:4px!important;
+    padding:3px!important;
+  }
+  .namaa-investments-page>.namaa-focus-tabs>a{
+    min-height:30px!important;
+    padding:3px 8px!important;
+    font-size:9px!important;
+  }
+  .namaa-investments-page>.namaa-focus-panel{
+    padding:6px!important;
+    gap:5px!important;
+  }
+  .namaa-investments-page .namaa-focus-metrics{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:5px!important;
+  }
+  .namaa-investments-page .namaa-focus-metrics article{
+    min-height:72px!important;
+    padding:7px!important;
+  }
+  .namaa-investments-page .namaa-focus-action-grid{
+    grid-template-columns:1fr!important;
+    gap:5px!important;
+  }
+  .namaa-investments-page .namaa-focus-action-grid>article{
+    min-height:76px!important;
+    padding:7px!important;
+  }
+  .namaa-investments-page .namaa-focus-team-grid{
+    grid-template-columns:1fr!important;
+  }
+}

@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { LucideIcon } from '@/components/ui/lucide-icon';
-import { InvestmentActionDialogs } from './investment-action-dialogs';
+import { AddInvestmentPortfolioDialog } from './investment-action-dialogs';
 import { NAMAA_PERSONA_ASSETS } from '@/components/conversations/persona-assets';
 
 type InvestmentTab='overview'|'portfolio'|'analysis'|'followup'|'team';
@@ -22,12 +22,11 @@ export default async function InvestmentsPage({searchParams}:{searchParams:Promi
         <div className="namaa-investments-hero-copy">
           <p>بنك الأصول الاستثمارية</p>
           <h1>الاستثمارات</h1>
-          <span>إدارة المحافظ والأصول والأداء والمخاطر من شاشة مركزة واحدة.</span>
+          <span>المحافظ والأصول والأداء والمخاطر.</span>
         </div>
-        <span className="namaa-investments-building" aria-hidden="true">
-          <Image src="/brand/ndos/banks/investment-assets-bank.jpg" alt="" fill priority sizes="(min-width: 1024px) 42vw, 100vw" />
-          <span className="namaa-investments-building-shade" />
-        </span>
+        <div className="namaa-investments-hero-actions">
+          <AddInvestmentPortfolioDialog />
+        </div>
       </header>
 
       <nav className="namaa-focus-tabs" aria-label="أقسام الاستثمارات">
@@ -36,7 +35,7 @@ export default async function InvestmentsPage({searchParams}:{searchParams:Promi
 
       <section className="namaa-focus-panel">
         {active==='overview'&&<>
-          <div className="namaa-focus-panel-head"><div><span>الوضع الحالي</span><h2>المحفظة الاستثمارية</h2><p>ملخص سريع لما هو متاح وما يحتاج قرارًا.</p></div><LucideIcon name="chart" size={20}/></div>
+          <div className="namaa-focus-panel-head"><div><span>الوضع الحالي</span><h2>المحفظة الاستثمارية</h2></div><LucideIcon name="chart" size={20}/></div>
           <div className="namaa-focus-metrics">
             <article><div><span>المحافظ</span><small>تظهر بعد الربط</small></div><strong>—</strong></article>
             <article><div><span>قيمة الأصول</span><small>لا يوجد مصدر محفظة فعلي بعد</small></div><strong>—</strong></article>
@@ -47,17 +46,17 @@ export default async function InvestmentsPage({searchParams}:{searchParams:Promi
         </>}
 
         {active==='portfolio'&&<>
-          <div className="namaa-focus-panel-head"><div><span>المحافظ والأصول</span><h2>إدارة المحفظة</h2><p>إضافة المحفظة أو الوصول إلى الحسابات والاستثمارات المرتبطة.</p></div></div>
+          <div className="namaa-focus-panel-head"><div><span>المحافظ والأصول</span><h2>إدارة المحفظة</h2></div><AddInvestmentPortfolioDialog /></div>
           <div className="namaa-focus-action-grid">
-            <article><LucideIcon name="walletCards" size={20}/><div><strong>المحافظ الاستثمارية</strong><span>تعريف المحفظة وبياناتها الأساسية.</span></div><InvestmentActionDialogs/></article>
-            <article><LucideIcon name="landmark" size={20}/><div><strong>الحسابات المرتبطة</strong><span>أضف أو عدّل الحساب الذي يغذي الاستثمار.</span></div><Link href="/accounts">فتح الحسابات</Link></article>
-            <article><LucideIcon name="target" size={20}/><div><strong>الأهداف المالية</strong><span>اربط الاستثمار بهدف مالي قابل للقياس.</span></div><Link href="/goals">فتح الأهداف</Link></article>
-            <article><LucideIcon name="chart" size={20}/><div><strong>السجل المالي</strong><span>راجع التدفقات الداخلة والخارجة المرتبطة.</span></div><Link href="/transactions">فتح العمليات</Link></article>
+            <article className="is-green"><LucideIcon name="walletCards" size={20}/><div><strong>المحافظ الاستثمارية</strong><span>تعريف المحفظة وبياناتها الأساسية.</span></div><AddInvestmentPortfolioDialog /></article>
+            <article className="is-gold"><LucideIcon name="landmark" size={20}/><div><strong>الحسابات المرتبطة</strong><span>أضف أو عدّل الحساب الذي يغذي الاستثمار.</span></div><Link href="/accounts">فتح الحسابات</Link></article>
+            <article className="is-blue"><LucideIcon name="target" size={20}/><div><strong>الأهداف المالية</strong><span>اربط الاستثمار بهدف مالي قابل للقياس.</span></div><Link href="/goals">فتح الأهداف</Link></article>
+            <article className="is-purple"><LucideIcon name="chart" size={20}/><div><strong>السجل المالي</strong><span>راجع التدفقات الداخلة والخارجة المرتبطة.</span></div><Link href="/transactions">فتح العمليات</Link></article>
           </div>
         </>}
 
         {active==='analysis'&&<>
-          <div className="namaa-focus-panel-head"><div><span>الأداء والمخاطر</span><h2>التحليل الاستثماري</h2><p>الأداء والسيولة والمخاطر والتوصيات في مساحة واحدة.</p></div><Link href="/advisor">فتح مختبر الخوارزميات</Link></div>
+          <div className="namaa-focus-panel-head"><div><span>الأداء والمخاطر</span><h2>التحليل الاستثماري</h2></div><Link href="/advisor">فتح مختبر الخوارزميات</Link></div>
           <div className="namaa-focus-metrics">
             <article><div><span>الأداء</span><small>بعد اختيار محفظة</small></div><strong>—</strong></article>
             <article><div><span>المخاطر</span><small>تقييم مستمر</small></div><strong>—</strong></article>
@@ -68,7 +67,7 @@ export default async function InvestmentsPage({searchParams}:{searchParams:Promi
         </>}
 
         {active==='followup'&&<>
-          <div className="namaa-focus-panel-head"><div><span>المتابعة</span><h2>ما يحتاج انتباهًا</h2><p>إجراءات الاستثمار التي تحتاج مراجعة أو تحديث.</p></div><Link href="/reports">فتح المرصد</Link></div>
+          <div className="namaa-focus-panel-head"><div><span>المتابعة</span><h2>ما يحتاج انتباهًا</h2></div><Link href="/reports">فتح المرصد</Link></div>
           <div className="namaa-focus-list">
             <article><strong>إضافة منتج أو صندوق</strong><span>يظهر كعنصر متابعة عند وجود بيانات مرتبطة.</span></article>
             <article><strong>مراجعة أصل ضعيف</strong><span>لا يظهر تنبيه فعلي قبل توفر أداء موثق.</span></article>
@@ -77,7 +76,7 @@ export default async function InvestmentsPage({searchParams}:{searchParams:Promi
         </>}
 
         {active==='team'&&<>
-          <div className="namaa-focus-panel-head"><div><span>الفريق الخوارزمي</span><h2>فريق بنك الأصول الاستثمارية</h2><p>الفريق المسؤول عن الاستثمار والأصول والأهداف.</p></div><LucideIcon name="circleUserRound" size={20}/></div>
+          <div className="namaa-focus-panel-head"><div><span>الفريق الخوارزمي</span><h2>فريق بنك الأصول الاستثمارية</h2></div><LucideIcon name="circleUserRound" size={20}/></div>
           <div className="namaa-focus-team-grid">
             <article><span><Image src={NAMAA_PERSONA_ASSETS['assets-manager']!} alt="" fill unoptimized sizes="64px"/></span><strong>مدير بنك الأصول</strong></article>
             <article><span><Image src={NAMAA_PERSONA_ASSETS['investment-owner']!} alt="" fill unoptimized sizes="64px"/></span><strong>مسؤول الاستثمار</strong></article>
