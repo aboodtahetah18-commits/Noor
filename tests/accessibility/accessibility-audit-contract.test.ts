@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 const layout = readFileSync('src/app/(protected)/layout.tsx', 'utf8');
 const rootLayout = readFileSync('src/app/layout.tsx', 'utf8');
 const css = readFileSync('src/app/globals.css', 'utf8');
+const shell = readFileSync('src/app/namaa-app-shell.css', 'utf8');
 const mobileNav = readFileSync('src/app/(protected)/mobile-bottom-nav.tsx', 'utf8');
 
 const accountForm = readFileSync('src/app/(protected)/accounts/new/account-form.tsx', 'utf8');
@@ -29,7 +30,8 @@ describe('Phase 36 accessibility audit contract', () => {
   });
 
   it('keeps touch targets at least 44px', () => {
-    expect(css).toContain('min-height:44px');
+    expect(shell).toContain('width:44px;');
+    expect(shell).toContain('height:44px;');
   });
 
   it('labels navigation and announces form errors', () => {

@@ -104,10 +104,51 @@ export class TransactionRepository {
         t.transaction_date::text,t.description,t.planning_status,t.expense_nature,
         t.income_source_name,t.income_kind,t.posted_at::text,t.reversed_at::text,
         t.reversal_reason,t.created_at::text,
+        coalesce(
+          nullif(right(regexp_replace(coalesce(a.account_number,''),'\\s','','g'),4),''),
+          nullif(right(regexp_replace(coalesce(a.iban,''),'\\s','','g'),4),'')
+        ) account_last4,
+        (
+          coalesce(ob.amount,0)
+          + coalesce((
+              select sum(case
+                when x.status<>'POSTED' then 0
+                when x.transaction_direction='IN' or x.transaction_type in ('INCOME','REFUND') then x.amount
+                when x.transaction_direction='OUT' or x.transaction_type in ('EXPENSE','OBLIGATION_PAYMENT') then -x.amount
+                else 0
+              end)
+              from public.transactions x
+              where x.user_id=t.user_id
+                and x.account_id=t.account_id
+                and (
+                  x.transaction_date < t.transaction_date
+                  or (x.transaction_date=t.transaction_date and x.created_at<t.created_at)
+                )
+            ),0)
+        )::text account_balance_before,
+        (
+          coalesce(ob.amount,0)
+          + coalesce((
+              select sum(case
+                when x.status<>'POSTED' then 0
+                when x.transaction_direction='IN' or x.transaction_type in ('INCOME','REFUND') then x.amount
+                when x.transaction_direction='OUT' or x.transaction_type in ('EXPENSE','OBLIGATION_PAYMENT') then -x.amount
+                else 0
+              end)
+              from public.transactions x
+              where x.user_id=t.user_id
+                and x.account_id=t.account_id
+                and (
+                  x.transaction_date < t.transaction_date
+                  or (x.transaction_date=t.transaction_date and x.created_at<=t.created_at)
+                )
+            ),0)
+        )::text account_balance_after,
         oo.id obligation_id,oo.due_date::text obligation_due_date,oo.status obligation_status,ot.name obligation_name
       from public.transactions t
       left join public.financial_cycles fc on fc.id=t.cycle_id and fc.user_id=t.user_id
       left join public.accounts a on a.id=t.account_id and a.user_id=t.user_id
+      left join public.account_opening_balances ob on ob.account_id=a.id and ob.user_id=a.user_id
       left join public.budget_categories bc on bc.id=t.category_id and bc.user_id=t.user_id
       left join public.obligation_occurrences oo on oo.id=t.obligation_occurrence_id and oo.user_id=t.user_id
       left join public.obligation_templates ot on ot.id=oo.template_id and ot.user_id=t.user_id
@@ -118,6 +159,9 @@ export class TransactionRepository {
     return {
       ...mapRow(row),
       cycleName: row.cycle_name ? String(row.cycle_name) : null,
+      accountLast4: row.account_last4 ? String(row.account_last4) : null,
+      accountBalanceBefore: row.account_id ? String(row.account_balance_before ?? '0.00') : null,
+      accountBalanceAfter: row.account_id ? String(row.account_balance_after ?? '0.00') : null,
       reversedAt: row.reversed_at ? String(row.reversed_at) : null,
       reversalReason: row.reversal_reason ? String(row.reversal_reason) : null,
       obligation: row.obligation_id ? {

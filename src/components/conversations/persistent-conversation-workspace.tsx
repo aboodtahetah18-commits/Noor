@@ -193,11 +193,7 @@ function formatConversationTimeDivider(value?:string){
   if(!value)return 'الآن';
   const date=new Date(value);
   if(!Number.isFinite(date.getTime()))return 'الآن';
-  const now=new Date();
-  const sameDay=now.getFullYear()===date.getFullYear()&&now.getMonth()===date.getMonth()&&now.getDate()===date.getDate();
-  const time=new Intl.DateTimeFormat('ar-SA-u-nu-latn',{hour:'numeric',minute:'2-digit'}).format(date);
-  if(sameDay)return 'اليوم · '+time;
-  return new Intl.DateTimeFormat('ar-SA-u-nu-latn',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'}).format(date);
+  return new Intl.DateTimeFormat('ar-SA-u-ca-gregory-nu-latn',{day:'numeric',month:'long',year:'numeric'}).format(date);
 }
 function formatConversationMessageTime(value?:string){
   if(!value)return 'الآن';
@@ -854,9 +850,9 @@ function StructuredFacts({data}:{data?:Record<string,unknown>}){
   </div>;
 }
 
-export function PersistentConversationWorkspace(){
+export function PersistentConversationWorkspace({initialRoom='central'}:{initialRoom?:RoomKey}){
   const router=useRouter();
-  const [activeRoomId,setActiveRoomId]=useState<RoomKey>('central');
+  const [activeRoomId,setActiveRoomId]=useState<RoomKey>(initialRoom);
   const [loadedRoomId,setLoadedRoomId]=useState<RoomKey|null>(null);
   const [messages,setMessages]=useState<Message[]>([]);
   const [participants,setParticipants]=useState<Participant[]>([]);
@@ -867,6 +863,7 @@ export function PersistentConversationWorkspace(){
   const [error,setError]=useState('');
   const [roomsOpen,setRoomsOpen]=useState(false);
   const [directoryTab,setDirectoryTab]=useState<'entities'|'owners'|'meetings'>('entities');
+  const [responsiveDirectoryOpen,setResponsiveDirectoryOpen]=useState(true);
   const [contextOpen,setContextOpen]=useState(false);
   const [onboardingComplete,setOnboardingComplete]=useState<boolean|null>(null);
   const [onboardingStep,setOnboardingStep]=useState<string|null>(null);
@@ -907,7 +904,8 @@ export function PersistentConversationWorkspace(){
   const [chatFontSize,setChatFontSize]=useState<ChatFontSize>('medium');
   const composerTextareaRef=useRef<HTMLTextAreaElement|null>(null);
   const messagesScrollRef=useRef<HTMLDivElement|null>(null);
-  const [desktopContextVisible,setDesktopContextVisible]=useState(true);
+  const [desktopContextVisible,setDesktopContextVisible]=useState(false);
+  const [desktopRoomsVisible,setDesktopRoomsVisible]=useState(true);
   const activeRoom=useMemo(()=>rooms.find(r=>r.id===activeRoomId)??rooms[0],[activeRoomId]);
   const loading=loadedRoomId!==activeRoomId;
   const visibleMessages=useMemo(()=>{
@@ -931,6 +929,16 @@ export function PersistentConversationWorkspace(){
   function updateChatFontSize(value:ChatFontSize){
     setChatFontSize(value);
     window.localStorage.setItem(CHAT_FONT_STORAGE_KEY,value);
+  }
+
+  function openPrimarySidebar(){
+    if(window.matchMedia('(max-width:1023px)').matches){
+      window.dispatchEvent(new Event('namaa:open-responsive-navigation'));
+      return;
+    }
+    window.localStorage.setItem('sidebarState','expanded');
+    document.documentElement.dataset.sidebar='expanded';
+    window.dispatchEvent(new Event('mustaqbali:sidebar-state'));
   }
 
   useEffect(()=>{
@@ -993,7 +1001,7 @@ export function PersistentConversationWorkspace(){
     } })
     .catch(()=>{ if(!cancelled){ setError('تعذر تحميل المحادثة الآن. حاول مرة أخرى.'); setLoadedRoomId(activeRoomId); } }); return()=>{cancelled=true}; },[activeRoomId]);
 
-  function chooseRoom(id:RoomKey){if(onboardingComplete===false&&id!=='central')return;setError('');setFocusedChat(null);setActiveRoomId(id);setRoomsOpen(false)}
+  function chooseRoom(id:RoomKey){if(onboardingComplete===false&&id!=='central')return;setError('');setFocusedChat(null);setActiveRoomId(id);setRoomsOpen(false);setResponsiveDirectoryOpen(false)}
 
   function openRoleChat(role:AlgorithmRoleRef){
     const roomId=role.homeRoom as RoomKey;
@@ -1001,6 +1009,7 @@ export function PersistentConversationWorkspace(){
     setError('');setActiveAlgorithmRole(null);setDetailRoomId(null);setRoomsOpen(false);
     setFocusedChat({kind:'role',key:role.key,title:role.name,roomId});
     setActiveRoomId(roomId);
+    setResponsiveDirectoryOpen(false);
   }
 
   function openMeetingChat(meeting:{id:string;title:string}){
@@ -1008,6 +1017,7 @@ export function PersistentConversationWorkspace(){
     setError('');setGovernanceMode(null);setRoomsOpen(false);
     setFocusedChat({kind:'meeting',key:meeting.id,title:meeting.title,roomId:'council'});
     setActiveRoomId('council');
+    setResponsiveDirectoryOpen(false);
   }
 
   function openSavedFocusedChat(item:FocusedChatIndexItem){
@@ -1016,10 +1026,12 @@ export function PersistentConversationWorkspace(){
     if(item.scope_kind==='meeting'){
       setFocusedChat({kind:'meeting',key:item.scope_key,title:item.scope_title||'دردشة الاجتماع',roomId:'council'});
       setActiveRoomId('council');
+      setResponsiveDirectoryOpen(false);
       return;
     }
     setFocusedChat({kind:'role',key:item.scope_key,title:item.scope_title||'دردشة المسؤول',roomId:item.room_key});
     setActiveRoomId(item.room_key);
+    setResponsiveDirectoryOpen(false);
   }
 
   async function refreshActiveRoom(){
@@ -1138,17 +1150,6 @@ export function PersistentConversationWorkspace(){
     setAccountReconciliation(data.reconciliation??null);
   }
 
-  async function openAccountsSettings(){
-    setRoomsOpen(false);
-    setSettingsSection('accounts');
-    setSettingsOpen(true);
-    setAccountEditor(null);
-    try{
-      await loadManagedAccounts();
-    }catch{
-      setError('تعذر تحميل الحسابات الآن.');
-    }
-  }
 
   async function saveManagedAccount(){
     if(!accountEditor||accountSaving)return;
@@ -1333,9 +1334,10 @@ export function PersistentConversationWorkspace(){
     catch{setError('لم تُحفظ الرسالة أو تعذر توليد الرد. لم يعتبر نماء الإرسال مكتملًا؛ أعد المحاولة.')} finally{setSending(false)} }
 
   const visibleRooms=onboardingComplete===false?rooms.filter(room=>room.id==='central'):rooms;
-  const roomButtons=<div className={styles.roomList}>{visibleRooms.map(room=><div key={room.id} className={`${styles.roomItemShell} ${activeRoom.id===room.id?styles.activeRoom:''}`}><button type="button" onClick={()=>chooseRoom(room.id)} className={styles.roomItem}><RoomPortrait room={room} size="md"/><span className={styles.roomCopy}><strong>{chatRoleTitle(room)}</strong></span></button><button type="button" className={styles.roomDetailButton} aria-label={`تفاصيل ${chatRoleTitle(room)}`} onClick={()=>{setDetailRoomId(room.id);setDetailTab('role')}}><LucideIcon name="info" size={20}/></button></div>)}</div>;
-  const ownerButtons=<div className={styles.responsibilityOwnerList}>{RESPONSIBILITY_OWNERS.map(role=><button type="button" key={role.key} onClick={()=>{setRoomsOpen(false);setActiveAlgorithmRole({roomId:role.homeRoom as RoomKey,role})}}><span><strong>{role.name}</strong><small>{role.mandate}</small></span><LucideIcon name="chevronLeft" size={16}/></button>)}</div>;
-  const mobileOwnerButtons=<div className={styles.responsibilityOwnerList+' '+styles.mobileResponsibilityOwnerList}>{RESPONSIBILITY_OWNERS.map(role=>{const ownerRoom=rooms.find(room=>room.id===role.homeRoom)??rooms[0];const portrait=rolePortraitByKey[role.key];return <button type="button" key={role.key} onClick={()=>openRoleChat(role)}><span className={styles.ownerDirectoryPortrait}>{portrait&&<Image src={portrait} alt="" fill unoptimized sizes="72px"/>}</span><span className={styles.ownerDirectoryCopy}><strong>{role.name}</strong><small>{ownerRoom.title}</small></span><LucideIcon name="chevronLeft" size={16}/></button>})}</div>;
+  const directoryRooms=visibleRooms.filter(room=>room.id!=='council');
+  const roomButtons=<div className={styles.roomList}>{directoryRooms.map(room=><div key={room.id} className={`${styles.roomItemShell} ${activeRoom.id===room.id?styles.activeRoom:''}`}><button type="button" onClick={()=>chooseRoom(room.id)} className={styles.roomItem}><RoomPortrait room={room} size="md"/><span className={styles.roomCopy}><strong>{chatRoleTitle(room)}</strong></span></button><button type="button" className={styles.roomDetailButton} aria-label={`تفاصيل ${chatRoleTitle(room)}`} onClick={()=>{setDetailRoomId(room.id);setDetailTab('role')}}><LucideIcon name="info" size={20}/></button></div>)}</div>;
+  const ownerButtons=<div className={styles.responsibilityOwnerList}>{RESPONSIBILITY_OWNERS.map(role=>{const portrait=rolePortraitByKey[role.key];return <button type="button" key={role.key} onClick={()=>{setRoomsOpen(false);setActiveAlgorithmRole({roomId:role.homeRoom as RoomKey,role})}}><span className={styles.ownerDirectoryPortrait}>{portrait&&<Image src={portrait} alt="" fill unoptimized sizes="64px"/>}</span><span className={styles.ownerDirectoryCopy}><strong>{role.name}</strong></span><LucideIcon name="chevronLeft" size={16}/></button>})}</div>;
+  const mobileOwnerButtons=<div className={styles.responsibilityOwnerList+' '+styles.mobileResponsibilityOwnerList}>{RESPONSIBILITY_OWNERS.map(role=>{const portrait=rolePortraitByKey[role.key];return <button type="button" key={role.key} onClick={()=>openRoleChat(role)}><span className={styles.ownerDirectoryPortrait}>{portrait&&<Image src={portrait} alt="" fill unoptimized sizes="72px"/>}</span><span className={styles.ownerDirectoryCopy}><strong>{role.name}</strong></span><LucideIcon name="chevronLeft" size={16}/></button>})}</div>;
   const directoryTabs=<div className={styles.directoryTabs} role="tablist" aria-label="أقسام مركز العمل">
     <button type="button" role="tab" aria-selected={directoryTab==='entities'} className={directoryTab==='entities'?styles.directoryTabActive:''} onClick={()=>setDirectoryTab('entities')}>الإدارة والبنوك</button>
     <button type="button" role="tab" aria-selected={directoryTab==='owners'} className={directoryTab==='owners'?styles.directoryTabActive:''} onClick={()=>setDirectoryTab('owners')}>مسؤولو البنود</button>
@@ -1373,13 +1375,35 @@ export function PersistentConversationWorkspace(){
 
   const contextCards=<><section className={styles.contextCard}><small>الجهة الحالية</small><strong>{activeRoom.title}</strong><p>{activeRoom.lead} · {activeRoom.subtitle}</p></section><section className={styles.contextCard}><small>المشاركون الفعليون</small><strong>{participants.length?`${participants.length} اختصاصيين`:'اختصاصيون حسب الموضوع'}</strong><p>{participants.length?participants.map(p=>p.display_name).join('، '):activeRoom.specialists}. لا تُستدعى جميع الجهات تلقائيًا.</p></section><section className={styles.contextCard}><small>حد التنفيذ</small><strong>توصية ومتابعة فقط</strong><p>لا تحويل، لا سداد، ولا إجراء مالي خارجي يُعد منفذًا من المنصة.</p></section></>;
 
+  const responsiveDirectoryScreen=<section className={styles.responsiveDirectoryPage} aria-label="دليل الدردشة">
+    <header className={styles.responsiveDirectoryHeader}>
+      <div>
+        <span>الدردشة</span>
+        <strong>جهات الاتصال ومراكز العمل</strong>
+      </div>
+      <button type="button" onClick={openPrimarySidebar} aria-label="فتح التنقل بين المنصة"><LucideIcon name="menu" size={20}/></button>
+    </header>
+    <label className={styles.responsiveDirectorySelector}>
+      <span>عرض</span>
+      <select value={directoryTab} onChange={event=>setDirectoryTab(event.target.value as 'entities'|'owners'|'meetings')} aria-label="اختيار قسم الدردشة">
+        <option value="entities">الإدارة والبنوك</option>
+        <option value="owners">مسؤولو البنود</option>
+        <option value="meetings">الاجتماعات</option>
+      </select>
+    </label>
+    <div className={styles.responsiveDirectoryContent}>
+      {mobileDirectoryContent}
+    </div>
+  </section>;
+
   return <section className={`${styles.page} ${styles[`chatFont_${chatFontSize}`]}`} dir="rtl" aria-label="محادثات نماء">
+    {responsiveDirectoryOpen&&responsiveDirectoryScreen}
     <Image className={styles.brandWatermark} src="/brand/namaa-leaf.webp" alt="" width={256} height={256} aria-hidden="true" />
     <Image className={`${styles.brandWatermark} ${styles.brandWatermarkSecondary}`} src="/brand/namaa-leaf.webp" alt="" width={220} height={220} aria-hidden="true" />
     <Image className={`${styles.brandWatermark} ${styles.brandWatermarkTertiary}`} src="/brand/namaa-leaf.webp" alt="" width={180} height={180} aria-hidden="true" />
     <header className={styles.mobileAppBar}>
       <div className={styles.mobileAppBarPrimary}>
-        <button type="button" className={styles.mobileTopButton} aria-label="فتح القائمة الجانبية" onClick={()=>setRoomsOpen(true)}><LucideIcon name="menu" size={20}/></button>
+        <button type="button" className={styles.mobileTopButton} aria-label="فتح التنقل بين المنصة" onClick={openPrimarySidebar}><LucideIcon name="menu" size={20}/></button>
         <span className={styles.mobileBrandLogoWrap} aria-label="نماء"><Image className={`${styles.mobileBrandLogo} ${styles.mobileBrandLogoLight}`} src="/brand/ndos/namaa-logo-color-hq.png" alt="" width={112} height={44} priority /><Image className={`${styles.mobileBrandLogo} ${styles.mobileBrandLogoDark}`} src="/brand/ndos/namaa-logo-white-hq.png" alt="" width={112} height={44} priority /></span>
       </div>
       <div className={styles.mobileAppBarActions}>
@@ -1392,9 +1416,29 @@ export function PersistentConversationWorkspace(){
       </div>
     </header>
     <header className={styles.workspaceHeader}><div className={styles.headingCopy}><span className={styles.eyebrow}>محادثات نماء</span><h1>مركز الحوار والقرار</h1><p>المحادثات محفوظة في حسابك، وتصل رسالتك إلى الجهة والمتخصصين المرتبطين بالموضوع.</p></div><div className={styles.headerActions}><button type="button" className={styles.secondaryButton} onClick={()=>setDesktopContextVisible(v=>!v)}><LucideIcon name="info" size={16}/><span>{desktopContextVisible?'إخفاء السياق':'إظهار السياق'}</span></button></div></header>
-    <div className={`${styles.workspace} ${desktopContextVisible?'':styles.withoutContext}`}>
-      <aside className={styles.roomsPane} aria-label="الجهات والمحادثات"><div className={styles.paneTitle}><span>مركز العمل</span><small>3 أقسام</small></div>{onboardingComplete!==false?directoryTabs:null}{directoryContent}</aside>
-      <main className={styles.chatPane}><header className={`${styles.chatHeader} ${activeRoom.id==='central'?styles.centralChatHeader:''}`}><div className={styles.chatHeaderShade} aria-hidden="true"/><div className={styles.desktopChatHeaderForeground}><div className={styles.chatIdentity}><RoomPortrait room={activeRoom} size={activeRoom.id==='central'?'lg':'md'}/><div><div className={styles.entityTitle}><strong>{chatRoleTitle(activeRoom)}</strong></div><small>{chatEntityTitle(activeRoom)}</small></div></div><span className={styles.chatHeaderBankMark} aria-hidden="true"><Image src={activeRoom.bankLogo} alt="" fill sizes="56px"/></span></div><div className={styles.chatHeaderForeground}><button type="button" className={styles.compactMenuButton} aria-label="فتح القائمة الجانبية" onClick={()=>setRoomsOpen(true)}><LucideIcon name="menu" size={20}/></button><RoomPortrait room={activeRoom} size="md"/><div className={styles.compactRoleTitle}><strong>{compactChatRoleTitle(activeRoom)}</strong></div><div className={styles.mobileTools}><button type="button" aria-label="لوحة الجهة" onClick={()=>setEntityDashboardRoom(activeRoomId)}><LucideIcon name="chart" size={20}/></button><button type="button" aria-label="معلومات الجهة" onClick={()=>{setDetailRoomId(activeRoomId);setDetailTab('role')}}><LucideIcon name="info" size={20}/></button></div></div></header>
+    <div className={`${styles.workspace} ${desktopContextVisible?'':styles.withoutContext} ${desktopRoomsVisible?'':styles.withoutRooms} ${responsiveDirectoryOpen?styles.responsiveChatHidden:''}`}>
+      {desktopRoomsVisible&&<aside className={styles.roomsPane} aria-label="الجهات والمحادثات"><div className={styles.paneTitle}><span>مركز العمل</span><small>3 أقسام</small></div>{onboardingComplete!==false?directoryTabs:null}{directoryContent}</aside>}
+      <main className={styles.chatPane}>
+        <header className={styles.desktopGovernorHeader}>
+          <div className={styles.desktopGovernorIdentity}>
+            <RoomPortrait room={activeRoom} size={activeRoom.id==='central'?'lg':'md'}/>
+            <div className={styles.desktopGovernorCopy}>
+              <strong>{chatRoleTitle(activeRoom)}</strong>
+              <small>{chatEntityTitle(activeRoom)}</small>
+            </div>
+          </div>
+          <div className={styles.desktopGovernorActions}>
+            <button type="button" aria-label="فتح القائمة الرئيسية" title="فتح القائمة الرئيسية" onClick={openPrimarySidebar}><LucideIcon name="menu" size={16}/></button>
+            <button type="button" aria-label={desktopRoomsVisible?'إخفاء جهات الاتصال':'إظهار جهات الاتصال'} title={desktopRoomsVisible?'إخفاء جهات الاتصال':'إظهار جهات الاتصال'} onClick={()=>setDesktopRoomsVisible(v=>!v)}><LucideIcon name="messageSquareText" size={16}/></button>
+            <button type="button" aria-label={desktopContextVisible?'إخفاء السياق':'إظهار السياق'} title={desktopContextVisible?'إخفاء السياق':'إظهار السياق'} onClick={()=>setDesktopContextVisible(v=>!v)}><LucideIcon name={desktopContextVisible?'chevronLeft':'chevronRight'} size={16}/></button>
+            <button type="button" aria-label={detailRoomId===activeRoomId?'إخفاء بيانات الجهة':'إظهار بيانات الجهة'} title={detailRoomId===activeRoomId?'إخفاء بيانات الجهة':'إظهار بيانات الجهة'} onClick={()=>{if(detailRoomId===activeRoomId){setDetailRoomId(null)}else{setDetailRoomId(activeRoomId);setDetailTab('role')}}}><LucideIcon name="info" size={16}/></button>
+            <span className={styles.desktopGovernorBankMark} aria-hidden="true"><Image src={activeRoom.bankLogo} alt="" fill sizes="48px"/></span>
+          </div>
+        </header>
+        <header className={`${styles.chatHeader} ${activeRoom.id==='central'?styles.centralChatHeader:''}`}>
+          <div className={styles.chatHeaderForeground}><button type="button" className={styles.responsiveDirectoryBackButton} aria-label="الرجوع إلى جهات الاتصال" onClick={()=>setResponsiveDirectoryOpen(true)}><LucideIcon name="chevronRight" size={20}/></button><RoomPortrait room={activeRoom} size="md"/><div className={styles.compactRoleTitle}><strong>{compactChatRoleTitle(activeRoom)}</strong></div><div className={styles.mobileTools}><button type="button" aria-label="لوحة الجهة" onClick={()=>setEntityDashboardRoom(activeRoomId)}><LucideIcon name="chart" size={20}/></button><button type="button" aria-label="معلومات الجهة" onClick={()=>{setDetailRoomId(activeRoomId);setDetailTab('role')}}><LucideIcon name="info" size={20}/></button></div></div>
+        </header>
+        <div className={styles.chatBody}>
         {focusedChat?<div className={`${styles.routingNote} ${styles.specialistRoutingNote} ${styles.focusedChatBanner}`}><LucideIcon name={focusedChat.kind==='meeting'?'calendarDays':'messageSquareText'} size={16}/><span><strong>{focusedChat.title}</strong><small>{focusedChat.kind==='meeting'?'دردشة الاجتماع — محفوظة بشكل مستقل عن دردشة المجلس العامة':'دردشة مباشرة — تستخدم الذاكرة المشتركة دون خلطها بدردشة البنك العامة'}</small></span><button type="button" onClick={()=>setFocusedChat(null)} aria-label="العودة إلى دردشة الجهة"><LucideIcon name="x" size={16}/></button></div>:<div className={`${styles.routingNote} ${styles.specialistRoutingNote}`}><LucideIcon name="sparkles" size={16}/><span>{activeRoom.specialists}</span></div>}
         <div ref={messagesScrollRef} className={styles.messages} aria-live="polite">{activeRoom.building&&<span className={styles.messagesBuildingBackdrop} aria-hidden="true"><Image src={activeRoom.building} alt="" fill sizes="100vw"/></span>}{loading&&<p>جارٍ تحميل سجل المحادثة…</p>}{!loading&&!visibleMessages.length&&<article className={`${styles.message} ${styles.agentMessage}`}><p>{onboardingComplete===false?'أنا محافظ بنك نماء المركزي. سأبدأ معك بسؤال واحد في كل مرة حتى أبني ملفك من معلوماتك أنت، دون افتراضات.':'هذه بداية محادثتك مع '+activeRoom.title+'. اكتب سؤالك أو القرار الذي تريد دراسته.'}</p></article>}{visibleMessages.map((message,messageIndex)=>{
   const previous=visibleMessages[messageIndex-1];
@@ -1485,15 +1529,29 @@ export function PersistentConversationWorkspace(){
         />
         {statementPickerOpen&&<div className={styles.statementPicker}><div><strong>اختر الحساب المرتبط بالكشف</strong><small>سيُقرأ الملف للمراجعة فقط، ولن ينشئ معاملات تلقائيًا.</small></div><select value={statementAccountId} onChange={event=>setStatementAccountId(event.target.value)} aria-label="الحساب المرتبط بكشف الحساب">{statementAccounts.map(account=><option key={account.id} value={account.id}>{account.bank_name||account.name} — {account.name}</option>)}</select><button type="button" className={styles.secondaryButton} onClick={()=>statementFileRef.current?.click()} disabled={statementUploading}>{statementUploading?'جارٍ الاستيراد…':'اختيار ملف CSV'}</button></div>}
         <div className={styles.attachmentPolicy}><LucideIcon name="upload" size={16}/><span>{onboardingStep==='statements'?'ارفع كشف CSV إن كان متاحًا. كل صف يبقى تحت المراجعة حتى تؤكده.':'المرفق للمراجعة والتحقق فقط؛ لا ينشئ حركة مالية ولا يثبت التنفيذ تلقائيًا.'}</span></div><div className={styles.executionNote}><LucideIcon name="circleCheck" size={16}/><span>نماء يوصي ويتابع؛ التنفيذ المالي الخارجي يتم بواسطة المستخدم.</span></div>
+        </div>
         <form className={styles.composer} onSubmit={send}><input ref={statementFileRef} className={styles.hiddenFileInput} type="file" accept=".csv,text/csv" onChange={event=>{const file=event.target.files?.[0];if(file)void uploadStatement(file)}}/><button type="submit" className={styles.sendButton} disabled={!draft.trim()||sending} aria-label="إرسال"><span>{sending?'جارٍ التحليل…':'إرسال'}</span><LucideIcon name="send" size={20}/></button><textarea ref={composerTextareaRef} value={draft} onFocus={e=>{if(!draft.trim())e.currentTarget.style.height='40px'}} onBlur={e=>{if(!draft.trim())e.currentTarget.style.height='40px'}} onChange={e=>{const value=e.target.value;setDraft(value);e.currentTarget.style.height='auto';e.currentTarget.style.height=value.trim()?`${Math.min(Math.max(e.currentTarget.scrollHeight,64),96)}px`:'40px'}} placeholder={`اكتب إلى ${chatRoleTitle(activeRoom)}…`} rows={1} aria-label="نص الرسالة" maxLength={8000}/><button type="button" className={styles.attachButton} aria-label="إرفاق كشف حساب CSV" title="إرفاق كشف حساب CSV للمراجعة" onClick={()=>void prepareStatementUpload()} disabled={statementUploading}><LucideIcon name="upload" size={20}/></button></form>
       </main>
       {desktopContextVisible&&<aside className={styles.contextPane} aria-label="سياق المحادثة"><div className={styles.paneTitle}><span>السياق</span><small>حيّز العمل</small></div>{contextCards}</aside>}
     </div>
     {roomsOpen&&<div className={styles.mobileOverlay} role="dialog" aria-modal="true" aria-label="القائمة الجانبية"><button type="button" className={styles.scrim} aria-label="إغلاق القائمة الجانبية" onClick={()=>setRoomsOpen(false)}/><aside className={styles.mobileSideSheet}><div className={styles.sideBrandRow}><span className={styles.sideBrandLogoWrap} aria-label="نماء"><Image className={`${styles.sideBrandLogo} ${styles.sideBrandLogoLight}`} src="/brand/ndos/namaa-logo-color-transparent.png" alt="" width={96} height={38}/><Image className={`${styles.sideBrandLogo} ${styles.sideBrandLogoDark}`} src="/brand/ndos/namaa-logo-white-transparent.png" alt="" width={96} height={38}/></span><ThemeToggle className={styles.sideThemeToggle}/><button type="button" className={styles.sideUserButton} aria-label="ملف المستخدم" aria-expanded={userMenuOpen} onClick={()=>setUserMenuOpen(open=>!open)}>{profile?.image?<span className={styles.userImage} style={{backgroundImage:`url("${profile.image.replace(/"/g,'')}")`}} aria-hidden="true"/>:<LucideIcon name="circleUserRound" size={20}/>}</button>{userMenuOpen&&<div className={styles.drawerUserMenu} role="dialog" aria-label="ملف المستخدم"><div className={styles.userMenuIdentity}><button type="button" className={styles.userMenuAvatar} aria-label="صورة المستخدم">{profile?.image?<span className={styles.userImage} style={{backgroundImage:`url("${profile.image.replace(/"/g,'')}")`}}/>:<LucideIcon name="circleUserRound" size={32}/>}</button><div><strong>{profile?.name||'المستخدم'}</strong><small>{profile?.email||''}</small></div></div><button type="button" onClick={()=>{setRoomsOpen(false);setUserMenuOpen(false);setProfileOpen(true)}}><LucideIcon name="pencil" size={20}/><span>الملف الشخصي وتعديل البيانات</span></button><button type="button" onClick={()=>{setRoomsOpen(false);setUserMenuOpen(false);setSettingsSection('general');setSettingsOpen(true)}}><LucideIcon name="settings" size={20}/><span>الإعدادات</span></button><button type="button" className={styles.logoutButton} onClick={()=>void logout()}><LucideIcon name="logOut" size={20}/><span>تسجيل الخروج</span></button></div>}</div>
-      <div className={styles.sideSection}><small>مركز العمل</small>{onboardingComplete!==false?directoryTabs:null}{mobileDirectoryContent}</div>
       <div className={styles.sideSection}>
-        <small>الصفحات</small>
-        <div className={styles.sideUtilityList}>{onboardingComplete!==false&&<button type="button" onClick={()=>void openAccountsSettings()}><LucideIcon name="walletCards" size={20}/><span>الحسابات</span></button>}{onboardingComplete!==false&&<button type="button" onClick={()=>{setRoomsOpen(false);setExtendedProfileInitialSection(null);setExtendedProfileOpen(true)}}><LucideIcon name="listChecks" size={20}/><span>الملف المالي التفصيلي</span></button>}{onboardingComplete!==false&&<button type="button" onClick={()=>{setRoomsOpen(false);setGovernanceMode('meetings')}}><LucideIcon name="calendarDays" size={20}/><span>الاجتماعات</span></button>}{onboardingComplete!==false&&<button type="button" onClick={()=>{setRoomsOpen(false);setGovernanceMode('governance')}}><LucideIcon name="landmark" size={20}/><span>الحوكمة والسياسات</span></button>}{onboardingComplete!==false&&<button type="button" onClick={()=>{setRoomsOpen(false);setGovernanceMode('documents')}}><LucideIcon name="receiptText" size={20}/><span>الوثائق</span></button>}<button type="button" onClick={()=>{setRoomsOpen(false);setSettingsSection('general');setSettingsOpen(true)}}><LucideIcon name="settings" size={20}/><span>الإعدادات</span></button><button type="button" onClick={()=>{setRoomsOpen(false);setContextOpen(true)}}><LucideIcon name="info" size={20}/><span>المساعدة والسياق</span></button></div>
+        <small>التنقل في المنصة</small>
+        <div className={styles.sideUtilityList}>
+          <button type="button" onClick={()=>{setRoomsOpen(false);router.push('/dashboard')}}><LucideIcon name="house" size={20}/><span>الرئيسية</span></button>
+          <button type="button" onClick={()=>{setRoomsOpen(false);router.push('/accounts')}}><LucideIcon name="creditCard" size={20}/><span>الحسابات</span></button>
+          <button type="button" onClick={()=>{setRoomsOpen(false);router.push('/transactions')}}><LucideIcon name="repeat2" size={20}/><span>العمليات</span></button>
+          <button type="button" onClick={()=>{setRoomsOpen(false);router.push('/budget')}}><LucideIcon name="chart" size={20}/><span>الميزانية</span></button>
+          <button type="button" onClick={()=>{setRoomsOpen(false);router.push('/bank-operations')}}><LucideIcon name="landmark" size={20}/><span>البنوك</span></button>
+          <button type="button" onClick={()=>{setRoomsOpen(false);router.push('/investments')}}><LucideIcon name="chart" size={20}/><span>الاستثمارات</span></button>
+          <button type="button" onClick={()=>{setRoomsOpen(false);router.push('/reports')}}><LucideIcon name="receiptText" size={20}/><span>التقارير</span></button>
+          <button type="button" onClick={()=>{setRoomsOpen(false);router.push('/alerts')}}><LucideIcon name="bell" size={20}/><span>التنبيهات</span></button>
+        </div>
+      </div>
+      <div className={styles.sideSection}><small>مركز العمل والمحادثات</small>{onboardingComplete!==false?directoryTabs:null}{mobileDirectoryContent}</div>
+      <div className={styles.sideSection}>
+        <small>أدوات المحادثة</small>
+        <div className={styles.sideUtilityList}>{onboardingComplete!==false&&<button type="button" onClick={()=>{setRoomsOpen(false);setExtendedProfileInitialSection(null);setExtendedProfileOpen(true)}}><LucideIcon name="listChecks" size={20}/><span>الملف المالي التفصيلي</span></button>}{onboardingComplete!==false&&<button type="button" onClick={()=>{setRoomsOpen(false);setGovernanceMode('meetings')}}><LucideIcon name="calendarDays" size={20}/><span>الاجتماعات</span></button>}{onboardingComplete!==false&&<button type="button" onClick={()=>{setRoomsOpen(false);setGovernanceMode('governance')}}><LucideIcon name="landmark" size={20}/><span>الحوكمة والسياسات</span></button>}{onboardingComplete!==false&&<button type="button" onClick={()=>{setRoomsOpen(false);setGovernanceMode('documents')}}><LucideIcon name="receiptText" size={20}/><span>الوثائق</span></button>}<button type="button" onClick={()=>{setRoomsOpen(false);setSettingsSection('general');setSettingsOpen(true)}}><LucideIcon name="settings" size={20}/><span>الإعدادات</span></button><button type="button" onClick={()=>{setRoomsOpen(false);setContextOpen(true)}}><LucideIcon name="info" size={20}/><span>المساعدة والسياق</span></button></div>
       </div>
     </aside></div>}
     {entityDashboardRoom&&<EntityDashboardMobilePage roomKey={entityDashboardRoom} onClose={()=>setEntityDashboardRoom(null)}/>}

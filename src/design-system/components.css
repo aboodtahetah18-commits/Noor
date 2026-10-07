@@ -423,6 +423,11 @@ html[data-theme="dark"] .ux-dialog-actions { border-color:var(--ux-border-defaul
 .ux-tabs-bar > button span { color:inherit; font-size:var(--ux-type-caption-size); }
 .ux-tab-panel { min-width:0; padding-block:var(--ux-space-4); }
 
+/* Dialog visibility invariant: closed dialogs never participate in layout. */
+dialog:not([open]) {
+  display:none !important;
+}
+
 .ux-overlay-dialog,
 .ux-drawer-surface,
 .ux-bottom-sheet-surface {

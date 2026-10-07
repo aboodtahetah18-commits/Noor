@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { useEffect, useSyncExternalStore } from 'react';
 import { LucideIcon } from '@/components/ui/lucide-icon';
 import { ProfileTrigger, type HeaderProfile } from './profile-trigger';
-import { ThemeToggle } from '../theme-toggle';
 import { BrandLogo } from '@/components/brand/brand-logo';
 
 function subscribeSidebar(callback: () => void) {
@@ -54,7 +53,7 @@ export function GlobalTopBar({ profile }: { profile: HeaderProfile }) {
           <LucideIcon name="menu" size={20} />
         </button>
         <Link href="/dashboard" className="namaa-topbar-logo" aria-label="نماء — الرئيسية">
-          <BrandLogo surface="auto" priority />
+          <BrandLogo surface="dark" priority />
         </Link>
       </div>
 
@@ -70,7 +69,6 @@ export function GlobalTopBar({ profile }: { profile: HeaderProfile }) {
         <Link href="/alerts" aria-label="التنبيهات" title="التنبيهات">
           <LucideIcon name="bell" size={20} />
         </Link>
-        <ThemeToggle />
         <ProfileTrigger profile={profile} className="namaa-profile-trigger" />
       </div>
     </header>

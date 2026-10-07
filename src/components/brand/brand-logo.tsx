@@ -39,13 +39,41 @@ export function BrandLogo({
 }) {
   const theme = useSyncExternalStore(subscribe, clientSnapshot, serverSnapshot);
   const resolvedSurface = surface === 'auto' ? theme : surface;
-  const src = resolvedSurface === 'dark' ? DARK_LOGO : LIGHT_LOGO;
+  if (resolvedSurface === 'dark') {
+    return (
+      <span
+        className={`namaa-brand-logo ${className}`.trim()}
+        data-brand-surface={resolvedSurface}
+        style={{ position:'relative', display:'block', width:128, aspectRatio:'2 / 1' }}
+      >
+        <Image
+          src={DARK_LOGO}
+          alt="نماء"
+          fill
+          sizes="(max-width: 767px) 96px, (max-width: 1023px) 112px, 128px"
+          priority={priority}
+          draggable={false}
+          style={{ objectFit:'contain' }}
+        />
+        <Image
+          src={LIGHT_LOGO}
+          alt=""
+          aria-hidden="true"
+          fill
+          sizes="(max-width: 767px) 96px, (max-width: 1023px) 112px, 128px"
+          priority={priority}
+          draggable={false}
+          style={{ objectFit:'contain', clipPath:'inset(0 0 0 58%)' }}
+        />
+      </span>
+    );
+  }
 
   return (
     <Image
       className={`namaa-brand-logo ${className}`.trim()}
       data-brand-surface={resolvedSurface}
-      src={src}
+      src={LIGHT_LOGO}
       width={128}
       height={64}
       sizes="(max-width: 767px) 96px, (max-width: 1023px) 112px, 128px"

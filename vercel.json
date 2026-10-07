@@ -21,7 +21,8 @@
   "git": {
     "deploymentEnabled": {
       "*": false,
-      "main": true
+      "main": true,
+      "prod/chat-tablet-drawer-fix-20261001": true
     }
   }
 }
