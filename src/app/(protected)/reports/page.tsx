@@ -107,7 +107,7 @@ export default async function ReportsPage({searchParams}:{searchParams:Promise<{
       {active==='history'&&<>
         <div className="namaa-reports-panel-head"><div><span>السجل التاريخي</span><h2>الدورات السابقة</h2></div><Link href="/reports/history">فتح السجل</Link></div>
         <div className="namaa-reports-history-actions">
-          <Link href="/reports/history"><LucideIcon name="history" size={20}/><span>الدورات السابقة</span></Link>
+          <Link href="/reports/history"><LucideIcon name="calendarDays" size={20}/><span>الدورات السابقة</span></Link>
           <Link href="/reports/learning"><LucideIcon name="sparkles" size={20}/><span>تعلم النظام</span></Link>
           <Link href="/reports/future-pressure"><LucideIcon name="triangleAlert" size={20}/><span>الضغط المالي القادم</span></Link>
         </div>
