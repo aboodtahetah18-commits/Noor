@@ -72,11 +72,6 @@ export function BanksWide({selected,selectedTab,pendingReviewCount,pendingItems,
   return <section className="namaa-banks-wide" dir="rtl">
     <header className="namaa-banks-hero namaa-wide-card">
       <div className="namaa-banks-hero-copy"><p>غرفة القيادة</p><h1>{bank.name}</h1><span>{bank.subtitle}</span></div>
-      <div className="namaa-banks-hero-stats" aria-label="ملخص سريع">
-        <span><small>السيولة</small><strong><Sar value={dashboardData.totalLiquidity}/></strong></span>
-        <span><small>مراجعة</small><strong>{pendingReviewCount}</strong></span>
-        <span><small>قرارات</small><strong>{dashboardData.decisionCount}</strong></span>
-      </div>
       <div className="namaa-banks-selector">{Object.entries(banks).map(([key,item])=><Link key={key} href={hrefFor(key as BankKey,'overview')} className={selected===key?'is-active':''}>{item.name}</Link>)}</div>
     </header>
 
@@ -96,19 +91,23 @@ export function BanksWide({selected,selectedTab,pendingReviewCount,pendingItems,
           <article className="is-count"><div><span>قرارات مسجلة</span><small>آخر نشاطات الحوكمة البنكية</small></div><strong>{dashboardData.decisionCount}</strong></article>
         </div>
         <div className="namaa-banks-health-grid">
-          <article><span>تكرارات محتملة</span><strong>{dashboardData.duplicateCandidatesCount}</strong><small>قيد المراجعة</small></article>
-          <article><span>عمليات غير مصنفة</span><strong>{dashboardData.unclassifiedCount}</strong><small>تحتاج بندًا</small></article>
-          <article className="is-money"><span>آخر عمليات معتمدة</span><strong><Sar value={recentApprovedValue}/></strong><small>{dashboardData.recentApproved.length} عملية</small></article>
-          <article><span>تمويل داخلي نشط</span><strong>{dashboardData.activeFundingCount}</strong><small>{dashboardData.pendingImportsCount} كشف/دفعة للمراجعة</small></article>
+          <article className="is-count"><div><span>تكرارات محتملة</span><small>قيد المراجعة</small></div><strong>{dashboardData.duplicateCandidatesCount}</strong></article>
+          <article className="is-count"><div><span>عمليات غير مصنفة</span><small>تحتاج بندًا</small></div><strong>{dashboardData.unclassifiedCount}</strong></article>
+          <article className="is-money"><div><span>آخر عمليات معتمدة</span><small>{dashboardData.recentApproved.length} عملية</small></div><strong><Sar value={recentApprovedValue}/></strong></article>
+          <article className="is-count"><div><span>تمويل داخلي نشط</span><small>{dashboardData.pendingImportsCount} كشف/دفعة للمراجعة</small></div><strong>{dashboardData.activeFundingCount}</strong></article>
         </div>
       </>}
 
       {selectedTab==='operations'&&<>
         <div className="namaa-bank-panel-head"><div><span>التشغيل اليومي</span><h2>العمليات</h2></div><div className="namaa-bank-head-actions"><InfoNote>كل ما يحتاج قرارًا أو مراجعة في شاشة واحدة.</InfoNote><Link href="/bank-statements">فتح المطابقة</Link></div></div>
-        <div className="namaa-bank-operations-summary"><article><span>تحتاج مراجعة</span><strong>{pendingReviewCount}</strong></article><article><span>قيمة معلقة</span><strong><Sar value={pendingValue}/></strong></article><article><span>آخر عمليات معتمدة</span><strong>{dashboardData.recentApproved.length}</strong></article></div>
+        <div className="namaa-bank-operations-summary">
+          <article className="is-count"><div><span>تحتاج مراجعة</span><small>عدد العمليات</small></div><strong>{pendingReviewCount}</strong></article>
+          <article className="is-money"><div><span>قيمة معلقة</span><small>إجمالي القيمة</small></div><strong><Sar value={pendingValue}/></strong></article>
+          <article className="is-count"><div><span>آخر عمليات معتمدة</span><small>عدد العمليات</small></div><strong>{dashboardData.recentApproved.length}</strong></article>
+        </div>
         <div className="namaa-bank-operations-visuals">
-          <article className="namaa-bank-donut-card"><div><span>اتجاه العمليات المعلقة</span><strong>{debitShare==null?'لا توجد عمليات معلقة':debitShare+'٪ خصم'}</strong><small>{debitShare==null?'لا توجد بيانات حالية':<>خصم <Sar value={debitValue}/> · إضافة <Sar value={creditValue}/></>}</small></div>{debitShare==null?<div className="namaa-bank-no-chart">لا بيانات</div>:<div className="namaa-bank-donut" style={{'--namaa-donut-share':debitShare+'%'} as React.CSSProperties}><b>{debitShare}٪</b></div>}</article>
-          <article className="namaa-bank-bars-card"><div><span>أعلى العمليات المعلقة</span><strong>{Math.min(5,pendingItems.length)} عملية</strong></div><div className="namaa-bank-bars">{pendingItems.slice(0,5).map(item=><div key={item.rowId}><span>{item.description}</span><i style={{width:Math.max(6,(Math.abs(Number(item.amount)||0)/maxPending)*100)+'%'}}/><b><Sar value={item.amount}/></b></div>)}{pendingItems.length===0?<p>لا توجد عمليات معلقة.</p>:null}</div></article>
+          <article className="namaa-bank-donut-card namaa-bank-operation-card"><div><span>اتجاه العمليات المعلقة</span><strong>{debitShare==null?'لا توجد عمليات معلقة':debitShare+'٪ خصم'}</strong><small>{debitShare==null?'لا توجد بيانات حالية':<>خصم <Sar value={debitValue}/> · إضافة <Sar value={creditValue}/></>}</small></div>{debitShare==null?<div className="namaa-bank-no-chart">لا بيانات</div>:<div className="namaa-bank-donut" style={{'--namaa-donut-share':debitShare+'%'} as React.CSSProperties}><b>{debitShare}٪</b></div>}</article>
+          <article className="namaa-bank-bars-card namaa-bank-operation-card"><div><span>أعلى العمليات المعلقة</span><strong>{Math.min(5,pendingItems.length)} عملية</strong></div><div className="namaa-bank-bars">{pendingItems.slice(0,5).map(item=><div key={item.rowId}><span>{item.description}</span><i style={{width:Math.max(6,(Math.abs(Number(item.amount)||0)/maxPending)*100)+'%'}}/><b><Sar value={item.amount}/></b></div>)}{pendingItems.length===0?<p>لا توجد عمليات معلقة.</p>:null}</div></article>
         </div>
         {pendingItems.length===0?<div className="namaa-banks-empty"><strong>لا توجد عمليات معلقة</strong><p>أي عملية تحتاج قرارًا ستظهر هنا.</p></div>:<div className="namaa-banks-pending-list">{pendingItems.slice(0,8).map(item=><article key={item.rowId}><div><strong>{item.description}</strong><span>{(item.bankName?item.bankName+' · ':'')+item.accountName+' · '+(item.transactionDate??'بدون تاريخ')}</span></div><b>{item.direction==='DEBIT'?'−':'+'}<Sar value={item.amount}/></b><div><span>{KIND[item.detectedKind]??item.detectedKind}</span>{item.duplicateCandidate?<em>مكرر محتمل</em>:null}<Link href={'/bank-statements/'+item.importId}>مراجعة</Link></div></article>)}</div>}
       </>}

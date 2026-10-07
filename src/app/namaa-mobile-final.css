@@ -5241,3 +5241,346 @@ html[data-theme="dark"]{color-scheme:light!important;}
     align-self:center!important;
   }
 }
+
+
+/* 2026-10-07 — BANKS FINAL APPROVED OVERVIEW + OPERATIONS */
+/* الهيرو: عنوان مستقل تمامًا، لا بيانات مكررة خلفه أو بجانبه. */
+.namaa-banks-hero{
+  grid-template-columns:1fr!important;
+  grid-template-areas:
+    "copy"
+    "selector"!important;
+  align-items:start!important;
+  gap:8px!important;
+  padding:12px 12px 7px!important;
+}
+.namaa-banks-hero-copy{
+  grid-area:copy!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  padding:8px 10px!important;
+  justify-self:stretch!important;
+  text-align:right!important;
+  background:rgba(250,249,244,.86)!important;
+  border:1px solid rgba(220,230,224,.72)!important;
+}
+.namaa-banks-hero-stats{display:none!important;}
+.namaa-banks-selector{
+  grid-area:selector!important;
+  margin:0!important;
+  padding:0!important;
+}
+
+/* كل بطاقات النظرة العامة بنفس العقد:
+   النص يمين، السطر المساند تحته، القيمة في منتصف الجهة اليسرى. */
+.namaa-banks-kpis-dashboard,
+.namaa-banks-health-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:8px!important;
+}
+.namaa-banks-kpis-dashboard article,
+.namaa-banks-health-grid article{
+  min-width:0!important;
+  min-height:96px!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(92px,auto)!important;
+  grid-template-areas:"copy value"!important;
+  align-items:center!important;
+  gap:10px!important;
+  padding:12px 14px!important;
+  overflow:hidden!important;
+}
+.namaa-banks-kpis-dashboard article>div,
+.namaa-banks-health-grid article>div{
+  grid-area:copy!important;
+  min-width:0!important;
+  display:grid!important;
+  align-content:center!important;
+  gap:6px!important;
+  text-align:right!important;
+}
+.namaa-banks-kpis-dashboard article>div>span,
+.namaa-banks-health-grid article>div>span{
+  margin:0!important;
+  color:#334155!important;
+  font-size:13px!important;
+  line-height:1.35!important;
+  font-weight:800!important;
+}
+.namaa-banks-kpis-dashboard article>div>small,
+.namaa-banks-health-grid article>div>small{
+  margin:0!important;
+  color:#61758A!important;
+  font-size:11px!important;
+  line-height:1.35!important;
+  font-weight:600!important;
+}
+.namaa-banks-kpis-dashboard article>strong,
+.namaa-banks-health-grid article>strong{
+  grid-area:value!important;
+  align-self:center!important;
+  justify-self:start!important;
+  margin:0!important;
+  min-width:0!important;
+  max-width:100%!important;
+  color:#1F2937!important;
+  font-size:22px!important;
+  line-height:1!important;
+  font-weight:900!important;
+  white-space:nowrap!important;
+  text-align:left!important;
+}
+.namaa-banks-kpis-dashboard article.is-count>strong,
+.namaa-banks-health-grid article.is-count>strong{
+  min-width:38px!important;
+}
+.namaa-banks-kpis-dashboard article .namaa-sar-value,
+.namaa-banks-health-grid article .namaa-sar-value{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:5px!important;
+  font-size:19px!important;
+  font-weight:900!important;
+  line-height:1!important;
+}
+.namaa-banks-kpis-dashboard article .namaa-sar-value img,
+.namaa-banks-health-grid article .namaa-sar-value img{
+  width:17px!important;
+  height:17px!important;
+  min-width:17px!important;
+  flex:0 0 17px!important;
+}
+.namaa-banks-kpis-dashboard article:nth-child(1)>strong{color:#0B6B4F!important;}
+.namaa-banks-kpis-dashboard article:nth-child(2)>strong{color:#C2413A!important;}
+.namaa-banks-kpis-dashboard article:nth-child(3)>strong{color:#2563EB!important;}
+.namaa-banks-kpis-dashboard article:nth-child(4)>strong{color:#9A6B11!important;}
+.namaa-banks-kpis-dashboard article:nth-child(5)>strong{color:#0B6B4F!important;}
+.namaa-banks-kpis-dashboard article:nth-child(6)>strong{color:#6D4CC2!important;}
+.namaa-banks-health-grid article:nth-child(1)>strong{color:#C2413A!important;}
+.namaa-banks-health-grid article:nth-child(2)>strong{color:#9A6B11!important;}
+.namaa-banks-health-grid article:nth-child(3)>strong{color:#0B6B4F!important;}
+.namaa-banks-health-grid article:nth-child(4)>strong{color:#2563EB!important;}
+
+/* العمليات: نفس مقياس الخطوط ونفس محاذاة القيم. */
+.namaa-bank-operations-summary{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:8px!important;
+}
+.namaa-bank-operations-summary article{
+  min-width:0!important;
+  min-height:90px!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(80px,auto)!important;
+  grid-template-areas:"copy value"!important;
+  align-items:center!important;
+  gap:8px!important;
+  padding:12px!important;
+  border:1px solid var(--ux-border-default)!important;
+  border-radius:11px!important;
+  background:var(--ux-card-bg)!important;
+}
+.namaa-bank-operations-summary article>div{
+  grid-area:copy!important;
+  min-width:0!important;
+  display:grid!important;
+  gap:5px!important;
+  text-align:right!important;
+}
+.namaa-bank-operations-summary article span{
+  color:#334155!important;
+  font-size:13px!important;
+  line-height:1.35!important;
+  font-weight:800!important;
+}
+.namaa-bank-operations-summary article small{
+  color:#61758A!important;
+  font-size:11px!important;
+  line-height:1.35!important;
+}
+.namaa-bank-operations-summary article>strong{
+  grid-area:value!important;
+  align-self:center!important;
+  justify-self:start!important;
+  margin:0!important;
+  color:#0B6B4F!important;
+  font-size:21px!important;
+  line-height:1!important;
+  font-weight:900!important;
+  white-space:nowrap!important;
+}
+.namaa-bank-operations-summary .namaa-sar-value{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:5px!important;
+  font-size:18px!important;
+  font-weight:900!important;
+}
+.namaa-bank-operations-summary .namaa-sar-value img{
+  width:16px!important;
+  height:16px!important;
+  min-width:16px!important;
+  flex:0 0 16px!important;
+}
+.namaa-bank-operations-visuals{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:8px!important;
+}
+.namaa-bank-operation-card{
+  min-height:132px!important;
+  padding:14px!important;
+  border-radius:12px!important;
+}
+.namaa-bank-operation-card>div:first-child{
+  display:grid!important;
+  gap:6px!important;
+}
+.namaa-bank-operation-card span{
+  color:#61758A!important;
+  font-size:12px!important;
+  line-height:1.35!important;
+}
+.namaa-bank-operation-card strong{
+  color:#1F2937!important;
+  font-size:17px!important;
+  line-height:1.25!important;
+  font-weight:850!important;
+}
+.namaa-bank-operation-card small,
+.namaa-bank-operation-card p{
+  color:#61758A!important;
+  font-size:11px!important;
+  line-height:1.5!important;
+}
+.namaa-banks-empty{
+  min-height:96px!important;
+  padding:14px!important;
+}
+.namaa-banks-empty strong{
+  color:#1F2937!important;
+  font-size:16px!important;
+  line-height:1.35!important;
+}
+.namaa-banks-empty p{
+  color:#61758A!important;
+  font-size:11px!important;
+  line-height:1.5!important;
+}
+
+@media(max-width:767px){
+  .namaa-banks-hero{
+    grid-template-columns:1fr!important;
+    grid-template-areas:
+      "copy"
+      "selector"!important;
+    gap:6px!important;
+    padding:7px!important;
+  }
+  .namaa-banks-hero-copy{
+    width:100%!important;
+    max-width:none!important;
+    padding:7px 8px!important;
+  }
+  .namaa-banks-hero-copy h1{
+    font-size:20px!important;
+    line-height:1.2!important;
+  }
+  .namaa-banks-hero-copy p{
+    font-size:9px!important;
+  }
+  .namaa-banks-hero-copy span{
+    font-size:10px!important;
+    line-height:1.35!important;
+  }
+
+  .namaa-banks-kpis-dashboard,
+  .namaa-banks-health-grid{
+    gap:6px!important;
+  }
+  .namaa-banks-kpis-dashboard article,
+  .namaa-banks-health-grid article{
+    min-height:94px!important;
+    grid-template-columns:minmax(0,1fr) minmax(74px,auto)!important;
+    gap:7px!important;
+    padding:10px!important;
+  }
+  .namaa-banks-kpis-dashboard article>div>span,
+  .namaa-banks-health-grid article>div>span{
+    font-size:12px!important;
+  }
+  .namaa-banks-kpis-dashboard article>div>small,
+  .namaa-banks-health-grid article>div>small{
+    font-size:10px!important;
+  }
+  .namaa-banks-kpis-dashboard article>strong,
+  .namaa-banks-health-grid article>strong{
+    font-size:21px!important;
+  }
+  .namaa-banks-kpis-dashboard article .namaa-sar-value,
+  .namaa-banks-health-grid article .namaa-sar-value{
+    font-size:17px!important;
+    gap:4px!important;
+  }
+  .namaa-banks-kpis-dashboard article .namaa-sar-value img,
+  .namaa-banks-health-grid article .namaa-sar-value img{
+    width:15px!important;
+    height:15px!important;
+    min-width:15px!important;
+    flex-basis:15px!important;
+  }
+
+  .namaa-bank-operations-summary{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:5px!important;
+  }
+  .namaa-bank-operations-summary article{
+    min-height:86px!important;
+    grid-template-columns:1fr!important;
+    grid-template-areas:
+      "copy"
+      "value"!important;
+    align-content:center!important;
+    gap:6px!important;
+    padding:8px!important;
+  }
+  .namaa-bank-operations-summary article>div{
+    gap:3px!important;
+  }
+  .namaa-bank-operations-summary article span{
+    font-size:11px!important;
+  }
+  .namaa-bank-operations-summary article small{
+    display:none!important;
+  }
+  .namaa-bank-operations-summary article>strong{
+    justify-self:start!important;
+    font-size:18px!important;
+  }
+  .namaa-bank-operations-summary .namaa-sar-value{
+    font-size:16px!important;
+    gap:3px!important;
+  }
+  .namaa-bank-operations-summary .namaa-sar-value img{
+    width:14px!important;
+    height:14px!important;
+    min-width:14px!important;
+    flex-basis:14px!important;
+  }
+
+  .namaa-bank-operations-visuals{
+    grid-template-columns:1fr!important;
+    gap:6px!important;
+  }
+  .namaa-bank-operation-card{
+    min-height:112px!important;
+    padding:11px!important;
+  }
+  .namaa-bank-operation-card span{font-size:11px!important;}
+  .namaa-bank-operation-card strong{font-size:16px!important;}
+  .namaa-bank-operation-card small,
+  .namaa-bank-operation-card p{font-size:10px!important;}
+  .namaa-banks-empty strong{font-size:15px!important;}
+  .namaa-banks-empty p{font-size:10px!important;}
+}
