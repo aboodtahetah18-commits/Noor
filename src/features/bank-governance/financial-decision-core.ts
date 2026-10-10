@@ -69,11 +69,14 @@ export function detectClassificationPatterns(
     if (rows.length < minimumSamples) continue;
     const counts = new Map<string, number>();
     for (const row of rows) counts.set(row.category, (counts.get(row.category) ?? 0) + 1);
-    const [category, matches] = [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))[0];
+    const winner = [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))[0];
+    const first = rows[0];
+    if (!winner || !first) continue;
+    const [category, matches] = winner;
     const consistency = matches / rows.length;
     if (consistency >= minimumConsistency) {
       proposals.push({
-        bank: rows[0].bank, merchantKey: rows[0].merchantKey, category,
+        bank: first.bank, merchantKey: first.merchantKey, category,
         observations: rows.length, matches, consistency, suggestedAction: 'CLASSIFY',
       });
     }
