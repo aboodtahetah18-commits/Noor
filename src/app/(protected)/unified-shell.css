@@ -1,0 +1,33 @@
+/*
+ * Unified mobile-first shell.
+ * Uses existing Namaa tokens; never defines a second brand palette.
+ * Keep the same DOM for mobile, tablet and desktop.
+ */
+.protected-app-shell[data-responsive-platform="unified-mobile-first"] {
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+.protected-app-shell[data-responsive-platform="unified-mobile-first"] .namaa-app-main,
+.protected-app-shell[data-responsive-platform="unified-mobile-first"] .namaa-page-frame {
+  min-width: 0;
+  max-width: 100%;
+}
+.protected-app-shell[data-responsive-platform="unified-mobile-first"] :is(input, select, textarea, button) {
+  max-width: 100%;
+}
+.protected-app-shell[data-responsive-platform="unified-mobile-first"] :is(img, video, canvas, svg) {
+  max-width: 100%;
+}
+.protected-app-shell[data-responsive-platform="unified-mobile-first"] :is(.namaa-table-wrap, [role="table"]) {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+@media (min-width: 768px) {
+  .protected-app-shell[data-responsive-platform="unified-mobile-first"] .namaa-page-frame {
+    width: 100%;
+    margin-inline: auto;
+  }
+}
