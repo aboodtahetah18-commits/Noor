@@ -11381,14 +11381,6 @@
 }
 
 @media (min-width:768px){
-  .page,
-  .workspace,
-  .chatPane{
-    width:100%!important;
-    max-width:none!important;
-    margin-inline:0!important;
-  }
-
   .mobileSideSheet{
     width:min(52vw,440px)!important;
     max-width:440px!important;
