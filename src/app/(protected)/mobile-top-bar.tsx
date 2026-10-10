@@ -3,24 +3,12 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { LucideIcon, type LucideIconName } from '@/components/ui/lucide-icon';
+import { LucideIcon } from '@/components/ui/lucide-icon';
 import { Drawer } from '@/components/ui';
+import { PLATFORM_NAVIGATION } from '@/lib/navigation/platform-navigation';
 import { BrandLogo } from '@/components/brand/brand-logo';
 import { ProfileTrigger, type HeaderProfile } from './profile-trigger';
 
-const secondary: ReadonlyArray<{ href:string; label:string; icon:LucideIconName }> = [
-  { href:'/conversations', label:'مركز العمل', icon:'messageSquareText' },
-  { href:'/bank-operations', label:'البنوك', icon:'landmark' },
-  { href:'/investments', label:'الاستثمارات', icon:'chart' },
-  { href:'/governance', label:'المعرفة', icon:'receiptText' },
-  { href:'/cases', label:'القضايا والقرارات', icon:'listChecks' },
-  { href:'/reports', label:'التقارير', icon:'chart' },
-  { href:'/advisor', label:'مختبر الخوارزميات', icon:'sparkles' },
-  { href:'/internal-funding', label:'التمويل الداخلي', icon:'banknote' },
-  { href:'/workspace', label:'مركز النظام', icon:'layoutGrid' },
-  { href:'/alerts', label:'التنبيهات', icon:'bell' },
-  { href:'/settings', label:'الإعدادات', icon:'settings' },
-];
 
 export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
   const pathname = usePathname();
@@ -61,7 +49,7 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
 
       <Drawer open={open} onOpenChange={setOpen} title="القائمة" side="start" className="namaa-mobile-navigation-drawer">
         <nav className="namaa-mobile-drawer-nav" aria-label="التنقل الثانوي للمنصة">
-          {secondary.map(({ href, label, icon }) => {
+          {PLATFORM_NAVIGATION.map(({ href, label, icon }) => {
             const active = pathname === href || pathname.startsWith(`${href}/`);
             return (
               <Link
