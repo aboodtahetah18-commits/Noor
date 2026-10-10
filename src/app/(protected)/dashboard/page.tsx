@@ -102,26 +102,26 @@ export default async function DashboardPage() {
           </header>
           <div className={styles.bankHubGrid}>
             <Link href="/bank-operations?bank=central" className={styles.bankHubCard}>
-              <span className={styles.bankHubIcon}><LucideIcon name="landmark" size={23}/></span>
+              <span className={styles.bankHubIcon}><LucideIcon name="landmark" size={24}/></span>
               <strong>البنك المركزي</strong><small>الرقابة والتنسيق والقرارات</small>
             </Link>
             <Link href="/bank-operations?bank=hilal" className={styles.bankHubCard}>
-              <span className={styles.bankHubIcon}><LucideIcon name="walletCards" size={23}/></span>
+              <span className={styles.bankHubIcon}><LucideIcon name="walletCards" size={24}/></span>
               <strong>بنك الهلال</strong><small>التشغيل والالتزامات</small>
             </Link>
             <Link href="/bank-operations?bank=solvency" className={styles.bankHubCard}>
-              <span className={styles.bankHubIcon}><LucideIcon name="lockKeyhole" size={23}/></span>
+              <span className={styles.bankHubIcon}><LucideIcon name="lockKeyhole" size={24}/></span>
               <strong>بنك ملاذ</strong><small>الادخار والطوارئ</small>
             </Link>
             <Link href="/bank-operations?bank=assets" className={styles.bankHubCard}>
-              <span className={styles.bankHubIcon}><LucideIcon name="chart" size={23}/></span>
+              <span className={styles.bankHubIcon}><LucideIcon name="chart" size={24}/></span>
               <strong>بنك أصول</strong><small>الاستثمارات والأصول</small>
             </Link>
           </div>
           <Link className={styles.bankStatementLink} href="/bank-statements">
             <LucideIcon name="receiptText" size={20}/>
             <span>استيراد كشف الحساب ومراجعة العمليات</span>
-            <LucideIcon name="chevronLeft" size={18}/>
+            <LucideIcon name="chevronLeft" size={20}/>
           </Link>
         </section>
 
