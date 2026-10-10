@@ -52,3 +52,23 @@
   .budgetPanel footer{display:grid}
   .followupGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+
+/* One bank navigation surface shared by all viewport widths. */
+.bankHub{display:grid;gap:var(--ux-space-3);padding:var(--ux-space-4);background:var(--ux-card-bg);border:1px solid var(--ux-border-emphasis);border-radius:var(--ux-radius-xl);min-width:0}
+.bankHubHeading{display:flex;align-items:center;justify-content:space-between;gap:var(--ux-space-3);flex-wrap:wrap}
+.bankHubHeading>div{display:grid;gap:var(--ux-space-1)}
+.bankHubHeading span{color:var(--ux-text-secondary);font-size:var(--ux-type-caption-size)}
+.bankHubHeading h2{margin:0;font-size:var(--ux-type-card-title-size)}
+.bankHubHeading a{color:var(--ux-action-primary);font-weight:700;text-decoration:none}
+.bankHubGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--ux-space-2)}
+.bankHubCard{min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:var(--ux-space-2);padding:var(--ux-space-3);border:1px solid var(--ux-border-default);border-radius:var(--ux-radius-lg);background:var(--ux-surface-default);text-decoration:none;color:var(--ux-text-primary)}
+.bankHubCard strong{font-size:var(--ux-type-body-sm-size)}
+.bankHubCard small{color:var(--ux-text-secondary);line-height:1.5}
+.bankHubIcon{display:grid;place-items:center;width:38px;height:38px;border-radius:var(--ux-radius-md);color:var(--ux-brand-primary);background:var(--ux-section-soft-teal)}
+.bankHubCard:nth-child(2) .bankHubIcon{background:var(--ux-surface-default);color:var(--ux-action-primary)}
+.bankHubCard:nth-child(3) .bankHubIcon{background:var(--ux-surface-warm);color:var(--ux-text-primary)}
+.bankHubCard:nth-child(4) .bankHubIcon{background:var(--ux-section-soft-teal);color:var(--ux-brand-primary)}
+.bankStatementLink{display:flex;align-items:center;gap:var(--ux-space-2);padding:var(--ux-space-3);border:1px solid var(--ux-border-default);border-radius:var(--ux-radius-lg);color:var(--ux-action-primary);font-weight:700;text-decoration:none;min-width:0}
+.bankStatementLink span{flex:1;min-width:0}
+@media(min-width:768px){.bankHubGrid{grid-template-columns:repeat(4,minmax(0,1fr))}}
