@@ -1,0 +1,118 @@
+/**
+ * Deterministic CSV bank statement preview.
+ * No uploads, persistence, AI calls or financial postings happen here.
+ * Raw statement content remains in caller memory until a separate approval flow is added.
+ */
+export interface StatementRow {
+  date: string;
+  description: string;
+  amountHalalas: number;
+  direction: 'CREDIT' | 'DEBIT';
+  reference: string;
+  fingerprint: string;
+}
+export interface StatementPreview {
+  accepted: StatementRow[];
+  duplicates: StatementRow[];
+  rejected: Array<{ line: number; reason: string }>;
+}
+function cells(line: string, separator: string): string[] {
+  const out: string[] = [];
+  let current = ''; let quoted = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') {
+      if (quoted && line[i + 1] === '"') { current += '"'; i++; }
+      else quoted = !quoted;
+    } else if (ch === separator && !quoted) { out.push(current.trim()); current = ''; }
+    else current += ch;
+  }
+  if (quoted) throw new Error('UNCLOSED_QUOTED_FIELD');
+  out.push(current.trim());
+  return out;
+}
+function splitRecords(text: string): string[] {
+  const lines: string[] = [];
+  let buffer = ''; let quoted = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (ch === '"') {
+      if (quoted && text[i+1] === '"') { buffer += '""'; i++; }
+      else { quoted = !quoted; buffer += ch; }
+    } else if ((ch === '\n' || ch === '\r') && !quoted) {
+      if (buffer.trim()) lines.push(buffer);
+      buffer = '';
+      if (ch === '\r' && text[i+1] === '\n') i++;
+    } else buffer += ch;
+  }
+  if (quoted) throw new Error('UNCLOSED_QUOTED_FIELD');
+  if (buffer.trim()) lines.push(buffer);
+  return lines;
+}
+const aliases: Record<string, string[]> = {
+  date:['date','transaction date','تاريخ','تاريخ العملية','تاريخ الحركة'],
+  description:['description','details','narration','الوصف','البيان','تفاصيل العملية'],
+  amount:['amount','المبلغ','قيمة العملية'],
+  debit:['debit','withdrawal','مدين','سحب'],
+  credit:['credit','deposit','دائن','إيداع'],
+  reference:['reference','ref','رقم المرجع','مرجع العملية','رقم العملية'],
+};
+const normalizeHeader = (v: string) => v.trim().toLowerCase().replace(/\s+/g,' ');
+const normalizedDigits = (v: string) => v.replace(/[٠-٩]/g,ch=>String(ch.charCodeAt(0)-0x0660)).replace(/[۰-۹]/g,ch=>String(ch.charCodeAt(0)-0x06f0));
+function parseMinor(value: string): number | null {
+  const str = normalizedDigits(value).replace(/[\s,٬]/g, '').replace('٫', '.').replace(/[−]/g,'-');
+  if (!/^-?\d+(?:\.\d{1,2})?$/.test(str)) return null;
+  const negative = str.startsWith('-');
+  const [whole, fraction = ''] = (negative ? str.slice(1) : str).split('.');
+  const amount = Number(whole) * 100 + Number(fraction.padEnd(2, '0'));
+  if (!Number.isSafeInteger(amount)) return null;
+  return negative ? -amount : amount;
+}
+function parseDate(raw: string): string | null {
+  const val = normalizedDigits(raw.trim());
+  const match = /^(\d{4})[-/](\d{1,2})[-/](\d{1,2})$/.exec(val);
+  if (!match) return null;
+  const y = Number(match[1]), m = Number(match[2]), d = Number(match[3]);
+  const date = new Date(Date.UTC(y,m-1,d));
+  if (date.getUTCFullYear() !== y || date.getUTCMonth() !== m-1 || date.getUTCDate() !== d) return null;
+  return [String(y).padStart(4,'0'),String(m).padStart(2,'0'),String(d).padStart(2,'0')].join('-');
+}
+export function previewStatementCsv(csv: string, accountKey: string, existingFingerprints: ReadonlySet<string> = new Set()): StatementPreview {
+  if (!accountKey.trim()) throw new Error('ACCOUNT_REQUIRED');
+  if (csv.length > 5_000_000) throw new Error('STATEMENT_TOO_LARGE');
+  const records = splitRecords(csv.replace(/^\uFEFF/,''));
+  if (!records.length) throw new Error('EMPTY_STATEMENT');
+  const separator = (records[0].match(/;/g)?.length ?? 0) > (records[0].match(/,/g)?.length ?? 0) ? ';' : ',';
+  const headers = cells(records[0],separator).map(normalizeHeader);
+  const indexOf = (field: string) => headers.findIndex(header => aliases[field]?.includes(header));
+  const dateIndex = indexOf('date'), descIndex = indexOf('description'), amountIndex = indexOf('amount');
+  const debitIndex = indexOf('debit'), creditIndex = indexOf('credit'), referenceIndex = indexOf('reference');
+  if (dateIndex < 0 || descIndex < 0 || (amountIndex < 0 && debitIndex < 0 && creditIndex < 0)) throw new Error('UNSUPPORTED_STATEMENT_COLUMNS');
+  const result: StatementPreview = {accepted: [], duplicates: [], rejected: []};
+  const seen = new Set(existingFingerprints);
+  for (let i=1;i<records.length;i++) {
+    let values: string[];
+    try {values = cells(records[i],separator);} catch {result.rejected.push({line:i+1,reason:'INVALID_CSV_ROW'});continue;}
+    const get=(index:number)=>index<0?'':(values[index]??'').trim();
+    const date=parseDate(get(dateIndex)), description=get(descIndex), reference=get(referenceIndex);
+    const rawAmount = amountIndex>=0 ? parseMinor(get(amountIndex)) : null;
+    const debit = debitIndex>=0 && get(debitIndex) ? parseMinor(get(debitIndex)) : null;
+    const credit = creditIndex>=0 && get(creditIndex) ? parseMinor(get(creditIndex)) : null;
+    if (!date || !description || (debit!==null && debit<0) || (credit!==null && credit<0)) {
+      result.rejected.push({line:i+1,reason:'INVALID_REQUIRED_FIELDS'});continue;
+    }
+    if (debit!==null && credit!==null && debit!==0 && credit!==0) {
+      result.rejected.push({line:i+1,reason:'AMBIGUOUS_DIRECTION'});continue;
+    }
+    const amount = rawAmount ?? (credit!==null ? credit : debit!==null ? -debit : null);
+    if (amount===null || amount===0) {result.rejected.push({line:i+1,reason:'INVALID_AMOUNT'});continue;}
+    const direction=amount>0?'CREDIT':'DEBIT';
+    // Fallback fingerprints may collapse legitimate identical transactions.
+    // Mark these as reviewable duplicates, never discard them silently.
+    const fingerprint=JSON.stringify([accountKey,date,description.toLowerCase().replace(/\s+/g,' '),Math.abs(amount),direction,reference]);
+    const row:StatementRow={date,description,amountHalalas:Math.abs(amount),direction,reference,fingerprint};
+    if (seen.has(fingerprint)) result.duplicates.push(row);
+    else {seen.add(fingerprint);result.accepted.push(row);}
+  }
+  return result;
+}
