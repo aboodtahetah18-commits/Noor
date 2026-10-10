@@ -4,7 +4,6 @@ import { safeReturnTo } from '@/auth/safe-return-to';
 import { getOwnerBootstrapStatus } from '@/features/auth/queries/get-owner-bootstrap-status';
 import { LoginForm } from './login-form';
 import { APP_VERSION, appEnvironmentLabel } from '@/lib/app-release';
-import { ThemeToggle } from '../../theme-toggle';
 import { BrandLogo } from '@/components/brand/brand-logo';
 import { LucideIcon } from '@/components/ui/lucide-icon';
 import styles from './login.module.css';
@@ -22,7 +21,6 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   return (
     <main className={styles.page}>
       <section className={styles.card} aria-label="تسجيل الدخول إلى نماء">
-        <div className={styles.themeButton}><ThemeToggle /></div>
 
         <header className={styles.brandBlock}>
           <BrandLogo surface="dark" className={styles.logo} priority />
