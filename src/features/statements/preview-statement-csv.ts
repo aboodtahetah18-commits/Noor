@@ -82,8 +82,10 @@ export function previewStatementCsv(csv: string, accountKey: string, existingFin
   if (csv.length > 5_000_000) throw new Error('STATEMENT_TOO_LARGE');
   const records = splitRecords(csv.replace(/^\uFEFF/,''));
   if (!records.length) throw new Error('EMPTY_STATEMENT');
-  const separator = (records[0].match(/;/g)?.length ?? 0) > (records[0].match(/,/g)?.length ?? 0) ? ';' : ',';
-  const headers = cells(records[0],separator).map(normalizeHeader);
+  const header = records[0];
+  if (header === undefined) throw new Error('EMPTY_STATEMENT');
+  const separator = (header.match(/;/g)?.length ?? 0) > (header.match(/,/g)?.length ?? 0) ? ';' : ',';
+  const headers = cells(header,separator).map(normalizeHeader);
   const indexOf = (field: string) => headers.findIndex(header => aliases[field]?.includes(header));
   const dateIndex = indexOf('date'), descIndex = indexOf('description'), amountIndex = indexOf('amount');
   const debitIndex = indexOf('debit'), creditIndex = indexOf('credit'), referenceIndex = indexOf('reference');
@@ -92,7 +94,9 @@ export function previewStatementCsv(csv: string, accountKey: string, existingFin
   const seen = new Set(existingFingerprints);
   for (let i=1;i<records.length;i++) {
     let values: string[];
-    try {values = cells(records[i],separator);} catch {result.rejected.push({line:i+1,reason:'INVALID_CSV_ROW'});continue;}
+    const record = records[i];
+    if (record === undefined) continue;
+    try {values = cells(record,separator);} catch {result.rejected.push({line:i+1,reason:'INVALID_CSV_ROW'});continue;}
     const get=(index:number)=>index<0?'':(values[index]??'').trim();
     const date=parseDate(get(dateIndex)), description=get(descIndex), reference=get(referenceIndex);
     const rawAmount = amountIndex>=0 ? parseMinor(get(amountIndex)) : null;
