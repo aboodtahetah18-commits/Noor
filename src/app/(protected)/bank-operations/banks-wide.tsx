@@ -116,7 +116,7 @@ export function BanksWide({selected,pendingReviewCount,pendingItems,dashboardDat
   const maxPending=Math.max(1,...pendingItems.map(item=>Math.abs(Number(item.amount)||0)));
   const recentApprovedValue=dashboardData.recentApproved.reduce((sum,item)=>sum+Math.abs(Number(item.amount)||0),0);
 
-  return <section className="namaa-wide-only namaa-banks-wide" dir="rtl">
+  return <section className="namaa-banks-wide namaa-banks-unified" dir="rtl">
     <header className="namaa-banks-hero namaa-wide-card">
       <div className="namaa-banks-hero-copy"><p>غرفة القيادة</p><h1>{bank.name}</h1></div>
       <span className="namaa-banks-building" aria-hidden="true">
