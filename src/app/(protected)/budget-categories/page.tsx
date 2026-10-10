@@ -1,3 +1,4 @@
+import './unified-categories.css';
 import { requireAuthenticatedUser } from '@/auth/require-authenticated-user'; import { listBudgetCategories } from '@/features/budget-categories/queries/list-budget-categories'; import { seedBudgetCategoriesAction, createBudgetCategoryAction, updateBudgetCategoryAction, deactivateBudgetCategoryAction } from './actions';
 import { ActionDialog } from '@/components/overlays/action-dialog';
 import { FocusedNextStep } from '@/components/ux/focused-next-step';
