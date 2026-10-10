@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { LucideIcon } from '@/components/ui/lucide-icon';
 import { Drawer } from '@/components/ui';
-import { PLATFORM_NAVIGATION } from '@/lib/navigation/platform-navigation';
+import { PlatformNavigationLinks } from '@/components/navigation/platform-navigation-links';
 import { BrandLogo } from '@/components/brand/brand-logo';
 import { ProfileTrigger, type HeaderProfile } from './profile-trigger';
 
@@ -48,23 +48,7 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
       </header>
 
       <Drawer open={open} onOpenChange={setOpen} title="القائمة" side="start" className="namaa-mobile-navigation-drawer">
-        <nav className="namaa-mobile-drawer-nav" aria-label="التنقل الثانوي للمنصة">
-          {PLATFORM_NAVIGATION.map(({ href, label, icon }) => {
-            const active = pathname === href || pathname.startsWith(`${href}/`);
-            return (
-              <Link
-                key={href}
-                href={href}
-                onClick={() => setOpen(false)}
-                className={active ? 'is-active' : ''}
-                aria-current={active ? 'page' : undefined}
-              >
-                <span className="namaa-mobile-drawer-icon" aria-hidden="true"><LucideIcon name={icon} size={20}/></span>
-                <span>{label}</span>
-              </Link>
-            );
-          })}
-        </nav>
+        <PlatformNavigationLinks className="namaa-mobile-drawer-nav" pathname={pathname} onNavigate={() => setOpen(false)}/>
       </Drawer>
     </>
   );
