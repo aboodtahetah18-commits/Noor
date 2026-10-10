@@ -2,7 +2,7 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [main, "feature/entity-profile-governance-redesign", "cleanup/full-system-20260930"]
+    branches: [main, "feature/entity-profile-governance-redesign", "cleanup/full-system-20260930", "feature/financial-bank-autonomy-learning-20261010"]
 
 permissions:
   contents: read
