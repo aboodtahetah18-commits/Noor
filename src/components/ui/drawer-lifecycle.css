@@ -27,3 +27,58 @@
   overflow:visible!important;
   box-shadow:none!important;
 }
+
+/* Isolate the one navigation drawer from historical hidden/mobile-only menus. */
+.ux-drawer-surface.namaa-mobile-navigation-drawer[open],
+.ux-drawer-surface.namaa-conversation-navigation-drawer[open] {
+  position:fixed!important;
+  inset-block:0!important;
+  inset-inline-start:0!important;
+  inset-inline-end:auto!important;
+  width:min(88vw,380px)!important;
+  max-width:min(88vw,380px)!important;
+  height:100dvh!important;
+  max-height:100dvh!important;
+  margin:0!important;
+  padding:0!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  background:var(--ux-surface-default)!important;
+  color:var(--ux-text-primary)!important;
+}
+.ux-drawer-surface:is(.namaa-mobile-navigation-drawer,.namaa-conversation-navigation-drawer)[open] .ux-overlay-shell,
+.ux-drawer-surface:is(.namaa-mobile-navigation-drawer,.namaa-conversation-navigation-drawer)[open] .ux-dialog-body {
+  display:block!important;
+  position:relative!important;
+  height:auto!important;
+  min-height:0!important;
+  width:100%!important;
+  overflow:visible!important;
+  visibility:visible!important;
+}
+.ux-drawer-surface[open] .namaa-mobile-drawer-nav,
+.ux-drawer-surface[open] .namaa-conversation-navigation-drawer .namaa-unified-nav-icon,
+.ux-drawer-surface[open] .namaa-conversation-navigation-body .namaa-unified-nav-icon {
+  visibility:visible!important;
+}
+.ux-drawer-surface[open] nav[aria-label="التنقل في منصة نماء"] {
+  display:flex!important;
+  flex-direction:column!important;
+  gap:4px!important;
+  width:100%!important;
+  min-width:0!important;
+  visibility:visible!important;
+  opacity:1!important;
+}
+.ux-drawer-surface[open] nav[aria-label="التنقل في منصة نماء"] > a {
+  display:flex!important;
+  align-items:center!important;
+  gap:12px!important;
+  min-height:44px!important;
+  padding:10px 12px!important;
+  width:100%!important;
+  color:var(--ux-text-primary)!important;
+  text-decoration:none!important;
+  visibility:visible!important;
+  opacity:1!important;
+}
