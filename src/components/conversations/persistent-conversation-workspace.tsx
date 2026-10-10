@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
-import { LucideIcon } from '@/components/ui/lucide-icon';
+import { LucideIcon, type LucideIconName } from '@/components/ui/lucide-icon';
 import { StatementReviewPanel } from '@/components/conversations/statement-review-panel';
 import { GovernorOnboardingIntake } from '@/components/conversations/governor-onboarding-intake';
 import { GovernanceMobileSheet } from '@/components/conversations/governance-mobile-sheet';
