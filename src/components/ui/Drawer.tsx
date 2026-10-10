@@ -46,9 +46,6 @@ export function Drawer({
     if (event.target === ref.current) close();
   };
 
-  // A closed drawer must not exist in the DOM. This prevents any legacy
-  // dialog/sheet CSS from making navigation visible before the user opens it.
-  if (!open) return null;
 
   return (
     <dialog
@@ -59,7 +56,7 @@ export function Drawer({
       aria-labelledby={titleId}
       aria-describedby={description ? descriptionId : undefined}
       onClick={onBackdrop}
-      onClose={close}
+      onClose={() => { if (open) close(); }}
       onCancel={(event) => { event.preventDefault(); close(); }}
     >
       <div className="ux-overlay-shell" dir="rtl">
