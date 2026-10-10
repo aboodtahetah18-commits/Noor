@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
-import { LucideIcon, type LucideIconName } from '@/components/ui/lucide-icon';
+import { LucideIcon } from '@/components/ui/lucide-icon';
 import { StatementReviewPanel } from '@/components/conversations/statement-review-panel';
 import { GovernorOnboardingIntake } from '@/components/conversations/governor-onboarding-intake';
 import { GovernanceMobileSheet } from '@/components/conversations/governance-mobile-sheet';
@@ -16,6 +16,7 @@ import { ALGORITHM_ROLE_REGISTRY, algorithmRolesForRoom, type AlgorithmRoleRef }
 import { buildOversightPriorityItems, buildOversightSummaryMetrics, filterAndSortOversightItems, type OversightViewFilter, type OversightViewSort } from '@/lib/governance/governance-oversight-view';
 import { buildGovernanceUserActionItems } from '@/lib/governance/governance-user-action-center';
 import { NAMAA_PERSONA_ASSETS } from './persona-assets';
+import { PLATFORM_NAVIGATION } from '@/lib/navigation/platform-navigation';
 import styles from './conversation-workspace.module.css';
 
 type RoomKey = 'central' | 'operations' | 'solvency' | 'assets' | 'hilal' | 'advisor' | 'secretary' | 'council';
@@ -30,16 +31,7 @@ type UserProfile = { id:string; name:string; email:string|null; image:string|nul
 type OnboardingReviewFact = { key:string; label:string; raw:string; verified_at?:string; confidence:number };
 type ConversationAttachment = { id:string; message_id?:string|null; file_name:string; content_type?:string|null; verification_status?:string|null; created_at?:string };
 type ChatFontSize='small'|'medium'|'large';
-const PLATFORM_NAV: ReadonlyArray<{href:string;label:string;icon:LucideIconName}> = [
-  {href:'/dashboard',label:'الرئيسية',icon:'house'},
-  {href:'/accounts',label:'الحسابات',icon:'creditCard'},
-  {href:'/transactions',label:'العمليات',icon:'repeat2'},
-  {href:'/budget',label:'الميزانية',icon:'chart'},
-  {href:'/bank-operations',label:'البنوك',icon:'landmark'},
-  {href:'/investments',label:'الاستثمارات',icon:'chart'},
-  {href:'/reports',label:'التقارير',icon:'receiptText'},
-  {href:'/alerts',label:'التنبيهات',icon:'bell'},
-];
+
 type FocusedChat={kind:'role';key:string;title:string;roomId:RoomKey}|{kind:'meeting';key:string;title:string;roomId:'council'};
 type FocusedChatIndexItem={
   room_key:RoomKey;
@@ -1468,7 +1460,7 @@ export function PersistentConversationWorkspace(){
     {roomsOpen&&<div className={styles.mobileOverlay} role="dialog" aria-modal="true" aria-label="القائمة الجانبية"><button type="button" className={styles.scrim} aria-label="إغلاق القائمة الجانبية" onClick={()=>setRoomsOpen(false)}/><aside className={styles.mobileSideSheet}><div className={styles.sideBrandRow}><span className={styles.sideBrandLogoWrap} aria-label="نماء"><Image className={`${styles.sideBrandLogo} ${styles.sideBrandLogoLight}`} src="/brand/ndos/namaa-logo-color-transparent.png" alt="" width={96} height={38}/><Image className={`${styles.sideBrandLogo} ${styles.sideBrandLogoDark}`} src="/brand/ndos/namaa-logo-white-transparent.png" alt="" width={96} height={38}/></span><button type="button" className={styles.sideUserButton} aria-label="ملف المستخدم" aria-expanded={userMenuOpen} onClick={()=>setUserMenuOpen(open=>!open)}>{profile?.image?<span className={styles.userImage} style={{backgroundImage:`url("${profile.image.replace(/"/g,'')}")`}} aria-hidden="true"/>:<LucideIcon name="circleUserRound" size={20}/>}</button>{userMenuOpen&&<div className={styles.drawerUserMenu} role="dialog" aria-label="ملف المستخدم"><div className={styles.userMenuIdentity}><button type="button" className={styles.userMenuAvatar} aria-label="صورة المستخدم">{profile?.image?<span className={styles.userImage} style={{backgroundImage:`url("${profile.image.replace(/"/g,'')}")`}}/>:<LucideIcon name="circleUserRound" size={32}/>}</button><div><strong>{profile?.name||'المستخدم'}</strong><small>{profile?.email||''}</small></div></div><button type="button" onClick={()=>{setRoomsOpen(false);setUserMenuOpen(false);setProfileOpen(true)}}><LucideIcon name="pencil" size={20}/><span>الملف الشخصي وتعديل البيانات</span></button><button type="button" onClick={()=>{setRoomsOpen(false);setUserMenuOpen(false);setSettingsSection('general');setSettingsOpen(true)}}><LucideIcon name="settings" size={20}/><span>الإعدادات</span></button><button type="button" className={styles.logoutButton} onClick={()=>void logout()}><LucideIcon name="logOut" size={20}/><span>تسجيل الخروج</span></button></div>}</div>
       <div className={styles.sideSection}>
         <small>التنقل في المنصة</small>
-        <div className={styles.sideUtilityList}>{PLATFORM_NAV.map(item=><button type="button" key={item.href} onClick={()=>{setRoomsOpen(false);router.push(item.href)}}><LucideIcon name={item.icon} size={20}/><span>{item.label}</span></button>)}</div>
+        <div className={styles.sideUtilityList}>{PLATFORM_NAVIGATION.map(item=><button type="button" key={item.href} onClick={()=>{setRoomsOpen(false);router.push(item.href)}}><LucideIcon name={item.icon} size={20}/><span>{item.label}</span></button>)}</div>
       </div>
       <div className={styles.sideSection}><small>مركز العمل والمحادثات</small>{onboardingComplete!==false?directoryTabs:null}{mobileDirectoryContent}</div>
       <div className={styles.sideSection}>
