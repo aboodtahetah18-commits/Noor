@@ -10776,12 +10776,14 @@
   inset:0!important;
   display:block!important;
   isolation:isolate!important;
-  z-index:var(--ux-z-modal)!important;
+  z-index:9999!important;
+  pointer-events:auto!important;
   overflow:hidden!important;
 }
 
 .mobileOverlay>.scrim{
   position:absolute!important;
+  pointer-events:auto!important;
   inset:0!important;
   width:100%!important;
   height:100%!important;
@@ -10860,8 +10862,8 @@
 
 @media (min-width:768px){
   .mobileSideSheet{
-    width:min(46vw,420px)!important;
-    max-width:420px!important;
+    width:min(52vw,440px)!important;
+    max-width:440px!important;
   }
 
   .mobileSheet{
@@ -11367,25 +11369,7 @@
   cursor:pointer!important;
 }
 
-.mobileOverlay{
-  z-index:9999!important;
-  pointer-events:auto!important;
-}
 
-.mobileOverlay>.scrim{
-  pointer-events:auto!important;
-}
-
-.mobileOverlay>.mobileSideSheet{
-  pointer-events:auto!important;
-}
-
-@media (min-width:768px){
-  .mobileSideSheet{
-    width:min(52vw,440px)!important;
-    max-width:440px!important;
-  }
-}
 
 
 
