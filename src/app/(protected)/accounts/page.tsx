@@ -1,3 +1,4 @@
+import './unified-accounts.css';
 import { requireAuthenticatedUser } from '@/auth/require-authenticated-user';
 import { listAccounts } from '@/features/accounts/queries/list-accounts';
 import { Money, sumMoney } from '@/financial-engine/money';
