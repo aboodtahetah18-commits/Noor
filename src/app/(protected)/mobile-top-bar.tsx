@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { LucideIcon, type LucideIconName } from '@/components/ui/lucide-icon';
 import { Drawer } from '@/components/ui';
-import { ThemeToggle } from '../theme-toggle';
 import { BrandLogo } from '@/components/brand/brand-logo';
 import { ProfileTrigger, type HeaderProfile } from './profile-trigger';
 
@@ -56,13 +55,12 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
           <Link href="/alerts" aria-label="التنبيهات" title="التنبيهات">
             <LucideIcon name="bell" size={20} />
           </Link>
-          <ThemeToggle />
           <ProfileTrigger profile={profile} className="namaa-mobile-profile-trigger" />
         </div>
       </header>
 
       <Drawer open={open} onOpenChange={setOpen} title="القائمة" side="start" className="namaa-mobile-navigation-drawer">
-        <nav className="namaa-mobile-drawer-nav" aria-label="التنقل الثانوي للجوال والتابلت">
+        <nav className="namaa-mobile-drawer-nav" aria-label="التنقل الثانوي للمنصة">
           {secondary.map(({ href, label, icon }) => {
             const active = pathname === href || pathname.startsWith(`${href}/`);
             return (
