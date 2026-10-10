@@ -11407,3 +11407,26 @@
   inset-block-start:0!important;
 }
 
+
+
+/* Shared navigation links keep the same touch targets as the former buttons. */
+.sideUtilityList :global(a) {
+  display:flex;
+  align-items:center;
+  gap:var(--ux-space-3);
+  min-height:44px;
+  padding:var(--ux-space-2) var(--ux-space-3);
+  border:0;
+  border-radius:var(--ux-radius-3);
+  background:transparent;
+  color:var(--ux-text-primary);
+  font:inherit;
+  font-size:var(--ux-type-body-sm-size);
+  text-decoration:none;
+  width:100%;
+}
+.sideUtilityList :global(a.is-active) {
+  background:var(--ux-section-soft-teal);
+  color:var(--ux-brand-primary);
+  font-weight:700;
+}
