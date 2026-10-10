@@ -1,3 +1,4 @@
+import './bank-operations-unified.css';
 import { requireAuthenticatedUser } from '@/auth/require-authenticated-user';
 import { getDailyBankOperationsCenter } from '@/features/bank-operations/queries/get-daily-bank-operations-center';
 import { BanksWide } from './banks-wide';
