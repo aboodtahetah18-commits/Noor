@@ -1,0 +1,25 @@
+/* Unified banking center — same DOM at every breakpoint, mobile first. */
+.namaa-banks-unified-page {width:100%;min-width:0;max-width:100%;overflow-x:clip}
+.namaa-banks-unified {display:block!important;width:100%;max-width:100%;min-width:0}
+.namaa-banks-unified :is(.namaa-banks-layout,.namaa-banks-dashboard,.namaa-banks-team,.namaa-banks-goals,.namaa-banks-visual-dashboard,.namaa-banks-health-grid,.namaa-banks-kpis){min-width:0;max-width:100%}
+.namaa-banks-unified .namaa-banks-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--ux-space-3)}
+.namaa-banks-unified .namaa-banks-kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--ux-space-2)}
+.namaa-banks-unified .namaa-banks-visual-dashboard{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--ux-space-3)}
+.namaa-banks-unified .namaa-banks-health-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--ux-space-2)}
+.namaa-banks-unified .namaa-banks-selector{display:flex;max-width:100%;gap:var(--ux-space-2);overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin}
+.namaa-banks-unified .namaa-banks-selector a{flex:0 0 auto;white-space:nowrap}
+.namaa-banks-unified .namaa-banks-hero{min-width:0;overflow:hidden}
+.namaa-banks-unified .namaa-banks-pending-list article{min-width:0}
+.namaa-banks-unified .namaa-banks-pending-list strong{overflow-wrap:anywhere}
+@media(min-width:900px){
+ .namaa-banks-unified .namaa-banks-layout{grid-template-columns:minmax(190px,0.7fr) minmax(0,2fr);align-items:start}
+ .namaa-banks-unified .namaa-banks-goals{grid-column:1/-1}
+ .namaa-banks-unified .namaa-banks-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .namaa-banks-unified .namaa-banks-visual-dashboard{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:480px){
+ .namaa-banks-unified .namaa-banks-kpis article,
+ .namaa-banks-unified .namaa-banks-health-grid article{padding:var(--ux-space-3)}
+ .namaa-banks-unified :is(.namaa-banks-kpis strong,.namaa-banks-health-grid strong){overflow-wrap:anywhere}
+ .namaa-banks-unified .namaa-banks-building{pointer-events:none}
+}
