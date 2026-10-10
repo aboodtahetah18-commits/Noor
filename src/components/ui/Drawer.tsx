@@ -1,5 +1,7 @@
 'use client';
 
+import './drawer-lifecycle.css';
+
 import { useEffect, useId, useRef, type MouseEvent, type ReactNode } from 'react';
 
 export type DrawerProps = {
