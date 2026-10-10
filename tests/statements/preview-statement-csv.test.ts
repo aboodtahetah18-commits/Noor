@@ -24,20 +24,20 @@ describe('statement import preview', () => {
     expect(result.accepted).toHaveLength(1);
   });
   it('treats zero debit or credit as an empty side, not a zero transaction', () => {
-    const csv = 'date,description,debit,credit\\n2026-10-01,Salary,0,900\\n2026-10-02,Purchase,45,0';
+    const csv = 'date,description,debit,credit\n2026-10-01,Salary,0,900\n2026-10-02,Purchase,45,0';
     const result = previewStatementCsv(csv, 'a');
     expect(result.accepted).toHaveLength(2);
     expect(result.accepted[0]).toMatchObject({direction:'CREDIT', amountHalalas:90000});
     expect(result.accepted[1]).toMatchObject({direction:'DEBIT', amountHalalas:4500});
   });
   it('rejects malformed nonempty financial values instead of treating them as missing', () => {
-    const csv = 'date,description,debit,credit\\n2026-10-01,Unknown,abc,\\n2026-10-02,Unknown,,1.234\\n2026-10-03,Valid,,10';
+    const csv = 'date,description,debit,credit\n2026-10-01,Unknown,abc,\n2026-10-02,Unknown,,1.234\n2026-10-03,Valid,,10';
     const result = previewStatementCsv(csv, 'a');
     expect(result.accepted).toHaveLength(1);
     expect(result.rejected).toHaveLength(2);
   });
   it('does not fall back to debit when the specified amount column is malformed', () => {
-    const csv = 'date,description,amount,debit\\n2026-10-01,Malformed,abc,25';
+    const csv = 'date,description,amount,debit\n2026-10-01,Malformed,abc,25';
     const result = previewStatementCsv(csv, 'a');
     expect(result.accepted).toHaveLength(0);
     expect(result.rejected).toHaveLength(1);
