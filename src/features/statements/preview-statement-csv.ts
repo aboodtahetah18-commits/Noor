@@ -100,15 +100,18 @@ export function previewStatementCsv(csv: string, accountKey: string, existingFin
     const get=(index:number)=>index<0?'':(values[index]??'').trim();
     const date=parseDate(get(dateIndex)), description=get(descIndex), reference=get(referenceIndex);
     const rawAmount = amountIndex>=0 ? parseMinor(get(amountIndex)) : null;
-    const debit = debitIndex>=0 && get(debitIndex) ? parseMinor(get(debitIndex)) : null;
-    const credit = creditIndex>=0 && get(creditIndex) ? parseMinor(get(creditIndex)) : null;
-    if (!date || !description || (debit!==null && debit<0) || (credit!==null && credit<0)) {
+    const debitText = get(debitIndex), creditText = get(creditIndex);
+    const debit = debitText ? parseMinor(debitText) : null;
+    const credit = creditText ? parseMinor(creditText) : null;
+    if (!date || !description || (debitText && debit===null) || (creditText && credit===null) ||
+        (amountIndex>=0 && rawAmount===null) || (debit!==null && debit<0) || (credit!==null && credit<0)) {
       result.rejected.push({line:i+1,reason:'INVALID_REQUIRED_FIELDS'});continue;
     }
-    if (debit!==null && credit!==null && debit!==0 && credit!==0) {
+    if ((debit!==null && debit>0) && (credit!==null && credit>0)) {
       result.rejected.push({line:i+1,reason:'AMBIGUOUS_DIRECTION'});continue;
     }
-    const amount = rawAmount ?? (credit!==null ? credit : debit!==null ? -debit : null);
+    const splitAmount = credit!==null && credit>0 ? credit : debit!==null && debit>0 ? -debit : null;
+    const amount = amountIndex>=0 ? rawAmount : splitAmount;
     if (amount===null || amount===0) {result.rejected.push({line:i+1,reason:'INVALID_AMOUNT'});continue;}
     const direction=amount>0?'CREDIT':'DEBIT';
     // Fallback fingerprints may collapse legitimate identical transactions.
