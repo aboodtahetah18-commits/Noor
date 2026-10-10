@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import './unified-shell.css';
 import { requireAuthenticatedUser } from '@/auth/require-authenticated-user';
 import { MobileBottomNav } from './mobile-bottom-nav';
 import { MobileTopBar } from './mobile-top-bar';
@@ -18,7 +19,7 @@ export default async function ProtectedLayout({ children }: Readonly<{ children:
   };
 
   return (
-    <div className="protected-app-shell" data-responsive-platform="mobile-tablet">
+    <div className="protected-app-shell" data-responsive-platform="unified-mobile-first">
       <FinancialFormIntelligence />
       <a className="skip-link" href="#main-content">تجاوز إلى المحتوى الرئيسي</a>
 
