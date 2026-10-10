@@ -1,0 +1,3 @@
+/* Native dialog is mounted before showModal() runs. Closed state must remain hidden. */
+.ux-drawer-surface:not([open]) { display:none!important; }
+.ux-drawer-surface[open] { pointer-events:auto; }
