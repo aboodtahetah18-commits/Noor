@@ -11430,3 +11430,30 @@
   color:var(--ux-brand-primary);
   font-weight:700;
 }
+
+/* The shared native Drawer owns positioning; previous side-sheet absolute
+   positioning must not escape the dialog's scroll container. */
+:global(.namaa-conversation-navigation-drawer.ux-drawer-surface[open]) {
+  position:fixed!important;
+  inset-block:0!important;
+  inset-inline-start:0!important;
+  inset-inline-end:auto!important;
+  width:min(88vw,380px)!important;
+  max-width:min(88vw,380px)!important;
+  height:100dvh!important;
+  max-height:100dvh!important;
+  margin:0!important;
+  padding:0!important;
+  overflow-y:auto!important;
+}
+:global(.namaa-conversation-navigation-drawer) .mobileSideSheet {
+  position:relative!important;
+  inset:auto!important;
+  width:100%!important;
+  max-width:none!important;
+  min-height:0!important;
+  height:auto!important;
+  max-height:none!important;
+  overflow:visible!important;
+  box-shadow:none!important;
+}
