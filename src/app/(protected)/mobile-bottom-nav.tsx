@@ -19,7 +19,7 @@ export function MobileBottomNav() {
   if (chatFirst) return null;
 
   return (
-    <nav className="namaa-mobile-bottom-nav" aria-label="التنقل الرئيسي للجوال والتابلت">
+    <nav className="namaa-mobile-bottom-nav" aria-label="التنقل الرئيسي للمنصة">
       {items.map((item) => {
         const active = item.href === '/dashboard'
           ? pathname === '/dashboard'
