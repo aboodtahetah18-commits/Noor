@@ -14,9 +14,9 @@ describe('statement import preview', () => {
   it('supports quoted commas and split debit/credit columns', () => {
     const result = previewStatementCsv('date;description;debit;credit\n2026-10-01;"Store; branch";15.25;\n2026-10-02;Salary;;900', 'a');
     expect(result.accepted).toHaveLength(2);
-    expect(result.accepted[0].description).toBe('Store; branch');
-    expect(result.accepted[0].direction).toBe('DEBIT');
-    expect(result.accepted[1].direction).toBe('CREDIT');
+    expect(result.accepted[0]!.description).toBe('Store; branch');
+    expect(result.accepted[0]!.direction).toBe('DEBIT');
+    expect(result.accepted[1]!.direction).toBe('CREDIT');
   });
   it('rejects invalid dates and does not silently import invalid values', () => {
     const result = previewStatementCsv('date,description,amount\n2026-02-30,test,15\n2026-02-28,valid,19.99','a');
@@ -28,6 +28,6 @@ describe('statement import preview', () => {
   });
   it('distinguishes imports across accounts', () => {
     const csv='date,description,amount\n2026-10-01,test,-10';
-    expect(previewStatementCsv(csv,'a').accepted[0].fingerprint).not.toBe(previewStatementCsv(csv,'b').accepted[0].fingerprint);
+    expect(previewStatementCsv(csv,'a').accepted[0]!.fingerprint).not.toBe(previewStatementCsv(csv,'b').accepted[0]!.fingerprint);
   });
 });
