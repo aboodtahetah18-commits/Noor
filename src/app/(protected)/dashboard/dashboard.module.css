@@ -110,10 +110,9 @@
 .page:global(.namaa-empty-cycle-page) .emptyState {
   border:0!important;
   border-radius:0!important;
-  box-shadow:none!important;
   max-width:none!important;
   width:100%!important;
   min-height:calc(100dvh - 170px);
-  padding:clamp(16px,5vw,48px)!important;
+  padding:var(--ux-space-4)!important;
   margin:0!important;
 }
