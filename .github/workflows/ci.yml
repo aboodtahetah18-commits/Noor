@@ -22,5 +22,8 @@ jobs:
           node-version: '24.20.0'
       - run: npm install --legacy-peer-deps --no-audit --no-fund
       - run: npm run typecheck
-      - run: npm run vercel:build
       - run: npm run quality:gate
+      - run: npm run vercel:build
+        env:
+          APP_ENV: preview
+          DATABASE_URL: postgresql://namaa_build:build_only@127.0.0.1:5432/namaa_build
