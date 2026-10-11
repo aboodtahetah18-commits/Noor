@@ -95,7 +95,7 @@
   min-height:0;
   height:100%;
   margin:0;
-  padding:clamp(12px,4vw,32px);
+  padding:var(--ux-space-4);
   gap:var(--ux-space-3);
 }
 @media (min-width:768px){
