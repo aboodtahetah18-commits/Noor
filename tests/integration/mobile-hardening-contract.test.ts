@@ -10,7 +10,7 @@ describe('Phase 32 mobile hardening contract', () => {
     const layout = read('src/app/(protected)/layout.tsx');
     const nav = read('src/app/(protected)/mobile-bottom-nav.tsx');
     expect(layout).toContain('<MobileBottomNav />');
-    expect(nav).toContain('aria-label="التنقل الرئيسي للجوال"');
+    expect(nav).toContain('aria-label="التنقل الرئيسي للمنصة"');
     expect(nav).toContain("'/dashboard'");
     expect(nav).toContain("'/transactions'");
     expect(nav).toContain("'/budget'");
@@ -21,7 +21,7 @@ describe('Phase 32 mobile hardening contract', () => {
     const css = read('src/app/globals.css');
     expect(css).toContain('env(safe-area-inset-bottom)');
     expect(css).toContain('min-height:44px');
-    expect(css).toContain('.mobile-bottom-nav');
+    expect(read('src/app/namaa-app-shell.css')).toContain('.namaa-mobile-bottom-nav');
   });
 
   it('converts financial tables to labeled mobile cards instead of horizontal tables', () => {
