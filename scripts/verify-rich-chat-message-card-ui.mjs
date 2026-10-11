@@ -11,7 +11,7 @@ if(!/messages\.slice\(messageIndex\+1\)\.some\([^=]+=>[^\n;]*\.sender_type!=='us
 for(const token of ['.messageMeta{','.messageReceiptRead{','.structuredCardHeader{','.messageCopy{']){
   if(!css.includes(token)) throw new Error('RICH-CHAT-MESSAGE-STYLE-MISSING '+token);
 }
-if(!css.includes('width:min(820px,92%)')||!css.includes('width:88%')||!css.includes('max-width:88%')||!css.includes('max-width:78%')){
+if(!css.includes('max-width:min(820px,92%)')||!css.includes('max-width:min(72%,680px)!important')){
   throw new Error('RICH-CHAT-MESSAGE-WIDTH-CONTRACT-MISSING');
 }
 if(!css.includes('min-height:58px')||!css.includes('width:40px')){
