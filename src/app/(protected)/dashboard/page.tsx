@@ -24,7 +24,7 @@ export default async function DashboardPage() {
 
   if (!dashboard) {
     return (
-      <main className={styles.page} dir="rtl">
+      <main className={`${styles.page} namaa-empty-cycle-page`} dir="rtl">
         <section className={styles.emptyState}>
           <div className={styles.emptyIcon}><LucideIcon name="walletCards" size={32}/></div>
           <span>مستقبلي</span>
