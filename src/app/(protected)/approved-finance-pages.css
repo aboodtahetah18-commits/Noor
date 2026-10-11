@@ -1,0 +1,35 @@
+/* Approved Namaa finance screens: one governed presentation for the four core pages.
+   Legacy functional forms remain intact; the old card geometry is superseded here. */
+.namaa-approved-finance{direction:rtl;width:100%;min-width:0;max-width:100%;margin:0;padding:var(--ux-space-3);background:var(--ux-page-bg);color:var(--ux-text-primary);overflow-x:clip}
+.namaa-approved-finance :is(.page-shell,.p47-content-shell,.namaa-banks-wide,.namaa-banks-unified){width:100%;max-width:100%;min-width:0;margin-inline:auto}
+.namaa-approved-finance :is(.p47-resource-header,.p47-page-heading,.p4912-ledger-heading){display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--ux-space-3);padding:var(--ux-space-3) 0;margin:0;background:transparent;border:0;box-shadow:var(--ux-shadow-none)}
+.namaa-approved-finance :is(h1,h2,h3,p){overflow-wrap:normal;word-break:normal;hyphens:none}
+.namaa-approved-finance :is(.p47-resource-header,.p47-page-heading,.p4912-ledger-heading) h1{font-size:var(--ux-type-page-title-size);line-height:1.35;margin:0;color:var(--ux-text-primary)}
+.namaa-approved-finance :is(.p47-resource-card,.p47-panel,.p47-account-tile,.p47-transaction-row,.p47-budget-summary-grid>article,.namaa-banks-team,.namaa-banks-dashboard,.namaa-banks-goals){min-width:0;max-width:100%;border:1px solid var(--ux-border-default);border-radius:var(--ux-radius-lg);background:var(--ux-surface-default);box-shadow:var(--ux-shadow-none)}
+.namaa-approved-finance :is(.p47-account-tile,.p47-transaction-row,.p47-budget-summary-grid>article){padding:var(--ux-space-3)}
+.namaa-approved-finance :is(.p47-account-map,.p47-transaction-list,.p47-budget-list,.namaa-banks-team-list){display:grid;grid-template-columns:minmax(0,1fr);gap:var(--ux-space-2)}
+.namaa-approved-finance :is(.p47-primary-action,.primary-link,.primary-button){min-height:44px;background:var(--ux-brand-primary);color:var(--ux-text-inverse);border-radius:var(--ux-radius-lg);display:inline-flex;align-items:center;justify-content:center;gap:var(--ux-space-2);padding:var(--ux-space-2) var(--ux-space-4);text-decoration:none}
+.namaa-approved-finance :is(.p47-secondary-action,.p47-quiet-action){min-height:44px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--ux-border-default);border-radius:var(--ux-radius-lg);background:var(--ux-surface-default);color:var(--ux-brand-primary);padding:var(--ux-space-2) var(--ux-space-3)}
+.namaa-approved-finance :is(.p47-resource-card,.p47-panel){padding:var(--ux-space-4)}
+.namaa-approved-finance :is(.p47-filter-panel,.p47-filter-grid){min-width:0;max-width:100%}
+.namaa-approved-finance :is(input,select,textarea,button){max-width:100%}
+.namaa-approved-finance .p74-focus-summary{padding:var(--ux-space-5);border-radius:var(--ux-radius-lg);background:var(--ux-brand-primary);color:var(--ux-text-inverse);margin-block:var(--ux-space-3)}
+.namaa-approved-finance .p74-focus-summary :is(strong,span,small){color:inherit}
+.namaa-approved-finance .p47-budget-hero{padding:var(--ux-space-4);border-radius:var(--ux-radius-lg);border:1px solid var(--ux-border-default);background:var(--ux-section-soft-teal)}
+.namaa-approved-finance .p47-budget-summary-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--ux-space-2)}
+.namaa-approved-finance .p47-budget-summary-grid>article:nth-child(4n+1){background:var(--ux-section-soft-teal)}
+.namaa-approved-finance .p47-budget-summary-grid>article:nth-child(4n+2){background:var(--ux-surface-warm)}
+.namaa-approved-finance .p47-budget-summary-grid>article:nth-child(4n+3){background:var(--ux-surface-default)}
+.namaa-approved-finance .p47-budget-summary-grid>article:nth-child(4n+4){background:var(--ux-section-soft-teal)}
+.namaa-approved-finance .p47-transaction-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:var(--ux-space-2)}
+.namaa-approved-finance .p47-transaction-main{min-width:0}
+.namaa-approved-finance .p47-transaction-amount{min-width:0;text-align:start}
+.namaa-approved-finance .namaa-banks-hero{border-radius:var(--ux-radius-lg);background:var(--ux-section-soft-teal);box-shadow:var(--ux-shadow-none)}
+.namaa-approved-finance .namaa-banks-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--ux-space-3)}
+.namaa-approved-finance .namaa-banks-team-list{grid-template-columns:minmax(0,1fr)}
+@media(min-width:768px){
+ .namaa-approved-finance{padding:var(--ux-space-5)}
+ .namaa-approved-finance .p47-budget-summary-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .namaa-approved-finance .p47-account-map{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .namaa-approved-finance .namaa-banks-layout{grid-template-columns:minmax(0,1fr)}
+}
