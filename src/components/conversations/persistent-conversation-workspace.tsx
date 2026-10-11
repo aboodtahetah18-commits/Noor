@@ -1355,6 +1355,9 @@ export function PersistentConversationWorkspace(){
         </button>)}
       </div>{savedFocusedChats(recentMeetingChats)}</>;
 
+  // Transitional directory data is retained for focused-chat state, but not rendered.
+  void directoryTabs;
+  void mobileDirectoryContent;
   const contextCards=<><section className={styles.contextCard}><small>الجهة الحالية</small><strong>{activeRoom.title}</strong><p>{activeRoom.lead} · {activeRoom.subtitle}</p></section><section className={styles.contextCard}><small>المشاركون الفعليون</small><strong>{participants.length?`${participants.length} اختصاصيين`:'اختصاصيون حسب الموضوع'}</strong><p>{participants.length?participants.map(p=>p.display_name).join('، '):activeRoom.specialists}. لا تُستدعى جميع الجهات تلقائيًا.</p></section><section className={styles.contextCard}><small>حد التنفيذ</small><strong>توصية ومتابعة فقط</strong><p>لا تحويل، لا سداد، ولا إجراء مالي خارجي يُعد منفذًا من المنصة.</p></section></>;
 
   return <section className={`${styles.page} ${styles[`chatFont_${chatFontSize}`]}`} dir="rtl" aria-label="محادثات نماء">
