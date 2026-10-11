@@ -1,17 +1,11 @@
 import Link from 'next/link';
-import { randomUUID } from 'node:crypto';
 import { requireAuthenticatedUser } from '@/auth/require-authenticated-user';
 import { listTransactions } from '@/features/transactions/queries/list-transactions';
 import { listAccounts } from '@/features/accounts/queries/list-accounts';
 import { listBudgetCategories } from '@/features/budget-categories/queries/list-budget-categories';
 import { getDashboardSummary } from '@/features/dashboard/queries/get-dashboard-summary';
-import { getCurrentFinancialCycle } from '@/features/cycles/queries/get-current-cycle';
-import { getUserOperationalDate } from '@/features/settings/queries/get-user-timezone';
 import { formatSar } from '@/lib/format-money';
 import { CompactFilterPanel } from '@/components/ui/compact-filter-panel';
-import { recordExpenseAction } from '../expenses/actions';
-import { transferAction } from '../transfers/actions';
-import { recordRefundAction } from '../refunds/new/actions';
 import { FocusedNextStep } from '@/components/ux/focused-next-step';
 import { transactionHistoryFiltersSchema } from '@/features/transactions/schemas/transaction-history';
 const TYPE_LABELS:Record<string,string>={INCOME:'دخل',EXPENSE:'مصروف',TRANSFER:'تحويل',REFUND:'استرداد',SAVING_TRANSFER:'تحويل للادخار',EMERGENCY_CONTRIBUTION:'مساهمة طوارئ',EMERGENCY_WITHDRAWAL:'سحب طارئ',GOAL_CONTRIBUTION:'مساهمة هدف',OBLIGATION_PAYMENT:'سداد التزام'};
@@ -21,7 +15,7 @@ function queryString(current:Record<string,string|undefined>,patch:Record<string
 function sign(type:string,direction:string|null){if(type==='INCOME'||type==='REFUND'||direction==='IN')return '+';if(type==='EXPENSE'||type==='OBLIGATION_PAYMENT'||direction==='OUT')return '−';return ''}
 export default async function TransactionsPage({searchParams}:{searchParams:SearchParams}){
   const user=await requireAuthenticatedUser();const raw=await searchParams;const parsedFilters=transactionHistoryFiltersSchema.safeParse({page:one(raw.page)??'1',pageSize:one(raw.pageSize)??'25',dateFrom:one(raw.dateFrom),dateTo:one(raw.dateTo),transactionType:one(raw.transactionType)||undefined,categoryId:one(raw.categoryId)||undefined,accountId:one(raw.accountId)||undefined,planningStatus:one(raw.planningStatus)||undefined,search:one(raw.search),sort:one(raw.sort)??'DATE_DESC'});const input=parsedFilters.success?parsedFilters.data:transactionHistoryFiltersSchema.parse({});
-  const [result,accounts,categories,dashboard,cycle,today,refundCandidates]=await Promise.all([listTransactions(user.id,input),listAccounts(user.id),listBudgetCategories(user.id,true),getDashboardSummary(user.id),getCurrentFinancialCycle(user.id),getUserOperationalDate(user.id),listTransactions(user.id,{page:1,pageSize:100,transactionType:'EXPENSE',sort:'DATE_DESC'})]);const current=Object.fromEntries(Object.entries(raw).map(([k,v])=>[k,one(v)]));
+  const [result,accounts,categories,dashboard]=await Promise.all([listTransactions(user.id,input),listAccounts(user.id),listBudgetCategories(user.id,true),getDashboardSummary(user.id)]);const current=Object.fromEntries(Object.entries(raw).map(([k,v])=>[k,one(v)]));
   return <main className="p47-page namaa-approved-finance" dir="rtl"><section className="p47-content-shell">
     <header className="p47-page-heading p4912-ledger-heading">
       <div className="p4912-ledger-main">
