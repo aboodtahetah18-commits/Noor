@@ -23,3 +23,15 @@
  .namaa-banks-unified :is(.namaa-banks-kpis strong,.namaa-banks-health-grid strong){overflow-wrap:anywhere}
  .namaa-banks-unified .namaa-banks-building{pointer-events:none}
 }
+
+/* Read-only algorithm advisory follows the existing responsive bank layout. */
+.namaa-bank-algorithm-advisory{width:100%;min-width:0;display:grid;gap:var(--ux-space-3);padding:var(--ux-space-4)}
+.namaa-bank-algorithm-advisory>header{display:grid;gap:var(--ux-space-1)}
+.namaa-bank-algorithm-advisory :is(h2,h3,p){margin:0}
+.namaa-bank-algorithm-advisory>header>p{color:var(--ux-brand-primary);font-weight:700}
+.namaa-bank-algorithm-advisory>header>small,.namaa-bank-algorithm-advisory article p,.namaa-bank-algorithm-disclaimer{color:var(--ux-text-secondary)}
+.namaa-bank-algorithm-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--ux-space-3)}
+.namaa-bank-algorithm-grid article{display:grid;align-content:start;gap:var(--ux-space-2);min-width:0;border:1px solid var(--ux-border-emphasis);background:var(--ux-card-bg);border-radius:var(--ux-radius-lg);padding:var(--ux-space-4);overflow-wrap:anywhere}
+.namaa-bank-algorithm-grid article strong{color:var(--ux-text-primary)}
+.namaa-bank-algorithm-grid article a{color:var(--ux-brand-primary);font-weight:700}
+@media(min-width:780px){.namaa-bank-algorithm-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
