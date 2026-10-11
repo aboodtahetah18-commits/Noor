@@ -6,16 +6,19 @@ import { listAccounts } from '@/features/accounts/queries/list-accounts';
 import { getGoalCycleReadiness } from '@/features/goals/queries/get-goal-cycle-readiness';
 import { getEmergencySummary } from '@/features/emergency/queries/get-emergency-summary';
 import { getSavingsSummary } from '@/features/savings/queries/get-savings-summary';
+import { getDashboardSummary } from '@/features/dashboard/queries/get-dashboard-summary';
+import { BankAlgorithmAdvisory } from './bank-algorithm-advisory';
 
 export default async function BankOperationsPage({searchParams}:{searchParams:Promise<{error?:string;bank?:string}>}){
   const user=await requireAuthenticatedUser();
-  const [center,q,accounts,goals,emergency,savings]=await Promise.all([
+  const [center,q,accounts,goals,emergency,savings,financialSummary]=await Promise.all([
     getDailyBankOperationsCenter(user.id),
     searchParams,
     listAccounts(user.id).catch(()=>[]),
     getGoalCycleReadiness(user.id).catch(()=>({cycle:null,items:[]})),
     getEmergencySummary(user.id).catch(()=>null),
     getSavingsSummary(user.id).catch(()=>null),
+    getDashboardSummary(user.id).catch(()=>null),
   ]);
 
   const selected=(q.bank==='hilal'||q.bank==='solvency'||q.bank==='assets')?q.bank:'central';
@@ -49,5 +52,6 @@ export default async function BankOperationsPage({searchParams}:{searchParams:Pr
   return <main className="p47-page namaa-banks-unified-page" dir="rtl">
     {q.error ? <section role="alert" className="p47-panel p47-danger-panel"><strong>{q.error}</strong></section> : null}
     <BanksWide selected={selected} pendingReviewCount={center.pendingReviewCount} pendingItems={center.pendingItems} dashboardData={dashboardData}/>
+    <BankAlgorithmAdvisory summary={financialSummary}/>
   </main>;
 }
