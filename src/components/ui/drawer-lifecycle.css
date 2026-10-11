@@ -82,3 +82,20 @@
   visibility:visible!important;
   opacity:1!important;
 }
+
+/* Shared visual authority for every Namaa navigation drawer. */
+.ux-drawer-surface.namaa-mobile-navigation-drawer[open]{
+  background:var(--ux-surface-default)!important;
+  color:var(--ux-text-primary)!important;
+  border-color:var(--ux-border-default)!important;
+}
+.ux-drawer-surface.namaa-mobile-navigation-drawer[open] .ux-dialog-header{
+  background:var(--ux-section-soft-teal)!important;
+  color:var(--ux-brand-primary)!important;
+  border-bottom:1px solid var(--ux-border-default)!important;
+}
+.ux-drawer-surface.namaa-mobile-navigation-drawer[open] nav[aria-label="التنقل في منصة نماء"] > a[aria-current="page"]{
+  background:var(--ux-section-soft-teal)!important;
+  color:var(--ux-brand-primary)!important;
+  font-weight:700;
+}
