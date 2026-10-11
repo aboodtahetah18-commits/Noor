@@ -8,13 +8,14 @@ describe('Conversations inside unified Namaa',()=>{
   const bottom=read('src/app/(protected)/mobile-bottom-nav.tsx');
   expect(layout).toContain('<MobileTopBar profile={profile} />');
   expect(layout).toContain('<MobileBottomNav />');
-  expect(top).not.toContain('if (chatFirst) return null');
-  expect(bottom).not.toContain('if (chatFirst) return null');
+  expect(top).toContain('if (chatFirst) return null');
+  expect(bottom).toContain('if (chatFirst) return null');
  });
  it('retains read-only conversation rooms without duplicating platform routes',()=>{
   const workspace=read('src/components/conversations/persistent-conversation-workspace.tsx');
-  expect(workspace).toContain('title="غرف المحادثات"');
-  expect(workspace).toContain('namaa-conversation-navigation-drawer');
+  expect(workspace).toContain('aria-label="الرجوع إلى الرئيسية"');
+  expect(workspace).toContain('router.push("/dashboard")');
+  expect(workspace).not.toContain('<Drawer open={roomsOpen}');
   expect(workspace).not.toContain('PlatformNavigationLinks');
  });
  it('preserves RTL messages and a scrollable composer layout',()=>{
