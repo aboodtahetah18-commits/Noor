@@ -13,8 +13,8 @@ import { ProfileTrigger, type HeaderProfile } from './profile-trigger';
 export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
   const pathname = usePathname();
   const chatFirst = pathname === '/conversations' || pathname.startsWith('/conversations/');
-  if (chatFirst) return null;
   const [open, setOpen] = useState(false);
+  if (chatFirst) return null;
   return (
     <>
       <header className="namaa-mobile-topbar namaa-mobile-header" dir="rtl">
