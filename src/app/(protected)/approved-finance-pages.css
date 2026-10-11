@@ -149,3 +149,26 @@
 .namaa-full-form-content .account-form-primary-grid label{min-width:0}
 .namaa-full-form-content input{max-width:100%}
 @media(max-width:767px){.namaa-approved-finance .namaa-approved-account-stats{gap:var(--ux-space-2)}.namaa-approved-finance .namaa-approved-account-stats>a{font-size:var(--ux-type-body-sm-size)}.namaa-full-form-content .account-form-primary-grid{grid-template-columns:minmax(0,1fr)}}
+
+/* Full-page transaction entry and approved compact ledger. */
+.namaa-approved-transaction-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--ux-space-4)}
+.namaa-approved-transaction-form>label{display:grid;gap:var(--ux-space-2);min-width:0;color:var(--ux-text-primary)}
+.namaa-approved-transaction-form :is(input,select){display:block;min-height:48px;width:100%;min-width:0;border:1px solid var(--ux-border-default);border-radius:var(--ux-radius-lg);background:var(--ux-surface-default);color:var(--ux-text-primary);padding:var(--ux-space-3)}
+.namaa-approved-transaction-form>button{grid-column:1/-1}
+.namaa-approved-finance .p4912-ledger-heading{display:grid;grid-template-columns:minmax(0,1fr);align-items:stretch;gap:var(--ux-space-3);padding-block:var(--ux-space-3)}
+.namaa-approved-finance .p4912-ledger-heading h1{font-size:var(--ux-type-page-title-size)}
+.namaa-approved-finance .p4912-ledger-status{border-radius:var(--ux-radius-lg);padding:var(--ux-space-2) var(--ux-space-3);background:var(--ux-section-soft-teal);color:var(--ux-text-secondary)}
+.namaa-approved-finance .p47-header-actions{display:flex;flex-wrap:wrap;gap:var(--ux-space-2);width:100%}
+.namaa-approved-finance .p47-section-heading{display:flex;flex-wrap:wrap;gap:var(--ux-space-3);align-items:center;justify-content:space-between}
+.namaa-approved-finance .p47-inline-actions{display:flex;flex-wrap:wrap;gap:var(--ux-space-2)}
+.namaa-approved-finance .p47-transaction-list{display:grid;gap:var(--ux-space-2)}
+.namaa-approved-finance .p47-transaction-row{grid-template-columns:minmax(0,1fr) auto}
+.namaa-approved-finance .p47-transaction-kind{grid-column:1/-1;font-size:var(--ux-type-body-sm-size);color:var(--ux-text-secondary)}
+.namaa-approved-finance .p47-transaction-main{display:grid;gap:var(--ux-space-2)}
+.namaa-approved-finance .p47-transaction-main strong{color:var(--ux-text-primary)}
+.namaa-approved-finance .p47-transaction-main span{color:var(--ux-text-secondary)}
+.namaa-approved-finance .p47-transaction-state{grid-column:1/-1;font-size:var(--ux-type-body-sm-size)}
+.namaa-approved-finance .p47-transaction-amount{display:flex;align-items:center;justify-content:space-between;gap:var(--ux-space-2);grid-column:1/-1}
+.namaa-approved-finance .p47-transaction-amount strong{color:var(--ux-brand-primary)}
+.namaa-approved-finance .p47-transaction-amount .p47-secondary-action{font-size:var(--ux-type-body-sm-size)}
+@media(max-width:767px){.namaa-approved-transaction-form{grid-template-columns:minmax(0,1fr)}.namaa-approved-finance .p47-inline-actions>a{flex:1 1 auto}}
