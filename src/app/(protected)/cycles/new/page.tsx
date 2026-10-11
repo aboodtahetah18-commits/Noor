@@ -1,19 +1,20 @@
 import Link from 'next/link';
 import { LucideIcon } from '@/components/ui/lucide-icon';
 import { createCycleAction } from '../actions';
+import './full-page.css';
 
 export default function NewCyclePage(){
-  return <main className="app-page cycle-create-page cycle-create-page--focused p47-shell p47-closure-page" data-p47-shell="true" dir="rtl">
-    <div className="page-shell narrow-shell cycle-create-focus-shell">
-      <section className="card cycle-create-card cycle-create-card--focused" aria-labelledby="new-cycle-title">
+  return <main className="namaa-cycle-full-page" dir="rtl">
+    <div className="namaa-cycle-full-content">
+      <section className="namaa-cycle-full-section" aria-labelledby="new-cycle-title">
         <header className="cycle-create-minimal-header">
-          <Link href="/budget" className="cycle-create-close" aria-label="العودة إلى التخطيط والميزانية">
-            <LucideIcon name="x" size={20}/>
+          <Link href="/dashboard" className="namaa-cycle-return" aria-label="العودة إلى الرئيسية">
+            <LucideIcon name="chevronRight" size={20}/>
           </Link>
           <h1 id="new-cycle-title">بداية الدورة</h1>
         </header>
 
-        <form className="cycle-create-form cycle-create-form--focused" action={async(fd)=>{'use server'; await createCycleAction({},fd)}}>
+        <form className="namaa-cycle-full-form" action={async(fd)=>{'use server'; await createCycleAction({},fd)}}>
           <label className="cycle-field cycle-field-full">
             <span>اسم الدورة</span>
             <input name="name" required placeholder="مثال: سبتمبر 2026"/>
@@ -29,7 +30,7 @@ export default function NewCyclePage(){
             <input name="expectedNextIncomeDate" type="date" required/>
           </label>
 
-          <div className="cycle-create-actions cycle-create-actions--focused">
+          <div className="namaa-cycle-full-actions">
             <button className="primary-button" type="submit">بدء الدورة</button>
             <Link className="secondary-button" href="/budget">إلغاء</Link>
           </div>
