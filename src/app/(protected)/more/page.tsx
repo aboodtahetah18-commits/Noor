@@ -31,13 +31,23 @@ const baseGroups:NavGroup[] = [
 
 export default async function MorePage(){
   const user=await requireAuthenticatedUser();
-  const authorizationAdmin=await authorizationRepository.authorize({
-    actorUserId:user.id,
-    action:'ADMINISTER',
-    resource:{objectType:'AUDIT_EVENT',objectId:'authorization-admin-navigation'},
-  });
+  // Optional administration links must fail closed when governance schema
+  // has not been provisioned; the ordinary More page remains available.
+  let canAdministerAuthorization=false;
+  try {
+    const authorizationAdmin=await authorizationRepository.authorize({
+      actorUserId:user.id,
+      action:'ADMINISTER',
+      resource:{objectType:'AUDIT_EVENT',objectId:'authorization-admin-navigation'},
+    });
+    canAdministerAuthorization=authorizationAdmin.decision==='ALLOW';
+  } catch (error) {
+    const dbCode=(error as { code?: unknown } | null)?.code;
+    if (dbCode !== '42P01') throw error;
+    console.warn('[more] Governance authorization tables are not provisioned; admin links hidden.');
+  }
 
-  const groups=baseGroups.map((group)=>group.id==='admin' && authorizationAdmin.decision==='ALLOW'
+  const groups=baseGroups.map((group)=>group.id==='admin' && canAdministerAuthorization
     ? {...group,items:[
         ...group.items,
         ['/governance/authorization','إدارة الصلاحيات','الأدوار والـGrants والتفويضات وBreak Glass','lockKeyhole'] as NavItem,
