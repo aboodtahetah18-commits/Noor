@@ -4,10 +4,10 @@ import { sanitizeMetadata } from '@/security/safe-logging';
 
 describe('Phase 37 security contracts', () => {
   it('blocks external/open redirects', () => {
-    expect(safeReturnTo('https://evil.example')).toBe('/conversations');
-    expect(safeReturnTo('//evil.example')).toBe('/conversations');
-    expect(safeReturnTo('/login')).toBe('/conversations');
-    expect(safeReturnTo('/auth/reset-password')).toBe('/conversations');
+    expect(safeReturnTo('https://evil.example')).toBe('/dashboard');
+    expect(safeReturnTo('//evil.example')).toBe('/dashboard');
+    expect(safeReturnTo('/login')).toBe('/dashboard');
+    expect(safeReturnTo('/auth/reset-password')).toBe('/dashboard');
     expect(safeReturnTo('/transactions')).toBe('/transactions');
   });
 
