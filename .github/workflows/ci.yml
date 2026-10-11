@@ -22,4 +22,5 @@ jobs:
           node-version: '24.20.0'
       - run: npm install --legacy-peer-deps --no-audit --no-fund
       - run: npm run typecheck
+      - run: npm run vercel:build
       - run: npm run quality:gate
