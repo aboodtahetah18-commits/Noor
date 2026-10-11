@@ -21,9 +21,9 @@ export default async function BudgetPage({searchParams}:{searchParams:Promise<{e
   const u=await requireAuthenticatedUser();
   await syncTemporaryAmountOutcomes(u.id);
   const cycle=await getCurrentFinancialCycle(u.id);
-  if(!cycle)return <main className="p47-page" dir="rtl"><section className="p47-content-shell p47-empty-shell"><div className="p47-empty-state"><div className="p47-empty-icon">خ</div><p className="p47-kicker">الميزانية</p><h1>لا توجد دورة مالية نشطة</h1><p>ابدأ دورة مالية حتى تتمكن من توزيع الدخل ومتابعة الصرف مقابل الخطة.</p><Link href="/cycles/new" className="p47-primary-action">بدء دورة مالية</Link></div></section></main>;
+  if(!cycle)return <main className="p47-page namaa-approved-finance" dir="rtl"><section className="p47-content-shell p47-empty-shell"><div className="p47-empty-state"><div className="p47-empty-icon">خ</div><p className="p47-kicker">الميزانية</p><h1>لا توجد دورة مالية نشطة</h1><p>ابدأ دورة مالية حتى تتمكن من توزيع الدخل ومتابعة الصرف مقابل الخطة.</p><Link href="/cycles/new" className="p47-primary-action">بدء دورة مالية</Link></div></section></main>;
   const plan=await getFinancialPlanByCycle(u.id,cycle.id);
-  if(!plan)return <main className="p47-page" dir="rtl"><section className="p47-content-shell"><header className="p47-page-heading"><div><p className="p47-kicker">الميزانية · {cycle.name}</p><h1>أنشئ خطة الدورة</h1><p className="p47-cycle-line">لا توجد تخصيصات مالية معتمدة لهذه الدورة بعد.</p></div><Link href={`/budget/new?cycle=${cycle.id}`} className="p47-primary-action">إنشاء الخطة</Link></header><section className="p47-panel"><div className="p47-soft-empty is-info"><strong>ابدأ من توزيع الدخل</strong><span>وزع الدخل على الالتزامات والاحتياجات والادخار والطوارئ والأهداف والمصروف المرن، ثم راجع الخطة قبل اعتمادها.</span></div></section></section></main>;
+  if(!plan)return <main className="p47-page namaa-approved-finance" dir="rtl"><section className="p47-content-shell"><header className="p47-page-heading"><div><p className="p47-kicker">الميزانية · {cycle.name}</p><h1>أنشئ خطة الدورة</h1><p className="p47-cycle-line">لا توجد تخصيصات مالية معتمدة لهذه الدورة بعد.</p></div><Link href={`/budget/new?cycle=${cycle.id}`} className="p47-primary-action">إنشاء الخطة</Link></header><section className="p47-panel"><div className="p47-soft-empty is-info"><strong>ابدأ من توزيع الدخل</strong><span>وزع الدخل على الالتزامات والاحتياجات والادخار والطوارئ والأهداف والمصروف المرن، ثم راجع الخطة قبل اعتمادها.</span></div></section></section></main>;
 
   if(plan.status==='PLAN_DRAFT'){
     const draftRows=await rawSql`
@@ -46,7 +46,7 @@ export default async function BudgetPage({searchParams}:{searchParams:Promise<{e
     const review=await reviewInitialBudgetDraft(u.id,plan.id);
     const blockers=review.issues.filter(issue=>issue.severity==='blocker');
     const warnings=review.issues.filter(issue=>issue.severity==='warning');
-    return <main className="p47-page" dir="rtl"><section className="p47-content-shell">
+    return <main className="p47-page namaa-approved-finance" dir="rtl"><section className="p47-content-shell">
       <header className="p47-page-heading"><div><p className="p47-kicker">الميزانية · {cycle.name}</p><h1>مسودة الميزانية الأولى</h1><p className="p47-cycle-line">بناها نماء من بيانات التأسيس. راجع المبالغ والتصنيفات قبل الاعتماد.</p></div></header>
       {q.error?<p className="error-banner" role="alert">{q.error}</p>:null}
       {q.draft==='updated'?<p className="success-banner">تم حفظ تعديلات المسودة. لم تعتمد الميزانية بعد.</p>:null}
@@ -214,7 +214,7 @@ export default async function BudgetPage({searchParams}:{searchParams:Promise<{e
 
   const center=await getBudgetCommandCenter(u.id,cycle.id);
   const view=plan.pendingRevision??plan.currentVersion;
-  return <main className="p47-page" dir="rtl"><section className="p47-content-shell">
+  return <main className="p47-page namaa-approved-finance" dir="rtl"><section className="p47-content-shell">
     <header className="p47-page-heading"><div><p className="p47-kicker">خطة الإنفاق الشهرية · {cycle.name}</p><div className="title-with-help"><h1>الميزانية</h1></div><div className="p47-cycle-line"><span className={`p47-status-dot ${center.overBudgetCount?'is-danger':'is-good'}`}/><span>{planStatus[plan.status]??plan.status}</span><b>•</b><span>{center.overBudgetCount?`${center.overBudgetCount} بند متجاوز`:'لا يوجد تجاوز مؤكد'}</span></div></div><div className="p47-page-actions"><Link href="/budget/optimizer" className="p47-secondary-action">تحسين توزيع الراتب</Link>{plan.status==='ACTIVE_PLAN'?<Link href={`/budget/revise?plan=${plan.id}`} className="p47-primary-action">تعديل الخطة</Link>:null}</div></header>
 
     <section className="p47-budget-hero"><div><p className="p47-kicker">ملخص الخطة</p><span>إجمالي المخصص</span><strong>{formatSar(center.plannedTotal)}</strong><small>المصروف الفعلي {formatSar(center.actualTotal)}</small></div><div className="p47-budget-hero-progress"><div><span style={{width:`${Math.min(100,Math.max(0,center.utilizationPercent??0))}%`}}/></div><div><span>المتبقي</span><strong>{formatSar(center.remainingTotal)}</strong><b>{pct(center.utilizationPercent)} مستخدم</b></div></div></section>
