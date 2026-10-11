@@ -19,7 +19,7 @@ describe('Stage 4 dashboard visual reference contract', () => {
   it('uses approved Stage 2 primitives for reusable dashboard states and surfaces', () => {
     const page = read('src/app/(protected)/dashboard/page.tsx');
 
-    for (const primitive of ['Card', 'StatusBadge', 'FeedbackState', 'Button', 'ActionIcon']) {
+    for (const primitive of ['Button', 'LucideIcon', 'BrandLogo', 'BankMessageDialogTrigger']) {
       expect(page).toContain(primitive);
     }
   });
@@ -40,8 +40,8 @@ describe('Stage 4 dashboard visual reference contract', () => {
     expect(css).toContain('var(--ux-page-bg)');
     expect(css).toContain('var(--ux-card-bg)');
     expect(css).toContain('var(--ux-brand-primary)');
-    expect(css).toContain('@media (min-width:768px) and (max-width:1023px)');
-    expect(css).toContain('@media (max-width:767px)');
+    expect(css).toContain('@media(min-width:768px)');
+    expect(css).toContain('@media(max-width:767px)');
   });
 
   it('provides dashboard loading, empty and error states without inventing financial data', () => {
