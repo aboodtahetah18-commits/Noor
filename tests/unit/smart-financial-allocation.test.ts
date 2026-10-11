@@ -17,7 +17,7 @@ describe('governed financial allocation',()=>{
   it('forecasts shortfalls from three-month weighted spending',()=>{
     const f=predictiveCashFlow({history:[{incomeHalalas:10000,spendingHalalas:10000},{incomeHalalas:10000,spendingHalalas:20000},{incomeHalalas:10000,spendingHalalas:30000}],currentOperatingCashHalalas:10000,expectedMonthlyIncomeHalalas:10000,knownNextMonthObligationsHalalas:5000,operatingSafetyFloorHalalas:10000});
     expect(f.estimatedMonthlySpendingHalalas).toBe(23333);
-    expect(f.likelyLiquidityShortfallHalalas).toBe(28333);
+    expect(f.likelyLiquidityShortfallHalalas).toBe(18333);
     expect(f.confidence).toBe('MEDIUM');
     expect(f.requiresApproval).toBe(true);
   });
