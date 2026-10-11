@@ -4,22 +4,16 @@ import Link from 'next/link';
 import { LucideIcon } from '@/components/ui/lucide-icon';
 import { formatSar } from '@/lib/format-money';
 import { listAccounts } from '@/features/accounts/queries/list-accounts';
-import { getGoalCycleReadiness } from '@/features/goals/queries/get-goal-cycle-readiness';
-import { getEmergencySummary } from '@/features/emergency/queries/get-emergency-summary';
-import { getSavingsSummary } from '@/features/savings/queries/get-savings-summary';
 import { getDashboardSummary } from '@/features/dashboard/queries/get-dashboard-summary';
 import { BankAlgorithmAdvisory } from './bank-algorithm-advisory';
 import { getMonthlyPostedCashFlow } from '@/features/bank-governance/queries/get-monthly-posted-cash-flow';
 
 export default async function BankOperationsPage({searchParams}:{searchParams:Promise<{error?:string;bank?:string}>}){
   const user=await requireAuthenticatedUser();
-  const [center,q,accounts,goals,emergency,savings,financialSummary,cashFlowHistory]=await Promise.all([
+  const [center,q,accounts,financialSummary,cashFlowHistory]=await Promise.all([
     getDailyBankOperationsCenter(user.id),
     searchParams,
     listAccounts(user.id).catch(()=>[]),
-    getGoalCycleReadiness(user.id).catch(()=>({cycle:null,items:[]})),
-    getEmergencySummary(user.id).catch(()=>null),
-    getSavingsSummary(user.id).catch(()=>null),
     getDashboardSummary(user.id).catch(()=>null),
     getMonthlyPostedCashFlow(user.id).catch(()=>[]),
   ]);
@@ -27,31 +21,6 @@ export default async function BankOperationsPage({searchParams}:{searchParams:Pr
 
   const activeAccounts=accounts.filter(account=>account.isActive);
   const totalLiquidity=activeAccounts.reduce((sum,account)=>sum+(Number(account.balance)||0),0);
-  const goalsRemaining=goals.items.reduce((sum,goal)=>sum+(Number(goal.remainingAmount)||0),0);
-  const goalsGap=goals.items.reduce((sum,goal)=>sum+Math.max(0,Number(goal.gapThisCycle)||0),0);
-  const goalsApprovedThisCycle=goals.items.reduce((sum,goal)=>sum+(Number(goal.approvedThisCycle)||0),0);
-  const goalsRequiredThisCycle=goals.items.reduce((sum,goal)=>sum+(Number(goal.requiredContribution)||0),0);
-
-  const dashboardData={
-    activeAccountCount:activeAccounts.length,
-    totalLiquidity,
-    activeGoalCount:goals.items.length,
-    goalsRemaining,
-    goalsGap,
-    goalsApprovedThisCycle,
-    goalsRequiredThisCycle,
-    emergencyBalance:Number(emergency?.currentBalance??0),
-    emergencyProgress:Number(emergency?.progressPercent??0),
-    emergencyCoverageMonths:emergency?.coverageMonths==null?null:Number(emergency.coverageMonths),
-    savingsActual:Number(savings?.actualTransferredAmount??0),
-    savingsPlanned:Number(savings?.allocatedAmount??0),
-    pendingImportsCount:center.pendingImportsCount,
-    duplicateCandidatesCount:center.duplicateCandidatesCount,
-    unclassifiedCount:center.unclassifiedCount,
-    activeFundingCount:center.activeFundingCount,
-    recentApproved:center.recentApproved,
-  };
-
   const groupedBanks=new Map<string,{count:number;balance:number}>();
   for(const account of activeAccounts){
     const name=account.bankName?.trim() || 'حسابات دون بنك محدد';
@@ -82,7 +51,7 @@ export default async function BankOperationsPage({searchParams}:{searchParams:Pr
     <section className="namaa-approved-banks-actions" aria-label="عمليات البنوك">
       <Link href="/bank-statements"><LucideIcon name="receiptText" size={20}/> الكشوف البنكية</Link>
       <Link href="/conversations"><LucideIcon name="messageSquareText" size={20}/> محادثات البنوك</Link>
-      <Link href="/bank-operations/review"><LucideIcon name="listChecks" size={20}/> مراجعة العمليات</Link>
+      <Link href="/bank-statements"><LucideIcon name="listChecks" size={20}/> مراجعة العمليات</Link>
     </section>
     <section className="namaa-approved-banks-summary namaa-approved-banks-secondary">
       <div><span>عمليات تحتاج مراجعة</span><strong>{center.pendingReviewCount}</strong><small>{center.pendingImportsCount} كشف/دفعة تحتاج مراجعة</small></div>
