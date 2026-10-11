@@ -27,8 +27,9 @@ requireText(css,'env(safe-area-inset-bottom)','composer/overlay surfaces must pr
 requireText(css,'@media (min-width:768px){','tablet/stretched-tablet authority is missing');
 forbid(css,/@media\s*\([^)]*min-width\s*:\s*(?:1024|1440)px/i,'retired desktop chat breakpoint was reintroduced');
 
-requireText(workspace,'/brand/ndos/namaa-logo-color-transparent.png','official color Namaa logo is missing');
-requireText(workspace,'/brand/ndos/namaa-logo-white-transparent.png','official white Namaa logo is missing');
+requireText(workspace,'/brand/ndos/namaa-logo-color-hq.png','approved Namaa logo asset is missing from the chat surface');
+requireText(workspace,'aria-label="الرجوع إلى الرئيسية"','full-screen chat must expose back navigation');
+forbid(workspace,/<Drawer open=\{roomsOpen\}/,'retired conversation drawer must not return');
 forbid(workspace,/mobileBrandLockup/,'Namaa logo must not be redrawn from text and symbol');
 forbid(css,/filter\s*:\s*(?:brightness|invert|hue-rotate|sepia|saturate)/i,'approved brand imagery must not be recolored with CSS filters');
 
