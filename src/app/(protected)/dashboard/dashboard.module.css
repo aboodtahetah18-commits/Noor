@@ -72,3 +72,32 @@
 .bankStatementLink{display:flex;align-items:center;gap:var(--ux-space-2);padding:var(--ux-space-3);border:1px solid var(--ux-border-default);border-radius:var(--ux-radius-lg);color:var(--ux-action-primary);font-weight:700;text-decoration:none;min-width:0}
 .bankStatementLink span{flex:1;min-width:0}
 @media(min-width:768px){.bankHubGrid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+
+/* Empty first-cycle state: centered content fills the remaining shell area. */
+.page:global(.namaa-empty-cycle-page){
+  flex:1 1 auto;
+  display:flex;
+  flex-direction:column;
+  min-height:0;
+  height:100%;
+  width:100%;
+  padding:var(--ux-space-2);
+  margin:0;
+}
+.page:global(.namaa-empty-cycle-page) .emptyState{
+  flex:1 1 auto;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  max-width:none;
+  min-height:0;
+  height:100%;
+  margin:0;
+  padding:clamp(12px,4vw,32px);
+  gap:var(--ux-space-3);
+}
+@media (min-width:768px){
+  .page:global(.namaa-empty-cycle-page){padding:var(--ux-space-3)}
+}
