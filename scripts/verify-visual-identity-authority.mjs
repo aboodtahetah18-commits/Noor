@@ -20,7 +20,7 @@ assert(tokens.typography?.family==='Noto Sans Arabic','Noto Sans Arabic is the o
 assert(workspace.includes('/brand/ndos/namaa-logo-white-transparent.png'),'Mobile dark-surface header must use the approved white Namaa logo asset.');
 assert(!workspace.includes('mobileBrandLockup'),'Do not redraw Namaa with text + symbol composition.');
 assert(!/filter\s*:\s*(?:brightness|invert|hue-rotate|sepia|saturate)/i.test(chatCss),'Brand assets must not be recolored with CSS filters.');
-assert(chatCss.includes('.mobileBrandLogo'),'Governed mobile logo class is missing.');
+assert(workspace.includes('styles.sideBrandLogo') && chatCss.includes('.sideBrandLogo'), 'Approved sidebar brand logo must be rendered and styled.');
 assert(chatCss.includes('.chatHeaderForeground{')&&chatCss.includes('direction:rtl')&&chatCss.includes('.chatHeaderForeground .mobileTools{\n  margin-inline-start:auto!important;'),'Mobile/tablet chat header must keep the primary identity on the RTL start edge and utility actions on the far left.');
 assert(chatCss.includes('min-width:88px'),'Mobile full logo must never render below 88px.');
 assert(authShell.includes('styles.mobileHeroLogoLight')&&authShell.includes('styles.mobileHeroLogoDark'),'Public auth mobile hero must render explicit official light and dark logo variants.');
