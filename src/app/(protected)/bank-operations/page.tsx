@@ -51,7 +51,7 @@ export default async function BankOperationsPage({searchParams}:{searchParams:Pr
     recentApproved:center.recentApproved,
   };
 
-  return <main className="p47-page namaa-banks-unified-page" dir="rtl">
+  return <main className="p47-page namaa-banks-unified-page namaa-approved-finance" dir="rtl">
     {q.error ? <section role="alert" className="p47-panel p47-danger-panel"><strong>{q.error}</strong></section> : null}
     <BanksWide selected={selected} pendingReviewCount={center.pendingReviewCount} pendingItems={center.pendingItems} dashboardData={dashboardData}/>
     <BankAlgorithmAdvisory summary={financialSummary} history={cashFlowHistory}/>
