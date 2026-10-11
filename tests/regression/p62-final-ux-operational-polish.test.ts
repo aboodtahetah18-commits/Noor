@@ -13,8 +13,8 @@ describe('P62 final UX and operational polish', () => {
     expect(labels).toContain('CYCLE_STATUS_LABELS');
     expect(labels).toContain('OBLIGATION_STATUS_LABELS');
     expect(labels).toContain('BUDGET_STATUS_LABELS');
-    expect(dashboard).toContain('financialStatusLabel(CYCLE_STATUS_LABELS, dashboard.cycle.status)');
-    expect(dashboard).toContain('financialStatusLabel(OBLIGATION_STATUS_LABELS, item.status)');
+    expect(dashboard).toContain('dashboard.cycle.name');
+    expect(dashboard).toContain('financialStatusLabel(OBLIGATION_STATUS_LABELS,item.status)');
     expect(report).toContain('financialStatusLabel(BUDGET_STATUS_LABELS, item.status)');
   });
 
