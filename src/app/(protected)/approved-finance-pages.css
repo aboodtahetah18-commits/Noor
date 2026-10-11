@@ -172,3 +172,20 @@
 .namaa-approved-finance .p47-transaction-amount strong{color:var(--ux-brand-primary)}
 .namaa-approved-finance .p47-transaction-amount .p47-secondary-action{font-size:var(--ux-type-body-sm-size)}
 @media(max-width:767px){.namaa-approved-transaction-form{grid-template-columns:minmax(0,1fr)}.namaa-approved-finance .p47-inline-actions>a{flex:1 1 auto}}
+
+/* Mobile More hub: retire inherited two-column squeeze and broken word wrapping. */
+@media(max-width:767px){
+  .protected-app-shell .more-hub-page,
+  .protected-app-shell .more-hub-shell,
+  .protected-app-shell .more-hub-sections,
+  .protected-app-shell .more-hub-section{width:100%;max-width:100%;min-width:0}
+  .protected-app-shell .more-hub-shell{padding:var(--ux-space-3)}
+  .protected-app-shell .more-hub-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--ux-space-2)}
+  .protected-app-shell .more-hub-card{display:flex;align-items:center;gap:var(--ux-space-3);min-width:0;max-width:100%;width:100%;padding:var(--ux-space-3);border-radius:var(--ux-radius-lg);overflow:visible}
+  .protected-app-shell .more-hub-card>div{flex:1;min-width:0;max-width:100%}
+  .protected-app-shell .more-hub-card :is(strong,span){display:block;word-break:normal;overflow-wrap:break-word;hyphens:none;white-space:normal}
+  .protected-app-shell .more-hub-card-icon{flex:0 0 44px}
+  .protected-app-shell .more-hub-section-head{display:flex;align-items:center;gap:var(--ux-space-3);min-width:0}
+  .protected-app-shell .more-hub-section-head>div{min-width:0}
+  .protected-app-shell .more-hub-section-head :is(h2,p){word-break:normal;overflow-wrap:break-word;hyphens:none}
+}
