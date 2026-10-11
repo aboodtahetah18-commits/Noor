@@ -23,7 +23,7 @@ function sign(type:string,direction:string|null){if(type==='INCOME'||type==='REF
 export default async function TransactionsPage({searchParams}:{searchParams:SearchParams}){
   const user=await requireAuthenticatedUser();const raw=await searchParams;const parsedFilters=transactionHistoryFiltersSchema.safeParse({page:one(raw.page)??'1',pageSize:one(raw.pageSize)??'25',dateFrom:one(raw.dateFrom),dateTo:one(raw.dateTo),transactionType:one(raw.transactionType)||undefined,categoryId:one(raw.categoryId)||undefined,accountId:one(raw.accountId)||undefined,planningStatus:one(raw.planningStatus)||undefined,search:one(raw.search),sort:one(raw.sort)??'DATE_DESC'});const input=parsedFilters.success?parsedFilters.data:transactionHistoryFiltersSchema.parse({});
   const [result,accounts,categories,dashboard,cycle,today,refundCandidates]=await Promise.all([listTransactions(user.id,input),listAccounts(user.id),listBudgetCategories(user.id,true),getDashboardSummary(user.id),getCurrentFinancialCycle(user.id),getUserOperationalDate(user.id),listTransactions(user.id,{page:1,pageSize:100,transactionType:'EXPENSE',sort:'DATE_DESC'})]);const current=Object.fromEntries(Object.entries(raw).map(([k,v])=>[k,one(v)]));
-  return <main className="p47-page" dir="rtl"><section className="p47-content-shell">
+  return <main className="p47-page namaa-approved-finance" dir="rtl"><section className="p47-content-shell">
     <header className="p47-page-heading p4912-ledger-heading">
       <div className="p4912-ledger-main">
         <div className="p4912-ledger-title"><p className="p47-kicker">سجل الحركة المالية</p><h1>العمليات</h1></div>
