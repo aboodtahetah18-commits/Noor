@@ -87,3 +87,20 @@ body:has(.protected-app-shell[data-responsive-platform="unified-mobile-first"]) 
   inset-block-start:0!important;
   transform:none!important;
 }
+
+/* Canonical opaque platform header: no page control may show through it. */
+.protected-app-shell[data-responsive-platform="unified-mobile-first"] > .namaa-mobile-topbar.namaa-mobile-header{
+  position:sticky!important;
+  inset-block-start:0!important;
+  isolation:isolate;
+  z-index:var(--ux-z-sticky);
+  background:var(--ux-surface-default)!important;
+  opacity:1!important;
+  width:100%;
+  min-width:0;
+  box-sizing:border-box;
+}
+.protected-app-shell[data-responsive-platform="unified-mobile-first"] .namaa-app-main{
+  position:relative;
+  z-index:0;
+}
