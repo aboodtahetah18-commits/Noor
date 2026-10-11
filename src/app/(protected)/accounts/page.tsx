@@ -29,7 +29,7 @@ export default async function AccountsPage({ searchParams }: { searchParams: Pro
   const bankNames = [...new Set([...BANK_OPTIONS.map((b) => b.name), ...accounts.map((a) => a.bankName).filter((v): v is string => Boolean(v))])];
   const total = sumMoney(active.map((a) => Money.parse(a.balance)));
 
-  return <main className="page-shell p47-resource-page" dir="rtl">
+  return <main className="page-shell p47-resource-page namaa-approved-finance" dir="rtl">
     <header className="p47-resource-header"><div><p className="eyebrow">إدارة السيولة</p><div className="title-with-help"><h1>الحسابات</h1></div><p>رصيدك الفعلي موزع بوضوح بين الحسابات والمحافظ.</p></div><ActionDialog title="إضافة حساب" description="أدخل بيانات الحساب دون مغادرة الصفحة." size="lg" triggerClassName="primary-link" trigger="إضافة حساب" defaultOpen={query.action==='add'}><AccountForm accountNames={accountNames} bankNames={bankNames}/></ActionDialog></header>
 
     <section className="p74-focus-summary"><div><span>إجمالي السيولة الفعلية</span><strong>{formatSar(total)}</strong><small>{active.length} حساب نشط</small></div></section>
