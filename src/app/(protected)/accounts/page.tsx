@@ -1,41 +1,58 @@
+import Link from 'next/link';
 import { requireAuthenticatedUser } from '@/auth/require-authenticated-user';
 import { listAccounts } from '@/features/accounts/queries/list-accounts';
 import { Money, sumMoney } from '@/financial-engine/money';
 import { formatSar } from '@/lib/format-money';
-import { ActionDialog } from '@/components/overlays/action-dialog';
-import { AccountForm } from './new/account-form';
-import { ACCOUNT_NAME_PRESETS } from '@/features/accounts/account-name-options';
-import { BANK_OPTIONS } from '@/features/accounts/banks';
-import { getEditableAccount } from '@/features/accounts/queries/get-editable-account';
-import { SmartComboInput } from '@/components/forms/smart-combo-input';
-import { deactivateAccountAction, updateAccountAction } from './actions';
-import { FocusedNextStep } from '@/components/ux/focused-next-step';
-import { EntityActionRail } from '@/components/ui/entity-actions';
+import { LucideIcon } from '@/components/ui/lucide-icon';
 import { reconcileConfirmedOnboardingAccounts } from '@/lib/conversations/onboarding-account-reconciliation';
 
-const labels = { BANK: 'حساب جاري', SAVINGS: 'ادخار', CASH: 'نقدي', OTHER: 'أخرى' } as const;
+const types={
+  BANK:{label:'البنوك',icon:'landmark'},
+  SAVINGS:{label:'الادخار',icon:'banknote'},
+  CASH:{label:'المحافظ',icon:'walletCards'},
+  OTHER:{label:'أخرى',icon:'ellipsis'},
+} as const;
 
-export default async function AccountsPage({ searchParams }: { searchParams: Promise<Record<string,string|string[]|undefined>> }) {
-  const query = await searchParams;
-  const user = await requireAuthenticatedUser();
+export default async function AccountsPage({searchParams}:{searchParams:Promise<{type?:string}>}){
+  const q=await searchParams;
+  const user=await requireAuthenticatedUser();
   await reconcileConfirmedOnboardingAccounts(user.id);
-  const accounts = await listAccounts(user.id, true);
-  const active = accounts.filter((a) => a.isActive);
-  const inactive = accounts.filter((a) => !a.isActive);
-  const editableEntries = await Promise.all(active.map(async (a) => [a.id, await getEditableAccount(user.id, a.id)] as const));
-  const editable = new Map(editableEntries);
-  const accountNames = [...new Set([...ACCOUNT_NAME_PRESETS, ...accounts.map((a) => a.name)])];
-  const bankNames = [...new Set([...BANK_OPTIONS.map((b) => b.name), ...accounts.map((a) => a.bankName).filter((v): v is string => Boolean(v))])];
-  const total = sumMoney(active.map((a) => Money.parse(a.balance)));
+  const accounts=await listAccounts(user.id,true);
+  const active=accounts.filter(a=>a.isActive);
+  const inactive=accounts.filter(a=>!a.isActive);
+  const selected=q.type&&Object.prototype.hasOwnProperty.call(types,q.type)?q.type:'ALL';
+  const filtered=selected==='ALL'?active:active.filter(a=>a.accountType===selected);
+  const total=sumMoney(active.map(a=>Money.parse(a.balance)));
 
-  return <main className="page-shell p47-resource-page namaa-approved-finance" dir="rtl">
-    <header className="p47-resource-header"><div><p className="eyebrow">إدارة السيولة</p><div className="title-with-help"><h1>الحسابات</h1></div><p>رصيدك الفعلي موزع بوضوح بين الحسابات والمحافظ.</p></div><ActionDialog title="إضافة حساب" description="أدخل بيانات الحساب دون مغادرة الصفحة." size="lg" triggerClassName="primary-link" trigger="إضافة حساب" defaultOpen={query.action==='add'}><AccountForm accountNames={accountNames} bankNames={bankNames}/></ActionDialog></header>
-
-    <section className="p74-focus-summary"><div><span>إجمالي السيولة الفعلية</span><strong>{formatSar(total)}</strong><small>{active.length} حساب نشط</small></div></section>
-
-    {active.length===0?<section className="p47-empty-state"><strong>لا توجد حسابات نشطة</strong><span>أضف حسابك الأول لبدء تسجيل الحركات المالية.</span><ActionDialog title="إضافة أول حساب" size="xl" triggerClassName="primary-link" trigger="إضافة أول حساب"><AccountForm accountNames={accountNames} bankNames={bankNames}/></ActionDialog></section>:<>
-<section className="p47-resource-card namaa-accounts-unified"><div className="p47-section-heading"><div><span>خريطة السيولة</span><h2>الحسابات النشطة</h2></div><small>اضغط على أي حساب لعرض التفاصيل</small></div><div className="p47-account-map">{active.map(account=>{const a=editable.get(account.id);return <article className="p47-account-tile" key={account.id}><div><span className="p47-account-type">{labels[account.accountType]}</span><h3>{account.name}</h3><small>{account.bankName??'بدون جهة محددة'}{account.cardLast4?` · •••• ${account.cardLast4}`:''}</small></div><div><span>الرصيد الحالي</span><strong>{formatSar(account.balance)}</strong></div><EntityActionRail print={true}><ActionDialog title={`تفاصيل ${account.name}`} trigger="عرض التفاصيل"><div className="detail-list"><div><span>النوع</span><strong>{labels[account.accountType]}</strong></div><div><span>البنك/الجهة</span><strong>{account.bankName??'—'}</strong></div><div><span>آخر البطاقة</span><strong>{account.cardLast4?`•••• ${account.cardLast4}`:'—'}</strong></div><div><span>الرصيد الحالي</span><strong>{formatSar(account.balance)}</strong></div></div></ActionDialog>{a?<ActionDialog title={`تعديل ${account.name}`} size="lg" trigger="تعديل"><form className="form-grid" action={updateAccountAction}><input type="hidden" name="accountId" value={a.id}/><input type="hidden" name="returnTo" value="/accounts"/><label>اسم الحساب<SmartComboInput name="name" options={[...ACCOUNT_NAME_PRESETS]} defaultValue={a.name} placeholder="اختر أو اكتب اسم الحساب" ariaLabel="اسم الحساب"/></label><label>البنك أو الجهة<SmartComboInput name="bankName" options={BANK_OPTIONS.map((b)=>b.name)} defaultValue={a.bankName} placeholder="اختر أو اكتب اسم البنك" ariaLabel="البنك أو الجهة"/></label><label>الرصيد الافتتاحي<input name="openingBalance" inputMode="decimal" defaultValue={a.openingBalance} required/></label><label>تاريخ الرصيد<input name="effectiveDate" type="date" defaultValue={a.effectiveDate} required/></label><label>IBAN<input name="iban" dir="ltr" defaultValue={a.iban}/></label><label>آخر 4 أرقام<input name="cardLast4" inputMode="numeric" maxLength={4} defaultValue={a.cardLast4}/></label><button className="primary-button" type="submit">حفظ التعديلات</button></form></ActionDialog>:null}<ActionDialog title={`تعطيل ${account.name}`} description="سيبقى تاريخ الحساب محفوظًا ولن يحذف." size="sm" trigger="تعطيل"><form action={deactivateAccountAction}><input type="hidden" name="accountId" value={account.id}/><div className="p49-dialog-actions"><button className="danger-button" type="submit">تأكيد التعطيل</button></div></form></ActionDialog></EntityActionRail></article>})}</div></section></>}
-
-    {inactive.length?<details className="p74-secondary-disclosure"><summary>الحسابات غير النشطة ({inactive.length})</summary><section className="p47-resource-card"><div className="p47-compact-list">{inactive.map(a=><div key={a.id}><div><strong>{a.name}</strong><span>{a.bankName??labels[a.accountType]}</span></div><ActionDialog title={`تفاصيل ${a.name}`} trigger="عرض"><div className="detail-list"><div><span>الحالة</span><strong>غير نشط</strong></div><div><span>الرصيد</span><strong>{formatSar(a.balance)}</strong></div></div></ActionDialog></div>)}</div></section></details>:null}<FocusedNextStep href="/bank-operations" title="انتقل إلى التشغيل البنكي" description="بعد ضبط الحسابات، راجع الرسائل والحركات البنكية اليومية المرتبطة بها."/>
+  return <main className="page-shell p47-resource-page namaa-approved-finance namaa-approved-accounts" dir="rtl">
+    <header className="p47-resource-header namaa-approved-page-heading">
+      <div><h1>الحسابات</h1><p>إدارة حساباتك المالية في مكان واحد</p></div>
+    </header>
+    <section className="p74-focus-summary namaa-approved-accounts-balance">
+      <span>إجمالي الرصيد الحالي</span>
+      <strong>{formatSar(total)}</strong>
+      <small>{active.length} حساب نشط</small>
+      <LucideIcon name="walletCards" size={32}/>
+    </section>
+    <section className="namaa-approved-account-stats" aria-label="أنواع الحسابات">
+      {(Object.entries(types) as Array<[keyof typeof types,(typeof types)[keyof typeof types]]>).map(([key,value])=><Link key={key} href={`/accounts?type=${key}`} className={selected===key?'is-selected':''}><LucideIcon name={value.icon} size={20}/><span>{value.label}</span><strong>{active.filter(a=>a.accountType===key).length}</strong></Link>)}
+    </section>
+    <Link href="/accounts/new" className="namaa-approved-account-add p47-primary-action"><LucideIcon name="plus" size={20}/> إضافة حساب جديد</Link>
+    <nav className="namaa-approved-account-filters" aria-label="تصفية الحسابات">
+      <Link href="/accounts" aria-current={selected==='ALL'?'page':undefined}>الكل</Link>
+      {(Object.entries(types) as Array<[keyof typeof types,(typeof types)[keyof typeof types]]>).map(([key,value])=><Link key={key} href={`/accounts?type=${key}`} aria-current={selected===key?'page':undefined}>{value.label}</Link>)}
+    </nav>
+    <section className="namaa-approved-account-list" aria-label="الحسابات النشطة">
+      {filtered.length?filtered.map(a=><article className="namaa-approved-account-row" key={a.id}>
+        <div className="namaa-approved-account-icon"><LucideIcon name={a.accountType==='BANK'?'landmark':a.accountType==='SAVINGS'?'banknote':'walletCards'} size={24}/></div>
+        <div className="namaa-approved-account-details">
+          <strong>{a.name}</strong>
+          <small>{a.bankName??types[a.accountType].label}{a.cardLast4?` · •••• ${a.cardLast4}`:''}</small>
+          <b>{formatSar(a.balance)}</b>
+        </div>
+        <Link href={`/accounts/${a.id}`} className="namaa-approved-account-view" aria-label={`عرض تفاصيل ${a.name}`}><LucideIcon name="chevronLeft" size={20}/></Link>
+      </article>):<div className="namaa-approved-banks-empty">لا توجد حسابات مطابقة. يمكنك تغيير التصنيف أو إضافة حساب جديد.</div>}
+    </section>
+    {inactive.length?<details className="namaa-approved-inactive"><summary>الحسابات غير النشطة ({inactive.length})</summary><div>{inactive.map(a=><Link key={a.id} href={`/accounts/${a.id}`}>{a.name}</Link>)}</div></details>:null}
   </main>;
 }
