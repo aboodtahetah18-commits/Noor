@@ -14,15 +14,15 @@ function forbid(source,re,message){
 
 requireText(css,'MOBILE/TABLET CHAT-FIRST FINAL AUTHORITY','final mobile/tablet chat authority marker is missing');
 requireText(css,'.page{\n  width:100%!important;\n  max-width:100%!important;','chat page must own the available width');
-requireText(css,'.workspace,\n.workspace.withoutRooms,\n.workspace.withoutContext,\n.workspace.withoutRooms.withoutContext{\n  display:block!important;','chat workspace must use the final single-surface composition');
-requireText(css,'.roomsPane,\n.contextPane{\n  display:none!important;','retired desktop room/context rails must stay hidden');
+requireText(css,'.workspace{\n  display:block!important;','chat workspace must use the final single-surface composition');
+forbid(workspace,/styles\\.(?:roomsPane|contextPane)\\b/,'retired desktop room/context rails must stay hidden');
 requireText(css,'.chatPane{\n  display:flex!important;\n  flex-direction:column!important;','chat pane must remain a vertical full-height surface');
-requireText(css,'.desktopChatHeaderForeground{\n  display:none!important;','desktop chat header must remain retired');
+forbid(workspace,/styles\\.desktopChatHeaderForeground\\b/,'desktop chat header must remain retired');
 requireText(css,'.chatHeaderForeground{\n  display:flex!important;','mobile/tablet header must remain the active header');
 requireText(css,'.chatHeaderForeground .mobileTools{\n  margin-inline-start:auto!important;','header utilities must stay on the far RTL-opposite edge');
-requireText(css,'.messages{\n  flex:1 1 auto!important;','message pane must consume remaining height');
+requireText(css,'flex:1 1 0!important;','message pane must consume remaining height');
 requireText(css,'overflow-y:auto!important;','message pane must own vertical scrolling');
-requireText(css,'.composer{\n  position:relative!important;\n  display:flex!important;\n  direction:rtl!important;','composer must remain RTL and anchored below the scroll pane');
+requireText(css,'position:sticky!important;\n  bottom:0!important;\n  inset-block-end:0!important;\n  z-index:20!important;\n  display:flex!important;\n  direction:rtl!important;','composer must remain RTL and anchored below the scroll pane');
 requireText(css,'env(safe-area-inset-bottom)','composer/overlay surfaces must preserve device safe area');
 requireText(css,'@media (min-width:768px){','tablet/stretched-tablet authority is missing');
 forbid(css,/@media\s*\([^)]*min-width\s*:\s*(?:1024|1440)px/i,'retired desktop chat breakpoint was reintroduced');
@@ -66,7 +66,7 @@ for(const required of [
   'السياسات واللوائح','مصفوفة الصلاحيات','الإجراءات والآليات',
   'EntityReferenceList','setActiveGovernedDocument(value)','classifyGovernedReference',
   "setGovernanceMode('governance')",'rolePortraitByKey','userMessageIdentity',
-  'styles.accountSurfaceOverlay','styles.accountSurfaceSheet'
+  'EntityDashboardMobilePage','styles.accountSurfaceSheet'
 ]){
   requireText(workspace,required,'governed conversation/entity capability missing: '+required);
 }
