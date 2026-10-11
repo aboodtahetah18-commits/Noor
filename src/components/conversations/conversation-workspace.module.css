@@ -11431,28 +11431,24 @@
   font-weight:700;
 }
 
-/* Conversations is a page inside Namaa, not a second full-screen app. */
+/* Conversation owns the viewport without the app header or bottom navigation. */
 [data-chat-first-route="true"] .page {
-  position:relative!important;
-  inset:auto!important;
+  position:fixed!important;
+  inset:0!important;
   width:100%!important;
   max-width:100%!important;
-  height:calc(100dvh - 150px)!important;
+  height:100dvh!important;
   min-height:0!important;
-  margin:0!important;
   padding:0!important;
+  margin:0!important;
   overflow:hidden!important;
 }
 [data-chat-first-route="true"] .workspace,
 [data-chat-first-route="true"] .chatPane {
   position:relative!important;
   inset:auto!important;
-  min-height:0!important;
+  width:100%!important;
   height:100%!important;
+  min-height:0!important;
   max-height:100%!important;
-}
-@media (min-width:768px) {
-  [data-chat-first-route="true"] .page {
-    height:calc(100dvh - 88px)!important;
-  }
 }
