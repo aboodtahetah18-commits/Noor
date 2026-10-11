@@ -25,7 +25,7 @@
   height:auto!important;
   max-height:none!important;
   overflow:visible!important;
-  box-shadow:none!important;
+  box-shadow:var(--ux-shadow-none)!important;
 }
 
 /* Isolate the one navigation drawer from historical hidden/mobile-only menus. */
@@ -64,7 +64,7 @@
 .ux-drawer-surface[open] nav[aria-label="التنقل في منصة نماء"] {
   display:flex!important;
   flex-direction:column!important;
-  gap:4px!important;
+  gap:var(--ux-space-1)!important;
   width:100%!important;
   min-width:0!important;
   visibility:visible!important;
@@ -73,9 +73,9 @@
 .ux-drawer-surface[open] nav[aria-label="التنقل في منصة نماء"] > a {
   display:flex!important;
   align-items:center!important;
-  gap:12px!important;
+  gap:var(--ux-space-3)!important;
   min-height:44px!important;
-  padding:10px 12px!important;
+  padding:var(--ux-space-3)!important;
   width:100%!important;
   color:var(--ux-text-primary)!important;
   text-decoration:none!important;
