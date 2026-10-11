@@ -1,37 +1,29 @@
-import { readFileSync } from 'node:fs';
-import { describe, expect, it } from 'vitest';
-
-const listPage = readFileSync('src/app/(protected)/cases/page.tsx', 'utf8');
-const detailPage = readFileSync('src/app/(protected)/cases/[caseId]/page.tsx', 'utf8');
-const desktopNav = readFileSync('src/app/(protected)/desktop-top-nav.tsx', 'utf8');
-const morePage = readFileSync('src/app/(protected)/more/page.tsx', 'utf8');
-
-describe('governance cases workspace integration contract', () => {
-  it('requires authenticated server reads for both case pages', () => {
-    expect(listPage).toContain('requireAuthenticatedUser()');
-    expect(listPage).toContain('listGovernanceCaseContracts(user.id');
-    expect(detailPage).toContain('requireAuthenticatedUser()');
-    expect(detailPage).toContain('getGovernanceCaseContract(user.id, caseId)');
-  });
-
-  it('surfaces the governed next action rather than inventing a client-side workflow', () => {
-    expect(listPage).toContain('nextActionCode');
-    expect(listPage).toContain('actionOwner');
-    expect(detailPage).toContain('nextActionCode');
-    expect(detailPage).toContain('actionOwner');
-  });
-
-  it('keeps the launch UI inside the existing governed visual language', () => {
-    expect(listPage).toContain('p47-decision-page');
-    expect(listPage).toContain('p47-analysis-card');
-    expect(detailPage).toContain('p47-analysis-card');
-    expect(listPage).not.toContain('style={{');
-    expect(detailPage).not.toContain('style={{');
-  });
-
-  it('exposes the cases workspace in desktop navigation and the mobile/tablet more hub', () => {
-    expect(desktopNav).toContain("href: '/cases'");
-    expect(desktopNav).toContain("label: 'القضايا والقرارات'");
-    expect(morePage).toContain("['/cases','القضايا والقرارات'");
-  });
+import {readFileSync} from 'node:fs';
+import {describe,expect,it} from 'vitest';
+const read=(p:string)=>readFileSync(p,'utf8');
+describe('governance cases in unified workspace',()=>{
+ const list=read('src/app/(protected)/cases/page.tsx');
+ const detail=read('src/app/(protected)/cases/[caseId]/page.tsx');
+ it('requires authenticated case reads',()=>{
+  expect(list).toContain('requireAuthenticatedUser()');
+  expect(list).toContain('listGovernanceCaseContracts(user.id');
+  expect(detail).toContain('requireAuthenticatedUser()');
+  expect(detail).toContain('getGovernanceCaseContract(user.id, caseId)');
+ });
+ it('preserves responsible next action',()=>{
+  for(const page of [list,detail]){expect(page).toContain('nextActionCode');expect(page).toContain('actionOwner');}
+ });
+ it('uses approved case surfaces without inline visual styles',()=>{
+  expect(list).toContain('p47-decision-page');
+  expect(list).toContain('p47-analysis-card');
+  expect(detail).toContain('p47-analysis-card');
+  expect(list).not.toContain('style={{');
+  expect(detail).not.toContain('style={{');
+ });
+ it('exposes cases in shared platform navigation',()=>{
+  const registry=read('src/lib/navigation/platform-navigation.ts');
+  const more=read('src/app/(protected)/more/page.tsx');
+  expect(registry).toContain("href: '/cases'");
+  expect(more).toContain("['/cases','القضايا والقرارات'");
+ });
 });
