@@ -31,3 +31,42 @@
     margin-inline: auto;
   }
 }
+
+/* Unified mobile viewport: the header starts at the visual top without a
+   historical body/shell spacer. The device safe area remains usable. */
+html,body{margin:0;padding:0;padding-block-start:0}
+.protected-app-shell[data-responsive-platform="unified-mobile-first"]{
+  margin:0;
+  padding:0;
+  padding-block-start:0;
+  min-height:100dvh;
+}
+.protected-app-shell[data-responsive-platform="unified-mobile-first"] > .namaa-mobile-topbar{
+  margin-block-start:0!important;
+  top:0;
+}
+.protected-app-shell[data-responsive-platform="unified-mobile-first"] .namaa-app-main,
+.protected-app-shell[data-responsive-platform="unified-mobile-first"] .namaa-page-frame{
+  padding-block-start:0;
+  margin-block-start:0;
+}
+/* Only the first-cycle empty dashboard expands to available screen height.
+   Other dashboard and application pages retain their natural scroll behavior. */
+.protected-app-shell[data-responsive-platform="unified-mobile-first"]:has(.namaa-empty-cycle-page) {
+  display:flex;
+  flex-direction:column;
+  min-height:100dvh;
+}
+.protected-app-shell[data-responsive-platform="unified-mobile-first"]:has(.namaa-empty-cycle-page) > .namaa-app-main{
+  flex:1 1 auto;
+  display:flex;
+  flex-direction:column;
+  min-height:0;
+}
+.protected-app-shell[data-responsive-platform="unified-mobile-first"]:has(.namaa-empty-cycle-page) .namaa-page-frame{
+  flex:1 1 auto;
+  display:flex;
+  flex-direction:column;
+  min-height:0;
+  width:100%;
+}
