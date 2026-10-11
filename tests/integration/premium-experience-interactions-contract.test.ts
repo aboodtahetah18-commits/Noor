@@ -18,10 +18,14 @@ describe('approved Namaa interaction system',()=>{
   expect(dialog).toContain('const shouldPrint = printable ?? /تفاصيل|تقرير|كشف|ملخص/.test(title)');
   expect(dialog).toContain('shouldPrint ? <PrintButton/> : null');
  });
- it('keeps approved action rail and scroll affordances',()=>{
+ it('keeps approved full-page account navigation and reusable action affordances',()=>{
   const account=read('src/app/(protected)/accounts/page.tsx');
   const css=read('src/design-system/interaction-components.css');
-  expect(account).toContain('EntityActionRail');
+  expect(account).toContain('href="/accounts/new"');
+  expect(account).toContain('namaa-approved-account-row');
+  expect(account).not.toContain('ActionDialog');
+  const newAccount=read('src/app/(protected)/accounts/new/page.tsx');
+  expect(newAccount).toContain('<AccountForm');
   expect(css).toContain('.mx-action-rail');
   expect(css).toContain('touch-action:pan-x');
  });
