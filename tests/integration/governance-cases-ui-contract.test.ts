@@ -23,7 +23,7 @@ describe('governance cases in unified workspace',()=>{
  it('exposes cases in shared platform navigation',()=>{
   const registry=read('src/lib/navigation/platform-navigation.ts');
   const more=read('src/app/(protected)/more/page.tsx');
-  expect(registry).toContain("href: '/cases'");
+  expect(registry).toContain("href:'/cases'");
   expect(more).toContain("['/cases','القضايا والقرارات'");
  });
 });
