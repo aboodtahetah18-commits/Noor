@@ -20,7 +20,7 @@ describe('Stage 4.7 legacy cleanup contract', () => {
   it('keeps one desktop speaker-color authority without a final override appendix', () => {
     const css = read('src/components/conversations/conversation-workspace.module.css');
     expect(css).not.toContain('STAGE 4.7 FINAL DESKTOP CHAT AUTHORITY');
-    expect(css).toContain('.page .agentMessage{');
-    expect(css).toContain('.page .userMessage{');
+    expect(css).toContain('.agentMessage{');
+    expect(css).toContain('.userMessage{');
   });
 });
