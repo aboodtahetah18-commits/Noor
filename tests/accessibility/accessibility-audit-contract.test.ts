@@ -33,7 +33,7 @@ describe('Phase 36 accessibility audit contract', () => {
   });
 
   it('labels navigation and announces form errors', () => {
-    expect(mobileNav).toContain('aria-label="التنقل الرئيسي للجوال"');
+    expect(mobileNav).toContain('aria-label="التنقل الرئيسي للمنصة"');
     expect(mobileNav).toContain('aria-current={active ? \'page\' : undefined}');
     expect(accountForm).toContain('role="alert"');
   });
