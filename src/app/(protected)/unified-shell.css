@@ -70,3 +70,20 @@ html,body{margin:0;padding:0;padding-block-start:0}
   min-height:0;
   width:100%;
 }
+
+/* Remove historical top-shell reservation from every regular Namaa page. */
+html:has(.protected-app-shell[data-responsive-platform="unified-mobile-first"]),
+body:has(.protected-app-shell[data-responsive-platform="unified-mobile-first"]) {
+  margin-block-start:0!important;
+  padding-block-start:0!important;
+}
+.protected-app-shell[data-responsive-platform="unified-mobile-first"] {
+  margin-block-start:0!important;
+  padding-block-start:0!important;
+  inset-block-start:auto!important;
+}
+.protected-app-shell[data-responsive-platform="unified-mobile-first"] > .namaa-mobile-topbar {
+  margin:0!important;
+  inset-block-start:0!important;
+  transform:none!important;
+}
