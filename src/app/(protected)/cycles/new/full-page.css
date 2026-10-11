@@ -1,0 +1,14 @@
+/* A financial cycle is a full page, never a card or modal. */
+.namaa-cycle-full-page{width:100%;min-height:calc(100dvh - 160px);margin:0;padding:var(--ux-space-4);background:var(--ux-page-bg);color:var(--ux-text-primary);direction:rtl}
+.namaa-cycle-full-content{width:100%;max-width:100%;margin:0;padding:0}
+.namaa-cycle-full-section{width:100%;min-height:calc(100dvh - 192px);margin:0;padding:var(--ux-space-4);background:var(--ux-surface-default);border:0;border-radius:0;box-shadow:var(--ux-shadow-none)}
+.namaa-cycle-full-section .cycle-create-minimal-header{display:flex;flex-direction:row;justify-content:flex-start;align-items:center;gap:var(--ux-space-4);padding-block:var(--ux-space-4);margin:0}
+.namaa-cycle-full-section .cycle-create-minimal-header h1{margin:0;color:var(--ux-text-primary)}
+.namaa-cycle-return{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;color:var(--ux-brand-primary);text-decoration:none}
+.namaa-cycle-full-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--ux-space-4);align-content:start;padding-block:var(--ux-space-4)}
+.namaa-cycle-full-form .cycle-field{display:flex;flex-direction:column;gap:var(--ux-space-2);min-width:0}
+.namaa-cycle-full-form .cycle-field-full{grid-column:1/-1}
+.namaa-cycle-full-form input{width:100%;min-width:0;min-height:48px;border:1px solid var(--ux-border-default);border-radius:var(--ux-radius-lg);padding:var(--ux-space-3);background:var(--ux-surface-default);color:var(--ux-text-primary)}
+.namaa-cycle-full-actions{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:var(--ux-space-3);padding-block:var(--ux-space-4)}
+.namaa-cycle-full-actions a,.namaa-cycle-full-actions button{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:var(--ux-space-3) var(--ux-space-5);border-radius:var(--ux-radius-lg)}
+@media(max-width:767px){.namaa-cycle-full-page{padding:0}.namaa-cycle-full-section{padding:var(--ux-space-4)}.namaa-cycle-full-form{grid-template-columns:minmax(0,1fr)}.namaa-cycle-full-actions a,.namaa-cycle-full-actions button{flex:1 1 auto}}
