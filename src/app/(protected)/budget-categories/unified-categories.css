@@ -5,9 +5,7 @@
 .namaa-budget-categories-unified .account-card-head {min-width:0}
 .namaa-budget-categories-unified .p49-resource-actions {display:flex;flex-wrap:wrap;gap:var(--ux-space-2)}
 .namaa-budget-categories-unified :is(button,input,select) {max-width:100%}
-@media (min-width:700px) {
+@media (min-width:768px) {
   .namaa-budget-categories-unified .accounts-grid {grid-template-columns:repeat(2,minmax(0,1fr))}
 }
-@media (min-width:1200px) {
-  .namaa-budget-categories-unified .accounts-grid {grid-template-columns:repeat(3,minmax(0,1fr))}
-}
+
