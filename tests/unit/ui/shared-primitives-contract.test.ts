@@ -75,9 +75,9 @@ describe('Stage 2 shared primitive contract', () => {
     expect(css).toContain('.ux-drawer-surface');
   });
 
-  it('keeps the legacy feedback implementation as a compatibility layer', () => {
-    const legacy = read('src/components/ui/feedback-state.tsx');
-    expect(legacy).toContain('p47-feedback-state');
-    expect(legacy).toContain("'danger'");
+  it('keeps a single approved feedback component without a legacy duplicate', () => {
+    const current = read('src/components/ui/FeedbackState.tsx');
+    expect(current).toContain("role={tone === 'error' ? 'alert' : 'status'}");
+    expect(fs.existsSync(path.join(root, 'src/components/ui/feedback-state.tsx'))).toBe(false);
   });
 });
