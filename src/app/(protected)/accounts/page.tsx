@@ -26,7 +26,7 @@ export default async function AccountsPage({searchParams}:{searchParams:Promise<
 
   return <main className="page-shell p47-resource-page namaa-approved-finance namaa-approved-accounts" dir="rtl">
     <header className="p47-resource-header namaa-approved-page-heading">
-      <div><h1>الحسابات</h1><p>إدارة حساباتك المالية في مكان واحد</p></div>
+      <div><h1>الحسابات</h1></div><Link href="/accounts/new" className="namaa-approved-account-header-add"><LucideIcon name="plus" size={20}/> إضافة حساب</Link>
     </header>
     <section className="p74-focus-summary namaa-approved-accounts-balance">
       <span>إجمالي الرصيد الحالي</span>
@@ -37,7 +37,6 @@ export default async function AccountsPage({searchParams}:{searchParams:Promise<
     <section className="namaa-approved-account-stats" aria-label="أنواع الحسابات">
       {(Object.entries(types) as Array<[keyof typeof types,(typeof types)[keyof typeof types]]>).map(([key,value])=><Link key={key} href={`/accounts?type=${key}`} className={selected===key?'is-selected':''}><LucideIcon name={value.icon} size={20}/><span>{value.label}</span><strong>{active.filter(a=>a.accountType===key).length}</strong></Link>)}
     </section>
-    <Link href="/accounts/new" className="namaa-approved-account-add p47-primary-action"><LucideIcon name="plus" size={20}/> إضافة حساب جديد</Link>
     <nav className="namaa-approved-account-filters" aria-label="تصفية الحسابات">
       <Link href="/accounts" aria-current={selected==='ALL'?'page':undefined}>الكل</Link>
       {(Object.entries(types) as Array<[keyof typeof types,(typeof types)[keyof typeof types]]>).map(([key,value])=><Link key={key} href={`/accounts?type=${key}`} aria-current={selected===key?'page':undefined}>{value.label}</Link>)}
