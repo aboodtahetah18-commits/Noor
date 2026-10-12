@@ -132,3 +132,31 @@
  .namaa-v2-transactions__actions>.namaa-v2__primary{grid-column:auto}
  .namaa-v2-transactions__actions>a{min-height:38px}
 }
+
+
+/* Phase 2: consistent account spacing and understated bottom navigation. */
+.protected-app-shell[data-responsive-platform="unified-mobile-first"] .namaa-mobile-bottom-nav{
+  margin-block-start:0;box-sizing:border-box;min-height:56px;
+  padding:4px max(4px,env(safe-area-inset-right)) max(4px,env(safe-area-inset-bottom)) max(4px,env(safe-area-inset-left));
+  border-top:1px solid #E2E8F0;background:#FFF;
+}
+.protected-app-shell[data-responsive-platform="unified-mobile-first"] .namaa-mobile-bottom-nav>a{
+  min-width:0;min-height:48px;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:2px;padding:3px 1px;border:0;border-radius:0;
+  background:transparent;color:#64748B;font-size:11px;line-height:1.25;
+}
+.protected-app-shell[data-responsive-platform="unified-mobile-first"] .namaa-mobile-bottom-nav>a.is-active{
+  color:#0E4D38;background:transparent;border:0;box-shadow:none;
+}
+.protected-app-shell[data-responsive-platform="unified-mobile-first"] .namaa-mobile-bottom-nav>a .mobile-nav-icon{
+  min-width:0;min-height:0;padding:0;background:transparent;border-radius:0;box-shadow:none;
+}
+.protected-app-shell[data-responsive-platform="unified-mobile-first"] .namaa-mobile-bottom-nav>a.is-active .mobile-nav-icon{
+  background:transparent;border-radius:0;box-shadow:none;color:#0E4D38;
+}
+.namaa-v2:not(.namaa-v2-transactions){padding:8px;min-height:calc(100dvh - 112px)}
+.namaa-v2:not(.namaa-v2-transactions) .namaa-v2__header{margin:0 0 6px}
+.namaa-v2:not(.namaa-v2-transactions) .namaa-v2__balance{margin:0 0 8px;padding:12px}
+.namaa-v2:not(.namaa-v2-transactions) .namaa-v2__filters{margin-bottom:6px;padding-bottom:3px}
+.namaa-v2:not(.namaa-v2-transactions) .namaa-v2__list{gap:6px}
+.namaa-v2:not(.namaa-v2-transactions) .namaa-v2__account{padding:10px;gap:8px;border-radius:12px}
