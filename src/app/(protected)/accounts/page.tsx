@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { requireAuthenticatedUser } from '@/auth/require-authenticated-user';
 import { listAccounts } from '@/features/accounts/queries/list-accounts';
 import { Money, sumMoney } from '@/financial-engine/money';
-import { formatSar } from '@/lib/format-money';
+import { SaudiAmount } from '@/components/ui/saudi-amount';
 import { LucideIcon } from '@/components/ui/lucide-icon';
 import { reconcileConfirmedOnboardingAccounts } from '@/lib/conversations/onboarding-account-reconciliation';
 
@@ -30,7 +30,7 @@ export default async function AccountsPage({searchParams}:{searchParams:Promise<
     </header>
     <section className="p74-focus-summary namaa-approved-accounts-balance">
       <span>إجمالي الرصيد الحالي</span>
-      <strong>{formatSar(total)}</strong>
+      <strong><SaudiAmount value={total}/> </strong>
       <small>{active.length} حساب نشط</small>
       <LucideIcon name="walletCards" size={32}/>
     </section>
@@ -47,7 +47,7 @@ export default async function AccountsPage({searchParams}:{searchParams:Promise<
         <div className="namaa-approved-account-details">
           <strong>{a.name}</strong>
           <small>{a.bankName??types[a.accountType].label}{a.cardLast4?` · •••• ${a.cardLast4}`:''}</small>
-          <b>{formatSar(a.balance)}</b>
+          <b><SaudiAmount value={a.balance}/> </b>
         </div>
         <Link href={`/accounts/${a.id}`} className="namaa-approved-account-view" aria-label={`عرض تفاصيل ${a.name}`}><LucideIcon name="chevronLeft" size={20}/></Link>
       </article>):<div className="namaa-approved-banks-empty">لا توجد حسابات مطابقة. يمكنك تغيير التصنيف أو إضافة حساب جديد.</div>}
