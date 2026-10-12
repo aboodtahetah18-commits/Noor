@@ -219,3 +219,23 @@
 .namaa-v2-bank-detail .namaa-system-bank-detail-heading{background:transparent;box-shadow:none;border:0;padding:4px 0;min-height:0}
 .namaa-v2-bank-detail .namaa-system-bank-detail-heading>span{width:38px;height:38px;min-width:38px;display:grid;place-items:center;background:#E9F3EE;color:#0E4D38;border-radius:11px}
 .namaa-v2-bank-detail .namaa-system-bank-detail-heading>span svg{width:22px;height:22px}
+
+
+/* Central bank governance: a single compact page for all existing documents and procedures. */
+.namaa-v2-governance{box-sizing:border-box;width:100%;max-width:100%;min-height:calc(100dvh - 112px);margin:0!important;padding:8px!important;background:#F8FAFC;color:#0F172A}
+.namaa-v2-governance *{box-sizing:border-box}
+.namaa-v2-governance__back{display:inline-flex;align-items:center;gap:4px;margin:0 0 6px;color:#0E4D38;text-decoration:none;font-size:12px;font-weight:700}
+.namaa-v2-governance .namaa-governance-portal-hero{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px;margin:0 0 8px;border-radius:12px;min-height:0}
+.namaa-v2-governance .namaa-governance-portal-hero h1{font-size:18px;line-height:1.35;margin:2px 0}
+.namaa-v2-governance .namaa-governance-portal-hero p{font-size:12px;line-height:1.5;margin:0}
+.namaa-v2-governance .namaa-governance-portal-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:0 0 8px}
+.namaa-v2-governance .namaa-governance-portal-metrics article{min-width:0;min-height:0;margin:0;padding:9px;border-radius:10px}
+.namaa-v2-governance .namaa-governance-portal-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 8px}
+.namaa-v2-governance .namaa-governance-library-card{padding:10px;margin:0 0 8px;min-width:0;border-radius:12px}
+.namaa-v2-governance .namaa-governance-library-card h2{font-size:14px}
+.namaa-v2-governance .namaa-governance-library-card p{font-size:12px;line-height:1.55}
+.namaa-v2-governance .namaa-governance-doc-preview{display:grid;gap:5px}
+.namaa-v2-governance .namaa-governance-doc-preview :is(a,div){min-width:0;overflow-wrap:anywhere}
+.namaa-v2-governance .namaa-governance-portal-footer{margin:0;padding:10px;border-radius:12px}
+@media(max-width:420px){.namaa-v2-governance .namaa-governance-portal-grid{grid-template-columns:minmax(0,1fr)}}
+@media(min-width:850px){.namaa-v2-governance{padding:12px 16px!important}.namaa-v2-governance .namaa-governance-portal-metrics{grid-template-columns:repeat(4,minmax(0,1fr))}}
