@@ -16,6 +16,30 @@ const banks:Record<string,InstitutionalBank>={
  assets:{name:'بنك الأصول الاستثمارية',subtitle:'الأصول والاستثمار والأهداف',icon:'chart',purpose:'متابعة الاستثمارات والأصول وربط الفرص بالأهداف المالية.',team:['مدير بنك الأصول','مسؤول الاستثمار','مسؤول الأهداف'],goals:['تحسين جودة المحافظ','ضبط مخاطر الاستثمار','ربط الاستثمار بالأهداف'],destination:'/investments',tone:'assets'},
 };
 
+
+const bankSections:Record<string,readonly {title:string;description:string;href:string;icon:LucideIconName}[]>={
+ central:[
+  {title:'الحوكمة والقرارات',description:'السياسات والمراجعات والاعتمادات',href:'/governance',icon:'landmark'},
+  {title:'مركز العمليات',description:'متابعة الاستثناءات والمراجعات',href:'/bank-operations',icon:'listChecks'},
+  {title:'التقارير المركزية',description:'مؤشرات المنظومة وتحليل الأداء',href:'/reports',icon:'chart'},
+ ],
+ hilal:[
+  {title:'التمويل الداخلي',description:'التمويلات والجداول والمتابعة',href:'/internal-funding',icon:'repeat2'},
+  {title:'الالتزامات',description:'المستحقات والمدفوعات القادمة',href:'/obligations',icon:'receiptText'},
+  {title:'العمليات',description:'الحركة المالية وسجل المعاملات',href:'/transactions',icon:'arrowUpDown'},
+ ],
+ solvency:[
+  {title:'صندوق الطوارئ',description:'الرصيد المستهدف والتغطية',href:'/emergency',icon:'lockKeyhole'},
+  {title:'الادخار',description:'الأرصدة والتحويلات وخطط الادخار',href:'/savings',icon:'banknote'},
+  {title:'تقارير الأمان',description:'الضغط المالي ومؤشرات الحماية',href:'/reports',icon:'chart'},
+ ],
+ assets:[
+  {title:'الاستثمارات',description:'المحفظة والأداء والعوائد',href:'/investments',icon:'chart'},
+  {title:'الأهداف المالية',description:'متابعة الأهداف والتقدم',href:'/goals',icon:'target'},
+  {title:'التقارير',description:'قراءة أداء الأصول والاستثمارات',href:'/reports',icon:'receiptText'},
+ ],
+};
+
 export default async function InstitutionalBankPage({params}:{params:Promise<{bank:string}>}){
  const {bank:key}=await params;
  const bank=banks[key];
@@ -27,7 +51,7 @@ export default async function InstitutionalBankPage({params}:{params:Promise<{ba
   getEmergencySummary(user.id).catch(()=>null),
   getSavingsSummary(user.id).catch(()=>null),
  ]);
- return <main className="namaa-approved-finance namaa-system-bank-detail" dir="rtl">
+ return <main className="namaa-approved-finance namaa-system-bank-detail namaa-v2 namaa-v2-bank-detail" dir="rtl">
   <Link href="/bank-operations" className="namaa-system-bank-back"><LucideIcon name="chevronRight" size={20}/> بنوك نماء</Link>
   <header className={`namaa-system-bank-detail-heading tone-${bank.tone}`}>
    <span><LucideIcon name={bank.icon} size={32}/></span><div><h1>{bank.name}</h1><p>{bank.subtitle}</p></div>
@@ -42,8 +66,9 @@ export default async function InstitutionalBankPage({params}:{params:Promise<{ba
     {key==='assets'?<><div><span>الأهداف المسجلة</span><strong>{goals.items.length}</strong></div><div><span>بيانات المحافظ</span><strong>تظهر في وحدة الاستثمارات</strong></div></>:null}
    </div>
   </section>
-  <section className="namaa-system-bank-detail-panel"><h2>الفريق المسؤول</h2><div className="namaa-system-bank-people">{bank.team.map(name=><div key={name}><LucideIcon name="circleUserRound" size={20}/><span>{name}</span></div>)}</div></section>
-  <section className="namaa-system-bank-detail-panel"><h2>الأهداف والاختصاصات</h2><div className="namaa-system-bank-people">{bank.goals.map(goal=><div key={goal}><LucideIcon name="circleCheck" size={20}/><span>{goal}</span></div>)}</div></section>
+  <section className="namaa-v2-bank-detail__sections" aria-label="الأقسام الداخلية للبنك"><h2>الأقسام الداخلية</h2><div className="namaa-v2-bank-detail__grid">{bankSections[key].map(item=><Link key={item.href} href={item.href} className="namaa-v2-bank-detail__section"><span className="namaa-v2-bank-detail__section-icon"><LucideIcon name={item.icon} size={20}/></span><strong>{item.title}</strong><small>{item.description}</small><LucideIcon name="chevronLeft" size={16}/></Link>)}</div></section>
+  <details className="namaa-v2-bank-detail__secondary"><summary>الفريق المسؤول</summary><div className="namaa-system-bank-people">{bank.team.map(name=><div key={name}><LucideIcon name="circleUserRound" size={20}/><span>{name}</span></div>)}</div></details>
+  <details className="namaa-v2-bank-detail__secondary"><summary>الأهداف والاختصاصات</summary><div className="namaa-system-bank-people">{bank.goals.map(goal=><div key={goal}><LucideIcon name="circleCheck" size={20}/><span>{goal}</span></div>)}</div></details>
   <nav className="namaa-system-bank-actions" aria-label="إجراءات البنك">
    <Link href={bank.destination}><LucideIcon name="layoutGrid" size={20}/> الوحدة المرتبطة</Link>
    <Link href="/conversations"><LucideIcon name="messageSquareText" size={20}/> المحادثات</Link>
