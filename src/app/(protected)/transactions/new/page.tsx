@@ -16,9 +16,9 @@ export default async function NewTransactionPage(){
     getUserOperationalDate(user.id),
   ]);
   return <main className="namaa-approved-finance namaa-full-form-page" dir="rtl">
-    <header className="namaa-full-form-header"><div><h1>إضافة عملية مالية</h1><p>تسجيل مصروف جديد ضمن دورتك المالية.</p></div><Link href="/transactions">العودة إلى العمليات</Link></header>
+    <header className="namaa-full-form-header"><h1>إضافة عملية</h1></header>
     <section className="namaa-full-form-content">
-      {!cycle?<p>ابدأ دورة مالية قبل تسجيل مصروف. <Link href="/cycles/new">بدء دورة مالية</Link></p>:
+      {!cycle?<div className="namaa-form-state"><strong>لا توجد دورة مالية نشطة</strong><Link href="/cycles/new" className="namaa-form-state__action">بدء دورة الآن</Link></div>:
         <form action={recordExpenseAction} className="namaa-approved-transaction-form">
           <input type="hidden" name="cycleId" value={cycle.id}/>
           <input type="hidden" name="idempotencyKey" value={randomUUID()}/>
