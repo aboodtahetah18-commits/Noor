@@ -6,7 +6,8 @@ import { NAMAA_PERSONA_ASSETS } from '@/components/conversations/persona-assets'
 
 export default function InvestmentsPage() {
   return (
-    <main className="namaa-investments-page" dir="rtl">
+    <main className="namaa-investments-page namaa-assets-operations" dir="rtl">
+      <nav className="namaa-bank-subpage-back"><Link href="/bank-operations/assets">‹ بنك الأصول</Link></nav>
       <section className="namaa-investments-shell namaa-wide-only">
         <header className="namaa-investments-header namaa-wide-card">
           <div className="namaa-investments-hero-copy">
