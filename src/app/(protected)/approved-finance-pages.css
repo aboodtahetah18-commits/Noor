@@ -238,3 +238,17 @@
 .namaa-riyal-money{display:inline-flex;align-items:center;gap:var(--ux-space-2);direction:ltr;unicode-bidi:isolate;white-space:nowrap;max-width:100%}
 .namaa-riyal-money>img{display:inline-block;object-fit:contain;width:1em;height:1em;flex:0 0 1em}
 @media(max-width:767px){.namaa-approved-finance .p47-inline-actions :is(button,a){flex:1 1 auto;font-size:var(--ux-type-body-sm-size)}}
+
+/* Governed semantic palette: green for primary, navy for transfers,
+   red for spending/warnings, gold for savings/attention. */
+.namaa-approved-finance .namaa-approved-account-stats>a:nth-child(2){background:var(--ux-surface-warm);color:var(--ux-brand-deep)}
+.namaa-approved-finance .namaa-approved-account-stats>a:nth-child(3){background:var(--ux-section-soft-teal);color:var(--ux-brand-night)}
+.namaa-approved-finance .namaa-approved-account-stats>a:nth-child(4){background:var(--ux-surface-warm);color:var(--ux-brand-deep)}
+.namaa-approved-finance .p47-transaction-kind.is-expense,.namaa-approved-finance .p47-transaction-kind.is-fee{color:var(--ux-state-error)}
+.namaa-approved-finance .p47-transaction-kind.is-transfer{color:var(--ux-brand-night)}
+.namaa-approved-finance .p47-transaction-kind.is-income{color:var(--ux-state-success)}
+.namaa-approved-finance .p47-transaction-row .p47-transaction-amount{font-variant-numeric:tabular-nums}
+.namaa-approved-finance .p47-budget-list article.is-over{border-inline-start:3px solid var(--ux-state-error)}
+.namaa-system-bank-tile.tone-hilal .namaa-system-bank-symbol{color:var(--ux-brand-night)}
+.namaa-system-bank-tile.tone-solvency .namaa-system-bank-symbol{color:var(--ux-brand-deep)}
+.namaa-system-bank-tile.tone-assets .namaa-system-bank-symbol{color:var(--ux-brand-night)}
