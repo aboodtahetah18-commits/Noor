@@ -24,8 +24,9 @@ export default async function InternalFundingPage({searchParams}:{searchParams:P
   const emergencyGrowth=Money.parse(String(data.emergencyGrowth??'0.00'));
   const emergencyAccount=accounts.find(a=>a.financialRole==='EMERGENCY_FUND');
 
-  return <main className="page-shell p47-internal-funding-page" dir="rtl">
-    <header className="page-header p47-section-header"><div><p className="eyebrow">التخطيط والتمويل · التمويل الداخلي</p><div className="title-with-help"><h1>القروض والرحلات الممولة</h1></div></div><div className="button-row"><BankMessageDialogTrigger className="button-link">رسالة بنك</BankMessageDialogTrigger><Link className="button-link" href="/budget/optimizer">تحسين الخطة</Link></div></header>
+  return <main className="page-shell p47-internal-funding-page namaa-hilal-funding" dir="rtl">
+    <nav className="namaa-bank-subpage-back"><Link href="/bank-operations/hilal">‹ بنك الهلال</Link></nav>
+    <header className="page-header p47-section-header"><div><p className="eyebrow">التخطيط والتمويل · التمويل الداخلي</p><div className="title-with-help"><h1>التمويل الداخلي</h1></div></div><div className="button-row"><BankMessageDialogTrigger className="button-link">رسالة بنك</BankMessageDialogTrigger><Link className="button-link" href="/budget/optimizer">تحسين الخطة</Link></div></header>
     {q.error?<p className="error-banner" role="alert">{q.error}</p>:null}
     {q.created?<p className="success-banner">تم إنشاء التمويل. عند لصق الرسالة البنكية يمكنك ربط العملية به.</p>:null}
     {q.categoryCreated?<p className="success-banner">تم إنشاء تمويل البند من حساب الطوارئ بفائدة 10% وجدول سداد لا يتجاوز الحد الشهري الآمن الحالي.</p>:null}
@@ -47,7 +48,7 @@ export default async function InternalFundingPage({searchParams}:{searchParams:P
       </div><div className="button-row"><button className="primary-button" type="submit"><LucideIcon name="plus" size={20}/>إنشاء طلب التمويل</button><Link className="secondary-button" href="/budget/optimizer"><LucideIcon name="chart" size={20}/>فحص القدرة الشهرية</Link></div></form>}
     </section>
 
-    <details className="ux-progressive-disclosure p75-secondary-section"><summary>إنشاء تمويل جديد</summary><div className="ux-progressive-disclosure__content"><section className="card p47-funding-create"><div className="section-title-row"><h2>تمويل جديد</h2></div>
+    <details className="ux-progressive-disclosure p75-secondary-section" id="namaa-hilal-funding-create"><summary>إنشاء تمويل جديد</summary><div className="ux-progressive-disclosure__content"><section className="card p47-funding-create"><div className="section-title-row"><h2>تمويل جديد</h2></div>
       <form action={createInternalFundingCaseAction} className="form-card"><div className="form-grid">
         <label>اسم التمويل<input name="title" required maxLength={180} placeholder="مثال: رحلة جدة الأولى - الشتاء"/></label>
         <label>النوع<select name="caseType" defaultValue="TRIP"><option value="TRIP">رحلة</option><option value="GOAL">هدف</option><option value="URGENT">احتياج عاجل</option><option value="OTHER">آخر</option></select></label>
