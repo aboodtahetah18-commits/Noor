@@ -10,7 +10,8 @@ export default async function GovernancePage(){
   const user=await requireAuthenticatedUser();
   const dailyReport=await readDailyAlgorithmKnowledgeReport(user.id);
   const latest=dailyReport?.latest??null;
-  return <main className="namaa-governance-portal page-shell" dir="rtl">
+  return <main className="namaa-governance-portal page-shell namaa-v2-governance" dir="rtl">
+    <Link className="namaa-v2-governance__back" href="/bank-operations/central"><LucideIcon name="chevronRight" size={20}/> بنك نماء المركزي</Link>
     <header className="namaa-governance-portal-hero">
       <div>
         <span>الحوكمة المختصرة</span>
