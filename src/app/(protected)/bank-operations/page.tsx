@@ -37,20 +37,5 @@ export default async function BankOperationsPage({searchParams}:{searchParams:Pr
     <strong>{bank.name}</strong><small>{bank.description}</small>
    </Link>)}
   </nav>
-  <section className="namaa-system-bank-focus">
-   <header><span><LucideIcon name={selected.icon} size={24}/></span><div><h2>{selected.name}</h2><p>{selected.description}</p></div></header>
-   <div className="namaa-system-bank-facts">
-    {selected.key==='central'?<><div><span>عمليات تحتاج مراجعة</span><strong>{center.pendingReviewCount}</strong></div><div><span>عمليات غير مصنفة</span><strong>{center.unclassifiedCount}</strong></div></>:null}
-    {selected.key==='hilal'?<><div><span>التمويل الداخلي النشط</span><strong>{center.activeFundingCount}</strong></div><div><span>دفعات كشف معلقة</span><strong>{center.pendingImportsCount}</strong></div></>:null}
-    {selected.key==='solvency'?<><div><span>حالة صندوق الطوارئ</span><strong>{emergency?'بيانات متاحة':'غير مكتملة'}</strong></div><div><span>الادخار</span><strong>{savings?'بيانات متاحة':'غير مكتملة'}</strong></div></>:null}
-    {selected.key==='assets'?<><div><span>الأهداف المسجلة</span><strong>{goals.items.length}</strong></div><div><span>المتابعة الاستثمارية</span><strong>عبر بنك الأصول</strong></div></>:null}
-   </div>
-   <div className="namaa-system-bank-actions">
-    <Link href={selected.href}><LucideIcon name="layoutGrid" size={20}/> عرض الوحدة</Link>
-    <Link href="/conversations"><LucideIcon name="messageSquareText" size={20}/> المحادثة</Link>
-    <Link href="/bank-statements"><LucideIcon name="receiptText" size={20}/> الكشوف</Link>
-   </div>
-  </section>
-  <BankAlgorithmAdvisory summary={financialSummary} history={cashFlowHistory}/>
  </main>;
 }
