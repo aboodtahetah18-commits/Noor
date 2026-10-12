@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { ActionDialog } from '@/components/overlays/action-dialog';
 import { formatSar } from '@/lib/format-money';
-import { cancelObligationAction, createObligationAction, payObligationAction } from './actions';
+import { cancelObligationAction, payObligationAction } from './actions';
 
 type AccountOption={id:string;name:string;isActive:boolean};
 type ObligationRow={
@@ -18,20 +18,6 @@ type ObligationRow={
 
 const STATUS_LABELS:Record<string,string>={OVERDUE:'متأخرة',DUE:'مستحقة الآن',UPCOMING:'قادمة',PAID:'مدفوعة',CANCELLED:'ملغاة'};
 const RECURRENCE_LABELS:Record<string,string>={ONCE:'مرة واحدة',MONTHLY:'شهري',QUARTERLY:'ربع سنوي',SEMI_ANNUAL:'نصف سنوي',ANNUAL:'سنوي'};
-
-function AddObligationForm({accounts,today}:{accounts:AccountOption[];today:string}){
-  const active=accounts.filter(a=>a.isActive);
-  return <form action={createObligationAction} className="form-grid">
-    <input type="hidden" name="idempotencyKey" value={randomUUID()}/>
-    <label>اسم الالتزام<input name="name" required maxLength={160} placeholder="مثال: فاتورة الإنترنت"/></label>
-    <label>المبلغ الافتراضي<input name="defaultAmount" required inputMode="decimal" placeholder="0.00"/></label>
-    <label>التكرار<select name="recurrence" defaultValue="MONTHLY"><option value="ONCE">مرة واحدة</option><option value="MONTHLY">شهري</option><option value="QUARTERLY">ربع سنوي</option><option value="SEMI_ANNUAL">نصف سنوي</option><option value="ANNUAL">سنوي</option></select></label>
-    <label>أول تاريخ استحقاق<input name="firstDueDate" type="date" defaultValue={today} required/></label>
-    <label>الأولوية<input name="priority" type="number" min="1" placeholder="اختياري"/></label>
-    <label>الحساب المتوقع<select name="expectedAccountId"><option value="">غير محدد</option>{active.map(a=><option key={a.id} value={a.id}>{a.name}</option>)}</select></label>
-    <button className="primary-button" type="submit">إنشاء الالتزام</button>
-  </form>;
-}
 
 export function ObligationsWide({items,accounts,today}:{items:ObligationRow[];accounts:AccountOption[];today:string}){
   const active=accounts.filter(a=>a.isActive);
