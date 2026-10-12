@@ -189,3 +189,38 @@
   .protected-app-shell .more-hub-section-head>div{min-width:0}
   .protected-app-shell .more-hub-section-head :is(h2,p){word-break:normal;overflow-wrap:break-word;hyphens:none}
 }
+
+/* Distinct institutional banks, never grouped personal accounts. */
+.namaa-system-banks-head{display:flex;align-items:center;justify-content:space-between;padding:var(--ux-space-3) 0}
+.namaa-system-banks-head h1{margin:0;color:var(--ux-text-primary)}
+.namaa-system-banks-head p{color:var(--ux-text-secondary);margin:var(--ux-space-2) 0}
+.namaa-system-bank-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--ux-space-3);margin-block:var(--ux-space-3)}
+.namaa-system-bank-tile{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:var(--ux-space-2);min-width:0;min-height:120px;padding:var(--ux-space-4);background:var(--ux-surface-default);color:var(--ux-text-primary);border:1px solid var(--ux-border-default);border-radius:var(--ux-radius-lg);text-decoration:none}
+.namaa-system-bank-tile[aria-current="page"]{border:2px solid var(--ux-brand-primary)}
+.namaa-system-bank-tile small{color:var(--ux-text-secondary);overflow-wrap:normal}
+.namaa-system-bank-symbol{color:var(--ux-brand-primary)}
+.namaa-system-bank-tile.tone-hilal{background:var(--ux-section-soft-teal)}
+.namaa-system-bank-tile.tone-solvency{background:var(--ux-surface-warm)}
+.namaa-system-bank-tile.tone-assets{background:var(--ux-section-soft-teal)}
+.namaa-system-bank-focus{display:grid;gap:var(--ux-space-4);padding:var(--ux-space-4);background:var(--ux-surface-default);border:1px solid var(--ux-border-default);border-radius:var(--ux-radius-lg)}
+.namaa-system-bank-focus>header{display:flex;align-items:center;gap:var(--ux-space-3)}
+.namaa-system-bank-focus>header h2,.namaa-system-bank-focus>header p{margin:0}
+.namaa-system-bank-focus>header p{color:var(--ux-text-secondary)}
+.namaa-system-bank-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--ux-space-3)}
+.namaa-system-bank-facts>div{display:grid;gap:var(--ux-space-2);padding:var(--ux-space-3);background:var(--ux-section-soft-teal);border-radius:var(--ux-radius-lg)}
+.namaa-system-bank-facts span{color:var(--ux-text-secondary)}
+.namaa-system-bank-actions{display:flex;flex-wrap:wrap;gap:var(--ux-space-2)}
+.namaa-system-bank-actions a{display:inline-flex;align-items:center;justify-content:center;gap:var(--ux-space-2);min-height:44px;padding:var(--ux-space-2) var(--ux-space-3);color:var(--ux-text-inverse);background:var(--ux-brand-primary);border-radius:var(--ux-radius-lg);text-decoration:none}
+.namaa-system-bank-actions a:nth-child(2){background:var(--ux-text-primary)}
+.namaa-system-bank-actions a:nth-child(3){background:var(--ux-brand-primary)}
+/* Keep responsive inputs legible; never make field foreground match surface. */
+.namaa-full-form-content :is(input,select,textarea){width:100%;min-width:0;min-height:48px;color:var(--ux-text-primary);background:var(--ux-surface-default);border:1px solid var(--ux-border-default)}
+.namaa-full-form-content .money-field{display:flex;align-items:center;gap:var(--ux-space-2);min-width:0}
+.namaa-full-form-content .money-field input{min-width:0;flex:1}
+.namaa-full-form-content .money-field>span{flex:0 0 auto;color:var(--ux-text-secondary)}
+.namaa-full-form-content .account-form-primary-grid{align-items:start}
+.namaa-full-form-content .account-form-primary-grid label{display:flex;flex-direction:column;gap:var(--ux-space-2);min-width:0}
+.namaa-approved-finance .namaa-approved-account-add{width:auto}
+.namaa-approved-finance .namaa-approved-accounts-balance{background:var(--ux-brand-primary);color:var(--ux-text-inverse)}
+.namaa-approved-finance .namaa-approved-accounts-balance :is(span,strong,small,b){color:var(--ux-text-inverse)}
+@media(max-width:767px){.namaa-system-bank-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.namaa-system-bank-tile{padding:var(--ux-space-3)}.namaa-system-bank-actions a{flex:1 1 auto}.namaa-system-bank-facts{grid-template-columns:minmax(0,1fr)}}
