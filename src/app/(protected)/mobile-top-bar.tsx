@@ -35,9 +35,6 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
         </div>
 
         <div className="namaa-mobile-header-actions">
-          <Link href="/transactions" className="namaa-mobile-search-action" aria-label="البحث في نماء" title="البحث">
-            <LucideIcon name="search" size={20} />
-          </Link>
           <Link href="/alerts" aria-label="التنبيهات" title="التنبيهات">
             <LucideIcon name="bell" size={20} />
           </Link>
