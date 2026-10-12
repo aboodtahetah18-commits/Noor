@@ -252,3 +252,20 @@
 .namaa-system-bank-tile.tone-hilal .namaa-system-bank-symbol{color:var(--ux-brand-night)}
 .namaa-system-bank-tile.tone-solvency .namaa-system-bank-symbol{color:var(--ux-brand-deep)}
 .namaa-system-bank-tile.tone-assets .namaa-system-bank-symbol{color:var(--ux-brand-night)}
+
+/* Dedicated institutional bank pages, no personal-account tiles. */
+.namaa-system-bank-back{display:inline-flex;align-items:center;gap:var(--ux-space-2);min-height:44px;color:var(--ux-brand-primary);text-decoration:none}
+.namaa-system-bank-detail-heading{display:flex;align-items:center;gap:var(--ux-space-4);padding:var(--ux-space-5);border:1px solid var(--ux-border-default);border-radius:var(--ux-radius-lg);background:var(--ux-section-soft-teal)}
+.namaa-system-bank-detail-heading.tone-hilal{background:var(--ux-surface-warm)}
+.namaa-system-bank-detail-heading.tone-solvency{background:var(--ux-section-soft-teal)}
+.namaa-system-bank-detail-heading.tone-assets{background:var(--ux-surface-warm)}
+.namaa-system-bank-detail-heading h1{font-size:var(--ux-type-page-title-size);margin:0;line-height:1.35}
+.namaa-system-bank-detail-heading p{color:var(--ux-text-secondary);margin:var(--ux-space-2) 0 0}
+.namaa-system-bank-detail-heading>span{color:var(--ux-brand-primary)}
+.namaa-system-bank-purpose{padding-block:var(--ux-space-3);margin:0;color:var(--ux-text-secondary)}
+.namaa-system-bank-detail-panel{padding:var(--ux-space-4);margin-block:var(--ux-space-3);border:1px solid var(--ux-border-default);border-radius:var(--ux-radius-lg);background:var(--ux-surface-default)}
+.namaa-system-bank-detail-panel h2{margin:0 0 var(--ux-space-3);font-size:var(--ux-type-card-title-size)}
+.namaa-system-bank-people{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--ux-space-2)}
+.namaa-system-bank-people>div{display:flex;align-items:center;gap:var(--ux-space-3);padding:var(--ux-space-3);border-radius:var(--ux-radius-lg);background:var(--ux-section-soft-teal);color:var(--ux-text-primary)}
+.namaa-system-bank-people>div svg{flex:0 0 auto;color:var(--ux-brand-primary)}
+@media(max-width:767px){.namaa-system-bank-people{grid-template-columns:minmax(0,1fr)}}
