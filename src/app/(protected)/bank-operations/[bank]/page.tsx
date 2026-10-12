@@ -8,12 +8,12 @@ import { getSavingsSummary } from '@/features/savings/queries/get-savings-summar
 import { LucideIcon, type LucideIconName } from '@/components/ui/lucide-icon';
 import { SaudiAmount } from '@/components/ui/saudi-amount';
 
-type InstitutionalBank={name:string;subtitle:string;icon:LucideIconName;purpose:string;team:readonly string[];goals:readonly string[];destination:string;tone:string};
+type InstitutionalBank={name:string;subtitle:string;icon:LucideIconName;purpose:string;tone:string};
 const banks:Record<string,InstitutionalBank>={
- central:{name:'بنك نماء المركزي',subtitle:'المتابعة المالية',icon:'landmark',purpose:'متابعة العمليات والمراجعات المالية لجميع البنوك.',team:['محافظ بنك نماء المركزي','مدير بنك نماء المركزي','المستشار الاقتصادي','أمين السر المركزي'],goals:['الاستقرار المالي','سلامة السيولة','اتساق القرارات بين البنوك'],destination:'/transactions',tone:'central'},
- hilal:{name:'بنك الهلال',subtitle:'التمويل الداخلي والالتزامات',icon:'repeat2',purpose:'إدارة التمويل الداخلي ومتابعة الالتزامات والضغط المالي.',team:['مدير بنك الهلال','مسؤول الالتزامات','مسؤول الميزانية والإنفاق'],goals:['ضبط التمويل الداخلي','خفض ضغط الالتزامات','رفع وضوح التدفقات'],destination:'/internal-funding',tone:'hilal'},
- solvency:{name:'بنك ملاءة',subtitle:'الحماية والاحتياطي',icon:'lockKeyhole',purpose:'متابعة صندوق الطوارئ والادخار وحماية الاحتياطي والسيولة.',team:['مدير بنك ملاءة','مسؤول السيولة والحماية','مسؤول الالتزامات'],goals:['رفع هامش الأمان','حماية الاحتياطي','تخفيف مخاطر السيولة'],destination:'/emergency',tone:'solvency'},
- assets:{name:'بنك الأصول الاستثمارية',subtitle:'الأصول والاستثمار والأهداف',icon:'chart',purpose:'متابعة الاستثمارات والأصول وربط الفرص بالأهداف المالية.',team:['مدير بنك الأصول','مسؤول الاستثمار','مسؤول الأهداف'],goals:['تحسين جودة المحافظ','ضبط مخاطر الاستثمار','ربط الاستثمار بالأهداف'],destination:'/investments',tone:'assets'},
+ central:{name:'بنك نماء المركزي',subtitle:'المتابعة المالية',icon:'landmark',purpose:'متابعة العمليات والمراجعات المالية لجميع البنوك.',tone:'central'},
+ hilal:{name:'بنك الهلال',subtitle:'التمويل الداخلي والالتزامات',icon:'repeat2',purpose:'إدارة التمويل الداخلي ومتابعة الالتزامات والضغط المالي.',tone:'hilal'},
+ solvency:{name:'بنك ملاءة',subtitle:'الحماية والاحتياطي',icon:'lockKeyhole',purpose:'متابعة صندوق الطوارئ والادخار وحماية الاحتياطي والسيولة.',tone:'solvency'},
+ assets:{name:'بنك الأصول الاستثمارية',subtitle:'الأصول والاستثمار والأهداف',icon:'chart',purpose:'متابعة الاستثمارات والأصول وربط الفرص بالأهداف المالية.',tone:'assets'},
 };
 
 
@@ -58,7 +58,7 @@ export default async function InstitutionalBankPage({params}:{params:Promise<{ba
    <span><LucideIcon name={bank.icon} size={32}/></span><div><h1>{bank.name}</h1><p>{bank.subtitle}</p></div>
   </header>
   <section className={`namaa-v2-bank-detail__hero tone-${bank.tone}`} aria-label="ملخص البنك"><span>{primary.label}</span><strong>{primary.value===null?(emergency?<SaudiAmount value={String(emergency.currentBalance??0)}/>:'غير متاح'):primary.value}</strong><small>{primary.note}</small></section>
-  <p className="namaa-system-bank-purpose">{bank.purpose}</p>
+
   <section className="namaa-system-bank-detail-panel">
    <h2>المؤشرات الحالية</h2>
    <div className="namaa-system-bank-facts">
@@ -68,11 +68,6 @@ export default async function InstitutionalBankPage({params}:{params:Promise<{ba
     {key==='assets'?<><div><span>الأهداف المسجلة</span><strong>{goals.items.length}</strong></div><div><span>بيانات المحافظ</span><strong>تظهر في وحدة الاستثمارات</strong></div></>:null}
    </div>
   </section>
-  <section className="namaa-v2-bank-detail__sections" aria-label="الأقسام الداخلية للبنك"><h2>الأقسام الداخلية</h2><div className="namaa-v2-bank-detail__grid">{(bankSections[key] ?? []).map(item=><Link key={item.href} href={item.href} className="namaa-v2-bank-detail__section"><span className="namaa-v2-bank-detail__section-icon"><LucideIcon name={item.icon} size={20}/></span><strong>{item.title}</strong><small>{item.description}</small><LucideIcon name="chevronLeft" size={16}/></Link>)}</div></section>
-  <nav className="namaa-system-bank-actions" aria-label="إجراءات البنك">
-   <Link href={bank.destination}><LucideIcon name="layoutGrid" size={20}/> الوحدة المرتبطة</Link>
-   <Link href="/conversations"><LucideIcon name="messageSquareText" size={20}/> المحادثات</Link>
-   <Link href="/bank-statements"><LucideIcon name="receiptText" size={20}/> الكشوف</Link>
-  </nav>
+  <section className="namaa-v2-bank-detail__sections" aria-label="أقسام العمليات والمتابعة"><h2>العمليات والمتابعة</h2><div className="namaa-v2-bank-detail__grid">{(bankSections[key] ?? []).map(item=><Link key={item.href} href={item.href} className="namaa-v2-bank-detail__section"><span className="namaa-v2-bank-detail__section-icon"><LucideIcon name={item.icon} size={20}/></span><strong>{item.title}</strong><small>{item.description}</small><LucideIcon name="chevronLeft" size={16}/></Link>)}</div></section>
  </main>;
 }
