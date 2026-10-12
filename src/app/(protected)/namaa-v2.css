@@ -324,3 +324,23 @@
 .namaa-solvency-operations .namaa-solvency-primary-action:focus-visible{outline:3px solid #16A34A;outline-offset:3px}
 @media(max-width:480px){.namaa-solvency-operations .p74-inline-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(min-width:768px){.namaa-solvency-operations{padding:12px 16px 98px!important}.namaa-solvency-operations .namaa-solvency-primary-action{right:24px}}
+
+/* Assets bank: operational investment and goals screens */
+.namaa-assets-operations,.namaa-assets-goals{box-sizing:border-box;width:100%;max-width:100%;min-width:0;margin:0!important;padding:8px 8px 94px!important;background:#F8FAFC}
+.namaa-assets-operations *, .namaa-assets-goals *{box-sizing:border-box}
+.namaa-assets-operations .namaa-investments-shell{width:100%;max-width:100%;margin:0;min-width:0}
+.namaa-assets-operations .namaa-investments-header{min-height:0;padding:12px;margin:0 0 8px;border-radius:12px}
+.namaa-assets-operations .namaa-investments-header h1{font-size:18px;margin:0}
+.namaa-assets-operations .namaa-investments-grid{gap:8px}
+.namaa-assets-operations .namaa-investments-grid>*{min-width:0;margin:0;padding:10px;border-radius:12px}
+.namaa-assets-operations .namaa-investments-dashboard-grid{gap:8px}
+.namaa-assets-operations .namaa-investments-followup-list{gap:6px}
+.namaa-assets-goals .p47-section-header{min-height:0;margin:0 0 8px;padding:0;gap:8px}
+.namaa-assets-goals .p47-section-header h1{font-size:18px;margin:0}
+.namaa-assets-goals .p47-section-header p{font-size:12px;margin:3px 0}
+.namaa-assets-goals .p47-section-header .eyebrow{display:none}
+.namaa-assets-goals .namaa-goals-overview{gap:6px;margin:0 0 8px}
+.namaa-assets-goals .namaa-goals-overview>article{min-width:0;padding:10px;border-radius:10px}
+.namaa-assets-goals .namaa-assets-goals__add{position:fixed;right:12px;bottom:calc(68px + env(safe-area-inset-bottom));z-index:40;display:grid;place-items:center;width:54px;height:54px;min-height:54px;border:2px solid #fff;border-radius:50%;background:#0E4D38;color:#fff;font-size:28px;box-shadow:0 5px 16px #0F172A33;cursor:pointer}
+.namaa-assets-goals .namaa-assets-goals__add:focus-visible{outline:3px solid #16A34A;outline-offset:3px}
+@media(min-width:768px){.namaa-assets-operations,.namaa-assets-goals{padding:12px 16px 94px!important}.namaa-assets-goals .namaa-assets-goals__add{right:24px}}
