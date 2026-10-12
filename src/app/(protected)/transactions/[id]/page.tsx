@@ -17,8 +17,8 @@ export default async function TransactionDetailsPage({ params, searchParams }: {
   const reversed = query.reversed === '1';
   const transaction = await getTransactionDetails(user.id,id);
   if (!transaction) notFound();
-  return <main className="page-shell narrow-shell p47-closure-page" dir="rtl">
-    <header className="page-header p47-closure-header"><div><p className="eyebrow">تفاصيل العملية</p><h1>{TYPE_LABELS[transaction.transactionType] ?? transaction.transactionType}</h1></div><div className="mx-entity-actions"><PrintButton className="mx-action-chip"/><Link className="tertiary-link" href="/transactions">العودة للسجل</Link></div></header>
+  return <main className="page-shell narrow-shell p47-closure-page namaa-subform-screen" dir="rtl">
+    <header className="page-header p47-closure-header"><h1>{TYPE_LABELS[transaction.transactionType] ?? transaction.transactionType}</h1><div className="mx-entity-actions"><PrintButton className="mx-action-chip"/></div></header>
     {reversed ? <section className="card success-card"><strong>تم عكس العملية بنجاح.</strong><p className="muted">تم الاحتفاظ بالأصل في السجل وإلغاء أثره المالي.</p></section> : null}
     <section className="account-detail-hero"><span>المبلغ</span><strong>{transaction.amount} ريال</strong><small>{transaction.transactionDate} · {STATUS_LABELS[transaction.status] ?? transaction.status}</small></section>
     <section className="detail-list">
