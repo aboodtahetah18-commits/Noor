@@ -13,11 +13,10 @@ export default async function AccountDetailsPage({ params }: { params: Promise<{
   if (!account) notFound();
 
   return (
-    <main className="app-page" dir="rtl">
+    <main className="app-page namaa-subform-screen" dir="rtl">
       <div className="page-shell narrow-shell p47-closure-page">
         <header className="page-header p47-closure-header">
-          <div><p className="eyebrow">تفاصيل الحساب</p><div className="title-with-help"><h1>{account.name}</h1></div></div>
-          <Link className="tertiary-link" href="/accounts">عودة</Link>
+          <h1>{account.name}</h1>
         </header>
 
         <section className="account-detail-hero"><span>الرصيد الحالي</span><strong>{formatSar(account.balance)}</strong></section>
