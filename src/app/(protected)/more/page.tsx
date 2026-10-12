@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import './more-unified.css';
 import { LucideIcon, type LucideIconName } from '@/components/ui/lucide-icon';
 import { requireAuthenticatedUser } from '@/auth/require-authenticated-user';
 import { authorizationRepository } from '@/repositories/authorization-repository';
@@ -61,7 +62,7 @@ export default async function MorePage(){
         <div>
           <p className="eyebrow">المزيد</p>
           <h1>كل وحدات النظام</h1>
-          <p className="muted">اختر القسم ثم انتقل مباشرة إلى الوحدة المطلوبة.</p>
+          
         </div>
       </header>
 
@@ -71,7 +72,7 @@ export default async function MorePage(){
             <LucideIcon name={group.icon} size={24}/>
             <div>
               <h2 id={`more-${group.id}`}>{group.title}</h2>
-              <p>{group.hint}</p>
+              
             </div>
           </header>
           <div className="more-hub-grid">
@@ -79,7 +80,7 @@ export default async function MorePage(){
               <span className="more-hub-card-icon"><LucideIcon name={icon} size={24}/></span>
               <div>
                 <strong>{title}</strong>
-                <span>{description}</span>
+                
               </div>
               <LucideIcon name="chevronLeft" size={20}/>
             </Link>)}
