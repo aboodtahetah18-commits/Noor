@@ -271,3 +271,8 @@
 .namaa-hilal-obligation-amount{font-size:13px;font-weight:800;white-space:nowrap}
 .namaa-hilal-obligation-detail-actions{display:flex;align-items:center;gap:8px;margin-top:14px;flex-wrap:wrap}
 .namaa-hilal-obligation-detail-actions>button{min-height:40px;border-radius:10px}
+
+/* Unified desktop obligations: select row details from the first column, not repeated buttons. */
+.namaa-hilal-obligations .namaa-obligation-table-detail{display:flex;flex-direction:column;align-items:flex-start;gap:3px;width:100%;min-height:38px;background:transparent;color:#0F172A;border:0;padding:4px 2px;cursor:pointer;text-align:right}
+.namaa-hilal-obligations .namaa-obligation-table-detail:hover{text-decoration:underline;text-decoration-color:#0E4D38}
+.namaa-hilal-obligations .namaa-obligation-table-detail:focus-visible{outline:3px solid #16A34A;outline-offset:2px;border-radius:6px}
