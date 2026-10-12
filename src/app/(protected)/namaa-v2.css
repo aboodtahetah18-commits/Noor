@@ -344,3 +344,11 @@
 .namaa-assets-goals .namaa-assets-goals__add{position:fixed;right:12px;bottom:calc(68px + env(safe-area-inset-bottom));z-index:40;display:grid;place-items:center;width:54px;height:54px;min-height:54px;border:2px solid #fff;border-radius:50%;background:#0E4D38;color:#fff;font-size:28px;box-shadow:0 5px 16px #0F172A33;cursor:pointer}
 .namaa-assets-goals .namaa-assets-goals__add:focus-visible{outline:3px solid #16A34A;outline-offset:3px}
 @media(min-width:768px){.namaa-assets-operations,.namaa-assets-goals{padding:12px 16px 94px!important}.namaa-assets-goals .namaa-assets-goals__add{right:24px}}
+
+/* Shared nested-screen header: compact, clear return affordance, no duplicate titles. */
+.protected-app-shell[data-responsive-platform="unified-mobile-first"] .namaa-mobile-header--subpage{min-height:48px;padding-inline:8px}
+.protected-app-shell[data-responsive-platform="unified-mobile-first"] .namaa-mobile-header--subpage .namaa-mobile-brand{max-width:76px}
+.protected-app-shell[data-responsive-platform="unified-mobile-first"] .namaa-mobile-header--subpage .namaa-mobile-brand img{max-height:26px}
+.protected-app-shell[data-responsive-platform="unified-mobile-first"] .namaa-mobile-header--subpage .namaa-mobile-header-page-title{font-size:14px;font-weight:750;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.protected-app-shell[data-responsive-platform="unified-mobile-first"] .namaa-mobile-header--subpage .namaa-mobile-menu-trigger{border-radius:10px;background:#E9F3EE;color:#0E4D38}
+@media(max-width:767px){.protected-app-shell[data-responsive-platform="unified-mobile-first"] .namaa-mobile-header--subpage + main{padding-top:0}}
