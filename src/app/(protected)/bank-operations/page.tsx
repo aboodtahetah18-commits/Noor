@@ -3,7 +3,7 @@ import { requireAuthenticatedUser } from '@/auth/require-authenticated-user';
 import { LucideIcon } from '@/components/ui/lucide-icon';
 
 const banks=[
- {key:'central',name:'بنك نماء المركزي',description:'الحوكمة والاستقرار والرقابة',icon:'landmark' as const,tone:'central'},
+ {key:'central',name:'بنك نماء المركزي',description:'المراجعات والعمليات المالية',icon:'landmark' as const,tone:'central'},
  {key:'hilal',name:'بنك الهلال',description:'التمويل الداخلي والالتزامات',icon:'repeat2' as const,tone:'hilal'},
  {key:'solvency',name:'بنك ملاءة',description:'الحماية والاحتياطي والسيولة',icon:'lockKeyhole' as const,tone:'solvency'},
  {key:'assets',name:'بنك الأصول الاستثمارية',description:'الأصول والاستثمارات والأهداف',icon:'chart' as const,tone:'assets'},
