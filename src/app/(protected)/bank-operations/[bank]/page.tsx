@@ -19,9 +19,12 @@ const banks:Record<string,InstitutionalBank>={
 
 const bankSections:Record<string,readonly {title:string;description:string;href:string;icon:LucideIconName}[]>={
  central:[
-  {title:'الحوكمة والقرارات',description:'السياسات والمراجعات والاعتمادات',href:'/governance',icon:'landmark'},
-  {title:'مركز العمليات',description:'متابعة الاستثناءات والمراجعات',href:'/bank-operations',icon:'listChecks'},
-  {title:'التقارير المركزية',description:'مؤشرات المنظومة وتحليل الأداء',href:'/reports',icon:'chart'},
+  {title:'مركز الحوكمة',description:'الرقابة والقرارات المعتمدة',href:'/governance',icon:'landmark'},
+  {title:'المراجع الحاكمة',description:'الوثائق والقواعد الأساسية',href:'/governance/core',icon:'receiptText'},
+  {title:'الإجراءات',description:'المسارات التشغيلية والمراجعة',href:'/governance/procedures',icon:'listChecks'},
+  {title:'الصلاحيات',description:'حدود التنفيذ والاعتماد',href:'/governance/authorization-matrix',icon:'lockKeyhole'},
+  {title:'نماذج الحوكمة',description:'التوثيق والإجراءات المعتمدة',href:'/governance/forms',icon:'layoutGrid'},
+  {title:'التقارير المركزية',description:'المؤشرات وتحليل الأداء',href:'/reports',icon:'chart'},
  ],
  hilal:[
   {title:'التمويل الداخلي',description:'التمويلات والجداول والمتابعة',href:'/internal-funding',icon:'repeat2'},
