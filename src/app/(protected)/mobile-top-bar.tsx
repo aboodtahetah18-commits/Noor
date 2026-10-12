@@ -14,6 +14,7 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
   const pathname = usePathname();
   const chatFirst = pathname === '/conversations' || pathname.startsWith('/conversations/');
   const [open, setOpen] = useState(false);
+  const pageTitle = pathname === '/transactions' ? 'العمليات' : pathname === '/accounts' ? 'الحسابات' : pathname === '/budget' ? 'الميزانية' : pathname === '/more' ? 'المزيد' : pathname === '/dashboard' ? 'الرئيسية' : null;
   if (chatFirst) return null;
   return (
     <>
@@ -34,6 +35,7 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
           </Link>
         </div>
 
+        {pageTitle ? <strong className="namaa-mobile-header-page-title">{pageTitle}</strong> : null}
         <div className="namaa-mobile-header-actions">
           <Link href="/alerts" aria-label="التنبيهات" title="التنبيهات">
             <LucideIcon name="bell" size={20} />
