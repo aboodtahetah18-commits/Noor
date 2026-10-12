@@ -18,7 +18,7 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
   const isSubpage = subAction || (/^\/(transactions|accounts|obligations|goals|investments|internal-funding|emergency|savings)\/[^/]+/.test(pathname));
   const parentHref = '/' + (parts[0] || 'dashboard');
   const actionTitle = parts.includes('new') ? 'إضافة' : parts.includes('edit') ? 'تعديل' : 'تفاصيل';
-  const entityTitle = ({transactions:'عملية',accounts:'حساب',obligations:'التزام',goals:'هدف',investments:'استثمار','internal-funding':'تمويل',emergency:'صندوق الطوارئ',savings:'ادخار'} as Record<string,string>)[parts[0]] ?? 'السجل';
+  const entityTitle = ({transactions:'عملية',accounts:'حساب',obligations:'التزام',goals:'هدف',investments:'استثمار','internal-funding':'تمويل',emergency:'صندوق الطوارئ',savings:'ادخار'} as Record<string,string>)[parts[0] ?? ''] ?? 'السجل';
   const subpageTitle = subAction ? `${actionTitle} ${entityTitle}` : entityTitle;
   const chatFirst = pathname === '/conversations' || pathname.startsWith('/conversations/');
   const [open, setOpen] = useState(false);
