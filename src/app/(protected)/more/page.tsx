@@ -76,7 +76,7 @@ export default async function MorePage(){
             </div>
           </header>
           <div className="more-hub-grid">
-            {group.items.map(([href,title,description,icon])=><Link key={href} href={href} className="more-hub-card">
+            {group.items.map(([href,title,,icon])=><Link key={href} href={href} className="more-hub-card">
               <span className="more-hub-card-icon"><LucideIcon name={icon} size={24}/></span>
               <div>
                 <strong>{title}</strong>
