@@ -51,11 +51,13 @@ export default async function InstitutionalBankPage({params}:{params:Promise<{ba
   getEmergencySummary(user.id).catch(()=>null),
   getSavingsSummary(user.id).catch(()=>null),
  ]);
+ const primary=key==='central'?{label:'عمليات تحت المراجعة',value:String(center.pendingReviewCount),note:'إجراءات تحتاج إلى متابعة'}:key==='hilal'?{label:'التمويل الداخلي النشط',value:String(center.activeFundingCount),note:'ملفات تمويل قيد المتابعة'}:key==='solvency'?{label:'صندوق الطوارئ',value:null,note:'رصيد الحماية والسيولة الاحتياطية'}:{label:'الأهداف المالية',value:String(goals.items.length),note:'أهداف مسجلة في المنظومة'};
  return <main className="namaa-approved-finance namaa-system-bank-detail namaa-v2 namaa-v2-bank-detail" dir="rtl">
   <Link href="/bank-operations" className="namaa-system-bank-back"><LucideIcon name="chevronRight" size={20}/> بنوك نماء</Link>
   <header className={`namaa-system-bank-detail-heading tone-${bank.tone}`}>
    <span><LucideIcon name={bank.icon} size={32}/></span><div><h1>{bank.name}</h1><p>{bank.subtitle}</p></div>
   </header>
+  <section className={`namaa-v2-bank-detail__hero tone-${bank.tone}`} aria-label="ملخص البنك"><span>{primary.label}</span><strong>{primary.value===null?(emergency?<SaudiAmount value={String(emergency.currentBalance??0)}/>:'غير متاح'):primary.value}</strong><small>{primary.note}</small></section>
   <p className="namaa-system-bank-purpose">{bank.purpose}</p>
   <section className="namaa-system-bank-detail-panel">
    <h2>المؤشرات الحالية</h2>
