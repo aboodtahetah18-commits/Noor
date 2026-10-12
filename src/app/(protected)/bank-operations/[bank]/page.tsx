@@ -54,7 +54,7 @@ export default async function InstitutionalBankPage({params}:{params:Promise<{ba
   getEmergencySummary(user.id).catch(()=>null),
   getSavingsSummary(user.id).catch(()=>null),
  ]);
- const primary=key==='central'?{label:'عمليات تحت المراجعة',value:String(center.pendingReviewCount),note:'إجراءات تحتاج إلى متابعة'}:key==='hilal'?{label:'التمويل الداخلي النشط',value:String(center.activeFundingCount),note:'ملفات تمويل قيد المتابعة'}:key==='solvency'?{label:'صندوق الطوارئ',value:null,note:'رصيد الحماية والسيولة الاحتياطية'}:{label:'الأهداف المالية',value:String(goals.items.length),note:'أهداف مسجلة في المنظومة'};
+ const primary=key==='central'?{label:'عمليات تحت المراجعة',value:String(center?.pendingReviewCount ?? 0),note:'إجراءات تحتاج إلى متابعة'}:key==='hilal'?{label:'التمويل الداخلي النشط',value:String(center?.activeFundingCount ?? 0),note:'ملفات تمويل قيد المتابعة'}:key==='solvency'?{label:'صندوق الطوارئ',value:null,note:'رصيد الحماية والسيولة الاحتياطية'}:{label:'الأهداف المالية',value:String(goals.items.length),note:'أهداف مسجلة في المنظومة'};
  return <main className="namaa-approved-finance namaa-system-bank-detail namaa-v2 namaa-v2-bank-detail" dir="rtl">
   <Link href="/bank-operations" className="namaa-system-bank-back"><LucideIcon name="chevronRight" size={20}/> بنوك نماء</Link>
   <header className={`namaa-system-bank-detail-heading tone-${bank.tone}`}>
@@ -65,13 +65,13 @@ export default async function InstitutionalBankPage({params}:{params:Promise<{ba
   <section className="namaa-system-bank-detail-panel">
    <h2>المؤشرات الحالية</h2>
    <div className="namaa-system-bank-facts">
-    {key==='central'?<><div><span>عمليات تحتاج مراجعة</span><strong>{center.pendingReviewCount}</strong></div><div><span>عمليات غير مصنفة</span><strong>{center.unclassifiedCount}</strong></div></>:null}
-    {key==='hilal'?<><div><span>تمويل داخلي نشط</span><strong>{center.activeFundingCount}</strong></div><div><span>كشوف تحتاج مراجعة</span><strong>{center.pendingImportsCount}</strong></div></>:null}
+    {key==='central'?<><div><span>عمليات تحتاج مراجعة</span><strong>{center?.pendingReviewCount ?? 0}</strong></div><div><span>عمليات غير مصنفة</span><strong>{center?.unclassifiedCount ?? 0}</strong></div></>:null}
+    {key==='hilal'?<><div><span>تمويل داخلي نشط</span><strong>{center?.activeFundingCount ?? 0}</strong></div><div><span>كشوف تحتاج مراجعة</span><strong>{center?.pendingImportsCount ?? 0}</strong></div></>:null}
     {key==='solvency'?<><div><span>رصيد صندوق الطوارئ</span><strong>{emergency?<SaudiAmount value={String(emergency.currentBalance??0)}/>: 'غير متاح'}</strong></div><div><span>الادخار الفعلي</span><strong>{savings?<SaudiAmount value={String(savings.actualTransferredAmount??0)}/>: 'غير متاح'}</strong></div></>:null}
     {key==='assets'?<><div><span>الأهداف المسجلة</span><strong>{goals.items.length}</strong></div><div><span>بيانات المحافظ</span><strong>تظهر في وحدة الاستثمارات</strong></div></>:null}
    </div>
   </section>
-  <section className="namaa-v2-bank-detail__sections" aria-label="الأقسام الداخلية للبنك"><h2>الأقسام الداخلية</h2><div className="namaa-v2-bank-detail__grid">{bankSections[key].map(item=><Link key={item.href} href={item.href} className="namaa-v2-bank-detail__section"><span className="namaa-v2-bank-detail__section-icon"><LucideIcon name={item.icon} size={20}/></span><strong>{item.title}</strong><small>{item.description}</small><LucideIcon name="chevronLeft" size={16}/></Link>)}</div></section>
+  <section className="namaa-v2-bank-detail__sections" aria-label="الأقسام الداخلية للبنك"><h2>الأقسام الداخلية</h2><div className="namaa-v2-bank-detail__grid">{(bankSections[key] ?? []).map(item=><Link key={item.href} href={item.href} className="namaa-v2-bank-detail__section"><span className="namaa-v2-bank-detail__section-icon"><LucideIcon name={item.icon} size={20}/></span><strong>{item.title}</strong><small>{item.description}</small><LucideIcon name="chevronLeft" size={16}/></Link>)}</div></section>
   <details className="namaa-v2-bank-detail__secondary"><summary>الفريق المسؤول</summary><div className="namaa-system-bank-people">{bank.team.map(name=><div key={name}><LucideIcon name="circleUserRound" size={20}/><span>{name}</span></div>)}</div></details>
   <details className="namaa-v2-bank-detail__secondary"><summary>الأهداف والاختصاصات</summary><div className="namaa-system-bank-people">{bank.goals.map(goal=><div key={goal}><LucideIcon name="circleCheck" size={20}/><span>{goal}</span></div>)}</div></details>
   <nav className="namaa-system-bank-actions" aria-label="إجراءات البنك">
