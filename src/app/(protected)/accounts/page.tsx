@@ -29,7 +29,6 @@ export default async function AccountsPage({ searchParams }: { searchParams: Pro
   return (
     <div className="namaa-v2" dir="rtl">
       <header className="namaa-v2__header">
-        <h1>الحسابات</h1>
         <Link href="/accounts/new" className="namaa-v2__primary">
           <LucideIcon name="plus" size={20} /> إضافة حساب
         </Link>
