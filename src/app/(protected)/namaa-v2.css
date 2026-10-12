@@ -259,5 +259,4 @@
 .namaa-hilal-obligations .namaa-bank-floating-add{position:fixed;inset-inline-start:auto;right:12px;bottom:calc(64px + env(safe-area-inset-bottom));z-index:40;margin:0}
 .namaa-hilal-obligations .namaa-bank-floating-add__trigger{display:grid;place-items:center;min-width:52px;width:52px;height:52px;min-height:52px;padding:0;border:2px solid #fff;border-radius:50%;background:#0E4D38;color:#fff;box-shadow:0 5px 16px rgba(0,0,0,.22);font-size:28px;line-height:1;cursor:pointer}
 .namaa-hilal-obligations .namaa-bank-floating-add__trigger:focus-visible{outline:3px solid #16A34A;outline-offset:2px}
-.namaa-hilal-obligations .p47-obligation-item .p49-resource-actions{display:none}
 @media(min-width:768px){.namaa-hilal-obligations{padding:12px 16px!important}.namaa-hilal-obligations .namaa-bank-floating-add{right:24px}}
