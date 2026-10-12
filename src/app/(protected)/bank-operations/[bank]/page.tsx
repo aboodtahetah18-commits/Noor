@@ -22,21 +22,25 @@ const bankSections:Record<string,readonly {title:string;description:string;href:
   {title:'متابعة العمليات',description:'عرض العمليات المالية ومتابعة حالاتها',href:'/transactions',icon:'arrowUpDown'},
   {title:'مراجعة الكشوف',description:'معالجة العمليات التي تحتاج مراجعة',href:'/bank-statements',icon:'receiptText'},
   {title:'التقارير المالية',description:'مؤشرات الحركة والأداء',href:'/reports',icon:'chart'},
+  {title:'الحسابات المالية',description:'الأرصدة والحسابات التشغيلية',href:'/accounts',icon:'wallet'},
  ],
  hilal:[
   {title:'التمويل الداخلي',description:'التمويلات والجداول والمتابعة',href:'/internal-funding',icon:'repeat2'},
   {title:'الالتزامات',description:'المستحقات والمدفوعات القادمة',href:'/obligations',icon:'receiptText'},
   {title:'العمليات',description:'الحركة المالية وسجل المعاملات',href:'/transactions',icon:'arrowUpDown'},
+  {title:'الكشوف والمطابقة',description:'مراجعة الحركات المستوردة',href:'/bank-statements',icon:'listChecks'},
  ],
  solvency:[
   {title:'صندوق الطوارئ',description:'الرصيد المستهدف والتغطية',href:'/emergency',icon:'lockKeyhole'},
   {title:'الادخار',description:'الأرصدة والتحويلات وخطط الادخار',href:'/savings',icon:'banknote'},
   {title:'تقارير الأمان',description:'الضغط المالي ومؤشرات الحماية',href:'/reports',icon:'chart'},
+  {title:'الحسابات والاحتياطي',description:'الحسابات المرتبطة بالحماية',href:'/accounts',icon:'wallet'},
  ],
  assets:[
   {title:'الاستثمارات',description:'المحفظة والأداء والعوائد',href:'/investments',icon:'chart'},
   {title:'الأهداف المالية',description:'متابعة الأهداف والتقدم',href:'/goals',icon:'target'},
   {title:'التقارير',description:'قراءة أداء الأصول والاستثمارات',href:'/reports',icon:'receiptText'},
+  {title:'الحسابات المرتبطة',description:'مصادر الأموال والحسابات',href:'/accounts',icon:'wallet'},
  ],
 };
 
@@ -68,6 +72,7 @@ export default async function InstitutionalBankPage({params}:{params:Promise<{ba
     {key==='assets'?<><div><span>الأهداف المسجلة</span><strong>{goals.items.length}</strong></div><div><span>بيانات المحافظ</span><strong>تظهر في وحدة الاستثمارات</strong></div></>:null}
    </div>
   </section>
+  {key==='central' && center.recentApproved.length>0?<section className="namaa-v2-bank-activity" aria-label="آخر العمليات المسجلة"><div className="namaa-v2-bank-activity__heading"><h2>آخر العمليات</h2><Link href="/transactions">عرض الكل <LucideIcon name="chevronLeft" size={15}/></Link></div><div className="namaa-v2-bank-activity__rows">{center.recentApproved.slice(0,4).map(item=><Link href="/transactions" key={item.id} className="namaa-v2-bank-activity__row"><span><strong>{item.description}</strong><small>{item.accountName} · {item.transactionDate}</small></span><SaudiAmount value={String(item.amount)}/></Link>)}</div></section>:null}
   <section className="namaa-v2-bank-detail__sections" aria-label="أقسام العمليات والمتابعة"><h2>العمليات والمتابعة</h2><div className="namaa-v2-bank-detail__grid">{(bankSections[key] ?? []).map(item=><Link key={item.href} href={item.href} className="namaa-v2-bank-detail__section"><span className="namaa-v2-bank-detail__section-icon"><LucideIcon name={item.icon} size={20}/></span><strong>{item.title}</strong><small>{item.description}</small><LucideIcon name="chevronLeft" size={16}/></Link>)}</div></section>
  </main>;
 }
