@@ -6,52 +6,79 @@ import { SaudiAmount } from '@/components/ui/saudi-amount';
 import { LucideIcon } from '@/components/ui/lucide-icon';
 import { reconcileConfirmedOnboardingAccounts } from '@/lib/conversations/onboarding-account-reconciliation';
 
-const types={
-  BANK:{label:'البنوك',icon:'landmark'},
-  SAVINGS:{label:'الادخار',icon:'banknote'},
-  CASH:{label:'المحافظ',icon:'walletCards'},
-  OTHER:{label:'أخرى',icon:'ellipsis'},
+const accountTypes = {
+  BANK: { label: 'البنوك', icon: 'landmark' },
+  SAVINGS: { label: 'الادخار', icon: 'banknote' },
+  CASH: { label: 'المحافظ', icon: 'walletCards' },
+  OTHER: { label: 'أخرى', icon: 'ellipsis' },
 } as const;
 
-export default async function AccountsPage({searchParams}:{searchParams:Promise<{type?:string}>}){
-  const q=await searchParams;
-  const user=await requireAuthenticatedUser();
+export default async function AccountsPage({ searchParams }: { searchParams: Promise<{ type?: string }> }) {
+  const params = await searchParams;
+  const user = await requireAuthenticatedUser();
   await reconcileConfirmedOnboardingAccounts(user.id);
-  const accounts=await listAccounts(user.id,true);
-  const active=accounts.filter(a=>a.isActive);
-  const inactive=accounts.filter(a=>!a.isActive);
-  const selected=q.type&&Object.prototype.hasOwnProperty.call(types,q.type)?q.type:'ALL';
-  const filtered=selected==='ALL'?active:active.filter(a=>a.accountType===selected);
-  const total=sumMoney(active.map(a=>Money.parse(a.balance)));
+  const accounts = await listAccounts(user.id, true);
+  const active = accounts.filter((account) => account.isActive);
+  const inactive = accounts.filter((account) => !account.isActive);
+  const selected = params.type && Object.prototype.hasOwnProperty.call(accountTypes, params.type)
+    ? params.type
+    : 'ALL';
+  const visible = selected === 'ALL' ? active : active.filter((account) => account.accountType === selected);
+  const total = sumMoney(active.map((account) => Money.parse(account.balance)));
 
-  return <main className="page-shell p47-resource-page namaa-approved-finance namaa-approved-accounts" dir="rtl">
-    <header className="p47-resource-header namaa-approved-page-heading">
-      <div><h1>الحسابات</h1></div><Link href="/accounts/new" className="namaa-approved-account-header-add"><LucideIcon name="plus" size={20}/> إضافة حساب</Link>
-    </header>
-    <section className="p74-focus-summary namaa-approved-accounts-balance">
-      <span>إجمالي الرصيد الحالي</span>
-      <strong><SaudiAmount value={total}/> </strong>
-      <small>{active.length} حساب نشط</small>
-      <LucideIcon name="walletCards" size={32}/>
-    </section>
-    <section className="namaa-approved-account-stats" aria-label="أنواع الحسابات">
-      {(Object.entries(types) as Array<[keyof typeof types,(typeof types)[keyof typeof types]]>).map(([key,value])=><Link key={key} href={`/accounts?type=${key}`} className={selected===key?'is-selected':''}><LucideIcon name={value.icon} size={20}/><span>{value.label}</span><strong>{active.filter(a=>a.accountType===key).length}</strong></Link>)}
-    </section>
-    <nav className="namaa-approved-account-filters" aria-label="تصفية الحسابات">
-      <Link href="/accounts" aria-current={selected==='ALL'?'page':undefined}>الكل</Link>
-      {(Object.entries(types) as Array<[keyof typeof types,(typeof types)[keyof typeof types]]>).map(([key,value])=><Link key={key} href={`/accounts?type=${key}`} aria-current={selected===key?'page':undefined}>{value.label}</Link>)}
-    </nav>
-    <section className="namaa-approved-account-list" aria-label="الحسابات النشطة">
-      {filtered.length?filtered.map(a=><article className="namaa-approved-account-row" key={a.id}>
-        <div className="namaa-approved-account-icon"><LucideIcon name={a.accountType==='BANK'?'landmark':a.accountType==='SAVINGS'?'banknote':'walletCards'} size={24}/></div>
-        <div className="namaa-approved-account-details">
-          <strong>{a.name}</strong>
-          <small>{a.bankName??types[a.accountType].label}{a.cardLast4?` · •••• ${a.cardLast4}`:''}</small>
-          <b><SaudiAmount value={a.balance}/> </b>
-        </div>
-        <Link href={`/accounts/${a.id}`} className="namaa-approved-account-view" aria-label={`عرض تفاصيل ${a.name}`}><LucideIcon name="chevronLeft" size={20}/></Link>
-      </article>):<div className="namaa-approved-banks-empty">لا توجد حسابات مطابقة. يمكنك تغيير التصنيف أو إضافة حساب جديد.</div>}
-    </section>
-    {inactive.length?<details className="namaa-approved-inactive"><summary>الحسابات غير النشطة ({inactive.length})</summary><div>{inactive.map(a=><Link key={a.id} href={`/accounts/${a.id}`}>{a.name}</Link>)}</div></details>:null}
-  </main>;
+  return (
+    <div className="namaa-v2" dir="rtl">
+      <header className="namaa-v2__header">
+        <h1>الحسابات</h1>
+        <Link href="/accounts/new" className="namaa-v2__primary">
+          <LucideIcon name="plus" size={18} /> إضافة حساب
+        </Link>
+      </header>
+
+      <section className="namaa-v2__balance" aria-label="ملخص الرصيد">
+        <span className="namaa-v2__balance-label">إجمالي الرصيد الحالي</span>
+        <strong className="namaa-v2__balance-value"><SaudiAmount value={total} /></strong>
+        <span className="namaa-v2__balance-count">{active.length} حساب نشط</span>
+      </section>
+
+      <nav className="namaa-v2__filters" aria-label="تصفية الحسابات">
+        <Link className="namaa-v2__chip" href="/accounts" aria-current={selected === 'ALL' ? 'page' : undefined}>
+          الكل ({active.length})
+        </Link>
+        {(Object.entries(accountTypes) as Array<[keyof typeof accountTypes, (typeof accountTypes)[keyof typeof accountTypes]]>).map(([key, type]) => (
+          <Link key={key} className="namaa-v2__chip" href={`/accounts?type=${key}`} aria-current={selected === key ? 'page' : undefined}>
+            {type.label} ({active.filter((account) => account.accountType === key).length})
+          </Link>
+        ))}
+      </nav>
+
+      <section className="namaa-v2__list" aria-label="الحسابات النشطة">
+        {visible.length === 0 ? (
+          <div className="namaa-v2__empty">لا توجد حسابات مطابقة. يمكنك تغيير التصفية أو إضافة حساب جديد.</div>
+        ) : visible.map((account) => (
+          <Link className="namaa-v2__account" href={`/accounts/${account.id}`} key={account.id}>
+            <span className="namaa-v2__account-icon">
+              <LucideIcon name={account.accountType === 'BANK' ? 'landmark' : account.accountType === 'SAVINGS' ? 'banknote' : 'walletCards'} size={22} />
+            </span>
+            <span className="namaa-v2__account-details">
+              <strong>{account.name}</strong>
+              <small>{account.bankName ?? accountTypes[account.accountType].label}{account.cardLast4 ? ` · •••• ${account.cardLast4}` : ''}</small>
+            </span>
+            <span className="namaa-v2__account-amount"><SaudiAmount value={account.balance} /></span>
+          </Link>
+        ))}
+      </section>
+
+      {inactive.length > 0 ? (
+        <details className="namaa-v2__inactive">
+          <summary>الحسابات غير النشطة ({inactive.length})</summary>
+          <div className="namaa-v2__inactive-links">
+            {inactive.map((account) => (
+              <Link href={`/accounts/${account.id}`} key={account.id}>{account.name}</Link>
+            ))}
+          </div>
+        </details>
+      ) : null}
+    </div>
+  );
 }
