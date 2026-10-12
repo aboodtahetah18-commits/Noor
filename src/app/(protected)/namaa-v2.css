@@ -352,3 +352,23 @@
 .protected-app-shell[data-responsive-platform="unified-mobile-first"] .namaa-mobile-header--subpage .namaa-mobile-header-page-title{font-size:14px;font-weight:750;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .protected-app-shell[data-responsive-platform="unified-mobile-first"] .namaa-mobile-header--subpage .namaa-mobile-menu-trigger{border-radius:10px;background:#E9F3EE;color:#0E4D38}
 @media(max-width:767px){.protected-app-shell[data-responsive-platform="unified-mobile-first"] .namaa-mobile-header--subpage + main{padding-top:0}}
+
+/* Shared add/edit screens: compact title, form-first layout and aligned controls. */
+.namaa-full-form-page,.namaa-subform-screen{box-sizing:border-box;width:100%;max-width:100%;min-width:0;min-height:calc(100dvh - 120px);margin:0!important;padding:8px 8px 90px!important;background:#F8FAFC}
+.namaa-full-form-page *,.namaa-subform-screen *{box-sizing:border-box}
+.namaa-full-form-page .namaa-full-form-header{display:flex;align-items:center;margin:0 0 8px;padding:0;min-height:0}
+.namaa-full-form-page .namaa-full-form-header h1,.namaa-subform-screen .p47-flow-header h1{font-size:16px;line-height:1.35;margin:0;color:#0F172A}
+.namaa-full-form-page .namaa-full-form-content{margin:0;padding:12px;border:1px solid #E2E8F0;background:#fff;border-radius:12px;min-height:0}
+.namaa-full-form-page .namaa-approved-transaction-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0}
+.namaa-full-form-page .namaa-approved-transaction-form label{display:grid;gap:5px;min-width:0;font-size:12px;font-weight:700;color:#334155}
+.namaa-full-form-page .namaa-approved-transaction-form :is(input,select){width:100%;min-width:0;min-height:42px;padding:8px;border:1px solid #CBD5E1;border-radius:9px;background:#F1F5F9;color:#0F172A;font-size:14px}
+.namaa-full-form-page .namaa-approved-transaction-form button[type=submit]{grid-column:1/-1;min-height:44px;border-radius:10px;background:#0E4D38;color:#fff;font-weight:800}
+.namaa-form-state{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:12px;border:1px solid #FCD34D;border-radius:10px;background:#FFFBEB;color:#92400E}
+.namaa-form-state strong{font-size:13px}
+.namaa-form-state__action{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 12px;background:#0E4D38;border-radius:9px;color:#fff!important;text-decoration:none;font-size:12px;font-weight:800}
+.namaa-subform-screen .page-shell{padding:0!important;margin:0!important;max-width:100%}
+.namaa-subform-screen .p47-flow-header{margin:0 0 8px;padding:0;min-height:0}
+.namaa-subform-screen .p47-flow-card{padding:12px;margin:0;border:1px solid #E2E8F0;border-radius:12px;background:#fff}
+.namaa-subform-screen .form-grid{gap:10px}
+@media(max-width:440px){.namaa-full-form-page .namaa-approved-transaction-form{grid-template-columns:minmax(0,1fr)}}
+@media(min-width:768px){.namaa-full-form-page,.namaa-subform-screen{padding:12px 16px 90px!important}}
