@@ -22,7 +22,7 @@ const bankSections:Record<string,readonly {title:string;description:string;href:
   {title:'متابعة العمليات',description:'عرض العمليات المالية ومتابعة حالاتها',href:'/transactions',icon:'arrowUpDown'},
   {title:'مراجعة الكشوف',description:'معالجة العمليات التي تحتاج مراجعة',href:'/bank-statements',icon:'receiptText'},
   {title:'التقارير المالية',description:'مؤشرات الحركة والأداء',href:'/reports',icon:'chart'},
-  {title:'الحسابات المالية',description:'الأرصدة والحسابات التشغيلية',href:'/accounts',icon:'wallet'},
+  {title:'الحسابات المالية',description:'الأرصدة والحسابات التشغيلية',href:'/accounts',icon:'walletCards'},
  ],
  hilal:[
   {title:'التمويل الداخلي',description:'التمويلات والجداول والمتابعة',href:'/internal-funding',icon:'repeat2'},
@@ -34,13 +34,13 @@ const bankSections:Record<string,readonly {title:string;description:string;href:
   {title:'صندوق الطوارئ',description:'الرصيد المستهدف والتغطية',href:'/emergency',icon:'lockKeyhole'},
   {title:'الادخار',description:'الأرصدة والتحويلات وخطط الادخار',href:'/savings',icon:'banknote'},
   {title:'تقارير الأمان',description:'الضغط المالي ومؤشرات الحماية',href:'/reports',icon:'chart'},
-  {title:'الحسابات والاحتياطي',description:'الحسابات المرتبطة بالحماية',href:'/accounts',icon:'wallet'},
+  {title:'الحسابات والاحتياطي',description:'الحسابات المرتبطة بالحماية',href:'/accounts',icon:'walletCards'},
  ],
  assets:[
   {title:'الاستثمارات',description:'المحفظة والأداء والعوائد',href:'/investments',icon:'chart'},
   {title:'الأهداف المالية',description:'متابعة الأهداف والتقدم',href:'/goals',icon:'target'},
   {title:'التقارير',description:'قراءة أداء الأصول والاستثمارات',href:'/reports',icon:'receiptText'},
-  {title:'الحسابات المرتبطة',description:'مصادر الأموال والحسابات',href:'/accounts',icon:'wallet'},
+  {title:'الحسابات المرتبطة',description:'مصادر الأموال والحسابات',href:'/accounts',icon:'walletCards'},
  ],
 };
 
