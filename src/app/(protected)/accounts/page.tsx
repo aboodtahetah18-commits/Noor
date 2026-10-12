@@ -31,7 +31,7 @@ export default async function AccountsPage({ searchParams }: { searchParams: Pro
       <header className="namaa-v2__header">
         <h1>الحسابات</h1>
         <Link href="/accounts/new" className="namaa-v2__primary">
-          <LucideIcon name="plus" size={18} /> إضافة حساب
+          <LucideIcon name="plus" size={20} /> إضافة حساب
         </Link>
       </header>
 
@@ -58,7 +58,7 @@ export default async function AccountsPage({ searchParams }: { searchParams: Pro
         ) : visible.map((account) => (
           <Link className="namaa-v2__account" href={`/accounts/${account.id}`} key={account.id}>
             <span className="namaa-v2__account-icon">
-              <LucideIcon name={account.accountType === 'BANK' ? 'landmark' : account.accountType === 'SAVINGS' ? 'banknote' : 'walletCards'} size={22} />
+              <LucideIcon name={account.accountType === 'BANK' ? 'landmark' : account.accountType === 'SAVINGS' ? 'banknote' : 'walletCards'} size={20} />
             </span>
             <span className="namaa-v2__account-details">
               <strong>{account.name}</strong>
