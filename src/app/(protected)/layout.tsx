@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import './unified-shell.css';
 import './approved-finance-pages.css';
+import './namaa-v2.css';
 import { requireAuthenticatedUser } from '@/auth/require-authenticated-user';
 import { MobileBottomNav } from './mobile-bottom-nav';
 import { MobileTopBar } from './mobile-top-bar';
