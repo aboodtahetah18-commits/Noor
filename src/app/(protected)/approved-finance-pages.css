@@ -224,3 +224,17 @@
 .namaa-approved-finance .namaa-approved-accounts-balance{background:var(--ux-brand-primary);color:var(--ux-text-inverse)}
 .namaa-approved-finance .namaa-approved-accounts-balance :is(span,strong,small,b){color:var(--ux-text-inverse)}
 @media(max-width:767px){.namaa-system-bank-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.namaa-system-bank-tile{padding:var(--ux-space-3)}.namaa-system-bank-actions a{flex:1 1 auto}.namaa-system-bank-facts{grid-template-columns:minmax(0,1fr)}}
+
+/* Header actions: dark, distinct and legible on every viewport. */
+.namaa-approved-finance .namaa-approved-page-heading{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;flex-wrap:wrap!important;gap:var(--ux-space-2)}
+.namaa-approved-finance .namaa-approved-account-header-add{display:inline-flex;align-items:center;justify-content:center;gap:var(--ux-space-2);min-height:44px;padding:var(--ux-space-2) var(--ux-space-3);border-radius:var(--ux-radius-lg);background:var(--ux-brand-primary);color:var(--ux-text-inverse);text-decoration:none;font-weight:700}
+.namaa-approved-finance .namaa-approved-account-stats>a{color:var(--ux-text-primary)}
+.namaa-approved-finance .namaa-approved-account-stats>a.is-selected{background:var(--ux-brand-primary);color:var(--ux-text-inverse)}
+.namaa-approved-finance .p47-header-actions,.namaa-approved-finance .p4913-header-filter-actions{display:flex!important;flex-direction:row!important;align-items:center!important;flex-wrap:nowrap!important;gap:var(--ux-space-2);min-width:0}
+.namaa-approved-finance .p47-inline-actions{display:flex!important;flex-flow:row wrap!important;align-items:center!important;gap:var(--ux-space-2)}
+.namaa-approved-finance .p47-inline-actions :is(button,a){min-height:44px;white-space:normal;overflow-wrap:normal;line-height:1.3;background:var(--ux-brand-primary);color:var(--ux-text-inverse);border:0;border-radius:var(--ux-radius-lg);padding:var(--ux-space-2) var(--ux-space-3)}
+.namaa-approved-finance .p47-inline-actions :is(button,a):nth-child(2){background:var(--ux-text-primary);color:var(--ux-text-inverse)}
+.namaa-approved-finance .p47-inline-actions :is(button,a):nth-child(3){background:var(--ux-brand-primary);color:var(--ux-text-inverse)}
+.namaa-riyal-money{display:inline-flex;align-items:center;gap:var(--ux-space-2);direction:ltr;unicode-bidi:isolate;white-space:nowrap;max-width:100%}
+.namaa-riyal-money>img{display:inline-block;object-fit:contain;width:1em;height:1em;flex:0 0 1em}
+@media(max-width:767px){.namaa-approved-finance .p47-inline-actions :is(button,a){flex:1 1 auto;font-size:var(--ux-type-body-sm-size)}}
