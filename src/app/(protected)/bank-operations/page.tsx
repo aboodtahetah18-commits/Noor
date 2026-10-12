@@ -28,12 +28,12 @@ export default async function BankOperationsPage({searchParams}:{searchParams:Pr
   getSavingsSummary(user.id).catch(()=>null),
  ]);
  const selected=banks.find(b=>b.key===q.bank)??banks[0];
- return <main className="p47-page namaa-banks-unified-page namaa-approved-finance namaa-system-banks" dir="rtl">
-  <header className="namaa-system-banks-head"><div><h1>بنوك نماء</h1><p>الجهات الأربع لإدارة منظومة نماء المالية</p></div></header>
+ return <main className="p47-page namaa-banks-unified-page namaa-approved-finance namaa-system-banks namaa-v2 namaa-v2-banks" dir="rtl">
+  <p className="namaa-v2-banks__intro">الجهات الأربع لإدارة منظومة نماء المالية</p>
   {q.error?<p role="alert">{q.error}</p>:null}
   <nav className="namaa-system-bank-grid" aria-label="بنوك نماء">
    {banks.map(bank=><Link href={`/bank-operations/${bank.key}`} key={bank.key} aria-current={selected.key===bank.key?'page':undefined} className={`namaa-system-bank-tile tone-${bank.tone}`}>
-    <span className="namaa-system-bank-symbol"><LucideIcon name={bank.icon} size={24}/></span>
+    <span className="namaa-system-bank-symbol"><LucideIcon name={bank.icon} size={20}/></span>
     <strong>{bank.name}</strong><small>{bank.description}</small>
    </Link>)}
   </nav>
