@@ -276,3 +276,16 @@
 .namaa-hilal-obligations .namaa-obligation-table-detail{display:flex;flex-direction:column;align-items:flex-start;gap:3px;width:100%;min-height:38px;background:transparent;color:#0F172A;border:0;padding:4px 2px;cursor:pointer;text-align:right}
 .namaa-hilal-obligations .namaa-obligation-table-detail:hover{text-decoration:underline;text-decoration-color:#0E4D38}
 .namaa-hilal-obligations .namaa-obligation-table-detail:focus-visible{outline:3px solid #16A34A;outline-offset:2px;border-radius:6px}
+
+/* Four bank operational homes: lightweight recent financial records, not governance documentation. */
+.namaa-v2-bank-activity{margin:0 0 10px;padding:10px;border:1px solid #E2E8F0;border-radius:12px;background:#fff;min-width:0}
+.namaa-v2-bank-activity__heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
+.namaa-v2-bank-activity__heading h2{font-size:14px;margin:0;color:#0F172A}
+.namaa-v2-bank-activity__heading a{display:inline-flex;align-items:center;gap:3px;font-size:12px;color:#0E4D38;text-decoration:none}
+.namaa-v2-bank-activity__rows{display:grid;gap:0}
+.namaa-v2-bank-activity__row{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0;padding:9px 2px;text-decoration:none;color:#0F172A;border-bottom:1px solid #E2E8F0}
+.namaa-v2-bank-activity__row:last-child{border-bottom:0}
+.namaa-v2-bank-activity__row>span:first-child{display:grid;min-width:0;gap:3px}
+.namaa-v2-bank-activity__row strong{font-size:12px;overflow-wrap:anywhere}
+.namaa-v2-bank-activity__row small{font-size:11px;color:#64748B}
+.namaa-v2-bank-activity__row:focus-visible{outline:2px solid #16A34A;outline-offset:2px}
