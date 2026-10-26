@@ -14,6 +14,28 @@
   -webkit-backdrop-filter: none !important;
 }
 
+/* Approved Namaa logo is always presented as an unboxed transparent asset. */
+.auth-brand-symbol-frame,
+.auth-brand-lockup-symbol,
+.brand-logo-preview {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.auth-brand-symbol-frame {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ux-space-0) !important;
+}
+.auth-brand-symbol.namaa-brand-logo {
+  inline-size: 128px;
+  block-size: auto;
+  aspect-ratio: 2 / 1;
+  object-fit: contain;
+  background: transparent !important;
+}
+
 /* RTL-first: replace physical legacy offsets with logical equivalents. */
 @media (max-width:767px) {
   .report-table-card {
@@ -27,6 +49,84 @@
   }
   .smart-combo-menu {
     inset-inline: var(--ux-space-3) !important;
+  }
+
+  /* Login is a single fixed mobile viewport: no unnecessary page scrolling. */
+  .auth-page-v42.auth-page-nature {
+    position: fixed !important;
+    inset: var(--ux-space-0) !important;
+    inline-size: 100% !important;
+    block-size: 100dvh !important;
+    min-block-size: 100dvh !important;
+    overflow: hidden !important;
+    overscroll-behavior: none;
+    padding: env(safe-area-inset-top) var(--ux-space-4) env(safe-area-inset-bottom) !important;
+  }
+  .auth-page-v42 .auth-stage.auth-stage-nature {
+    inline-size: 100%;
+    block-size: 100%;
+    min-block-size: var(--ux-space-0) !important;
+    max-block-size: 100%;
+    display: grid;
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto minmax(0,1fr);
+    overflow: hidden;
+  }
+  .auth-page-v42 .auth-visual.auth-visual-nature {
+    min-block-size: var(--ux-space-0) !important;
+    max-block-size: 88px;
+    padding: var(--ux-space-3) var(--ux-space-0) var(--ux-space-2) !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .auth-page-v42 .auth-brand-lockup.auth-brand-lockup-symbol {
+    margin: var(--ux-space-0) !important;
+    padding: var(--ux-space-0) !important;
+  }
+  .auth-page-v42 .auth-brand-symbol.namaa-brand-logo {
+    inline-size: 96px !important;
+    block-size: 48px !important;
+  }
+  .auth-page-v42 .auth-nature-copy,
+  .auth-page-v42 .auth-nature-path,
+  .auth-page-v42 .auth-nature-glow {
+    display: none !important;
+  }
+  .auth-page-v42 .auth-panel.auth-panel-nature {
+    min-block-size: var(--ux-space-0) !important;
+    block-size: 100%;
+    max-block-size: 100%;
+    margin: var(--ux-space-0) !important;
+    padding: var(--ux-space-4) !important;
+    border-radius: var(--ux-radius-lg) var(--ux-radius-lg) var(--ux-space-0) var(--ux-space-0) !important;
+    overflow: hidden !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--ux-space-3);
+  }
+  .auth-page-v42 .auth-theme-action {
+    position: absolute;
+    inset-block-start: calc(env(safe-area-inset-top) + var(--ux-space-3));
+    inset-inline-end: var(--ux-space-4);
+  }
+  .auth-page-v42 .auth-heading-block {
+    margin: var(--ux-space-0) !important;
+  }
+  .auth-page-v42 .auth-form-v42 {
+    gap: var(--ux-space-3) !important;
+  }
+  .auth-page-v42 .auth-form-v42 input {
+    min-block-size: 48px !important;
+  }
+  .auth-page-v42 .auth-helper {
+    margin-block: var(--ux-space-0) !important;
+  }
+  .auth-page-v42 .auth-version {
+    margin-block-start: var(--ux-space-2) !important;
+    padding-block-start: var(--ux-space-2) !important;
   }
 }
 
