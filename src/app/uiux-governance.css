@@ -642,7 +642,7 @@ html[data-theme="dark"] .namaa-sidebar-brand img{opacity:1!important;}
   box-shadow:var(--ux-shadow-s)!important;
   padding:var(--ux-space-4) var(--ux-space-5)!important;
 }
-.account-detail-hero,.p74-focus-summary,.p74-next-step){
+.account-detail-hero,.p74-focus-summary,.p74-next-step{
   border-color:var(--ux-border-emphasis)!important;
   background:var(--ux-section-soft-teal)!important;
   box-shadow:var(--ux-shadow-m)!important;
@@ -661,7 +661,7 @@ html[data-theme="dark"] .namaa-sidebar-brand img{opacity:1!important;}
 .dashboard-header-actions,.actions-row{
   display:flex!important;align-items:center!important;gap:var(--ux-space-2)!important;flex-wrap:nowrap!important;
 }
-.dashboard-header-actions)>*{white-space:nowrap!important;}
+.dashboard-header-actions>*{white-space:nowrap!important;}
 
 /* Filter controls are invisible until the compact filter button is pressed. */
 .p4913-header-filter-actions{position:relative!important;}
