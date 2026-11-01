@@ -239,9 +239,9 @@ let host=document.createElement('div');host.className='v8-wizard-host';parent.pr
 steps=steps.filter(x=>x.nodes.length);steps.forEach((g,i)=>{let section=document.createElement('section');section.className='wiz-step';section.dataset.step=i;let body=document.createElement('div');body.className='formgrid';for(let node of g.nodes)body.appendChild(node);section.appendChild(body);host.append(section)});
 let review=document.createElement('section');review.className='wiz-step';review.dataset.step=steps.length;review.innerHTML='<h3>معاينة</h3><div class="wiz-review"></div>';host.append(review);
 const header=document.createElement('div');header.className='wiz-head';header.innerHTML='<b class="wiz-name"></b><span class="wiz-pill"></span>';form.prepend(header);
-const footer=document.createElement('div');footer.className='wiz-actions';footer.innerHTML='<button type="button" class="btn" data-prev>السابق</button><button type="button" class="btn primary" data-next>التالي</button><button type="button" class="btn primary" data-save>حفظ</button><button type="button" class="btn" data-cancel>إلغاء</button>';form.append(footer);originalActions.classList.add('wiz-original-hidden');
-let index=0,total=steps.length+1;const paint=()=>{[...host.children].forEach((e,i)=>e.classList.toggle('active',i===index));header.querySelector('.wiz-name').textContent=index===steps.length?'المعاينة':steps[index].label;header.querySelector('.wiz-pill').textContent=(index+1)+' / '+total;footer.querySelector('[data-prev]').style.display=index?'inline-flex':'none';footer.querySelector('[data-next]').style.display=index===steps.length?'none':'inline-flex';footer.querySelector('[data-save]').style.display=index===steps.length?'inline-flex':'none';if(index===steps.length){let rows=[...host.querySelectorAll('input,select,textarea')].filter(el=>!el.closest('.wiz-review')&&el.type!=='hidden');review.querySelector('.wiz-review').innerHTML=rows.map(el=>{let label=el.closest('.field')?.querySelector('label')?.textContent||el.id;let value=el.tagName==='SELECT'?el.selectedOptions[0]?.textContent:el.value;return `<div class="wiz-review-row"><span>${esc(label)}</span><b>${esc(value||'—')}</b></div>`}).join('')}};
-footer.querySelector('[data-next]').onclick=()=>{let current=host.children[index];let fields=[...current.querySelectorAll('input,select,textarea')].filter(el=>el.getClientRects().length&&el.closest('[style*="display: none"]')===null);for(let e of fields){if(e.required&&!e.checkValidity()){e.reportValidity();return}}index=Math.min(total-1,index+1);paint()};footer.querySelector('[data-prev]').onclick=()=>{index=Math.max(0,index-1);paint()};footer.querySelector('[data-cancel]').onclick=closeModal;footer.querySelector('[data-save]').onclick=()=>{let submit=originalActions.querySelector('[type=submit],button.primary');if(submit){submit.click()}else form.requestSubmit()};
+const footer=document.createElement('div');footer.className='wiz-actions';footer.innerHTML='<button type="button" class="btn" data-prev>السابق</button><button type="button" class="btn primary" data-save>حفظ</button><button type="button" class="btn" data-next>التالي</button>';form.append(footer);originalActions.classList.add('wiz-original-hidden');
+let index=0,total=steps.length+1;const paint=()=>{[...host.children].forEach((e,i)=>e.classList.toggle('active',i===index));header.querySelector('.wiz-name').textContent=index===steps.length?'المعاينة':steps[index].label;header.querySelector('.wiz-pill').textContent=(index+1)+' من '+total;footer.querySelector('[data-prev]').style.display=index?'inline-flex':'none';footer.querySelector('[data-next]').style.display=index===steps.length?'none':'inline-flex';footer.querySelector('[data-save]').style.display='inline-flex';if(index===steps.length){let rows=[...host.querySelectorAll('input,select,textarea')].filter(el=>!el.closest('.wiz-review')&&el.type!=='hidden');review.querySelector('.wiz-review').innerHTML=rows.map(el=>{let label=el.closest('.field')?.querySelector('label')?.textContent||el.id;let value=el.tagName==='SELECT'?el.selectedOptions[0]?.textContent:el.value;return `<div class="wiz-review-row"><span>${esc(label)}</span><b>${esc(value||'—')}</b></div>`}).join('')}};
+footer.querySelector('[data-next]').onclick=()=>{let current=host.children[index];let fields=[...current.querySelectorAll('input,select,textarea')].filter(el=>el.getClientRects().length&&el.closest('[style*="display: none"]')===null);for(let e of fields){if(e.required&&!e.checkValidity()){e.reportValidity();return}}index=Math.min(total-1,index+1);paint()};footer.querySelector('[data-prev]').onclick=()=>{index=Math.max(0,index-1);paint()};footer.querySelector('[data-save]').onclick=()=>{if(index!==steps.length){let next=footer.querySelector('[data-next]');if(next)next.click();else{index=steps.length;paint()}return;}let submit=originalActions.querySelector('[type=submit],button.primary');if(submit){submit.click()}else form.requestSubmit()};
 form.addEventListener('submit',e=>{if(index!==steps.length){e.preventDefault();e.stopImmediatePropagation();index=steps.length;paint()}},true);
 modal.dataset.v8wizard='1';paint();
 }
@@ -456,6 +456,23 @@ icons.next='<path d="M9 18l6-6-6-6"/><path d="M3 12h12"/>';
 })();
 
 
+/* V15: definitive single footer for modal wizards and centered save */
+(function(){
+const sheet=document.createElement('style');
+sheet.textContent=`
+#modalRoot .modal .actions.wiz-original-hidden,
+#modalRoot .modal .v3footer.wiz-original-hidden,
+#modalRoot .modal .wiz-original-hidden{display:none!important}
+#modalRoot .modal .wiz-actions{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important;align-items:stretch!important}
+#modalRoot .modal .wiz-actions [data-prev]{grid-column:3!important;grid-row:1!important}
+#modalRoot .modal .wiz-actions [data-save]{grid-column:2!important;grid-row:1!important}
+#modalRoot .modal .wiz-actions [data-next]{grid-column:1!important;grid-row:1!important}
+#modalRoot .modal .wiz-actions .btn{min-width:0!important;white-space:nowrap!important;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+#modalRoot .modal .wiz-pill{direction:rtl;unicode-bidi:plaintext}
+@media(max-width:740px){#modalRoot .modal .wiz-actions{padding:12px 16px 18px!important;gap:8px!important}#modalRoot .modal .wiz-actions .btn{font-size:13px!important;padding:8px 4px!important}}
+`;
+document.head.appendChild(sheet)
+})();
 /* V14 — salary cycle: date 25, editable review before any posting */
 const V14_CYCLE_KEY='rakaez-cycle-v14';
 function ensureCycle(){if(!Array.isArray(db.salaryCycles))db.salaryCycles=[];if(!db.cycleDay)db.cycleDay=25;}
