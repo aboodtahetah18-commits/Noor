@@ -36,6 +36,13 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   typescript: { ignoreBuildErrors: isPreviewBuild },
+  async redirects() {
+    const legacy = ['login','dashboard','accounts','transactions','budget','obligations','savings','emergency','goals','advisor','reports','settings','onboarding','cycles','income','expenses','preview'];
+    return legacy.flatMap(segment => [
+      { source: `/${segment}`, destination: '/rakaez', permanent: false },
+      { source: `/${segment}/:path*`, destination: '/rakaez', permanent: false },
+    ]);
+  },
   async headers() {
     return [
       { source: '/:path*', headers: securityHeaders },
