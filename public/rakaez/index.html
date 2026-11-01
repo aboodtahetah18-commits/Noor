@@ -241,8 +241,8 @@ let review=document.createElement('section');review.className='wiz-step';review.
 const header=document.createElement('div');header.className='wiz-head';header.innerHTML='<b class="wiz-name"></b><span class="wiz-pill"></span>';form.prepend(header);
 const footer=document.createElement('div');footer.className='wiz-actions';footer.innerHTML='<button type="button" class="btn" data-prev>السابق</button><button type="button" class="btn primary" data-save>حفظ</button><button type="button" class="btn" data-next>التالي</button>';form.append(footer);originalActions.classList.add('wiz-original-hidden');
 let index=0,total=steps.length+1;const paint=()=>{[...host.children].forEach((e,i)=>e.classList.toggle('active',i===index));header.querySelector('.wiz-name').textContent=index===steps.length?'المعاينة':steps[index].label;header.querySelector('.wiz-pill').textContent=(index+1)+' من '+total;footer.querySelector('[data-prev]').style.display=index?'inline-flex':'none';footer.querySelector('[data-next]').style.display=index===steps.length?'none':'inline-flex';footer.querySelector('[data-save]').style.display='inline-flex';if(index===steps.length){let rows=[...host.querySelectorAll('input,select,textarea')].filter(el=>!el.closest('.wiz-review')&&el.type!=='hidden');review.querySelector('.wiz-review').innerHTML=rows.map(el=>{let label=el.closest('.field')?.querySelector('label')?.textContent||el.id;let value=el.tagName==='SELECT'?el.selectedOptions[0]?.textContent:el.value;return `<div class="wiz-review-row"><span>${esc(label)}</span><b>${esc(value||'—')}</b></div>`}).join('')}};
-footer.querySelector('[data-next]').onclick=()=>{let current=host.children[index];let fields=[...current.querySelectorAll('input,select,textarea')].filter(el=>el.getClientRects().length&&el.closest('[style*="display: none"]')===null);for(let e of fields){if(e.required&&!e.checkValidity()){e.reportValidity();return}}index=Math.min(total-1,index+1);paint()};footer.querySelector('[data-prev]').onclick=()=>{index=Math.max(0,index-1);paint()};footer.querySelector('[data-save]').onclick=()=>{if(index!==steps.length){let next=footer.querySelector('[data-next]');if(next)next.click();else{index=steps.length;paint()}return;}let submit=originalActions.querySelector('[type=submit],button.primary');if(submit){submit.click()}else form.requestSubmit()};
-form.addEventListener('submit',e=>{if(index!==steps.length){e.preventDefault();e.stopImmediatePropagation();index=steps.length;paint()}},true);
+const validateCurrentStep=()=>{let current=host.children[index];for(const e of current.querySelectorAll('input,select,textarea')){if(e.disabled||e.type==='hidden')continue;if(!e.checkValidity()){e.reportValidity();return false}}return true};footer.querySelector('[data-next]').onclick=()=>{if(!validateCurrentStep())return;index=Math.min(total-1,index+1);paint()};footer.querySelector('[data-prev]').onclick=()=>{index=Math.max(0,index-1);paint()};footer.querySelector('[data-save]').onclick=()=>{if(index!==steps.length){if(!validateCurrentStep())return;index=steps.length;paint();return}for(const e of host.querySelectorAll('input,select,textarea')){if(e.disabled||e.type==='hidden')continue;if(!e.checkValidity()){let step=e.closest('.wiz-step');index=Math.max(0,[...host.children].indexOf(step));paint();e.reportValidity();return}}let submit=originalActions.querySelector('[type=submit],button.primary');if(submit){submit.click()}else form.requestSubmit()};
+form.addEventListener('submit',e=>{if(index!==steps.length){e.preventDefault();e.stopImmediatePropagation();if(validateCurrentStep()){index=steps.length;paint()}}},true);
 modal.dataset.v8wizard='1';paint();
 }
 function v8Decorate(){v8TableCards(document.getElementById('view'));document.querySelectorAll('#modalRoot .modal').forEach(v8Sections);document.querySelectorAll('#modalRoot .notice,#view .notice,#view p.tiny.muted').forEach(n=>n.style.display='none')}
@@ -473,6 +473,19 @@ sheet.textContent=`
 `;
 document.head.appendChild(sheet)
 })();
+/* V16: consistent wizard footer and scrollable step body */
+(function(){const st=document.createElement('style');st.textContent=`
+#modalRoot .modal .wiz-original-hidden{display:none!important}
+#modalRoot .modal .wiz-actions{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important;width:100%!important;margin:0!important;direction:rtl!important}
+#modalRoot .modal .wiz-actions [data-prev]{grid-column:1!important;grid-row:1!important}
+#modalRoot .modal .wiz-actions [data-save]{grid-column:2!important;grid-row:1!important}
+#modalRoot .modal .wiz-actions [data-next]{grid-column:3!important;grid-row:1!important}
+#modalRoot .modal .wiz-actions .btn{min-width:0!important;max-width:100%!important;white-space:nowrap!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:5px!important}
+#modalRoot .modal .wiz-actions [data-prev][style*="display: none"],#modalRoot .modal .wiz-actions [data-next][style*="display: none"]{visibility:hidden!important;display:inline-flex!important}
+#modalRoot .modal form{min-height:0!important;overflow:auto!important}
+#modalRoot .modal .wiz-head{flex-shrink:0}
+@media(max-width:740px){#modalRoot .modal .wiz-actions{gap:8px!important;padding:12px 16px 18px!important}#modalRoot .modal .wiz-actions .btn{font-size:12px!important;padding:7px 3px!important;min-height:48px!important}}
+`;document.head.appendChild(st)})();
 /* V14 — salary cycle: date 25, editable review before any posting */
 const V14_CYCLE_KEY='rakaez-cycle-v14';
 function ensureCycle(){if(!Array.isArray(db.salaryCycles))db.salaryCycles=[];if(!db.cycleDay)db.cycleDay=25;}
