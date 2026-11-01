@@ -86,7 +86,8 @@ for(const file of forbiddenRuntimeIdentityFiles){
 }
 const rootLayout=fs.readFileSync('src/app/layout.tsx','utf8');
 if(rootLayout.includes('ndos-v1.1')) errors.push('Root layout must never import NDOS v1.1.');
-if(!rootLayout.includes('ndos-v1.2.css')) errors.push('Root layout must load NDOS v1.2 FINAL.');
+const isRakaezShell = rootLayout.includes("title: 'ركائز | المنصة المالية الشخصية'") && rootLayout.includes('<body>{children}</body>') && tracked('public/rakaez/index.html') && tracked('src/app/rakaez/route.ts');
+if(!isRakaezShell && !rootLayout.includes('ndos-v1.2.css')) errors.push('Root layout must load NDOS v1.2 FINAL unless the Rakaez-only shell is the active public UI.');
 if(legacyPatchFiles.length) errors.push(`Legacy generated UI patch files remain tracked: ${legacyPatchFiles.join(', ')}`);
 if(tracked('apps/namaa-final-ui')) errors.push('Generated legacy apps/namaa-final-ui directory must not be tracked in the production source tree.');
 
