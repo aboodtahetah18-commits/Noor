@@ -401,15 +401,8 @@ function v8Decorate(){v8TableCards(document.getElementById('view'));document.que
 const v8OrigRender=render;render=function(){v8OrigRender();v8Decorate()};
 const v8Observer=new MutationObserver(()=>{const root=document.getElementById('modalRoot');if(root?.querySelector('.modal:not([data-v8wizard])'))v8Decorate()});v8Observer.observe(document.getElementById('modalRoot'),{childList:true});
 // Optional demonstrations - never replace existing finance records.
-function v8Examples(){if(!confirm('إضافة أمثلة افتراضية إلى البيانات الحالية؟'))return;db.goals=db.goals||[];db.debts=db.debts||[];db.fees=db.fees||[];db.watchlist=db.watchlist||[];
-if(!db.goals.some(x=>x.name==='صندوق شراء سيارة — مثال'))db.goals.push({id:rid(),name:'صندوق شراء سيارة — مثال',target:4000000,saved:350000,monthly:40000,date:'2028-12-31'});
-if(!db.debts.some(x=>x.name==='قسط جهاز — مثال'))db.debts.push({id:rid(),name:'قسط جهاز — مثال',principal:240000,paid:60000,installment:20000,rate:0,due:'2027-09-01'});
-if(!db.fees.some(x=>x.name==='رسوم إدارة — مثال'))db.fees.push({id:rid(),name:'رسوم إدارة — مثال',bank:'assets',account:'محفظة تجريبية',amount:2500,period:'quarterly',due:'2027-01-01'});
-if(!db.holdings.some(x=>x.name==='محفظة النمو — مثال'))db.holdings.push({id:rid(),name:'محفظة النمو — مثال',kind:'محفظة استثمارية',risk:'متوسطة',monthly:30000,months:12,contributed:180000,marketValue:187000,expectedReturn:8,maxDrawdown:15,redemptionDays:12,allocation:{'أسهم':50,'صكوك':20,'نقد':15,'صناديق':10,'بدائل':5},date:iso(today),updatedAt:iso(today)});
-if(!db.watchlist.some(x=>x.symbol==='DEMO-SA'))db.watchlist.push({id:rid(),name:'شركة سعودية افتراضية',symbol:'DEMO-SA',market:'SA',sector:'خدمات',price:28,pe:16,dividend:3,growth:7,roe:11,debt:20,fcf:100,date:iso(today),source:'تجريبي'});
-if(!db.watchlist.some(x=>x.symbol==='DEMO-US'))db.watchlist.push({id:rid(),name:'شركة أمريكية افتراضية',symbol:'DEMO-US',market:'US',sector:'تقنية',price:120,pe:28,dividend:0,growth:14,roe:18,debt:25,fcf:500,date:iso(today),source:'تجريبي'});
-if(!db.transactions.some(x=>x.description==='مشتريات منزلية — مثال'))db.transactions.push({id:rid(),date:iso(today),description:'مشتريات منزلية — مثال',type:'expense',category:'food',amount:18500});
-audit('إضافة بيانات تجريبية','V8');save();render();toast('تمت إضافة الأمثلة')}
+function v8Examples(){return v11ToggleSamples()}
+
 const v8Run=render;render=function(){v8Run();let controls=document.querySelector('.topcontrols');if(controls&&!controls.querySelector('#examplesBtn')){let b=document.createElement('button');b.id='examplesBtn';b.className='btn';b.innerHTML=ico('plus')+' <span>أمثلة</span>';b.onclick=v8Examples;controls.appendChild(b)}v8TableCards(document.getElementById('view'))};
 
 
