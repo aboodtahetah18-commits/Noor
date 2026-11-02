@@ -472,6 +472,77 @@ td,th{border-bottom:1px solid #d6e2e8!important}
 
 .rk-review-result{display:flex;align-items:center;justify-content:center;gap:10px;color:#167D78;background:#eaf6f3;border:2px solid #aed2c8;border-radius:12px;padding:14px;margin-bottom:14px}
 .rk-review-result svg{width:20px;height:20px}.rk-review-result strong{font-size:14px}
+
+/* Approved quiet budget layout: one parent surface, slim openable rows, no action icon boxes. */
+#view .rk-budget-shell{padding:5px 19px!important;border:2px solid #bdced7!important;border-radius:18px!important;background:#fff!important;box-shadow:0 8px 24px #182A4210!important}
+#view .rk-budget-entry{appearance:none;display:block!important;width:100%;border:0!important;border-bottom:1px solid #d3e0e5!important;background:transparent!important;
+ border-radius:0!important;box-shadow:none!important;padding:16px 2px!important;margin:0!important;min-height:70px!important;cursor:pointer;text-align:right;color:#182A42;transition:background .15s ease}
+#view .rk-budget-entry:last-child{border-bottom:0!important}
+#view .rk-budget-entry:hover{background:#f4f8f8!important}
+#view .rk-budget-entry:focus-visible{outline:2px solid #167D78!important;outline-offset:-2px;border-radius:9px!important}
+#view .rk-budget-entry-content{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-width:0}
+#view .rk-budget-entry-heading{display:flex;align-items:center;gap:11px;flex:1;min-width:0}
+#view .rk-budget-entry-heading strong{font-size:13px;color:#182A42;font-weight:750;min-width:0}
+#view .rk-budget-entry-heading .rk-budget-icon{width:31px!important;height:31px!important;border-radius:9px!important;flex:none!important}
+#view .rk-budget-entry-figures{display:flex;align-items:center;justify-content:flex-start;gap:7px;flex:none;font-variant-numeric:tabular-nums;white-space:nowrap}
+#view .rk-budget-entry-figures span{font-size:12px;font-weight:700}
+#view .rk-budget-entry-spent{color:#a07828}
+#view .rk-budget-entry-allocation{color:#167D78}
+#view .rk-budget-entry-divider{color:#9cabba!important;font-weight:400!important}
+#view .rk-budget-entry-percent{font-size:12px;color:#167D78;min-width:54px;text-align:left;font-weight:700;flex:none}
+#view .rk-budget-state-near .rk-budget-entry-percent,#view .rk-budget-state-over .rk-budget-entry-percent{color:#987026}
+#view .rk-budget-entry-track{display:block;width:100%;height:5px;margin-top:11px;border-radius:8px;background:#e1eaed;overflow:hidden}
+#view .rk-budget-entry-track>span{display:block;height:100%;background:#167D78;border-radius:8px}
+#view .rk-budget-state-near .rk-budget-entry-track>span,#view .rk-budget-state-over .rk-budget-entry-track>span{background:#C69A42}
+#view .rk-home-block .rk-budget-entry{padding:13px 3px!important}
+#view .rk-home-block .rk-budget-entry-heading .rk-budget-icon{width:27px!important;height:27px!important}
+#view .rk-home-block .rk-budget-entry-heading .rk-budget-icon svg{width:15px!important;height:15px!important}
+#view .rk-home-block .rk-budget-entry-figures{gap:5px}
+#view .rk-home-block .rk-budget-entry-figures span{font-size:11px}
+#modalRoot .rk-budget-detail-dialog{width:min(550px,100%)!important;max-width:550px!important;border:1.5px solid #b9ced5!important;border-radius:20px!important;overflow:auto;box-shadow:0 24px 55px #182A4242!important}
+#modalRoot .rk-budget-detail-dialog .modalhead{background:#182A42!important;padding:18px 23px!important;border-bottom:3px solid #C69A42!important;display:flex;justify-content:space-between;align-items:center;gap:12px}
+#modalRoot .rk-budget-detail-dialog .modalhead h2{color:#fff!important;font-size:19px!important;margin:0!important}
+#modalRoot .rk-budget-detail-dialog .modalhead .rk-budget-close{display:grid!important;place-items:center;width:37px!important;height:37px!important;min-height:37px!important;padding:6px!important;
+ background:#ffffff20!important;border:1px solid #ffffff70!important;color:#fff!important;border-radius:11px!important;box-shadow:none!important}
+#modalRoot .rk-budget-detail-dialog .rk-budget-close svg{width:18px!important;height:18px!important;color:#fff}
+#modalRoot .rk-budget-detail-content{padding:21px 23px 10px;background:#fff}
+#modalRoot .rk-budget-detail-overview{display:flex;justify-content:space-between;align-items:flex-end;gap:15px;padding-bottom:16px}
+#modalRoot .rk-budget-detail-total{display:grid;gap:7px;min-width:0}
+#modalRoot .rk-budget-detail-total span{font-size:12px;color:#5c7281}
+#modalRoot .rk-budget-detail-total strong{font-size:clamp(23px,6vw,29px);color:#167D78;line-height:1.4;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+#modalRoot .rk-budget-detail-ratio{display:grid;gap:2px;text-align:left;flex:none}
+#modalRoot .rk-budget-detail-ratio strong{color:#C69A42;font-weight:800;font-size:23px;font-variant-numeric:tabular-nums}
+#modalRoot .rk-budget-detail-ratio span{font-size:11px;color:#5c7281}
+#modalRoot .rk-budget-detail-track{width:100%;height:9px;background:#e1e9ed;border-radius:50px;overflow:hidden}
+#modalRoot .rk-budget-detail-track>span{display:block;height:100%;background:#167D78;border-radius:30px}
+#modalRoot .rk-budget-detail-list{margin:12px 0 5px;display:block}
+#modalRoot .rk-budget-detail-list>div{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #dfe7eb;padding:14px 0}
+#modalRoot .rk-budget-detail-list>div:last-child{border:0}
+#modalRoot .rk-budget-detail-list dt{font-size:13px;color:#536a79;font-weight:500}
+#modalRoot .rk-budget-detail-list dd{margin:0;font-size:15px;color:#182A42;font-weight:750;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;text-align:left}
+#modalRoot .rk-budget-detail-list dd.rk-budget-tone-outflow{color:#9a7228}
+#modalRoot .rk-budget-detail-list dd.rk-budget-tone-income{color:#167D78}
+#modalRoot .rk-budget-detail-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px;padding:14px 23px 21px;background:#fff;border-top:1px solid #e2eaee}
+#modalRoot .rk-budget-detail-actions .btn{display:flex!important;width:100%!important;min-height:45px!important;gap:7px!important;align-items:center!important;justify-content:center!important}
+#modalRoot .rk-budget-detail-actions .btn svg{width:17px!important;height:17px!important}
+#modalRoot .rk-budget-detail-actions .rk-budget-delete-action{border:1.5px solid #d6c29b!important;background:#faf6ec!important;color:#8d681f!important}
+#modalRoot .rk-budget-edit-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:23px;background:#fff}
+#modalRoot .rk-budget-edit-fields .field{min-width:0}
+@media(max-width:740px){
+ #view .rk-budget-shell{padding:3px 13px!important}
+ #view .rk-budget-entry{padding:13px 0!important}
+ #view .rk-budget-entry-content{gap:7px;flex-wrap:wrap}
+ #view .rk-budget-entry-heading{flex:1 1 56%;gap:7px}
+ #view .rk-budget-entry-heading strong{font-size:12px}
+ #view .rk-budget-entry-percent{min-width:48px}
+ #view .rk-budget-entry-figures{order:3;flex:1 1 100%;padding-inline-start:39px;gap:7px}
+ #view .rk-home-block .rk-budget-entry-figures{padding-inline-start:34px}
+ #view .rk-budget-entry-track{margin-top:8px}
+ #modalRoot .rk-budget-detail-content{padding:19px 17px 8px}
+ #modalRoot .rk-budget-detail-dialog .modalhead{padding:16px 19px!important}
+ #modalRoot .rk-budget-detail-actions{padding:13px 17px 19px!important}
+ #modalRoot .rk-budget-edit-fields{grid-template-columns:1fr;padding:17px}
+}
 </style></head><body><div class="layout" id="layout"><aside><div class="brand"><div class="brandmark">ر</div><div><b>ركائز</b><small>منظومتك المالية الشخصية</small></div></div><nav class="nav" id="nav"></nav><div class="asidefoot">ثلاثة مراكز مالية، رؤية واحدة.<br>نظام إدارة شخصية تجريبي • بيانات محلية</div></aside><main><header class="topbar"><div class="rakaez-title-row"><div class="row"><button type="button" class="btn mobilemenu rk-mobilemenu" aria-label="فتح القائمة الجانبية" aria-expanded="false" onclick="rkToggleMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" width="24" height="24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><h1 id="pageTitle">لوحة التحكم</h1><p id="pageSub" hidden></p></div><div class="rakaez-bell-wrap"><button type="button" class="btn primary rakaez-add" onclick="openModal('transaction')"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>إضافة</span></button><button type="button" class="rakaez-bell" id="rakaezBell" aria-label="الإشعارات" aria-expanded="false" aria-controls="rakaezNotifications" onclick="toggleRakaezNotifications()"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4"/></svg></button><div id="rakaezNotifications" class="rakaez-notifications" hidden></div></div></div><div class="topcontrols" hidden><select id="monthPicker" onchange="month=this.value;render()"></select></div></header><div class="content"><div class="demo">● نسخة تجريبية تعمل في متصفحك وتخزن المعلومات على هذا الجهاز فقط. لا تدخل بيانات مصرفية سرية أو تعتمد عليها كنسخة إنتاجية.</div><div id="view"></div></div></main></div><div id="modalRoot"></div><div id="toastRoot"></div><script>
 const icons={home:'<path d="m3 10 9-7 9 7v10H3z"/><path d="M9 20v-7h6v7"/>',moon:'<path d="M19 14A8 8 0 0 1 10 5a8 8 0 1 0 9 9Z"/>',shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/>',trend:'<path d="m3 17 6-6 4 4 8-8"/><path d="M15 7h6v6"/>',wallet:'<rect x="3" y="5" width="18" height="15" rx="2"/><path d="M16 12h5"/>',fund:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h4"/>',upload:'<path d="M12 16V3m-5 5 5-5 5 5M4 17v4h16v-4"/>',chart:'<path d="M4 20V10m6 10V4m6 16v-8m5 8H2"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="m19 13 2 1-2 4-2-1-2 1v2H9v-2l-2-1-2 1-2-4 2-1v-2l-2-1 2-4 2 1 2-1V4h6v2l2 1 2-1 2 4-2 1z"/>',bank:'<path d="m2 9 10-6 10 6M4 10h16M5 11v8m5-8v8m5-8v8m5-8v8M2 21h20"/>',bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4"/>',plus:'<path d="M12 5v14M5 12h14"/>'};function ico(name){return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${icons[name]||icons.wallet}</svg>`}
 const N=[['hilal','بنك الهلال التشغيلي','moon'],['malaa','بنك ملاءة للادخار','shield'],['assets','بنك الأصول الاستثماري','trend'],['goals','الأهداف المالية','trend'],['debts','الديون والالتزامات','fund'],['fees','الرسوم الدورية','chart'],['reserves','بنوك المنصة','bank'],['position','المركز المالي الموحد','bank'],['interbank','التمويل بين المراكز','fund'],['insights','الرئيسية','home'],['ledger','دفتر الأستاذ والمطابقة','fund'],['transactions','المعاملات المالية','wallet'],['funding','التمويل الداخلي','fund'],['import','استيراد المعاملات','upload'],['reports','التقارير والتحليلات','chart'],['settings','الإعدادات والتوزيع','settings']];
@@ -480,28 +551,35 @@ function save(){localStorage.setItem(STORE,JSON.stringify(db))}function money(v)
  const iconsById={housing:'home',food:'wallet',transport:'trend',bills:'fund',health:'shield',leisure:'moon',other:'chart'};
  return '<span class="rk-budget-icon" aria-hidden="true">'+ico(iconsById[category]||'wallet')+'</span>';
 }
+function rkBudgetRow(c,used,limit,compact=false){
+ const percent=limit>0?used/limit*100:null;
+ const shownPercent=percent===null?(used>0?'—':'0%'):percent.toLocaleString('en-US',{maximumFractionDigits:1})+'%';
+ const progress=limit>0?Math.min(100,Math.max(0,used/limit*100)):used>0?100:0;
+ const over=used>limit&&used>0;
+ const state=over?'over':progress>=80?'near':'normal';
+ return `<button type="button" class="rk-budget-entry ${compact?'rk-budget-entry-compact':''} rk-budget-state-${state}"
+ data-category="${esc(c.id)}" aria-label="تفاصيل ميزانية ${esc(c.name)}"
+ onclick="rkBudgetOpen(this.dataset.category)">
+  <span class="rk-budget-entry-content">
+   <span class="rk-budget-entry-heading">${rakCategoryIcon(c.id)}<strong>${esc(c.name)}</strong></span>
+   <span class="rk-budget-entry-figures">
+    <span class="rk-budget-entry-spent">${money(used)}</span>
+    <span class="rk-budget-entry-divider">/</span>
+    <span class="rk-budget-entry-allocation">${money(limit)}</span>
+   </span>
+   <span class="rk-budget-entry-percent">${shownPercent}</span>
+  </span>
+  <span class="rk-budget-entry-track" aria-hidden="true"><span style="width:${progress}%"></span></span>
+ </button>`;
+}
 function cats(){
  return db.categories.map(c=>{
   const used=Math.max(0,Number(spent(c.id))||0);
-  const limit=Math.max(0,(Number(c.limit)||0)*100+(Number(internal(c.id))||0));
-  const pct=limit>0?used/limit*100:used>0?100:0;
-  const visualPct=Math.max(0,Math.min(100,pct));
-  const status=pct>=100?'over':pct>=80?'near':'normal';
-  return `<article class="rk-budget-item rk-status-${status}" role="button" tabindex="0" aria-label="فتح وتعديل ميزانية ${esc(c.name)}" onclick="rkBudgetOpen(\'${esc(c.id)}\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();rkBudgetOpen(\'${esc(c.id)}\')}">
-   <header class="rk-budget-header">
-    <div class="rk-budget-name">${rakCategoryIcon(c.id)}<strong>${esc(c.name)}</strong></div>
-    <span class="rk-budget-percent">${pct.toLocaleString('en-US',{maximumFractionDigits:1})}%</span>
-   </header>
-   <div class="rk-budget-amounts">
-    <div class="rk-budget-spent"><span>المصروف</span><b>${money(used)}</b></div>
-    <div class="rk-budget-limit"><span>المخصص</span><b>${money(limit)}</b></div>
-   </div>
-   <div class="rk-budget-track" role="progressbar" aria-label="استهلاك ميزانية ${esc(c.name)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(visualPct)}">
-     <div class="rk-budget-fill" style="width:${visualPct}%"></div>
-   </div>
-  </article>`;
+  const allocation=Math.max(0,Math.round(Number(c.limit||0)*100)+(Number(internal(c.id))||0));
+  return rkBudgetRow(c,used,allocation);
  }).join('');
-}function chart(){let data=[5,4,3,2,1,0].map(n=>{let m=new Date(month+'-02');m.setMonth(m.getMonth()-n);let key=iso(m).slice(0,7);return {k:key,sum:db.transactions.filter(t=>t.date.slice(0,7)===key&&t.type==='expense').reduce((s,t)=>s+t.amount,0)}}),mx=Math.max(...data.map(x=>x.sum),1);return `<div class="bargraph">${data.map(d=>`<div class="bar" style="--h:${Math.max(2,d.sum/mx*100)}%" title="${esc(d.k)}: ${money(d.sum)}"><small>${esc(d.k.slice(5))}</small></div>`).join('')}</div><p class="tiny muted" style="margin-top:38px">المصروفات المسجلة لآخر 6 أشهر، بالريال السعودي.</p>`}function dashboard(){
+}
+function chart(){let data=[5,4,3,2,1,0].map(n=>{let m=new Date(month+'-02');m.setMonth(m.getMonth()-n);let key=iso(m).slice(0,7);return {k:key,sum:db.transactions.filter(t=>t.date.slice(0,7)===key&&t.type==='expense').reduce((s,t)=>s+t.amount,0)}}),mx=Math.max(...data.map(x=>x.sum),1);return `<div class="bargraph">${data.map(d=>`<div class="bar" style="--h:${Math.max(2,d.sum/mx*100)}%" title="${esc(d.k)}: ${money(d.sum)}"><small>${esc(d.k.slice(5))}</small></div>`).join('')}</div><p class="tiny muted" style="margin-top:38px">المصروفات المسجلة لآخر 6 أشهر، بالريال السعودي.</p>`}function dashboard(){
  const inflow=income(),outflow=spent();
  const totalSaving=db.savings.reduce((n,s)=>n+Number(s.balance||0),0);
  const investing=db.holdings.reduce((n,h)=>n+(rkHoldingHasPrice(h)?rkHoldingMarket(h):0),0);
@@ -512,7 +590,7 @@ function cats(){
  ${sTitle('الحركة المالية للشهر')}
  <section class="rk-home-motion"><div><span>الدخل المسجل</span><strong>${money(inflow)}</strong></div><div><span>المصروفات</span><strong>${money(outflow)}</strong></div><div><span>الرصيد الادخاري</span><strong>${money(totalSaving)}</strong></div><div><span>الاستثمارات المسجلة</span><strong>${money(investing)}</strong></div></section>
  <div class="rk-home-sections"><section class="card rk-home-block"><header><h2>ميزانية الهلال</h2><button class="btn" onclick="navigate('hilal')">${ico('view')} عرض الكل</button></header>
- ${categoryRows.map(({c,used,limit})=>`<button class="rk-home-budget-row" type="button" onclick="rkBudgetOpen('${esc(c.id)}')"><span>${esc(c.name)}</span><b>${money(used)}</b><small>${limit>0?(used/limit*100).toFixed(0)+'%':'0%'}</small></button>`).join('')}</section>
+ ${categoryRows.map(({c,used,limit})=>rkBudgetRow(c,used,Math.max(0,limit),true)).join('')}</section>
  <section class="card rk-home-block"><header><h2>الأهداف المالية</h2><button class="btn" onclick="navigate('goals')">${ico('view')} عرض الكل</button></header>
  ${goals.length?goals.map(g=>`<div class="rk-home-goal-row"><span>${esc(g.name)}</span><b>${Number(g.target)>0?Math.min(100,Number(g.saved||0)/Number(g.target)*100).toFixed(0)+'%':'0%'}</b></div>`).join(''):'<div class="rk-home-empty">لا توجد أهداف مسجلة</div>'}</section>
  </div>
@@ -1559,15 +1637,51 @@ function rkToggleMenu(button){
 }
 function rkBudgetOpen(id){
  const c=db.categories.find(x=>x.id===id);if(!c)return;
- const actual=Number(spent(id))||0,limit=Math.round((Number(c.limit)||0)*100)+(Number(internal(id))||0);
- const pct=limit>0?(actual/limit*100).toFixed(1):'0';
- document.getElementById('modalRoot').innerHTML=`<div class="modalbg" onclick="if(event.target===this)closeModal()"><div class="modal" role="dialog" aria-modal="true" aria-label="ميزانية ${esc(c.name)}"><div class="modalhead"><h2>${esc(c.name)}</h2><button type="button" class="btn" onclick="closeModal()" aria-label="إغلاق">${ico('close')}</button></div><div class="modalbody rk-budget-modal"><div class="rk-budget-modal-tiles"><div><span>المخصص</span><strong>${money(limit)}</strong></div><div><span>المصروف</span><strong>${money(actual)}</strong></div><div><span>الاستهلاك</span><strong>${pct}%</strong></div></div><div class="rk-budget-modal-actions"><button class="btn primary" onclick="rkBudgetEdit('${esc(c.id)}')">${ico('edit')} تعديل الميزانية</button><button class="btn" onclick="closeModal()">${ico('check')} إغلاق</button></div></div></div></div>`;
+ const spentAmount=Math.max(0,Number(spent(id))||0);
+ const baseline=Math.round(Number(c.limit||0)*100),adjustment=Number(internal(id))||0;
+ const allocated=Math.max(0,baseline+adjustment);
+ const percent=allocated>0?spentAmount/allocated*100:null;
+ const percentLabel=percent===null?(spentAmount>0?'—':'0%'):percent.toLocaleString('en-US',{maximumFractionDigits:1})+'%';
+ const progress=allocated>0?Math.min(100,Math.max(0,spentAmount/allocated*100)):spentAmount>0?100:0;
+ const balance=allocated-spentAmount;
+ document.getElementById('modalRoot').innerHTML=`<div class="modalbg" onclick="if(event.target===this)closeModal()">
+ <div class="modal rk-budget-detail-dialog" data-v8wizard="1" role="dialog" aria-modal="true" aria-label="تفاصيل ميزانية ${esc(c.name)}">
+ <div class="modalhead"><h2>${esc(c.name)}</h2><button type="button" class="btn rk-budget-close" aria-label="إغلاق" onclick="closeModal()">${ico('close')}</button></div>
+ <div class="rk-budget-detail-content">
+   <div class="rk-budget-detail-overview">
+    <div class="rk-budget-detail-total"><span>إجمالي المخصص</span><strong>${money(allocated)}</strong></div>
+    <div class="rk-budget-detail-ratio"><strong>${percentLabel}</strong><span>مستهلك</span></div>
+   </div>
+   <div class="rk-budget-detail-track" role="progressbar" aria-label="استهلاك بند ${esc(c.name)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(progress)}"><span style="width:${progress}%"></span></div>
+   <dl class="rk-budget-detail-list">
+    <div><dt>المصروف الفعلي</dt><dd class="rk-budget-tone-outflow">${money(spentAmount)}</dd></div>
+    <div><dt>${balance<0?'التجاوز':'المتبقي'}</dt><dd class="${balance<0?'rk-budget-tone-outflow':'rk-budget-tone-income'}">${money(Math.abs(balance))}</dd></div>
+    ${adjustment!==0?`<div><dt>التمويل الداخلي</dt><dd>${money(adjustment)}</dd></div>`:''}
+   </dl>
+ </div>
+ <div class="rk-budget-detail-actions">
+  <button type="button" class="btn primary" onclick="rkBudgetEdit('${esc(c.id)}')">${ico('edit')}<span>تعديل</span></button>
+  <button type="button" class="btn rk-budget-delete-action" onclick="rkBudgetRemove('${esc(c.id)}')">${ico('delete')}<span>حذف</span></button>
+ </div>
+ </div></div>`;
  if(typeof v10RepairDialogs==='function')v10RepairDialogs();
 }
 function rkBudgetEdit(id){
- const c=db.categories.find(x=>x.id===id),fresh=!c;
+ const c=db.categories.find(x=>x.id===id),isNew=!c;
  const name=c?.name||'',limit=Number(c?.limit)||0;
- document.getElementById('modalRoot').innerHTML=`<div class="modalbg" onclick="if(event.target===this)closeModal()"><div class="modal" role="dialog" aria-modal="true" aria-label="تعديل الميزانية"><div class="modalhead"><h2>${fresh?'إضافة بند ميزانية':'تعديل '+esc(name)}</h2><button type="button" class="btn" onclick="closeModal()" aria-label="إغلاق">${ico('close')}</button></div><form onsubmit="event.preventDefault();rkSaveBudget('${esc(id||'')}')"><div class="modalbody rk-budget-edit-form"><div class="field"><label for="rkBudgetName">اسم البند</label><input id="rkBudgetName" required maxlength="70" value="${esc(name)}"></div><div class="field"><label for="rkBudgetLimit">المخصص الشهري (⃁)</label><input id="rkBudgetLimit" required min="0" step="0.01" type="number" value="${limit}"></div></div><div class="rk-budget-modal-actions"><button type="submit" class="btn primary">${ico('check')} حفظ</button>${fresh?'':`<button type="button" class="btn" onclick="rkBudgetRemove('${esc(id)}')">${ico('delete')} حذف البند</button>`}</div></form></div></div>`;
+ document.getElementById('modalRoot').innerHTML=`<div class="modalbg" onclick="if(event.target===this)closeModal()">
+ <div class="modal rk-budget-detail-dialog" data-v8wizard="1" role="dialog" aria-modal="true" aria-label="${isNew?'إضافة بند':'تعديل ميزانية'}">
+ <div class="modalhead"><h2>${isNew?'إضافة بند':'تعديل '+esc(name)}</h2><button type="button" class="btn rk-budget-close" onclick="closeModal()" aria-label="إغلاق">${ico('close')}</button></div>
+ <form onsubmit="event.preventDefault();rkSaveBudget('${esc(id||'')}')">
+  <div class="rk-budget-edit-fields">
+   <div class="field"><label for="rkBudgetName">اسم البند</label><input id="rkBudgetName" required maxlength="70" value="${esc(name)}"></div>
+   <div class="field"><label for="rkBudgetLimit">المخصص الشهري (⃁)</label><input id="rkBudgetLimit" required type="number" min="0" step="0.01" value="${limit}"></div>
+  </div>
+  <div class="rk-budget-detail-actions">
+   <button class="btn primary" type="submit">${ico('check')}<span>حفظ التعديل</span></button>
+   ${isNew?'':`<button class="btn" type="button" onclick="rkBudgetOpen('${esc(id)}')">${ico('back')}<span>التفاصيل</span></button>`}
+  </div>
+ </form></div></div>`;
  if(typeof v10RepairDialogs==='function')v10RepairDialogs();
 }
 function rkSaveBudget(id){
@@ -1578,7 +1692,8 @@ function rkSaveBudget(id){
  if(c){c.name=name;c.limit=Math.round(limit*100)/100;}
  else db.categories.push({id:'cat-'+rid().replace(/[^a-zA-Z0-9_-]/g,''),name,limit:Math.round(limit*100)/100,icon:'◈'});
  audit(c?'تعديل الميزانية':'إضافة بند الميزانية',name);
- save();closeModal();render();toast('حُفظت الميزانية');
+ const savedId=c?.id||db.categories[db.categories.length-1].id;
+ save();render();rkBudgetOpen(savedId);toast('حُفظت الميزانية');
 }
 function rkBudgetRemove(id){
  const c=db.categories.find(c=>c.id===id);if(!c)return;
