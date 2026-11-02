@@ -1090,7 +1090,7 @@ function rkSaveCandidate(id){
  const prior=db.candidatePortfolios.find(x=>x.id===id);
  const next={...prior,id:prior?.id||rid(),name,category,risk,redemptionDays,expectedReturn,fees,minSubscription,manager:read('rkCandidateManager'),objective:read('rkCandidateObjective'),notes:read('rkCandidateNotes'),
   fundType:category==='صندوق'?read('rkCandidateFundType'):'',isin:category==='صندوق'?read('rkCandidateISIN'):'',nav:category==='صندوق'?nav:null,benchmark:category==='محفظة'?read('rkCandidateBenchmark'):'',maxDrawdown:category==='محفظة'?maxDrawdown:null};
- if(allocationCheck.allocation)next.allocation=allocationCheck.allocation;else if(!prior?.allocation)next.allocation=null;
+ if(allocationCheck.allocation)next.allocation=allocationCheck.allocation;else if(!prior?.allocation||rkAllocationEntries(prior.allocation).length)next.allocation=null;
  const index=db.candidatePortfolios.findIndex(x=>x.id===id);
  if(index<0)db.candidatePortfolios.push(next);else db.candidatePortfolios[index]=next;
  audit(id?'تعديل فرصة':'إضافة فرصة',name);save();render();rkCandidateReview(next.id);toast('حُفظت تفاصيل الفرصة');
