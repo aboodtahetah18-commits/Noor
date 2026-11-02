@@ -863,29 +863,111 @@ function rkSaveQuickDividend(id){
  db.dividends.push({id:rid(),holding:id,date,amount:Math.round(amount*100),reinvested:document.getElementById('rkDivReinvest')?.value==='yes'});
  audit('توزيع مستلم',id);save();closeModal();render();toast('تم حفظ التوزيع');
 }
+
+const rkAllocationClasses=[
+ ['saudi','الأسهم السعودية'],
+ ['us','الأسهم الأمريكية'],
+ ['developed','أسهم الأسواق المتقدمة الأخرى'],
+ ['emerging','أسهم الأسواق الناشئة الأخرى'],
+ ['gold','الذهب'],
+ ['sukuk','الصكوك'],
+ ['cash','السيولة وأدوات النقد'],
+ ['other','أصول أخرى']
+];
+function rkAllocationEntries(data){
+ return rkAllocationClasses.map(([key,label])=>({key,label,value:Number(data?.[key]||0)})).filter(v=>Number.isFinite(v.value)&&v.value>0);
+}
+function rkAllocationTotal(data){return rkAllocationEntries(data).reduce((n,x)=>n+x.value,0)}
+function rkAllocationBars(data){
+ const entries=rkAllocationEntries(data);
+ if(!entries.length)return '<div class="rk-no-allocation">لم يُدخل توزيع الأصول بعد</div>';
+ return '<div class="rk-allocation-list">'+entries.map(a=>'<div class="rk-allocation-line"><span>'+a.label+'</span><div class="rk-allocation-bar"><i style="width:'+Math.min(100,a.value)+'%"></i></div><b>'+a.value.toFixed(2)+'%</b></div>').join('')+'</div>';
+}
+function rkAllocationInputs(data,fieldPrefix){
+ return '<div class="rk-allocation-form" data-allocation-prefix="'+fieldPrefix+'">'+rkAllocationClasses.map(([key,label])=>
+ '<label class="rk-allocation-input"><span>'+label+'</span><input id="'+fieldPrefix+key+'" inputmode="decimal" type="number" min="0" max="100" step="0.01" value="'+(data&&data[key]!=null?Number(data[key]):0)+'" oninput="rkAllocationInputTotal(\''+fieldPrefix+'\')"></label>').join('')+
+ '<div class="rk-allocation-total">الإجمالي: <strong id="'+fieldPrefix+'total">0.00%</strong></div></div>';
+}
+function rkAllocationInputTotal(prefix){
+ const output=document.getElementById(prefix+'total');if(!output)return;
+ const total=rkAllocationClasses.reduce((n,[key])=>n+Number(document.getElementById(prefix+key)?.value||0),0);
+ output.textContent=(Number.isFinite(total)?total.toFixed(2):'—')+'%';
+ output.dataset.valid=total===0||Math.abs(total-100)<0.005?'true':'false';
+}
+function rkReadAllocation(prefix){
+ const entries=rkAllocationClasses.map(([key])=>[key,String(document.getElementById(prefix+key)?.value??'')]);
+ const values={};let any=false,sum=0;
+ for(const [key,raw] of entries){
+  const num=raw.trim()===''?0:Number(raw);
+  if(!Number.isFinite(num)||num<0||num>100||Math.abs(num*100-Math.round(num*100))>1e-6)return {error:'أدخل نسباً صحيحة بين 0 و100، بمنزلتين عشريتين كحد أقصى.'};
+  values[key]=num;if(num>0)any=true;sum+=num;
+ }
+ if(any&&Math.round(sum*100)!==10000)return {error:'يجب أن يكون مجموع نسب توزيع الأصول 100.00%، والمجموع الحالي '+sum.toFixed(2)+'%.'};
+ return {allocation:any?values:null};
+}
+function rkCandidateToggleFields(){
+ const type=document.getElementById('rkCandidateCategory')?.value||'محفظة';
+ document.querySelectorAll('[data-rk-type]').forEach(el=>{
+  const allowed=(el.getAttribute('data-rk-type')||'').split(',');
+  el.hidden=!allowed.includes(type);
+ });
+}
 function rkCandidateModal(id=''){
- rkEnsureAssets();const p=db.candidatePortfolios.find(x=>x.id===id)||{name:'',category:'محفظة',risk:'غير محددة',redemptionDays:'',expectedReturn:'',fees:'',notes:''};
- document.getElementById('modalRoot').innerHTML=`<div class="modalbg" onclick="if(event.target===this)closeModal()"><div class="modal rk-simple-dialog" data-v8wizard="1" role="dialog" aria-modal="true"><div class="modalhead"><h2>${id?'تعديل فرصة':'إضافة فرصة للدراسة'}</h2><button class="btn" onclick="closeModal()">${ico('close')}</button></div><form onsubmit="event.preventDefault();rkSaveCandidate('${esc(id)}')"><div class="modalbody"><div class="formgrid">
- <div class="field"><label>اسم الفرصة</label><input id="rkCandidateName" maxlength="100" value="${esc(p.name)}" required></div>
- <div class="field"><label>التصنيف</label><select id="rkCandidateCategory">${['محفظة','صندوق','صك','أخرى'].map(k=>`<option value="${k}" ${p.category===k?'selected':''}>${k}</option>`).join('')}</select></div>
- <div class="field"><label>المخاطرة المدخلة</label><select id="rkCandidateRisk">${['غير محددة','منخفضة','متوسطة','عالية'].map(k=>`<option value="${k}" ${p.risk===k?'selected':''}>${k}</option>`).join('')}</select></div>
- <div class="field"><label>الاسترداد (أيام عمل)</label><input id="rkCandidateDays" type="number" min="0" step="1" value="${p.redemptionDays===undefined?'':esc(String(p.redemptionDays))}"></div>
- <div class="field"><label>العائد السنوي المدخل (%)</label><input id="rkCandidateReturn" type="number" min="-100" max="1000" step="0.01" value="${esc(String(p.expectedReturn??''))}"></div>
- <div class="field"><label>الرسوم المدخلة (%)</label><input id="rkCandidateFees" type="number" min="0" max="100" step="0.01" value="${esc(String(p.fees??''))}"></div>
- </div></div><div class="rk-compact-footer"><button class="btn primary" type="submit">${ico('check')} حفظ الفرصة</button></div></form></div></div>`;
+ rkEnsureAssets();
+ const p=db.candidatePortfolios.find(x=>x.id===id)||{};
+ const category=p.category||'محفظة';
+ const field=(label,input)=>'<div class="field"><label>'+label+'</label>'+input+'</div>';
+ const input=(key,val,type='text',extra='')=>'<input id="'+key+'" type="'+type+'" '+extra+' value="'+esc(val??'')+'">';
+ document.getElementById('modalRoot').innerHTML=`<div class="modalbg" onclick="if(event.target===this)closeModal()"><div class="modal rk-candidate-form-modal" data-v8wizard="1" role="dialog" aria-modal="true">
+ <div class="modalhead"><h2>${id?'تعديل الفرصة':'إضافة فرصة للدراسة'}</h2><button class="btn" onclick="closeModal()" aria-label="إغلاق">${ico('close')}</button></div>
+ <form onsubmit="event.preventDefault();rkSaveCandidate('${esc(id)}')">
+ <div class="rk-candidate-fields">
+ <div class="rk-candidate-field-grid">
+ ${field('اسم الفرصة',input('rkCandidateName',p.name,'text','maxlength="100" required'))}
+ ${field('النوع',`<select id="rkCandidateCategory" onchange="rkCandidateToggleFields()">${['محفظة','صندوق','صك','أخرى'].map(k=>`<option value="${k}" ${category===k?'selected':''}>${k}</option>`).join('')}</select>`)}
+ ${field('المخاطرة المُدخلة',`<select id="rkCandidateRisk">${['غير محددة','منخفضة','متوسطة','عالية'].map(k=>`<option value="${k}" ${p.risk===k?'selected':''}>${k}</option>`).join('')}</select>`)}
+ ${field('الاسترداد (أيام عمل)',input('rkCandidateDays',p.redemptionDays,'number','min="0" max="365" step="1"'))}
+ ${field('العائد السنوي المُدخل (%)',input('rkCandidateReturn',p.expectedReturn,'number','min="-100" max="1000" step="0.01"'))}
+ ${field('رسوم سنوية (%)',input('rkCandidateFees',p.fees,'number','min="0" max="100" step="0.01"'))}
+ ${field('المدير أو الجهة',input('rkCandidateManager',p.manager,'text','maxlength="100"'))}
+ ${field('الحد الأدنى للاشتراك (⃁)',input('rkCandidateMin',p.minSubscription,'number','min="0" step="0.01"'))}
+ <div data-rk-type="صندوق" ${category==='صندوق'?'':'hidden'}>${field('نوع الصندوق',`<select id="rkCandidateFundType">${['نقدي','صكوك','أسهم','ذهب','مختلط','مؤشر متداول','عقاري','أخرى'].map(t=>`<option ${p.fundType===t?'selected':''}>${t}</option>`).join('')}</select>`)}</div>
+ <div data-rk-type="صندوق" ${category==='صندوق'?'':'hidden'}>${field('رمز الصندوق / ISIN',input('rkCandidateISIN',p.isin,'text','maxlength="30"'))}</div>
+ <div data-rk-type="صندوق" ${category==='صندوق'?'':'hidden'}>${field('صافي قيمة الوحدة (⃁)',input('rkCandidateNAV',p.nav,'number','min="0" step="0.0001"'))}</div>
+ <div data-rk-type="محفظة" ${category==='محفظة'?'':'hidden'}>${field('المؤشر المرجعي',input('rkCandidateBenchmark',p.benchmark,'text','maxlength="100"'))}</div>
+ <div data-rk-type="محفظة" ${category==='محفظة'?'':'hidden'}>${field('أقصى تراجع تاريخي مُدخل (%)',input('rkCandidateDrawdown',p.maxDrawdown,'number','min="0" max="100" step="0.01"'))}</div>
+ </div>
+ ${field('الهدف أو الاستراتيجية',`<textarea id="rkCandidateObjective" rows="2" maxlength="650">${esc(p.objective||'')}</textarea>`)}
+ <details class="rk-candidate-allocation-edit" open><summary>${ico('chart')} توزيع الأصول بالنسبة المئوية</summary>${rkAllocationInputs(p.allocation,'rkCa')}</details>
+ ${field('ملاحظات',`<textarea id="rkCandidateNotes" rows="2" maxlength="900">${esc(p.notes||'')}</textarea>`)}
+ </div>
+ <div class="rk-compact-footer"><button type="submit" class="btn primary">${ico('check')} حفظ الفرصة</button>${id?`<button type="button" class="btn" onclick="rkCandidateReview('${esc(id)}')">${ico('view')} التفاصيل</button>`:''}</div>
+ </form></div></div>`;
  if(typeof v10RepairDialogs==='function')v10RepairDialogs();
+ rkCandidateToggleFields();rkAllocationInputTotal('rkCa');
 }
 function rkSaveCandidate(id){
- rkEnsureAssets();const name=document.getElementById('rkCandidateName')?.value.trim()||'';
- const daysRaw=document.getElementById('rkCandidateDays')?.value||'',retRaw=document.getElementById('rkCandidateReturn')?.value||'',feeRaw=document.getElementById('rkCandidateFees')?.value||'';
- if(!name)return alert('أدخل اسم الفرصة.');
- const valid=(raw,min,max)=>raw===''||Number.isFinite(Number(raw))&&Number(raw)>=min&&Number(raw)<=max;
- if(!valid(daysRaw,0,365)||daysRaw!==''&&!Number.isInteger(Number(daysRaw))||!valid(retRaw,-100,1000)||!valid(feeRaw,0,100))return alert('راجع الأيام والنسب.');
- const p={id:id||rid(),name,category:document.getElementById('rkCandidateCategory').value,risk:document.getElementById('rkCandidateRisk').value,redemptionDays:daysRaw===''?null:Number(daysRaw),expectedReturn:retRaw===''?null:Number(retRaw),fees:feeRaw===''?null:Number(feeRaw)};
+ rkEnsureAssets();
+ const read=k=>document.getElementById(k)?.value?.trim()||'';
+ const name=read('rkCandidateName'),category=read('rkCandidateCategory'),risk=read('rkCandidateRisk');
+ if(!name||!['محفظة','صندوق','صك','أخرى'].includes(category)||!['غير محددة','منخفضة','متوسطة','عالية'].includes(risk))return alert('راجع اسم الفرصة ونوعها والمخاطرة.');
+ const number=(key,min,max,integer=false)=>{
+  const raw=read(key);if(raw==='')return null;const n=Number(raw);
+  return Number.isFinite(n)&&n>=min&&n<=max&&(!integer||Number.isInteger(n))?n:NaN;
+ };
+ const redemptionDays=number('rkCandidateDays',0,365,true),expectedReturn=number('rkCandidateReturn',-100,1000),fees=number('rkCandidateFees',0,100),minSubscription=number('rkCandidateMin',0,1e12),nav=number('rkCandidateNAV',0,1e12),maxDrawdown=number('rkCandidateDrawdown',0,100);
+ if([redemptionDays,expectedReturn,fees,minSubscription,category==='صندوق'?nav:null,category==='محفظة'?maxDrawdown:null].some(n=>n!==null&&!Number.isFinite(n)))return alert('راجع القيم والنسب وفترات الاسترداد.');
+ const allocationCheck=rkReadAllocation('rkCa');
+ if(allocationCheck.error)return alert(allocationCheck.error);
+ const prior=db.candidatePortfolios.find(x=>x.id===id);
+ const next={...prior,id:prior?.id||rid(),name,category,risk,redemptionDays,expectedReturn,fees,minSubscription,manager:read('rkCandidateManager'),objective:read('rkCandidateObjective'),notes:read('rkCandidateNotes'),
+  fundType:category==='صندوق'?read('rkCandidateFundType'):'',isin:category==='صندوق'?read('rkCandidateISIN'):'',nav:category==='صندوق'?nav:null,benchmark:category==='محفظة'?read('rkCandidateBenchmark'):'',maxDrawdown:category==='محفظة'?maxDrawdown:null};
+ if(allocationCheck.allocation)next.allocation=allocationCheck.allocation;else if(!prior?.allocation)next.allocation=null;
  const index=db.candidatePortfolios.findIndex(x=>x.id===id);
- if(index>=0)db.candidatePortfolios[index]=p;else db.candidatePortfolios.push(p);
- save();closeModal();render();toast('حُفظت الفرصة للدراسة');
+ if(index<0)db.candidatePortfolios.push(next);else db.candidatePortfolios[index]=next;
+ audit(id?'تعديل فرصة':'إضافة فرصة',name);save();render();rkCandidateReview(next.id);toast('حُفظت تفاصيل الفرصة');
 }
+
 function fundings(){return `${sTitle('عقود تمويل الهلال الداخلية','هذه حسابات افتراضية داخل المنصة وليست قروضاً مصرفية فعلية')}<div class="row spaced"><button class="btn primary" onclick="openModal('funding')">＋ إنشاء عقد تمويل</button></div><section class="card"><div class="tablewrap"><table><thead><tr><th>البند</th><th>أصل التمويل</th><th>معدل سنوي</th><th>مدة (شهر)</th><th>الربح الإجمالي البسيط</th><th>إجمالي السداد</th><th>المتبقي من الأصل</th><th>إجراء</th></tr></thead><tbody>${db.fundings.length?db.fundings.map(f=>{let profit=Math.round(f.principal*f.rate/100*f.months/12);return `<tr><td>${esc(db.categories.find(c=>c.id===f.category)?.name)}</td><td>${money(f.principal)}</td><td>${f.rate}%</td><td>${f.months}</td><td>${money(profit)}</td><td>${money(f.principal+profit)}</td><td>${money(f.principal-f.paid)}</td><td><button class="btn" onclick="openModal('repay','${f.id}')">سداد أصل</button></td></tr>`}).join(''):`<tr><td colspan="8" class="empty">لا يوجد تمويل داخلي مسجل</td></tr>`}</tbody></table></div></section><p class="notice">طريقة الاحتساب في هذه النسخة: ربح بسيط ثابت على أصل التمويل للفترة المحددة، للتخطيط فقط. لا تتضمن جدولة فائدة متناقصة أو احتساب أيام فعلي أو رسوم مصرفية. لا تتم زيادة النقد تلقائياً من التمويل الداخلي؛ يُزاد سقف البند فقط لمنع ازدواج الأرصدة.</p>`}function transactions(){let rows=db.transactions.filter(t=>t.date.slice(0,7)===month).sort((a,b)=>b.date.localeCompare(a.date));return `${sTitle('سجل المعاملات','تُعرض معاملات الشهر المحدد')}<section class="card"><div class="row between spaced"><span class="muted tiny">${rows.length} معاملة</span><button class="btn primary" onclick="openModal('transaction')">＋ إضافة معاملة</button></div>${txTable(rows)}</section>`}function reports(){let inc=rkRecordedIncome(),sp=spent(),saving=db.savings.reduce((s,x)=>s+x.balance,0),invest=db.holdings.reduce((s,h)=>s+(h.kind==='محفظة استثمارية'?(h.marketValue||0):h.quantity*h.price),0);return `<div class="grid stats">${stat('الدخل المسجل',inc,'الشهر المحدد','var(--blue)','wallet')}${stat('المصروف',sp,'الشهر المحدد','var(--red)','chart')}${stat('الفائض التشغيلي',income()*db.ratios.hilal/100-sp,'المخصص التشغيلي ناقص المصروف','var(--teal)','moon')}${stat('ادخار + استثمار',saving+invest,'أرصدة حالية وليست ربحاً','var(--gold)','trend')}</div>${sTitle('تقرير الانحرافات عن الميزانية')}<section class="card">${db.categories.map(c=>`<div class="metricline"><span>${esc(c.name)}</span><span class="money" style="color:${spent(c.id)>c.limit*100?'var(--red)':'var(--teal)'}">${money(c.limit*100-spent(c.id))}</span></div>`).join('')}</section>${sTitle('تصدير ومشاركة')}<section class="card"><div class="row" style="flex-wrap:wrap"><button class="btn primary" onclick="exportCsv()">تنزيل معاملات CSV</button><button class="btn" onclick="window.print()">طباعة / حفظ PDF</button><button class="btn" onclick="exportJson()">نسخة احتياطية JSON</button></div><p class="tiny muted">مخرجات هذا التقرير مبنية على الإدخالات المحلية. المراجعة والمطابقة البنكية مطلوبة قبل الاعتماد المالي.</p></section>`}function addBusinessDays(day,n){let d=new Date(day+'T12:00:00');while(n>0){d.setDate(d.getDate()+1);if(d.getDay()!==5&&d.getDay()!==6)n--}return iso(d)}let settingsTab='salary';
 function setSettingsTab(t){settingsTab=t;render()}
 function settings(){
