@@ -1419,6 +1419,45 @@ function rakaezDataCheck(){
   const debit=entry.lines.reduce((n,l)=>n+Number(l.debit||0),0),credit=entry.lines.reduce((n,l)=>n+Number(l.credit||0),0);
   if(!Number.isFinite(debit)||!Number.isFinite(credit)||Math.abs(debit-credit)>.01)issues.push('قيد غير متوازن: '+String(entry.description||entry.id||'بدون وصف'));
  }
+
+ const safeArray=k=>Array.isArray(db[k])?db[k]:[];
+ const numeric=x=>Number.isFinite(Number(x))&&Number(x)>=0;
+ const categories=new Set(safeArray('categories').map(x=>x.id));
+ const holdingIds=new Set(safeArray('holdings').map(x=>x.id));
+ const accountIds=new Set(safeArray('assetAccounts').map(x=>x.id));
+ const receivables=new Map(safeArray('receivables').map(x=>[x.id,x]));
+ for(const c of safeArray('categories')){
+  if(!c||!c.id||!String(c.name||'').trim()||!numeric(c.limit))issues.push('بند ميزانية غير صالح');
+ }
+ for(const t of safeArray('transactions')){
+  if(!t||!numeric(t.amount)||Number(t.amount)<=0)issues.push('عملية بمبلغ غير صالح');
+  if(t?.type==='expense'&&t.category&&!categories.has(t.category))issues.push('مصروف مرتبط ببند محذوف');
+ }
+ for(const d of safeArray('debts')){
+  if(!numeric(d.principal)||!numeric(d.paid)||Number(d.paid)>Number(d.principal))issues.push('التزام مدفوعاته تتجاوز أصله');
+  if(!numeric(d.installment))issues.push('قسط غير صالح');
+ }
+ for(const g of safeArray('goals'))if(!numeric(g.target)||!numeric(g.saved)||Number(g.saved)>Number(g.target))issues.push('هدف مالي بتخصيص غير صالح');
+ for(const z of safeArray('savings'))if(!numeric(z.balance))issues.push('رصيد ادخار غير صالح');
+ for(const h of safeArray('holdings')){
+  if(h.accountId&&!accountIds.has(h.accountId))issues.push('أصل مرتبط بمحفظة غير موجودة');
+  if(h.quantity!==undefined&&!numeric(h.quantity))issues.push('كمية أصل غير صالحة');
+ }
+ for(const d of safeArray('dividends'))if(!holdingIds.has(d.holding)||!numeric(d.amount)||Number(d.amount)<=0)issues.push('توزيع استثماري غير صالح');
+ const received=new Map();
+ for(const c of safeArray('receivableCollections')){
+  if(!receivables.has(c.receivableId)||!numeric(c.amount)||Number(c.amount)<=0)issues.push('تحصيل مستحق غير صالح');
+  received.set(c.receivableId,(received.get(c.receivableId)||0)+Number(c.amount||0));
+ }
+ for(const [id,sum] of received)if(sum>Number(receivables.get(id)?.principal||0))issues.push('تحصيل يتجاوز أصل المستحق');
+ for(const op of safeArray('scheduledOps')){
+  if(op.method==='percentage'&&(!numeric(op.rate)||Number(op.rate)>100))issues.push('نسبة جدولة غير صالحة');
+  if(op.method==='fixed'&&!numeric(op.amount))issues.push('مبلغ عملية مجدولة غير صالح');
+ }
+ for(const b of safeArray('externalBanks')){
+  if(!String(b.name||'').trim()||!['hilal','malaa','assets'].includes(b.center)||b.last4&&!/^[0-9]{4}$/.test(b.last4))issues.push('تعريف بنك خارجي غير صالح');
+  if(b.logo&&!/^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(b.logo))issues.push('شعار بنك خارجي غير صالح');
+ }
  return issues;
 }
 function rakaezShowDataCheck(){
@@ -1818,8 +1857,8 @@ function rkSaveExternalBank(id){
   const existing=db.externalBanks.slice();const idx=existing.findIndex(b=>b.id===id);
   if(idx>=0)existing[idx]=bank;else existing.push(bank);
   const old=db.externalBanks;db.externalBanks=existing;
-  try{save()}catch(e){db.externalBanks=old;throw e}
   audit('حفظ بنك خارجي',name);
+  try{save()}catch(e){db.externalBanks=old;throw e}
  }catch(e){alert('تعذر حفظ بيانات البنك أو الشعار، يُرجى تقليل حجم الصورة.');return}
  rkPendingBankLogo=null;render();rkExternalBankDetails(bank.id);toast('تم الحفظ');
 }
