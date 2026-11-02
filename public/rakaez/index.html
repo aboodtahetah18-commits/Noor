@@ -157,6 +157,32 @@ td,th{border-bottom:1px solid #d6e2e8!important}
 @media(max-width:1100px){.layout{grid-template-columns:220px minmax(0,1fr)!important}#view .grid.stats{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
 @media(max-width:740px){.layout{grid-template-columns:1fr!important}aside{width:min(85vw,280px)!important}.nav.rakaez-nav-flat>.rakaez-nav-link{min-height:39px!important}.content{padding:13px!important}#view .grid.stats{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}.card{padding:13px!important}.card.stat{padding:13px!important;min-height:115px!important}.card.stat strong{font-size:16px!important}.card.stat .sym{position:static;float:left;padding:5px;margin-right:4px}.card.stat .sym svg{width:16px!important;height:16px!important}}
 @media(max-width:350px){#view .grid.stats{grid-template-columns:1fr!important}}
+
+/* Strengthen edges and modal hierarchy, and keep approved brand palette. */
+:root{--line:#b9cbd7!important}
+.card,.item,.portfolio-block,.assetdetails,.calculations,.settings-panel{border-width:2px!important;border-color:#b4c8d4!important;box-shadow:0 6px 20px #182A4216!important}
+.field input,.field select,.field textarea,#modalRoot .modal input,#modalRoot .modal select,#modalRoot .modal textarea{border:2px solid #acc3cf!important;background:#f9fcfd!important;box-shadow:0 2px 8px #182A420b!important}
+#modalRoot .modal .v7-group,#modalRoot .modal .portfolio-block,#modalRoot .modal .calculations,#modalRoot .modal .assetdetails{border:2px solid #b9cbd7!important;background:#f7fafb!important}
+#modalRoot .modal{box-shadow:0 26px 86px #182A4245!important;border:2px solid #C69A42!important}
+#modalRoot .modal .wiz-head{border-bottom:2px solid #bfd0dc!important}
+#modalRoot .modal .wiz-review-row{display:flex!important;justify-content:space-between!important;gap:12px!important;padding:13px!important;background:#f7fafb!important;border:1.5px solid #b9cbd7!important;border-radius:11px!important;line-height:1.7}
+#modalRoot .modal .wiz-review-row b{color:#167D78!important;overflow-wrap:anywhere}
+#modalRoot .modal .wiz-actions{direction:rtl!important;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important}
+#modalRoot .modal .wiz-actions [data-prev]{grid-column:1!important;grid-row:1!important}
+#modalRoot .modal .wiz-actions [data-save]{grid-column:2!important;grid-row:1!important;background:#167D78!important;color:#fff!important}
+#modalRoot .modal .wiz-actions [data-next]{grid-column:3!important;grid-row:1!important}
+#modalRoot .modal .wiz-actions .btn{border:1.5px solid #b7ccd3!important}
+#modalRoot .modal .wiz-actions [data-save] .rakaez-action-icon{background:#ffffff24;color:#fff}
+.rakaez-mode-panel{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;border:2px solid #c8d9dd;background:#edf5f4;border-radius:15px;padding:12px 16px;margin-bottom:16px;box-shadow:0 3px 12px #182A420b}
+.rakaez-mode-panel.is-demo{border-color:#C69A42;background:#f8f2e8}
+.rakaez-mode-text{display:grid;gap:4px;flex:1;min-width:180px}
+.rakaez-mode-text strong{font-size:13px;color:#182A42}
+.rakaez-mode-text small{font-size:11px;line-height:1.75;color:#465e6b}
+.rakaez-mode-actions{display:flex;gap:8px;flex-wrap:wrap}
+.rakaez-mode-actions .btn{min-height:37px}
+.rakaez-audit{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:16px}
+.rakaez-audit p{font-size:12px;color:#536a79;line-height:1.8;margin:5px 0}
+@media(max-width:740px){.rakaez-mode-panel{padding:11px}.rakaez-mode-actions{width:100%;display:grid;grid-template-columns:1fr 1fr}.rakaez-mode-actions .btn{font-size:11px!important;padding:7px!important}}
 </style></head><body><div class="layout" id="layout"><aside><div class="brand"><div class="brandmark">ر</div><div><b>ركائز</b><small>منظومتك المالية الشخصية</small></div></div><nav class="nav" id="nav"></nav><div class="asidefoot">ثلاثة مراكز مالية، رؤية واحدة.<br>نظام إدارة شخصية تجريبي • بيانات محلية</div></aside><main><header class="topbar"><div class="rakaez-title-row"><div class="row"><button class="btn mobilemenu" aria-label="القائمة" onclick="document.querySelector('#layout').classList.toggle('showmenu')">☰</button><h1 id="pageTitle">لوحة التحكم</h1><p id="pageSub" hidden></p></div><div class="rakaez-bell-wrap"><button type="button" class="btn primary rakaez-add" onclick="openModal('transaction')">＋ إضافة</button><button type="button" class="rakaez-bell" id="rakaezBell" aria-label="الإشعارات" aria-expanded="false" aria-controls="rakaezNotifications" onclick="toggleRakaezNotifications()"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4"/></svg></button><div id="rakaezNotifications" class="rakaez-notifications" hidden></div></div></div><div class="topcontrols" hidden><select id="monthPicker" onchange="month=this.value;render()"></select></div></header><div class="content"><div class="demo">● نسخة تجريبية تعمل في متصفحك وتخزن المعلومات على هذا الجهاز فقط. لا تدخل بيانات مصرفية سرية أو تعتمد عليها كنسخة إنتاجية.</div><div id="view"></div></div></main></div><div id="modalRoot"></div><div id="toastRoot"></div><script>
 const icons={home:'<path d="m3 10 9-7 9 7v10H3z"/><path d="M9 20v-7h6v7"/>',moon:'<path d="M19 14A8 8 0 0 1 10 5a8 8 0 1 0 9 9Z"/>',shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/>',trend:'<path d="m3 17 6-6 4 4 8-8"/><path d="M15 7h6v6"/>',wallet:'<rect x="3" y="5" width="18" height="15" rx="2"/><path d="M16 12h5"/>',fund:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h4"/>',upload:'<path d="M12 16V3m-5 5 5-5 5 5M4 17v4h16v-4"/>',chart:'<path d="M4 20V10m6 10V4m6 16v-8m5 8H2"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="m19 13 2 1-2 4-2-1-2 1v2H9v-2l-2-1-2 1-2-4 2-1v-2l-2-1 2-4 2 1 2-1V4h6v2l2 1 2-1 2 4-2 1z"/>',bank:'<path d="m2 9 10-6 10 6M4 10h16M5 11v8m5-8v8m5-8v8m5-8v8M2 21h20"/>',bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4"/>',plus:'<path d="M12 5v14M5 12h14"/>'};function ico(name){return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${icons[name]||icons.wallet}</svg>`}
 const N=[['hilal','بنك الهلال التشغيلي','moon'],['malaa','بنك ملاءة للادخار','shield'],['assets','بنك الأصول الاستثماري','trend'],['goals','الأهداف المالية','trend'],['debts','الديون والالتزامات','fund'],['fees','الرسوم الدورية','chart'],['reserves','المراكز المالية','bank'],['position','المركز المالي الموحد','bank'],['interbank','التمويل بين البنوك','fund'],['insights','لوحة التحكم','home'],['ledger','دفتر الأستاذ والمطابقة','fund'],['transactions','المعاملات المالية','wallet'],['funding','التمويل الداخلي','fund'],['import','استيراد المعاملات','upload'],['reports','التقارير والتحليلات','chart'],['settings','الإعدادات والتوزيع','settings']];
@@ -402,6 +428,8 @@ openModal=function(type,id=''){v10OriginalOpenModal(type,id);v10RepairDialogs()}
 /* V11 - Separate sample dataset and remove repeated dashboard summaries. */
 const V11_DEMO_KEY='rakaez-v11-samples',V11_REAL_KEY='rakaez-v1';
 let v11ExamplesMode=false;
+try{v11ExamplesMode=localStorage.getItem('rakaez-v11-mode')==='demo';}catch(e){v11ExamplesMode=false;}
+if(v11ExamplesMode){try{db=JSON.parse(localStorage.getItem(V11_DEMO_KEY))||v11BuildSamples()}catch(e){db=v11BuildSamples()}}
 const v11SaveOriginal=save;
 save=function(){localStorage.setItem(v11ExamplesMode?V11_DEMO_KEY:V11_REAL_KEY,JSON.stringify(db))};
 function v11BuildSamples(){
@@ -445,11 +473,29 @@ function v11BuildSamples(){
  d.audit=[{date:new Date().toISOString(),verb:'بيانات تجريبية',detail:'عينة شاملة مستقلة عن بيانات المستخدم'}];
  return d;
 }
+
 function v11ToggleSamples(){
- if(!v11ExamplesMode){localStorage.setItem(V11_REAL_KEY,JSON.stringify(db));let existing=localStorage.getItem(V11_DEMO_KEY);try{db=existing?JSON.parse(existing):v11BuildSamples()}catch(e){db=v11BuildSamples()}v11ExamplesMode=true;}
- else{localStorage.setItem(V11_DEMO_KEY,JSON.stringify(db));try{db=JSON.parse(localStorage.getItem(V11_REAL_KEY))||seed()}catch(e){db=seed()}v11ExamplesMode=false;}
- localStorage.setItem('rakaez-v11-mode',v11ExamplesMode?'demo':'real');save();render();toast(v11ExamplesMode?'وضع الأمثلة':'البيانات الشخصية');
+ if(!v11ExamplesMode){
+  try{localStorage.setItem(V11_REAL_KEY,JSON.stringify(db))}catch(e){alert('تعذر حفظ نسخة بياناتك المحلية، ولن ننتقل إلى التجربة.');return;}
+  let existing=null;
+  try{existing=JSON.parse(localStorage.getItem(V11_DEMO_KEY))}catch(e){}
+  db=existing&&Array.isArray(existing.transactions)&&Array.isArray(existing.categories)?existing:v11BuildSamples();
+  v11ExamplesMode=true;
+ }else{
+  try{localStorage.setItem(V11_DEMO_KEY,JSON.stringify(db))}catch(e){}
+  let real=null;try{real=JSON.parse(localStorage.getItem(V11_REAL_KEY))}catch(e){}
+  if(!real||!Array.isArray(real.transactions)||!Array.isArray(real.categories)){alert('تعذر قراءة بياناتك الشخصية. أُبقيت على وضع التجربة لحمايتها.');return;}
+  db=real;v11ExamplesMode=false;
+ }
+ try{localStorage.setItem('rakaez-v11-mode',v11ExamplesMode?'demo':'real');save();}catch(e){alert('تعذر حفظ وضع العرض على هذا الجهاز.')}
+ if(typeof page==='string'&&page==='intelligence')page='insights';
+ render();toast(v11ExamplesMode?'تم تفعيل الوضع التجريبي المنفصل':'تمت العودة إلى البيانات الشخصية');
 }
+function rakaezResetDemo(){
+ if(!v11ExamplesMode||!confirm('إعادة إنشاء بيانات تجريبية جديدة؟ سيُحذف فقط ما عدلته داخل الوضع التجريبي. لن تتأثر بياناتك الشخصية.'))return;
+ db=v11BuildSamples();save();render();toast('أُعيد إنشاء بيانات التجربة');
+}
+
 /* Production preview starts with no sample records. */
 const v11Render=render;
 render=function(){
@@ -671,5 +717,74 @@ const rakaezDesignObserver=new MutationObserver(records=>{
 });
 rakaezDesignObserver.observe(document.body,{childList:true,subtree:true});
 rakaezApplyDesign();
+
+
+/* Consistent branded sample/real workspace, without merging demo records into personal records. */
+function rakaezSamplePanel(){
+ const host=document.querySelector('.content'),view=document.getElementById('view');if(!host||!view)return;
+ let panel=document.getElementById('rakaezModePanel');
+ if(!panel){panel=document.createElement('section');panel.id='rakaezModePanel';panel.setAttribute('aria-label','وضع بيانات ركائز');host.insertBefore(panel,view)}
+ panel.className='rakaez-mode-panel'+(v11ExamplesMode?' is-demo':'');
+ const title=v11ExamplesMode?'وضع التجربة — بيانات افتراضية':'البيانات الشخصية';
+ const explanation=v11ExamplesMode?'هذه بيانات مالية افتراضية يمكنك تعديلها وتجربتها. لا تُدمج مع بياناتك الشخصية.':'جرّب النوافذ والتقارير ببيانات افتراضية منفصلة، ثم ارجع إلى بياناتك الشخصية قبل بدء الاستخدام الحقيقي.';
+ panel.innerHTML='<div class="rakaez-mode-text"><strong>'+title+'</strong><small>'+explanation+'</small></div><div class="rakaez-mode-actions"><button type="button" class="btn primary" onclick="v11ToggleSamples()">'+(v11ExamplesMode?'العودة إلى بياناتي':'تجربة بيانات جاهزة')+'</button>'+(v11ExamplesMode?'<button type="button" class="btn" onclick="rakaezResetDemo()">تجديد الأمثلة</button>':'')+'</div>';
+}
+function rakaezModalConsistency(){
+ const root=document.getElementById('modalRoot');if(!root)return;
+ root.querySelectorAll('.modal').forEach(modal=>{
+  const title=(modal.querySelector('.v3header h2,.v7-head h2,.modalhead h2,h2')?.textContent||'').trim();
+  const head=modal.querySelector('.wiz-head');if(!head)return;
+  const labels=({'تسجيل معاملة مالية':['بيانات العملية','المبلغ والتصنيف','المعاينة'],'تمويل طارئ لبند':['مصدر التمويل','المبلغ والشروط','المعاينة'],'هدف مالي':['الهدف','قيمة التمويل','المعاينة'],'إضافة أصل أو محفظة':['نوع الأصل','التكلفة والكمية','المعاينة'],'دورة الراتب':['الفترة','توزيع البنود','المعاينة']});
+  const key=Object.keys(labels).find(k=>title.includes(k));if(!key)return;
+  const steps=[...modal.querySelectorAll('.wiz-step')];
+  if(steps.length>1)steps.slice(0,-1).forEach((section,i)=>{section.dataset.rakaezStepName=labels[key][Math.min(i,labels[key].length-2)]});
+  const active=steps.findIndex(section=>section.classList.contains('active'));
+  const name=head.querySelector('.wiz-name');
+  if(name&&active>=0&&active<steps.length-1)name.textContent=steps[active].dataset.rakaezStepName||name.textContent;
+ });
+}
+function rakaezDataCheck(){
+ const issues=[];
+ if(!db||typeof db!=='object')return ['تعذر قراءة سجلات البيانات'];
+ for(const name of ['transactions','categories','savings','holdings','dividends','fundings'])if(!Array.isArray(db[name]))issues.push('قائمة غير صالحة: '+name);
+ if(db.ratios&&['hilal','malaa','assets'].every(k=>Number.isFinite(Number(db.ratios[k])))){
+  const total=['hilal','malaa','assets'].reduce((sum,k)=>sum+Number(db.ratios[k]),0);
+  if(Math.abs(total-100)>.001)issues.push('مجموع نسب المراكز هو '+total+'% وليس 100%');
+ }
+ for(const name of ['transactions','holdings','dividends','fundings','goals','debts','fees']){
+  if(!Array.isArray(db[name]))continue;
+  const ids=new Set();for(const entry of db[name]){
+   if(!entry||typeof entry!=='object'){issues.push('سجل غير صالح: '+name);continue}
+   if(entry.id){if(ids.has(entry.id))issues.push('معرّف مكرر في '+name);ids.add(entry.id)}
+   if('amount' in entry&&(!Number.isFinite(Number(entry.amount))||Number(entry.amount)<0))issues.push('مبلغ غير صالح في '+name);
+  }
+ }
+ if(Array.isArray(db.ledgerEntries))for(const entry of db.ledgerEntries){
+  if(!Array.isArray(entry.lines))continue;
+  const debit=entry.lines.reduce((n,l)=>n+Number(l.debit||0),0),credit=entry.lines.reduce((n,l)=>n+Number(l.credit||0),0);
+  if(!Number.isFinite(debit)||!Number.isFinite(credit)||Math.abs(debit-credit)>.01)issues.push('قيد غير متوازن: '+String(entry.description||entry.id||'بدون وصف'));
+ }
+ return issues;
+}
+function rakaezShowDataCheck(){
+ const issues=rakaezDataCheck();
+ alert(issues.length?'نتيجة فحص البيانات المحلي:\n'+issues.slice(0,10).join('\n')+(issues.length>10?'\nوملاحظات أخرى: '+(issues.length-10):''):'اجتاز فحص سلامة البنية والنسب والقيود المتوازنة للبيانات المحلية. هذا ليس بديلاً عن اختبار جميع العمليات والربط المحاسبي.');
+}
+function rakaezEnhancePage(){
+ rakaezSamplePanel();
+ if(page==='settings'){
+  const view=document.getElementById('view');
+  if(view&&!view.querySelector('#rakaezDataCheck')){
+   const holder=document.createElement('div');holder.className='card rakaez-audit';holder.id='rakaezDataCheck';
+   holder.innerHTML='<div><strong>فحص سلامة البيانات المحلية</strong><p>يفحص نسب توزيع المراكز، وبنية السجلات، وتوازن القيود. لا يعدل أي مبلغ.</p></div><button type="button" class="btn" onclick="rakaezShowDataCheck()">فحص البيانات</button>';
+   view.appendChild(holder);
+  }
+ }
+ rakaezApplyDesign();
+}
+const rakaezReviewedRender=render;
+render=function(){rakaezReviewedRender();rakaezEnhancePage()};
+const rakaezWizardWatcher=new MutationObserver(records=>{if(records.some(x=>x.addedNodes.length))rakaezModalConsistency()});
+rakaezWizardWatcher.observe(document.getElementById('modalRoot'),{childList:true,subtree:true});
 
 render();</script></body></html>
