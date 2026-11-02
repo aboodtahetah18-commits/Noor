@@ -2069,16 +2069,47 @@ function rkRemoveExternalBank(id){
  rkExternalEnsure();const b=db.externalBanks.find(x=>x.id===id);if(!b||!confirm('حذف البنك الخارجي؟'))return;
  db.externalBanks=db.externalBanks.filter(x=>x.id!==id);save();closeModal();render();
 }
-function rkCandidateReview(id){
- rkEnsureAssets();const p=db.candidatePortfolios.find(x=>x.id===id);if(!p)return;
- const risk=p.risk!=='غير محددة';
- const liquid=p.redemptionDays!=null&&Number(p.redemptionDays)>=0;
- const ret=p.expectedReturn!=null&&Number.isFinite(Number(p.expectedReturn));
- const fees=p.fees!=null&&Number.isFinite(Number(p.fees));
- const complete=risk&&liquid&&ret&&fees;
- const low=p.risk==='منخفضة',quick=liquid&&Number(p.redemptionDays)<=3,affordable=fees&&Number(p.fees)<=1;
- const verdict=!complete?'بيانات ناقصة':low&&quick&&affordable?'مطابقة أولية لمعايير السيولة':'تحتاج مراجعة إضافية';
- document.getElementById('modalRoot').innerHTML=`<div class="modalbg" onclick="if(event.target===this)closeModal()"><div class="modal rk-simple-dialog" data-v8wizard="1" role="dialog" aria-modal="true"><div class="modalhead"><h2>${esc(p.name)}</h2><button class="btn" onclick="closeModal()">${ico('close')}</button></div><div class="modalbody"><div class="rk-review-result">${ico('chart')}<strong>${verdict}</strong></div><div class="rk-budget-modal-tiles"><div><span>المخاطر</span><strong>${esc(p.risk)}</strong></div><div><span>الاسترداد</span><strong>${liquid?Number(p.redemptionDays)+' يوم':'—'}</strong></div><div><span>الرسوم</span><strong>${fees?Number(p.fees).toFixed(2)+'%':'—'}</strong></div></div></div><div class="rk-compact-footer"><button class="btn primary" onclick="rkCandidateModal('${esc(id)}')">${ico('edit')} تعديل البيانات</button><button class="btn" onclick="closeModal()">${ico('check')} إغلاق</button></div></div></div>`;
+function rkCandidateReview(id,tab='overview'){
+ rkEnsureAssets();
+ const p=db.candidatePortfolios.find(x=>x.id===id);if(!p)return;
+ const validRisk=p.risk&&p.risk!=='غير محددة';
+ const validLiquidity=p.redemptionDays!=null&&Number.isInteger(Number(p.redemptionDays))&&Number(p.redemptionDays)>=0;
+ const validFee=p.fees!=null&&Number.isFinite(Number(p.fees));
+ const summary=validRisk&&validLiquidity&&validFee;
+ const meets=summary&&p.risk==='منخفضة'&&Number(p.redemptionDays)<=3&&Number(p.fees)<=1;
+ const result=!summary?'بيانات الفرز غير مكتملة':meets?'مطابقة أولية لشروط الفرز':'لا تستوفي بعض شروط الفرز';
+ const dataType=p.category||'محفظة',isFund=dataType==='صندوق';
+ const line=(k,v)=>`<div><dt>${k}</dt><dd>${esc(v==null||v===''?'—':String(v))}</dd></div>`;
+ const percentage=v=>v==null||v===''?'—':Number(v).toFixed(2)+'%';
+ const value=n=>n==null||n===''?'—':money(Math.round(Number(n)*100));
+ const days=p.redemptionDays==null?'—':Number(p.redemptionDays)===0?'فوري':p.redemptionDays+' أيام عمل';
+ const overview=[
+  ['النوع',dataType],
+  ['المدير أو الجهة',p.manager],
+  [isFund?'فئة الصندوق':'المؤشر المرجعي',isFund?p.fundType:p.benchmark],
+  [isFund?'رمز الصندوق / ISIN':'أقصى تراجع مُدخل',isFund?p.isin:percentage(p.maxDrawdown)],
+  [isFund?'صافي قيمة الوحدة':'الحد الأدنى للاشتراك',isFund?value(p.nav):value(p.minSubscription)],
+  ...(isFund?[['الحد الأدنى للاشتراك',value(p.minSubscription)]]:[]),
+  ['المخاطرة المُدخلة',p.risk||'غير محددة'],
+  ['الاسترداد',days],
+  ['العائد السنوي المُدخل',percentage(p.expectedReturn)],
+  ['الرسوم السنوية',percentage(p.fees)]
+ ];
+ const tabs=[['overview','البيانات'],['allocation','توزيع الأصول'],['assessment','التقييم']];
+ const content=tab==='allocation'?
+   `<div class="rk-study-allocation">${rkAllocationBars(p.allocation)}<div class="rk-study-coverage">المجموع المسجل: <b>${rkAllocationTotal(p.allocation).toFixed(2)}%</b></div></div>`:
+   tab==='assessment'?`<div class="rk-study-assessment">
+    <div class="rk-review-result">${ico('chart')}<strong>${result}</strong></div>
+    <dl class="rk-budget-detail-list">
+      ${line('المخاطرة',p.risk||'غير محددة')}${line('الاسترداد',days)}${line('الرسوم',percentage(p.fees))}${line('المؤشر المرجعي',isFund?'—':p.benchmark)}
+    </dl><small>نتيجة الفرز تعتمد على القيم المدخلة فقط، وليست توصية أو تحققاً من بيانات الوسيط.</small></div>`:
+   `<dl class="rk-budget-detail-list rk-study-facts">${overview.map(([k,v])=>line(k,v)).join('')}</dl>${p.objective?`<section class="rk-study-objective"><h3>الهدف والاستراتيجية</h3><p>${esc(p.objective)}</p></section>`:''}${p.notes?`<section class="rk-study-objective"><h3>ملاحظات</h3><p>${esc(p.notes)}</p></section>`:''}`;
+ document.getElementById('modalRoot').innerHTML=`<div class="modalbg" onclick="if(event.target===this)closeModal()">
+ <div class="modal rk-budget-detail-dialog rk-study-detail" data-v8wizard="1" role="dialog" aria-modal="true">
+ <div class="modalhead"><h2>${esc(p.name)}</h2><button class="btn rk-budget-close" onclick="closeModal()" aria-label="إغلاق">${ico('close')}</button></div>
+ <div class="rk-study-tabs" role="tablist">${tabs.map(([k,l])=>`<button type="button" role="tab" aria-selected="${tab===k}" class="${tab===k?'active':''}" onclick="rkCandidateReview('${esc(id)}','${k}')">${l}</button>`).join('')}</div>
+ <div class="rk-study-body" role="tabpanel">${content}</div>
+ <div class="rk-budget-detail-actions"><button class="btn primary" onclick="rkCandidateModal('${esc(id)}')">${ico('edit')} تعديل</button><button class="btn" onclick="closeModal()">${ico('check')} إغلاق</button></div></div></div>`;
  if(typeof v10RepairDialogs==='function')v10RepairDialogs();
 }
 render();</script></body></html>
