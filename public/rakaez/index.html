@@ -1435,7 +1435,12 @@ function v11BuildSamples(){
  d.assetAccounts=[{id:id(),name:'محفظة الراشد المالية — بيانات تجريبية',broker:'الراشد المالية'}];
  const demoStocks=d.holdings.filter(h=>h.kind==='سهم').slice(0,3);
  demoStocks.forEach((h,i)=>{h.accountId=d.assetAccounts[0].id;if(i===0)h.name='سهم أرامكو — بيانات افتراضية'});
- d.candidatePortfolios=[{id:id(),name:'فرصة سيولة تجريبية',category:'صندوق',risk:'منخفضة',redemptionDays:0,expectedReturn:3.1,fees:0.1},{id:id(),name:'محفظة منخفضة المخاطر — تجريبية',category:'محفظة',risk:'منخفضة',redemptionDays:2,expectedReturn:3.8,fees:0.25}];
+ d.candidatePortfolios=[
+ {id:id(),name:'فرصة سيولة تجريبية',category:'صندوق',fundType:'نقدي',manager:'مدير افتراضي',nav:10,minSubscription:500,risk:'منخفضة',redemptionDays:0,expectedReturn:3.1,fees:0.1,objective:'سيولة وأدوات قصيرة الأجل — نموذج تجريبي',allocation:{saudi:0,us:0,developed:0,emerging:0,gold:0,sukuk:30,cash:70,other:0}},
+ {id:id(),name:'محفظة منخفضة المخاطر — تجريبية',category:'محفظة',manager:'مدير افتراضي',benchmark:'مؤشر تجريبي',risk:'منخفضة',redemptionDays:2,expectedReturn:3.8,fees:0.25,minSubscription:1000,maxDrawdown:5,objective:'تنويع متحفظ — نموذج تجريبي',allocation:{saudi:8,us:7,developed:5,emerging:0,gold:10,sukuk:40,cash:30,other:0}}
+ ];
+ const firstDemoPortfolio=d.holdings.find(h=>h.kind==='محفظة استثمارية');
+ if(firstDemoPortfolio)firstDemoPortfolio.allocationDetail={saudi:20,us:15,developed:10,emerging:5,gold:0,sukuk:20,cash:15,other:15};
  return d;
 }
 
