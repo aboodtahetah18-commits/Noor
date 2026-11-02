@@ -626,6 +626,32 @@ td,th{border-bottom:1px solid #d6e2e8!important}
 #view .rk-malaa-offer-stats b{font-size:12px;color:#167D78}
 #view .rk-malaa-offer>svg:last-child{display:none}
 @media(max-width:780px){#view .rk-malaa-offers{grid-template-columns:1fr}#view .rk-malaa-tabs{gap:5px}#view .rk-malaa-tabs>button{min-height:58px;flex-direction:column;gap:4px;font-size:11px;padding:6px 3px}#view .rk-malaa-main{padding:12px!important}}
+
+/* Asset research as distinct portfolio/fund/other internal pages */
+#view .rk-assets-study-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:0 0 17px}
+#view .rk-assets-study-tabs>button{display:flex;align-items:center;justify-content:center;gap:8px;min-height:45px;background:#f2f7f9;border:1.5px solid #c5d3dc;border-radius:10px;color:#182A42;cursor:pointer;font-size:12px;font-weight:700}
+#view .rk-assets-study-tabs>button.active{background:#182A42;border-color:#C69A42;color:white}
+#view .rk-assets-study-tabs b{display:grid;place-items:center;border-radius:8px;background:#167D7822;padding:3px 8px;font-size:11px}
+#view .rk-assets-study-tabs .active b{background:#ffffff25}
+#view .rk-study-card{appearance:none;width:100%;padding:17px!important;display:grid!important;gap:12px!important;text-align:right!important;color:#182A42;cursor:pointer}
+#view .rk-study-card-head{display:flex;align-items:center;gap:9px;min-width:0}
+#view .rk-study-card-head .rk-investment-symbol{flex:none}
+#view .rk-study-card-title{min-width:0;display:grid;gap:3px;flex:1}
+#view .rk-study-card-title strong{font-size:14px;overflow-wrap:anywhere}
+#view .rk-study-card-title small{font-size:11px;color:#5e7280}
+#view .rk-study-card-objective{font-size:12px;color:#536a78;line-height:1.9;border-bottom:1px solid #d1dfe5;padding-bottom:10px}
+#view .rk-study-card-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+#view .rk-study-card-facts>span{display:grid;gap:5px;padding:8px 0;border-bottom:1px solid #d7e2e6}
+#view .rk-study-card-facts small{font-size:10px;color:#607886}
+#view .rk-study-card-facts strong{font-size:12px;color:#167D78;overflow-wrap:anywhere}
+#view .rk-study-preview{display:grid;gap:7px;padding:9px 0}
+#view .rk-study-preview>small{font-size:11px;color:#627982}
+#view .rk-study-preview>span{display:flex;flex-wrap:wrap;gap:6px}
+#view .rk-study-preview>span>span{font-size:10px;padding:5px 7px;border:1px solid #b9d4cb;border-radius:8px;background:#eaf6f3;color:#182A42}
+#view .rk-study-preview b{color:#167D78}
+#view .rk-study-card-tail{display:flex;align-items:center;gap:7px;color:#167D78;font-size:12px;font-weight:700;padding-top:8px}
+#view .rk-study-card-tail svg{width:17px;height:17px}
+@media(max-width:740px){#view .rk-study-card{padding:12px!important}#view .rk-study-card-head{flex-wrap:wrap}#view .rk-assets-study-tabs>button{font-size:11px;gap:4px}}
 </style></head><body><div class="layout" id="layout"><aside><div class="brand"><div class="brandmark">ر</div><div><b>ركائز</b><small>منظومتك المالية الشخصية</small></div></div><nav class="nav" id="nav"></nav><div class="asidefoot">ثلاثة مراكز مالية، رؤية واحدة.<br>نظام إدارة شخصية تجريبي • بيانات محلية</div></aside><main><header class="topbar"><div class="rakaez-title-row"><div class="row"><button type="button" class="btn mobilemenu rk-mobilemenu" aria-label="فتح القائمة الجانبية" aria-expanded="false" onclick="rkToggleMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" width="24" height="24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><h1 id="pageTitle">لوحة التحكم</h1><p id="pageSub" hidden></p></div><div class="rakaez-bell-wrap"><button type="button" class="btn primary rakaez-add" onclick="openModal('transaction')"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>إضافة</span></button><button type="button" class="rakaez-bell" id="rakaezBell" aria-label="الإشعارات" aria-expanded="false" aria-controls="rakaezNotifications" onclick="toggleRakaezNotifications()"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4"/></svg></button><div id="rakaezNotifications" class="rakaez-notifications" hidden></div></div></div><div class="topcontrols" hidden><select id="monthPicker" onchange="month=this.value;render()"></select></div></header><div class="content"><div class="demo">● نسخة تجريبية تعمل في متصفحك وتخزن المعلومات على هذا الجهاز فقط. لا تدخل بيانات مصرفية سرية أو تعتمد عليها كنسخة إنتاجية.</div><div id="view"></div></div></main></div><div id="modalRoot"></div><div id="toastRoot"></div><script>
 const icons={home:'<path d="m3 10 9-7 9 7v10H3z"/><path d="M9 20v-7h6v7"/>',moon:'<path d="M19 14A8 8 0 0 1 10 5a8 8 0 1 0 9 9Z"/>',shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/>',trend:'<path d="m3 17 6-6 4 4 8-8"/><path d="M15 7h6v6"/>',wallet:'<rect x="3" y="5" width="18" height="15" rx="2"/><path d="M16 12h5"/>',fund:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h4"/>',upload:'<path d="M12 16V3m-5 5 5-5 5 5M4 17v4h16v-4"/>',chart:'<path d="M4 20V10m6 10V4m6 16v-8m5 8H2"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="m19 13 2 1-2 4-2-1-2 1v2H9v-2l-2-1-2 1-2-4 2-1v-2l-2-1 2-4 2 1 2-1V4h6v2l2 1 2-1 2 4-2 1z"/>',bank:'<path d="m2 9 10-6 10 6M4 10h16M5 11v8m5-8v8m5-8v8m5-8v8M2 21h20"/>',bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4"/>',plus:'<path d="M12 5v14M5 12h14"/>'};function ico(name){return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${icons[name]||icons.wallet}</svg>`}
 const N=[['hilal','بنك الهلال التشغيلي','moon'],['malaa','بنك ملاءة للادخار','shield'],['assets','بنك الأصول الاستثماري','trend'],['goals','الأهداف المالية','trend'],['debts','الديون والالتزامات','fund'],['fees','الرسوم الدورية','chart'],['reserves','بنوك المنصة','bank'],['position','المركز المالي الموحد','bank'],['interbank','التمويل بين المراكز','fund'],['insights','الرئيسية','home'],['ledger','دفتر الأستاذ والمطابقة','fund'],['transactions','المعاملات المالية','wallet'],['funding','التمويل الداخلي','fund'],['import','استيراد المعاملات','upload'],['reports','التقارير والتحليلات','chart'],['settings','الإعدادات والتوزيع','settings']];
@@ -793,20 +819,39 @@ function rkAssetAccountSection(account){
  <button class="btn primary" onclick="event.preventDefault();rkAddAssetToAccount('${account.id}')">${ico('plus')} إضافة أصل</button></div>
  <div class="rk-investments-list">${items.length?items.map(rkInvestmentCard).join(''):'<div class="rk-no-investments">لا توجد أصول مرتبطة بهذه المحفظة.</div>'}</div></div></details>`;
 }
-function rkOpportunityCard(x){
- const isWatch=!!x.symbol;
- const risk=isWatch?'غير محددة':x.risk||'غير محددة';
- const availability=isWatch?'—':Number(x.redemptionDays)===0?'فوري':x.redemptionDays!=null?Number(x.redemptionDays)+' أيام':'—';
- return `<button type="button" class="rk-candidate-card rk-tap-record" onclick="${isWatch?`navigate('research')`:`rkCandidateReview('${esc(x.id)}')`}"><div class="rk-candidate-head"><div><strong>${esc(x.name)}</strong><small>${isWatch?esc(x.symbol):esc(x.category||'محفظة قيد الدراسة')}</small></div><span class="rk-risk-tag">${esc(risk)}</span></div>
- <div class="rk-candidate-grid"><div><span>السيولة</span><b>${availability}</b></div><div><span>العائد المُدخل</span><b>${isWatch?'—':x.expectedReturn==null?'—':Number(x.expectedReturn).toFixed(2)+'%'}</b></div></div>
-</button>`;
+let rkAssetStudyTab='portfolios';
+function rkAssetSetStudyTab(t){if(['portfolios','funds','other'].includes(t)){rkAssetStudyTab=t;render()}}
+function rkOpportunityCard(p){
+ const watching=!!p.symbol,fund=p.category==='صندوق';
+ const title=watching?'سهم للدراسة':fund?'صندوق استثماري':p.category==='محفظة'?'محفظة استثمارية':p.category||'فرصة للدراسة';
+ const redemption=p.redemptionDays==null?'غير محدد':Number(p.redemptionDays)===0?'فوري':p.redemptionDays+' أيام عمل';
+ const ratio=v=>v==null||v===''?'غير مدخل':Number(v).toFixed(2)+'%';
+ const classes=watching?[]:rkAllocationEntries(p.allocation).sort((a,b)=>b.value-a.value);
+ const metric=(label,value)=>`<span><small>${label}</small><strong>${esc(value)}</strong></span>`;
+ return `<button type="button" class="rk-candidate-card rk-study-card rk-tap-record" onclick="${watching?`navigate('research')`:`rkCandidateReview('${esc(p.id)}')`}">
+ <span class="rk-study-card-head"><span class="rk-investment-symbol">${ico(watching?'trend':fund?'fund':p.category==='محفظة'?'bank':'wallet')}</span>
+ <span class="rk-study-card-title"><strong>${esc(p.name)}</strong><small>${esc(title)}${!watching&&p.manager?' · '+esc(p.manager):''}</small></span>
+ <span class="rk-risk-tag">${esc(watching?'غير محددة':p.risk||'غير محددة')}</span></span>
+ ${!watching&&p.objective?`<span class="rk-study-card-objective">${esc(p.objective)}</span>`:''}
+ <span class="rk-study-card-facts">
+ ${metric('الاسترداد',watching?'—':redemption)}
+ ${metric('العائد المدخل',watching?'—':ratio(p.expectedReturn))}
+ ${metric('الرسوم',watching?'—':ratio(p.fees))}
+ ${metric(fund?'فئة الصندوق':'المرجع / الفئة',watching?esc(p.market||'—'):fund?esc(p.fundType||'—'):esc(p.benchmark||p.category||'—'))}
+ </span>
+ ${classes.length?`<span class="rk-study-preview"><small>توزيع الأصول</small><span>${classes.slice(0,3).map(v=>`<span>${v.label} <b>${v.value.toFixed(1)}%</b></span>`).join('')}${classes.length>3?`<span>+${classes.length-3}</span>`:''}</span></span>`:''}
+ <span class="rk-study-card-tail">${ico('view')} <span>عرض التفاصيل والتحليل</span></span>
+ </button>`;
 }
+
 function assets(){
  rkEnsureAssets();
  let cost=0,market=0,pricedCost=0;
  db.holdings.forEach(h=>{const c=rkHoldingCost(h);cost+=c;if(rkHoldingHasPrice(h)){market+=rkHoldingMarket(h);pricedCost+=c}});
  const unassigned=db.holdings.filter(h=>!h.accountId||!db.assetAccounts.some(a=>a.id===h.accountId));
- const opp=[...db.candidatePortfolios,...(db.watchlist||[])];
+ const all=[...db.candidatePortfolios,...(db.watchlist||[])];
+ const tabs=[['portfolios','المحافظ',all.filter(x=>x.category==='محفظة')],['funds','الصناديق',all.filter(x=>x.category==='صندوق')],['other','فرص أخرى',all.filter(x=>!['محفظة','صندوق'].includes(x.category))]];
+ const opp=tabs.find(x=>x[0]===rkAssetStudyTab)?.[2]||[];
  return `<section class="rk-assets-summary"><div><span>إجمالي الاستثمار</span><b>${money(cost)}</b></div><div><span>القيمة السوقية المسجلة</span><b>${money(market)}</b></div><div><span>الربح / الخسارة</span><b>${money(market-pricedCost)}</b></div></section>
  ${sTitle('محافظي الاستثمارية')}
  <div class="rk-account-actions"><button class="btn primary" onclick="rkAssetAccountModal()">${ico('plus')} إضافة محفظة</button><button class="btn" onclick="openModal('asset')">${ico('plus')} إضافة أصل</button></div>
@@ -815,7 +860,8 @@ function assets(){
  ${!db.assetAccounts.length&&!unassigned.length?'<div class="card rk-empty-section">لا توجد محافظ مسجلة.</div>':''}</section>
  ${sTitle('فرص قيد الدراسة')}
  <section class="card rk-opportunities"><div class="rk-account-actions"><button class="btn primary" onclick="rkCandidateModal()">${ico('plus')} إضافة فرصة</button><button class="btn" onclick="navigate('research')">${ico('chart')} تحليل الشركات</button></div>
- <div class="rk-candidate-list">${opp.length?opp.map(rkOpportunityCard).join(''):'<div class="rk-empty-section">لا توجد فرص قيد الدراسة</div>'}</div></section>`;
+ <div class="rk-assets-study-tabs" role="tablist">${tabs.map(([id,label,items])=>`<button type="button" role="tab" class="${rkAssetStudyTab===id?'active':''}" aria-selected="${rkAssetStudyTab===id}" onclick="rkAssetSetStudyTab('${id}')">${label} <b>${items.length}</b></button>`).join('')}</div>
+ <div class="rk-candidate-list" role="tabpanel">${opp.length?opp.map(rkOpportunityCard).join(''):'<div class="rk-empty-section">لا توجد فرص مسجلة في هذا القسم</div>'}</div></section>`;
 }
 function rkAssetAccountModal(id=''){
  rkEnsureAssets();const account=db.assetAccounts.find(a=>a.id===id)||{id:'',name:'',broker:''};
