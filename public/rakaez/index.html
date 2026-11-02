@@ -675,13 +675,34 @@ N.push(['cycles','دورة الراتب','wallet']);NAV_GROUPS.find(g=>g[0]==='o
 const v14render=render;render=function(){if(page==='cycles'){page='hilal';v14render();page='cycles';document.getElementById('view').innerHTML=v14CycleView();document.getElementById('pageTitle').textContent='دورة الراتب';drawNav()}else v14render()};
 
 
+
 function toggleRakaezNotifications(){
- const panel=document.getElementById('rakaezNotifications'),button=document.getElementById('rakaezBell');if(!panel||!button)return;
+ const panel=document.getElementById('rakaezNotifications'),button=document.getElementById('rakaezBell');
+ if(!panel||!button)return;
  const opening=panel.hidden;
- if(opening){let alerts=[];try{if(Array.isArray(db.categories))for(const c of db.categories){let allowance=Number(c.limit||0)*100+(typeof internal==='function'?Number(internal(c.id)||0):0),actual=typeof spent==='function'?Number(spent(c.id)||0):0;if(allowance>0&&actual>=allowance*.8)alerts.push({title:String(c.name||'بند ميزانية'),detail:actual>=allowance?'تجاوز المخصص':'اقترب من الحد المعتمد'});}}catch(e){}
- panel.innerHTML='<h2>الإشعارات والتنبيهات</h2>'+(alerts.length?alerts.map(a=>'<div class="notification-entry"><strong>'+esc(a.title)+'</strong><small>'+esc(a.detail)+'</small></div>').join(''):'<div class="notification-entry">لا توجد تنبيهات مالية جديدة حالياً.</div>');}
+ if(opening){
+  const alerts=[];
+  try{
+   if(Array.isArray(db.categories))for(const c of db.categories){
+    const allowance=Number(c.limit||0)*100+(typeof internal==='function'?Number(internal(c.id)||0):0);
+    const actual=typeof spent==='function'?Number(spent(c.id)||0):0;
+    if(allowance>0&&actual>=allowance*.8)alerts.push({title:String(c.name||'بند ميزانية'),detail:actual>=allowance?'تجاوز المخصص':'اقترب من الحد المعتمد',page:'hilal'});
+   }
+   const todayMidday=new Date(rkDate()+'T12:00:00');
+   const dueSoon=(date)=>{if(!/^\d{4}-\d{2}-\d{2}$/.test(date||''))return false;const days=(new Date(date+'T12:00:00')-todayMidday)/86400000;return Number.isFinite(days)&&days<=7};
+   if(Array.isArray(db.scheduledOps))for(const x of db.scheduledOps){
+    if(x.status==='planned'&&dueSoon(x.start))alerts.push({title:'عملية مجدولة: '+String(x.name||'عملية'),detail:'بانتظار التحقق من التنفيذ، دون خصم تلقائي',page:'scheduled'});
+   }
+   if(Array.isArray(db.receivables))for(const x of db.receivables){
+    const outstanding=Number(x.principal||0)-(typeof rkReceivableCollected==='function'?rkReceivableCollected(x.id):0);
+    if(outstanding>0&&dueSoon(x.due))alerts.push({title:'مستحق للتحصيل: '+String(x.name||'مستحق'),detail:rkAmount(outstanding)+' متبقٍ للتحصيل',page:'receivables'});
+   }
+  }catch(e){console.warn('تعذر تحديث بعض التنبيهات',e)}
+  panel.innerHTML='<h2>الإشعارات والتنبيهات</h2>'+(alerts.length?alerts.map(a=>'<div class="notification-entry"><strong>'+esc(a.title)+'</strong><small>'+esc(a.detail)+'</small><button class="btn" type="button" onclick="navigate(\''+a.page+'\');document.getElementById(\'rakaezNotifications\').hidden=true">عرض</button></div>').join(''):'<div class="notification-entry">لا توجد تنبيهات مالية جديدة حالياً.</div>');
+ }
  panel.hidden=!opening;button.setAttribute('aria-expanded',String(opening));
 }
+
 document.addEventListener('click',e=>{const wrap=document.querySelector('.rakaez-bell-wrap'),p=document.getElementById('rakaezNotifications');if(p&&!p.hidden&&wrap&&!wrap.contains(e.target)){p.hidden=true;document.getElementById('rakaezBell')?.setAttribute('aria-expanded','false')}});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){const p=document.getElementById('rakaezNotifications');if(p){p.hidden=true;document.getElementById('rakaezBell')?.setAttribute('aria-expanded','false')}}});
 
