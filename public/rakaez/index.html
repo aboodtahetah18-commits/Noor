@@ -543,6 +543,27 @@ td,th{border-bottom:1px solid #d6e2e8!important}
  #modalRoot .rk-budget-detail-actions{padding:13px 17px 19px!important}
  #modalRoot .rk-budget-edit-fields{grid-template-columns:1fr;padding:17px}
 }
+
+/* Bank identity: original SVG symbols for the three platform banks; user-supplied images for external banks. */
+#view .banklogo{background:#ffffff20!important;border:1.5px solid #ffffff70!important;border-radius:16px!important;display:grid!important;place-items:center!important;width:59px!important;height:59px!important}
+#view .banklogo svg{width:33px!important;height:33px!important;stroke:#fff!important;stroke-width:1.85!important}
+#view .bank.malaa .banklogo{border-color:#C69A42!important}
+#view .bank.assets .banklogo{background:#C69A4235!important}
+#view .rk-external-card{appearance:none;text-align:right;width:100%;cursor:pointer;color:#182A42}
+#view .rk-external-card:focus-visible{outline:2px solid #C69A42;outline-offset:3px}
+.rk-bank-identity{display:grid;place-items:center;flex:none;width:43px;height:43px;overflow:hidden;background:#eaf4f1;border:1.5px solid #b7d5cc;border-radius:13px;color:#167D78}
+.rk-bank-identity-large{width:56px;height:56px;border-radius:15px}
+.rk-bank-identity img{width:100%;height:100%;object-fit:contain;background:#fff}
+.rk-bank-identity svg{width:27px;height:27px}
+.rk-bank-logo-editor{display:flex;align-items:center;gap:17px;margin-bottom:17px;border-bottom:1px solid #d5e1e6;padding-bottom:15px}
+.rk-bank-logo-editor .field{flex:1;min-width:0}
+.rk-bank-logo-editor input[type=file]{padding:8px!important;font-size:12px!important;max-width:100%}
+.rk-bank-detail-head{display:flex;align-items:center;gap:13px;padding:22px 23px 8px}
+.rk-bank-detail-head>span:last-child{display:grid;gap:5px}
+.rk-bank-detail-head strong{font-size:19px;color:#182A42}
+.rk-bank-detail-head small{color:#627a87;font-size:12px}
+#modalRoot .rk-record-detail-list{margin:5px 23px 12px!important}
+@media(max-width:740px){.rk-bank-logo-editor{gap:9px}.rk-bank-detail-head{padding:17px 17px 6px}#modalRoot .rk-record-detail-list{margin:5px 17px 12px!important}}
 </style></head><body><div class="layout" id="layout"><aside><div class="brand"><div class="brandmark">ر</div><div><b>ركائز</b><small>منظومتك المالية الشخصية</small></div></div><nav class="nav" id="nav"></nav><div class="asidefoot">ثلاثة مراكز مالية، رؤية واحدة.<br>نظام إدارة شخصية تجريبي • بيانات محلية</div></aside><main><header class="topbar"><div class="rakaez-title-row"><div class="row"><button type="button" class="btn mobilemenu rk-mobilemenu" aria-label="فتح القائمة الجانبية" aria-expanded="false" onclick="rkToggleMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" width="24" height="24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><h1 id="pageTitle">لوحة التحكم</h1><p id="pageSub" hidden></p></div><div class="rakaez-bell-wrap"><button type="button" class="btn primary rakaez-add" onclick="openModal('transaction')"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>إضافة</span></button><button type="button" class="rakaez-bell" id="rakaezBell" aria-label="الإشعارات" aria-expanded="false" aria-controls="rakaezNotifications" onclick="toggleRakaezNotifications()"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4"/></svg></button><div id="rakaezNotifications" class="rakaez-notifications" hidden></div></div></div><div class="topcontrols" hidden><select id="monthPicker" onchange="month=this.value;render()"></select></div></header><div class="content"><div class="demo">● نسخة تجريبية تعمل في متصفحك وتخزن المعلومات على هذا الجهاز فقط. لا تدخل بيانات مصرفية سرية أو تعتمد عليها كنسخة إنتاجية.</div><div id="view"></div></div></main></div><div id="modalRoot"></div><div id="toastRoot"></div><script>
 const icons={home:'<path d="m3 10 9-7 9 7v10H3z"/><path d="M9 20v-7h6v7"/>',moon:'<path d="M19 14A8 8 0 0 1 10 5a8 8 0 1 0 9 9Z"/>',shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/>',trend:'<path d="m3 17 6-6 4 4 8-8"/><path d="M15 7h6v6"/>',wallet:'<rect x="3" y="5" width="18" height="15" rx="2"/><path d="M16 12h5"/>',fund:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h4"/>',upload:'<path d="M12 16V3m-5 5 5-5 5 5M4 17v4h16v-4"/>',chart:'<path d="M4 20V10m6 10V4m6 16v-8m5 8H2"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="m19 13 2 1-2 4-2-1-2 1v2H9v-2l-2-1-2 1-2-4 2-1v-2l-2-1 2-4 2 1 2-1V4h6v2l2 1 2-1 2 4-2 1z"/>',bank:'<path d="m2 9 10-6 10 6M4 10h16M5 11v8m5-8v8m5-8v8m5-8v8M2 21h20"/>',bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4"/>',plus:'<path d="M12 5v14M5 12h14"/>'};function ico(name){return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${icons[name]||icons.wallet}</svg>`}
 const N=[['hilal','بنك الهلال التشغيلي','moon'],['malaa','بنك ملاءة للادخار','shield'],['assets','بنك الأصول الاستثماري','trend'],['goals','الأهداف المالية','trend'],['debts','الديون والالتزامات','fund'],['fees','الرسوم الدورية','chart'],['reserves','بنوك المنصة','bank'],['position','المركز المالي الموحد','bank'],['interbank','التمويل بين المراكز','fund'],['insights','الرئيسية','home'],['ledger','دفتر الأستاذ والمطابقة','fund'],['transactions','المعاملات المالية','wallet'],['funding','التمويل الداخلي','fund'],['import','استيراد المعاملات','upload'],['reports','التقارير والتحليلات','chart'],['settings','الإعدادات والتوزيع','settings']];
@@ -1706,29 +1727,62 @@ function rkBudgetRemove(id){
 }
 N.push(['externalBanks','البنوك الخارجية','bank']);
 function rkExternalEnsure(){if(!Array.isArray(db.externalBanks))db.externalBanks=[]}
+function rkBankLogo(b,large=false){
+ const data=typeof b.logo==='string'&&/^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(b.logo)&&b.logo.length<400000?b.logo:'';
+ return '<span class="rk-bank-identity'+(large?' rk-bank-identity-large':'')+'">'+(data?'<img alt="" src="'+data+'">':ico('bank'))+'</span>';
+}
 function rkExternalBanksView(){
- rkExternalEnsure();return `${sTitle('البنوك العامة والخارجية')}<div class="rk-account-actions"><button class="btn primary" onclick="rkExternalBankOpen()">${ico('plus')} إضافة بنك خارجي</button></div>
- <div class="rk-external-grid">${db.externalBanks.length?db.externalBanks.map(b=>`<article class="rk-external-card"><div class="rk-external-head">${ico('bank')}<span><strong>${esc(b.name)}</strong><small>${esc(b.nickname||'')}</small></span></div>
- <div class="rk-external-fields"><div><span>آخر أربعة أرقام</span><b>${b.last4?'•••• '+esc(b.last4):'—'}</b></div><div><span>المركز المرتبط</span><b>${esc(({hilal:'بنك الهلال',malaa:'بنك ملاءة',assets:'بنك الأصول'})[b.center]||'غير محدد')}</b></div></div>
- <button class="btn" onclick="rkExternalBankOpen('${esc(b.id)}')">${ico('edit')} تعديل الحساب</button></article>`).join(''):'<div class="card rk-empty-section">لا توجد بنوك خارجية مسجلة.</div>'}</div>`;
+ rkExternalEnsure();
+ return `${sTitle('البنوك العامة والخارجية')}
+ <div class="rk-account-actions"><button class="btn primary" onclick="rkExternalBankOpen()">${ico('plus')} إضافة بنك خارجي</button></div>
+ <div class="rk-external-grid">${db.externalBanks.length?db.externalBanks.map(b=>`<button type="button" class="rk-external-card rk-tap-record" onclick="rkExternalBankDetails('${esc(b.id)}')" aria-label="تفاصيل حساب ${esc(b.name)}">
+ <span class="rk-external-head">${rkBankLogo(b,true)}<span><strong>${esc(b.name)}</strong><small>${esc(b.nickname||'')}</small></span></span>
+ <span class="rk-external-fields"><span><span>آخر أربعة أرقام</span><b>${b.last4?'•••• '+esc(b.last4):'—'}</b></span><span><span>بنك المنصة</span><b>${esc(({hilal:'بنك الهلال',malaa:'بنك ملاءة',assets:'بنك الأصول'})[b.center]||'غير محدد')}</b></span></span>
+ </button>`).join(''):'<div class="card rk-empty-section">لا توجد بنوك خارجية مسجلة.</div>'}</div>`;
+}
+function rkExternalBankDetails(id){
+ rkExternalEnsure();const b=db.externalBanks.find(x=>x.id===id);if(!b)return;
+ document.getElementById('modalRoot').innerHTML=`<div class="modalbg" onclick="if(event.target===this)closeModal()"><div class="modal rk-budget-detail-dialog rk-record-detail" data-v8wizard="1" role="dialog" aria-modal="true" aria-label="تفاصيل البنك الخارجي"><div class="modalhead"><h2>تفاصيل البنك الخارجي</h2><button class="btn rk-budget-close" onclick="closeModal()" aria-label="إغلاق">${ico('close')}</button></div>
+ <div class="rk-bank-detail-head">${rkBankLogo(b,true)}<span><strong>${esc(b.name)}</strong><small>${esc(b.nickname||'')}</small></span></div>
+ <dl class="rk-budget-detail-list rk-record-detail-list"><div><dt>آخر أربعة أرقام</dt><dd>${b.last4?'•••• '+esc(b.last4):'—'}</dd></div><div><dt>بنك المنصة</dt><dd>${esc(({hilal:'الهلال',malaa:'ملاءة',assets:'الأصول'})[b.center]||'غير محدد')}</dd></div></dl>
+ <div class="rk-budget-detail-actions"><button class="btn primary" onclick="rkExternalBankOpen('${esc(id)}')">${ico('edit')} تعديل</button><button class="btn rk-budget-delete-action" onclick="rkRemoveExternalBank('${esc(id)}')">${ico('delete')} حذف</button></div></div></div>`;
+ if(typeof v10RepairDialogs==='function')v10RepairDialogs();
+}
+function rkChooseBankLogo(input){
+ const file=input?.files?.[0];if(!file)return;
+ if(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>150*1024){input.value='';rkPendingBankLogo=null;alert('اختر شعار PNG أو JPG أو WebP لا يتجاوز 150 كيلوبايت.');return}
+ const reader=new FileReader();
+ reader.onload=()=>{const data=String(reader.result||'');if(!/^data:image\/(?:png|jpeg|webp);base64,/.test(data))return alert('صيغة الشعار غير صالحة');rkPendingBankLogo=data;const preview=document.getElementById('rkExternalLogoPreview');if(preview)preview.innerHTML='<img src="'+data+'" alt="معاينة الشعار">';};
+ reader.onerror=()=>alert('تعذر قراءة الشعار');
+ reader.readAsDataURL(file);
 }
 function rkExternalBankOpen(id=''){
  rkExternalEnsure();const b=db.externalBanks.find(x=>x.id===id)||{name:'',nickname:'',last4:'',center:'hilal'};
- document.getElementById('modalRoot').innerHTML=`<div class="modalbg" onclick="if(event.target===this)closeModal()"><div class="modal rk-simple-dialog" data-v8wizard="1" role="dialog" aria-modal="true"><div class="modalhead"><h2>${id?'تعديل بنك خارجي':'إضافة بنك خارجي'}</h2><button class="btn" onclick="closeModal()">${ico('close')}</button></div><form onsubmit="event.preventDefault();rkSaveExternalBank('${esc(id)}')"><div class="modalbody"><div class="formgrid">
- <div class="field"><label>اسم البنك</label><input id="rkExternalName" maxlength="90" required value="${esc(b.name)}"></div>
+ rkPendingBankLogo=null;
+ document.getElementById('modalRoot').innerHTML=`<div class="modalbg" onclick="if(event.target===this)closeModal()"><div class="modal rk-simple-dialog rk-bank-form" data-v8wizard="1" role="dialog" aria-modal="true"><div class="modalhead"><h2>${id?'تعديل بنك خارجي':'إضافة بنك خارجي'}</h2><button class="btn" onclick="closeModal()" aria-label="إغلاق">${ico('close')}</button></div>
+ <form onsubmit="event.preventDefault();rkSaveExternalBank('${esc(id)}')"><div class="modalbody"><div class="rk-bank-logo-editor"><span id="rkExternalLogoPreview">${rkBankLogo(b,true)}</span><div class="field"><label for="rkExternalLogoFile">شعار البنك</label><input id="rkExternalLogoFile" type="file" accept="image/png,image/jpeg,image/webp" onchange="rkChooseBankLogo(this)"></div></div>
+ <div class="formgrid"><div class="field"><label>اسم البنك</label><input id="rkExternalName" maxlength="90" required value="${esc(b.name)}"></div>
  <div class="field"><label>اسم الحساب</label><input id="rkExternalNickname" maxlength="90" value="${esc(b.nickname)}"></div>
  <div class="field"><label>آخر 4 أرقام (اختياري)</label><input id="rkExternalLast4" maxlength="4" inputmode="numeric" pattern="[0-9]{4}" value="${esc(b.last4)}"></div>
- <div class="field"><label>بنك المنصة المرتبط</label><select id="rkExternalCenter">${[['hilal','بنك الهلال'],['malaa','بنك ملاءة'],['assets','بنك الأصول']].map(([k,n])=>`<option value="${k}" ${b.center===k?'selected':''}>${n}</option>`).join('')}</select></div>
- </div></div><div class="rk-compact-footer"><button type="submit" class="btn primary">${ico('check')} حفظ</button>${id?`<button type="button" class="btn" onclick="rkRemoveExternalBank('${esc(id)}')">${ico('delete')} حذف</button>`:''}</div></form></div></div>`;
+ <div class="field"><label>بنك المنصة المرتبط</label><select id="rkExternalCenter">${[['hilal','بنك الهلال'],['malaa','بنك ملاءة'],['assets','بنك الأصول']].map(([k,n])=>`<option value="${k}" ${b.center===k?'selected':''}>${n}</option>`).join('')}</select></div></div></div>
+ <div class="rk-compact-footer"><button type="submit" class="btn primary">${ico('check')} حفظ</button>${id?`<button type="button" class="btn" onclick="rkExternalBankDetails('${esc(id)}')">${ico('back')} التفاصيل</button>`:''}</div></form></div></div>`;
  if(typeof v10RepairDialogs==='function')v10RepairDialogs();
 }
 function rkSaveExternalBank(id){
  const name=(document.getElementById('rkExternalName')?.value||'').trim(),nickname=(document.getElementById('rkExternalNickname')?.value||'').trim(),last4=(document.getElementById('rkExternalLast4')?.value||'').trim(),center=document.getElementById('rkExternalCenter')?.value||'hilal';
  if(!name||last4&&!/^[0-9]{4}$/.test(last4))return alert('راجع اسم البنك وآخر أربعة أرقام.');
- const bank={id:id||rid(),name,nickname,last4,center};
- const index=db.externalBanks.findIndex(b=>b.id===id);
- if(index>=0)db.externalBanks[index]=bank;else db.externalBanks.push(bank);
- audit('حفظ بنك خارجي',name);save();closeModal();render();toast('حُفظ البنك الخارجي');
+ if(!['hilal','malaa','assets'].includes(center))return alert('بنك المنصة غير صالح');
+ if(db.externalBanks.some(b=>b.id!==id&&b.name===name&&b.last4===last4&&last4))return alert('الحساب مسجل مسبقاً.');
+ const previous=db.externalBanks.find(b=>b.id===id);
+ const bank={id:id||rid(),name,nickname,last4,center,logo:rkPendingBankLogo||previous?.logo||''};
+ try{
+  const existing=db.externalBanks.slice();const idx=existing.findIndex(b=>b.id===id);
+  if(idx>=0)existing[idx]=bank;else existing.push(bank);
+  const old=db.externalBanks;db.externalBanks=existing;
+  try{save()}catch(e){db.externalBanks=old;throw e}
+  audit('حفظ بنك خارجي',name);
+ }catch(e){alert('تعذر حفظ بيانات البنك أو الشعار، يُرجى تقليل حجم الصورة.');return}
+ rkPendingBankLogo=null;render();rkExternalBankDetails(bank.id);toast('تم الحفظ');
 }
 function rkRemoveExternalBank(id){
  rkExternalEnsure();const b=db.externalBanks.find(x=>x.id===id);if(!b||!confirm('حذف البنك الخارجي؟'))return;
