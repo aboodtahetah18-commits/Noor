@@ -740,7 +740,7 @@ function rakaezModalConsistency(){
   if(steps.length>1)steps.slice(0,-1).forEach((section,i)=>{section.dataset.rakaezStepName=labels[key][Math.min(i,labels[key].length-2)]});
   const active=steps.findIndex(section=>section.classList.contains('active'));
   const name=head.querySelector('.wiz-name');
-  if(name&&active>=0&&active<steps.length-1)name.textContent=steps[active].dataset.rakaezStepName||name.textContent;
+  if(name&&active>=0&&active<steps.length-1){const desired=steps[active].dataset.rakaezStepName||name.textContent;if(name.textContent!==desired)name.textContent=desired;}
  });
 }
 function rakaezDataCheck(){
