@@ -1785,6 +1785,17 @@ function rakaezDataCheck(){
   if(op.method==='percentage'&&(!numeric(op.rate)||Number(op.rate)>100))issues.push('نسبة جدولة غير صالحة');
   if(op.method==='fixed'&&!numeric(op.amount))issues.push('مبلغ عملية مجدولة غير صالح');
  }
+ const allocationValid=o=>{
+  if(o==null)return true;
+  if(typeof o!=='object'||Array.isArray(o))return false;
+  const fields=rkAllocationClasses.filter(([k])=>Object.prototype.hasOwnProperty.call(o,k));
+  if(!fields.length)return true;
+  const numbers=fields.map(([k])=>Number(o[k]));
+  return numbers.every(v=>Number.isFinite(v)&&v>=0&&v<=100)&&Math.round(numbers.reduce((a,b)=>a+b,0)*100)===10000;
+ };
+ for(const p of safeArray('candidatePortfolios'))if(!allocationValid(p.allocation))issues.push('نسب توزيع فرصة استثمارية غير متوازنة');
+ for(const p of safeArray('holdings'))if(!allocationValid(p.allocationDetail))issues.push('نسب توزيع محفظة غير متوازنة');
+ for(const p of safeArray('assetAccounts'))if(!allocationValid(p.allocationDetail))issues.push('نسب توزيع محفظة الوساطة غير متوازنة');
  for(const b of safeArray('externalBanks')){
   if(!String(b.name||'').trim()||!['hilal','malaa','assets'].includes(b.center)||b.last4&&!/^[0-9]{4}$/.test(b.last4))issues.push('تعريف بنك خارجي غير صالح');
   if(b.logo&&!/^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(b.logo))issues.push('شعار بنك خارجي غير صالح');
