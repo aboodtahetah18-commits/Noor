@@ -353,8 +353,9 @@ function cats(){
  const portfolio=h.kind==='محفظة استثمارية';
  const cost=portfolio?Number(h.contributed||0):Number(h.quantity||0)*Number(h.cost||0);
  const value=portfolio?Number(h.marketValue||0):Number(h.quantity||0)*Number(h.price||0);
- const pnl=value-cost;
- const outcome=pnl<0?'loss':pnl>0?'profit':'flat';
+ const hasMarket=portfolio?(h.marketValue!==undefined&&h.marketValue!==null&&h.marketValue!==''):(h.price!==undefined&&h.price!==null&&h.price!=='');
+ const pnl=hasMarket?value-cost:0;
+ const outcome=!hasMarket?'flat':pnl<0?'loss':pnl>0?'profit':'flat';
  const id=String(h.id||'').replace(/[^A-Za-z0-9_-]/g,'');
  const details=(portfolio?
   `<div class="rk-extra-value"><span>الاشتراك الشهري</span><b>${money(h.monthly||0)}</b></div>
@@ -368,8 +369,8 @@ function cats(){
  </header>
  <div class="rk-investment-metrics">
   <div class="rk-metric rk-metric-cost"><span>إجمالي الاستثمار</span><strong>${money(cost)}</strong></div>
-  <div class="rk-metric rk-metric-market"><span>القيمة السوقية</span><strong>${money(value)}</strong></div>
-  <div class="rk-metric rk-metric-${outcome}"><span>الربح / الخسارة</span><strong>${money(pnl)}</strong></div>
+  <div class="rk-metric rk-metric-market"><span>القيمة السوقية</span><strong>${hasMarket?money(value):'غير مدخلة'}</strong></div>
+  <div class="rk-metric rk-metric-${outcome}"><span>الربح / الخسارة</span><strong>${hasMarket?money(pnl):'—'}</strong></div>
  </div>
  <div class="rk-investment-actions" role="group" aria-label="عمليات ${esc(h.name)}">
   <button type="button" class="btn rk-action-update" onclick="openModal('${portfolio?'portfolioUpdate':'price'}','${id}')">${ico('trend')}<span>تحديث</span></button>
@@ -379,10 +380,10 @@ function cats(){
  </article>`;
 }
 function assets(){
- let cost=0,market=0;
- db.holdings.forEach(h=>{const portfolio=h.kind==='محفظة استثمارية';cost+=portfolio?Number(h.contributed||0):Number(h.quantity||0)*Number(h.cost||0);market+=portfolio?Number(h.marketValue||0):Number(h.quantity||0)*Number(h.price||0)});
+ let cost=0,market=0,pricedCost=0;
+ db.holdings.forEach(h=>{const portfolio=h.kind==='محفظة استثمارية',c=portfolio?Number(h.contributed||0):Number(h.quantity||0)*Number(h.cost||0);cost+=c;const priced=portfolio?(h.marketValue!==undefined&&h.marketValue!==null&&h.marketValue!==''):(h.price!==undefined&&h.price!==null&&h.price!=='');if(priced){pricedCost+=c;market+=portfolio?Number(h.marketValue||0):Number(h.quantity||0)*Number(h.price||0)}});
  const divs=(db.dividends||[]).reduce((n,d)=>n+Number(d.amount||0),0);
- return `<div class="grid stats">${stat('القيمة السوقية',market,'','var(--teal)','trend')}${stat('إجمالي الاستثمار',cost,'','var(--navy)','wallet')}${stat('الربح / الخسارة',market-cost,'','var(--gold)','chart')}${stat('التوزيعات المستلمة',divs,'','var(--teal)','bank')}</div>
+ return `<div class="grid stats">${stat('القيمة السوقية',market,'','var(--teal)','trend')}${stat('إجمالي الاستثمار',cost,'','var(--navy)','wallet')}${stat('الربح / الخسارة',market-pricedCost,'','var(--gold)','chart')}${stat('التوزيعات المستلمة',divs,'','var(--teal)','bank')}</div>
  ${sTitle('الاستثمارات والمحافظ')}
  <section class="card rk-investments-shell">
   <div class="rk-section-action"><button type="button" class="btn primary" onclick="openModal('asset')">${ico('plus')}<span>إضافة أصل أو محفظة</span></button></div>
