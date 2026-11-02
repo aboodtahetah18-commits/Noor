@@ -838,7 +838,7 @@ function rkScheduledEstimated(x){
 }
 function rkScheduledView(){
  rkEnsure();
- return '<div class="grid stats">'+stat('العمليات المجدولة',db.scheduledOps.filter(x=>x.status==='planned').length*100,'عدد العمليات قيد التخطيط','var(--teal)','chart')+stat('تقدير قيمة العمليات',db.scheduledOps.filter(x=>x.status==='planned').reduce((n,x)=>n+rkScheduledEstimated(x),0),'لا يغيّر رصيد الحساب','var(--gold)','wallet')+'</div>'+
+ return '<div class="grid stats"><div class="card stat" style="--accent:var(--teal)"><span class="label">العمليات المجدولة النشطة</span><strong>'+db.scheduledOps.filter(x=>x.status==='planned').length+' عملية</strong><small>عدد العمليات قيد التخطيط</small><div class="sym">'+ico('chart')+'</div></div>'+stat('تقدير قيمة العمليات',db.scheduledOps.filter(x=>x.status==='planned').reduce((n,x)=>n+rkScheduledEstimated(x),0),'لا يغيّر رصيد الحساب','var(--gold)','wallet')+'</div>'+
  '<section class="card"><div class="row between rk-heading"><div><h2>إدارة العمليات المجدولة</h2><p>المجدول ليس منفّذاً، ولا تُنشأ منه مصروفات أو تحويلات تلقائياً.</p></div><button class="btn primary" onclick="rkOpen(\'scheduled\')">＋ إضافة عملية مجدولة</button></div>'+
  (db.scheduledOps.length?db.scheduledOps.map(x=>'<div class="item rk-record"><div><strong>'+esc(x.name)+'</strong><p>'+rkAmount(rkScheduledEstimated(x))+' · '+esc(x.period||'شهري')+' · '+(x.status==='planned'?'مجدولة':'مؤكدة في الجدول')+'</p></div><div class="rk-record-actions"><button class="btn" onclick="rkOpen(\'scheduled\',\''+esc(x.id)+'\')">تعديل</button><button class="btn" onclick="rkToggleSchedule(\''+esc(x.id)+'\')">'+(x.status==='planned'?'إيقاف مؤقت':'إعادة الجدولة')+'</button></div></div>').join(''):'<p class="rk-empty">لا توجد عمليات مجدولة.</p>')+'</section>';
 }
