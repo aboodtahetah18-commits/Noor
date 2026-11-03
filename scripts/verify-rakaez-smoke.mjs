@@ -180,6 +180,14 @@ assert.equal(followup.originTransactionId,tx.id,'Follow-up links to the transact
 assert.ok(followup.relatedTransactionIds.includes(tx.id));
 assert.ok(document.getElementById('modalRoot').innerHTML.includes('نتيجة الإجراء المترابط'),'Consolidated receipt must appear');
 assert.equal(app.rkActionPeriodSpend('food',tx.date.slice(0,7)),65000,'Budget uses the one transaction with no duplicate posting');
+app.navigate('insights');
+const afterExpense=app.rkHomeDashboardTotals();
+assert.equal(afterExpense.expense,65000,'Home expense total updates after saving the one operation');
+assert.equal(app.rkHomeIncomeExpenseTrend().at(-1).expense,65000,'Six-month graph updates from the same saved transaction');
+assert.equal(app.rkHomeSpendingCategories().reduce((sum,row)=>sum+row.amount,0),65000,'Spend distribution reconciles to the home total');
+assert.ok(document.getElementById('view').innerHTML.includes('rk-home-category-row'),'Graph appears with real recorded expense data');
+assert.ok(document.getElementById('view').innerHTML.includes('rk-home-trend-chart'),'Monthly trend chart appears with recorded movements');
+
 app.navigate('spending');
 assert.ok(document.getElementById('view').innerHTML.includes('STARBUCKS'));
 assert.ok(document.getElementById('view').innerHTML.includes('معالجة ومتابعة'));
