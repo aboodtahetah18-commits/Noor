@@ -789,6 +789,21 @@ td,th{border-bottom:1px solid #d6e2e8!important}
 .rk-stat-home-panels>.grid.stats,.rk-stat-home-panels>.rk-assets-summary,.rk-stat-home-panels>.rk-goal-overview,.rk-stat-home-panels>.rk-malaa-hero,.rk-stat-home-panels>.rk-slim-summary{margin:0;max-width:100%}
 @media(max-width:740px){.rk-stat-home-group>summary{padding:12px 2px}.rk-stat-home-panels>.grid.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
+
+/* RK-V17-NOOR-UI-RELEASE: icon-only actions using existing Rakaez tokens */
+button.rk-v17-icon-only{display:inline-flex!important;align-items:center!important;justify-content:center!important;vertical-align:middle!important;gap:0!important;flex:0 0 auto;min-width:40px!important;width:42px!important;max-width:42px!important;min-height:40px!important;padding:8px!important;line-height:0!important;font-size:0!important;white-space:nowrap;overflow:visible}
+button.rk-v17-icon-only *:not(svg):not(path):not(line):not(circle):not(rect):not(polyline):not(polygon){font-size:0!important;line-height:0!important}
+button.rk-v17-icon-only svg{display:block!important;width:19px!important;height:19px!important;min-width:19px;min-height:19px;flex-shrink:0}
+button.rk-v17-icon-only i::before{font-size:18px!important}
+button.rk-v17-icon-only:focus-visible{outline:2px solid var(--gold)!important;outline-offset:2px!important}
+#nav button.rk-v17-icon-only{margin-inline:auto!important}
+#nav button.rk-v17-icon-only.active{border-inline-start:3px solid var(--gold)!important}
+.rakaez-bell{position:relative}
+.rakaez-bell .rk-v17-notice-count{position:absolute;top:-7px;inset-inline-start:-7px;display:grid;place-items:center;min-width:17px;height:17px;padding:0 3px;border-radius:20px;background:var(--red);color:var(--white);font-size:10px!important;line-height:1!important;font-weight:700}
+.rakaez-bell .rk-v17-notice-count[hidden]{display:none!important}
+#modalRoot .modal{box-sizing:border-box;max-height:calc(100dvh - 28px);overflow-y:auto}
+#modalRoot .modal input,#modalRoot .modal select,#modalRoot .modal textarea{box-sizing:border-box;max-width:100%}
+@media(max-width:740px){#modalRoot .modalbg{padding:12px!important}#modalRoot .modal{width:100%!important;max-width:calc(100vw - 24px)!important;max-height:calc(100dvh - 24px)!important}button.rk-v17-icon-only{min-width:40px!important;width:40px!important;max-width:40px!important}}
 </style></head><body><div class="layout" id="layout"><aside><div class="brand"><div class="brandmark">ر</div><div><b>ركائز</b><small>منظومتك المالية الشخصية</small></div></div><nav class="nav" id="nav"></nav><div class="asidefoot">ثلاثة مراكز مالية، رؤية واحدة.<br>نظام إدارة شخصية تجريبي • بيانات محلية</div></aside><main><header class="topbar"><div class="rakaez-title-row"><div class="row"><button type="button" class="btn mobilemenu rk-mobilemenu" aria-label="فتح القائمة الجانبية" aria-expanded="false" onclick="rkToggleMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" width="24" height="24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><h1 id="pageTitle">لوحة التحكم</h1><p id="pageSub" hidden></p></div><div class="rakaez-bell-wrap"><button type="button" class="btn primary rakaez-add" onclick="openModal('transaction')"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>إضافة</span></button><button type="button" class="rakaez-bell" id="rakaezBell" aria-label="الإشعارات" aria-expanded="false" aria-controls="rakaezNotifications" onclick="toggleRakaezNotifications()"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4"/></svg></button><div id="rakaezNotifications" class="rakaez-notifications" hidden></div></div></div><div class="topcontrols" hidden><select id="monthPicker" onchange="month=this.value;render()"></select></div></header><div class="content"><div class="demo">● نسخة تجريبية تعمل في متصفحك وتخزن المعلومات على هذا الجهاز فقط. لا تدخل بيانات مصرفية سرية أو تعتمد عليها كنسخة إنتاجية.</div><div id="view"></div></div></main></div><div id="modalRoot"></div><div id="toastRoot"></div><script>
 const icons={home:'<path d="m3 10 9-7 9 7v10H3z"/><path d="M9 20v-7h6v7"/>',moon:'<path d="M19 14A8 8 0 0 1 10 5a8 8 0 1 0 9 9Z"/>',shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/>',trend:'<path d="m3 17 6-6 4 4 8-8"/><path d="M15 7h6v6"/>',wallet:'<rect x="3" y="5" width="18" height="15" rx="2"/><path d="M16 12h5"/>',fund:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h4"/>',upload:'<path d="M12 16V3m-5 5 5-5 5 5M4 17v4h16v-4"/>',chart:'<path d="M4 20V10m6 10V4m6 16v-8m5 8H2"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="m19 13 2 1-2 4-2-1-2 1v2H9v-2l-2-1-2 1-2-4 2-1v-2l-2-1 2-4 2 1 2-1V4h6v2l2 1 2-1 2 4-2 1z"/>',bank:'<path d="m2 9 10-6 10 6M4 10h16M5 11v8m5-8v8m5-8v8m5-8v8M2 21h20"/>',bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4"/>',plus:'<path d="M12 5v14M5 12h14"/>'};function ico(name){return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${icons[name]||icons.wallet}</svg>`}
 const N=[['hilal','بنك الهلال التشغيلي','moon'],['malaa','بنك ملاءة للادخار','shield'],['assets','بنك الأصول الاستثماري','trend'],['goals','الأهداف المالية','trend'],['debts','الديون والالتزامات','fund'],['fees','الرسوم الدورية','chart'],['reserves','بنوك المنصة','bank'],['position','المركز المالي الموحد','bank'],['interbank','التمويل بين المراكز','fund'],['insights','الرئيسية','home'],['ledger','دفتر الأستاذ والمطابقة','fund'],['transactions','المعاملات المالية','wallet'],['funding','التمويل الداخلي','fund'],['import','استيراد المعاملات','upload'],['reports','التقارير والتحليلات','chart'],['settings','الإعدادات والتوزيع','settings']];
@@ -3656,6 +3671,125 @@ render=function(){
 }
 `;
  document.head.appendChild(sheet);
+})();
+
+
+/* RK-V17-NOOR-UI-RELEASE: preserve Next.js and all financial flows. */
+(function(){
+ const paths={
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  close:'<path d="M18 6 6 18M6 6l12 12"/>',
+  check:'<path d="m5 12 5 5L20 7"/>',
+  edit:'<path d="M12 20h9M16 4l4 4-11 11-5 1 1-5z"/>',
+  trash:'<path d="M4 7h16M10 11v6m4-6v6M6 7l1 14h10l1-14M9 7V4h6v3"/>',
+  eye:'<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>',
+  download:'<path d="M12 3v12m-5-5 5 5 5-5M5 19v2h14v-2"/>',
+  upload:'<path d="M12 21V9m-5 5 5-5 5 5M4 5V3h16v2"/>',
+  refresh:'<path d="M20 7V3l-4 4 4 4M20 7a8 8 0 1 0 2 7"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/>',
+  filter:'<path d="M3 4h18l-7 8v8l-4-2v-6Z"/>',
+  bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4"/>',
+  calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 10h18"/>',
+  settings:'<circle cx="12" cy="12" r="4"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3M5 5l2 2m10 10 2 2M19 5l-2 2M7 17l-2 2"/>',
+  chart:'<path d="M4 20V9h4v11M10 20V4h4v16M16 20v-7h4v7"/>',
+  arrow:'<path d="M5 12h14m-6-6 6 6-6 6"/>',
+  list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h1M3 12h1M3 18h1"/>',
+  minus:'<path d="M5 12h14"/>'
+ };
+ function symbol(which){return '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+(paths[which]||paths.list)+'</svg>';}
+ const matchers=[
+  [/حذف|إزالة|مسح/,'trash'],[/إغلاق|اغلاق|إلغاء|الغاء|✕|×/,'close'],
+  [/حفظ|اعتماد|تأكيد|موافق|تم|تثبيت/,'check'],[/تعديل|تحرير/,'edit'],
+  [/إضافة|إنشاء|جديد|جديدة|تسجيل|إدراج/,'plus'],[/بحث|ابحث/,'search'],
+  [/استيراد|رفع/,'upload'],[/تصدير|تنزيل|تحميل/,'download'],
+  [/تحديث|مزامنة|إعادة التحميل/,'refresh'],[/تصفية|فلتر/,'filter'],
+  [/عرض|تفاصيل|فتح|مراجعة/,'eye'],[/استحقاق|تاريخ|موعد|دورة/,'calendar'],
+  [/إشعار|تنبيه/,'bell'],[/إعداد|ضبط/,'settings'],[/تقرير|توزيع|تحليل|إحصاء/,'chart'],
+  [/سحب|خصم/,'minus'],[/التالي|السابق|العودة|رجوع|انتقال/,'arrow']
+ ];
+ function labelOf(button){
+   return (button.getAttribute('aria-label')||button.getAttribute('title')||button.textContent||'').replace(/\s+/g,' ').trim()||'إجراء';
+ }
+ function decorate(root){
+   if(!root||!root.querySelectorAll)return;
+   const collection=root.querySelectorAll('button:not([data-rk-v17-enhanced])');
+   collection.forEach(button=>{
+     button.setAttribute('data-rk-v17-enhanced','1');
+     const label=labelOf(button);
+     button.setAttribute('aria-label',label);
+     button.setAttribute('title',label);
+     if(button.id==='rakaezBell')return;
+     if(button.querySelector('input,select,textarea'))return;
+     if(!button.querySelector('svg,i,img,[role="img"]')){
+       const inline=button.getAttribute('onclick')||'';
+       let icon=(matchers.find(entry=>entry[0].test(label))||[])[1];
+       if(!icon&&/openModal|formV3|Form\(/.test(inline))icon='plus';
+       if(!icon&&/delete|Delete|remove/.test(inline))icon='trash';
+       if(!icon&&/navigate/.test(inline))icon='arrow';
+       button.insertAdjacentHTML('afterbegin',symbol(icon||'list'));
+     }
+     button.classList.add('rk-v17-icon-only');
+   });
+ }
+ let priorFocus=null,activeModal=null;
+ function syncModal(){
+   const modal=document.querySelector('#modalRoot .modal');
+   if(!modal){if(activeModal){activeModal=null;if(priorFocus&&priorFocus.isConnected)priorFocus.focus({preventScroll:true});priorFocus=null}return;}
+   modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');
+   if(activeModal!==modal){
+     priorFocus=document.activeElement;activeModal=modal;
+     const heading=modal.querySelector('h2,h3');
+     if(heading){if(!heading.id)heading.id='rk-v17-modal-heading';modal.setAttribute('aria-labelledby',heading.id);}
+     const first=[...modal.querySelectorAll('input,textarea,select,button')].find(x=>!x.disabled&&x.getClientRects().length>0);
+     if(first)first.focus({preventScroll:true});
+   }
+ }
+ function closeNotificationPanel(){
+   const panel=document.getElementById('rakaezNotifications'),bell=document.getElementById('rakaezBell');
+   if(panel)panel.hidden=true;
+   if(bell)bell.setAttribute('aria-expanded','false');
+ }
+ function refreshNotificationBadge(){
+   const bell=document.getElementById('rakaezBell');
+   const panel=document.getElementById('rakaezNotifications');
+   if(!bell||!panel)return;
+   let badge=bell.querySelector('.rk-v17-notice-count');
+   if(!badge){badge=document.createElement('span');badge.className='rk-v17-notice-count';badge.setAttribute('aria-hidden','true');bell.appendChild(badge);}
+   const total=panel.querySelectorAll('.notification-entry').length;
+   badge.textContent=String(total);
+   badge.hidden=total===0;
+ }
+ const originalToggle=toggleRakaezNotifications;
+ toggleRakaezNotifications=function(){
+   originalToggle();
+   const panel=document.getElementById('rakaezNotifications'),bell=document.getElementById('rakaezBell');
+   if(panel&&bell)bell.setAttribute('aria-expanded',String(!panel.hidden));
+   refreshNotificationBadge();
+   decorate(panel);
+ };
+ const originalNavigate=navigate;
+ navigate=function(target){closeNotificationPanel();originalNavigate(target);};
+ let queued=false;
+ function sync(){
+   queued=false;decorate(document);syncModal();
+ }
+ const observer=new MutationObserver(()=>{if(queued)return;queued=true;queueMicrotask(sync);});
+ observer.observe(document.body,{childList:true,subtree:true});
+ document.addEventListener('keydown',e=>{
+   if(e.key==='Escape'){
+     if(document.querySelector('#modalRoot .modal')){e.preventDefault();closeModal();}
+     else closeNotificationPanel();
+   }
+   if(e.key==='Tab'){
+     const modal=document.querySelector('#modalRoot .modal');
+     if(!modal)return;
+     const items=[...modal.querySelectorAll('button,input,select,textarea,[tabindex]')].filter(x=>!x.disabled&&x.tabIndex>=0&&x.getClientRects().length>0);
+     if(!items.length)return;
+     if(e.shiftKey&&document.activeElement===items[0]){e.preventDefault();items[items.length-1].focus();}
+     else if(!e.shiftKey&&document.activeElement===items[items.length-1]){e.preventDefault();items[0].focus();}
+   }
+ });
+ sync();
 })();
 
 render();</script></body></html>
