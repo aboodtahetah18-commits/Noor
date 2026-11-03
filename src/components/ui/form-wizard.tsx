@@ -17,7 +17,7 @@ type Props = {
 /** Divide one real form into pages without replacing its submit action or dropping fields. */
 export function FormWizard({ steps, finish, className = '' }: Props) {
   const [active, setActive] = useState(0);
-  const panelRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const panelRefs = useRef<Array<HTMLElement | null>>([]);
   const id = useId();
   const current = Math.min(active, Math.max(0, steps.length - 1));
 
