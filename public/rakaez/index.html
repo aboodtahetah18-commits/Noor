@@ -3456,7 +3456,7 @@ render=function(){
 /* Some review dialogs render fields directly under .modal, with no .modalbody. */
 #modalRoot .modal>:is(.field,.formgrid,.metricline,.rk-action-preview,h3,p.notice){
   box-sizing:border-box!important;
-  max-width:calc(100% - 2 * var(--rk-field-edge))!important;
+  max-width:calc(100% - var(--rk-field-edge) - var(--rk-field-edge))!important;
   margin-inline:var(--rk-field-edge)!important;
 }
 #modalRoot .modal>.rk-budget-detail-actions,
