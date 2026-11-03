@@ -43,7 +43,7 @@ const document={
 };
 class MutationObserver{observe(){} disconnect(){}}
 const app= new Function('document','localStorage','MutationObserver','window','alert','confirm','crypto',
-  source+"\nreturn {N,navigate,parseSMS,rkMerchantEnglishFromText,rkMerchantMonitored,rkMerchantCreateCase,rkMerchantCaseSave,rkSpendingView,merchantSnapshot:()=>rkMerchantSnapshot,merchantCases:()=>db.merchantFollowups,pushMerchantTx:t=>{db.transactions.push(t);save()},openModal,formV3,interbankForm,ledgerOpen,ledgerReconcile,researchForm,v14CycleForm,v11ToggleSamples,rakaezDataCheck,rkOpen,rkSave,edit:d=>Object.assign(rkDraft,d),step:n=>{rkStep=n},state:()=>({demo:v11ExamplesMode,transactions:db.transactions.length,receivables:db.receivables?.length||0,collections:db.receivableCollections?.length||0,scheduled:db.scheduledOps?.length||0})};"
+  source+"\nreturn {N,navigate,rkMerchantSetFollowupFilter,parseSMS,rkMerchantEnglishFromText,rkMerchantMonitored,rkMerchantCreateCase,rkMerchantCaseSave,rkSpendingView,merchantSnapshot:()=>rkMerchantSnapshot,merchantCases:()=>db.merchantFollowups,pushMerchantTx:t=>{db.transactions.push(t);save()},openModal,formV3,interbankForm,ledgerOpen,ledgerReconcile,researchForm,v14CycleForm,v11ToggleSamples,rakaezDataCheck,rkOpen,rkSave,edit:d=>Object.assign(rkDraft,d),step:n=>{rkStep=n},state:()=>({demo:v11ExamplesMode,transactions:db.transactions.length,receivables:db.receivables?.length||0,collections:db.receivableCollections?.length||0,scheduled:db.scheduledOps?.length||0})};"
 )(document,localStorage,MutationObserver,{},()=>{},()=>true,{randomUUID:()=>String(++sequence)});
 
 let rendered=0;
@@ -84,6 +84,12 @@ assert.equal(app.rkMerchantEnglishFromText('تم شراء 20 ريال لدى م�
 app.pushMerchantTx({id:'merchant-test-1',date:new Date().toISOString().slice(0,10),type:'expense',description:'شراء STARBUCKS',category:'food',amount:4500,merchantEnglish:'STARBUCKS'});
 app.navigate('spending');
 assert.ok(document.getElementById('view').innerHTML.includes('STARBUCKS'),'Merchant monitoring must appear in the actual Rakaez screen');
+assert.ok(!document.getElementById('view').innerHTML.includes('سجل المتابعة'),'Merchant monitor must not stack the follow-up registry');
+app.navigate('spending-followups');
+assert.ok(document.getElementById('view').innerHTML.includes('سجل المتابعة'),'Follow-ups must have their own page');
+assert.ok(!document.getElementById('view').innerHTML.includes('مؤشرات الإنفاق'),'Follow-up page must not duplicate merchant monitoring');
+assert.ok(document.getElementById('nav').innerHTML.includes('rakaez-nav-link active'),'The spending parent navigation remains active on follow-ups');
+app.navigate('spending');
 const merchantIndex=app.merchantSnapshot().findIndex(m=>m.name==='STARBUCKS');
 assert.ok(merchantIndex>=0,'Merchant must be included in monitored spending');
 app.rkMerchantCreateCase(merchantIndex);
@@ -98,6 +104,12 @@ document.getElementById('rkMCAction').value='مقارنة أسعار المور�
 document.getElementById('rkMCNote').value='تم تكليف المسؤول بدراسة البدائل';
 app.rkMerchantCaseSave(merchantCase.id);
 assert.equal(app.merchantCases()[0].status,'IN_PROGRESS','Follow-up state must survive update');
+assert.ok(document.getElementById('view').innerHTML.includes('سجل المتابعة'),'Saving a case must return to the follow-up page');
+assert.ok(document.getElementById('view').innerHTML.includes('STARBUCKS'),'The separate follow-up page must show the newly managed merchant');
+app.rkMerchantSetFollowupFilter('completed');
+assert.ok(document.getElementById('view').innerHTML.includes('لا توجد حالات تم التحقق'),'Completed-only filter must exclude active cases');
+app.rkMerchantSetFollowupFilter('active');
+assert.ok(document.getElementById('view').innerHTML.includes('STARBUCKS'),'Active filter must show pending cases');
 assert.ok(JSON.parse(storage.get('rakaez-v1')).merchantFollowups.length===1,'Follow-up must persist in existing real workspace');
 
 const real=storage.get('rakaez-v1');
