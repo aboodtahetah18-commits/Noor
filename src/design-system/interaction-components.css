@@ -431,3 +431,19 @@ button[data-namaa-symbol-only="true"]:focus-visible,
   .ux-wizard-progress { gap:var(--ux-space-2); }
   .ux-wizard-progress li { font-size:var(--ux-type-caption-size); }
 }
+
+
+/* Accounts are a readable continuous list, not a stack of mini-cards. */
+.p47-account-map {
+  display:grid;
+  gap:0!important;
+  min-inline-size:0;
+}
+.p47-account-map .p47-account-tile {
+  margin:0!important;
+  border:0!important;
+  border-block-end:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default)!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  background:transparent!important;
+}
