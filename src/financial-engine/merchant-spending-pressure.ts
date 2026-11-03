@@ -30,7 +30,7 @@ function percentageChange(currentMinor: bigint, previousMinor: bigint): string |
   const hundredthsOfPercent = (magnitude * 10000n + previousMinor / 2n) / previousMinor;
   const whole = hundredthsOfPercent / 100n;
   const decimals = (hundredthsOfPercent % 100n).toString().padStart(2, '0');
-  return ${difference < 0n ? '-' : difference > 0n ? '+' : ''}${whole}.${decimals};
+  return `${difference < 0n ? '-' : difference > 0n ? '+' : ''}${whole}.${decimals}`;
 }
 
 export function assessMerchantSpending(input: {
