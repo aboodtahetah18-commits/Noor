@@ -43,8 +43,25 @@ const document={
 };
 class MutationObserver{observe(){} disconnect(){}}
 const app= new Function('document','localStorage','MutationObserver','window','alert','confirm','crypto',
-  source+"\nreturn {N,navigate,rkMerchantSetFollowupFilter,parseSMS,rkMerchantEnglishFromText,rkMerchantMonitored,rkMerchantCreateCase,rkMerchantCaseSave,rkSpendingView,merchantSnapshot:()=>rkMerchantSnapshot,merchantCases:()=>db.merchantFollowups,pushMerchantTx:t=>{db.transactions.push(t);save()},openModal,formV3,interbankForm,ledgerOpen,ledgerReconcile,researchForm,v14CycleForm,v11ToggleSamples,rakaezDataCheck,rkOpen,rkSave,edit:d=>Object.assign(rkDraft,d),step:n=>{rkStep=n},state:()=>({demo:v11ExamplesMode,transactions:db.transactions.length,receivables:db.receivables?.length||0,collections:db.receivableCollections?.length||0,scheduled:db.scheduledOps?.length||0})};"
+  source+"\nreturn {N,navigate,rkMainSections,rkCenterForPage,rkMerchantSetFollowupFilter,parseSMS,rkMerchantEnglishFromText,rkMerchantMonitored,rkMerchantCreateCase,rkMerchantCaseSave,rkSpendingView,merchantSnapshot:()=>rkMerchantSnapshot,merchantCases:()=>db.merchantFollowups,pushMerchantTx:t=>{db.transactions.push(t);save()},openModal,formV3,interbankForm,ledgerOpen,ledgerReconcile,researchForm,v14CycleForm,v11ToggleSamples,rakaezDataCheck,rkOpen,rkSave,edit:d=>Object.assign(rkDraft,d),step:n=>{rkStep=n},state:()=>({demo:v11ExamplesMode,transactions:db.transactions.length,receivables:db.receivables?.length||0,collections:db.receivableCollections?.length||0,scheduled:db.scheduledOps?.length||0})};"
 )(document,localStorage,MutationObserver,{},()=>{},()=>true,{randomUUID:()=>String(++sequence)});
+
+
+assert.equal(app.rkMainSections.length,6,'Main sidebar must contain exactly six meaningful centers');
+const visibleRoutes=app.rkMainSections.flatMap(section=>section.pages);
+assert.equal(new Set(visibleRoutes).size,app.N.length,'Every legacy destination must appear in exactly one center');
+assert.deepEqual(visibleRoutes.slice().sort(),app.N.map(n=>n[0]).sort(),'Every existing page must remain reachable');
+for(const [id] of app.N){
+ app.navigate(id);
+ const center=app.rkCenterForPage(id);
+ const mainNav=document.getElementById('nav').innerHTML;
+ assert.equal((mainNav.match(/rakaez-nav-link /g)||[]).length,6,'Sidebar must not list internal pages');
+ assert.equal((mainNav.match(/aria-current="page"/g)||[]).length,1,'Exactly one main center must be marked active');
+ const viewHtml=document.getElementById('view').innerHTML;
+ const tabs=(viewHtml.match(/rk-module-tabs/g)||[]).length;
+ assert.equal(tabs,center.tabs.length?1:0,'Module tabs must appear once inside their center');
+ if(center.tabs.length)assert.ok(viewHtml.includes('aria-label="أقسام '+center.label+'"'),'Module tabs must be correctly labeled');
+}
 
 let rendered=0;
 for(const [id] of app.N){
