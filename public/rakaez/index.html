@@ -1246,7 +1246,7 @@ function drawNav(){
  nav.classList.add('rakaez-nav-flat');
  nav.innerHTML=rkMainSections.map(section=>{
   const active=section.pages.includes(page);
-  return `<button type="button" class="rakaez-nav-link ${active?'active':''}" aria-current="${active?'page':'false'}" onclick="navigate('${section.main}')"><span class="rakaez-nav-icon" aria-hidden="true">${ico(section.icon)}</span><span class="rakaez-nav-name">${section.label}</span></button>`;
+  return `<button type="button" class="rakaez-nav-link ${active?'active':''}" aria-current="${active?'page':'false'}" onclick="rkOpenMainCenter('${section.main}')"><span class="rakaez-nav-icon" aria-hidden="true">${ico(section.icon)}</span><span class="rakaez-nav-name">${section.label}</span></button>`;
  }).join('');
 }
 function render(){drawNav();let n=N.find(n=>n[0]===page)||N[0];document.getElementById('pageTitle').textContent=n[1];document.getElementById('pageSub').textContent=page==='overview'?'لوحة تحكم مالية شاملة — الهلال، ملاءة، والأصول':'إدارة حساباتك وبياناتك المالية الشخصية';let months=[];for(let i=-12;i<=3;i++){let d=new Date(today.getFullYear(),today.getMonth()+i,2);months.push(iso(d).slice(0,7))}document.getElementById('monthPicker').innerHTML=months.reverse().map(m=>`<option value="${m}" ${m===month?'selected':''}>${m}</option>`).join('');document.getElementById('view').innerHTML=({overview:dashboard,hilal,malaa,assets,goals:goalsView,debts:debtsView,fees:feesView,reserves:reservesView,position:positionView,interbank:interbankView,insights:dashboard,externalBanks:rkExternalBanksView,receivables:rkReceivablesView,scheduled:rkScheduledView,documents:rkDocumentsView,transactions,spending:rkSpendingView,'spending-followups':rkSpendingFollowupsView,ledger:ledgerView,funding:fundings,import:importView,reports,settings}[page]||dashboard)()}
@@ -2689,6 +2689,11 @@ const rkMainSections=[
  {main:'settings',label:'الإعدادات',icon:'settings',pages:['settings'],tabs:[]}
 ];
 function rkCenterForPage(id){return rkMainSections.find(section=>section.pages.includes(id))||null;}
+const rkLastCenterPage={};
+function rkOpenMainCenter(main){
+ const center=rkMainSections.find(section=>section.main===main);if(!center)return;
+ const last=rkLastCenterPage[main];navigate(last&&center.pages.includes(last)?last:center.main);
+}
 function rkCenterTabs(section){
  if(!section||!section.tabs.length)return '';
  return `<nav class="settings-tabs rk-module-tabs" aria-label="أقسام ${esc(section.label)}" role="navigation">${section.tabs.map(([id,title])=>
@@ -2700,7 +2705,14 @@ render=function(){
  rkRenderWithLegacyRoutes();
  const center=rkCenterForPage(page);
  const view=document.getElementById('view');
- if(center&&view&&center.tabs.length)view.innerHTML=rkCenterTabs(center)+view.innerHTML;
+ if(center){
+  rkLastCenterPage[center.main]=page;
+  if(view&&center.tabs.length){
+   view.innerHTML=rkCenterTabs(center)+view.innerHTML;
+   const active=view.querySelector?.('.rk-module-tabs .btn.active');
+   active?.scrollIntoView?.({block:'nearest',inline:'nearest'});
+  }
+ }
 };
 
 render();</script></body></html>
