@@ -3414,4 +3414,96 @@ render=function(){
   document.head.appendChild(sheet);
 })();
 
+/* V19 — Consistent breathing room between fields and all modal edges.
+   Keep the established navy/teal/gold palette and Arabic font unchanged. */
+(function rkInsetModalContents(){
+ const sheet=document.createElement('style');
+ sheet.setAttribute('data-rk-layout','edge-safe-v19');
+ sheet.textContent=`
+#modalRoot .modal{
+  --rk-field-edge:clamp(20px,3.4vw,26px);
+  box-sizing:border-box!important;
+  min-width:0!important;
+  max-width:100%!important;
+}
+#modalRoot .modalbg{
+  box-sizing:border-box!important;
+  padding-inline:14px!important;
+}
+#modalRoot .modal .modalbody,
+#modalRoot .modal .v3form,
+#modalRoot .modal .v7-modal-body,
+#modalRoot .modal .v8-wizard-host{
+  box-sizing:border-box!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  padding-inline:var(--rk-field-edge)!important;
+}
+#modalRoot .modal .rk-step-body{
+  box-sizing:border-box!important;
+  min-width:0!important;
+  max-width:100%!important;
+  padding-inline:16px!important;
+}
+#modalRoot .modal.rk-work-action-form>form,
+#modalRoot .modal>form:not(:has(>.v3form,>.v7-modal-body,>.v8-wizard-host,>.modalbody)){
+  box-sizing:border-box!important;
+  min-width:0!important;
+  max-width:100%!important;
+  padding-inline:var(--rk-field-edge)!important;
+}
+/* Some review dialogs render fields directly under .modal, with no .modalbody. */
+#modalRoot .modal>:is(.field,.formgrid,.metricline,.rk-action-preview,h3,p.notice){
+  box-sizing:border-box!important;
+  max-width:calc(100% - 2 * var(--rk-field-edge))!important;
+  margin-inline:var(--rk-field-edge)!important;
+}
+#modalRoot .modal>.rk-budget-detail-actions,
+#modalRoot .modal>.actions,
+#modalRoot .modal>.rk-footer,
+#modalRoot .modal>.v3footer,
+#modalRoot .modal>.wiz-actions{
+  box-sizing:border-box!important;
+  max-width:100%!important;
+  padding-inline:var(--rk-field-edge)!important;
+}
+#modalRoot .modal>form>.v3footer,
+#modalRoot .modal>form>.wiz-actions,
+#modalRoot .modal>form>.rk-footer{
+  box-sizing:border-box!important;
+  width:100%!important;
+  padding-inline:var(--rk-field-edge)!important;
+}
+#modalRoot .modal .field,
+#modalRoot .modal .formgrid,
+#modalRoot .modal .v7-group,
+#modalRoot .modal .portfolio-block,
+#modalRoot .modal .calculations{
+  box-sizing:border-box!important;
+  min-width:0!important;
+  max-width:100%!important;
+}
+#modalRoot .modal .field>input:not([type="checkbox"]):not([type="radio"]),
+#modalRoot .modal .field>select,
+#modalRoot .modal .field>textarea{
+  box-sizing:border-box!important;
+  min-width:0!important;
+  max-width:100%!important;
+}
+@media(max-width:680px){
+  #modalRoot .modal{--rk-field-edge:18px}
+  #modalRoot .modalbg{padding-inline:12px!important}
+  #modalRoot .modal .rk-step-body{padding-inline:13px!important}
+  #modalRoot .modal .modalbody,
+  #modalRoot .modal .v3form,
+  #modalRoot .modal .v7-modal-body,
+  #modalRoot .modal .v8-wizard-host{
+    padding-inline:var(--rk-field-edge)!important;
+  }
+}
+`;
+ document.head.appendChild(sheet);
+})();
+
 render();</script></body></html>
