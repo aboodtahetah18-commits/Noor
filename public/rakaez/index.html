@@ -2700,7 +2700,7 @@ render=function(){
  rkRenderWithLegacyRoutes();
  const center=rkCenterForPage(page);
  const view=document.getElementById('view');
- if(center&&view&&center.tabs.length)view.insertAdjacentHTML('afterbegin',rkCenterTabs(center));
+ if(center&&view&&center.tabs.length)view.innerHTML=rkCenterTabs(center)+view.innerHTML;
 };
 
 render();</script></body></html>
