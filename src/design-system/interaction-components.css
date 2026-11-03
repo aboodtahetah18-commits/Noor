@@ -129,3 +129,154 @@
     bottom:calc(var(--ux-space-2) + env(safe-area-inset-bottom))!important;
   }
 }
+
+
+/* Governed icon-only actions: preserve native actions, form submission, RTL and a11y labels. */
+button[data-namaa-symbol-only="true"] {
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex:0 0 auto;
+  inline-size:var(--ux-size-10)!important;
+  min-inline-size:var(--ux-size-10)!important;
+  max-inline-size:var(--ux-size-10)!important;
+  block-size:var(--ux-size-10)!important;
+  min-block-size:var(--ux-size-10)!important;
+  padding:0!important;
+  gap:0!important;
+  font-size:0!important;
+  line-height:0!important;
+  border-radius:var(--ux-radius-md);
+}
+button[data-namaa-symbol-only="true"] :is(span,strong,small,em,b) {
+  font-size:0!important;
+  line-height:0!important;
+}
+button[data-namaa-symbol-only="true"] svg {
+  display:block!important;
+  inline-size:var(--ux-size-5)!important;
+  block-size:var(--ux-size-5)!important;
+  flex:0 0 auto;
+}
+button[data-namaa-symbol-only="true"]:focus-visible,
+.ux-notification-trigger:focus-visible,
+.ux-notification-actions :is(button,a):focus-visible {
+  outline:var(--ux-border-width-2) var(--ux-border-style-default) var(--ux-focus-ring);
+  outline-offset:var(--ux-border-width-2);
+}
+
+/* Notifications use the existing official Namaa surfaces, spacing and functional colors. */
+.ux-notification-trigger {
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 auto;
+  inline-size:var(--ux-size-10);
+  block-size:var(--ux-size-10);
+  border:var(--ux-border-width-1) solid var(--ux-border-default);
+  border-radius:var(--ux-radius-md);
+  background:var(--ux-card-bg);
+  color:var(--ux-text-primary);
+  cursor:pointer;
+}
+.ux-notification-count {
+  position:absolute;
+  inset-block-start:0;
+  inset-inline-start:0;
+  min-inline-size:var(--ux-size-5);
+  block-size:var(--ux-size-5);
+  display:grid;
+  place-items:center;
+  border-radius:var(--ux-radius-full);
+  background:var(--ux-error);
+  color:var(--ux-text-inverse);
+  font-size:var(--ux-type-caption-size);
+  font-weight:700;
+  padding-inline:var(--ux-space-1);
+  transform:translate(-15%,-15%);
+}
+.ux-notification-drawer {
+  max-inline-size:min(var(--ux-container-reading), 100vw);
+}
+.ux-notification-list {
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:grid;
+  gap:var(--ux-space-3);
+}
+.ux-notification-item {
+  min-inline-size:0;
+  border:var(--ux-border-width-1) solid var(--ux-border-default);
+  border-radius:var(--ux-radius-md);
+  background:var(--ux-card-bg);
+  padding:var(--ux-space-3);
+}
+.ux-notification-heading {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:var(--ux-space-2);
+}
+.ux-notification-heading strong {
+  font-size:var(--ux-type-body-sm-size);
+  color:var(--ux-text-primary);
+}
+.ux-notification-heading span {
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-caption-size);
+  white-space:nowrap;
+}
+.ux-alert-critical .ux-notification-heading span { color:var(--ux-error); }
+.ux-alert-warning .ux-notification-heading span { color:var(--ux-warning); }
+.ux-notification-item p,
+.ux-notification-empty p,
+.ux-notification-unavailable {
+  margin:var(--ux-space-2) 0 0;
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-body-sm-size);
+  line-height:var(--ux-type-body-sm-line);
+}
+.ux-notification-actions {
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:var(--ux-space-2);
+  margin-block-start:var(--ux-space-3);
+}
+.ux-notification-actions form { margin:0; }
+.ux-notification-actions :is(button,a) {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  inline-size:var(--ux-size-10);
+  block-size:var(--ux-size-10);
+  border:var(--ux-border-width-1) solid var(--ux-border-default);
+  border-radius:var(--ux-radius-md);
+  background:var(--ux-card-bg);
+  color:var(--ux-brand-primary);
+  text-decoration:none;
+  cursor:pointer;
+}
+.ux-notification-source span { position:absolute;inline-size:1px;block-size:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap; }
+.ux-notification-empty {
+  display:grid;
+  justify-items:center;
+  gap:var(--ux-space-3);
+  padding:var(--ux-space-6);
+  color:var(--ux-success);
+  text-align:center;
+}
+.ux-notification-unavailable { color:var(--ux-error); }
+
+/* Dialogs fit their viewport; this does not alter approved typography or brand treatment. */
+.ux-dialog-surface,
+.p49-action-dialog {
+  box-sizing:border-box;
+  max-inline-size:calc(100vw - var(--ux-space-8));
+}
+:is(.ux-dialog-surface,.p49-action-dialog) :is(.ux-overlay-shell,.p49-dialog-shell,.ux-dialog-body,.p49-dialog-body) {
+  min-inline-size:0;
+  overflow-wrap:break-word;
+}
