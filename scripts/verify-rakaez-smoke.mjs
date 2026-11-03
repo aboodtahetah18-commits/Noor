@@ -43,7 +43,7 @@ const document={
 };
 class MutationObserver{observe(){} disconnect(){}}
 const app= new Function('document','localStorage','MutationObserver','window','alert','confirm','crypto',
-  source+"\nreturn {N,navigate,rkSplitKpiPanels,rkHomeKpiCenter,rkActionOpen,rkActionChooser,rkActionFromSMS,rkActionCommit,rkActionPreview,rkActionCents,rkActionExpected,rkActionPeriodSpend,rkMerchantEnglishFromText,parseSMS,rkMerchantMonitored,rkMerchantCreateCase,rkMerchantCaseSave,rkSaveTransactionEdit,rkRemoveTransaction,rkOperationCaseDialog,rkOperationCaseSave,submitModal,operationCases:()=>db.operationFollowups||[],assetHoldings:()=>db.holdings,updateTestSavings:(n)=>{db.savings[0].balance=n;save()},merchantSnapshot:()=>rkMerchantSnapshot,merchantCases:()=>db.merchantFollowups,pushMerchantTx:t=>{db.transactions.push(t);save()},openModal,formV3,interbankForm,ledgerOpen,ledgerReconcile,researchForm,v14CycleForm,v11ToggleSamples,rakaezDataCheck,rkOpen,rkSave,edit:d=>Object.assign(rkDraft,d),step:n=>{rkStep=n},state:()=>({demo:v11ExamplesMode,transactions:db.transactions.length,receivables:db.receivables?.length||0,collections:db.receivableCollections?.length||0,scheduled:db.scheduledOps?.length||0})};"
+  source+"\nreturn {N,navigate,rkSplitKpiPanels,rkSplitTitledIndicators,rkHomeKpiCenter,rkActionOpen,rkActionChooser,rkActionFromSMS,rkActionCommit,rkActionPreview,rkActionCents,rkActionExpected,rkActionPeriodSpend,rkMerchantEnglishFromText,parseSMS,rkMerchantMonitored,rkMerchantCreateCase,rkMerchantCaseSave,rkSaveTransactionEdit,rkRemoveTransaction,rkOperationCaseDialog,rkOperationCaseSave,submitModal,operationCases:()=>db.operationFollowups||[],assetHoldings:()=>db.holdings,updateTestSavings:(n)=>{db.savings[0].balance=n;save()},merchantSnapshot:()=>rkMerchantSnapshot,merchantCases:()=>db.merchantFollowups,pushMerchantTx:t=>{db.transactions.push(t);save()},openModal,formV3,interbankForm,ledgerOpen,ledgerReconcile,researchForm,v14CycleForm,v11ToggleSamples,rakaezDataCheck,rkOpen,rkSave,edit:d=>Object.assign(rkDraft,d),step:n=>{rkStep=n},state:()=>({demo:v11ExamplesMode,transactions:db.transactions.length,receivables:db.receivables?.length||0,collections:db.receivableCollections?.length||0,scheduled:db.scheduledOps?.length||0})};"
 )(document,localStorage,MutationObserver,{},()=>{},()=>true,{randomUUID:()=>String(++sequence)});
 
 
@@ -58,8 +58,11 @@ for(const [id] of app.N){
   assert.ok(view.includes('rk-stat-home-group'),'KPI sections must be available on home');
   assert.ok(view.includes('أرصدة ملاءة المسجلة'),'Home must include former financial-center KPIs');
   assert.ok(view.includes('إجمالي الاستثمار'),'Home must include investment KPIs');
+  assert.ok(view.includes('التزامات غير نقدية ومؤشرات تخطيطية'),'Home includes planning indicators formerly on financial center');
+  assert.ok(view.includes('<h2>المؤشرات</h2>'),'Home includes former financial intelligence indicator section');
  }else{
   assert.equal(app.rkSplitKpiPanels(view).blocks.length,0,'Statistics blocks must be absent outside home: '+id);
+  assert.equal(app.rkSplitTitledIndicators(view).blocks.length,0,'Analytical indicator sections must also leave operational pages: '+id);
  }
  if(id==='spending'||id==='spending-followups')assert.ok(view.includes('aria-label="صفحات كفاءة الإنفاق"'),'Dedicated spending subpage selector must be restored');
  rendered++;
