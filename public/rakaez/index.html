@@ -3015,4 +3015,18 @@ rkRemoveTransaction=function(id){
  if(affected){audit('مصدر متابعة محذوف',id);save();render();}
 };
 
+
+/* Keep operation monitoring visible in the previously established follow-ups page. */
+const rkExistingMerchantFollowupsView=rkSpendingFollowupsView;
+rkSpendingFollowupsView=function(){
+ const content=rkExistingMerchantFollowupsView();
+ const cases=db.operationFollowups||[];
+ if(!cases.length)return content;
+ const name=state=>({OPEN:'قيد المراجعة',MONITORING:'تحت المتابعة',BLOCKED:'تحتاج معالجة',VERIFIED:'تم التحقق'})[state]||'قيد المتابعة';
+ return content+`${sTitle('متابعة الاستثمارات وطلبات السحب')}
+ <section class="card"><div class="row between spaced"><h2>المتابعات المالية المستمرة</h2><span class="muted tiny">مرتبطة بالعمليات الأصلية ولا تُغلق تلقائيًا</span></div>
+ ${cases.slice().reverse().map(c=>`<div class="metricline"><span><strong>${esc(c.title||'عملية')}</strong><small class="muted"> · ${name(c.status)} · الموعد التالي ${esc(c.nextReview||'غير محدد')}</small></span>
+ <button type="button" class="btn" onclick="rkOperationCaseDialog('${esc(c.id)}')">عرض المتابعة</button></div>`).join('')}</section>`;
+};
+
 render();</script></body></html>
