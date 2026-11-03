@@ -3317,6 +3317,99 @@ render=function(){
     padding:8px 4px!important;
   }
 }
+
+/* V19 — modal content safety inset. Keep headers and footers edge-to-edge,
+   but never allow form controls to touch modal edges. */
+#modalRoot .modal{
+  box-sizing:border-box!important;
+  max-width:calc(100vw - 16px)!important;
+}
+#modalRoot .modal .formgrid{
+  box-sizing:border-box!important;
+  min-width:0!important;
+  max-width:100%!important;
+}
+#modalRoot .modal > .formgrid,
+#modalRoot .modal > form > .formgrid{
+  box-sizing:border-box!important;
+  width:100%!important;
+  max-width:100%!important;
+  padding:14px 22px!important;
+}
+#modalRoot .modal > .modalbody,
+#modalRoot .modal > form > .modalbody,
+#modalRoot .modal > .v7-modal-body,
+#modalRoot .modal > form > .v7-modal-body,
+#modalRoot .modal > .v3form,
+#modalRoot .modal > form > .v3form,
+#modalRoot .modal > .v8-wizard-host,
+#modalRoot .modal > form > .v8-wizard-host{
+  box-sizing:border-box!important;
+  padding-inline:22px!important;
+  max-width:100%!important;
+}
+#modalRoot .modal > .field,
+#modalRoot .modal > form > .field{
+  box-sizing:border-box!important;
+  margin-inline:22px!important;
+  max-width:calc(100% - 44px)!important;
+}
+#modalRoot .modal > .metricline,
+#modalRoot .modal > .notice,
+#modalRoot .modal > .calculations,
+#modalRoot .modal > .rk-action-preview,
+#modalRoot .modal > .rk-budget-detail-list,
+#modalRoot .modal > .rk-record-detail-list,
+#modalRoot .modal > .rk-work-context-body,
+#modalRoot .modal > h3,
+#modalRoot .modal > form > .rk-action-preview,
+#modalRoot .modal > form > .notice{
+  box-sizing:border-box!important;
+  margin-inline:22px!important;
+}
+#modalRoot .modal > .rk-budget-detail-actions{
+  box-sizing:border-box!important;
+  padding-inline:22px!important;
+  max-width:100%!important;
+}
+@media(max-width:680px){
+  #modalRoot .modal{max-width:calc(100vw - 10px)!important}
+  #modalRoot .modal > .formgrid,
+  #modalRoot .modal > form > .formgrid{
+    padding:13px 16px!important;
+  }
+  #modalRoot .modal > .modalbody,
+  #modalRoot .modal > form > .modalbody,
+  #modalRoot .modal > .v7-modal-body,
+  #modalRoot .modal > form > .v7-modal-body,
+  #modalRoot .modal > .v3form,
+  #modalRoot .modal > form > .v3form,
+  #modalRoot .modal > .v8-wizard-host,
+  #modalRoot .modal > form > .v8-wizard-host{
+    padding-inline:16px!important;
+  }
+  #modalRoot .modal > .field,
+  #modalRoot .modal > form > .field,
+  #modalRoot .modal > .metricline,
+  #modalRoot .modal > .notice,
+  #modalRoot .modal > .calculations,
+  #modalRoot .modal > .rk-action-preview,
+  #modalRoot .modal > .rk-budget-detail-list,
+  #modalRoot .modal > .rk-record-detail-list,
+  #modalRoot .modal > .rk-work-context-body,
+  #modalRoot .modal > h3,
+  #modalRoot .modal > form > .rk-action-preview,
+  #modalRoot .modal > form > .notice{
+    margin-inline:16px!important;
+  }
+  #modalRoot .modal > .field,
+  #modalRoot .modal > form > .field{
+    max-width:calc(100% - 32px)!important;
+  }
+  #modalRoot .modal > .rk-budget-detail-actions{
+    padding-inline:16px!important;
+  }
+}
 `;
   document.head.appendChild(sheet);
 })();
