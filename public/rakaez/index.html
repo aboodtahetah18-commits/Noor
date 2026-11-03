@@ -3099,44 +3099,117 @@ function rkSplitTitledIndicators(source){
  return {remaining:remaining+html.slice(start),blocks};
 }
 
-function rkHomeKpiCenter(){
- const groups=[
-  ['بنك الهلال',hilal],
-  ['بنك ملاءة',malaa],
-  ['بنك الأصول',assets],
-  ['المركز المالي',positionView],
-  ['دفتر الأستاذ',ledgerView],
-  ['الأهداف المالية',goalsView],
-  ['الديون والالتزامات',debtsView],
-  ['الرسوم الدورية',feesView],
-  ['الشركات والمؤشرات',researchView],
-  ['التحليلات والتنبيهات',intelligenceView],
-  ['التقارير المالية',reports],
-  ['المستحقات',rkReceivablesView],
-  ['العمليات المجدولة',rkScheduledView],
-  ['متابعة الإجراءات',rkSpendingFollowupsView]
- ];
- const sections=groups.map(([name,renderGroup])=>{
-  try{
-   const first=rkSplitKpiPanels(renderGroup());
-   const parts=[...first.blocks,...rkSplitTitledIndicators(first.remaining).blocks];
-   if(!parts.length)return '';
-   return `<details class="rk-stat-home-group"><summary>${esc(name)}</summary>
-    <div class="rk-stat-home-panels">${parts.join('')}</div></details>`;
-  }catch(error){
-   return `<details class="rk-stat-home-group"><summary>${esc(name)}</summary><p class="muted tiny">تعذر عرض المؤشرات حاليًا. تحقق من البيانات المسجلة.</p></details>`;
+
+/* V20 — Only the six decision-useful totals are shown on the home page.
+   Other pages retain actual ledger, portfolio, and operation details. */
+function rkHomeExecutiveSnapshot(){
+ const selected=/^\d{4}-\d{2}$/.test(month)?month:iso(today).slice(0,7);
+ const [year,monthNumber]=selected.split('-').map(Number);
+ const months=Array.from({length:6},(_,i)=>new Date(Date.UTC(year,monthNumber-1-5+i,1)).toISOString().slice(0,7));
+ const totals=new Map(months.map(period=>[period,{period,income:0,expense:0}]));
+ const categories=new Map();
+ for(const tx of db.transactions||[]){
+  const period=String(tx.date||'').slice(0,7),amount=Number(tx.amount||0);
+  if(!Number.isSafeInteger(amount)||amount<0)continue;
+  const row=totals.get(period);
+  if(row&&(tx.type==='expense'||tx.type==='income'))row[tx.type]+=amount;
+  if(period===selected&&tx.type==='expense'){
+   const label=db.categories.find(c=>c.id===tx.category)?.name||'غير مصنف';
+   categories.set(label,(categories.get(label)||0)+amount);
   }
- }).filter(Boolean).join('');
- return `${sTitle('مركز الإحصاءات الموحد','الإحصاءات المجمعة لجميع النوافذ — بحسب البيانات المسجلة والفترة المحددة')}
- <section class="card rk-stat-home-center">
- <p class="muted tiny">اختر المجال لعرض مؤشرات الأداء. تُحدّث هذه الإحصاءات من السجلات نفسها، ولا تُنشئ عمليات مالية أو أرصدة إضافية. تفاصيل كل عملية تبقى في صفحتها المخصصة.</p>
- ${sections||'<div class="rk-home-empty">لا تتوفر إحصاءات مجمعة بعد.</div>'}
- </section>`;
+ }
+ for(const row of totals.values()){
+  if(db.salaryMonths.includes(row.period))row.income+=Math.max(0,Number(db.salary)||0);
+ }
+ const monthly=totals.get(selected)||{
+  period:selected,
+  income:(db.salaryMonths.includes(selected)?Number(db.salary)||0:0),
+  expense:0,
+ };
+ const savings=(db.savings||[]).reduce((sum,item)=>sum+Math.max(0,Number(item.balance)||0),0);
+ const priced=(db.holdings||[]).filter(h=>rkHoldingHasPrice(h));
+ const investments=priced.reduce((sum,h)=>sum+Math.max(0,rkHoldingMarket(h)),0);
+ const unpriced=(db.holdings||[]).length-priced.length;
+ const debt=(db.debts||[]).reduce((sum,d)=>sum+Math.max(0,(Number(d.principal)||0)-(Number(d.paid)||0)),0);
+ const merchantCases=(db.merchantFollowups||[]).filter(c=>c.status!=='VERIFIED').length;
+ const operationCases=(db.operationFollowups||[]).filter(c=>c.status!=='VERIFIED').length;
+ const sorted=[...categories].filter(([,amount])=>amount>0).sort((a,b)=>b[1]-a[1]);
+ const top=sorted.slice(0,5).map(([name,amount])=>({name,amount}));
+ const remainder=sorted.slice(5).reduce((sum,[,amount])=>sum+amount,0);
+ if(remainder>0)top.push({name:'بقية البنود',amount:remainder});
+ return {
+  period:selected,income:monthly.income,expenses:monthly.expense,
+  net:monthly.income-monthly.expense,savings,investments,unpriced,debt,
+  openCases:merchantCases+operationCases,
+  months:[...totals.values()],
+  categories:top,
+ };
 }
-const rkDashboardWithOriginalSummary=dashboard;
-dashboard=function(){
- return rkHomeKpiCenter()+rkDashboardWithOriginalSummary();
-};
+function rkHomeChartCompact(amount){
+ const value=Number(amount)/100;
+ return new Intl.NumberFormat('ar-SA',{notation:'compact',maximumFractionDigits:1}).format(value)+' ر.س';
+}
+function rkHomeExecutiveDashboard(){
+ const data=rkHomeExecutiveSnapshot();
+ const items=[
+  ['الدخل المسجل للشهر',money(data.income),'chart'],
+  ['المصروف المسجل للشهر',money(data.expenses),'wallet'],
+  ['صافي حركة الشهر',money(data.net),'trend'],
+  ['إجمالي الادخار المسجل',money(data.savings),'shield'],
+  ['الاستثمارات المقيّمة',money(data.investments),'bank'],
+  ['الديون القائمة',money(data.debt),'fund'],
+ ];
+ const maxMonth=Math.max(1,...data.months.flatMap(m=>[m.income,m.expense]));
+ const monthChart=data.months.some(row=>row.income>0||row.expense>0)
+ ?data.months.map(row=>{
+  const incomePct=row.income>0?Math.max(2,Math.round(row.income/maxMonth*100)):0;
+  const expensePct=row.expense>0?Math.max(2,Math.round(row.expense/maxMonth*100)):0;
+  return `<div class="rk-summary-trend-row">
+    <span class="rk-summary-month" dir="ltr">${esc(row.period)}</span>
+    <div class="rk-summary-trend-bars">
+      <div class="rk-summary-track" role="img" aria-label="دخل ${esc(row.period)}: ${money(row.income)}">
+        <div class="rk-summary-fill rk-summary-income" style="width:${incomePct}%"></div>
+      </div>
+      <div class="rk-summary-track" role="img" aria-label="مصروف ${esc(row.period)}: ${money(row.expense)}">
+        <div class="rk-summary-fill rk-summary-expense" style="width:${expensePct}%"></div>
+      </div>
+    </div>
+    <span class="rk-summary-small-numbers" title="دخل ${money(row.income)}، مصروف ${money(row.expense)}">${rkHomeChartCompact(row.income)} / ${rkHomeChartCompact(row.expense)}</span>
+  </div>`;
+ }).join(''):'<p class="rk-home-empty">لا توجد حركة مالية مسجلة خلال الأشهر الستة المحددة.</p>';
+ const maxCategory=Math.max(1,...data.categories.map(x=>x.amount));
+ const categoriesChart=data.categories.length?data.categories.map(item=>{
+  const width=Math.max(2,Math.round(item.amount/maxCategory*100));
+  return `<div class="rk-summary-category-row">
+   <div class="rk-summary-category-label"><span>${esc(item.name)}</span><b>${money(item.amount)}</b></div>
+   <div class="rk-summary-track" role="img" aria-label="${esc(item.name)}: ${money(item.amount)}">
+    <div class="rk-summary-fill rk-summary-category-fill" style="width:${width}%"></div>
+   </div>
+  </div>`;
+ }).join(''):'<p class="rk-home-empty">لا توجد مصروفات موزعة على بنود خلال الشهر المحدد.</p>';
+ return `<div class="rk-executive-dashboard">
+  ${sTitle('المؤشرات المالية الرئيسية','إجماليات مركزة من جميع مراكز المنصة — الفترة '+esc(data.period))}
+  <div class="rk-summary-kpis">${items.map(([label,value,icon])=>
+   `<div class="rk-summary-kpi"><div class="rk-summary-kpi-title"><span>${esc(label)}</span><span aria-hidden="true">${ico(icon)}</span></div>
+   <strong dir="ltr">${value}</strong></div>`).join('')}</div>
+  <div class="rk-summary-chart-grid">
+   <section class="card rk-summary-chart"><header><h2>اتجاه الدخل والمصروف</h2><small>آخر 6 أشهر حتى الفترة المحددة</small></header>
+    <div class="rk-summary-legend"><span><i class="rk-summary-income"></i> الدخل المسجل</span><span><i class="rk-summary-expense"></i> المصروف</span></div>
+    <div class="rk-summary-trend">${monthChart}</div>
+   </section>
+   <section class="card rk-summary-chart"><header><h2>توزيع مصروف الشهر</h2><small>أهم البنود، مع تجميع البقية</small></header>
+    <div class="rk-summary-categories">${categoriesChart}</div>
+    <div class="rk-summary-chart-total"><span>إجمالي مصروف الفترة</span><b>${money(data.expenses)}</b></div>
+   </section>
+  </div>
+  <div class="rk-summary-attention" aria-label="القرارات والمتابعات المفتوحة">
+   <span>إجراءات تحتاج متابعة: <b>${data.openCases}</b></span>
+   <button type="button" class="btn" onclick="navigate('spending-followups')">عرض المتابعات</button>
+  </div>
+  <p class="muted tiny rk-summary-caveat">الإحصاءات بحسب السجلات المحلية، وليست أرصدة بنكية مؤكدة. الاستثمارات تشمل الأصول المقيّمة فقط${data.unpriced?'، وهناك '+data.unpriced+' أصل غير مقيّم':''}. لا تُجمع قيمة الادخار والاستثمارات في إجمالي ثروة لتجنب احتساب مبلغ واحد مرتين.</p>
+ </div>`;
+}
+dashboard=function(){return rkHomeExecutiveDashboard();};
 const rkRenderWithCentralStatistics=render;
 render=function(){
  rkRenderWithCentralStatistics();
@@ -3501,6 +3574,85 @@ render=function(){
   #modalRoot .modal .v8-wizard-host{
     padding-inline:var(--rk-field-edge)!important;
   }
+}
+`;
+ document.head.appendChild(sheet);
+})();
+
+(function rkApplyExecutiveOverviewStyle(){
+ const sheet=document.createElement('style');sheet.setAttribute('data-rk-dashboard','executive-v20');
+ sheet.textContent=`
+/* V20 — Executive overview and the approved blue dialog guidance. */
+#view .rk-executive-dashboard{display:grid;gap:17px;min-width:0}
+#view .rk-executive-dashboard>.sectiontitle{margin:0 0 2px}
+#view .rk-summary-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+#view .rk-summary-kpi{min-width:0;display:grid;gap:12px;padding:16px 18px;background:var(--white);border:1px solid var(--line);border-radius:15px}
+#view .rk-summary-kpi-title{display:flex;align-items:center;justify-content:space-between;gap:10px;color:var(--muted);font-size:12px}
+#view .rk-summary-kpi-title svg{width:18px;height:18px;color:var(--teal)}
+#view .rk-summary-kpi>strong{color:var(--navy);font-size:clamp(16px,1.7vw,22px);text-align:right;overflow-wrap:anywhere;line-height:1.5;font-variant-numeric:tabular-nums}
+#view .rk-summary-chart-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;min-width:0}
+#view .rk-summary-chart{min-width:0;display:grid;align-content:start;gap:13px}
+#view .rk-summary-chart>header{display:grid;gap:4px}
+#view .rk-summary-chart h2{margin:0;font-size:15px;color:var(--navy)}
+#view .rk-summary-chart header small{font-size:11px;color:var(--muted)}
+#view .rk-summary-legend{display:flex;flex-wrap:wrap;gap:14px;font-size:11px;color:var(--muted)}
+#view .rk-summary-legend span{display:inline-flex;align-items:center;gap:6px}
+#view .rk-summary-legend i{display:inline-block;width:9px;height:9px;border-radius:3px}
+#view .rk-summary-income{background:var(--teal)}
+#view .rk-summary-expense{background:var(--gold)}
+#view .rk-summary-trend{display:grid;gap:12px}
+#view .rk-summary-trend-row{display:grid;grid-template-columns:61px minmax(0,1fr) auto;gap:9px;align-items:center;min-width:0}
+#view .rk-summary-month{font-size:11px;color:var(--muted);text-align:right}
+#view .rk-summary-trend-bars{display:grid;gap:4px;min-width:0}
+#view .rk-summary-track{height:9px;min-width:0;background:var(--paper);border-radius:8px;overflow:hidden}
+#view .rk-summary-fill{height:100%;border-radius:8px}
+#view .rk-summary-small-numbers{min-width:0;font-size:10px;color:var(--ink);text-align:left;font-variant-numeric:tabular-nums}
+#view .rk-summary-categories{display:grid;gap:13px}
+#view .rk-summary-category-row{display:grid;gap:6px;min-width:0}
+#view .rk-summary-category-label{display:flex;gap:9px;justify-content:space-between;align-items:center;font-size:11px;color:var(--ink)}
+#view .rk-summary-category-label span{overflow-wrap:anywhere;min-width:0}
+#view .rk-summary-category-label b{font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--navy)}
+#view .rk-summary-category-fill{background:var(--blue)}
+#view .rk-summary-chart-total{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-top:10px;border-top:1px solid var(--line);font-size:12px}
+#view .rk-summary-chart-total b{color:var(--navy)}
+#view .rk-summary-attention{border:1px solid var(--line);background:var(--white);border-radius:14px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:12px;color:var(--ink)}
+#view .rk-summary-attention b{color:var(--navy);font-size:17px}
+#view .rk-summary-caveat{margin:0;line-height:1.9}
+#modalRoot .modal :is(.notice,.rk-action-preview,.rk-security-note,.notealert){
+ box-sizing:border-box!important;
+ display:block!important;
+ max-width:100%!important;
+ min-width:0!important;
+ overflow-wrap:anywhere;
+ white-space:normal;
+ line-height:1.8!important;
+ text-align:right;
+ color:var(--navy)!important;
+ background:var(--paper)!important;
+ border:1px solid var(--line)!important;
+ border-inline-start:3px solid var(--blue)!important;
+ border-radius:10px!important;
+ padding:11px 13px!important;
+ font-size:12px!important;
+}
+#modalRoot .modal > .notice,
+#modalRoot .modal > .rk-action-preview{
+ max-width:calc(100% - var(--rk-field-edge) * 2)!important;
+}
+#modalRoot .modal .modalhead h2{max-width:100%;overflow-wrap:anywhere;line-height:1.5}
+@media(max-width:1050px){
+ #view .rk-summary-chart-grid{grid-template-columns:minmax(0,1fr)}
+}
+@media(max-width:780px){
+ #view .rk-summary-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #view .rk-summary-trend-row{grid-template-columns:52px minmax(0,1fr) auto;gap:6px}
+}
+@media(max-width:440px){
+ #view .rk-summary-kpis{gap:8px}
+ #view .rk-summary-kpi{padding:12px}
+ #view .rk-summary-small-numbers{font-size:9px}
+ #view .rk-summary-attention{flex-wrap:wrap}
+ #view .rk-summary-attention button{width:100%}
 }
 `;
  document.head.appendChild(sheet);
