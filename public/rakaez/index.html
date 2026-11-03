@@ -2772,14 +2772,14 @@ function rkWorkActions(buttons){
 }
 function rkWorkbenchHome(){
  const latest=db.transactions.slice().sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))).slice(0,4);
- const openCases=(db.merchantFollowups||[]).filter(x=>x.status!=='VERIFIED');
+ const openCases=[...(db.merchantFollowups||[]).filter(x=>x.status!=='VERIFIED'),...(db.operationFollowups||[]).filter(x=>x.status!=='VERIFIED')];
  const late=openCases.filter(x=>x.status==='BLOCKED'||x.nextReview&&x.nextReview<iso(new Date()));
  const totals=db.savings.reduce((s,x)=>s+Number(x.balance||0),0);
  return `<div class="rk-work-flow">
  ${rkWorkActions([['تنفيذ إجراء مالي',"rkActionOpen('expense')",true],['الاستثمارات',"navigate('assets')"],['المتابعة',"navigate('spending')"]])}
  ${rkSummary([['مصروف الشهر',money(spent())],['الادخار المسجل',money(totals)],['المتابعات المفتوحة',String(openCases.length)]])}
  <section class="card"><div class="rk-work-title"><h2>ما الذي يحتاج قرارًا؟</h2><button type="button" class="btn" onclick="navigate('spending')">عرض المتابعة</button></div>
- ${late.length?late.slice(0,3).map(c=>rkWorkRow(c.merchantName,'موعد مراجعة: '+(c.nextReview||'غير محدد'),'',`rkMerchantCaseDialog('${esc(c.id)}')`,'معالجة')).join(''):'<div class="rk-home-empty">لا توجد حالات متأخرة أو متعثرة في البيانات المسجلة.</div>'}</section>
+ ${late.length?late.slice(0,3).map(c=>rkWorkRow(c.merchantName||c.title,'موعد مراجعة: '+(c.nextReview||'غير محدد'),'',c.relatedId?`rkOperationCaseDialog('${esc(c.id)}')`:`rkMerchantCaseDialog('${esc(c.id)}')`,'معالجة')).join(''):'<div class="rk-home-empty">لا توجد حالات متأخرة أو متعثرة في البيانات المسجلة.</div>'}</section>
  <section class="card"><div class="rk-work-title"><h2>آخر العمليات</h2><button type="button" class="btn" onclick="rkOpenContext('transactions')">السجل</button></div>
  ${latest.length?latest.map(t=>rkWorkRow(t.description||'عملية',t.date||'',money(t.amount),`rkTransactionDetails('${esc(t.id)}')`)).join(''):'<div class="rk-home-empty">لم تُسجل عمليات بعد.</div>'}</section></div>`;
 }
@@ -2808,7 +2808,7 @@ function rkWorkbenchInvestments(){
  const market=db.holdings.reduce((a,h)=>a+(rkHoldingHasPrice(h)?rkHoldingMarket(h):0),0);
  return `<div class="rk-work-flow">
  ${rkWorkActions([['إضافة أصل / استثمار',"openModal('asset')",true],['إنشاء محفظة',"rkAssetAccountModal()"],['نقل للادخار',"openModal('deposit')"]])}
- ${rkSummary([['إجمالي الادخار',money(saving)],['الاستثمارات المسجلة',money(market)],['عدد الأصول',String(db.holdings.length)]])}
+ ${rkSummary([['إجمالي الادخار',money(saving)],['الاستثمارات المسجلة',money(market)],['متابعات استثمار نشطة',String((db.operationFollowups||[]).filter(x=>x.kind==='INVESTMENT'&&x.status!=='VERIFIED').length)]])}
  <section class="card"><div class="rk-work-title"><h2>استثماراتي ومحافظي</h2><button class="btn" onclick="rkOpenContext('assets-full')">تفاصيل الأصول</button></div>
  ${holdings.length?holdings.map(h=>rkWorkRow(h.name||'استثمار',h.kind||'أصل',rkHoldingHasPrice(h)?money(rkHoldingMarket(h)):'غير مقيم',`rkAssetDetails('${esc(h.id)}')`)).join(''):'<div class="rk-home-empty">لا توجد استثمارات مسجلة. ابدأ بإضافة أصل أو محفظة.</div>'}</section>
  <section class="card"><div class="rk-work-title"><h2>الادخار والسيولة</h2><button class="btn" onclick="rkOpenContext('malaa')">عرض الشرائح والطلبات</button></div>
@@ -2820,14 +2820,16 @@ function rkWorkbenchReview(){
  const open=(db.merchantFollowups||[]).filter(c=>c.status!=='VERIFIED');
  const merchants=rkMerchantSnapshot.filter(m=>m.pressure!=='NORMAL');
  const pendingKeys=new Set(open.map(c=>c.merchantKey));
+ const operationCases=(db.operationFollowups||[]).filter(c=>c.status!=='VERIFIED');
+ const opRows=operationCases.map(c=>({type:'operation',id:c.id,title:c.title,sub:(c.kind==='INVESTMENT'?'متابعة استثمار':'متابعة سحب')+' · '+(c.owner||'لم يُسند')+' · '+c.nextReview,priority:c.status==='BLOCKED'?0:1}));
  const caseRows=open.map(c=>({type:'case',id:c.id,title:c.merchantName,sub:'متابعة '+(c.owner||'غير مسندة')+' · المراجعة '+(c.nextReview||'غير محددة'),priority:c.status==='BLOCKED'?0:1}));
  const anomalyRows=merchants.filter(m=>!pendingKeys.has(m.key)).map(m=>({type:'merchant',id:m.key,title:m.name,sub:m.categoryName+' · '+(m.pressure==='OVER'?'تجاوز':m.pressure==='WATCH'?'ضغط موازنة':'زيادة إنفاق'),priority:2}));
- const rows=[...caseRows,...anomalyRows].sort((a,b)=>a.priority-b.priority).slice(0,9);
+ const rows=[...opRows,...caseRows,...anomalyRows].sort((a,b)=>a.priority-b.priority).slice(0,9);
  return `<div class="rk-work-flow">
  ${rkWorkActions([['تسجيل إجراء ومعاينة أثره',"rkActionOpen('expense')",true],['تقرير تفصيلي',"rkOpenContext('reports')"],['تقييم الوضع المالي',"rkOpenContext('intelligence')"]])}
- ${rkSummary([['متابعات نشطة',String(open.length)],['إشارات إنفاق',String(merchants.length)],['حالات تم التحقق منها',String((db.merchantFollowups||[]).filter(c=>c.status==='VERIFIED').length)]])}
+ ${rkSummary([['متابعات نشطة',String(open.length+operationCases.length)],['إشارات إنفاق',String(merchants.length)],['حالات تم التحقق منها',String((db.merchantFollowups||[]).filter(c=>c.status==='VERIFIED').length+(db.operationFollowups||[]).filter(c=>c.status==='VERIFIED').length)]])}
  <section class="card"><div class="rk-work-title"><h2>قرارات وإجراءات تحتاج متابعة</h2><span class="muted tiny">قائمة عمل واحدة؛ لا صفحات مراقبة منفصلة</span></div>
- ${rows.length?rows.map(r=>rkWorkRow(r.title,r.sub,'',r.type==='case'?`rkMerchantCaseDialog('${esc(r.id)}')`:`rkMerchantOpenFromKey('${esc(r.id)}')`,r.type==='case'?'متابعة الخطة':'دراسة المعالجة')).join(''):'<div class="rk-home-empty">لا توجد مشكلات مؤكدة أو إجراءات مفتوحة في البيانات الحالية.</div>'}
+ ${rows.length?rows.map(r=>rkWorkRow(r.title,r.sub,'',r.type==='operation'?`rkOperationCaseDialog('${esc(r.id)}')`:r.type==='case'?`rkMerchantCaseDialog('${esc(r.id)}')`:`rkMerchantOpenFromKey('${esc(r.id)}')`,r.type==='merchant'?'دراسة المعالجة':'متابعة الخطة')).join(''):'<div class="rk-home-empty">لا توجد مشكلات مؤكدة أو إجراءات مفتوحة في البيانات الحالية.</div>'}
  ${rkToolButtons(['spending-followups','reports','intelligence','debts','fees','goals'])}</section>
  <p class="notice">المؤشرات تفسيرية بحسب البيانات المحلية، ولا تشكّل حكمًا قاطعًا على المورد أو الاستقرار المالي؛ يتم التحقق من أسباب الزيادة قبل اتخاذ القرار.</p></div>`;
 }
@@ -3024,5 +3026,78 @@ function rkActionReceipt(id,caseId=''){
  <button type="button" class="btn" onclick="closeModal()">إغلاق</button></div></div></div>`;
  if(typeof v10RepairDialogs==='function')v10RepairDialogs();
 }
+
+
+/* Operation follow-ups remain open beyond initial investment/withdrawal recording. */
+function rkOperationAdd(kind,relatedId,title,due){
+ if(!Array.isArray(db.operationFollowups))db.operationFollowups=[];
+ if(db.operationFollowups.some(x=>x.kind===kind&&x.relatedId===relatedId))return null;
+ const now=iso(new Date());
+ const c={id:rid(),kind,relatedId,title,owner:'',status:'OPEN',createdAt:now,
+  nextReview:due&&/^\d{4}-\d{2}-\d{2}$/.test(due)?due:rkMerchantWindowDays(now,30),
+  reviews:0,events:[{date:new Date().toISOString(),status:'OPEN',note:'إنشاء سلسلة متابعة بعد تسجيل العملية'}]};
+ db.operationFollowups.push(c);
+ return c;
+}
+function rkOperationCaseDialog(id){
+ const c=(db.operationFollowups||[]).find(x=>x.id===id);if(!c)return;
+ const invest=c.kind==='INVESTMENT',asset=invest?db.holdings.find(h=>h.id===c.relatedId):null;
+ const latest=(c.events||[]).slice(-5).reverse();
+ const options=invest?[['MONITORING','مراقبة الاستثمار'],['BLOCKED','يحتاج تدخلاً'],['CHECKIN','تقييم دوري واستمرار المتابعة']]:
+  [['MONITORING','انتظار التحصيل أو التسوية'],['BLOCKED','سحب متعثر'],['VERIFIED','تم التحقق من تنفيذ السحب']];
+ document.getElementById('modalRoot').innerHTML=`<div class="modalbg" onclick="if(event.target===this)closeModal()">
+ <div class="modal rk-work-action-form" role="dialog" aria-modal="true" aria-label="سلسلة المتابعة">
+ <div class="modalhead"><h2>متابعة ${esc(c.title)}</h2><button class="btn" type="button" onclick="closeModal()" aria-label="إغلاق">${ico('close')}</button></div>
+ <p class="notice">هذه متابعة مستمرة لحالة العملية. تسجيل الاستثمار لا يثبت تسوية بنكية؛ وتظل متابعة الاستثمار مفتوحة حتى التخارج الموثق. تُقفل متابعة السحب فقط بعد تأكيد تنفيذه.</p>
+ <div class="metricline"><span>النوع</span><b>${invest?'استثمار مسجل':'طلب سحب'}</b></div>
+ <div class="metricline"><span>الموعد التالي</span><b>${esc(c.nextReview)}</b></div>
+ ${asset?`<div class="metricline"><span>الأصل المرتبط</span><b>${esc(asset.name||'استثمار')}</b></div>`:''}
+ <div class="formgrid">
+ <div class="field"><label for="rkOpStatus">نتيجة المتابعة</label><select id="rkOpStatus">${options.map(([key,label])=>`<option value="${key}" ${c.status===key?'selected':''}>${label}</option>`).join('')}</select></div>
+ <div class="field"><label for="rkOpOwner">المسؤول</label><input id="rkOpOwner" value="${esc(c.owner||'')}" maxlength="100"></div>
+ <div class="field"><label for="rkOpReview">موعد التحقق القادم</label><input type="date" id="rkOpReview" value="${esc(c.nextReview||'')}"></div>
+ <div class="field full"><label for="rkOpNote">ما تم التحقق منه أو الإجراء التصحيحي</label><textarea id="rkOpNote" rows="3" maxlength="600" placeholder="اربط المراجعة بمستند أو وصف نتيجة محددة"></textarea></div>
+ </div>
+ <h3>سجل المتابعة</h3>
+ ${latest.map(e=>`<div class="metricline"><span>${esc(e.date.slice(0,10))}</span><small>${esc(e.note||'تحديث')}</small></div>`).join('')}
+ <div class="rk-budget-detail-actions"><button type="button" class="btn primary" onclick="rkOperationCaseSave('${esc(c.id)}')">حفظ المتابعة</button>
+ ${invest&&asset?`<button type="button" class="btn" onclick="rkAssetDetails('${esc(asset.id)}')">عرض الاستثمار</button>`:''}
+ <button type="button" class="btn" onclick="closeModal()">إغلاق</button></div></div></div>`;
+ if(typeof v10RepairDialogs==='function')v10RepairDialogs();
+}
+function rkOperationCaseSave(id){
+ const c=(db.operationFollowups||[]).find(x=>x.id===id);if(!c)return;
+ const read=k=>String(document.getElementById(k)?.value||'').trim();
+ const state=read('rkOpStatus'),owner=read('rkOpOwner'),note=read('rkOpNote'),next=read('rkOpReview');
+ const valid=c.kind==='INVESTMENT'?['MONITORING','BLOCKED','CHECKIN']:['MONITORING','BLOCKED','VERIFIED'];
+ if(!valid.includes(state)||!owner||!note||!/^\d{4}-\d{2}-\d{2}$/.test(next))return alert('حدد المسؤول ونتيجة المراجعة وتاريخ المتابعة.');
+ if((state==='VERIFIED'||state==='CHECKIN')&&next<iso(new Date()))return alert('اختر تاريخ متابعة صالحًا؛ لا تُغلق حالة السحب دون إثبات التسوية.');
+ c.status=state==='CHECKIN'?'MONITORING':state;
+ c.owner=owner;c.nextReview=state==='CHECKIN'?rkMerchantWindowDays(iso(new Date()),30):next;
+ if(state==='CHECKIN')c.reviews=Number(c.reviews||0)+1;
+ c.events.push({date:new Date().toISOString(),status:state,note});
+ audit('متابعة عملية',c.title+' — '+state);save();closeModal();navigate('spending');
+ toast('حُفظت المتابعة، مع استمرار مراقبة العمليات المفتوحة.');
+}
+const rkSubmitOriginal=submitModal;
+submitModal=function(type,id){
+ const beforeAssets=db.holdings.length,beforeWithdrawals=db.withdrawals.length,beforeDividends=db.dividends.length;
+ rkSubmitOriginal(type,id);
+ let changed=false;
+ if(type==='asset'&&db.holdings.length>beforeAssets){
+  const asset=db.holdings.at(-1);
+  if(rkOperationAdd('INVESTMENT',asset.id,asset.name||'استثمار مسجل'))changed=true;
+ }else if(type==='withdraw'&&db.withdrawals.length>beforeWithdrawals){
+  const request=db.withdrawals[0],bucket=db.savings.find(x=>x.id===request.bucket);
+  if(rkOperationAdd('WITHDRAWAL',request.id,'سحب '+(bucket?.name||'ادخار'),request.available))changed=true;
+ }else if(type==='portfolioUpdate'&&id){
+  const c=(db.operationFollowups||[]).find(x=>x.kind==='INVESTMENT'&&x.relatedId===id&&x.status!=='VERIFIED');
+  if(c){c.events.push({date:new Date().toISOString(),status:'VALUATION',note:'تم تحديث القيمة المسجلة للمحفظة'});changed=true;}
+ }else if(type==='dividend'&&db.dividends.length>beforeDividends){
+  const paid=db.dividends.at(-1),c=(db.operationFollowups||[]).find(x=>x.kind==='INVESTMENT'&&x.relatedId===paid.holding);
+  if(c){c.events.push({date:new Date().toISOString(),status:'DISTRIBUTION',note:'تسجيل توزيع مرتبط بالاستثمار'});changed=true;}
+ }
+ if(changed){audit('إنشاء / تحديث متابعة استثمارية',type);save();render();}
+};
 
 render();</script></body></html>
