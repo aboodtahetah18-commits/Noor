@@ -3,28 +3,46 @@
 import Link from 'next/link';
 import { ActionDialog } from '@/components/overlays/action-dialog';
 import { LucideIcon } from '@/components/ui/lucide-icon';
+import { FormWizard } from '@/components/ui/form-wizard';
 
 export function InvestmentActionDialogs() {
   return (
     <div className="namaa-investments-actions" aria-label="إجراءات الاستثمار">
-      <ActionDialog title="إضافة محفظة استثمارية" description="أدخل تعريف المحفظة وبياناتها الأساسية دون مغادرة صفحة الاستثمارات." size="xl" triggerClassName="namaa-wide-action-secondary" trigger={<span className="namaa-top-action-content"><LucideIcon name="plus" size={20}/><span>إضافة محفظة</span></span>}>
-        <div className="namaa-investment-dialog-content">
-          <form className="form-grid" onSubmit={(event)=>event.preventDefault()}>
-            <label>اسم المحفظة<input name="portfolioName" placeholder="مثال: محفظة النمو طويلة الأجل" /></label>
-            <label>الجهة أو المنصة<input name="provider" placeholder="اسم البنك أو المنصة المرخصة" /></label>
-            <label>نوع المحفظة<select name="portfolioType" defaultValue="MIXED"><option value="EQUITY">أسهم</option><option value="FUNDS">صناديق</option><option value="DEBT">أدوات دين</option><option value="REAL_ASSETS">أصول حقيقية</option><option value="MIXED">متنوعة</option><option value="OTHER">أخرى</option></select></label>
-            <label>العملة<select name="currency" defaultValue="SAR"><option value="SAR">ريال سعودي</option><option value="USD">دولار أمريكي</option><option value="OTHER">أخرى</option></select></label>
-            <label>القيمة الحالية<input name="currentValue" inputMode="decimal" placeholder="0.00" /></label>
-            <label>السيولة المتاحة<input name="cashValue" inputMode="decimal" placeholder="0.00" /></label>
-            <label>رقم/مرجع المحفظة<input name="portfolioReference" placeholder="اختياري" /></label>
-            <label>درجة المخاطر<select name="riskLevel" defaultValue="MEDIUM"><option value="LOW">منخفضة</option><option value="MEDIUM">متوسطة</option><option value="HIGH">مرتفعة</option></select></label>
-            <label className="namaa-investment-dialog-full">ملاحظات<textarea name="notes" rows={4} placeholder="أي تفاصيل مهمة عن المحفظة أو القيود الاستثمارية" /></label>
-            <div className="p49-dialog-actions namaa-investment-dialog-full"><button type="button" className="primary-button">حفظ بيانات المحفظة</button></div>
-          </form>
-        </div>
+      <ActionDialog title="إضافة محفظة استثمارية" size="xl" triggerAriaLabel="إضافة محفظة استثمارية" triggerClassName="namaa-wide-action-secondary" trigger={<span className="namaa-top-action-content"><LucideIcon name="plus" size={20}/></span>}>
+        <form className="namaa-investment-dialog-content" onSubmit={(event)=>event.preventDefault()}>
+          <FormWizard
+            steps={[
+              {
+                title: 'تعريف المحفظة',
+                content: <div className="form-grid">
+                  <label>اسم المحفظة<input name="portfolioName" placeholder="اسم المحفظة" required /></label>
+                  <label>الجهة أو المنصة<input name="provider" placeholder="البنك أو المنصة" /></label>
+                  <label>نوع المحفظة<select name="portfolioType" defaultValue="MIXED"><option value="EQUITY">أسهم</option><option value="FUNDS">صناديق</option><option value="DEBT">أدوات دين</option><option value="REAL_ASSETS">أصول حقيقية</option><option value="MIXED">متنوعة</option><option value="OTHER">أخرى</option></select></label>
+                </div>,
+              },
+              {
+                title: 'القيم والمخاطر',
+                content: <div className="form-grid">
+                  <label>العملة<select name="currency" defaultValue="SAR"><option value="SAR">ريال سعودي</option><option value="USD">دولار أمريكي</option><option value="OTHER">أخرى</option></select></label>
+                  <label>القيمة الحالية<input name="currentValue" inputMode="decimal" placeholder="0.00" /></label>
+                  <label>السيولة المتاحة<input name="cashValue" inputMode="decimal" placeholder="0.00" /></label>
+                  <label>درجة المخاطر<select name="riskLevel" defaultValue="MEDIUM"><option value="LOW">منخفضة</option><option value="MEDIUM">متوسطة</option><option value="HIGH">مرتفعة</option></select></label>
+                </div>,
+              },
+              {
+                title: 'المراجعة',
+                content: <div className="form-grid">
+                  <label>رقم المحفظة<input name="portfolioReference" /></label>
+                  <label>ملاحظات<textarea name="notes" rows={3} /></label>
+                </div>,
+              },
+            ]}
+            finish={<button type="button" className="primary-button" aria-label="حفظ بيانات المحفظة" title="حفظ بيانات المحفظة"><LucideIcon name="save" size={20} /></button>}
+          />
+        </form>
       </ActionDialog>
 
-      <ActionDialog title="طلب تحليل استثماري" description="حدد ما تريد تحليله قبل إرسال الطلب إلى فريق التحليل." size="lg" triggerClassName="namaa-wide-action-secondary" trigger={<span className="namaa-top-action-content"><LucideIcon name="chart" size={20}/><span>طلب تحليل</span></span>}>
+      <ActionDialog title="طلب تحليل استثماري" size="lg" triggerClassName="namaa-wide-action-secondary" trigger={<span className="namaa-top-action-content"><LucideIcon name="chart" size={20}/><span>طلب تحليل</span></span>}>
         <div className="namaa-investment-dialog-content">
           <form className="form-grid" onSubmit={(event)=>event.preventDefault()}>
             <label>المحفظة أو الأصل<input name="target" placeholder="اسم المحفظة أو الأصل" /></label>
@@ -37,23 +55,23 @@ export function InvestmentActionDialogs() {
         </div>
       </ActionDialog>
 
-      <ActionDialog title="تحديث المحفظة عبر الدردشة" description="اختر سياق التحديث ثم افتح محادثة الفريق المرتبطة بالمحفظة." size="lg" triggerClassName="namaa-wide-action-secondary" trigger={<span className="namaa-top-action-content"><LucideIcon name="messageSquareText" size={20}/><span>التحديث عبر الدردشة</span></span>}>
+      <ActionDialog title="تحديث المحفظة عبر الدردشة" size="lg" triggerClassName="namaa-wide-action-secondary" trigger={<span className="namaa-top-action-content"><LucideIcon name="messageSquareText" size={20}/><span>التحديث عبر الدردشة</span></span>}>
         <div className="namaa-investment-dialog-content">
           <div className="namaa-investment-dialog-grid">
-            <article><span>نوع التحديث</span><strong>قيمة أو رصيد أو أصل جديد</strong><p>استخدم الدردشة لإرسال التغيير مع الإثباتات أو الملاحظات.</p></article>
-            <article><span>قرار استثماري</span><strong>مراجعة توصية أو مخاطرة</strong><p>المناقشة لا تنفذ أي شراء أو بيع تلقائيًا.</p></article>
-            <article><span>متابعة</span><strong>نتائج أداء أو تنبيه</strong><p>يمكن طلب تفسير نتيجة أو متابعة توصية سابقة.</p></article>
+            <article><span>نوع التحديث</span><strong>قيمة أو رصيد أو أصل جديد</strong></article>
+            <article><span>قرار استثماري</span><strong>مراجعة توصية أو مخاطرة</strong></article>
+            <article><span>متابعة</span><strong>نتائج أداء أو تنبيه</strong></article>
           </div>
           <div className="p49-dialog-actions"><Link href="/conversations" className="primary-link">فتح محادثة المحفظة</Link></div>
         </div>
       </ActionDialog>
 
-      <ActionDialog title="متابعة المحافظ والاستثمارات" description="راجع ما يحتاج انتباهًا قبل الانتقال إلى التقارير التفصيلية." size="lg" triggerClassName="namaa-wide-action-secondary" trigger={<span className="namaa-top-action-content"><LucideIcon name="listChecks" size={20}/><span>عرض المتابعة</span></span>}>
+      <ActionDialog title="متابعة المحافظ والاستثمارات" size="lg" triggerClassName="namaa-wide-action-secondary" trigger={<span className="namaa-top-action-content"><LucideIcon name="listChecks" size={20}/><span>عرض المتابعة</span></span>}>
         <div className="namaa-investment-dialog-content">
           <div className="namaa-investment-dialog-grid">
-            <article><span>المحافظ</span><strong>تظهر بعد الربط</strong><p>عدد المحافظ النشطة وقيمتها المجمعة.</p></article>
-            <article><span>تنبيهات المخاطر</span><strong>تظهر عند وجود حالة</strong><p>أي أصل أو محفظة تجاوزت حدود المتابعة.</p></article>
-            <article><span>التوصيات المفتوحة</span><strong>بانتظار قرار المستخدم</strong><p>لا يتم تنفيذ أي توصية تلقائيًا.</p></article>
+            <article><span>المحافظ</span><strong>تظهر بعد الربط</strong></article>
+            <article><span>تنبيهات المخاطر</span><strong>تظهر عند وجود حالة</strong></article>
+            <article><span>التوصيات المفتوحة</span><strong>بانتظار قرار المستخدم</strong></article>
           </div>
           <div className="p49-dialog-actions"><Link href="/reports" className="primary-link">فتح المرصد والتقارير</Link></div>
         </div>
