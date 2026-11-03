@@ -4069,7 +4069,9 @@ render=function(){
   let index=0;
   function validStep(step){
    for(const field of step.querySelectorAll('input,select,textarea')){
-    if(field.disabled||field.closest('[hidden]')||field.type==='hidden')continue;
+    if(field.disabled||field.type==='hidden')continue;
+    const hiddenAncestor=field.closest('[hidden]');
+    if(hiddenAncestor&&hiddenAncestor!==step)continue;
     if(!field.checkValidity()){
      const failedIndex=steps.indexOf(step);
      if(failedIndex!==index){index=failedIndex;renderSteps();}
