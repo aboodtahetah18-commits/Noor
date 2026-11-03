@@ -843,6 +843,7 @@ button.rk-v17-icon-only:focus-visible{outline:2px solid var(--gold)!important;ou
 #modalRoot .rk-v18-step-nav[aria-current="step"]{background:var(--paper);color:var(--navy)}
 #modalRoot .rk-v18-step-nav[aria-current="step"] b{border-color:var(--teal);background:var(--teal);color:#fff}
 #modalRoot .rk-v18-step-panel{padding:18px 22px;min-height:200px}
+#modalRoot .rk-v18-panel-heading{font-size:15px;color:var(--navy);margin:0 0 15px;font-weight:700}
 #modalRoot .rk-v18-step-panel[hidden],#modalRoot .rk-v18-step-nav[hidden],#modalRoot .rk-v18-wizard-actions button[hidden]{display:none!important}
 #modalRoot .rk-v18-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 #modalRoot .rk-v18-fields > .rk-candidate-allocation-edit,#modalRoot .rk-v18-fields > .field:has(textarea){grid-column:1/-1}
@@ -3976,8 +3977,9 @@ render=function(){
   pages.forEach((page,i)=>{
    const tab=element('button','rk-v18-step-nav');
    tab.type='button';tab.setAttribute('aria-label','الانتقال إلى '+page.title);tab.title=page.title;
-   const count=element('b','',String(i+1));const text=element('span','',page.title);tab.append(count,text);nav.append(tab);links.push(tab);
+   tab.innerHTML=v18Icon(['wallet','chart','settings','check'][i]);tab.dataset.rkV17Enhanced='1';nav.append(tab);links.push(tab);
    const panel=element('section','rk-v18-step-panel');panel.setAttribute('aria-label',page.title);
+   panel.appendChild(element('h3','rk-v18-panel-heading',page.title));
    const inner=element('div',i===3?'rk-v18-review':'rk-v18-fields');
    page.fields.forEach(node=>inner.append(node));panel.append(inner);panels.append(panel);contents.push(panel);
    tab.onclick=()=>go(i);
