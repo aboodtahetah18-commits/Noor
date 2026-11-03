@@ -853,6 +853,92 @@ function rkLegacyAllocationBars(data){
  if(!rows.length)return '<div class="rk-no-allocation">لم يُسجل توزيع أصول المحفظة بعد</div>';
  return '<div class="rk-allocation-list">'+rows.map(([k,v])=>'<div class="rk-allocation-line"><span>'+esc(k)+'</span><div class="rk-allocation-bar"><i style="width:'+Math.min(100,Number(v))+'%"></i></div><b>'+Number(v).toFixed(2)+'%</b></div>').join('')+'</div>';
 }
+const rkComponentTypes=["صندوق استثماري","صندوق متداول","سهم شركة","عملة رقمية","ذهب","صكوك","سيولة","عقار","استثمار بديل","أخرى"];
+function rkComponentOwner(kind,id){
+ rkEnsureAssets();
+ if(kind==='account')return db.assetAccounts.find(x=>x.id===id)||null;
+ if(kind==='holding')return db.holdings.find(x=>x.id===id&&x.kind==='محفظة استثمارية')||null;
+ if(kind==='candidate')return db.candidatePortfolios.find(x=>x.id===id&&x.category==='محفظة')||null;
+ return null;
+}
+function rkComponentItems(owner){return Array.isArray(owner?.components)?owner.components:[]}
+function rkComponentSummary(owner){
+ const rows=rkComponentItems(owner);
+ if(!rows.length)return '<div class="rk-no-allocation">لم تُضف مكونات للمحفظة بعد</div>';
+ const ratioCount=rows.filter(x=>x.weight!==null&&x.weight!==undefined&&x.weight!=='').length;
+ const weightsComplete=ratioCount===rows.length;
+ return '<div class="rk-components-list">'+rows.map((x,i)=>{
+  const ratio=x.weight!==null&&x.weight!==undefined&&x.weight!==''?Number(x.weight).toFixed(2)+'%':'غير محددة';
+  return '<div class="rk-component-display"><span class="rk-component-rank">'+(i+1)+'</span><span class="rk-component-title"><strong>'+esc(x.name)+'</strong><small>'+esc(x.kind||'أخرى')+(x.symbol?' · '+esc(x.symbol):'')+'</small>'+(x.note?'<small>'+esc(x.note)+'</small>':'')+'</span><span class="rk-component-weight">'+ratio+'</span></div>';
+ }).join('')+'</div>'+(weightsComplete?'<div class="rk-components-total">مجموع نسب المكونات: <strong>'+rows.reduce((sum,x)=>sum+Number(x.weight),0).toFixed(2)+'%</strong></div>':'');
+}
+let rkComponentRowId=0;
+function rkComponentRow(x={}){
+ const uid=++rkComponentRowId,componentId=esc(x.id||'');
+ const name=esc(x.name||''),symbol=esc(x.symbol||''),note=esc(x.note||'');
+ const weight=x.weight===null||x.weight===undefined||x.weight===''?'':String(x.weight);
+ return '<div class="rk-component-line" data-row="'+uid+'" data-component-id="'+componentId+'"><div class="rk-component-line-head"><span>مكوّن استثماري</span><button type="button" class="btn rk-component-remove" onclick="this.closest(\'.rk-component-line\').remove();rkComponentsRefreshTotal()" aria-label="حذف المكوّن">'+ico('delete')+' حذف</button></div>'+
+ '<div class="rk-component-line-fields">'+
+ '<label>الاسم<input data-name maxlength="100" required placeholder="مثال: صندوق الذكاء الاصطناعي" value="'+name+'"></label>'+
+ '<label>النوع<select data-kind>'+rkComponentTypes.map(k=>'<option value="'+k+'" '+(x.kind===k?'selected':'')+'>'+k+'</option>').join('')+'</select></label>'+
+ '<label>الرمز (اختياري)<input data-symbol maxlength="40" placeholder="رمز السهم أو الصندوق" value="'+symbol+'"></label>'+
+ '<label>النسبة % (اختيارية)<input data-weight inputmode="decimal" type="number" min="0" max="100" step="0.01" placeholder="بدون نسبة" oninput="rkComponentsRefreshTotal()" value="'+weight+'"></label>'+
+ '</div><label class="rk-component-note">ملاحظة (اختيارية)<input data-note maxlength="220" value="'+note+'"></label></div>';
+}
+function rkComponentsRefreshTotal(){
+ const output=document.getElementById('rkCompTotal');if(!output)return;
+ const rows=[...document.querySelectorAll('#rkComponentsRows .rk-component-line')];
+ const entered=rows.map(x=>x.querySelector('[data-weight]')?.value?.trim()||'').filter(Boolean);
+ const sum=entered.reduce((n,k)=>n+Number(k),0);
+ output.textContent=entered.length?'نسب مسجلة: '+sum.toFixed(2)+'% من '+rows.length+' مكونات':'النسب اختيارية';
+ output.dataset.valid=(!entered.length||(entered.length===rows.length&&Math.round(sum*100)===10000))?'true':'false';
+}
+function rkComponentsAdd(){
+ const list=document.getElementById('rkComponentsRows');if(!list)return;
+ list.insertAdjacentHTML('beforeend',rkComponentRow());rkComponentsRefreshTotal();
+}
+function rkComponentsOpen(kind,id){
+ const owner=rkComponentOwner(kind,id);if(!owner)return;
+ const existing=rkComponentItems(owner);
+ document.getElementById('modalRoot').innerHTML=`<div class="modalbg" onclick="if(event.target===this)closeModal()"><div class="modal rk-candidate-form-modal rk-components-modal" role="dialog" aria-modal="true" data-v8wizard="1">
+ <div class="modalhead"><h2>مكونات ${esc(owner.name)}</h2><button type="button" class="btn" onclick="closeModal()" aria-label="إغلاق">${ico('close')}</button></div>
+ <div class="rk-components-editor"><div id="rkComponentsRows">${existing.map(rkComponentRow).join('')}</div>
+ <button type="button" class="btn rk-component-add" onclick="rkComponentsAdd()">${ico('plus')} إضافة مكوّن</button>
+ <div id="rkCompTotal" class="rk-component-total">النسب اختيارية</div>
+ </div>
+ <div class="rk-compact-footer"><button type="button" class="btn primary" onclick="rkComponentsSave('${kind}','${esc(id)}')">${ico('check')} حفظ المكونات</button><button type="button" class="btn" onclick="rkComponentsBack('${kind}','${esc(id)}')">${ico('back')} رجوع</button></div>
+ </div></div>`;
+ if(typeof v10RepairDialogs==='function')v10RepairDialogs();rkComponentsRefreshTotal();
+}
+function rkComponentsRead(){
+ const rows=[...document.querySelectorAll('#rkComponentsRows .rk-component-line')];
+ const result=[],unique=new Set();
+ for(const row of rows){
+  const field=k=>row.querySelector('[data-'+k+']')?.value?.trim()||'';
+  const name=field('name'),kind=field('kind'),symbol=field('symbol'),note=field('note'),weightRaw=field('weight');
+  if(!name||!rkComponentTypes.includes(kind))return {error:'أدخل اسم ونوع كل مكوّن.'};
+  const canonical=name.toLocaleLowerCase('ar')+'|'+kind;
+  if(unique.has(canonical))return {error:'المكوّن «'+name+'» مكرر في المحفظة.'};
+  unique.add(canonical);
+  const weight=weightRaw===''?null:Number(weightRaw);
+  if(weight!==null&&(!Number.isFinite(weight)||weight<0||weight>100||Math.abs(weight*100-Math.round(weight*100))>1e-6))return {error:'نسبة المكوّن «'+name+'» غير صحيحة.'};
+  result.push({id:row.dataset?.componentId||rid(),name,kind,symbol,note,weight});
+ }
+ const filled=result.filter(x=>x.weight!==null);
+ if(filled.length&&filled.length!==result.length)return {error:'حدد نسبة لكل المكونات أو اتركها جميعاً دون نسب.'};
+ if(filled.length&&Math.round(filled.reduce((sum,x)=>sum+x.weight,0)*100)!==10000)return {error:'يجب أن يكون مجموع نسب المكونات 100%، أو تُترك النسب جميعها فارغة.'};
+ return {components:result};
+}
+function rkComponentsSave(kind,id){
+ const owner=rkComponentOwner(kind,id);if(!owner)return;
+ const outcome=rkComponentsRead();if(outcome.error)return alert(outcome.error);
+ owner.components=outcome.components;audit('تحديث مكونات محفظة',owner.name);save();render();rkComponentsBack(kind,id);toast('تم حفظ مكونات المحفظة');
+}
+function rkComponentsBack(kind,id){
+ if(kind==='holding')return rkAssetDetails(id);
+ if(kind==='candidate')return rkCandidateReview(id,'components');
+ closeModal();
+}
 function rkPortfolioAllocationOpen(kind,id){
  const obj=kind==='holding'?db.holdings.find(x=>x.id===id&&x.kind==='محفظة استثمارية'):kind==='account'?db.assetAccounts.find(x=>x.id===id):null;
  if(!obj)return;
