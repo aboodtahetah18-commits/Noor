@@ -2678,14 +2678,14 @@ N.push(['spending-followups','متابعة الإجراءات بعد التنف�
 /* V16 — Five functional centers + settings: retain existing pages as internal views. */
 const rkMainSections=[
  {main:'insights',label:'الرئيسية',icon:'home',pages:['insights'],tabs:[]},
- {main:'hilal',label:'البنوك والاستثمارات',icon:'bank',pages:['hilal','malaa','assets','externalBanks','position','reserves','interbank'],
-  tabs:[['hilal','بنك الهلال'],['malaa','بنك ملاءة'],['assets','بنك الأصول'],['externalBanks','البنوك الخارجية'],['position','المركز المالي'],['reserves','الاحتياطيات'],['interbank','التمويل بين المراكز']]},
+ {main:'hilal',label:'البنوك والاستثمارات',icon:'bank',pages:['hilal','malaa','assets','research','externalBanks','position','reserves','interbank'],
+  tabs:[['hilal','بنك الهلال'],['malaa','بنك ملاءة'],['assets','بنك الأصول'],['research','دراسة الشركات'],['externalBanks','البنوك الخارجية'],['position','المركز المالي'],['reserves','الاحتياطيات'],['interbank','التمويل بين المراكز']]},
  {main:'transactions',label:'العمليات المالية',icon:'wallet',pages:['transactions','import','ledger','cycles','scheduled','receivables','documents','funding'],
   tabs:[['transactions','المعاملات'],['import','استيراد العمليات'],['ledger','دفتر الأستاذ'],['cycles','دورة الراتب'],['scheduled','الجدولة'],['receivables','المستحقات'],['documents','المستندات'],['funding','التمويل الداخلي']]},
  {main:'goals',label:'التخطيط والالتزامات',icon:'trend',pages:['goals','debts','fees'],
   tabs:[['goals','الأهداف'],['debts','الديون والالتزامات'],['fees','الرسوم الدورية']]},
- {main:'spending',label:'الرقابة والتقارير',icon:'chart',pages:['spending','spending-followups','reports'],
-  tabs:[['spending','مراقبة الموردين'],['spending-followups','متابعة الإجراءات'],['reports','التقارير والتحليلات']]},
+ {main:'spending',label:'الرقابة والتقارير',icon:'chart',pages:['spending','spending-followups','intelligence','reports'],
+  tabs:[['spending','مراقبة الموردين'],['spending-followups','متابعة الإجراءات'],['intelligence','الذكاء المالي'],['reports','التقارير والتحليلات']]},
  {main:'settings',label:'الإعدادات',icon:'settings',pages:['settings'],tabs:[]}
 ];
 function rkCenterForPage(id){return rkMainSections.find(section=>section.pages.includes(id))||null;}
