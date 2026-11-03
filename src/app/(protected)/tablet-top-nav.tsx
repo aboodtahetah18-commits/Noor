@@ -6,6 +6,8 @@ import { LucideIcon } from '@/components/ui/lucide-icon';
 import { ThemeToggle } from '../theme-toggle';
 import { BrandLogo } from '@/components/brand/brand-logo';
 import { ProfileTrigger, type HeaderProfile } from './profile-trigger';
+import { NotificationCenter } from '@/components/ui/notification-center';
+import type { AlertItem } from '@/features/alerts/queries/get-alert-center';
 
 const items = [
   ['/dashboard', 'الرئيسية'],
@@ -18,7 +20,7 @@ const items = [
   ['/advisor', 'المختبر'],
 ] as const;
 
-export function TabletTopNav({ profile }: { profile: HeaderProfile }) {
+export function TabletTopNav({ profile, notifications, notificationsUnavailable = false }: { profile: HeaderProfile; notifications: AlertItem[]; notificationsUnavailable?: boolean }) {
   const pathname = usePathname();
 
   return (
@@ -34,9 +36,7 @@ export function TabletTopNav({ profile }: { profile: HeaderProfile }) {
         </form>
 
         <div className="namaa-tablet-actions">
-          <Link href="/alerts" className="namaa-tablet-action" aria-label="التنبيهات">
-            <LucideIcon name="bell" size={20} />
-          </Link>
+          <NotificationCenter items={notifications} unavailable={notificationsUnavailable} />
           <ThemeToggle />
           <ProfileTrigger profile={profile} className="namaa-tablet-profile-trigger" />
         </div>
