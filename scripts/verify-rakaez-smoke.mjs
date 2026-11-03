@@ -43,7 +43,7 @@ const document={
 };
 class MutationObserver{observe(){} disconnect(){}}
 const app= new Function('document','localStorage','MutationObserver','window','alert','confirm','crypto',
-  source+"\nreturn {N,navigate,rkActionOpen,rkActionChooser,rkActionFromSMS,rkActionCommit,rkActionPreview,rkActionCents,rkActionExpected,rkActionPeriodSpend,rkMerchantEnglishFromText,parseSMS,rkMerchantMonitored,rkMerchantCreateCase,rkMerchantCaseSave,rkSaveTransactionEdit,rkRemoveTransaction,rkOperationCaseDialog,rkOperationCaseSave,submitModal,operationCases:()=>db.operationFollowups||[],assetHoldings:()=>db.holdings,updateTestSavings:(n)=>{db.savings[0].balance=n;save()},merchantSnapshot:()=>rkMerchantSnapshot,merchantCases:()=>db.merchantFollowups,pushMerchantTx:t=>{db.transactions.push(t);save()},openModal,formV3,interbankForm,ledgerOpen,ledgerReconcile,researchForm,v14CycleForm,v11ToggleSamples,rakaezDataCheck,rkOpen,rkSave,edit:d=>Object.assign(rkDraft,d),step:n=>{rkStep=n},state:()=>({demo:v11ExamplesMode,transactions:db.transactions.length,receivables:db.receivables?.length||0,collections:db.receivableCollections?.length||0,scheduled:db.scheduledOps?.length||0})};"
+  source+"\nreturn {N,navigate,rkSplitKpiPanels,rkHomeKpiCenter,rkActionOpen,rkActionChooser,rkActionFromSMS,rkActionCommit,rkActionPreview,rkActionCents,rkActionExpected,rkActionPeriodSpend,rkMerchantEnglishFromText,parseSMS,rkMerchantMonitored,rkMerchantCreateCase,rkMerchantCaseSave,rkSaveTransactionEdit,rkRemoveTransaction,rkOperationCaseDialog,rkOperationCaseSave,submitModal,operationCases:()=>db.operationFollowups||[],assetHoldings:()=>db.holdings,updateTestSavings:(n)=>{db.savings[0].balance=n;save()},merchantSnapshot:()=>rkMerchantSnapshot,merchantCases:()=>db.merchantFollowups,pushMerchantTx:t=>{db.transactions.push(t);save()},openModal,formV3,interbankForm,ledgerOpen,ledgerReconcile,researchForm,v14CycleForm,v11ToggleSamples,rakaezDataCheck,rkOpen,rkSave,edit:d=>Object.assign(rkDraft,d),step:n=>{rkStep=n},state:()=>({demo:v11ExamplesMode,transactions:db.transactions.length,receivables:db.receivables?.length||0,collections:db.receivableCollections?.length||0,scheduled:db.scheduledOps?.length||0})};"
 )(document,localStorage,MutationObserver,{},()=>{},()=>true,{randomUUID:()=>String(++sequence)});
 
 
@@ -53,6 +53,14 @@ for(const [id] of app.N){
  app.navigate(id);
  const view=document.getElementById('view').innerHTML;
  assert.ok(view.length>70,'Restored page must render '+id);
+ if(id==='insights'){
+  assert.ok(view.includes('مركز الإحصاءات الموحد'),'Statistics must appear on home');
+  assert.ok(view.includes('rk-stat-home-group'),'KPI sections must be available on home');
+  assert.ok(view.includes('أرصدة ملاءة المسجلة'),'Home must include former financial-center KPIs');
+  assert.ok(view.includes('إجمالي الاستثمار'),'Home must include investment KPIs');
+ }else{
+  assert.equal(app.rkSplitKpiPanels(view).blocks.length,0,'Statistics blocks must be absent outside home: '+id);
+ }
  if(id==='spending'||id==='spending-followups')assert.ok(view.includes('aria-label="صفحات كفاءة الإنفاق"'),'Dedicated spending subpage selector must be restored');
  rendered++;
 }
@@ -63,6 +71,8 @@ assert.ok(sidebar.includes('الإدارة والمتابعة'),'Original manage
 assert.ok(sidebar.includes('المعاملات المالية'),'Original transaction link must return');
 assert.ok((sidebar.match(/rakaez-nav-link /g)||[]).length>=20,'Individual pages must be visible rather than bundled into five centers');
 assert.ok(!sidebar.includes('الحسابات والعمليات'),'Five-workspace navigation must be absent');
+assert.ok(app.rkSplitKpiPanels('<section class="rk-assets-summary"><div>قيمة <strong>10</strong></div></section><section class="card">صفحة تشغيلية</section>').remaining.includes('صفحة تشغيلية'),'Removing KPIs preserves operations');
+assert.equal(app.rkSplitKpiPanels('<div class="grid stats"><div class="card stat">عدد</div></div>').blocks.length,1,'Nested cards extracted as a single KPI group');
 app.navigate('spending');
 assert.ok(document.getElementById('view').innerHTML.includes('مؤشرات الإنفاق'),'Supplier page remains dedicated');
 app.navigate('spending-followups');
