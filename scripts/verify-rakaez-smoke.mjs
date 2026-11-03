@@ -55,6 +55,18 @@ const app= new Function('document','localStorage','MutationObserver','window','a
 
 
 
+const modalInsetStylesheet=document.head.children.find(el=>el.getAttribute('data-rk-layout')==='edge-safe-v19');
+assert.ok(modalInsetStylesheet,'Modal edge spacing rules must be installed');
+assert.ok(modalInsetStylesheet.textContent.includes('padding-inline:var(--rk-field-edge)!important'),
+ 'All modal content must have horizontal internal padding');
+assert.ok(modalInsetStylesheet.textContent.includes('#modalRoot .modal>.rk-budget-detail-actions'),
+ 'Record and case dialog footer buttons must be inset from the edges');
+assert.ok(modalInsetStylesheet.textContent.includes('max-width:100%!important'),
+ 'Forms must stay within the dialog width on mobile');
+assert.ok(modalInsetStylesheet.textContent.includes('@media(max-width:680px)'),
+ 'Mobile layout must define independent horizontal spacing');
+
+
 let rendered=0;
 for(const [id] of app.N){
  app.navigate(id);
