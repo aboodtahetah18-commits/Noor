@@ -50,7 +50,7 @@ const document={
 };
 class MutationObserver{observe(){} disconnect(){}}
 const app= new Function('document','localStorage','MutationObserver','window','alert','confirm','crypto',
-  source+"\nreturn {N,navigate,rkSplitKpiPanels,rkSplitTitledIndicators,rkHomeKpiCenter,rkActionOpen,rkActionChooser,rkActionFromSMS,rkActionCommit,rkActionPreview,rkActionCents,rkActionExpected,rkActionPeriodSpend,rkMerchantEnglishFromText,parseSMS,rkMerchantMonitored,rkMerchantCreateCase,rkMerchantCaseSave,rkSaveTransactionEdit,rkRemoveTransaction,rkOperationCaseDialog,rkOperationCaseSave,submitModal,operationCases:()=>db.operationFollowups||[],assetHoldings:()=>db.holdings,updateTestSavings:(n)=>{db.savings[0].balance=n;save()},merchantSnapshot:()=>rkMerchantSnapshot,merchantCases:()=>db.merchantFollowups,pushMerchantTx:t=>{db.transactions.push(t);save()},openModal,formV3,interbankForm,ledgerOpen,ledgerReconcile,researchForm,v14CycleForm,v11ToggleSamples,rakaezDataCheck,rkOpen,rkSave,edit:d=>Object.assign(rkDraft,d),step:n=>{rkStep=n},state:()=>({demo:v11ExamplesMode,transactions:db.transactions.length,receivables:db.receivables?.length||0,collections:db.receivableCollections?.length||0,scheduled:db.scheduledOps?.length||0})};"
+  source+"\nreturn {N,navigate,rkSplitKpiPanels,rkSplitTitledIndicators,rkHomeExecutiveDashboard,rkHomeExecutiveSnapshot,rkActionOpen,rkActionChooser,rkActionFromSMS,rkActionCommit,rkActionPreview,rkActionCents,rkActionExpected,rkActionPeriodSpend,rkMerchantEnglishFromText,parseSMS,rkMerchantMonitored,rkMerchantCreateCase,rkMerchantCaseSave,rkSaveTransactionEdit,rkRemoveTransaction,rkOperationCaseDialog,rkOperationCaseSave,submitModal,operationCases:()=>db.operationFollowups||[],assetHoldings:()=>db.holdings,updateTestSavings:(n)=>{db.savings[0].balance=n;save()},merchantSnapshot:()=>rkMerchantSnapshot,merchantCases:()=>db.merchantFollowups,pushMerchantTx:t=>{db.transactions.push(t);save()},openModal,formV3,interbankForm,ledgerOpen,ledgerReconcile,researchForm,v14CycleForm,v11ToggleSamples,rakaezDataCheck,rkOpen,rkSave,edit:d=>Object.assign(rkDraft,d),step:n=>{rkStep=n},state:()=>({demo:v11ExamplesMode,transactions:db.transactions.length,receivables:db.receivables?.length||0,collections:db.receivableCollections?.length||0,scheduled:db.scheduledOps?.length||0})};"
 )(document,localStorage,MutationObserver,{},()=>{},()=>true,{randomUUID:()=>String(++sequence)});
 
 
@@ -73,12 +73,22 @@ for(const [id] of app.N){
  const view=document.getElementById('view').innerHTML;
  assert.ok(view.length>70,'Restored page must render '+id);
  if(id==='insights'){
-  assert.ok(view.includes('مركز الإحصاءات الموحد'),'Statistics must appear on home');
-  assert.ok(view.includes('rk-stat-home-group'),'KPI sections must be available on home');
-  assert.ok(view.includes('أرصدة ملاءة المسجلة'),'Home must include former financial-center KPIs');
-  assert.ok(view.includes('إجمالي الاستثمار'),'Home must include investment KPIs');
-  assert.ok(view.includes('التزامات غير نقدية ومؤشرات تخطيطية'),'Home includes planning indicators formerly on financial center');
-  assert.ok(view.includes('<h2>المؤشرات</h2>'),'Home includes former financial intelligence indicator section');
+  assert.ok(view.includes('المؤشرات المالية الرئيسية'),'Home must show a clear executive summary');
+  assert.ok(view.includes('rk-summary-kpis'),'Home must contain the six primary totals');
+  assert.equal((view.match(/class="rk-summary-kpi"/g)||[]).length,6,'Home must show exactly six essential KPI totals');
+  assert.equal((view.match(/class="card rk-summary-chart"/g)||[]).length,2,'Home must show exactly two relevant charts');
+  assert.ok(view.includes('اتجاه الدخل والمصروف'),'Home includes six-month trend');
+  assert.ok(view.includes('توزيع مصروف الشهر'),'Home includes spending distribution');
+  assert.ok(!view.includes('rk-stat-home-group'),'Home must not hide dozens of KPI sections in accordions');
+  assert.ok(!view.includes('rk-home-motion'),'Redundant monthly summary must be removed');
+  assert.ok(!view.includes('rk-home-activity'),'Transaction details must stay in transaction pages');
+  assert.ok(!view.includes('class="grid banks"'),'Banks belong in operational sections, not repeated summary cards');
+  const snapshot=app.rkHomeExecutiveSnapshot();
+  assert.equal(snapshot.months.length,6,'Six-month chart must use six consecutive months');
+  assert.equal(snapshot.net,snapshot.income-snapshot.expenses,'Monthly net must be calculated from recorded inflow/outflow');
+  assert.ok(snapshot.categories.reduce((a,b)=>a+b.amount,0)<=snapshot.expenses,'Category breakdown must not double-count expenses');
+  assert.ok(snapshot.investments>=0&&snapshot.debt>=0,'Portfolio valuations and outstanding debts are nonnegative');
+  assert.ok(view.includes('ليست أرصدة بنكية مؤكدة'),'Home clearly discloses locally recorded values');
  }else{
   assert.equal(app.rkSplitKpiPanels(view).blocks.length,0,'Statistics blocks must be absent outside home: '+id);
   assert.equal(app.rkSplitTitledIndicators(view).blocks.length,0,'Analytical indicator sections must also leave operational pages: '+id);
