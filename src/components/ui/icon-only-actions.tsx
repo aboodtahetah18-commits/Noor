@@ -74,7 +74,7 @@ function generateIcon(name: SymbolName): SVGSVGElement {
 function upgradeButton(button: HTMLButtonElement) {
   if (button.closest('[data-symbol-exempt="true"]')) return;
   if (button.matches('[data-symbol-exempt="true"], [role="tablist"] button, [role="grid"] button')) return;
-  if (button.querySelector('input,textarea,select,fieldset,article,table,video,canvas')) return;
+  if (button.querySelector('input,textarea,select,fieldset,article,table,video,canvas,div')) return;
 
   const originalText = (button.getAttribute('data-namaa-action-label') || button.innerText || button.textContent || '').trim();
   const label = (button.getAttribute('aria-label') || button.getAttribute('title') || originalText).trim();
