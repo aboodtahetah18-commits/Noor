@@ -43,7 +43,7 @@ const document={
 };
 class MutationObserver{observe(){} disconnect(){}}
 const app= new Function('document','localStorage','MutationObserver','window','alert','confirm','crypto',
-  source+"\nreturn {N,navigate,rkMainSections,rkCenterForPage,rkMerchantSetFollowupFilter,parseSMS,rkMerchantEnglishFromText,rkMerchantMonitored,rkMerchantCreateCase,rkMerchantCaseSave,rkSpendingView,merchantSnapshot:()=>rkMerchantSnapshot,merchantCases:()=>db.merchantFollowups,pushMerchantTx:t=>{db.transactions.push(t);save()},openModal,formV3,interbankForm,ledgerOpen,ledgerReconcile,researchForm,v14CycleForm,v11ToggleSamples,rakaezDataCheck,rkOpen,rkSave,edit:d=>Object.assign(rkDraft,d),step:n=>{rkStep=n},state:()=>({demo:v11ExamplesMode,transactions:db.transactions.length,receivables:db.receivables?.length||0,collections:db.receivableCollections?.length||0,scheduled:db.scheduledOps?.length||0})};"
+  source+"\nreturn {N,navigate,rkMainSections,rkCenterForPage,rkOpenMainCenter,rkMerchantSetFollowupFilter,parseSMS,rkMerchantEnglishFromText,rkMerchantMonitored,rkMerchantCreateCase,rkMerchantCaseSave,rkSpendingView,merchantSnapshot:()=>rkMerchantSnapshot,merchantCases:()=>db.merchantFollowups,pushMerchantTx:t=>{db.transactions.push(t);save()},openModal,formV3,interbankForm,ledgerOpen,ledgerReconcile,researchForm,v14CycleForm,v11ToggleSamples,rakaezDataCheck,rkOpen,rkSave,edit:d=>Object.assign(rkDraft,d),step:n=>{rkStep=n},state:()=>({demo:v11ExamplesMode,transactions:db.transactions.length,receivables:db.receivables?.length||0,collections:db.receivableCollections?.length||0,scheduled:db.scheduledOps?.length||0})};"
 )(document,localStorage,MutationObserver,{},()=>{},()=>true,{randomUUID:()=>String(++sequence)});
 
 
@@ -62,6 +62,15 @@ for(const [id] of app.N){
  assert.equal(tabs,center.tabs.length?1:0,'Module tabs must appear once inside their center');
  if(center.tabs.length)assert.ok(viewHtml.includes('aria-label="أقسام '+center.label+'"'),'Module tabs must be correctly labeled');
 }
+
+app.navigate('research');
+app.navigate('transactions');
+app.rkOpenMainCenter('hilal');
+assert.equal(document.getElementById('pageTitle').textContent,'مركز الشركات','Returning to a main center must restore its last internal tab');
+app.navigate('spending-followups');
+app.navigate('goals');
+app.rkOpenMainCenter('spending');
+assert.equal(document.getElementById('pageTitle').textContent,'متابعة الإجراءات بعد التنفيذ','Merchant follow-up must remain the last active tab');
 
 let rendered=0;
 for(const [id] of app.N){
