@@ -43,41 +43,36 @@ const document={
 };
 class MutationObserver{observe(){} disconnect(){}}
 const app= new Function('document','localStorage','MutationObserver','window','alert','confirm','crypto',
-  source+"\nreturn {N,navigate,rkMainSections,rkCenterForPage,rkOpenMainCenter,rkMerchantSetFollowupFilter,parseSMS,rkMerchantEnglishFromText,rkMerchantMonitored,rkMerchantCreateCase,rkMerchantCaseSave,rkSpendingView,merchantSnapshot:()=>rkMerchantSnapshot,merchantCases:()=>db.merchantFollowups,pushMerchantTx:t=>{db.transactions.push(t);save()},openModal,formV3,interbankForm,ledgerOpen,ledgerReconcile,researchForm,v14CycleForm,v11ToggleSamples,rakaezDataCheck,rkOpen,rkSave,edit:d=>Object.assign(rkDraft,d),step:n=>{rkStep=n},state:()=>({demo:v11ExamplesMode,transactions:db.transactions.length,receivables:db.receivables?.length||0,collections:db.receivableCollections?.length||0,scheduled:db.scheduledOps?.length||0})};"
+  source+"\nreturn {N,navigate,rkWorkspaces,rkOpenContext,rkActionOpen,rkActionFromSMS,rkActionCommit,rkActionPreview,rkActionExpected,rkActionPeriodSpend,rkMerchantEnglishFromText,parseSMS,rkMerchantMonitored,rkMerchantCreateCase,rkMerchantCaseSave,merchantSnapshot:()=>rkMerchantSnapshot,merchantCases:()=>db.merchantFollowups,pushMerchantTx:t=>{db.transactions.push(t);save()},openModal,formV3,interbankForm,ledgerOpen,ledgerReconcile,researchForm,v14CycleForm,v11ToggleSamples,rakaezDataCheck,rkOpen,rkSave,edit:d=>Object.assign(rkDraft,d),step:n=>{rkStep=n},state:()=>({demo:v11ExamplesMode,transactions:db.transactions.length,receivables:db.receivables?.length||0,collections:db.receivableCollections?.length||0,scheduled:db.scheduledOps?.length||0})};"
 )(document,localStorage,MutationObserver,{},()=>{},()=>true,{randomUUID:()=>String(++sequence)});
 
 
-assert.equal(app.rkMainSections.length,6,'Main sidebar must contain exactly six meaningful centers');
-const visibleRoutes=app.rkMainSections.flatMap(section=>section.pages);
-assert.equal(new Set(visibleRoutes).size,app.N.length,'Every legacy destination must appear in exactly one center');
-assert.deepEqual(visibleRoutes.slice().sort(),app.N.map(n=>n[0]).sort(),'Every existing page must remain reachable');
-for(const [id] of app.N){
- app.navigate(id);
- const center=app.rkCenterForPage(id);
- const mainNav=document.getElementById('nav').innerHTML;
- assert.equal((mainNav.match(/rakaez-nav-link /g)||[]).length,6,'Sidebar must not list internal pages');
- assert.equal((mainNav.match(/aria-current="page"/g)||[]).length,1,'Exactly one main center must be marked active');
- const viewHtml=document.getElementById('view').innerHTML;
- const tabs=(viewHtml.match(/rk-module-tabs/g)||[]).length;
- assert.equal(tabs,center.tabs.length?1:0,'Module tabs must appear once inside their center');
- if(center.tabs.length)assert.ok(viewHtml.includes('aria-label="أقسام '+center.label+'"'),'Module tabs must be correctly labeled');
-}
 
-app.navigate('research');
-app.navigate('transactions');
-app.rkOpenMainCenter('hilal');
-assert.equal(document.getElementById('pageTitle').textContent,'مركز الشركات','Returning to a main center must restore its last internal tab');
-app.navigate('spending-followups');
-app.navigate('goals');
-app.rkOpenMainCenter('spending');
-assert.equal(document.getElementById('pageTitle').textContent,'متابعة الإجراءات بعد التنفيذ','Merchant follow-up must remain the last active tab');
-
+assert.equal(app.rkWorkspaces.length,5,'Exactly five real functional workspaces must exist');
+assert.deepEqual(app.rkWorkspaces.map(x=>x.id),['insights','hilal','assets','spending','settings']);
 let rendered=0;
-for(const [id] of app.N){
-  app.navigate(id);
-  assert.ok(document.getElementById('view').innerHTML.length>70,'Empty page '+id);
-  rendered++;
+for(const workspace of app.rkWorkspaces){
+ app.navigate(workspace.id);
+ const nav=document.getElementById('nav').innerHTML;
+ const html=document.getElementById('view').innerHTML;
+ assert.equal((nav.match(/rakaez-nav-link /g)||[]).length,5,'Only five actual workspaces are navigable');
+ assert.equal((nav.match(/aria-current="page"/g)||[]).length,1,'Exactly one active workspace');
+ assert.ok(html.length>140,'Workspace must contain useful controls');
+ assert.ok(!html.includes('rk-module-tabs'),'Legacy nested page tabs must not appear');
+ rendered++;
 }
+for(const [id] of app.N){
+ if(app.rkWorkspaces.some(x=>x.id===id))continue;
+ app.navigate(id);
+ assert.ok(document.getElementById('modalRoot').innerHTML.includes('rk-work-context'),'Legacy detail is a contextual tool: '+id);
+}
+app.navigate('hilal');
+assert.ok(document.getElementById('view').innerHTML.includes('تسجيل مصروف أو دخل'));
+app.navigate('assets');
+assert.ok(document.getElementById('view').innerHTML.includes('إضافة أصل / استثمار'));
+app.navigate('spending');
+assert.ok(document.getElementById('view').innerHTML.includes('قرارات وإجراءات تحتاج متابعة'));
+
 const kinds=['transaction','funding','deposit','withdraw','asset','portfolioUpdate','dividend','price','repay'];
 let modalCount=0;
 for(const type of kinds){
@@ -104,39 +99,70 @@ app.rkOpen('scheduled');app.edit({name:'ادخار تجريبي',method:'percent
 assert.equal(app.state().scheduled,1);
 assert.deepEqual(app.rakaezDataCheck(),[]);
 
+
 const sms=app.parseSMS('عملية شراء بقيمة 45.00 SAR لدى STARBUCKS عبر بطاقة 1234');
-assert.equal(sms.merchantEnglish,'STARBUCKS','Merchant name must be sourced from bank text');
-assert.equal(app.rkMerchantEnglishFromText('تم شراء 20 ريال لدى مطعم محلي'),null,'Arabic name must not be fabricated as an English name');
-app.pushMerchantTx({id:'merchant-test-1',date:new Date().toISOString().slice(0,10),type:'expense',description:'شراء STARBUCKS',category:'food',amount:4500,merchantEnglish:'STARBUCKS'});
+assert.equal(sms.merchantEnglish,'STARBUCKS','Source merchant English name from bank text');
+assert.equal(app.rkMerchantEnglishFromText('تم شراء 20 ريال لدى مطعم محلي'),null,'Never fabricate an English merchant identity');
+app.rkActionOpen('expense');
+assert.ok(document.getElementById('modalRoot').innerHTML.includes('إجراء مالي متكامل'));
+document.getElementById('rkASms').value='عملية شراء بقيمة 45.00 SAR لدى STARBUCKS عبر بطاقة 1234';
+app.rkActionFromSMS();
+assert.equal(document.getElementById('rkAMerchant').value,'STARBUCKS');
+assert.equal(document.getElementById('rkAAmount').value,'45.00');
+assert.ok(!String(storage.get('rakaez-v1')||'').includes('بطاقة 1234'),'The raw bank message must not be saved');
+
+app.rkActionOpen('expense');
+document.getElementById('rkAType').value='expense';
+document.getElementById('rkADate').value=new Date().toISOString().slice(0,10);
+document.getElementById('rkADesc').value='ضيافة لدى STARBUCKS';
+document.getElementById('rkAAmount').value='650.00';
+document.getElementById('rkACategory').value='food';
+document.getElementById('rkAMerchant').value='STARBUCKS';
+app.rkActionPreview();
+assert.ok(document.getElementById('rkAPreview').innerHTML.includes('اقتراب من حد الموازنة'));
+const previousTransactions=app.state().transactions,previousCases=app.merchantCases().length;
+app.rkActionCommit();
+assert.equal(app.state().transactions,previousTransactions+1,'One action records one transaction');
+assert.equal(app.merchantCases().length,previousCases+1,'Budget pressure opens one linked follow-up');
+const stateAfter=JSON.parse(storage.get('rakaez-v1'));
+const tx=stateAfter.transactions.at(-1),followup=stateAfter.merchantFollowups.at(-1);
+assert.equal(tx.amount,65000);
+assert.equal(tx.category,'food');
+assert.equal(tx.merchantEnglish,'STARBUCKS');
+assert.equal(tx.workflowSource,'ONE_ACTION_LOCAL');
+assert.equal(followup.originTransactionId,tx.id,'Follow-up links to the transaction');
+assert.ok(followup.relatedTransactionIds.includes(tx.id));
+assert.ok(document.getElementById('modalRoot').innerHTML.includes('نتيجة الإجراء المترابط'),'Consolidated receipt must appear');
+assert.equal(app.rkActionPeriodSpend('food',tx.date.slice(0,7)),65000,'Budget uses the one transaction with no duplicate posting');
 app.navigate('spending');
-assert.ok(document.getElementById('view').innerHTML.includes('STARBUCKS'),'Merchant monitoring must appear in the actual Rakaez screen');
-assert.ok(!document.getElementById('view').innerHTML.includes('سجل المتابعة'),'Merchant monitor must not stack the follow-up registry');
-app.navigate('spending-followups');
-assert.ok(document.getElementById('view').innerHTML.includes('سجل المتابعة'),'Follow-ups must have their own page');
-assert.ok(!document.getElementById('view').innerHTML.includes('مؤشرات الإنفاق'),'Follow-up page must not duplicate merchant monitoring');
-assert.ok(document.getElementById('nav').innerHTML.includes('rakaez-nav-link active'),'The spending parent navigation remains active on follow-ups');
+assert.ok(document.getElementById('view').innerHTML.includes('STARBUCKS'));
+assert.ok(document.getElementById('view').innerHTML.includes('متابعة الخطة'));
+
+app.rkActionOpen('expense');
+document.getElementById('rkADate').value=tx.date;
+document.getElementById('rkADesc').value=tx.description;
+document.getElementById('rkAAmount').value='650.00';
+document.getElementById('rkACategory').value='food';
+document.getElementById('rkAMerchant').value='STARBUCKS';
+app.rkActionCommit();
+assert.equal(app.state().transactions,previousTransactions+1,'Duplicate expense must be blocked');
+assert.equal(app.merchantCases().length,previousCases+1,'Duplicate expense must not create another follow-up');
+
 app.navigate('spending');
 const merchantIndex=app.merchantSnapshot().findIndex(m=>m.name==='STARBUCKS');
-assert.ok(merchantIndex>=0,'Merchant must be included in monitored spending');
+assert.ok(merchantIndex>=0);
 app.rkMerchantCreateCase(merchantIndex);
-assert.equal(app.merchantCases().length,1,'A follow-up must be opened independently of a paid transaction');
-const merchantCase=app.merchantCases()[0];
-assert.ok(document.getElementById('modalRoot').innerHTML.includes('متابعة إنفاق'),'Follow-up dialog must be usable');
+assert.equal(app.merchantCases().length,previousCases+1,'Open follow-up must be reused, not duplicated');
+const merchantCase=app.merchantCases().at(-1);
 document.getElementById('rkMCStatus').value='IN_PROGRESS';
 document.getElementById('rkMCOwner').value='المسؤول المالي';
 document.getElementById('rkMCTarget').value='20';
 document.getElementById('rkMCReview').value=merchantCase.nextReview;
-document.getElementById('rkMCAction').value='مقارنة أسعار الموردين وتخفيض التكرار';
-document.getElementById('rkMCNote').value='تم تكليف المسؤول بدراسة البدائل';
+document.getElementById('rkMCAction').value='مقارنة الموردين وتخفيض التكرار';
+document.getElementById('rkMCNote').value='تم تكليف المسؤول';
 app.rkMerchantCaseSave(merchantCase.id);
-assert.equal(app.merchantCases()[0].status,'IN_PROGRESS','Follow-up state must survive update');
-assert.ok(document.getElementById('view').innerHTML.includes('سجل المتابعة'),'Saving a case must return to the follow-up page');
-assert.ok(document.getElementById('view').innerHTML.includes('STARBUCKS'),'The separate follow-up page must show the newly managed merchant');
-app.rkMerchantSetFollowupFilter('completed');
-assert.ok(document.getElementById('view').innerHTML.includes('لا توجد حالات تم التحقق'),'Completed-only filter must exclude active cases');
-app.rkMerchantSetFollowupFilter('active');
-assert.ok(document.getElementById('view').innerHTML.includes('STARBUCKS'),'Active filter must show pending cases');
-assert.ok(JSON.parse(storage.get('rakaez-v1')).merchantFollowups.length===1,'Follow-up must persist in existing real workspace');
+assert.equal(app.merchantCases().at(-1).status,'IN_PROGRESS','Follow-up continues after expense');
+assert.equal(JSON.parse(storage.get('rakaez-v1')).merchantFollowups.length,previousCases+1);
 
 const real=storage.get('rakaez-v1');
 app.v11ToggleSamples();
@@ -147,4 +173,4 @@ assert.deepEqual(app.rakaezDataCheck(),[]);
 app.v11ToggleSamples();
 assert.equal(app.state().demo,false);
 assert.equal(storage.get('rakaez-v1'),real,'Demo mode must preserve personal data');
-console.log('Rakaez smoke PASS: '+rendered+' pages, '+modalCount+' existing modal routes, 3 new workflows, sample/real isolation.');
+console.log('Rakaez smoke PASS: '+rendered+' real workspaces, '+modalCount+' dialogs, one-action financial impact, isolated demo data.');
