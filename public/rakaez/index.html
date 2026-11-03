@@ -2620,7 +2620,7 @@ function rkMerchantCreateCase(index){
 function rkMerchantCaseDialog(id){
  const c=(db.merchantFollowups||[]).find(x=>x.id===id);if(!c)return;
  const statuses=[['OPEN','المراجعة والتحليل'],['IN_PROGRESS','تنفيذ خطة التحسين'],['MONITORING','متابعة أثر الإجراء'],['BLOCKED','متعثرة أو تحتاج دعمًا'],['VERIFIED','تم التحقق من النتائج']];
- const metrics=rkMerchantMonitored().find(m=>m.key===c.merchantKey);
+ const metrics=rkCaseCurrentMetric(c);
  const measured=metrics?money(metrics.current):'لا توجد بيانات للمقارنة';
  const events=(c.events||[]).slice(-6).reverse().map(e=>`<div class="metricline"><span>${esc(e.date.slice(0,10))} · ${esc(e.action)}</span><b>${esc(e.note||'—')}</b></div>`).join('');
  document.getElementById('modalRoot').innerHTML=`<div class="modalbg" onclick="if(event.target===this)closeModal()"><div class="modal rk-budget-detail-dialog rk-record-detail" data-v8wizard="1" role="dialog" aria-modal="true">
@@ -2648,7 +2648,7 @@ function rkMerchantCaseSave(id){
  if(status==='VERIFIED'){
   if(!note||!action)return alert('إغلاق المتابعة يتطلب الإجراء المنفذ ونتيجة موثقة.');
   if(iso(new Date())<c.nextReview||iso(new Date())<rkMerchantWindowDays(c.createdAt,30))return alert('لا يمكن التحقق النهائي قبل انقضاء فترة قياس لا تقل عن 30 يومًا.');
-  const metric=rkMerchantMonitored().find(m=>m.key===c.merchantKey);
+  const metric=rkCaseCurrentMetric(c);
   if(!metric||metric.current>Math.round(c.baseline*(1-target/100)))return alert('لم يتحقق هدف خفض الإنفاق المسجل؛ استمر في المتابعة أو عدّل الخطة.');
  }
  const priorStatus=c.status,metric=rkMerchantMonitored().find(m=>m.key===c.merchantKey);
@@ -2850,5 +2850,171 @@ render=function(){
   document.getElementById('view').innerHTML=data[1]();
  }
 };
+
+
+/* One financial action: capture, validated budget impact, merchant link, follow-up. */
+function rkActionCents(value){
+ const raw=String(value??'').trim();
+ if(!/^\d{1,15}(?:\.\d{1,2})?$/.test(raw))return null;
+ const [whole,dec='']=raw.split('.');
+ const valueMinor=BigInt(whole)*100n+BigInt(dec.padEnd(2,'0'));
+ return valueMinor>0n&&valueMinor<=BigInt(Number.MAX_SAFE_INTEGER)?Number(valueMinor):null;
+}
+function rkActionPeriodSpend(category,period){
+ return (db.transactions||[]).filter(t=>t.type==='expense'&&t.category===category&&String(t.date||'').slice(0,7)===period)
+  .reduce((a,t)=>a+Number(t.amount||0),0);
+}
+function rkActionExpected(input){
+ const cat=db.categories.find(c=>c.id===input.category);
+ const date=String(input.date||''),period=date.slice(0,7),minor=rkActionCents(input.amount);
+ if(!cat||!minor||!/^\d{4}-\d{2}-\d{2}$/.test(date))return null;
+ const limit=Math.round(Number(cat.limit||0)*100)+(db.fundings||[]).filter(f=>f.category===cat.id&&String(f.date||'').slice(0,7)<=period).reduce((a,f)=>a+Number(f.principal||0),0);
+ const before=rkActionPeriodSpend(cat.id,period),after=before+minor;
+ const pct=limit>0?Math.round(after/limit*100):null;
+ return {category:cat,minor,period,before,after,limit,percent:pct,
+  pressure:limit>0&&after>limit?'OVER':limit>0&&after>=limit*.8?'WATCH':'NORMAL'};
+}
+function rkCaseCurrentMetric(c){
+ if(String(c.merchantKey||'').startsWith('budget:')){
+  const category=String(c.categoryId||c.merchantKey.slice(7));
+  return {current:rkActionPeriodSpend(category,iso(new Date()).slice(0,7))};
+ }
+ return rkMerchantMonitored().find(m=>m.key===c.merchantKey)||null;
+}
+function rkActionOpen(mode='expense'){
+ if(mode==='investment')return openModal('asset');
+ if(mode==='saving')return openModal('deposit');
+ if(mode==='transfer')return interbankForm();
+ if(mode==='scheduled')return rkOpen('scheduled');
+ if(!['income','expense'].includes(mode))mode='expense';
+ const type=mode;
+ document.getElementById('modalRoot').innerHTML=`<div class="modalbg" onclick="if(event.target===this)closeModal()">
+ <div class="modal rk-work-action-form" role="dialog" aria-modal="true" aria-label="إجراء مالي واحد">
+ <div class="modalhead"><h2>إجراء مالي متكامل</h2><button type="button" class="btn" onclick="closeModal()" aria-label="إغلاق">${ico('close')}</button></div>
+ <p class="notice">أدخل العملية مرة واحدة: تُحدَّث المعاملة والموازنة وملف المورد والمتابعة المرتبطة في السجل المحلي. لا ينفّذ هذا النموذج دفعًا أو تسوية بنكية ولا يكرر القيد في دفتر الأستاذ التجريبي.</p>
+ <form onsubmit="event.preventDefault();rkActionCommit()"><div class="formgrid">
+ <div class="field"><label for="rkAType">نوع العملية</label><select id="rkAType" onchange="rkActionTypeChanged()"><option value="expense" ${type==='expense'?'selected':''}>مصروف / شراء</option><option value="income" ${type==='income'?'selected':''}>دخل / تحصيل</option></select></div>
+ <div class="field"><label for="rkADate">التاريخ</label><input type="date" id="rkADate" value="${iso(new Date())}" required onchange="rkActionPreview()"></div>
+ <div class="field full"><label for="rkADesc">وصف العملية</label><input id="rkADesc" maxlength="140" placeholder="مثال: وجبات للاجتماع" required oninput="rkActionPreview()"></div>
+ <div class="field"><label for="rkAAmount">المبلغ (ر.س)</label><input id="rkAAmount" type="number" min="0.01" step="0.01" inputmode="decimal" required oninput="rkActionPreview()"></div>
+ <div class="field" id="rkACategoryWrap"><label for="rkACategory">بند الموازنة</label><select id="rkACategory" onchange="rkActionPreview()">${db.categories.map(c=>`<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('')}</select></div>
+ <div class="field full" id="rkAMerchantWrap"><label for="rkAMerchant">اسم المحل بالإنجليزية (مقترح قابل للتعديل)</label><input id="rkAMerchant" maxlength="72" dir="ltr" placeholder="مثال: STARBUCKS" oninput="rkActionPreview()"></div>
+ <div class="field full" id="rkASmsWrap"><label for="rkASms">رسالة البنك (اختياري — للاستخراج دون حفظ نص الرسالة)</label>
+ <textarea id="rkASms" rows="2" placeholder="الصق وصف الدفع بعد إزالة بيانات البطاقة والحساب"></textarea>
+ <button type="button" class="btn" onclick="rkActionFromSMS()">استخراج المبلغ واسم المحل</button></div>
+ <div class="field full" id="rkAFollowWrap"><label><input id="rkAFollow" type="checkbox"> إنشاء متابعة إضافية حتى لو لم يظهر ضغط تلقائي</label></div>
+ </div>
+ <div class="rk-action-preview" id="rkAPreview" aria-live="polite"></div>
+ <div class="rk-budget-detail-actions"><button type="submit" class="btn primary">${ico('check')} حفظ وربط الأثر</button><button type="button" class="btn" onclick="closeModal()">إلغاء</button></div>
+ </form></div></div>`;
+ rkActionTypeChanged();
+ if(typeof v10RepairDialogs==='function')v10RepairDialogs();
+}
+function rkActionTypeChanged(){
+ const expense=document.getElementById('rkAType')?.value==='expense';
+ for(const id of ['rkACategoryWrap','rkAMerchantWrap','rkAFollowWrap']){const el=document.getElementById(id);if(el)el.hidden=!expense;}
+ rkActionPreview();
+}
+function rkActionFromSMS(){
+ const text=String(document.getElementById('rkASms')?.value||'').trim();
+ if(!text)return alert('الصق نص الرسالة أولًا.');
+ const parsed=parseSMS(text);
+ if(parsed.amount>0)document.getElementById('rkAAmount').value=(parsed.amount/100).toFixed(2);
+ if(parsed.date)document.getElementById('rkADate').value=parsed.date;
+ if(parsed.merchantEnglish){
+  document.getElementById('rkAMerchant').value=parsed.merchantEnglish;
+  if(!document.getElementById('rkADesc').value.trim())document.getElementById('rkADesc').value='عملية لدى '+parsed.merchantEnglish;
+ }
+ document.getElementById('rkAType').value=parsed.type==='income'?'income':'expense';
+ rkActionTypeChanged();
+}
+function rkActionPreview(){
+ const read=id=>document.getElementById(id)?.value||'';
+ const target=document.getElementById('rkAPreview');if(!target)return;
+ if(read('rkAType')==='income'){
+  const moneyVal=rkActionCents(read('rkAAmount'));
+  target.innerHTML=''; 
+  target.textContent=moneyVal?'سيُسجل دخل بقيمة '+money(moneyVal)+' في المعاملات والتقارير دون اعتباره تحويلًا مصرفيًا مؤكدًا.':'أدخل المبلغ لمعاينة الأثر المالي المسجل.';
+  return;
+ }
+ const impact=rkActionExpected({date:read('rkADate'),amount:read('rkAAmount'),category:read('rkACategory')});
+ if(!impact){target.textContent='أدخل التاريخ والمبلغ وبند الموازنة لعرض أثر العملية قبل الحفظ.';return;}
+ const merchant=read('rkAMerchant').trim()||rkMerchantEnglishFromText(read('rkADesc'));
+ const pressure=impact.pressure==='OVER'?'تجاوز متوقع لبند الموازنة':impact.pressure==='WATCH'?'اقتراب من حد الموازنة':'ضمن الحدود المسجلة';
+ target.innerHTML=`<strong>أثر العملية المتوقع:</strong>
+ <div class="metricline"><span>البند</span><b>${esc(impact.category.name)}</b></div>
+ <div class="metricline"><span>المصروف بعد التسجيل</span><b>${money(impact.after)}${impact.limit?' / '+money(impact.limit):''}</b></div>
+ <div class="metricline"><span>التقييم</span><b>${esc(pressure)}</b></div>
+ <div class="metricline"><span>المحل</span><b dir="ltr">${esc(merchant||'غير محدد')}</b></div>
+ <small>${impact.pressure==='NORMAL'?'تبقى المراقبة نشطة بعد التسجيل.':'ستُفتح متابعة مرتبطة تلقائيًا بالعملية لمراجعة أسباب الضغط.'} اسم المحل مستخرج أو مدخل للمراجعة وليس تحققًا من هوية الجهة.</small>`;
+}
+function rkActionStoreFollowup(tx,impact,force){
+ if(!Array.isArray(db.merchantFollowups))db.merchantFollowups=[];
+ const merchantKey=tx.merchantEnglish?rkMerchantKey(tx.merchantEnglish):'budget:'+tx.category;
+ const merchantName=tx.merchantEnglish||'بند '+impact.category.name;
+ const trend=tx.merchantEnglish?rkMerchantMonitored().find(m=>m.key===merchantKey):null;
+ const rising=Boolean(trend&&trend.ratio!==null&&trend.ratio>=30&&trend.count>=2);
+ const recent=tx.date>=rkMerchantWindowDays(iso(new Date()),-30)&&tx.date<=iso(new Date());
+ if(!force&&!recent)return null;
+ if(!force&&impact.pressure==='NORMAL'&&!rising)return null;
+ const current=tx.merchantEnglish?(trend?.current||tx.amount):impact.after;
+ let existing=db.merchantFollowups.find(c=>c.merchantKey===merchantKey&&c.status!=='VERIFIED');
+ if(existing){
+  if(!Array.isArray(existing.events))existing.events=[];
+  if(!Array.isArray(existing.relatedTransactionIds))existing.relatedTransactionIds=[];
+  if(!existing.relatedTransactionIds.includes(tx.id))existing.relatedTransactionIds.push(tx.id);
+  existing.events.push({date:new Date().toISOString(),action:'TRANSACTION_LINKED',note:'ارتبطت عملية مصروف جديدة رقم '+tx.id+' بالمراجعة'});
+  return existing;
+ }
+ const now=iso(new Date());
+ const next={id:rid(),merchantKey,merchantName,categoryId:tx.category,status:'OPEN',owner:'',action:'',targetPercent:20,
+  baseline:current,createdAt:now,nextReview:rkMerchantWindowDays(now,30),
+  lastMeasurement:null,originTransactionId:tx.id,relatedTransactionIds:[tx.id],
+  events:[{date:new Date().toISOString(),action:'OPEN',note:'بدأت المتابعة بعد رصد أثر العملية على '+impact.category.name}]};
+ db.merchantFollowups.push(next);
+ return next;
+}
+function rkActionCommit(){
+ const get=id=>String(document.getElementById(id)?.value||'').trim();
+ const type=get('rkAType'),date=get('rkADate'),description=get('rkADesc'),amountCents=rkActionCents(get('rkAAmount'));
+ const category=get('rkACategory');
+ if(!['income','expense'].includes(type)||!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Number.isFinite(new Date(date+'T00:00:00Z').getTime())||!description||description.length>140||!amountCents)return alert('راجع نوع العملية والتاريخ والوصف والمبلغ.');
+ const rawMerchant=get('rkAMerchant'),suggestedMerchant=rkMerchantEnglishFromText(description)||'';
+ const merchant=type==='expense'?(rawMerchant||suggestedMerchant):'';
+ if(merchant&&(!/^[A-Za-z][A-Za-z0-9 &'.,-]{2,71}$/.test(merchant)||merchant.length>72))return alert('اسم المحل الإنجليزي غير صالح. صححه أو اتركه فارغًا.');
+ const impact=type==='expense'?rkActionExpected({date,amount:get('rkAAmount'),category}):null;
+ if(type==='expense'&&!impact)return alert('اختر بندًا صحيحًا للمصروف.');
+ const tx={id:rid(),date,description,type,category:type==='expense'?category:'',amount:amountCents,
+  ...(merchant?{merchantEnglish:merchant,merchantSource:rawMerchant?'USER_CONFIRMED':'DESCRIPTION_SUGGESTION'}:{}),
+  workflowSource:'ONE_ACTION_LOCAL',recordedAt:new Date().toISOString()};
+ if(duplicate(tx))return alert('عملية مماثلة مسجلة بالفعل. راجع سجل المعاملات قبل الإضافة.');
+ const previous=JSON.stringify(db);
+ let c=null;
+ try{
+  db.transactions.push(tx);
+  if(type==='expense')c=rkActionStoreFollowup(tx,impact,Boolean(document.getElementById('rkAFollow')?.checked));
+  audit('إجراء مالي مترابط',type+' '+tx.id+(c?' متابعة '+c.id:''));
+  save();
+ }catch(e){db=JSON.parse(previous);alert('تعذر حفظ العملية؛ لم تُعتمد التغييرات.');return}
+ render();rkActionReceipt(tx.id,c?.id||'');
+}
+function rkActionReceipt(id,caseId=''){
+ const tx=db.transactions.find(t=>t.id===id);if(!tx)return;
+ const category=db.categories.find(c=>c.id===tx.category);
+ const c=(db.merchantFollowups||[]).find(x=>x.id===caseId);
+ document.getElementById('modalRoot').innerHTML=`<div class="modalbg" onclick="if(event.target===this)closeModal()">
+ <div class="modal rk-work-action-form" role="dialog" aria-modal="true">
+ <div class="modalhead"><h2>نتيجة الإجراء المترابط</h2><button type="button" class="btn" onclick="closeModal()" aria-label="إغلاق">${ico('close')}</button></div>
+ <div class="metricline"><span>سجل العملية</span><b>${esc(tx.id)}</b></div>
+ <div class="metricline"><span>القيمة</span><b>${money(tx.amount)}</b></div>
+ <div class="metricline"><span>بند الموازنة</span><b>${esc(category?.name||'غير مرتبط بمصروف')}</b></div>
+ <div class="metricline"><span>ملف المحل</span><b dir="ltr">${esc(tx.merchantEnglish||'لم يحدد')}</b></div>
+ <div class="metricline"><span>المتابعة</span><b>${c?'مرتبطة بحالة مفتوحة':'مراقبة المؤشرات دون حالة جديدة'}</b></div>
+ <p class="notice">حُفظت العملية مرة واحدة في السجل المحلي، وستظهر في المؤشرات ذات الصلة. لا يعني ذلك إثبات خصم بنكي فعلي أو ترحيل قيد مستقل إلى دفتر الأستاذ.</p>
+ <div class="rk-budget-detail-actions"><button type="button" class="btn primary" onclick="rkTransactionDetails('${esc(tx.id)}')">تفاصيل العملية</button>
+ ${c?`<button type="button" class="btn" onclick="rkMerchantCaseDialog('${esc(c.id)}')">متابعة الأثر</button>`:''}
+ <button type="button" class="btn" onclick="closeModal()">إغلاق</button></div></div></div>`;
+ if(typeof v10RepairDialogs==='function')v10RepairDialogs();
+}
 
 render();</script></body></html>
