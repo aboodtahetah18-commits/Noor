@@ -3099,43 +3099,116 @@ function rkSplitTitledIndicators(source){
  return {remaining:remaining+html.slice(start),blocks};
 }
 
-function rkHomeKpiCenter(){
- const groups=[
-  ['بنك الهلال',hilal],
-  ['بنك ملاءة',malaa],
-  ['بنك الأصول',assets],
-  ['المركز المالي',positionView],
-  ['دفتر الأستاذ',ledgerView],
-  ['الأهداف المالية',goalsView],
-  ['الديون والالتزامات',debtsView],
-  ['الرسوم الدورية',feesView],
-  ['الشركات والمؤشرات',researchView],
-  ['التحليلات والتنبيهات',intelligenceView],
-  ['التقارير المالية',reports],
-  ['المستحقات',rkReceivablesView],
-  ['العمليات المجدولة',rkScheduledView],
-  ['متابعة الإجراءات',rkSpendingFollowupsView]
- ];
- const sections=groups.map(([name,renderGroup])=>{
-  try{
-   const first=rkSplitKpiPanels(renderGroup());
-   const parts=[...first.blocks,...rkSplitTitledIndicators(first.remaining).blocks];
-   if(!parts.length)return '';
-   return `<details class="rk-stat-home-group"><summary>${esc(name)}</summary>
-    <div class="rk-stat-home-panels">${parts.join('')}</div></details>`;
-  }catch(error){
-   return `<details class="rk-stat-home-group"><summary>${esc(name)}</summary><p class="muted tiny">تعذر عرض المؤشرات حاليًا. تحقق من البيانات المسجلة.</p></details>`;
-  }
- }).filter(Boolean).join('');
- return `${sTitle('مركز الإحصاءات الموحد','الإحصاءات المجمعة لجميع النوافذ — بحسب البيانات المسجلة والفترة المحددة')}
- <section class="card rk-stat-home-center">
- <p class="muted tiny">اختر المجال لعرض مؤشرات الأداء. تُحدّث هذه الإحصاءات من السجلات نفسها، ولا تُنشئ عمليات مالية أو أرصدة إضافية. تفاصيل كل عملية تبقى في صفحتها المخصصة.</p>
- ${sections||'<div class="rk-home-empty">لا تتوفر إحصاءات مجمعة بعد.</div>'}
- </section>`;
+
+/* V20 — Only six decision-grade totals and two real-data graphs on the home page.
+ * Monthly cash movement and partial net financial position are distinct concepts. */
+function rkHomeDashboardTotals(){
+ const position=v4Numbers();
+ const notPriced=(db.holdings||[]).filter(h=>!rkHoldingHasPrice(h)).length;
+ const priced=(db.holdings||[]).length-notPriced;
+ return {
+  partialNet:position.partialNet,
+  saving:position.saving,
+  investments:position.investments,
+  debt:position.debt,
+  income:rkRecordedIncome(),
+  expense:spent(),
+  flow:rkRecordedIncome()-spent(),
+  priced,
+  notPriced
+ };
 }
+function rkHomeMonthKey(monthsBack){
+ const parts=String(month).match(/^(\d{4})-(\d{2})$/);
+ if(!parts)return '';
+ const day=new Date(Date.UTC(Number(parts[1]),Number(parts[2])-1-monthsBack,1));
+ return day.toISOString().slice(0,7);
+}
+function rkHomeIncomeExpenseTrend(){
+ return [5,4,3,2,1,0].map(offset=>{
+  const key=rkHomeMonthKey(offset);
+  let cashIncome=0,expense=0;
+  for(const tx of db.transactions||[]){
+   if(String(tx.date||'').slice(0,7)!==key)continue;
+   const value=Math.max(0,Number(tx.amount)||0);
+   if(tx.type==='income')cashIncome+=value;
+   else if(tx.type==='expense')expense+=value;
+  }
+  const salary=(db.salaryMonths||[]).includes(key)?Math.max(0,Number(db.salary)||0):0;
+  return {month:key,income:cashIncome+salary,expense};
+ });
+}
+function rkHomeSpendingCategories(){
+ const amounts=new Map(),nameById=new Map((db.categories||[]).map(c=>[String(c.id),String(c.name||'بند')]));
+ for(const tx of db.transactions||[]){
+  if(tx.type!=='expense'||String(tx.date||'').slice(0,7)!==month)continue;
+  const value=Math.max(0,Number(tx.amount)||0);
+  if(!value)continue;
+  const id=nameById.has(String(tx.category))?String(tx.category):'__unknown__';
+  amounts.set(id,(amounts.get(id)||0)+value);
+ }
+ const rows=[...amounts].map(([id,value])=>({label:id==='__unknown__'?'غير مصنف':nameById.get(id),amount:value}))
+   .sort((a,b)=>b.amount-a.amount);
+ if(rows.length<=5)return rows;
+ return [...rows.slice(0,4),{label:'بنود إضافية',amount:rows.slice(4).reduce((sum,row)=>sum+row.amount,0)}];
+}
+function rkHomeKpiCenter(){
+ const totals=rkHomeDashboardTotals(),trend=rkHomeIncomeExpenseTrend(),categories=rkHomeSpendingCategories();
+ const valued=totals.priced>0||!totals.notPriced;
+ const kpis=[
+  ['صافي المركز المالي الجزئي',totals.partialNet,'ادخار + استثمارات مقيّمة − ديون خارجية'],
+  ['إجمالي الادخار المسجل',totals.saving,'أرصدة شرائح ملاءة المسجلة'],
+  ['الاستثمارات المقيّمة',valued?totals.investments:null,totals.notPriced?'توجد '+totals.notPriced+' أصول دون تقييم':'حسب آخر تقييم مدخل'],
+  ['الديون الخارجية المتبقية',totals.debt,'أصل الالتزامات المسجلة غير المسدد'],
+  ['إجمالي دخل الشهر',totals.income,'الراتب المعتمد في الفترة + الدخل المدخل'],
+  ['إجمالي مصروفات الشهر',totals.expense,'مجموع العمليات المصنفة مصروفات']
+ ];
+ const maxTrend=Math.max(0,...trend.flatMap(t=>[t.income,t.expense]));
+ const spendingTotal=categories.reduce((sum,c)=>sum+c.amount,0);
+ return `<div class="rk-home-focus">
+  ${sTitle('المؤشرات المالية الأساسية','إجماليات مباشرة وواضحة · الفترة '+esc(month))}
+  <section class="rk-home-kpi-grid" aria-label="ستة مؤشرات مالية أساسية">
+   ${kpis.map(([label,value,description])=>`<div class="card rk-home-kpi">
+    <span class="rk-home-kpi-label">${esc(label)}</span>
+    <strong class="rk-home-kpi-value">${value===null?'—':money(value)}</strong>
+    <small>${esc(description)}</small>
+   </div>`).join('')}
+  </section>
+  <div class="rk-home-flow-note"><strong>صافي حركة الشهر: ${money(totals.flow)}</strong><span>دخل الشهر المسجل ناقص مصروفاته؛ لا يمثل رصيد الحساب البنكي.</span></div>
+  <div class="rk-home-chart-grid">
+   <section class="card rk-home-chart-panel">
+    <header><h2>اتجاه الدخل والمصروف</h2><small>آخر 6 أشهر حتى الفترة المحددة</small></header>
+    <div class="rk-home-chart-legend"><span><i class="rk-home-legend-income"></i>الدخل المسجل</span><span><i class="rk-home-legend-expense"></i>المصروف</span></div>
+    ${maxTrend>0?`<div class="rk-home-trend-chart" role="img" aria-label="مقارنة الدخل والمصروف لآخر ستة أشهر">
+      ${trend.map(t=>`<div class="rk-home-month">
+       <div class="rk-home-month-bars">
+        <span class="rk-home-income-bar" style="height:${Math.max(0,t.income/maxTrend*100).toFixed(2)}%" title="الدخل ${esc(t.month)}: ${money(t.income)}"></span>
+        <span class="rk-home-expense-bar" style="height:${Math.max(0,t.expense/maxTrend*100).toFixed(2)}%" title="المصروف ${esc(t.month)}: ${money(t.expense)}"></span>
+       </div>
+       <small>${esc(t.month.slice(5))}/${esc(t.month.slice(2,4))}</small>
+      </div>`).join('')}
+     </div>`:'<div class="rk-home-empty">لا توجد حركات دخل أو مصروف مسجلة خلال الأشهر الستة.</div>'}
+    <p class="rk-home-chart-help">الراتب يحتسب فقط في الأشهر المسجلة ضمن دورة الراتب، دون افتراض وصول مبالغ للبنك.</p>
+   </section>
+   <section class="card rk-home-chart-panel">
+    <header><h2>توزيع مصروفات الشهر</h2><small>حسب بنود المعاملات المسجلة</small></header>
+    ${spendingTotal>0?`<div class="rk-home-category-chart">
+      ${categories.map(c=>`<div class="rk-home-category-row" title="${esc(c.label)}: ${money(c.amount)}">
+       <span>${esc(c.label)}</span>
+       <div class="rk-home-category-track"><i style="width:${(c.amount/spendingTotal*100).toFixed(2)}%"></i></div>
+       <b>${money(c.amount)}</b>
+      </div>`).join('')}
+     </div>`:'<div class="rk-home-empty">لا توجد مصروفات مسجلة في الشهر المحدد لعرض توزيعها.</div>'}
+    <p class="rk-home-chart-help">البنود الإضافية مجمعة لتسهيل القراءة؛ مجموعها يساوي المصروف المسجل للشهر.</p>
+   </section>
+  </div>
+  <p class="rk-home-disclosure">صافي المركز المالي <strong>جزئي</strong> بحسب القيم المدخلة؛ لا يتضمن أرصدة الحسابات البنكية غير المربوطة، ولا تُعامل مخصصات التشغيل أو الاحتياطيات المستهدفة كأموال فعلية. ${totals.notPriced?'هناك '+totals.notPriced+' أصول بدون تقييم سوقي، لذا قد تكون الصورة غير مكتملة.':''}</p>
+ </div>`;
+}
+
 const rkDashboardWithOriginalSummary=dashboard;
 dashboard=function(){
- return rkHomeKpiCenter()+rkDashboardWithOriginalSummary();
+ return rkHomeKpiCenter();
 };
 const rkRenderWithCentralStatistics=render;
 render=function(){
