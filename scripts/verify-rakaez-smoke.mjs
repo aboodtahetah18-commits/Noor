@@ -8,6 +8,13 @@ assert.ok(html.includes('rakaez-nav-flat'),'Direct flat navigation must be prese
 assert.ok(html.includes('rakaez-bell'),'Shared notification bell must be present');
 assert.ok(html.includes('rakaez-mode-panel'),'Separated demo workspace must be present');
 assert.ok(html.includes('border:2px solid'),'Visible modal/field borders must be present');
+assert.ok(html.includes('V19 — modal content safety inset'),'Modal spacing regression rules must be loaded');
+assert.ok(html.includes('#modalRoot .modal > form > .formgrid'),'Direct form grids must be inset from modal edges');
+assert.ok(html.includes('padding:14px 22px!important'),'Modal form fields must have a desktop safety inset');
+assert.ok(html.includes('padding:13px 16px!important'),'Modal form fields must have a mobile safety inset');
+assert.ok(html.includes('box-sizing:border-box!important'),'Form padding must not cause horizontal overflow');
+assert.ok(html.includes('#modalRoot .modal > .rk-budget-detail-actions'),'Modal action bars must also have safe horizontal padding');
+
 new Function(source);
 
 const storage=new Map();
