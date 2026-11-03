@@ -2776,7 +2776,7 @@ function rkWorkbenchHome(){
  const late=openCases.filter(x=>x.status==='BLOCKED'||x.nextReview&&x.nextReview<iso(new Date()));
  const totals=db.savings.reduce((s,x)=>s+Number(x.balance||0),0);
  return `<div class="rk-work-flow">
- ${rkWorkActions([['تنفيذ إجراء مالي',"rkActionOpen('expense')",true],['الاستثمارات',"navigate('assets')"],['المتابعة',"navigate('spending')"]])}
+ ${rkWorkActions([['بدء إجراء مترابط',"rkActionChooser()",true],['الاستثمارات',"navigate('assets')"],['المتابعة',"navigate('spending')"]])}
  ${rkSummary([['مصروف الشهر',money(spent())],['الادخار المسجل',money(totals)],['المتابعات المفتوحة',String(openCases.length)]])}
  <section class="card"><div class="rk-work-title"><h2>ما الذي يحتاج قرارًا؟</h2><button type="button" class="btn" onclick="navigate('spending')">عرض المتابعة</button></div>
  ${late.length?late.slice(0,3).map(c=>rkWorkRow(c.merchantName||c.title,'موعد مراجعة: '+(c.nextReview||'غير محدد'),'',c.relatedId?`rkOperationCaseDialog('${esc(c.id)}')`:`rkMerchantCaseDialog('${esc(c.id)}')`,'معالجة')).join(''):'<div class="rk-home-empty">لا توجد حالات متأخرة أو متعثرة في البيانات المسجلة.</div>'}</section>
@@ -2891,8 +2891,27 @@ function rkCaseCurrentMetric(c){
  }
  return rkMerchantMonitored().find(m=>m.key===c.merchantKey)||null;
 }
+
+function rkActionChooser(){
+ const actions=[
+  ['مصروف أو شراء',"rkActionOpen('expense')",'يربط المصروف بالموازنة والمورد والمتابعة'],
+  ['دخل أو تحصيل',"rkActionOpen('income')",'يسجل الدخل مرة واحدة في المؤشرات'],
+  ['تسجيل استثمار',"rkActionOpen('investment')",'يضيف الأصل ويبدأ متابعة دورية'],
+  ['سحب من الادخار',"rkActionOpen('withdrawal')",'يسجل طلب السحب مع موعد تحقق لاحق'],
+  ['نقل إلى الادخار',"rkActionOpen('saving')",'نقل داخلي بين الشرائح'],
+  ['تمويل بين المراكز',"rkActionOpen('transfer')",'طلب دراسة لا يُنفّذ تحويلًا تلقائيًا']
+ ];
+ document.getElementById('modalRoot').innerHTML=`<div class="modalbg" onclick="if(event.target===this)closeModal()">
+ <div class="modal rk-work-action-form" role="dialog" aria-modal="true">
+ <div class="modalhead"><h2>ما الإجراء الذي تريد إنجازه؟</h2><button type="button" class="btn" onclick="closeModal()" aria-label="إغلاق">${ico('close')}</button></div>
+ <p class="notice">اختر الإجراء بحسب النتيجة المطلوبة؛ ستظهر البيانات اللازمة فقط، وترتبط المتابعة بأصل العملية دون تكرار.</p>
+ ${actions.map(([title,action,desc])=>`<button type="button" class="rk-manage-row" onclick="${action}"><span class="rk-manage-id"><span><strong>${title}</strong><small>${desc}</small></span></span><span class="rk-manage-chevron">${ico('view')}</span></button>`).join('')}
+ </div></div>`;
+ if(typeof v10RepairDialogs==='function')v10RepairDialogs();
+}
 function rkActionOpen(mode='expense'){
  if(mode==='investment')return openModal('asset');
+ if(mode==='withdrawal')return openModal('withdraw');
  if(mode==='saving')return openModal('deposit');
  if(mode==='transfer')return interbankForm();
  if(mode==='scheduled')return rkOpen('scheduled');
