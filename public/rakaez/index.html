@@ -3029,4 +3029,82 @@ rkSpendingFollowupsView=function(){
  <button type="button" class="btn" onclick="rkOperationCaseDialog('${esc(c.id)}')">عرض المتابعة</button></div>`).join('')}</section>`;
 };
 
+
+/* Consolidate aggregate KPI panels into the home page while retaining actionable
+   record-level figures and all original page routes. */
+const rkKpiPanelClasses=new Set(['rk-assets-summary','rk-malaa-hero','rk-goal-overview','rk-slim-summary']);
+function rkIsKpiPanel(className){
+ const names=String(className||'').trim().split(/\s+/);
+ return (names.includes('grid')&&names.includes('stats'))||names.some(x=>rkKpiPanelClasses.has(x));
+}
+function rkSplitKpiPanels(source){
+ const html=String(source||''),blocks=[],ranges=[];
+ const open=/<(div|section)\b[^>]*\bclass="([^"]*)"[^>]*>/gi;
+ let match;
+ while((match=open.exec(html))){
+  if(!rkIsKpiPanel(match[2]))continue;
+  const tag=match[1].toLowerCase();
+  const tags=new RegExp('<(/?)'+tag+'\\b[^>]*>','gi');
+  tags.lastIndex=open.lastIndex;
+  let depth=1,end=-1,token;
+  while((token=tags.exec(html))){
+   if(token[1]==='/')depth--;
+   else if(!/\/\s*>$/.test(token[0]))depth++;
+   if(depth===0){end=tags.lastIndex;break;}
+  }
+  if(end<0)continue;
+  blocks.push(html.slice(match.index,end));
+  ranges.push([match.index,end]);
+  open.lastIndex=end;
+ }
+ let cursor=0,remaining='';
+ for(const [start,end] of ranges){remaining+=html.slice(cursor,start);cursor=end;}
+ remaining+=html.slice(cursor);
+ return {remaining,blocks};
+}
+function rkHomeKpiCenter(){
+ const groups=[
+  ['بنك الهلال',hilal],
+  ['بنك ملاءة',malaa],
+  ['بنك الأصول',assets],
+  ['المركز المالي',positionView],
+  ['دفتر الأستاذ',ledgerView],
+  ['الأهداف المالية',goalsView],
+  ['الديون والالتزامات',debtsView],
+  ['الرسوم الدورية',feesView],
+  ['الشركات والمؤشرات',researchView],
+  ['التحليلات والتنبيهات',intelligenceView],
+  ['التقارير المالية',reports],
+  ['المستحقات',rkReceivablesView],
+  ['العمليات المجدولة',rkScheduledView],
+  ['متابعة الإجراءات',rkSpendingFollowupsView]
+ ];
+ const sections=groups.map(([name,renderGroup])=>{
+  try{
+   const parts=rkSplitKpiPanels(renderGroup()).blocks;
+   if(!parts.length)return '';
+   return `<details class="rk-stat-home-group"><summary>${esc(name)}</summary>
+    <div class="rk-stat-home-panels">${parts.join('')}</div></details>`;
+  }catch(error){
+   return `<details class="rk-stat-home-group"><summary>${esc(name)}</summary><p class="muted tiny">تعذر عرض المؤشرات حاليًا. تحقق من البيانات المسجلة.</p></details>`;
+  }
+ }).filter(Boolean).join('');
+ return `${sTitle('مركز الإحصاءات الموحد','الإحصاءات المجمعة لجميع النوافذ — بحسب البيانات المسجلة والفترة المحددة')}
+ <section class="card rk-stat-home-center">
+ <p class="muted tiny">اختر المجال لعرض مؤشرات الأداء. تُحدّث هذه الإحصاءات من السجلات نفسها، ولا تُنشئ عمليات مالية أو أرصدة إضافية. تفاصيل كل عملية تبقى في صفحتها المخصصة.</p>
+ ${sections||'<div class="rk-home-empty">لا تتوفر إحصاءات مجمعة بعد.</div>'}
+ </section>`;
+}
+const rkDashboardWithOriginalSummary=dashboard;
+dashboard=function(){
+ return rkHomeKpiCenter()+rkDashboardWithOriginalSummary();
+};
+const rkRenderWithCentralStatistics=render;
+render=function(){
+ rkRenderWithCentralStatistics();
+ if(page==='insights')return;
+ const view=document.getElementById('view');
+ if(view)view.innerHTML=rkSplitKpiPanels(view.innerHTML).remaining;
+};
+
 render();</script></body></html>
