@@ -2597,8 +2597,8 @@ function rkMerchantMonitored(){
  }
  return [...groups.values()].map(g=>{
   const category=Object.keys(g.categoryTotals).sort((a,b)=>g.categoryTotals[b]-g.categoryTotals[a])[0]||'';
-  const categoryObj=db.categories.find(c=>c.id===category),used=category?spent(category):0;
-  const limit=categoryObj?Math.round(Number(categoryObj.limit||0)*100)+Number(internal(category)||0):0;
+  const categoryObj=db.categories.find(c=>c.id===category),used=category?rkActionPeriodSpend(category,iso(new Date()).slice(0,7)):0;
+  const limit=categoryObj?Math.round(Number(categoryObj.limit||0)*100)+(db.fundings||[]).filter(f=>f.category===category&&String(f.date||'').slice(0,7)<=iso(new Date()).slice(0,7)).reduce((a,f)=>a+Number(f.principal||0),0):0;
   const ratio=g.prior>0?Math.round((g.current-g.prior)/g.prior*1000)/10:null;
   const pressure=limit>0&&used>limit?'OVER':limit>0&&used>=limit*.8?'WATCH':ratio!==null&&ratio>=30&&g.current>=g.prior&&g.count>=2?'RISING':'NORMAL';
   return {...g,category,categoryName:categoryObj?.name||'غير محدد',used,limit,ratio,pressure};
@@ -2651,7 +2651,7 @@ function rkMerchantCaseSave(id){
   const metric=rkCaseCurrentMetric(c);
   if(!metric||metric.current>Math.round(c.baseline*(1-target/100)))return alert('لم يتحقق هدف خفض الإنفاق المسجل؛ استمر في المتابعة أو عدّل الخطة.');
  }
- const priorStatus=c.status,metric=rkMerchantMonitored().find(m=>m.key===c.merchantKey);
+ const priorStatus=c.status,metric=rkCaseCurrentMetric(c);
  c.status=status;c.owner=owner;c.action=action;c.targetPercent=target;c.nextReview=review;
  c.lastMeasurement=metric?{date:iso(new Date()),amount:metric.current}:null;
  c.events.push({date:new Date().toISOString(),action:priorStatus===status?'REVIEW':status,note:note||'تحديث مسؤول أو خطة المتابعة'});
@@ -2736,6 +2736,7 @@ const rkLegacyToolCatalog={
  'hilal-detail':['الميزانية التشغيلية',hilal],
  'spending-followups':['سجل الحالات',rkSpendingFollowupsView]
 };
+let rkActiveContextId='';
 const rkLegacyNavigate=navigate;
 navigate=function(id){
  if(rkWorkspaceIds.has(id)){
@@ -2747,12 +2748,13 @@ navigate=function(id){
 function rkOpenContext(id){
  const descriptor=rkLegacyToolCatalog[id];if(!descriptor)return;
  const [title,view]=descriptor;
+ rkActiveContextId=id;
  let content='';
  try{content=view()}catch(e){alert('تعذر عرض الأداة حاليًا. راجع بياناتها أو جرّب لاحقًا.');return}
  document.getElementById('modalRoot').innerHTML=`<div class="modalbg" onclick="if(event.target===this)closeModal()">
-  <div class="modal rk-work-context" role="dialog" aria-modal="true" aria-label="${esc(title)}">
+  <div class="modal rk-work-context" data-rk-context="${esc(id)}" role="dialog" aria-modal="true" aria-label="${esc(title)}">
   <div class="modalhead"><h2>${esc(title)}</h2><button type="button" class="btn" aria-label="إغلاق" onclick="closeModal()">${ico('close')}</button></div>
-  <div class="rk-work-context-body">${content}</div></div></div>`;
+  <div id="rkContextBody" class="rk-work-context-body">${content}</div></div></div>`;
  if(typeof v10RepairDialogs==='function')v10RepairDialogs();
 }
 function rkToolButtons(ids){
@@ -2848,6 +2850,12 @@ render=function(){
   document.getElementById('pageTitle').textContent=data[0];
   document.getElementById('pageSub').textContent='مساحة عمل مترابطة — الإجراء الواحد يحدّث بياناته ويظهر أثره';
   document.getElementById('view').innerHTML=data[1]();
+ }
+ const modal=document.getElementById('modalRoot');
+ if(rkActiveContextId&&modal?.innerHTML?.includes('data-rk-context="'+rkActiveContextId+'"')){
+  const inside=modal.querySelector?.('#rkContextBody');
+  const next=rkLegacyToolCatalog[rkActiveContextId]?.[1];
+  if(inside&&next)inside.innerHTML=next();
  }
 };
 
@@ -2978,7 +2986,7 @@ function rkActionCommit(){
  const get=id=>String(document.getElementById(id)?.value||'').trim();
  const type=get('rkAType'),date=get('rkADate'),description=get('rkADesc'),amountCents=rkActionCents(get('rkAAmount'));
  const category=get('rkACategory');
- if(!['income','expense'].includes(type)||!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Number.isFinite(new Date(date+'T00:00:00Z').getTime())||!description||description.length>140||!amountCents)return alert('راجع نوع العملية والتاريخ والوصف والمبلغ.');
+ if(!['income','expense'].includes(type)||!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Number.isFinite(new Date(date+'T00:00:00Z').getTime())||new Date(date+'T00:00:00Z').toISOString().slice(0,10)!==date||!description||description.length>140||!amountCents)return alert('راجع نوع العملية والتاريخ والوصف والمبلغ.');
  const rawMerchant=get('rkAMerchant'),suggestedMerchant=rkMerchantEnglishFromText(description)||'';
  const merchant=type==='expense'?(rawMerchant||suggestedMerchant):'';
  if(merchant&&(!/^[A-Za-z][A-Za-z0-9 &'.,-]{2,71}$/.test(merchant)||merchant.length>72))return alert('اسم المحل الإنجليزي غير صالح. صححه أو اتركه فارغًا.');
