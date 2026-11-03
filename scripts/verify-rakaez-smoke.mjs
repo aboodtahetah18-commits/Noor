@@ -43,35 +43,30 @@ const document={
 };
 class MutationObserver{observe(){} disconnect(){}}
 const app= new Function('document','localStorage','MutationObserver','window','alert','confirm','crypto',
-  source+"\nreturn {N,navigate,rkWorkspaces,rkOpenContext,rkActionOpen,rkActionChooser,rkActionFromSMS,rkActionCommit,rkActionPreview,rkActionCents,rkActionExpected,rkActionPeriodSpend,rkMerchantEnglishFromText,parseSMS,rkMerchantMonitored,rkMerchantCreateCase,rkMerchantCaseSave,rkSaveTransactionEdit,rkRemoveTransaction,rkOperationCaseDialog,rkOperationCaseSave,submitModal,operationCases:()=>db.operationFollowups||[],assetHoldings:()=>db.holdings,updateTestSavings:(n)=>{db.savings[0].balance=n;save()},merchantSnapshot:()=>rkMerchantSnapshot,merchantCases:()=>db.merchantFollowups,pushMerchantTx:t=>{db.transactions.push(t);save()},openModal,formV3,interbankForm,ledgerOpen,ledgerReconcile,researchForm,v14CycleForm,v11ToggleSamples,rakaezDataCheck,rkOpen,rkSave,edit:d=>Object.assign(rkDraft,d),step:n=>{rkStep=n},state:()=>({demo:v11ExamplesMode,transactions:db.transactions.length,receivables:db.receivables?.length||0,collections:db.receivableCollections?.length||0,scheduled:db.scheduledOps?.length||0})};"
+  source+"\nreturn {N,navigate,rkActionOpen,rkActionChooser,rkActionFromSMS,rkActionCommit,rkActionPreview,rkActionCents,rkActionExpected,rkActionPeriodSpend,rkMerchantEnglishFromText,parseSMS,rkMerchantMonitored,rkMerchantCreateCase,rkMerchantCaseSave,rkSaveTransactionEdit,rkRemoveTransaction,rkOperationCaseDialog,rkOperationCaseSave,submitModal,operationCases:()=>db.operationFollowups||[],assetHoldings:()=>db.holdings,updateTestSavings:(n)=>{db.savings[0].balance=n;save()},merchantSnapshot:()=>rkMerchantSnapshot,merchantCases:()=>db.merchantFollowups,pushMerchantTx:t=>{db.transactions.push(t);save()},openModal,formV3,interbankForm,ledgerOpen,ledgerReconcile,researchForm,v14CycleForm,v11ToggleSamples,rakaezDataCheck,rkOpen,rkSave,edit:d=>Object.assign(rkDraft,d),step:n=>{rkStep=n},state:()=>({demo:v11ExamplesMode,transactions:db.transactions.length,receivables:db.receivables?.length||0,collections:db.receivableCollections?.length||0,scheduled:db.scheduledOps?.length||0})};"
 )(document,localStorage,MutationObserver,{},()=>{},()=>true,{randomUUID:()=>String(++sequence)});
 
 
 
-assert.equal(app.rkWorkspaces.length,5,'Exactly five real functional workspaces must exist');
-assert.deepEqual(app.rkWorkspaces.map(x=>x.id),['insights','hilal','assets','spending','settings']);
 let rendered=0;
-for(const workspace of app.rkWorkspaces){
- app.navigate(workspace.id);
- const nav=document.getElementById('nav').innerHTML;
- const html=document.getElementById('view').innerHTML;
- assert.equal((nav.match(/rakaez-nav-link /g)||[]).length,5,'Only five actual workspaces are navigable');
- assert.equal((nav.match(/aria-current="page"/g)||[]).length,1,'Exactly one active workspace');
- assert.ok(html.length>140,'Workspace must contain useful controls');
- assert.ok(!html.includes('rk-module-tabs'),'Legacy nested page tabs must not appear');
+for(const [id] of app.N){
+ app.navigate(id);
+ const view=document.getElementById('view').innerHTML;
+ assert.ok(view.length>70,'Restored page must render '+id);
+ if(id==='spending'||id==='spending-followups')assert.ok(view.includes('aria-label="صفحات كفاءة الإنفاق"'),'Dedicated spending subpage selector must be restored');
  rendered++;
 }
-for(const [id] of app.N){
- if(app.rkWorkspaces.some(x=>x.id===id))continue;
- app.navigate(id);
- assert.ok(document.getElementById('modalRoot').innerHTML.includes('rk-work-context'),'Legacy detail is a contextual tool: '+id);
-}
 app.navigate('hilal');
-assert.ok(document.getElementById('view').innerHTML.includes('تسجيل مصروف أو دخل'));
-app.navigate('assets');
-assert.ok(document.getElementById('view').innerHTML.includes('إضافة أصل / استثمار'));
+const sidebar=document.getElementById('nav').innerHTML;
+assert.ok(sidebar.includes('بنوك المنصة'),'Original bank section must return');
+assert.ok(sidebar.includes('الإدارة والمتابعة'),'Original management section must return');
+assert.ok(sidebar.includes('المعاملات المالية'),'Original transaction link must return');
+assert.ok((sidebar.match(/rakaez-nav-link /g)||[]).length>=20,'Individual pages must be visible rather than bundled into five centers');
+assert.ok(!sidebar.includes('الحسابات والعمليات'),'Five-workspace navigation must be absent');
 app.navigate('spending');
-assert.ok(document.getElementById('view').innerHTML.includes('قرارات وإجراءات تحتاج متابعة'));
+assert.ok(document.getElementById('view').innerHTML.includes('مؤشرات الإنفاق'),'Supplier page remains dedicated');
+app.navigate('spending-followups');
+assert.ok(document.getElementById('view').innerHTML.includes('سجل المتابعة'),'Follow-ups remain dedicated');
 
 const kinds=['transaction','funding','deposit','withdraw','asset','portfolioUpdate','dividend','price','repay'];
 let modalCount=0;
@@ -136,7 +131,8 @@ assert.ok(document.getElementById('modalRoot').innerHTML.includes('نتيجة ا
 assert.equal(app.rkActionPeriodSpend('food',tx.date.slice(0,7)),65000,'Budget uses the one transaction with no duplicate posting');
 app.navigate('spending');
 assert.ok(document.getElementById('view').innerHTML.includes('STARBUCKS'));
-assert.ok(document.getElementById('view').innerHTML.includes('متابعة الخطة'));
+assert.ok(document.getElementById('view').innerHTML.includes('معالجة ومتابعة'));
+assert.ok(!document.getElementById('view').innerHTML.includes('سجل المتابعة'),'Supplier monitoring and follow-ups stay separate');
 
 app.rkActionOpen('expense');
 document.getElementById('rkADate').value=tx.date;
@@ -166,7 +162,7 @@ assert.equal(JSON.parse(storage.get('rakaez-v1')).merchantFollowups.length,previ
 
 app.navigate('insights');
 app.rkActionChooser();
-assert.ok(document.getElementById('modalRoot').innerHTML.includes('ما الإجراء الذي تريد إنجازه؟'),'Unified launcher must be reachable from home');
+assert.ok(document.getElementById('modalRoot').innerHTML.includes('ما الإجراء الذي تريد إنجازه؟'),'Linked action chooser remains available');
 assert.ok(document.getElementById('modalRoot').innerHTML.includes('تسجيل استثمار'),'Launcher must include investing intent');
 const beforeAssets=app.assetHoldings().length,beforeOperations=app.operationCases().length;
 app.openModal('asset');
@@ -179,8 +175,8 @@ assert.equal(app.operationCases().length,beforeOperations+1,'An investment follo
 const investment=app.assetHoldings().at(-1),investmentCase=app.operationCases().at(-1);
 assert.equal(investmentCase.relatedId,investment.id);
 assert.equal(investmentCase.kind,'INVESTMENT');
-app.navigate('spending');
-assert.ok(document.getElementById('view').innerHTML.includes('استثمار تجريبي متابع'),'One decision queue should show the investment case');
+app.navigate('spending-followups');
+assert.ok(document.getElementById('view').innerHTML.includes('استثمار تجريبي متابع'),'Restored follow-ups page includes investment monitoring');
 app.rkOperationCaseDialog(investmentCase.id);
 assert.ok(document.getElementById('modalRoot').innerHTML.includes('سلسلة المتابعة'));
 document.getElementById('rkOpStatus').value='CHECKIN';
@@ -246,4 +242,4 @@ assert.deepEqual(app.rakaezDataCheck(),[]);
 app.v11ToggleSamples();
 assert.equal(app.state().demo,false);
 assert.equal(storage.get('rakaez-v1'),real,'Demo mode must preserve personal data');
-console.log('Rakaez smoke PASS: '+rendered+' real workspaces, '+modalCount+' dialogs, one-action financial impact, investment and withdrawal follow-ups, isolated demo data.');
+console.log('Rakaez smoke PASS: '+rendered+' restored pages, '+modalCount+' dialogs, one-action financial impact, investment and withdrawal follow-ups, isolated demo data.');
