@@ -3062,6 +3062,31 @@ function rkSplitKpiPanels(source){
  remaining+=html.slice(cursor);
  return {remaining,blocks};
 }
+
+/* Standalone analytical indicator sections are statistics too, not action data. */
+function rkSplitTitledIndicators(source){
+ const html=String(source||''),ranges=[],blocks=[];
+ const heading=/<div class="sectiontitle">\s*<h2>(?:المؤشرات|التزامات غير نقدية ومؤشرات تخطيطية)<\/h2>[\s\S]*?<\/div>\s*<section class="card">/gi;
+ let match;
+ while((match=heading.exec(html))){
+  const tags=/<\/?section\b[^>]*>/gi;
+  tags.lastIndex=heading.lastIndex;
+  let depth=1,last=-1,token;
+  while((token=tags.exec(html))){
+   if(/^<\//.test(token[0]))depth--;
+   else depth++;
+   if(depth===0){last=tags.lastIndex;break;}
+  }
+  if(last<0)continue;
+  ranges.push([match.index,last]);
+  blocks.push(html.slice(match.index,last));
+  heading.lastIndex=last;
+ }
+ let remaining='',start=0;
+ for(const [begin,end] of ranges){remaining+=html.slice(start,begin);start=end;}
+ return {remaining:remaining+html.slice(start),blocks};
+}
+
 function rkHomeKpiCenter(){
  const groups=[
   ['بنك الهلال',hilal],
@@ -3081,7 +3106,8 @@ function rkHomeKpiCenter(){
  ];
  const sections=groups.map(([name,renderGroup])=>{
   try{
-   const parts=rkSplitKpiPanels(renderGroup()).blocks;
+   const first=rkSplitKpiPanels(renderGroup());
+   const parts=[...first.blocks,...rkSplitTitledIndicators(first.remaining).blocks];
    if(!parts.length)return '';
    return `<details class="rk-stat-home-group"><summary>${esc(name)}</summary>
     <div class="rk-stat-home-panels">${parts.join('')}</div></details>`;
@@ -3104,7 +3130,10 @@ render=function(){
  rkRenderWithCentralStatistics();
  if(page==='insights')return;
  const view=document.getElementById('view');
- if(view)view.innerHTML=rkSplitKpiPanels(view.innerHTML).remaining;
+ if(view){
+  const split=rkSplitKpiPanels(view.innerHTML);
+  view.innerHTML=rkSplitTitledIndicators(split.remaining).remaining;
+ }
 };
 
 render();</script></body></html>
