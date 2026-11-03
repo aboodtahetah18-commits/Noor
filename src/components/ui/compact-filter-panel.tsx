@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, type ReactNode } from 'react';
+import { Dialog } from '@/components/ui/Dialog';
 import { LucideIcon } from './lucide-icon';
 
 type Props = {
@@ -10,22 +11,25 @@ type Props = {
   className?: string;
 };
 
-export function CompactFilterPanel({title='تصفية',hint,children,className=''}:Props){
-  const [open,setOpen]=useState(false);
-  const toggleOpen=()=>{
-    // Keep the JS side aligned with the canonical 768px responsive contract
-    // without auto-opening the filter panel on any viewport.
-    window.matchMedia('(min-width: 768px)');
-    setOpen(v=>!v);
-  };
-  return <section className={`p4913-filter-shell ${open?'is-open':''} ${className}`.trim()}>
-    <button type="button" className="p4913-filter-toggle" onClick={toggleOpen} aria-expanded={open} aria-label={title}>
-      <LucideIcon name="slidersHorizontal" size={20}/>
-      <span className="p4913-filter-toggle-label">{title}</span>
-    </button>
-    <div className="p4913-filter-content" hidden={!open}>
-      {hint?<p className="p4913-filter-hint">{hint}</p>:null}
-      {children}
+/** Filters stay hidden until the user explicitly opens the button. */
+export function CompactFilterPanel({ title = 'تصفية', children, className = '' }: Props) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className={['ux-filter-dialog-trigger', className].filter(Boolean).join(' ')}>
+      <button
+        type="button"
+        className="ux-filter-icon-button"
+        title={title}
+        aria-label={title}
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        onClick={() => setOpen(true)}
+      >
+        <LucideIcon name="slidersHorizontal" size={20} />
+      </button>
+      <Dialog open={open} onOpenChange={setOpen} title={title} size="lg" className="ux-filter-dialog">
+        <div className="ux-filter-dialog-fields">{children}</div>
+      </Dialog>
     </div>
-  </section>;
+  );
 }
