@@ -36,6 +36,9 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Rakaez active-interface smoke
+        run: node scripts/verify-rakaez-smoke.mjs
+
       - name: Tests
         run: npm run test
 
