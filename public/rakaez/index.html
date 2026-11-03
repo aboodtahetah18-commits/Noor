@@ -3119,4 +3119,45 @@ submitModal=function(type,id){
  if(changed){audit('إنشاء / تحديث متابعة استثمارية',type);save();render();}
 };
 
+
+/* Route legacy transaction entry through the linked action; retain change audit. */
+const rkLegacyModalEntry=openModal;
+openModal=function(type,id=''){
+ if(type==='transaction')return rkActionOpen('expense');
+ return rkLegacyModalEntry(type,id);
+};
+const rkLegacyTransactionEdit=rkSaveTransactionEdit;
+rkSaveTransactionEdit=function(id){
+ const before=db.transactions.find(t=>t.id===id);
+ if(!before)return;
+ const old=JSON.stringify(before);
+ rkLegacyTransactionEdit(id);
+ const after=db.transactions.find(t=>t.id===id);
+ if(!after||JSON.stringify(after)===old)return;
+ let affected=false;
+ for(const c of db.merchantFollowups||[]){
+  if(c.originTransactionId===id||c.relatedTransactionIds?.includes(id)){
+   c.events.push({date:new Date().toISOString(),action:'SOURCE_EDITED',note:'تغيرت بيانات معاملة مرتبطة؛ يلزم إعادة تقييم المؤشرات وخطة المعالجة'});
+   if(c.status==='VERIFIED')c.status='MONITORING';
+   affected=true;
+  }
+ }
+ if(affected){audit('مراجعة مصدر متابعة',id);save();render();}
+};
+const rkLegacyTransactionRemove=rkRemoveTransaction;
+rkRemoveTransaction=function(id){
+ const before=db.transactions.some(t=>t.id===id);
+ if(!before)return;
+ rkLegacyTransactionRemove(id);
+ if(db.transactions.some(t=>t.id===id))return;
+ let affected=false;
+ for(const c of db.merchantFollowups||[]){
+  if(c.originTransactionId===id||c.relatedTransactionIds?.includes(id)){
+   c.events.push({date:new Date().toISOString(),action:'SOURCE_REMOVED',note:'حُذفت المعاملة الأصلية؛ يجب مراجعة أساس المتابعة، ولم يُحذف سجل القرارات'});
+   c.status='BLOCKED';affected=true;
+  }
+ }
+ if(affected){audit('مصدر متابعة محذوف',id);save();render();}
+};
+
 render();</script></body></html>
