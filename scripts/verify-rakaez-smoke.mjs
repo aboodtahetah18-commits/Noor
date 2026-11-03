@@ -43,7 +43,7 @@ const document={
 };
 class MutationObserver{observe(){} disconnect(){}}
 const app= new Function('document','localStorage','MutationObserver','window','alert','confirm','crypto',
-  source+"\nreturn {N,navigate,rkWorkspaces,rkOpenContext,rkActionOpen,rkActionChooser,rkActionFromSMS,rkActionCommit,rkActionPreview,rkActionExpected,rkActionPeriodSpend,rkMerchantEnglishFromText,parseSMS,rkMerchantMonitored,rkMerchantCreateCase,rkMerchantCaseSave,rkOperationCaseDialog,rkOperationCaseSave,submitModal,operationCases:()=>db.operationFollowups||[],assetHoldings:()=>db.holdings,updateTestSavings:(n)=>{db.savings[0].balance=n;save()},merchantSnapshot:()=>rkMerchantSnapshot,merchantCases:()=>db.merchantFollowups,pushMerchantTx:t=>{db.transactions.push(t);save()},openModal,formV3,interbankForm,ledgerOpen,ledgerReconcile,researchForm,v14CycleForm,v11ToggleSamples,rakaezDataCheck,rkOpen,rkSave,edit:d=>Object.assign(rkDraft,d),step:n=>{rkStep=n},state:()=>({demo:v11ExamplesMode,transactions:db.transactions.length,receivables:db.receivables?.length||0,collections:db.receivableCollections?.length||0,scheduled:db.scheduledOps?.length||0})};"
+  source+"\nreturn {N,navigate,rkWorkspaces,rkOpenContext,rkActionOpen,rkActionChooser,rkActionFromSMS,rkActionCommit,rkActionPreview,rkActionCents,rkActionExpected,rkActionPeriodSpend,rkMerchantEnglishFromText,parseSMS,rkMerchantMonitored,rkMerchantCreateCase,rkMerchantCaseSave,rkSaveTransactionEdit,rkRemoveTransaction,rkOperationCaseDialog,rkOperationCaseSave,submitModal,operationCases:()=>db.operationFollowups||[],assetHoldings:()=>db.holdings,updateTestSavings:(n)=>{db.savings[0].balance=n;save()},merchantSnapshot:()=>rkMerchantSnapshot,merchantCases:()=>db.merchantFollowups,pushMerchantTx:t=>{db.transactions.push(t);save()},openModal,formV3,interbankForm,ledgerOpen,ledgerReconcile,researchForm,v14CycleForm,v11ToggleSamples,rakaezDataCheck,rkOpen,rkSave,edit:d=>Object.assign(rkDraft,d),step:n=>{rkStep=n},state:()=>({demo:v11ExamplesMode,transactions:db.transactions.length,receivables:db.receivables?.length||0,collections:db.receivableCollections?.length||0,scheduled:db.scheduledOps?.length||0})};"
 )(document,localStorage,MutationObserver,{},()=>{},()=>true,{randomUUID:()=>String(++sequence)});
 
 
@@ -202,6 +202,38 @@ assert.equal(app.operationCases().length,beforeWithdrawals+1,'Savings withdrawal
 assert.equal(app.operationCases().at(-1).kind,'WITHDRAWAL');
 assert.equal(app.operationCases().at(-1).status,'OPEN','A withdrawal request cannot be treated as settled immediately');
 assert.equal(JSON.parse(storage.get('rakaez-v1')).operationFollowups.length,beforeWithdrawals+1,'Operation follow-up persists in the same local workspace');
+
+assert.equal(app.rkActionCents('99.99'),9999,'Amounts must use exact halala conversion');
+assert.equal(app.rkActionCents('1.234'),null,'Reject fractions smaller than one halala');
+app.openModal('transaction');
+assert.ok(document.getElementById('modalRoot').innerHTML.includes('إجراء مالي متكامل'),
+ 'Legacy manual expense entry must use the unified linked action');
+app.rkActionOpen('income');
+document.getElementById('rkAType').value='income';
+document.getElementById('rkADate').value=new Date().toISOString().slice(0,10);
+document.getElementById('rkADesc').value='دخل تجريبي مستقل';
+document.getElementById('rkAAmount').value='123.45';
+const incomeCaseCount=app.merchantCases().length;
+const incomeTxCount=app.state().transactions;
+app.rkActionCommit();
+assert.equal(app.state().transactions,incomeTxCount+1,'Income must be recorded once');
+assert.equal(app.merchantCases().length,incomeCaseCount,'Income must not create a spending follow-up');
+
+const originalCase=app.merchantCases().find(c=>c.id===merchantCase.id);
+const eventsBeforeEdit=originalCase.events.length;
+app.navigate('hilal');
+for(const [field,value] of Object.entries({rkTxDesc:tx.description,rkTxDate:tx.date,rkTxType:'expense',rkTxCategory:'food',rkTxAmount:'600.00'})){
+ document.getElementById(field).value=value;
+}
+app.rkSaveTransactionEdit(tx.id);
+assert.equal(app.rkActionPeriodSpend('food',tx.date.slice(0,7)),60000,'Budget must recalculate after editing an expense');
+assert.ok(originalCase.events.length>eventsBeforeEdit,'Editing a linked expense must retain follow-up trace');
+assert.equal(originalCase.events.at(-1).action,'SOURCE_EDITED');
+app.rkRemoveTransaction(tx.id);
+assert.equal(app.rkActionPeriodSpend('food',tx.date.slice(0,7)),0,'Deleting the expense removes its budget effect');
+assert.equal(originalCase.status,'BLOCKED','Deleting linked source requires explicit review of case');
+assert.equal(originalCase.events.at(-1).action,'SOURCE_REMOVED','Do not silently erase the follow-up chain');
+
 
 
 
