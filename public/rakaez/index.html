@@ -3963,7 +3963,7 @@ render=function(){
   prepareFilters();
   const modal=document.querySelector('#modalRoot .modal');
   if(modal){streamlineDialog(modal);paginateForm(modal);}
-  else if(activeFilter)closeFilter();
+  else if(activeFilter&&!activeFilter.isConnected)activeFilter=null;
  }
  const obs=new MutationObserver(()=>{if(scheduled)return;scheduled=true;queueMicrotask(apply);});
  obs.observe(document.body,{childList:true,subtree:true});
