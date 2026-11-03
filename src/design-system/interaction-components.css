@@ -280,3 +280,154 @@ button[data-namaa-symbol-only="true"]:focus-visible,
   min-inline-size:0;
   overflow-wrap:break-word;
 }
+
+
+/* V18 — low-chrome record listings and fully hidden filters. */
+.ux-filter-dialog-trigger {
+  display:inline-flex;
+  align-items:center;
+  margin:0;
+  min-inline-size:0;
+  background:transparent;
+  border:0;
+  box-shadow:none;
+}
+.ux-filter-icon-button {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  inline-size:var(--ux-size-10);
+  block-size:var(--ux-size-10);
+  padding:0;
+  border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);
+  border-radius:var(--ux-radius-md);
+  background:var(--ux-card-bg);
+  color:var(--ux-brand-primary);
+  cursor:pointer;
+}
+.ux-filter-dialog { max-inline-size:calc(100vw - var(--ux-space-8)); }
+.ux-filter-dialog-fields { max-inline-size:100%; min-inline-size:0; }
+.ux-filter-dialog-fields .p47-filter-grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:var(--ux-space-3);
+  min-inline-size:0;
+}
+.ux-filter-dialog-fields :is(label,input,select,textarea) { min-inline-size:0; max-inline-size:100%; }
+.ux-filter-dialog-fields .p47-filter-actions { display:flex; align-items:center; flex-wrap:wrap; gap:var(--ux-space-2); grid-column:1 / -1; }
+
+.p47-transaction-surface {
+  min-inline-size:0;
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+}
+.p47-transaction-surface > .p47-section-heading {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--ux-space-3);
+  margin-block-end:var(--ux-space-3);
+}
+.p47-transaction-surface .p47-transaction-list {
+  display:grid;
+  gap:0;
+  border-block-start:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);
+  background:var(--ux-card-bg);
+}
+.p47-transaction-surface .p47-transaction-row {
+  border:0!important;
+  border-block-end:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default)!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  background:transparent!important;
+  margin:0!important;
+}
+.namaa-investments-dashboard-grid article,
+.namaa-investments-followup-list article {
+  border:0!important;
+  border-block-end:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default)!important;
+  box-shadow:none!important;
+  border-radius:0!important;
+  background:transparent!important;
+}
+
+/* Multi-page form steps: use headings rather than nested cards. */
+.ux-form-wizard {
+  display:grid;
+  gap:var(--ux-space-4);
+  inline-size:100%;
+  min-inline-size:0;
+}
+.ux-wizard-progress {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:var(--ux-space-4);
+  margin:0;
+  padding:0 0 var(--ux-space-3);
+  list-style:none;
+  border-block-end:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);
+}
+.ux-wizard-progress li {
+  display:inline-flex;
+  align-items:center;
+  gap:var(--ux-space-2);
+  color:var(--ux-text-secondary);
+  font-size:var(--ux-type-body-sm-size);
+}
+.ux-wizard-progress li.is-current { color:var(--ux-brand-primary);font-weight:700; }
+.ux-wizard-number {
+  display:inline-grid;
+  place-items:center;
+  inline-size:var(--ux-size-6);
+  block-size:var(--ux-size-6);
+  border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);
+  border-radius:var(--ux-radius-full);
+}
+.ux-wizard-progress .is-current .ux-wizard-number {
+  border-color:var(--ux-brand-primary);
+}
+.ux-wizard-page {
+  display:block;
+  min-inline-size:0;
+  inline-size:100%;
+}
+.ux-wizard-page[hidden] { display:none!important; }
+.ux-wizard-page :is(.form-grid,.account-form-primary-grid) {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:var(--ux-space-3);
+  min-inline-size:0;
+}
+.ux-wizard-page :is(label,input,select,textarea) { min-inline-size:0;max-inline-size:100%; }
+.ux-wizard-page label { display:grid; gap:var(--ux-space-2); }
+.ux-wizard-actions {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--ux-space-3);
+  border-block-start:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);
+  padding-block-start:var(--ux-space-3);
+}
+.ux-wizard-actions :is(.ux-wizard-next,.ux-wizard-back) {
+  inline-size:var(--ux-size-10);
+  block-size:var(--ux-size-10);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--ux-card-bg);
+  color:var(--ux-brand-primary);
+  border:var(--ux-border-width-1) var(--ux-border-style-default) var(--ux-border-default);
+  border-radius:var(--ux-radius-md);
+  cursor:pointer;
+}
+@media (max-width:767px) {
+  .ux-filter-dialog-fields .p47-filter-grid,
+  .ux-wizard-page :is(.form-grid,.account-form-primary-grid) { grid-template-columns:minmax(0,1fr); }
+  .ux-wizard-progress { gap:var(--ux-space-2); }
+  .ux-wizard-progress li { font-size:var(--ux-type-caption-size); }
+}
