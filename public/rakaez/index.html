@@ -842,6 +842,68 @@ button.rk-v17-icon-only:focus-visible{outline:2px solid var(--gold)!important;ou
  #modalRoot .rk-v18-step .formgrid{grid-template-columns:minmax(0,1fr)!important}
 }
 
+</style><style>
+/* Rakaez V18: quieter hierarchy using the existing approved tokens. */
+#view.workbench .workbench-intro,
+#view.workbench .sectiontitle > span,
+#view.workbench .workbench-section-head .sectiontitle > span,
+#view.workbench .rk-study-card-objective,
+#view.workbench .workbench-section-content > .notice,
+#modalRoot .rk-candidate-form-modal .notice {display:none!important}
+#view.workbench .workbench-section{margin-bottom:22px}
+#view.workbench .workbench-section-head{padding-bottom:10px;margin-bottom:12px}
+#view.workbench .workbench-section-content > section.card,
+#view.workbench .workbench-section-content > .card,
+#view.workbench .rk-opportunities,
+#view.workbench .rk-empty-section{background:transparent!important;border:0!important;box-shadow:none!important;border-radius:0!important;padding:0!important}
+#view.workbench .rk-assets-summary{background:transparent!important;border:0!important;box-shadow:none!important;gap:0}
+#view.workbench .rk-assets-summary > div{background:transparent!important;border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important;box-shadow:none!important}
+#view.workbench .rk-candidate-list .rk-study-card{background:transparent!important;border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important;box-shadow:none!important;padding:16px 4px!important}
+#view.workbench .rk-account-group{box-shadow:none!important;border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important}
+#view.workbench .rk-account-group > summary{border-radius:0!important}
+#view.workbench .tablewrap{box-shadow:none!important}
+#view.workbench .grid.stats .stat{box-shadow:none!important;border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important}
+#view [data-r18-inline-filter][hidden]{display:none!important}
+#view .rk-v18-filter-trigger{width:42px!important;min-width:42px!important;height:42px!important;padding:8px!important}
+#modalRoot .rk-v18-filter-modal{width:min(520px,100%)!important}
+#modalRoot .rk-v18-filter-content{padding:18px 21px;overflow:auto;max-height:62dvh}
+#modalRoot .rk-v18-filter-option{display:flex;align-items:center;gap:12px;padding:12px 4px;border-bottom:1px solid var(--line);cursor:pointer}
+#modalRoot .rk-v18-filter-option:last-child{border-bottom:0}
+#modalRoot .rk-v18-filter-option input{width:18px;height:18px;accent-color:var(--teal);flex:none}
+#modalRoot .rk-v18-filter-footer{display:flex;justify-content:flex-end;gap:9px;padding:13px 19px;border-top:1px solid var(--line)}
+#modalRoot .rk-v18-filter-footer .btn{min-width:42px;min-height:42px}
+#modalRoot .rk-v18-filter-search{width:100%}
+#modalRoot .rk-candidate-form-modal .rk-candidate-fields{padding:0!important;min-height:0;flex:1;overflow:auto}
+#modalRoot .rk-v18-wizard{width:100%;min-width:0}
+#modalRoot .rk-v18-steps{display:flex;gap:5px;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line);overflow-x:auto}
+#modalRoot .rk-v18-step-nav{display:flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;flex:1;min-width:0;padding:9px 6px;border:0;border-radius:8px;background:transparent;color:var(--muted);font-size:11px;font-weight:700;cursor:pointer}
+#modalRoot .rk-v18-step-nav b{border:1px solid var(--line);border-radius:50%;width:24px;height:24px;display:grid;place-items:center;flex:none;font-size:11px}
+#modalRoot .rk-v18-step-nav[aria-current="step"]{background:var(--paper);color:var(--navy)}
+#modalRoot .rk-v18-step-nav[aria-current="step"] b{border-color:var(--teal);background:var(--teal);color:#fff}
+#modalRoot .rk-v18-step-panel{padding:18px 22px;min-height:200px}
+#modalRoot .rk-v18-panel-heading{font-size:15px;color:var(--navy);margin:0 0 15px;font-weight:700}
+#modalRoot .rk-v18-step-panel[hidden],#modalRoot .rk-v18-step-nav[hidden],#modalRoot .rk-v18-wizard-actions button[hidden]{display:none!important}
+#modalRoot .rk-v18-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+#modalRoot .rk-v18-fields > .rk-candidate-allocation-edit,#modalRoot .rk-v18-fields > .field:has(textarea){grid-column:1/-1}
+#modalRoot .rk-v18-fields .field{min-width:0}
+#modalRoot .rk-v18-fields .field label{display:block;margin-bottom:5px}
+#modalRoot .rk-v18-wizard-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 18px;border-top:1px solid var(--line);flex:0 0 auto}
+#modalRoot .rk-v18-wizard-actions > div{display:flex;align-items:center;gap:9px}
+#modalRoot .rk-v18-wizard-actions button{width:42px!important;min-width:42px!important;height:42px!important;padding:8px!important}
+#modalRoot .rk-v18-review{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 22px}
+#modalRoot .rk-v18-review-row{padding:10px 0;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:3px}
+#modalRoot .rk-v18-review-row small{color:var(--muted)}
+#modalRoot .rk-v18-review-row b{font-weight:700;overflow-wrap:anywhere}
+#modalRoot .rk-v18-wizard .rk-candidate-allocation-edit{border:0!important;padding:0!important}
+@media(max-width:740px){
+ #modalRoot .rk-v18-steps{padding:9px 10px;gap:2px}
+ #modalRoot .rk-v18-step-nav{font-size:0;padding:8px 3px}
+ #modalRoot .rk-v18-step-nav b{font-size:11px}
+ #modalRoot .rk-v18-step-panel{padding:13px}
+ #modalRoot .rk-v18-fields,#modalRoot .rk-v18-review{grid-template-columns:1fr}
+ #modalRoot .rk-v18-wizard-actions{padding:10px 12px}
+ #view.workbench .rk-assets-summary{gap:5px}
+}
 </style></head><body><div class="layout" id="layout"><aside><div class="brand"><div class="brandmark">ر</div><div><b>ركائز</b><small>منظومتك المالية الشخصية</small></div></div><nav class="nav" id="nav"></nav><div class="asidefoot">ثلاثة مراكز مالية، رؤية واحدة.<br>نظام إدارة شخصية تجريبي • بيانات محلية</div></aside><main><header class="topbar"><div class="rakaez-title-row"><div class="row"><button type="button" class="btn mobilemenu rk-mobilemenu" aria-label="فتح القائمة الجانبية" aria-expanded="false" onclick="rkToggleMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" width="24" height="24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><h1 id="pageTitle">لوحة التحكم</h1><p id="pageSub" hidden></p></div><div class="rakaez-bell-wrap"><button type="button" class="btn primary rakaez-add" onclick="openModal('transaction')"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>إضافة</span></button><button type="button" class="rakaez-bell" id="rakaezBell" aria-label="الإشعارات" aria-expanded="false" aria-controls="rakaezNotifications" onclick="toggleRakaezNotifications()"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4"/></svg></button><div id="rakaezNotifications" class="rakaez-notifications" hidden></div></div></div><div class="topcontrols" hidden><select id="monthPicker" onchange="month=this.value;render()"></select></div></header><div class="content"><div class="demo">● نسخة تجريبية تعمل في متصفحك وتخزن المعلومات على هذا الجهاز فقط. لا تدخل بيانات مصرفية سرية أو تعتمد عليها كنسخة إنتاجية.</div><div id="view"></div></div></main></div><div id="modalRoot"></div><div id="toastRoot"></div><script>
 const icons={home:'<path d="m3 10 9-7 9 7v10H3z"/><path d="M9 20v-7h6v7"/>',moon:'<path d="M19 14A8 8 0 0 1 10 5a8 8 0 1 0 9 9Z"/>',shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/>',trend:'<path d="m3 17 6-6 4 4 8-8"/><path d="M15 7h6v6"/>',wallet:'<rect x="3" y="5" width="18" height="15" rx="2"/><path d="M16 12h5"/>',fund:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h4"/>',upload:'<path d="M12 16V3m-5 5 5-5 5 5M4 17v4h16v-4"/>',chart:'<path d="M4 20V10m6 10V4m6 16v-8m5 8H2"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="m19 13 2 1-2 4-2-1-2 1v2H9v-2l-2-1-2 1-2-4 2-1v-2l-2-1 2-4 2 1 2-1V4h6v2l2 1 2-1 2 4-2 1z"/>',bank:'<path d="m2 9 10-6 10 6M4 10h16M5 11v8m5-8v8m5-8v8m5-8v8M2 21h20"/>',bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4"/>',plus:'<path d="M12 5v14M5 12h14"/>'};function ico(name){return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${icons[name]||icons.wallet}</svg>`}
 const N=[['hilal','بنك الهلال التشغيلي','moon'],['malaa','بنك ملاءة للادخار','shield'],['assets','بنك الأصول الاستثماري','trend'],['goals','الأهداف المالية','trend'],['debts','الديون والالتزامات','fund'],['fees','الرسوم الدورية','chart'],['reserves','بنوك المنصة','bank'],['position','المركز المالي الموحد','bank'],['interbank','التمويل بين المراكز','fund'],['insights','الرئيسية','home'],['ledger','دفتر الأستاذ والمطابقة','fund'],['transactions','المعاملات المالية','wallet'],['funding','التمويل الداخلي','fund'],['import','استيراد المعاملات','upload'],['reports','التقارير والتحليلات','chart'],['settings','الإعدادات والتوزيع','settings']];
@@ -3973,5 +4035,158 @@ render=function(){
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&activeFilter){e.preventDefault();closeFilter();}});
  apply();
 })();
+
+/* Rakaez V18 unified: assets category filter and paged opportunity flow. */
+(function(){
+ const root=document.getElementById('modalRoot');
+ const view=document.getElementById('view');
+ if(!root||!view)return;
+ const v18Icon=(name)=>typeof ico==='function'?ico(name):'';
+ const element=(tag,className,txt)=>{
+  const e=document.createElement(tag);
+  if(className)e.className=className;
+  if(txt!=null)e.textContent=txt;
+  return e;
+ };
+ function closeFilter(){closeModal();}
+ function showFilter(title,options,current,apply){
+  const backdrop=element('div','modalbg');
+  const modal=element('div','modal rk-v18-filter-modal');
+  modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');
+  const head=element('div','modalhead');
+  const heading=element('h2','',title);
+  const exit=element('button','btn');exit.type='button';exit.setAttribute('aria-label','إغلاق الفلتر');exit.title='إغلاق';exit.innerHTML=v18Icon('close');exit.onclick=closeFilter;
+  head.append(heading,exit);
+  const body=element('div','rk-v18-filter-content');
+  const radios=[];
+  for(const option of options){
+   const label=element('label','rk-v18-filter-option');
+   const input=element('input');input.type='radio';input.name='rkV18Filter';input.value=option.value;
+   input.checked=String(option.value)===String(current);
+   radios.push(input);
+   const span=element('span','',option.label);
+   label.append(input,span);body.appendChild(label);
+  }
+  if(!radios.some(x=>x.checked)&&radios[0])radios[0].checked=true;
+  const foot=element('div','rk-v18-filter-footer');
+  const cancel=element('button','btn');cancel.type='button';cancel.setAttribute('aria-label','إلغاء');cancel.title='إلغاء';cancel.innerHTML=v18Icon('close');cancel.onclick=closeFilter;
+  const submit=element('button','btn primary');submit.type='button';submit.setAttribute('aria-label','تطبيق الفلتر');submit.title='تطبيق الفلتر';submit.innerHTML=v18Icon('check');
+  submit.onclick=()=>{const choice=radios.find(x=>x.checked);apply(choice?choice.value:current);closeFilter()};
+  foot.append(cancel,submit);modal.append(head,body,foot);backdrop.appendChild(modal);
+  backdrop.onclick=e=>{if(e.target===backdrop)closeFilter()};
+  root.replaceChildren(backdrop);
+ }
+ function filterButton(target,title,handler){
+  if(!target||target.querySelector('[data-r18-filter-button]'))return;
+  const btn=element('button','btn rk-v18-filter-trigger');
+  btn.type='button';btn.dataset.r18FilterButton='1';btn.title=title;btn.setAttribute('aria-label',title);btn.innerHTML=v18Icon('filter');
+  btn.onclick=handler;target.appendChild(btn);
+ }
+ function enhanceFilters(){
+  const study=view.querySelector('.rk-assets-study-tabs');
+  if(study){
+   study.dataset.r18InlineFilter='1';study.hidden=true;
+   const bar=view.querySelector('.rk-opportunities .rk-account-actions');
+   filterButton(bar,'تصفية فرص الدراسة',()=>showFilter('تصفية فرص الدراسة',[
+     {value:'portfolios',label:'المحافظ'},{value:'funds',label:'الصناديق'},{value:'other',label:'فرص أخرى'}
+    ],rkAssetStudyTab,value=>rkAssetSetStudyTab(value)));
+  }
+
+ }
+ function enhanceCandidateWizard(){
+  const modal=root.querySelector('.rk-candidate-form-modal');
+  if(!modal||modal.dataset.r18Wizard)return;
+  const form=modal.querySelector('form');
+  const content=modal.querySelector('.rk-candidate-fields');
+  const grid=content?.querySelector('.rk-candidate-field-grid');
+  const previousFooter=form?.querySelector('.rk-compact-footer');
+  if(!form||!content||!grid||!previousFooter)return;
+  modal.dataset.r18Wizard='1';form.noValidate=true;
+  const children=[...grid.children];
+  const includes=(el,id)=>!!el.querySelector('[id="'+id+'"]');
+  const pick=(ids)=>children.filter(el=>ids.some(id=>includes(el,id)));
+  const group1=pick(['rkCandidateName','rkCandidateCategory','rkCandidateRisk','rkCandidateManager']);
+  const group2=pick(['rkCandidateDays','rkCandidateReturn','rkCandidateFees','rkCandidateMin']);
+  const used=new Set([...group1,...group2]);
+  const group3=children.filter(el=>!used.has(el));
+  const objective=content.querySelector('#rkCandidateObjective')?.closest('.field');
+  const allocation=content.querySelector('.rk-candidate-allocation-edit');
+  const notes=content.querySelector('#rkCandidateNotes')?.closest('.field');
+  [objective,allocation,notes].forEach(node=>{if(node)group3.push(node)});
+  const pages=[
+   {title:'الأساسية',fields:group1},
+   {title:'المالية',fields:group2},
+   {title:'التفاصيل',fields:group3},
+   {title:'المراجعة',fields:[]}
+  ];
+  const wizard=element('div','rk-v18-wizard');
+  const nav=element('div','rk-v18-steps');
+  const panels=element('div','rk-v18-panels');
+  const links=[],contents=[];
+  pages.forEach((page,i)=>{
+   const tab=element('button','rk-v18-step-nav');
+   tab.type='button';tab.setAttribute('aria-label','الانتقال إلى '+page.title);tab.title=page.title;
+   tab.innerHTML=v18Icon(['wallet','chart','settings','check'][i]);tab.dataset.rkV17Enhanced='1';nav.append(tab);links.push(tab);
+   const panel=element('section','rk-v18-step-panel');panel.setAttribute('aria-label',page.title);
+   panel.appendChild(element('h3','rk-v18-panel-heading',page.title));
+   const inner=element('div',i===3?'rk-v18-review':'rk-v18-fields');
+   page.fields.forEach(node=>inner.append(node));panel.append(inner);panels.append(panel);contents.push(panel);
+   tab.onclick=()=>go(i);
+  });
+  grid.remove();wizard.append(nav,panels);content.prepend(wizard);
+  const actions=element('div','rk-v18-wizard-actions');
+  const back=element('button','btn');back.type='button';back.title='السابق';back.setAttribute('aria-label','السابق');back.innerHTML=v18Icon('prev');
+  const side=element('div');
+  const next=element('button','btn primary');next.type='button';next.title='التالي';next.setAttribute('aria-label','التالي');next.innerHTML=v18Icon('forward');
+  const save=previousFooter.querySelector('button[type="submit"]');
+  if(save){save.dataset.r18Save='1';save.title='حفظ الفرصة';save.setAttribute('aria-label','حفظ الفرصة');}
+  const details=previousFooter.querySelector('button[type="button"]');
+  back.onclick=()=>go(Math.max(0,index-1));
+  next.onclick=()=>{if(index===0&&!document.getElementById('rkCandidateName')?.value.trim()){alert('اسم الفرصة مطلوب');document.getElementById('rkCandidateName')?.focus();return}go(Math.min(3,index+1))};
+  side.append(next);if(save)side.append(save);if(details){details.title='العودة إلى التفاصيل';details.setAttribute('aria-label','العودة إلى التفاصيل');side.append(details);}
+  actions.append(back,side);form.append(actions);previousFooter.remove();
+  function updateReview(){
+   const container=contents[3].querySelector('.rk-v18-review');container.replaceChildren();
+   const items=[
+    ['اسم الفرصة',document.getElementById('rkCandidateName')?.value],
+    ['النوع',document.getElementById('rkCandidateCategory')?.value],
+    ['المخاطرة',document.getElementById('rkCandidateRisk')?.value],
+    ['العائد السنوي',document.getElementById('rkCandidateReturn')?.value?document.getElementById('rkCandidateReturn').value+'%':'—'],
+    ['الرسوم',document.getElementById('rkCandidateFees')?.value?document.getElementById('rkCandidateFees').value+'%':'—'],
+    ['المدير',document.getElementById('rkCandidateManager')?.value||'—']
+   ];
+   for(const [title,value] of items){
+    const line=element('div','rk-v18-review-row');
+    line.append(element('small','',title),element('b','',value||'—'));container.append(line);
+   }
+  }
+  let index=0;
+  function go(nextStep){
+   index=nextStep;
+   contents.forEach((section,i)=>{section.hidden=i!==index});
+   links.forEach((button,i)=>button.setAttribute('aria-current',i===index?'step':'false'));
+   back.hidden=index===0;
+   next.hidden=index===3;
+   if(save)save.hidden=index!==3;
+   if(details)details.hidden=index!==3;
+   if(index===3)updateReview();
+   const focusable=contents[index].querySelector('input:not([hidden]),select:not([hidden]),textarea:not([hidden])');
+   if(focusable&&index<3)focusable.focus({preventScroll:true});
+   content.scrollTop=0;
+  }
+  go(0);
+  if(typeof rkCandidateToggleFields==='function')rkCandidateToggleFields();
+  if(typeof rkAllocationInputTotal==='function')rkAllocationInputTotal('rkCa');
+ }
+ const originalRender=render;
+ render=function(){const result=originalRender.apply(this,arguments);enhanceFilters();return result};
+ let queued=false;
+ const observer=new MutationObserver(()=>{
+  if(queued)return;queued=true;queueMicrotask(()=>{queued=false;enhanceCandidateWizard()});
+ });
+ observer.observe(root,{childList:true,subtree:true});
+ enhanceFilters();enhanceCandidateWizard();
+})();
+
 
 render();</script></body></html>
