@@ -1556,12 +1556,19 @@ function v11BuildSamples(){
  d.receivableCollections=[];
  d.scheduledOps=[{id:id(),name:'تحويل ادخار شهري — مثال تجريبي',kind:'allocation',method:'percentage',rate:15,amount:0,base:'salary',period:'monthly',start:at(0),mode:'confirm',status:'planned'}];
  d.docs=[{id:id(),name:'فاتورة تجريبية',kind:'receipt',date:at(2),amount:45000,related:'مصروف — مثال تجريبي',fileName:'مستند افتراضي دون ملف',isDemo:true}];
- d.assetAccounts=[{id:id(),name:'محفظة الراشد المالية — بيانات تجريبية',broker:'الراشد المالية'}];
- const demoStocks=d.holdings.filter(h=>h.kind==='سهم').slice(0,3);
- demoStocks.forEach((h,i)=>{h.accountId=d.assetAccounts[0].id;if(i===0)h.name='سهم أرامكو — بيانات افتراضية'});
+ d.assetAccounts=[
+ {id:id(),name:'محفظة سهم واحد — بيانات تجريبية',broker:'وسيط افتراضي',components:[{id:id(),name:'سهم شركة افتراضية واحدة',kind:'سهم شركة',symbol:'DEMO-SA',note:'ملكية تجريبية في شركة واحدة',weight:null}]},
+ {id:id(),name:'محفظة المستقبل — بيانات تجريبية',broker:'شركة إدارة افتراضية',components:[
+  {id:id(),name:'صندوق الذكاء الاصطناعي — تجريبي',kind:'صندوق استثماري',symbol:'',note:'مثال لمكوّن واحد من محفظة متعددة الصناديق',weight:null},
+  {id:id(),name:'صندوق البيتكوين — تجريبي',kind:'صندوق متداول',symbol:'',note:'أصل متقلب للغاية؛ لا يُفترض له عائد أو سيولة محددة',weight:null}
+ ]}
+ ];
+ const demoStocks=d.holdings.filter(h=>h.kind==='سهم').slice(0,1);
+ demoStocks.forEach(h=>{h.accountId=d.assetAccounts[0].id;h.name='سهم سعودي افتراضي — بيانات تجريبية'});
  d.candidatePortfolios=[
  {id:id(),name:'فرصة سيولة تجريبية',category:'صندوق',fundType:'نقدي',manager:'مدير افتراضي',nav:10,minSubscription:500,risk:'منخفضة',redemptionDays:0,expectedReturn:3.1,fees:0.1,objective:'سيولة وأدوات قصيرة الأجل — نموذج تجريبي',allocation:{saudi:0,us:0,developed:0,emerging:0,gold:0,sukuk:30,cash:70,other:0}},
- {id:id(),name:'محفظة منخفضة المخاطر — تجريبية',category:'محفظة',manager:'مدير افتراضي',benchmark:'مؤشر تجريبي',risk:'منخفضة',redemptionDays:2,expectedReturn:3.8,fees:0.25,minSubscription:1000,maxDrawdown:5,objective:'تنويع متحفظ — نموذج تجريبي',allocation:{saudi:8,us:7,developed:5,emerging:0,gold:10,sukuk:40,cash:30,other:0}}
+ {id:id(),name:'محفظة منخفضة المخاطر — تجريبية',category:'محفظة',manager:'مدير افتراضي',benchmark:'مؤشر تجريبي',risk:'منخفضة',redemptionDays:2,expectedReturn:3.8,fees:0.25,minSubscription:1000,maxDrawdown:5,objective:'تنويع متحفظ — نموذج تجريبي',allocation:{saudi:8,us:7,developed:5,emerging:0,gold:10,sukuk:40,cash:30,other:0},components:[{id:id(),name:'صندوق أدوات نقدية — تجريبي',kind:'صندوق استثماري',weight:50,symbol:'',note:''},{id:id(),name:'صندوق صكوك — تجريبي',kind:'صندوق استثماري',weight:50,symbol:'',note:''}]},
+ {id:id(),name:'محفظة المستقبل — فرصة دراسة تجريبية',category:'محفظة',risk:'غير محددة',redemptionDays:null,expectedReturn:null,fees:null,objective:'مثال على محفظة تضم صندوقين مختلفين دون توزيع إلزامي',components:[{id:id(),name:'صندوق الذكاء الاصطناعي — تجريبي',kind:'صندوق استثماري',weight:null,symbol:'',note:''},{id:id(),name:'صندوق البيتكوين — تجريبي',kind:'صندوق متداول',weight:null,symbol:'',note:''}]}
  ];
  const firstDemoPortfolio=d.holdings.find(h=>h.kind==='محفظة استثمارية');
  if(firstDemoPortfolio)firstDemoPortfolio.allocationDetail={saudi:20,us:15,developed:10,emerging:5,gold:0,sukuk:20,cash:15,other:15};
@@ -1925,6 +1932,27 @@ function rakaezDataCheck(){
  for(const p of safeArray('candidatePortfolios'))if(!allocationValid(p.allocation))issues.push('نسب توزيع فرصة استثمارية غير متوازنة');
  for(const p of safeArray('holdings'))if(!allocationValid(p.allocationDetail))issues.push('نسب توزيع محفظة غير متوازنة');
  for(const p of safeArray('assetAccounts'))if(!allocationValid(p.allocationDetail))issues.push('نسب توزيع محفظة الوساطة غير متوازنة');
+ const checkComponents=(obj,label)=>{
+  if(obj.components===undefined||obj.components===null)return;
+  if(!Array.isArray(obj.components)){issues.push('مكونات غير صالحة في '+label);return}
+  const seen=new Set(),ids=new Set();let weightCount=0,weightSum=0;
+  for(const item of obj.components){
+   if(!item||typeof item.name!=='string'||!item.name.trim()||!rkComponentTypes.includes(item.kind)){
+    issues.push('مكوّن استثماري غير صالح في '+label);continue;
+   }
+   const canonical=item.kind+'|'+item.name.trim().toLocaleLowerCase('ar');
+   if(seen.has(canonical))issues.push('مكوّن مكرر في '+label);seen.add(canonical);
+   if(item.id){if(ids.has(item.id))issues.push('معرّف مكوّن مكرر في '+label);ids.add(item.id)}
+   if(item.weight!==null&&item.weight!==undefined&&item.weight!==''){
+    const w=Number(item.weight);weightCount++;weightSum+=w;
+    if(!Number.isFinite(w)||w<0||w>100||Math.abs(w*100-Math.round(w*100))>0.000001)issues.push('نسبة مكوّن غير صالحة في '+label);
+   }
+  }
+  if(weightCount&&(weightCount!==obj.components.length||Math.round(weightSum*100)!==10000))issues.push('مجموع نسب مكونات '+label+' ليس 100%');
+ };
+ for(const account of safeArray('assetAccounts'))checkComponents(account,'محفظة الوساطة');
+ for(const holding of safeArray('holdings'))if(holding.kind==='محفظة استثمارية')checkComponents(holding,'المحفظة الاستثمارية');
+ for(const candidate of safeArray('candidatePortfolios'))if(candidate.category==='محفظة')checkComponents(candidate,'فرصة المحفظة');
  for(const b of safeArray('externalBanks')){
   if(!String(b.name||'').trim()||!['hilal','malaa','assets'].includes(b.center)||b.last4&&!/^[0-9]{4}$/.test(b.last4))issues.push('تعريف بنك خارجي غير صالح');
   if(b.logo&&!/^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(b.logo))issues.push('شعار بنك خارجي غير صالح');
