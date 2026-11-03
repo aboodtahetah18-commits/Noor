@@ -6,6 +6,8 @@ import { LucideIcon } from '@/components/ui/lucide-icon';
 import { ProfileTrigger, type HeaderProfile } from './profile-trigger';
 import { ThemeToggle } from '../theme-toggle';
 import { BrandLogo } from '@/components/brand/brand-logo';
+import { NotificationCenter } from '@/components/ui/notification-center';
+import type { AlertItem } from '@/features/alerts/queries/get-alert-center';
 
 function subscribeSidebar(callback: () => void) {
   const onStorage = (event: StorageEvent) => { if (event.key === 'sidebarState') callback(); };
@@ -25,7 +27,7 @@ function sidebarServerSnapshot() {
   return true;
 }
 
-export function GlobalTopBar({ profile }: { profile: HeaderProfile }) {
+export function GlobalTopBar({ profile, notifications, notificationsUnavailable = false }: { profile: HeaderProfile; notifications: AlertItem[]; notificationsUnavailable?: boolean }) {
   const collapsed = useSyncExternalStore(subscribeSidebar, sidebarSnapshot, sidebarServerSnapshot);
 
   useEffect(() => {
@@ -67,9 +69,7 @@ export function GlobalTopBar({ profile }: { profile: HeaderProfile }) {
         <Link href="/conversations" aria-label="الدردشة" title="الدردشة">
           <LucideIcon name="messageSquareText" size={20} />
         </Link>
-        <Link href="/alerts" aria-label="التنبيهات" title="التنبيهات">
-          <LucideIcon name="bell" size={20} />
-        </Link>
+        <NotificationCenter items={notifications} unavailable={notificationsUnavailable} />
         <ThemeToggle />
         <ProfileTrigger profile={profile} className="namaa-profile-trigger" />
       </div>
