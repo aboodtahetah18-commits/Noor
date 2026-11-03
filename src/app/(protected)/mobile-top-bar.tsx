@@ -8,6 +8,8 @@ import { Drawer } from '@/components/ui';
 import { ThemeToggle } from '../theme-toggle';
 import { BrandLogo } from '@/components/brand/brand-logo';
 import { ProfileTrigger, type HeaderProfile } from './profile-trigger';
+import { NotificationCenter } from '@/components/ui/notification-center';
+import type { AlertItem } from '@/features/alerts/queries/get-alert-center';
 
 const secondary: ReadonlyArray<{ href:string; label:string; icon:LucideIconName }> = [
   { href:'/conversations', label:'مركز العمل', icon:'messageSquareText' },
@@ -19,11 +21,10 @@ const secondary: ReadonlyArray<{ href:string; label:string; icon:LucideIconName 
   { href:'/advisor', label:'مختبر الخوارزميات', icon:'sparkles' },
   { href:'/internal-funding', label:'التمويل الداخلي', icon:'banknote' },
   { href:'/workspace', label:'مركز النظام', icon:'layoutGrid' },
-  { href:'/alerts', label:'التنبيهات', icon:'bell' },
   { href:'/settings', label:'الإعدادات', icon:'settings' },
 ];
 
-export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
+export function MobileTopBar({ profile, notifications, notificationsUnavailable = false }: { profile: HeaderProfile; notifications: AlertItem[]; notificationsUnavailable?: boolean }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const chatFirst = pathname === '/conversations' || pathname.startsWith('/conversations/');
@@ -53,9 +54,7 @@ export function MobileTopBar({ profile }: { profile: HeaderProfile }) {
           <Link href="/transactions" className="namaa-mobile-search-action" aria-label="البحث في نماء" title="البحث">
             <LucideIcon name="search" size={20} />
           </Link>
-          <Link href="/alerts" aria-label="التنبيهات" title="التنبيهات">
-            <LucideIcon name="bell" size={20} />
-          </Link>
+          <NotificationCenter items={notifications} unavailable={notificationsUnavailable} />
           <ThemeToggle />
           <ProfileTrigger profile={profile} className="namaa-mobile-profile-trigger" />
         </div>
