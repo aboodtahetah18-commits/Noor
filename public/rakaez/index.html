@@ -3148,4 +3148,177 @@ render=function(){
  }
 };
 
+/* V18 — Compact and consistent form inputs, using existing Rakaez identity.
+   The last stylesheet intentionally resolves older, conflicting modal rules. */
+(function rkApplyCompactFormLayout(){
+  const sheet=document.createElement('style');
+  sheet.setAttribute('data-rk-forms','compact-v18');
+  sheet.textContent=`
+/* Keep inputs in their own columns, never wider than their parent. */
+#modalRoot .modal .formgrid,
+#modalRoot .modal .wiz-step>.formgrid,
+#modalRoot .modal .v7-group .formgrid,
+#modalRoot .modal .portfolio-block .formgrid{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  column-gap:12px!important;
+  row-gap:10px!important;
+  width:100%;
+  max-width:100%;
+  min-width:0;
+}
+#modalRoot .modal .formgrid>.field.full,
+#modalRoot .modal .formgrid>.full,
+#modalRoot .modal .formgrid>.portfolio-block{
+  grid-column:1/-1!important;
+}
+#modalRoot .modal .field,
+#modalRoot .modal .formgrid>.field,
+#view .field{
+  min-width:0!important;
+  max-width:100%;
+  box-sizing:border-box;
+}
+#modalRoot .modal .field{gap:5px!important;margin-bottom:0}
+#modalRoot .modal .field label,
+#view .field label{
+  display:block;
+  width:100%;
+  max-width:100%;
+  line-height:1.5!important;
+  overflow-wrap:anywhere;
+}
+/* The previous generic 52px input rule also affected checkboxes: fix it explicitly. */
+#modalRoot .modal input[type="checkbox"],
+#modalRoot .modal input[type="radio"],
+#view input[type="checkbox"],
+#view input[type="radio"]{
+  box-sizing:border-box!important;
+  width:18px!important;
+  min-width:18px!important;
+  max-width:18px!important;
+  height:18px!important;
+  min-height:18px!important;
+  max-height:18px!important;
+  padding:0!important;
+  margin:0 6px!important;
+  flex:0 0 18px!important;
+  vertical-align:middle;
+  box-shadow:none!important;
+}
+#modalRoot .modal label:has(>input[type="checkbox"]),
+#modalRoot .modal label:has(>input[type="radio"]){
+  display:inline-flex!important;
+  align-items:center;
+  gap:5px;
+  width:auto;
+  max-width:100%;
+  overflow-wrap:anywhere;
+}
+/* Single-line controls: balanced and compact, without changing the palette or font. */
+#modalRoot .modal input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]),
+#modalRoot .modal select{
+  box-sizing:border-box!important;
+  display:block;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  height:41px!important;
+  min-height:41px!important;
+  max-height:41px!important;
+  padding:7px 11px!important;
+  border-radius:10px!important;
+  font-size:13px!important;
+  line-height:1.45!important;
+}
+#modalRoot .modal textarea{
+  box-sizing:border-box!important;
+  display:block;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  height:auto!important;
+  min-height:76px!important;
+  max-height:none!important;
+  padding:9px 11px!important;
+  resize:vertical;
+  line-height:1.6!important;
+  font-size:13px!important;
+}
+#modalRoot .modal input[type="file"]{
+  box-sizing:border-box!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  height:auto!important;
+  padding:8px 10px!important;
+}
+#view .field input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+#view .field select,
+#view .field textarea{
+  box-sizing:border-box!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+}
+#modalRoot .modal .v3footer,
+#modalRoot .modal .rk-footer,
+#modalRoot .modal .wiz-actions{
+  box-sizing:border-box!important;
+  width:100%!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:8px!important;
+}
+#modalRoot .modal .v3footer>.btn,
+#modalRoot .modal .rk-footer>.btn,
+#modalRoot .modal .wiz-actions>.btn{
+  box-sizing:border-box!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  min-height:46px!important;
+  padding:9px 8px!important;
+  white-space:normal!important;
+  overflow-wrap:anywhere;
+  text-align:center;
+}
+#modalRoot .modal .actions:not(.wiz-original-hidden)>.btn{
+  min-width:0!important;
+  min-height:43px!important;
+  max-width:100%;
+  padding:9px 12px!important;
+  white-space:normal!important;
+}
+@media(max-width:680px){
+  #modalRoot .modal .formgrid,
+  #modalRoot .modal .wiz-step>.formgrid,
+  #modalRoot .modal .v7-group .formgrid,
+  #modalRoot .modal .portfolio-block .formgrid{
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:11px!important;
+  }
+  #modalRoot .modal .formgrid>.field.full,
+  #modalRoot .modal .formgrid>.full{
+    grid-column:1/-1!important;
+  }
+  #modalRoot .modal input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]),
+  #modalRoot .modal select{
+    height:44px!important;
+    min-height:44px!important;
+    max-height:44px!important;
+  }
+  #modalRoot .modal .v3footer,
+  #modalRoot .modal .rk-footer,
+  #modalRoot .modal .wiz-actions{gap:6px!important}
+  #modalRoot .modal .v3footer>.btn,
+  #modalRoot .modal .rk-footer>.btn,
+  #modalRoot .modal .wiz-actions>.btn{
+    min-height:46px!important;
+    padding:8px 4px!important;
+  }
+}
+`;
+  document.head.appendChild(sheet);
+})();
+
 render();</script></body></html>
