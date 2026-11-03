@@ -1652,6 +1652,119 @@ icons.next='<path d="M9 18l6-6-6-6"/><path d="M3 12h12"/>';
    #modalRoot .modal .v3footer,#modalRoot .modal .actions,#modalRoot .modal .wiz-actions{padding:14px 18px 18px!important;gap:10px!important}
    #modalRoot .modal .wiz-step>.formgrid,#modalRoot .modal .formgrid,#modalRoot .modal .v7-group .formgrid{grid-template-columns:1fr!important;gap:14px!important}
  }
+
+ /* V14: comfortable dense inputs and wide edge-to-edge modal actions.
+    Keep the approved right-to-left sequence: previous | save | next. */
+ #modalRoot .modal .field{gap:4px!important}
+ #modalRoot .modal .field label{font-size:12px!important;line-height:1.5!important}
+ #modalRoot .modal .formgrid,
+ #modalRoot .modal .wiz-step>.formgrid,
+ #modalRoot .modal .v7-group .formgrid{column-gap:12px!important;row-gap:10px!important}
+ #modalRoot .modal input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+ #modalRoot .modal select{
+   box-sizing:border-box!important;
+   width:100%;
+   height:42px!important;
+   min-height:42px!important;
+   max-height:42px!important;
+   padding:7px 11px!important;
+   border-radius:10px!important;
+   font-size:13px!important;
+   line-height:1.45!important;
+   box-shadow:none!important;
+ }
+ #modalRoot .modal input[type="file"]{
+   min-height:42px!important;height:auto!important;
+   padding:7px 10px!important;border-radius:10px!important;font-size:12px!important;
+ }
+ #modalRoot .modal textarea{
+   min-height:72px!important;
+   height:auto!important;
+   padding:9px 11px!important;
+   border-radius:10px!important;
+   font-size:13px!important;
+   line-height:1.6!important;
+   box-shadow:none!important;
+ }
+ #modalRoot .modal .v8-wizard-host{padding:12px 18px 8px!important}
+ #modalRoot .modal .v3form,
+ #modalRoot .modal .modalbody,
+ #modalRoot .modal .v7-modal-body{padding:12px 18px!important}
+ #modalRoot .modal .rk-step-body{
+   box-sizing:border-box!important;
+   width:100%!important;
+   max-width:700px!important;
+   min-height:0!important;
+   margin-inline:auto!important;
+   padding:14px 16px 18px!important;
+   gap:10px 12px!important;
+   align-content:start!important;
+ }
+ #modalRoot .modal .v7-group,#modalRoot .modal .portfolio-block{
+   padding:11px 13px!important;margin-bottom:10px!important;border-radius:12px!important
+ }
+ #modalRoot .modal .rk-footer,
+ #modalRoot .modal .v3footer,
+ #modalRoot .modal .wiz-actions{
+   box-sizing:border-box!important;
+   display:grid!important;
+   direction:rtl!important;
+   grid-template-columns:repeat(3,minmax(0,1fr))!important;
+   column-gap:9px!important;
+   padding:11px 10px 13px!important;
+   margin:0!important;
+   width:100%!important;
+   border-top:1.5px solid #c1d0d9!important;
+   background:#fff!important;
+ }
+ #modalRoot .modal .rk-footer>.btn,
+ #modalRoot .modal .v3footer>.btn,
+ #modalRoot .modal .wiz-actions>.btn{
+   box-sizing:border-box!important;
+   display:flex!important;
+   width:100%!important;
+   max-width:none!important;
+   min-width:0!important;
+   min-height:49px!important;
+   border-radius:11px!important;
+   padding:9px 8px!important;
+   justify-content:center!important;
+   align-items:center!important;
+   gap:8px!important;
+   font-size:14px!important;
+   font-weight:750!important;
+   white-space:nowrap!important;
+ }
+ #modalRoot .modal .rk-footer>.btn.primary,
+ #modalRoot .modal .v3footer>.btn.primary,
+ #modalRoot .modal .wiz-actions>.btn.primary{
+   background:#167D78!important;
+   border-color:#167D78!important;
+   color:#fff!important;
+ }
+ #modalRoot .modal .rk-footer>.btn:not(.primary),
+ #modalRoot .modal .v3footer>.btn:not(.primary),
+ #modalRoot .modal .wiz-actions>.btn:not(.primary){
+   background:#eef5f5!important;
+   border:1.5px solid #b8cbd5!important;
+   color:#182A42!important;
+ }
+ #modalRoot .modal .rk-footer>.btn svg,
+ #modalRoot .modal .v3footer>.btn svg,
+ #modalRoot .modal .wiz-actions>.btn svg{width:19px!important;height:19px!important;flex:none!important}
+ @media(max-width:740px){
+   #modalRoot .modal .rk-step-body{max-width:100%!important;padding:12px 13px 15px!important;gap:10px!important}
+   #modalRoot .modal .rk-footer,
+   #modalRoot .modal .v3footer,
+   #modalRoot .modal .wiz-actions{gap:6px!important;padding:10px 6px 13px!important}
+   #modalRoot .modal .rk-footer>.btn,
+   #modalRoot .modal .v3footer>.btn,
+   #modalRoot .modal .wiz-actions>.btn{font-size:12px!important;gap:4px!important;padding:8px 3px!important;min-height:47px!important}
+   #modalRoot .modal .rk-footer>.btn svg,
+   #modalRoot .modal .v3footer>.btn svg,
+   #modalRoot .modal .wiz-actions>.btn svg{width:16px!important;height:16px!important}
+ }
+
  `;
  document.head.appendChild(style);
  function cleanLabel(s){return (s||'').replace(/\s+/g,' ').replace(/[+×✕]/g,'').trim()}
