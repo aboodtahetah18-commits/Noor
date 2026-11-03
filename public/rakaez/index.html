@@ -804,6 +804,41 @@ button.rk-v17-icon-only:focus-visible{outline:2px solid var(--gold)!important;ou
 #modalRoot .modal{box-sizing:border-box;max-height:calc(100dvh - 28px);overflow-y:auto}
 #modalRoot .modal input,#modalRoot .modal select,#modalRoot .modal textarea{box-sizing:border-box;max-width:100%}
 @media(max-width:740px){#modalRoot .modalbg{padding:12px!important}#modalRoot .modal{width:100%!important;max-width:calc(100vw - 24px)!important;max-height:calc(100dvh - 24px)!important}button.rk-v17-icon-only{min-width:40px!important;width:40px!important;max-width:40px!important}}
+
+/* RK-V18-STREAMLINED: fewer nested boxes, compact filter dialog and multi-step entry */
+#view .rk-home-sections .rk-home-block,#view .card .card:not(.stat),#view .rk-stat-home-panels .rk-home-block{border:0!important;border-radius:0!important;box-shadow:none!important;background:transparent!important;padding:12px 0!important}
+#view .rk-home-sections .rk-home-block+.rk-home-block{border-top:1px solid var(--line)!important}
+#view .rk-slim-summary{background:transparent!important;box-shadow:none!important;border:0!important;padding:5px 0!important}
+#view .rk-home-sections{gap:18px}
+#view .rk-home-block>header{padding-bottom:9px;border-bottom:1px solid var(--line)}
+#view .rk-home-empty{background:transparent!important;border:0!important;box-shadow:none!important}
+#view .settings-tabs[data-rk-v18-hidden-filter],#view .v7-toolbar input[data-rk-v18-hidden-filter]{display:none!important}
+.rk-v18-filter-trigger{min-width:40px;min-height:40px;display:inline-flex;justify-content:center;align-items:center}
+.rk-v18-filter-backdrop{position:fixed;inset:0;z-index:19999;background:rgba(16,30,49,.6);display:grid;place-items:center;padding:15px}
+.rk-v18-filter-dialog{background:var(--white);color:var(--ink);border:1px solid var(--line);border-radius:14px;width:min(440px,100%);max-height:calc(100dvh - 30px);overflow:auto;padding:20px;box-shadow:0 12px 35px rgba(16,30,49,.2)}
+.rk-v18-filter-dialog header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}
+.rk-v18-filter-dialog h2{font-size:18px;margin:0;color:var(--navy)}
+.rk-v18-filter-dialog .rk-v18-filter-options{display:grid;gap:10px}
+.rk-v18-filter-dialog .rk-v18-filter-options label{display:flex;gap:12px;align-items:center;min-height:40px;font-weight:500}
+.rk-v18-filter-dialog .rk-v18-filter-options input[type=radio]{width:18px;height:18px;accent-color:var(--teal)}
+.rk-v18-filter-dialog input[type=search]{width:100%;min-height:44px}
+.rk-v18-filter-dialog footer{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+#modalRoot .rk-v18-step[hidden],#modalRoot .rk-v18-entry-actions[hidden]{display:none!important}
+#modalRoot .rk-v18-entry-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding:12px 0 0;margin-top:14px}
+#modalRoot .rk-v18-entry-index{font-size:12px;color:var(--muted);font-weight:700}
+#modalRoot .rk-v18-entry-step-title{font-size:15px;color:var(--navy);margin:12px 0 10px;font-weight:700}
+#modalRoot .rk-v18-step{max-width:100%;min-width:0}
+#modalRoot .rk-v18-step .formgrid{margin:0;min-width:0}
+#modalRoot .rk-v18-streamlined>.notice,#modalRoot .rk-v18-streamlined>p.notice{display:none!important}
+#modalRoot .rk-v18-streamlined .rk-v18-entry-nav button{width:42px;min-width:42px;max-width:42px}
+#modalRoot .rk-v18-streamlined .field{min-width:0}
+@media(max-width:740px){
+ #view .rk-home-sections .rk-home-block{padding:10px 0!important}
+ .rk-v18-filter-backdrop{padding:12px}
+ .rk-v18-filter-dialog{width:100%;max-height:calc(100dvh - 24px);padding:16px}
+ #modalRoot .rk-v18-step .formgrid{grid-template-columns:minmax(0,1fr)!important}
+}
+
 </style></head><body><div class="layout" id="layout"><aside><div class="brand"><div class="brandmark">ر</div><div><b>ركائز</b><small>منظومتك المالية الشخصية</small></div></div><nav class="nav" id="nav"></nav><div class="asidefoot">ثلاثة مراكز مالية، رؤية واحدة.<br>نظام إدارة شخصية تجريبي • بيانات محلية</div></aside><main><header class="topbar"><div class="rakaez-title-row"><div class="row"><button type="button" class="btn mobilemenu rk-mobilemenu" aria-label="فتح القائمة الجانبية" aria-expanded="false" onclick="rkToggleMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" width="24" height="24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><h1 id="pageTitle">لوحة التحكم</h1><p id="pageSub" hidden></p></div><div class="rakaez-bell-wrap"><button type="button" class="btn primary rakaez-add" onclick="openModal('transaction')"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>إضافة</span></button><button type="button" class="rakaez-bell" id="rakaezBell" aria-label="الإشعارات" aria-expanded="false" aria-controls="rakaezNotifications" onclick="toggleRakaezNotifications()"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4"/></svg></button><div id="rakaezNotifications" class="rakaez-notifications" hidden></div></div></div><div class="topcontrols" hidden><select id="monthPicker" onchange="month=this.value;render()"></select></div></header><div class="content"><div class="demo">● نسخة تجريبية تعمل في متصفحك وتخزن المعلومات على هذا الجهاز فقط. لا تدخل بيانات مصرفية سرية أو تعتمد عليها كنسخة إنتاجية.</div><div id="view"></div></div></main></div><div id="modalRoot"></div><div id="toastRoot"></div><script>
 const icons={home:'<path d="m3 10 9-7 9 7v10H3z"/><path d="M9 20v-7h6v7"/>',moon:'<path d="M19 14A8 8 0 0 1 10 5a8 8 0 1 0 9 9Z"/>',shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/>',trend:'<path d="m3 17 6-6 4 4 8-8"/><path d="M15 7h6v6"/>',wallet:'<rect x="3" y="5" width="18" height="15" rx="2"/><path d="M16 12h5"/>',fund:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h4"/>',upload:'<path d="M12 16V3m-5 5 5-5 5 5M4 17v4h16v-4"/>',chart:'<path d="M4 20V10m6 10V4m6 16v-8m5 8H2"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="m19 13 2 1-2 4-2-1-2 1v2H9v-2l-2-1-2 1-2-4 2-1v-2l-2-1 2-4 2 1 2-1V4h6v2l2 1 2-1 2 4-2 1z"/>',bank:'<path d="m2 9 10-6 10 6M4 10h16M5 11v8m5-8v8m5-8v8m5-8v8M2 21h20"/>',bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4"/>',plus:'<path d="M12 5v14M5 12h14"/>'};function ico(name){return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${icons[name]||icons.wallet}</svg>`}
 const N=[['hilal','بنك الهلال التشغيلي','moon'],['malaa','بنك ملاءة للادخار','shield'],['assets','بنك الأصول الاستثماري','trend'],['goals','الأهداف المالية','trend'],['debts','الديون والالتزامات','fund'],['fees','الرسوم الدورية','chart'],['reserves','بنوك المنصة','bank'],['position','المركز المالي الموحد','bank'],['interbank','التمويل بين المراكز','fund'],['insights','الرئيسية','home'],['ledger','دفتر الأستاذ والمطابقة','fund'],['transactions','المعاملات المالية','wallet'],['funding','التمويل الداخلي','fund'],['import','استيراد المعاملات','upload'],['reports','التقارير والتحليلات','chart'],['settings','الإعدادات والتوزيع','settings']];
@@ -3790,6 +3825,150 @@ render=function(){
    }
  });
  sync();
+})();
+
+
+/* RK-V18-STREAMLINED: additions retain the existing forms, IDs, save handlers and colors. */
+(function(){
+ const iconPaths={
+  filter:'<path d="M3 5h18l-7 8v7l-4-2v-5z"/>',
+  check:'<path d="m5 12 5 5L20 7"/>',
+  close:'<path d="M18 6 6 18M6 6l12 12"/>',
+  next:'<path d="m15 6-6 6 6 6"/>',
+  prev:'<path d="m9 6 6 6-6 6"/>',
+  reset:'<path d="M20 7V3l-4 4 4 4M20 7a8 8 0 1 0 2 7"/>'
+ };
+ function glyph(name){return '<svg aria-hidden="true" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+iconPaths[name]+'</svg>';}
+ function control(name,icon,fn){
+  const b=document.createElement('button');b.type='button';b.className='btn rk-v18-filter-trigger';
+  b.setAttribute('aria-label',name);b.title=name;b.innerHTML=glyph(icon);b.onclick=fn;return b;
+ }
+ let activeFilter=null;
+ function closeFilter(){
+  if(!activeFilter)return;
+  const old=activeFilter;activeFilter=null;old.remove();
+ }
+ function openFilter(kind){
+  closeFilter();
+  const backdrop=document.createElement('div');backdrop.className='rk-v18-filter-backdrop';
+  backdrop.onclick=e=>{if(e.target===backdrop)closeFilter()};
+  const status=kind==='status';
+  const selected=status?rkMerchantFollowupFilter:'';
+  backdrop.innerHTML='<section class="rk-v18-filter-dialog" role="dialog" aria-modal="true" aria-labelledby="rk-v18-filter-heading">'+
+   '<header><h2 id="rk-v18-filter-heading">تصفية النتائج</h2></header>'+
+   (status?'<div class="rk-v18-filter-options">'+
+      [['active','النشطة'],['completed','المتحقق منها'],['all','الكل']].map(([value,label])=>'<label><input type="radio" name="rk-v18-status" value="'+value+'" '+(selected===value?'checked':'')+'><span>'+label+'</span></label>').join('')+
+      '</div>':'<div class="field"><label for="rk-v18-search">بحث</label><input id="rk-v18-search" type="search" autocomplete="off"></div>')+
+   '<footer id="rk-v18-filter-footer"></footer></section>';
+  document.body.append(backdrop);activeFilter=backdrop;
+  if(!status)backdrop.querySelector('#rk-v18-search').value=String(window.researchFilter||'');
+  const footer=backdrop.querySelector('footer');
+  footer.append(control('إعادة ضبط','reset',()=>{
+   if(status)rkMerchantSetFollowupFilter('active');
+   else{window.researchFilter='';const source=document.getElementById('v7Search');if(source)source.value='';const rows=document.getElementById('v7List');if(rows)rows.innerHTML=researchRows();}
+   closeFilter();
+  }));
+  footer.append(control('إلغاء','close',closeFilter));
+  footer.append(control('تطبيق الفلتر','check',()=>{
+   if(status){const value=backdrop.querySelector('input[name="rk-v18-status"]:checked')?.value||'active';closeFilter();rkMerchantSetFollowupFilter(value);}
+   else{window.researchFilter=backdrop.querySelector('#rk-v18-search')?.value||'';const source=document.getElementById('v7Search');if(source)source.value=window.researchFilter;const rows=document.getElementById('v7List');if(rows)rows.innerHTML=researchRows();closeFilter();}
+  }));
+  backdrop.querySelector('input')?.focus({preventScroll:true});
+ }
+ function prepareFilters(){
+  document.querySelectorAll('#view [role="group"][aria-label*="تصفية"]:not([data-rk-v18-filter])').forEach(group=>{
+   group.dataset.rkV18Filter='1';group.dataset.rkV18HiddenFilter='1';
+   const trigger=control('فتح الفلاتر','filter',()=>openFilter('status'));group.before(trigger);
+  });
+  const search=document.querySelector('#view #v7Search:not([data-rk-v18-filter])');
+  if(search){
+   search.dataset.rkV18Filter='1';search.dataset.rkV18HiddenFilter='1';
+   const trigger=control('فتح فلاتر البحث','filter',()=>openFilter('search'));search.before(trigger);
+  }
+ }
+ function streamlineDialog(modal){
+  if(!modal||modal.dataset.rkV18Cleaned)return;
+  modal.dataset.rkV18Cleaned='1';
+  modal.classList.add('rk-v18-streamlined');
+  modal.querySelectorAll(':scope > .notice,:scope > p.notice').forEach(n=>n.remove());
+ }
+ function paginateForm(modal){
+  if(!modal||modal.dataset.rkV18Wizard||modal.querySelector('.v8-wizard-host,.wiz-head'))return;
+  const form=modal.querySelector('form');
+  if(!form)return;
+  const grid=form.querySelector(':scope > .formgrid');
+  if(!grid)return;
+  const fields=[...grid.children].filter(e=>e.classList.contains('field'));
+  if(fields.length<5)return;
+  const actions=form.querySelector(':scope > .rk-budget-detail-actions,:scope > .actions,:scope > .v3footer');
+  if(!actions)return;
+  modal.dataset.rkV18Wizard='1';
+  const actionFlow=modal.classList.contains('rk-work-action-form');
+  const groups=actionFlow?
+   [fields.filter(e=>['rkAType','rkADate','rkADesc'].includes(e.querySelector('input,select,textarea')?.id)),
+    fields.filter(e=>['rkAAmount','rkACategory','rkAMerchant'].includes(e.querySelector('input,select,textarea')?.id)),
+    fields.filter(e=>!['rkAType','rkADate','rkADesc','rkAAmount','rkACategory','rkAMerchant'].includes(e.querySelector('input,select,textarea')?.id))]:
+   [fields.slice(0,Math.ceil(fields.length/2)),fields.slice(Math.ceil(fields.length/2))];
+  const labels=actionFlow?['العملية','المبلغ والتصنيف','المراجعة']:['البيانات الأساسية','التفاصيل'];
+  const shell=document.createElement('div');shell.className='rk-v18-entry-wizard';
+  grid.before(shell);
+  const steps=[];
+  groups.forEach((nodes,i)=>{
+   if(!nodes.length)return;
+   const step=document.createElement('section');step.className='rk-v18-step';step.setAttribute('aria-label',labels[i]);
+   const heading=document.createElement('h3');heading.className='rk-v18-entry-step-title';heading.textContent=labels[i];step.append(heading);
+   const body=document.createElement('div');body.className='formgrid';nodes.forEach(node=>body.append(node));step.append(body);shell.append(step);steps.push(step);
+  });
+  const preview=form.querySelector('#rkAPreview');
+  if(preview&&steps.length)steps[steps.length-1].append(preview);
+  if(!steps.length)return;
+  grid.remove();
+  const nav=document.createElement('div');nav.className='rk-v18-entry-nav';
+  const prev=control('الصفحة السابقة','prev',()=>change(-1));
+  const next=control('الصفحة التالية','next',()=>change(1));
+  const count=document.createElement('span');count.className='rk-v18-entry-index';count.setAttribute('aria-live','polite');
+  nav.append(prev,count,next);actions.before(nav);actions.classList.add('rk-v18-entry-actions');
+  let index=0;
+  function validStep(step){
+   for(const field of step.querySelectorAll('input,select,textarea')){
+    if(field.disabled||field.closest('[hidden]')||field.type==='hidden')continue;
+    if(!field.checkValidity()){field.reportValidity();return false;}
+   }
+   return true;
+  }
+  function renderSteps(){
+   steps.forEach((step,i)=>step.hidden=i!==index);
+   count.textContent=(index+1)+' / '+steps.length;
+   prev.hidden=index===0;next.hidden=index===steps.length-1;actions.hidden=index!==steps.length-1;
+   const field=steps[index].querySelector('input:not([type="hidden"]),select,textarea');
+   if(field)field.focus({preventScroll:true});
+  }
+  function change(delta){
+   if(delta>0&&!validStep(steps[index]))return;
+   index=Math.min(steps.length-1,Math.max(0,index+delta));renderSteps();
+  }
+  actions.querySelectorAll('[type="submit"]').forEach(save=>save.addEventListener('click',e=>{
+   for(let i=0;i<steps.length;i++){
+    if(!validStep(steps[i])){
+      index=i;renderSteps();e.preventDefault();e.stopImmediatePropagation();return;
+    }
+   }
+  },true));
+  renderSteps();
+ }
+ let scheduled=false;
+ function apply(){
+  scheduled=false;
+  if(!document.getElementById('view'))return;
+  prepareFilters();
+  const modal=document.querySelector('#modalRoot .modal');
+  if(modal){streamlineDialog(modal);paginateForm(modal);}
+  else if(activeFilter)closeFilter();
+ }
+ const obs=new MutationObserver(()=>{if(scheduled)return;scheduled=true;queueMicrotask(apply);});
+ obs.observe(document.body,{childList:true,subtree:true});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&activeFilter){e.preventDefault();closeFilter();}});
+ apply();
 })();
 
 render();</script></body></html>
