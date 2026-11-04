@@ -76,10 +76,10 @@ function tasksFor(plan){const tasks=[{id:'receipt',name:'تأكيد نزول ا�
  return tasks;
 }
 function summaryBox(label,value,sub=''){return `<div class="v19-fact"><span>${esc(label)}</span><strong>${value}</strong>${sub?`<small>${esc(sub)}</small>`:''}</div>`}
-function statusText(p){return p?.status==='completed'?'مكتملة':p?.status==='approved'?'بانتظار تنفيذ التحويلات':p?.status==='tracking'?'قيد المتابعة':p?.status==='draft'?'مسودة':'لم تبدأ'}
-function pageList(){ensure();const current=upcomingPeriod(),plans=db.rkCyclesV19.slice().sort((a,b)=>b.period.localeCompare(a.period));if(!plans.some(p=>p.period===current)){plans.unshift({period:current,day:db.cycleDay||25,salary:db.salary,status:'new'})}
+function statusText(p){return p?.status==='completed'?'مكتملة':p?.status==='approved'?'بانتظار تنفيذ التحويلات':p?.status==='tracking'?'قيد المتابعة':p?.status==='draft'?'مسودة':p?.status==='legacy'?(p.approved?'معتمدة من إصدار سابق':'مسودة سابقة'):'لم تبدأ'}
+function pageList(){ensure();const current=upcomingPeriod(),plans=db.rkCyclesV19.slice();(db.salaryCycles||[]).filter(c=>!plans.some(p=>p.period===c.period)).forEach(c=>plans.push({period:c.period,day:c.day||db.cycleDay||25,salary:c.salary??null,status:'legacy',approved:!!c.approved}));if(!plans.some(p=>p.period===current)){plans.push({period:current,day:db.cycleDay||25,salary:db.salary,status:'new'})}plans.sort((a,b)=>b.period.localeCompare(a.period));
  return `<section class="v19-cycle-page"><header class="v19-section-title"><h2>دورة الراتب</h2><button class="btn primary" data-v19-action="new-cycle">${ico('plus')} دورة جديدة</button></header>
- <div class="v19-cycle-list">${plans.map(p=>`<button class="v19-cycle-list-item" type="button" data-v19-open="${esc(p.period)}"><span><small>تاريخ الدورة</small><strong>${esc(p.period)}-${String(p.day||25).padStart(2,'0')}</strong></span><span><small>الراتب</small><strong>${cash(p.salary)}</strong></span><span><small>حالة الدورة</small><strong>${statusText(p)}</strong></span></button>`).join('')}</div>
+ <div class="v19-cycle-list">${plans.map(p=>`<button class="v19-cycle-list-item" type="button" ${p.status==='legacy'?`data-v19-legacy="${esc(p.period)}"`:`data-v19-open="${esc(p.period)}"`}><span><small>تاريخ الدورة</small><strong>${esc(p.period)}-${String(p.day||25).padStart(2,'0')}</strong></span><span><small>الراتب</small><strong>${p.salary==null?'غير محفوظ':cash(p.salary)}</strong></span><span><small>حالة الدورة</small><strong>${statusText(p)}</strong></span></button>`).join('')}</div>
  ${note('اضغط على الدورة لفتح مساحة العمل الكاملة. تأكيد السداد والتحويلات يدوي، وليس تنفيذًا مصرفيًا تلقائيًا.')}</section>`;
 }
 function renderCyclePage(){if(page!=='cycles')return;const view=document.getElementById('view');if(view)view.innerHTML=pageList();}
@@ -134,6 +134,11 @@ function cycleShell(){const plan=getPlan(openedPeriod);if(!plan)return;const rea
  <nav class="v19-progress">${cycleSteps.map((s,i)=>`<button type="button" class="${i===idx?'active':''} ${i<idx?'done':''}" data-v19-step="${i}" ${ready&&i!==4?'disabled':''}>${i+1}. ${s}</button>`).join('')}</nav><main class="v19-workspace-main">${content}</main>
  <footer class="v19-workspace-footer"><button type="button" class="btn" data-v19-action="previous" ${idx===0||ready?'disabled':''}>${ico('back')} السابق</button><button type="button" class="btn v19-save" data-v19-action="save-cycle">${ico('check')} حفظ المسودة</button><button type="button" class="btn primary" data-v19-action="next" ${idx===3||ready?'disabled':''}>التالي ${ico('forward')}</button></footer></section></div>`;
  const scroller=document.querySelector('.v19-workspace-main');if(scroller)scroller.scrollTop=0;
+}
+function openLegacy(period){
+ const c=(db.salaryCycles||[]).find(x=>x.period===period);if(!c)return;
+ const summary=Object.entries(c.amounts||{}).map(([id,value])=>{const category=db.categories.find(x=>x.id===id);return '<div><span>'+esc(category?.name||id)+'</span><strong>'+cash(value)+'</strong></div>'}).join('');
+ openedPeriod='';document.getElementById('modalRoot').innerHTML='<div class="v19-workspace-bg"><section class="v19-workspace" role="dialog" aria-modal="true"><header class="v19-workspace-header"><button class="v19-close" type="button" data-v19-action="close-cycle" aria-label="إغلاق">'+ico('close')+'</button><div><h1>دورة الراتب '+esc(period)+'</h1><p>سجل محفوظ من الإصدار السابق · '+(c.approved?'معتمد':'مسودة')+'</p></div></header><main class="v19-workspace-main"><div class="v19-step-intro"><h2>المخصصات المسجلة</h2><p>هذه مراجعة تاريخية. لا يجوز تعديل دورة سبق اعتمادها؛ ويظهر الراتب فقط إن كان محفوظًا في سجل الدورة القديمة.</p></div><section class="v19-review"><div><span>تاريخ الدورة</span><strong>'+esc(period)+'-'+String(c.day||db.cycleDay||25).padStart(2,'0')+'</strong></div><div><span>الراتب</span><strong>'+(c.salary!=null?cash(c.salary):'غير محفوظ')+'</strong></div>'+summary+'</section></main><footer class="v19-workspace-footer v19-loan-final"><button class="btn primary" data-v19-action="close-cycle" type="button">إغلاق المراجعة</button></footer></section></div>';
 }
 function openCycle(period){openedPeriod=period||upcomingPeriod();let p=getPlan(openedPeriod);if(p.status==='draft')cycleStep=Number(p.step||0);else cycleStep=4;cycleShell()}
 function fieldValue(selector){return document.querySelector(selector)?.value||''}
@@ -286,6 +291,7 @@ function performAction(action,id){const plan=openedPeriod?getPlan(openedPeriod,f
 }
 document.addEventListener('click',event=>{
  const button=event.target.closest('[data-v19-action]');if(button){event.preventDefault();performAction(button.dataset.v19Action,button.dataset.id||'');return}
+ const legacy=event.target.closest('[data-v19-legacy]');if(legacy){event.preventDefault();openLegacy(legacy.dataset.v19Legacy);return}
  const open=event.target.closest('[data-v19-open]');if(open){event.preventDefault();openCycle(open.dataset.v19Open);return}
  const step=event.target.closest('[data-v19-step]');if(step&&openedPeriod){const p=getPlan(openedPeriod);const index=Number(step.dataset.v19Step);if(p.status==='draft'&&index<=3){if(index<=cycleStep||(index===cycleStep+1&&canNext(p))){cycleStep=index;saveEdits();cycleShell()}}}
 });
