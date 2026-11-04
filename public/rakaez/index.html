@@ -4377,15 +4377,18 @@ render=function(){
   grid.remove();wizard.append(nav,panels);content.prepend(wizard);
   const actions=element('div','rk-v18-wizard-actions');
   const back=element('button','btn');back.type='button';back.title='السابق';back.setAttribute('aria-label','السابق');back.innerHTML=v18Icon('prev')+'<span>السابق</span>';
-  const side=element('div');
   const next=element('button','btn primary');next.type='button';next.title='التالي';next.setAttribute('aria-label','التالي');next.innerHTML='<span>التالي</span>'+v18Icon('forward');
   const save=previousFooter.querySelector('button[type="submit"]');
   if(save){save.dataset.r18Save='1';save.title='حفظ الفرصة';save.setAttribute('aria-label','حفظ الفرصة');}
   const details=previousFooter.querySelector('button[type="button"]');
   back.onclick=()=>go(Math.max(0,index-1));
   next.onclick=()=>go(Math.min(3,index+1));
-  side.append(next);if(save)side.append(save);if(details){details.title='العودة إلى التفاصيل';details.setAttribute('aria-label','العودة إلى التفاصيل');side.append(details);}
-  actions.append(back,side);form.append(actions);previousFooter.remove();
+  actions.classList.add('rk-v22-wizard-actions');
+  if(details){details.title='العودة إلى التفاصيل';details.setAttribute('aria-label','العودة إلى التفاصيل');details.classList.add('rk-v22-related-action');contents[3].append(details);}
+  actions.append(next);
+  if(save)actions.append(save);
+  actions.append(back);
+  form.append(actions);previousFooter.remove();
   function updateReview(){
    const container=contents[3].querySelector('.rk-v18-review');container.replaceChildren();
    const items=[
@@ -4421,10 +4424,9 @@ render=function(){
    index=nextStep;
    contents.forEach((section,i)=>{section.hidden=i!==index});
    links.forEach((button,i)=>button.setAttribute('aria-current',i===index?'step':'false'));
-   back.hidden=index===0;
-   next.hidden=index===3;
-   if(save)save.hidden=index!==3;
-   if(details)details.hidden=index!==3;
+   back.disabled=index===0;
+   next.disabled=index===3;
+   if(save)save.disabled=index!==3;
    if(index===3)updateReview();
    const focusable=contents[index].querySelector('input:not([hidden]),select:not([hidden]),textarea:not([hidden])');
    if(focusable&&index<3)focusable.focus({preventScroll:true});
