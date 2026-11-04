@@ -3880,6 +3880,8 @@ render=function(){
    if(!root||!root.querySelectorAll)return;
    const collection=root.querySelectorAll('button:not([data-rk-v17-enhanced])');
    collection.forEach(button=>{
+     // Only action buttons get compact icon treatment. Preserve content and navigation.
+     if(!button.classList.contains('btn')&&button.id!=='rakaezBell')return;
      button.setAttribute('data-rk-v17-enhanced','1');
      const label=labelOf(button);
      button.setAttribute('aria-label',label);
@@ -4205,7 +4207,7 @@ render=function(){
   pages.forEach((page,i)=>{
    const tab=element('button','rk-v18-step-nav');
    tab.type='button';tab.setAttribute('aria-label','الانتقال إلى '+page.title);tab.title=page.title;
-   tab.innerHTML=v18Icon(['wallet','chart','settings','check'][i]);tab.dataset.rkV17Enhanced='1';nav.append(tab);links.push(tab);
+   tab.innerHTML='<b class="rk-v20-step-number">'+(i+1)+'</b><span class="rk-v20-step-label">'+page.title+'</span>';tab.dataset.rkV17Enhanced='1';nav.append(tab);links.push(tab);
    const panel=element('section','rk-v18-step-panel');panel.setAttribute('aria-label',page.title);
    panel.appendChild(element('h3','rk-v18-panel-heading',page.title));
    const inner=element('div',i===3?'rk-v18-review':'rk-v18-fields');
@@ -4214,14 +4216,14 @@ render=function(){
   });
   grid.remove();wizard.append(nav,panels);content.prepend(wizard);
   const actions=element('div','rk-v18-wizard-actions');
-  const back=element('button','btn');back.type='button';back.title='السابق';back.setAttribute('aria-label','السابق');back.innerHTML=v18Icon('prev');
+  const back=element('button','btn');back.type='button';back.title='السابق';back.setAttribute('aria-label','السابق');back.innerHTML=v18Icon('prev')+'<span>السابق</span>';
   const side=element('div');
-  const next=element('button','btn primary');next.type='button';next.title='التالي';next.setAttribute('aria-label','التالي');next.innerHTML=v18Icon('forward');
+  const next=element('button','btn primary');next.type='button';next.title='التالي';next.setAttribute('aria-label','التالي');next.innerHTML='<span>التالي</span>'+v18Icon('forward');
   const save=previousFooter.querySelector('button[type="submit"]');
   if(save){save.dataset.r18Save='1';save.title='حفظ الفرصة';save.setAttribute('aria-label','حفظ الفرصة');}
   const details=previousFooter.querySelector('button[type="button"]');
   back.onclick=()=>go(Math.max(0,index-1));
-  next.onclick=()=>{if(index===0&&!document.getElementById('rkCandidateName')?.value.trim()){alert('اسم الفرصة مطلوب');document.getElementById('rkCandidateName')?.focus();return}go(Math.min(3,index+1))};
+  next.onclick=()=>go(Math.min(3,index+1));
   side.append(next);if(save)side.append(save);if(details){details.title='العودة إلى التفاصيل';details.setAttribute('aria-label','العودة إلى التفاصيل');side.append(details);}
   actions.append(back,side);form.append(actions);previousFooter.remove();
   function updateReview(){
@@ -4241,6 +4243,21 @@ render=function(){
   }
   let index=0;
   function go(nextStep){
+   if(nextStep>index){
+    for(let i=index;i<nextStep;i++){
+     const invalid=[...contents[i].querySelectorAll('input,select,textarea')].find(el=>
+      !el.disabled&&el.type!=='hidden'&&!el.closest('[hidden]')&&!el.checkValidity()
+     );
+     if(invalid){
+      index=i;
+      contents.forEach((panel,j)=>{panel.hidden=j!==i});
+      links.forEach((tab,j)=>tab.setAttribute('aria-current',j===i?'step':'false'));
+      invalid.focus({preventScroll:true});
+      invalid.reportValidity();
+      return;
+     }
+    }
+   }
    index=nextStep;
    contents.forEach((section,i)=>{section.hidden=i!==index});
    links.forEach((button,i)=>button.setAttribute('aria-current',i===index?'step':'false'));
