@@ -186,7 +186,7 @@
   justify-content:center!important;
   gap:6px!important;
   border-radius:12px!important;
-  font:800 13px/1.45 inherit!important;
+  font-family:inherit!important;
   font-size:13px!important;
   font-weight:800!important;
   line-height:1.45!important;
@@ -293,4 +293,18 @@
 @media(max-width:360px){
   #modalRoot .v19-workspace-footer{gap:6px!important;padding-inline:8px!important}
   #modalRoot .v19-workspace-footer > .btn{font-size:12px!important;padding-inline:5px!important}
+}
+
+/* Preserve a complete text label and two-column layout for short dialog footers. */
+#modalRoot .modal :is(.actions:not(.wiz-original-hidden),.v3footer:not(.wiz-original-hidden),.rk-footer,.wiz-actions,.rk-compact-footer,.v18-footer):has(> .btn:nth-child(2):last-child) > .btn,
+#view :is(.actions,.rk-compact-footer,.v3footer,.rk-footer):has(> .btn:nth-child(2):last-child) > .btn{
+  grid-column:auto!important;
+}
+#modalRoot .v19-workspace-footer .btn:disabled{
+  opacity:.6!important;
+}
+#modalRoot .v19-workspace-footer .btn:focus-visible,
+#modalRoot .modal :is(.actions,.v3footer,.wiz-actions,.rk-footer,.rk-compact-footer,.v18-footer) > .btn:focus-visible{
+  outline:2px solid var(--teal)!important;
+  outline-offset:2px!important;
 }
