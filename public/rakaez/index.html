@@ -1394,7 +1394,7 @@ function rkAssetDetails(id){
  ${h.kind==='محفظة استثمارية'&&rkComponentItems(h).length?`<section class="rk-portfolio-components-inline rk-portfolio-components-modal"><h3>مكونات المحفظة</h3>${rkComponentSummary(h)}</section>`:''}
  ${h.kind==='محفظة استثمارية'?`<section class="rk-owned-allocation"><h3>توزيع أصول المحفظة</h3>${h.allocationDetail?rkAllocationBars(h.allocationDetail):rkLegacyAllocationBars(h.allocation)}</section>`:''}
  <div class="rk-budget-detail-actions rk-record-action-flex"><button class="btn primary" onclick="openModal('${h.kind==='محفظة استثمارية'?'portfolioUpdate':'price'}','${esc(id)}')">${ico('edit')} تحديث</button>
- <button class="btn" onclick="rkQuickDividend('${esc(id)}')">${ico('plus')} توزيع</button><button class="btn" onclick="rkAssignAsset('${esc(id)}')">${ico('bank')} ربط بمحفظة</button>${h.kind==='محفظة استثمارية'?`<button class="btn" onclick="rkPortfolioAllocationOpen('holding','${esc(id)}')">${ico('chart')} توزيع الأصول</button><button class="btn" onclick="rkComponentsOpen('holding','${esc(id)}')">${ico('plus')} مكونات المحفظة</button>`:''}</div>
+ <button class="btn" onclick="rkQuickDividend('${esc(id)}')">${ico('plus')} توزيع</button><button class="btn" onclick="rkAssignAsset('${esc(id)}')">${ico('bank')} ربط بمحفظة</button>${h.kind==='محفظة استثمارية'?`<button class="btn" onclick="rkPortfolioAllocationOpen('holding','${esc(id)}')">${ico('pie')} توزيع الأصول</button><button class="btn" onclick="rkComponentsOpen('holding','${esc(id)}')">${ico('layers')} مكونات المحفظة</button>`:''}</div>
  </div></div>`;
  if(typeof v10RepairDialogs==='function')v10RepairDialogs();
 }
@@ -1406,8 +1406,8 @@ function rkAssetAccountSection(account){
  <div class="rk-account-body"><div class="rk-account-tools">
  <button class="btn" onclick="event.preventDefault();rkAssetAccountModal('${account.id}')">${ico('edit')} تعديل</button>
  <button class="btn primary" onclick="event.preventDefault();rkAddAssetToAccount('${account.id}')">${ico('plus')} إضافة أصل</button>
- <button class="btn" onclick="event.preventDefault();rkPortfolioAllocationOpen('account','${esc(account.id)}')">${ico('chart')} توزيع الأصول</button>
- <button class="btn" onclick="event.preventDefault();rkComponentsOpen('account','${esc(account.id)}')">${ico('plus')} المكونات</button></div>
+ <button class="btn" onclick="event.preventDefault();rkPortfolioAllocationOpen('account','${esc(account.id)}')">${ico('pie')} توزيع الأصول</button>
+ <button class="btn" onclick="event.preventDefault();rkComponentsOpen('account','${esc(account.id)}')">${ico('layers')} المكونات</button></div>
  ${rkComponentItems(account).length?`<section class="rk-portfolio-components-inline"><h3>مكونات المحفظة</h3>${rkComponentSummary(account)}</section>`:''}
  ${account.allocationDetail?`<section class="rk-owned-allocation"><h3>التوزيع المسجل للمحفظة</h3>${rkAllocationBars(account.allocationDetail)}</section>`:''}
  <div class="rk-investments-list">${items.length?items.map(rkInvestmentCard).join(''):'<div class="rk-no-investments">لا توجد أصول مرتبطة بهذه المحفظة.</div>'}</div></div></details>`;
@@ -2894,8 +2894,9 @@ function rkCandidateReview(id,tab='overview'){
   ['الرسوم السنوية',percentage(p.fees)]
  ];
  const tabs=[['overview','البيانات'],...(p.category==='محفظة'?[['components','المكونات']]:[]),['allocation','توزيع الأصول'],['assessment','التقييم']];
+ const tabIcon={overview:'list',components:'layers',allocation:'pie',assessment:'shield'};
  const content=tab==='components'&&p.category==='محفظة'?
-  `<section class="rk-study-components">${rkComponentSummary(p)}<button type="button" class="btn primary" onclick="rkComponentsOpen('candidate','${esc(id)}')">${ico('edit')} إدارة المكونات</button></section>`:
+  `<section class="rk-study-components">${rkComponentSummary(p)}<button type="button" class="btn primary" onclick="rkComponentsOpen('candidate','${esc(id)}')">${ico('layers')} إدارة المكونات</button></section>`:
   tab==='allocation'?
    `<div class="rk-study-allocation">${rkAllocationBars(p.allocation)}<div class="rk-study-coverage">المجموع المسجل: <b>${rkAllocationTotal(p.allocation).toFixed(2)}%</b></div></div>`:
    tab==='assessment'?`<div class="rk-study-assessment">
@@ -2905,11 +2906,11 @@ function rkCandidateReview(id,tab='overview'){
     </dl><small>نتيجة الفرز تعتمد على القيم المدخلة فقط، وليست توصية أو تحققاً من بيانات الوسيط.</small></div>`:
    `<dl class="rk-budget-detail-list rk-study-facts">${overview.map(([k,v])=>line(k,v)).join('')}</dl>${p.objective?`<section class="rk-study-objective"><h3>الهدف والاستراتيجية</h3><p>${esc(p.objective)}</p></section>`:''}${p.notes?`<section class="rk-study-objective"><h3>ملاحظات</h3><p>${esc(p.notes)}</p></section>`:''}`;
  document.getElementById('modalRoot').innerHTML=`<div class="modalbg" onclick="if(event.target===this)closeModal()">
- <div class="modal rk-budget-detail-dialog rk-study-detail" data-v8wizard="1" role="dialog" aria-modal="true">
+ <div class="modal rk-budget-detail-dialog rk-study-detail rk-v22-detail-dialog" data-v8wizard="1" role="dialog" aria-modal="true">
  <div class="modalhead"><h2>${esc(p.name)}</h2><button class="btn rk-budget-close" onclick="closeModal()" aria-label="إغلاق">${ico('close')}</button></div>
- <div class="rk-study-tabs" role="tablist">${tabs.map(([k,l])=>`<button type="button" role="tab" aria-selected="${tab===k}" class="${tab===k?'active':''}" onclick="rkCandidateReview('${esc(id)}','${k}')">${l}</button>`).join('')}</div>
+ <div class="rk-study-tabs rk-v22-detail-tabs" role="tablist" style="--rk-v22-tab-count:${tabs.length}">${tabs.map(([k,l])=>`<button type="button" role="tab" aria-selected="${tab===k}" aria-label="${l}" class="${tab===k?'active':''}" onclick="rkCandidateReview('${esc(id)}','${k}')">${ico(tabIcon[k])}<span>${l}</span></button>`).join('')}</div>
  <div class="rk-study-body" role="tabpanel">${content}</div>
- <div class="rk-budget-detail-actions"><button class="btn primary" onclick="rkCandidateModal('${esc(id)}')">${ico('edit')} تعديل</button>${p.category==='محفظة'?`<button class="btn" onclick="rkComponentsOpen('candidate','${esc(id)}')">${ico('plus')} المكونات</button>`:''}</div></div></div>`;
+ <div class="rk-budget-detail-actions rk-v22-detail-actions"><button class="btn primary rk-v20-text-action rk-v22-detail-action" onclick="rkCandidateModal('${esc(id)}')">${ico('edit')} <span>تعديل بيانات الفرصة</span></button>${p.category==='محفظة'?`<button class="btn rk-v20-text-action rk-v22-detail-action" onclick="rkComponentsOpen('candidate','${esc(id)}')">${ico('layers')} <span>إدارة المكونات</span></button>`:''}</div></div></div>`;
  if(typeof v10RepairDialogs==='function')v10RepairDialogs();
 }
 
