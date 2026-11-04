@@ -8,6 +8,7 @@ const cycleSteps=['تسوية البنود','الالتزامات','التوزي
 let openedPeriod='',cycleStep=0,loanDraft=null,loanStep=0,loanEditId='';
 const nowISO=()=>new Date().toLocaleDateString('en-CA');
 const periodShift=(p,n)=>v18PeriodAdd(p,n);
+const upcomingPeriod=()=>{const d=new Date(),p=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');return d.getDate()<=Number(db.cycleDay||25)?p:periodShift(p,1)};
 const cents=v=>Math.round(Number(v||0)*100);
 const cash=v=>money(Number(v||0));
 const field=(id,label,value='',type='text',extra='')=>`<div class="v19-field"><label for="${id}">${esc(label)}</label><input type="${type}" id="${id}" value="${esc(value)}" ${extra}></div>`;
@@ -43,7 +44,7 @@ function makeObligations(period){v18Ensure();const rows=[];
   rows.push({id:'debt:'+d.id,reference:d.id,source:'debt',bank:'hilal',name:`قسط ${d.name}`,amount:Math.min(d.installment,d.principal-d.paid),kind:'debt',included:true,locked:true,dueDate:d.date||formatDay(period)});
  });
  (db.fees||[]).filter(x=>feeAmount(x)>0).forEach(f=>rows.push({id:'fee:'+f.id,reference:f.id,source:'fee',bank: f.bank==='assets'?'assets':f.bank==='malaa'?'malaa':'hilal',name:f.name,amount:feeAmount(f),kind:'fee',included:true,locked:false,dueDate:formatDay(period)}));
- (db.scheduledOps||[]).filter(x=>x.status==='planned'&&scheduledEstimate(x)>0).forEach(op=>{
+ (db.scheduledOps||[]).filter(x=>x.status==='planned'&&scheduledEstimate(x)>0&&(!x.start||String(x.start).slice(0,7)<=period)).forEach(op=>{
   const bank=op.bank==='malaa'?'malaa':op.bank==='assets'?'assets':'hilal';
   rows.push({id:'scheduled:'+op.id,reference:op.id,source:'scheduled',bank,name:op.name,amount:scheduledEstimate(op),kind:'bill',included:true,locked:false,dueDate:op.start||formatDay(period)});
  });
@@ -63,7 +64,8 @@ function covered(plan){return plan.categories.reduce((a,c)=>a+Math.min(Math.max(
 function deficitRemaining(plan){return Math.max(0,deficit(plan)-covered(plan))}
 function shortagePlan(plan){return plan.categories.filter(c=>c.balance<0).map(c=>({...c,negative:-c.balance}));}
 function allocationSum(plan){return Object.values(plan.allocations||{}).reduce((s,n)=>s+Number(n||0),0)}
-function routeSurplus(plan){return plan.categories.filter(c=>c.balance>Number(c.cover||0)&&c.destination!=='none').map(c=>({id:rid(),categoryId:c.categoryId,name:c.name,amount:c.balance-Number(c.cover||0),destination:c.destination,targetId:c.targetId,feeRate:Number(c.feeRate||0)}));}
+function routeSurplus(plan){const routes=plan.categories.filter(c=>c.balance>Number(c.cover||0)&&c.destination!=='none').map(c=>({id:rid(),categoryId:c.categoryId,name:c.name,amount:c.balance-Number(c.cover||0),destination:c.destination,targetId:c.targetId,feeRate:Number(c.feeRate||0)}));
+ if(!plan.combineSurplus)return routes;const pooled=routes.filter(x=>x.destination==='assets');if(pooled.length<2)return routes;return routes.filter(x=>x.destination!=='assets').concat([{id:rid(),categoryId:'combined',name:'الفوائض المجمعة',amount:pooled.reduce((a,x)=>a+x.amount,0),destination:'assets',targetId:'',feeRate:0,sources:pooled}]);}
 function tasksFor(plan){const tasks=[{id:'receipt',name:'تأكيد نزول الراتب',bank:'hilal',amount:plan.salary,kind:'receipt',done:!!plan.receivedAt,required:true}];
  for(const o of plan.obligations.filter(x=>x.included))tasks.push({id:'pay:'+o.id,name:`سداد ${o.name}`,bank:o.bank,amount:o.amount,kind:'obligation',sourceId:o.id,done:false,required:true});
  for(const route of routeSurplus(plan))tasks.push({id:'surplus:'+route.categoryId,name:`ترحيل فائض ${route.name} إلى ${route.destination==='malaa'?'ملاءة':route.destination==='goal'?'هدف في الأصول':'الاستثمار'}`,bank:route.destination==='malaa'?'malaa':'assets',amount:route.amount,kind:'surplus',route,done:false,required:true});
@@ -74,7 +76,7 @@ function tasksFor(plan){const tasks=[{id:'receipt',name:'تأكيد نزول ا�
 }
 function summaryBox(label,value,sub=''){return `<div class="v19-fact"><span>${esc(label)}</span><strong>${value}</strong>${sub?`<small>${esc(sub)}</small>`:''}</div>`}
 function statusText(p){return p?.status==='completed'?'مكتملة':p?.status==='approved'?'بانتظار تنفيذ التحويلات':p?.status==='tracking'?'قيد المتابعة':p?.status==='draft'?'مسودة':'لم تبدأ'}
-function pageList(){ensure();const current=v14Period(),plans=db.rkCyclesV19.slice().sort((a,b)=>b.period.localeCompare(a.period));if(!plans.some(p=>p.period===current)){plans.unshift({period:current,day:db.cycleDay||25,salary:db.salary,status:'new'})}
+function pageList(){ensure();const current=upcomingPeriod(),plans=db.rkCyclesV19.slice().sort((a,b)=>b.period.localeCompare(a.period));if(!plans.some(p=>p.period===current)){plans.unshift({period:current,day:db.cycleDay||25,salary:db.salary,status:'new'})}
  return `<section class="v19-cycle-page"><header class="v19-section-title"><h2>دورة الراتب</h2><button class="btn primary" data-v19-action="new-cycle">${ico('plus')} دورة جديدة</button></header>
  <div class="v19-cycle-list">${plans.map(p=>`<button class="v19-cycle-list-item" type="button" data-v19-open="${esc(p.period)}"><span><small>تاريخ الدورة</small><strong>${esc(p.period)}-${String(p.day||25).padStart(2,'0')}</strong></span><span><small>الراتب</small><strong>${cash(p.salary)}</strong></span><span><small>حالة الدورة</small><strong>${statusText(p)}</strong></span></button>`).join('')}</div>
  ${note('اضغط على الدورة لفتح مساحة العمل الكاملة. تأكيد السداد والتحويلات يدوي، وليس تنفيذًا مصرفيًا تلقائيًا.')}</section>`;
@@ -82,7 +84,7 @@ function pageList(){ensure();const current=v14Period(),plans=db.rkCyclesV19.slic
 function renderCyclePage(){if(page!=='cycles')return;const view=document.getElementById('view');if(view)view.innerHTML=pageList();}
 function drawStep1(plan){const deficits=shortagePlan(plan),availableCoverage=covered(plan),remainder=deficitRemaining(plan);
  return `<div class="v19-step-intro"><h2>تسوية البنود السابقة</h2><p>مراجعة إقفال ${esc(plan.closePeriod)} قبل إنشاء مخصصات الشهر الجديد. لا يتغير الإنفاق التاريخي.</p></div>
- <div class="v19-fact-grid">${summaryBox('إجمالي العجز',cash(deficit(plan)))}${summaryBox('مبلغ التغطية من الفوائض',cash(availableCoverage))}${summaryBox('العجز غير المغطى',cash(remainder))}</div>
+ <div class="v19-section-title"><button class="btn" data-v19-action="combine-surpluses" type="button">${ico('trend')} تجميع فوائض البنود للاستثمار</button></div><div class="v19-fact-grid">${summaryBox('إجمالي العجز',cash(deficit(plan)))}${summaryBox('مبلغ التغطية من الفوائض',cash(availableCoverage))}${summaryBox('العجز غير المغطى',cash(remainder))}</div>
  <div class="v19-record-grid">${plan.categories.map(c=>{
   const surplus=c.balance>0,negative=c.balance<0,remaining=c.balance-Number(c.cover||0);return `<article class="v19-record ${negative?'is-negative':surplus?'is-surplus':''}">
   <header><h3>${esc(c.name)}</h3><span class="v19-status ${negative?'is-negative':surplus?'is-positive':''}">${negative?'عجز':surplus?'فائض':'متوازن'}</span></header>
@@ -132,7 +134,7 @@ function cycleShell(){const plan=getPlan(openedPeriod);if(!plan)return;const rea
  <footer class="v19-workspace-footer"><button type="button" class="btn" data-v19-action="previous" ${idx===0||ready?'disabled':''}>${ico('back')} السابق</button><button type="button" class="btn v19-save" data-v19-action="save-cycle">${ico('check')} حفظ المسودة</button><button type="button" class="btn primary" data-v19-action="next" ${idx===3||ready?'disabled':''}>التالي ${ico('forward')}</button></footer></section></div>`;
  const scroller=document.querySelector('.v19-workspace-main');if(scroller)scroller.scrollTop=0;
 }
-function openCycle(period){openedPeriod=period||v14Period();let p=getPlan(openedPeriod);if(p.status==='draft')cycleStep=Number(p.step||0);else cycleStep=4;cycleShell()}
+function openCycle(period){openedPeriod=period||upcomingPeriod();let p=getPlan(openedPeriod);if(p.status==='draft')cycleStep=Number(p.step||0);else cycleStep=4;cycleShell()}
 function fieldValue(selector){return document.querySelector(selector)?.value||''}
 function saveEdits(){const plan=getPlan(openedPeriod);if(!plan||plan.status!=='draft')return;
  plan.step=cycleStep;persist('حفظ مسودة دورة',openedPeriod);}
@@ -150,9 +152,9 @@ function approveCycle(){const plan=getPlan(openedPeriod);if(!plan||plan.status!=
  if(!confirm('اعتماد خطة الدورة وتحديث مخصصات البنود الجديدة؟ لن يجري النظام أي تحويل أو خصم مصرفي.'))return;
  const latest=makeObligations(plan.period),newIds=latest.filter(x=>x.locked).map(x=>x.id),oldIds=plan.obligations.filter(x=>x.included&&x.locked).map(x=>x.id);
  if(newIds.some(id=>!oldIds.includes(id)))return alert('ظهرت التزامات جديدة. راجع مرحلة الالتزامات قبل اعتماد الدورة.');
- for(const c of v18ActiveCategories())c.limit=Number(((plan.allocations[c.id]||0)/100).toFixed(2));
  if(!Array.isArray(db.salaryCycles))db.salaryCycles=[];
  let old=db.salaryCycles.find(c=>c.period===plan.period);if(old?.approved)return alert('سبق اعتماد دورة الشهر بهذه الفترة في السجل القديم. راجعها أولاً.');
+ for(const c of v18ActiveCategories())c.limit=Number(((plan.allocations[c.id]||0)/100).toFixed(2));
  db.salaryCycles=db.salaryCycles.filter(c=>c.period!==plan.period);
  db.salaryCycles.push({period:plan.period,day:plan.day,amounts:{...plan.allocations},approved:true,approvedAt:new Date().toISOString(),origin:'v19'});
  db.salary=plan.salary;plan.approvedAt=new Date().toISOString();plan.status='tracking';plan.tasks=tasksFor(plan);plan.ratios={...plan.ratios};
@@ -173,7 +175,7 @@ function confirmTask(id){const plan=getPlan(openedPeriod),task=plan?.tasks.find(
  }else if(task.kind==='surplus'){
   const route=task.route;
   if(route.destination==='malaa'){
-   let target=(db.savings||[]).find(s=>s.id===route.targetId)||db.savings?.[0];if(target){target.balance=Number(target.balance||0)+route.amount}
+   const targetId='v19-surplus-'+route.categoryId;let target=(db.savings||[]).find(s=>s.id===targetId);if(!target){target={id:targetId,name:'ادخار فائض - '+route.name,days:0,balance:0,rate:0};db.savings.push(target)}target.balance=Number(target.balance||0)+route.amount;
    if(route.feeRate>0){db.rkSavingsFeesV19.push({id:rid(),name:route.name,monthly:Math.round(route.amount*route.feeRate/100),active:true,startPeriod:periodShift(plan.period,1)});}
   }else if(route.destination==='goal'){
    const goal=db.goals.find(x=>x.id===route.targetId);if(goal)goal.saved=Number(goal.saved||0)+route.amount;
@@ -188,12 +190,12 @@ function addClock(){let existing=document.getElementById('v19Clock');if(page==='
  else existing.textContent=personTime();
  }else existing?.remove();}
 function loanPreview(){if(!loanDraft)return '';let d=loanDraft,amt=cents(d.amount||0),rate=Number(d.rate||0),months=Math.max(1,Number(d.months||1)),profit=Math.round(amt*rate/100),total=amt+profit,inst=Math.ceil(total/months),previous=periodShift(iso(new Date()).slice(0,7),-1),spentLast=db.transactions.filter(t=>t.type==='expense'&&t.category===d.categoryId&&String(t.date).startsWith(previous)).reduce((s,x)=>s+x.amount,0),cat=db.categories.find(c=>c.id===d.categoryId),surplus=cat?Math.round(Number(cat.limit||0)*100)-spentLast:null;
- return `<div class="v19-step-intro"><h2>المعاينة المالية قبل الحفظ</h2><p>هذا طلب قرض من بنك الهلال. اختيار البند للتحليل فقط، ولا يُخصم منه مبلغ القرض أو يُزاد مخصصه.</p></div><section class="v19-review">${[['سبب القرض',d.name||'—'],['البند المرتبط',cat?.name||'—'],['قيمة القرض',cash(amt)],['الإنفاق على البند الشهر الماضي',cash(spentLast)],['الفائض المتوقع قياسًا بالشهر السابق',surplus==null?'—':cash(surplus)],['هامش الربح الإجمالي',`${rate}%`],['تكلفة التمويل',cash(profit)],['إجمالي السداد',cash(total)],['القسط التقريبي',cash(inst)],['عدد الأقساط',`${months} شهر`]].map(([k,v])=>`<div><span>${esc(k)}</span><strong>${v}</strong></div>`).join('')}</section>${note('المعاينة تقديرية مبنية على المدخلات والإنفاق المسجل، ولا تمثل عرضًا مصرفيًا ملزمًا. لا يؤثر الطلب على مخصص البند المحدد.')}`;
+ return `<div class="v19-step-intro"><h2>المعاينة المالية قبل الحفظ</h2><p>هذا طلب قرض من بنك الهلال. اختيار البند للتحليل فقط، ولا يُخصم منه مبلغ القرض أو يُزاد مخصصه.</p></div><section class="v19-review">${[['سبب القرض',d.name||'—'],['البند المرتبط',cat?.name||'—'],['قيمة القرض',cash(amt)],['الإنفاق على البند الشهر الماضي',cash(spentLast)],['الفائض المتوقع قياسًا بالشهر السابق',surplus==null?'—':cash(surplus)],['هامش الربح الإجمالي',`${rate}%`],['تكلفة التمويل',cash(profit)],['إجمالي السداد',cash(total)],['القسط التقريبي',cash(inst)],['عدد الأقساط',`${months} شهر`]].map(([k,v])=>`<div><span>${esc(k)}</span><strong>${esc(v)}</strong></div>`).join('')}</section>${note('المعاينة تقديرية مبنية على المدخلات والإنفاق المسجل، ولا تمثل عرضًا مصرفيًا ملزمًا. لا يؤثر الطلب على مخصص البند المحدد.')}`;
 }
 function loanModal(){if(!loanDraft)return;const d=loanDraft;
  const body=loanStep===0?`<div class="v19-step-intro"><h2>لماذا تحتاج القرض؟</h2><p>اختر البند للتحليل فقط. القرض مستقل تمامًا عن مخصصه الشهري.</p></div><div class="v19-form-grid">${field('v19LoanName','سبب القرض',d.name,'text','required maxlength="120"')}<div class="v19-field"><label for="v19LoanCat">البند المرتبط</label><select id="v19LoanCat">${option('','اختر البند',d.categoryId)}${v18ActiveCategories().map(c=>option(c.id,c.name,d.categoryId)).join('')}</select></div>${field('v19LoanAmount','مبلغ القرض المطلوب (ر.س)',d.amount,'number','min="0.01" step="0.01"')}${field('v19LoanDate','تاريخ الطلب',d.date,'date')}${field('v19LoanNotes','تفاصيل السبب',d.notes)}</div>`:
  loanStep===1?`<div class="v19-step-intro"><h2>التكلفة وجدولة السداد</h2><p>راجع تكلفة التمويل وتأثير القسط على الراتب قبل اتخاذ القرار.</p></div><div class="v19-form-grid">${field('v19LoanRate','هامش الربح الإجمالي (%)',d.rate,'number','min="0" max="100" step="0.01"')}${field('v19LoanMonths','عدد الأقساط الشهرية',d.months,'number','min="1" max="120" step="1"')}${field('v19LoanStart','أول دورة سداد',d.start,'month')}</div>${note('هامش الربح نسبة إجمالية على أصل التمويل وليس معدلًا سنويًا. يمكن تعديل القيم قبل الحفظ.')}`:loanPreview();
- document.getElementById('modalRoot').innerHTML=`<div class="v19-workspace-bg" role="presentation"><section class="v19-workspace v19-loan-workspace" role="dialog" aria-modal="true" aria-label="طلب قرض"><header class="v19-workspace-header"><button class="v19-close" type="button" data-v19-action="close-loan" aria-label="إغلاق">${ico('close')}</button><div><h1>${loanEditId?'تعديل طلب القرض':'طلب قرض جديد'}</h1><p>الممول: بنك الهلال · ${loanStep+1} من 3</p></div></header><nav class="v19-progress">${['سبب القرض والبند','التكلفة والأقساط','المعاينة'].map((x,i)=>`<span class="${loanStep===i?'active':''}">${i+1}. ${x}</span>`).join('')}</nav><main class="v19-workspace-main">${body}</main><footer class="v19-workspace-footer"><button class="btn" type="button" data-v19-action="loan-prev" ${loanStep===0?'disabled':''}>السابق</button><button class="btn v19-save" type="button" data-v19-action="loan-save" ${loanStep!==2?'disabled':''}>${ico('check')} حفظ الطلب</button><button class="btn primary" type="button" data-v19-action="loan-next" ${loanStep===2?'disabled':''}>التالي</button></footer></section></div>`;
+ document.getElementById('modalRoot').innerHTML=`<div class="v19-workspace-bg" role="presentation"><section class="v19-workspace v19-loan-workspace" role="dialog" aria-modal="true" aria-label="طلب قرض"><header class="v19-workspace-header"><button class="v19-close" type="button" data-v19-action="close-loan" aria-label="إغلاق">${ico('close')}</button><div><h1>${loanEditId?'تعديل طلب القرض':'طلب قرض جديد'}</h1><p>الممول: بنك الهلال · ${loanStep+1} من 3</p></div></header><nav class="v19-progress">${['سبب القرض والبند','التكلفة والأقساط','المعاينة'].map((x,i)=>`<span class="${loanStep===i?'active':''}">${i+1}. ${x}</span>`).join('')}</nav><main class="v19-workspace-main">${body}</main><footer class="v19-workspace-footer ${loanStep===2?'v19-loan-final':''}">${loanStep===2?`<button class="btn primary v19-wide" type="button" data-v19-action="loan-save">${ico('check')} حفظ الطلب بعد المراجعة</button>`:`<button class="btn" type="button" data-v19-action="loan-prev" ${loanStep===0?'disabled':''}>السابق</button><button class="btn v19-save" type="button" disabled>حفظ</button><button class="btn primary" type="button" data-v19-action="loan-next">التالي</button>`}</footer></section></div>`;
 }
 function readLoanFields(){if(!loanDraft)return true;
  if(loanStep===0){loanDraft.name=fieldValue('#v19LoanName').trim();loanDraft.categoryId=fieldValue('#v19LoanCat');loanDraft.amount=fieldValue('#v19LoanAmount');loanDraft.date=fieldValue('#v19LoanDate');loanDraft.notes=fieldValue('#v19LoanNotes');
@@ -249,11 +251,12 @@ const originalHilalAction=v18Action;
 v18Action=function(action,id){if(action==='new-request')return openLoan();if(action==='edit-request')return openLoan(id);if(action==='go-cycle')return navigate('cycles');return originalHilalAction(action,id)};
 function performAction(action,id){const plan=openedPeriod?getPlan(openedPeriod,false):null;
  switch(action){
-  case 'new-cycle':{const proposed=v14Period(),answer=prompt('حدد شهر الدورة الجديدة (YYYY-MM)',proposed);if(!answer)return;if(!/^\d{4}-(0[1-9]|1[0-2])$/.test(answer))return alert('أدخل شهرًا صحيحًا.');return openCycle(answer)}
+  case 'new-cycle':{const proposed=upcomingPeriod(),answer=prompt('حدد شهر الدورة الجديدة (YYYY-MM)',proposed);if(!answer)return;if(!/^\d{4}-(0[1-9]|1[0-2])$/.test(answer))return alert('أدخل شهرًا صحيحًا.');return openCycle(answer)}
   case 'close-cycle':saveEdits();openedPeriod='';closeModal();render();return;
   case 'save-cycle':saveEdits();toast(plan?.status==='draft'?'تم حفظ المسودة':'خطة الدورة محفوظة');return;
   case 'next':if(plan&&canNext(plan)&&cycleStep<3){cycleStep++;saveEdits();cycleShell()}return;
   case 'previous':if(plan&&cycleStep>0){cycleStep--;saveEdits();cycleShell()}return;
+  case 'combine-surpluses':if(!plan||plan.status!=='draft')return;plan.combineSurplus=true;plan.categories.forEach(c=>{if(c.balance>c.cover&&c.destination==='none')c.destination='assets'});persist('تجميع فوائض البنود للاستثمار');cycleShell();return;
   case 'reset-allocations':if(!plan||plan.status!=='draft')return;if(!confirm('إعادة مخصصات البنود الحالية كاقتراح توزيع؟'))return;plan.allocations=Object.fromEntries(v18ActiveCategories().map(c=>[c.id,cents(c.limit)]));persist('إعادة اقتراح التوزيع');cycleShell();return;
   case 'approve':return approveCycle();
   case 'confirm-task':return confirmTask(id);
