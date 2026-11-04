@@ -792,7 +792,7 @@ td,th{border-bottom:1px solid #d6e2e8!important}
 
 /* RK-V17-NOOR-UI-RELEASE: icon-only actions using existing Rakaez tokens */
 button.rk-v17-icon-only{display:inline-flex!important;align-items:center!important;justify-content:center!important;vertical-align:middle!important;gap:0!important;flex:0 0 auto;min-width:40px!important;width:42px!important;max-width:42px!important;min-height:40px!important;padding:8px!important;line-height:0!important;font-size:0!important;white-space:nowrap;overflow:visible}
-button.rk-v17-icon-only *:not(svg):not(path):not(line):not(circle):not(rect):not(polyline):not(polygon){font-size:0!important;line-height:0!important}
+button.rk-v17-icon-only:not(.rk-v20-text-action)>:is(span,strong,b,small,em):not(:has(svg)){font-size:0!important;line-height:0!important}
 button.rk-v17-icon-only svg{display:block!important;width:19px!important;height:19px!important;min-width:19px;min-height:19px;flex-shrink:0}
 button.rk-v17-icon-only i::before{font-size:18px!important}
 button.rk-v17-icon-only:focus-visible{outline:2px solid var(--gold)!important;outline-offset:2px!important}
@@ -4027,7 +4027,7 @@ render=function(){
        button.querySelector('.rk-budget-entry-content,.rk-study-card-head,.rk-manage-id,.rakaez-nav-name')||
        ((button.textContent||'').trim().length>75&&button.querySelector('strong,small'));
      if(semantic){button.classList.add('rk-v19-readable-control');return;}
-     if(button.closest('.rk-account-actions,.rk-budget-detail-actions,.sectiontitle,.rk-compact-footer,.rk-v18-entry-nav'))button.classList.add('rk-v19-context-action');
+     if(button.closest('.rk-account-actions,.rk-budget-detail-actions,.sectiontitle,.rk-compact-footer,.rk-v18-entry-nav,.rakaez-mode-actions,.rk-v18-wizard-actions'))button.classList.add('rk-v19-context-action','rk-v20-text-action');
      if(!button.querySelector('svg,i,img,[role="img"]')){
        const inline=button.getAttribute('onclick')||'';
        let icon=(matchers.find(entry=>entry[0].test(label))||[])[1];
