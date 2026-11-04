@@ -148,3 +148,149 @@
 }
 .v19-loan-final{grid-template-columns:1fr!important}
 .v19-loan-final .btn{width:100%;min-height:56px!important}
+
+
+/* v20: responsive action widths across all Rakaez screens.
+   Only existing brand tokens are used. Keep next | save | previous in RTL. */
+#modalRoot .v19-workspace-footer,
+#modalRoot .v19-loan-workspace .v19-workspace-footer {
+  box-sizing:border-box!important;
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  align-items:stretch!important;
+  justify-items:stretch!important;
+  width:100%!important;
+  min-width:0!important;
+  gap:10px!important;
+  padding:14px 16px calc(16px + env(safe-area-inset-bottom, 0px))!important;
+}
+#modalRoot .v19-workspace-footer:has(> button:only-child){
+  grid-template-columns:minmax(0,1fr)!important;
+}
+#modalRoot .v19-workspace-footer:has(> button:nth-child(2):last-child){
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+}
+#modalRoot .v19-workspace-footer > button,
+#modalRoot .v19-workspace-footer > .btn{
+  display:flex!important;
+  box-sizing:border-box!important;
+  flex:1 1 auto!important;
+  justify-self:stretch!important;
+  align-self:stretch!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  min-height:56px!important;
+  padding:11px 9px!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:6px!important;
+  border-radius:12px!important;
+  font:800 13px/1.45 inherit!important;
+  font-size:13px!important;
+  font-weight:800!important;
+  line-height:1.45!important;
+  white-space:normal!important;
+  word-break:normal!important;
+  overflow-wrap:break-word!important;
+  text-align:center!important;
+  text-overflow:clip!important;
+}
+#modalRoot .v19-workspace-footer > .btn svg{
+  width:17px!important;
+  height:17px!important;
+  min-width:17px!important;
+  flex:0 0 17px!important;
+}
+#modalRoot .modal :is(.actions:not(.wiz-original-hidden),.v3footer:not(.wiz-original-hidden),.rk-footer,.wiz-actions,.rk-compact-footer,.v18-footer),
+#view :is(.actions,.rk-compact-footer,.v3footer,.rk-footer){
+  display:grid!important;
+  box-sizing:border-box!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  align-items:stretch!important;
+  justify-items:stretch!important;
+  gap:10px!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+}
+#modalRoot .modal :is(.actions:not(.wiz-original-hidden),.v3footer:not(.wiz-original-hidden),.rk-footer,.wiz-actions,.rk-compact-footer,.v18-footer):has(> .btn:only-child),
+#view :is(.actions,.rk-compact-footer,.v3footer,.rk-footer):has(> .btn:only-child){
+  grid-template-columns:minmax(0,1fr)!important;
+}
+#modalRoot .modal :is(.actions:not(.wiz-original-hidden),.v3footer:not(.wiz-original-hidden),.rk-footer,.wiz-actions,.rk-compact-footer,.v18-footer):has(> .btn:nth-child(2):last-child),
+#view :is(.actions,.rk-compact-footer,.v3footer,.rk-footer):has(> .btn:nth-child(2):last-child){
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+}
+#modalRoot .modal :is(.actions:not(.wiz-original-hidden),.v3footer:not(.wiz-original-hidden),.rk-footer,.wiz-actions,.rk-compact-footer,.v18-footer):has(> .btn:nth-child(4)),
+#view :is(.actions,.rk-compact-footer,.v3footer,.rk-footer):has(> .btn:nth-child(4)){
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+}
+#modalRoot .modal :is(.actions:not(.wiz-original-hidden),.v3footer:not(.wiz-original-hidden),.rk-footer,.wiz-actions,.rk-compact-footer,.v18-footer) > :is(.btn,button),
+#view :is(.actions,.rk-compact-footer,.v3footer,.rk-footer) > :is(.btn,button){
+  display:flex!important;
+  box-sizing:border-box!important;
+  grid-column:auto;
+  justify-self:stretch!important;
+  align-self:stretch!important;
+  flex:1 1 auto!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  min-height:52px!important;
+  padding:9px 9px!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:6px!important;
+  font-size:13px!important;
+  font-weight:750!important;
+  line-height:1.5!important;
+  white-space:normal!important;
+  overflow-wrap:break-word!important;
+  text-align:center!important;
+}
+#modalRoot .modal .v18-footer > .btn{min-height:56px!important}
+#view :is(.v18-actions,.v19-card-actions) {
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  width:100%!important;
+  gap:9px!important;
+}
+#view :is(.v18-actions,.v19-card-actions) > .btn{
+  display:flex!important;
+  justify-content:center!important;
+  align-items:center!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+  min-height:46px!important;
+  padding:9px 8px!important;
+  white-space:normal!important;
+  overflow-wrap:break-word!important;
+  line-height:1.4!important;
+}
+#view :is(.v18-actions,.v19-card-actions):has(> .btn:only-child){grid-template-columns:1fr!important}
+@media(max-width:740px){
+  #modalRoot .v19-workspace-footer{
+    gap:8px!important;
+    padding:12px 12px calc(15px + env(safe-area-inset-bottom, 0px))!important;
+  }
+  #modalRoot .v19-workspace-footer > .btn{
+    min-height:58px!important;
+    padding:11px 7px!important;
+    font-size:13px!important;
+  }
+  #modalRoot .modal :is(.actions:not(.wiz-original-hidden),.v3footer:not(.wiz-original-hidden),.rk-footer,.wiz-actions,.rk-compact-footer,.v18-footer){
+    gap:8px!important;
+    padding:12px 12px calc(15px + env(safe-area-inset-bottom, 0px))!important;
+  }
+  #view .rk-manage-toolbar{display:flex!important;flex-wrap:wrap!important;gap:10px!important}
+  #view .rk-manage-toolbar > :is(.btn,button){width:100%!important;max-width:none!important;min-height:49px!important;flex:1 1 100%!important}
+  #view .sectiontitle:has(> .btn){flex-wrap:wrap!important}
+  #view .sectiontitle > .btn{min-height:46px!important;flex:1 1 100%!important;width:100%!important;max-width:none!important}
+  #view .row.spaced:has(> .btn:only-child) > .btn{width:100%!important;max-width:none!important;min-height:48px!important}
+}
+@media(max-width:360px){
+  #modalRoot .v19-workspace-footer{gap:6px!important;padding-inline:8px!important}
+  #modalRoot .v19-workspace-footer > .btn{font-size:12px!important;padding-inline:5px!important}
+}
