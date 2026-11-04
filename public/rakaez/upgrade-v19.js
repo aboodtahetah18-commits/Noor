@@ -43,6 +43,7 @@ function makeObligations(period){v18Ensure();const rows=[];
  (db.debts||[]).filter(d=>Number(d.principal||0)>Number(d.paid||0)&&Number(d.installment||0)>0).forEach(d=>{
   rows.push({id:'debt:'+d.id,reference:d.id,source:'debt',bank:'hilal',name:`قسط ${d.name}`,amount:Math.min(d.installment,d.principal-d.paid),kind:'debt',included:true,locked:true,dueDate:d.date||formatDay(period)});
  });
+ (db.goals||[]).filter(g=>Number(g.monthly||0)>0).forEach(g=>rows.push({id:'goal:'+g.id,reference:g.id,source:'goal',bank:'assets',name:'مساهمة هدف '+g.name,amount:Number(g.monthly),kind:'goal',included:true,locked:false,dueDate:formatDay(period)}));
  (db.fees||[]).filter(x=>feeAmount(x)>0).forEach(f=>rows.push({id:'fee:'+f.id,reference:f.id,source:'fee',bank: f.bank==='assets'?'assets':f.bank==='malaa'?'malaa':'hilal',name:f.name,amount:feeAmount(f),kind:'fee',included:true,locked:false,dueDate:formatDay(period)}));
  (db.scheduledOps||[]).filter(x=>x.status==='planned'&&scheduledEstimate(x)>0&&(!x.start||String(x.start).slice(0,7)<=period)).forEach(op=>{
   const bank=op.bank==='malaa'?'malaa':op.bank==='assets'?'assets':'hilal';
@@ -92,9 +93,9 @@ function drawStep1(plan){const deficits=shortagePlan(plan),availableCoverage=cov
   ${surplus?`<div class="v19-fields"><div class="v19-field"><label>تغطية عجز بنود أخرى (ر.س)</label><input type="number" min="0" max="${(c.balance/100).toFixed(2)}" step="0.01" value="${(c.cover/100).toFixed(2)}" data-v19-field="cover" data-id="${esc(c.categoryId)}"></div>
   <div class="v19-field"><label>وجهة الفائض المتبقي (${cash(Math.max(0,remaining))})</label><select data-v19-field="destination" data-id="${esc(c.categoryId)}">${[['none','لا ترحيل — إبقاؤه ضمن السيولة'],['malaa','ادخار مرتبط بالبند في بنك ملاءة'],['goal','تغذية هدف مالي في بنك الأصول'],['assets','استثمار مستقل في بنك الأصول']].map(([a,b])=>option(a,b,c.destination)).join('')}</select></div>
   ${c.destination==='goal'?`<div class="v19-field"><label>الهدف المالي</label><select data-v19-field="targetId" data-id="${esc(c.categoryId)}">${option('','اختر الهدف',c.targetId)}${(db.goals||[]).map(g=>option(g.id,g.name,c.targetId)).join('')}</select></div>`:''}
-  ${c.destination==='malaa'?`<div class="v19-field"><label>رسوم الاستثمار الشهرية في ملاءة (%) — حسب اتفاقك</label><input type="number" min="0" max="100" step="0.01" data-v19-field="feeRate" data-id="${esc(c.categoryId)}" value="${c.feeRate||0}"></div>`:''}</div>`:negative?`<p class="v19-help">يمكن تغطية العجز من فوائض البنود الأخرى. أي عجز متبقٍ يحتاج إلى اختيار تسوية موثقة أو تخفيض مخصصات الإنفاق القادم.</p><button class="btn" type="button" data-v19-action="loan-deficit" data-id="${esc(c.categoryId)}">${ico('fund')} طلب قرض لمعالجة العجز</button>`:note('البند متوازن ولا يتطلب إجراءً.')}
+  ${c.destination==='malaa'?`<div class="v19-field"><label>رسوم الاستثمار الشهرية في ملاءة (%) — حسب اتفاقك</label><input type="number" min="0" max="100" step="0.01" data-v19-field="feeRate" data-id="${esc(c.categoryId)}" value="${c.feeRate||0}"></div>`:''}</div>`:negative?`<p class="v19-help">يمكن تغطية العجز من فوائض البنود الأخرى. أي عجز متبقٍ يحتاج إلى اختيار تسوية موثقة أو تخفيض مخصصات الإنفاق القادم.</p><button class="btn" type="button" data-v19-action="reduce-deficit" data-id="${esc(c.categoryId)}">${ico('chart')} خفض مخصص الشهر القادم</button> <button class="btn" type="button" data-v19-action="loan-deficit" data-id="${esc(c.categoryId)}">${ico('fund')} طلب قرض لمعالجة العجز</button>`:note('البند متوازن ولا يتطلب إجراءً.')}
  </article>`}).join('')}</div>
- <div class="v19-note">${remainder>0?`يوجد عجز غير مغطى بمبلغ ${cash(remainder)}. يجوز إعداد الدورة كمسودة، لكن لا تُعتمد التسوية نهائيًا حتى تتم تغطيته أو تسجيله صراحةً كعجز مرحّل.`:'تمت تغطية كل العجز حسابيًا من الفوائض. فوائض البنود الأخرى لا تُخصم من مخصصات الشهر الجديد إلا بعد اعتماد التوزيع.'}</div>`;
+ <div class="v19-note">فائض البند قيمة حسابية لا تُثبت وحدها وجود نقد في الحساب. لا تؤكد الترحيل إلا بعد التحقق من الرصيد الفعلي. ${remainder>0?`يوجد عجز غير مغطى بمبلغ ${cash(remainder)}. يجوز إعداد الدورة كمسودة، لكن لا تُعتمد التسوية نهائيًا حتى تتم تغطيته أو تسجيله صراحةً كعجز مرحّل.`:'تمت تغطية كل العجز حسابيًا من الفوائض. فوائض البنود الأخرى لا تُخصم من مخصصات الشهر الجديد إلا بعد اعتماد التوزيع.'}</div>`;
 }
 function drawStep2(plan){refreshObligations(plan);const due=totalO(plan);
  return `<div class="v19-step-intro"><h2>مراجعة الالتزامات عبر البنوك الثلاثة</h2><p>الأقساط والرسوم والفواتير ذات العلاقة تُراجع قبل توزيع الراتب. يمكنك إيقاف فاتورة ملغاة مع توثيق السبب، ولا يمكن إسقاط قسط قائم دون تسويته.</p></div>
@@ -171,6 +172,7 @@ function confirmTask(id){const plan=getPlan(openedPeriod),task=plan?.tasks.find(
   }else if(ob?.source==='debt'){
    const debt=db.debts.find(x=>x.id===ob.reference);if(debt)debt.paid=Math.min(Number(debt.principal||0),Number(debt.paid||0)+ob.amount);
   }
+  if(ob?.source==='goal'){const goal=db.goals.find(g=>g.id===ob.reference);if(goal)goal.saved=Math.min(Number(goal.target||Infinity),Number(goal.saved||0)+ob.amount)}
   if(ob)ob.done=true;
  }else if(task.kind==='surplus'){
   const route=task.route;
@@ -272,6 +274,7 @@ function performAction(action,id){const plan=openedPeriod?getPlan(openedPeriod,f
   case 'reset-allocations':if(!plan||plan.status!=='draft')return;if(!confirm('إعادة مخصصات البنود الحالية كاقتراح توزيع؟'))return;plan.allocations=Object.fromEntries(v18ActiveCategories().map(c=>[c.id,cents(c.limit)]));persist('إعادة اقتراح التوزيع');cycleShell();return;
   case 'approve':return approveCycle();
   case 'confirm-task':return confirmTask(id);
+  case 'reduce-deficit':{if(!plan||plan.status!=='draft')return;const row=plan.categories.find(x=>x.categoryId===id);if(!row)return;const old=Number(plan.allocations[id]||0)/100;const raw=prompt('أدخل مخصص الشهر القادم بعد خفض الإنفاق (ر.س):',String(old));if(raw===null)return;const value=Number(raw);if(!Number.isFinite(value)||value<0||value>100000000)return alert('مخصص غير صالح.');plan.allocations[id]=cents(value);persist('خفض مخصص بند في الدورة القادمة',row.name);cycleShell();toast('تم تعديل مخصص الشهر القادم فقط؛ العجز السابق لا يُعد مسددًا.');return;}
   case 'loan-deficit':{if(!plan)return;const cat=plan.categories.find(x=>x.categoryId===id);v18Tab='loans';closeModal();page='hilal';render();openLoan();if(loanDraft&&cat){loanDraft.name='تغطية عجز '+cat.name;loanDraft.categoryId=id;loanDraft.amount=String(Math.max(0,-cat.balance)/100);loanModal()}return}
   case 'new-loan':return openLoan();case 'edit-loan':return openLoan(id);
   case 'go-cycle':return navigate('cycles');
