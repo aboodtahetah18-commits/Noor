@@ -146,3 +146,5 @@
  .v19-section-title h2{font-size:17px}
  .v19-section-title .btn{width:auto;min-height:43px!important}
 }
+.v19-loan-final{grid-template-columns:1fr!important}
+.v19-loan-final .btn{width:100%;min-height:56px!important}
