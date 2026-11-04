@@ -972,6 +972,12 @@ font-size:12px!important;line-height:1.5!important}}
 #modalRoot .rk-v18-entry-wizard{max-height:calc(100dvh - 260px);padding-inline:8px}}
 </style><style id="rk-v20-icon-system">
 /* RK V20: icon-size contract + balanced information density. Association identity only. */
+button:not(.rk-budget-entry):not(.rk-study-card):not(.rk-candidate-card)>svg[viewBox]{
+ box-sizing:border-box!important;display:inline-block!important;
+ width:20px!important;height:20px!important;min-width:20px!important;min-height:20px!important;
+ max-width:20px!important;max-height:20px!important;flex:0 0 20px!important;
+ vertical-align:middle;
+}
 #view button.btn svg,#modalRoot button.btn svg,.topbar button.btn svg,.rakaez-mode-actions button.btn svg{
  display:block!important;box-sizing:border-box!important;width:19px!important;height:19px!important;
  min-width:19px!important;min-height:19px!important;max-width:19px!important;max-height:19px!important;
@@ -4380,7 +4386,7 @@ render=function(){
    if(nextStep>index){
     for(let i=index;i<nextStep;i++){
      const invalid=[...contents[i].querySelectorAll('input,select,textarea')].find(el=>
-      !el.disabled&&el.type!=='hidden'&&!el.closest('[hidden]')&&!el.checkValidity()
+      !el.disabled&&el.type!=='hidden'&&(!el.closest('[hidden]')||el.closest('[hidden]')===contents[i])&&!el.checkValidity()
      );
      if(invalid){
       index=i;
@@ -4404,6 +4410,20 @@ render=function(){
    if(focusable&&index<3)focusable.focus({preventScroll:true});
    content.scrollTop=0;
   }
+  // Run native validity checks across all wizard panels, including inactive steps.
+  form.addEventListener('submit',event=>{
+   for(let i=0;i<contents.length;i++){
+    const invalid=[...contents[i].querySelectorAll('input,select,textarea')].find(el=>
+     !el.disabled&&el.type!=='hidden'&&(!el.closest('[hidden]')||el.closest('[hidden]')===contents[i])&&!el.checkValidity()
+    );
+    if(invalid){
+     event.preventDefault();event.stopImmediatePropagation();
+     index=i;go(i);
+     invalid.focus({preventScroll:true});invalid.reportValidity();
+     return;
+    }
+   }
+  },true);
   go(0);
   if(typeof rkCandidateToggleFields==='function')rkCandidateToggleFields();
   if(typeof rkAllocationInputTotal==='function')rkAllocationInputTotal('rkCa');
