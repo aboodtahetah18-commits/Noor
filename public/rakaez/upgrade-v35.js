@@ -180,6 +180,12 @@ function refreshBankSymbols(){
  decorateCurrentBankPage();
 }
 
+const previousDrawNav=drawNav;
+drawNav=function(){
+ const output=previousDrawNav.apply(this,arguments);
+ decorateBankNavigation();
+ return output;
+};
 const oldRender=render;
 render=function(){
  const result=oldRender.apply(this,arguments);
