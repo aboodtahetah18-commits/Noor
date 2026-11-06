@@ -246,3 +246,61 @@ if(modalRoot){
 }
 render();
 })();
+
+
+
+/* Rakaez v28 — compact journal cards with an expandable accounting breakdown.
+   Changes presentation only; reversal still uses the existing guarded handler. */
+(function(){
+'use strict';
+if(typeof ledgerView!=='function'||typeof db==='undefined'||typeof money!=='function')return;
+const previousLedgerView=ledgerView;
+const textSafe=value=>esc(String(value===null||value===undefined?'':value));
+const accounts={
+ hilal:'نقد الهلال',malaa:'نقد ملاءة',assets:'نقد الأصول',
+ salary:'إيراد الراتب',expense:'مصروفات التشغيل',outside:'الرصيد الافتتاحي'
+};
+const reverseIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-2"/></svg>';
+const value=(label,n,kind)=>'<div class="v28-ledger-value v28-'+kind+'"><span>'+label+'</span><strong>'+money(n)+'</strong></div>';
+const accountLines=entry=>(entry.lines||[]).map(line=>{
+ const debit=Number(line.debit||0),credit=Number(line.credit||0);
+ const detail=(debit>0?'<span class="v28-amount-debit">مدين '+money(debit)+'</span>':'')+
+  (credit>0?'<span class="v28-amount-credit">دائن '+money(credit)+'</span>':'');
+ return '<div class="v28-account-line"><strong>'+textSafe(accounts[line.account]||'حساب مالي آخر')+'</strong>'+
+  '<div class="v28-account-amounts">'+(detail||'<span>دون مبلغ</span>')+'</div></div>';
+}).join('');
+const journalCard=entry=>{
+ const lines=entry.lines||[];
+ const debit=lines.reduce((sum,line)=>sum+Number(line.debit||0),0);
+ const credit=lines.reduce((sum,line)=>sum+Number(line.credit||0),0);
+ const balanced=debit===credit&&debit>0;
+ const isReversal=Boolean(entry.reversalOf);
+ const wasReversed=(db.ledgerEntries||[]).some(other=>other.reversalOf===entry.id);
+ const locked=isReversal||wasReversed;
+ const state=balanced?'متوازن':'غير متوازن';
+ const opposite=locked?'<span class="v28-reversed-tag">'+(isReversal?'قيد عكسي':'تم عكس القيد')+'</span>':
+  '<button type="button" class="v28-reverse-action" data-v25-reverse="'+textSafe(entry.id)+'" aria-label="عكس القيد '+textSafe(entry.description||'المالي')+'">'+reverseIcon+'<span>عكس القيد</span></button>';
+ return '<article class="v28-ledger-card '+(balanced?'v28-balanced-card':'v28-unbalanced-card')+'">'+
+  '<header class="v28-ledger-header"><div class="v28-ledger-ident"><strong>'+textSafe(entry.description||'قيد مالي')+'</strong>'+
+  '<time datetime="'+textSafe(entry.date||'')+'">'+textSafe(entry.date||'تاريخ غير محدد')+'</time></div>'+
+  '<span class="v28-ledger-badge '+(balanced?'v28-state-good':'v28-state-warn')+'">'+state+'</span></header>'+
+  '<div class="v28-ledger-values">'+value('مدين',debit,'debit')+value('دائن',credit,'credit')+'</div>'+
+  '<div class="v28-ledger-footer">'+opposite+'</div>'+
+  '<details class="v28-ledger-breakdown"><summary>تفاصيل الحسابات <span>('+lines.length+')</span></summary>'+
+  '<div class="v28-ledger-account-list">'+(accountLines(entry)||'<p>لا توجد حسابات مرتبطة.</p>')+'</div></details></article>';
+};
+ledgerView=function(){
+ const original=previousLedgerView.apply(this,arguments);
+ const container=document.createElement('div');
+ container.innerHTML=original;
+ const page=container.querySelector('.v25-page');
+ const list=page?.querySelector('.v25-list');
+ if(!page||!list)return original;
+ const rows=(db.ledgerEntries||[]).slice().sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+ page.classList.add('v28-ledger-page');
+ list.classList.add('v28-ledger-grid');
+ list.innerHTML=rows.length?rows.map(journalCard).join(''):
+  '<div class="v25-empty">لا توجد قيود يومية. يمكنك إضافة حركة مالية أو إثبات رصيد افتتاحي.</div>';
+ return page.outerHTML;
+};
+})();
