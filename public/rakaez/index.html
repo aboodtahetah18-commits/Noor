@@ -2489,45 +2489,88 @@ icons.menu='<path d="M4 6h16M4 12h16M4 18h16"/>';
 icons.expense='<path d="M5 5h14M12 7v12m-6-6 6 6 6-6"/>';
 icons.income='<path d="M5 19h14M12 17V5m-6 6 6-6 6 6"/>';
 
-function rakaezDecorateButtons(root=document){
- const patterns=[
-  [/حذف|إزالة|مسح/,'delete'],
-  [/إعادة ضبط|تصفير/,'refresh'],
-  [/السابق|رجوع/,'back'],
-  [/التالي/,'forward'],
-  [/إلغاء|إغلاق|✕|×/,'close'],
-  [/إضافة|إنشاء|جديد|إثبات|تسجيل/,'plus'],
-  [/حفظ|اعتماد|تأكيد|تطبيق/,'check'],
-  [/تعديل|تحرير/,'edit'],
-  [/عرض|تفاصيل|فتح|مراجعة/,'view'],
-  [/رفع|استيراد/,'upload'],
+/* Semantic icons — the same icon means the same action across all pages.
+   Never use the settings gear as a fallback for unrelated actions. */
+icons.income='<path d="M12 4v12m-5-5 5 5 5-5"/><path d="M4 20h16"/>';
+icons.expense='<path d="M12 17V5m-5 5 5-5 5 5"/><path d="M4 19h16"/>';
+icons.transfer='<path d="M4 7h16m-5-4 5 4-5 4M20 17H4m5-4-5 4 5 4"/>';
+icons.withdraw='<path d="M12 18V5m-5 5 5-5 5 5"/><path d="M3 21h18"/>';
+icons.deposit='<path d="M12 3v13m-5-5 5 5 5-5"/><path d="M3 21h18"/>';
+icons.reconcile='<path d="M5 3h14v18H5zM9 7h6m-6 4h3m-3 4 2 2 5-5"/>';
+icons.payment='<path d="M4 6h16v12H4zM8 12h5m3 0h1M7 20h10"/>';
+icons.confirm='<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>';
+function rakaezSemanticPurpose(btn){
+ const actual=(btn.textContent||'').replace(/\s+/g,' ').trim();
+ const aria=(btn.getAttribute('aria-label')||'').replace(/\s+/g,' ').trim();
+ const t=(actual&&!/^[×✕xX+\-＋]$/.test(actual)?actual:aria||actual);
+ if(btn.matches('.mobilemenu'))return 'menu';
+ if(!t)return null;
+ if(/^(?:×|✕|X|x)$/.test(t))return 'close';
+ // Order matters: more specific financial actions precede generic words.
+ const rules=[
+  [/إعادة ضبط|تصفير|استعادة الافتراضي|مسح الفلاتر/,'refresh'],
+  [/حذف|إزالة|مسح السجل|إتلاف/,'delete'],
+  [/تعديل|تحرير|تغيير البيانات/,'edit'],
+  [/إعدادات|تفضيلات|الضبط|ضبط الحساب|تكوين/,'settings'],
+  [/تصفية|فلتر|الفلاتر/,'filter'],
+  [/بحث|ابحث/,'search'],
+  [/المصروفات|مصروف|إنفاق|خسارة/,'expense'],
+  [/الإيرادات|إيراد|الدخل|الوارد/,'income'],
+  [/^(?:الكل|الجميع|جميع العمليات|عرض الكل)$|قائمة كاملة/,'list'],
+  [/إثبات رصيد|رصيد افتتاحي|أرصدة/,'bank'],
+  [/مطابقة|تسوية حساب|عكس القيد|تسوية قيد/,'reconcile'],
+  [/إضافة|إنشاء|جديد|إثبات قيد|تسجيل/,'plus'],
+  [/حفظ|تخزين/,'check'],
+  [/اعتماد|تصديق/,'shield'],
+  [/تأكيد|تحقق/,'confirm'],
+  [/إلغاء|إغلاق|اغلاق|تراجع/,'close'],
+  [/السابق|رجوع|العودة|للخلف/,'back'],
+  [/التالي|المتابعة للخطوة/,'forward'],
+  [/استيراد|رفع|إرفاق/,'upload'],
   [/تصدير|تنزيل|تحميل/,'download'],
-  [/تصفية|فلترة|الفلتر/,'filter'],
-  [/بحث/,'search'],
-  [/الكل/,'list'],
-  [/مصروف|سحب|خسارة/,'expense'],
-  [/إيراد|دخل/,'income'],
+  [/طباعة/,'print'],
+  [/تحويل|نقل مبلغ/,'transfer'],
+  [/تمويل|قرض/,'fund'],
+  [/سحب/,'withdraw'],
+  [/إيداع/,'deposit'],
+  [/سداد|دفع|تحصيل/,'payment'],
+  [/دورة الراتب|جدولة|المجدولة|التقويم/,'calendar'],
+  [/مراقبة|اطلاع|عرض|تفاصيل|معاينة|فتح|مراجعة|رؤية/,'view'],
+  [/متابعة الإجراءات|متابعة الحالات|سجل المتابعة/,'list'],
+  [/تحليل|تقارير|إحصائيات|رسم بياني|مؤشرات/,'chart'],
   [/تحديث|تجديد/,'refresh'],
-  [/تحويل|تمويل|سداد|إيداع/,'wallet'],
-  [/تقرير|رسم|تحليل/,'chart'],
-  [/الإعدادات|إعدادات|ضبط النظام/,'settings']
+  [/حركة مالية/,'wallet'],
+  [/قائمة|سجل/,'list']
  ];
+ return (rules.find(([test])=>test.test(t))||[])[1]||null;
+}
+function rakaezDecorateButtons(root=document){
  if(!root||typeof root.querySelectorAll!=='function')return;
  root.querySelectorAll('button').forEach(btn=>{
-  if(btn.dataset.rakaezDecorated||btn.querySelector('svg')||btn.matches('.rakaez-bell,.rakaez-nav-link,[data-step],.tabs button,.settings-tabs button'))return;
-  const title=(btn.getAttribute('aria-label')||btn.textContent||'').trim().replace(/\s+/g,' ');
-  if(!title)return;
-  const choice=btn.classList.contains('mobilemenu')?'menu':patterns.find(p=>p[0].test(title))?.[1];
-  // No fallback to gear: an unknown action retains a text label and no glyph.
-  if(!choice)return;
-  if(btn.classList.contains('mobilemenu')||title==='✕'||title==='×'){
-   btn.textContent='';
-   btn.setAttribute('aria-label',choice==='menu'?'فتح القائمة':'إغلاق');
+  // Record cards and navigation buttons have their own composite illustrations.
+  if(btn.matches('.rakaez-nav-link,.rakaez-bell,[data-step],.v24-record,.v25-record,.v22-tx,.v22-account,.v22-budget-item,.v19-cycle-list-item'))return;
+  const purpose=rakaezSemanticPurpose(btn);
+  const shell=btn.querySelector(':scope > .rakaez-action-icon');
+  const firstSVG=btn.querySelector(':scope > svg')||btn.querySelector(':scope > .rakaez-action-icon svg')||btn.querySelector(':scope > span > svg');
+  if(!purpose){
+   // Unknown actions should keep their text, never inherit a misleading gear.
+   if(shell){shell.remove();btn.classList.remove('rakaez-action-button');}
+   else if(firstSVG&&firstSVG.querySelector('path[d^="m19 13"]'))firstSVG.remove();
+   btn.dataset.rakaezSemanticIcon='none';
+   return;
   }
-  btn.insertAdjacentHTML('afterbegin','<span class="rakaez-action-icon" aria-hidden="true">'+ico(choice)+'</span>');
+  if(btn.dataset.rakaezSemanticIcon===purpose)return;
+  btn.dataset.rakaezSemanticIcon=purpose;
+  const illustration=ico(purpose);
+  if(shell){shell.innerHTML=illustration;}
+  else if(firstSVG){firstSVG.outerHTML=illustration;}
+  else{
+   btn.insertAdjacentHTML('afterbegin','<span class="rakaez-action-icon" aria-hidden="true">'+illustration+'</span>');
+  }
   btn.classList.add('rakaez-action-button');
   btn.dataset.rakaezDecorated='1';
-  if(choice==='delete')btn.classList.add('rakaez-danger');
+  if(purpose==='delete')btn.classList.add('rakaez-danger');
+  else btn.classList.remove('rakaez-danger');
  });
 }
 function rakaezColorNumbers(root=document){
