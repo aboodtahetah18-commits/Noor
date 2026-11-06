@@ -1,0 +1,349 @@
+/* Rakaez v25 preview: consistent, one-row controls and compact operational pages.
+   Only approved Rakaez palette and existing IBM Plex Sans Arabic family. */
+#view .v25-page{display:grid;gap:0;min-width:0;width:100%;margin:0;padding:0}
+#view .v25-toolbar,
+#view .v25-cycle-actions{
+ display:grid!important;
+ grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ gap:8px!important;
+ align-items:stretch!important;
+ width:100%!important;
+ min-width:0!important;
+ margin:0 0 13px!important;
+ padding:0!important;
+ border:0!important;
+ background:transparent!important
+}
+#view .v25-toolbar.v25-toolbar-two{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+#view .v25-ledger-tools{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+#view .v25-toolbar .v25-control,
+#view .v25-cycle-actions button{
+ display:inline-flex!important;
+ flex-direction:row!important;
+ align-items:center!important;
+ justify-content:center!important;
+ width:100%!important;
+ min-width:0!important;
+ max-width:none!important;
+ min-height:46px!important;
+ height:auto!important;
+ padding:9px 7px!important;
+ flex:1 1 0%!important;
+ gap:7px!important;
+ margin:0!important;
+ border:1px solid var(--line)!important;
+ border-radius:11px!important;
+ background:var(--white)!important;
+ color:var(--navy)!important;
+ font:inherit!important;
+ font-size:13px!important;
+ font-weight:800!important;
+ line-height:1.25!important;
+ text-align:center!important;
+ white-space:nowrap!important;
+ box-shadow:none!important;
+ cursor:pointer!important
+}
+#view .v25-toolbar .v25-control.primary,
+#view .v25-cycle-actions button.primary{
+ color:var(--white)!important;
+ background:var(--teal)!important;
+ border-color:var(--teal)!important
+}
+#view .v25-toolbar .v25-control svg,
+#view .v25-cycle-actions button svg{
+ width:17px!important;
+ height:17px!important;
+ flex:0 0 17px!important;
+ color:inherit!important;
+ stroke:currentColor!important
+}
+#view .v25-toolbar .v25-control span{
+ display:inline!important;
+ position:static!important;
+ visibility:visible!important;
+ opacity:1!important;
+ width:auto!important;
+ line-height:1.3!important
+}
+#view .v25-toolbar .v25-control:focus-visible,
+#view .v25-record:focus-visible{
+ outline:2px solid var(--teal)!important;
+ outline-offset:2px!important
+}
+#view .v25-panels:empty{display:none}
+#view .v25-panels{
+ display:grid!important;
+ gap:9px!important;
+ margin:0 0 13px!important;
+ width:100%!important
+}
+#view .v25-panel{
+ border:1px solid var(--line)!important;
+ border-radius:12px!important;
+ background:var(--white)!important;
+ padding:11px!important;
+ width:100%!important;
+ min-width:0!important
+}
+#view .v25-search-panel{
+ display:grid!important;
+ gap:6px!important;
+}
+#view .v25-search-panel label{color:var(--muted);font-size:12px;font-weight:700}
+#view .v25-search-panel input{
+ display:block!important;
+ width:100%!important;
+ min-width:0!important;
+ height:44px!important;
+ min-height:44px!important;
+ border:1px solid var(--line)!important;
+ border-radius:9px!important;
+ padding:9px 11px!important;
+ background:var(--paper)!important;
+ color:var(--ink)!important;
+ font:inherit!important;
+ font-size:13px!important
+}
+#view .v25-filter-options{
+ display:grid!important;
+ grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ gap:0!important;
+ overflow:hidden!important;
+ padding:0!important;
+ border-radius:10px!important
+}
+#view .v25-filter-options .v25-choice{
+ min-width:0!important;
+ width:100%!important;
+ min-height:45px!important;
+ padding:8px 4px!important;
+ margin:0!important;
+ border:0!important;
+ border-left:1px solid var(--line)!important;
+ border-radius:0!important;
+ background:var(--white)!important;
+ color:var(--navy)!important;
+ font:inherit!important;
+ font-size:12px!important;
+ font-weight:700!important;
+ white-space:normal!important;
+ line-height:1.35!important
+}
+#view .v25-filter-options .v25-choice:last-child{border-left:0!important}
+#view .v25-filter-options .v25-choice.selected{background:var(--navy)!important;color:var(--white)!important}
+#view .v25-list{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:9px!important;min-width:0!important;margin:0!important}
+#view .v25-record{
+ display:flex!important;
+ flex-direction:row!important;
+ align-items:center!important;
+ gap:11px!important;
+ width:100%!important;
+ max-width:none!important;
+ min-width:0!important;
+ min-height:72px!important;
+ border:1px solid var(--line)!important;
+ border-radius:13px!important;
+ background:var(--white)!important;
+ padding:13px 14px!important;
+ color:var(--ink)!important;
+ font:inherit!important;
+ text-align:right!important;
+ box-shadow:0 2px 9px color-mix(in srgb,var(--navy) 5%,transparent)!important;
+ cursor:pointer!important
+}
+#view .v25-record-icon{
+ display:grid!important;
+ place-items:center!important;
+ flex:0 0 39px!important;
+ width:39px!important;
+ height:39px!important;
+ border-radius:10px!important;
+ background:color-mix(in srgb,var(--teal) 8%,var(--white))!important;
+ color:var(--teal)!important
+}
+#view .v25-record-icon svg{width:20px;height:20px}
+#view .v25-record-info{display:grid!important;gap:5px!important;flex:1 1 0%!important;min-width:0!important}
+#view .v25-record-info strong{
+ color:var(--navy)!important;
+ font-size:14px!important;
+ line-height:1.5!important;
+ overflow-wrap:anywhere!important
+}
+#view .v25-record-info small{color:var(--muted)!important;font-size:11px!important;line-height:1.5!important}
+#view .v25-record-extra{
+ color:var(--teal)!important;
+ font-size:13px!important;
+ font-weight:800!important;
+ white-space:nowrap!important;
+ font-variant-numeric:tabular-nums!important;
+ direction:ltr!important;
+ unicode-bidi:isolate!important
+}
+#view .v25-record-eye{color:var(--muted)!important;display:flex!important}
+#view .v25-record-eye svg{width:17px;height:17px}
+#view .v25-empty{
+ border:1px dashed var(--line)!important;
+ border-radius:13px!important;
+ background:var(--white)!important;
+ color:var(--muted)!important;
+ text-align:center!important;
+ padding:22px 14px!important;
+ font-size:13px!important;
+ line-height:1.75!important
+}
+#view .v25-ledger-entry{
+ display:grid!important;
+ gap:0!important;
+ padding:11px 14px!important;
+ background:var(--white)!important;
+ border:1px solid var(--line)!important;
+ border-radius:14px!important;
+ box-shadow:0 2px 8px color-mix(in srgb,var(--navy) 5%,transparent)!important;
+ min-width:0!important
+}
+#view .v25-ledger-line{
+ display:flex!important;align-items:flex-start!important;justify-content:space-between!important;
+ gap:15px!important;padding:10px 0!important;
+ border-bottom:1px solid var(--line)!important;min-width:0!important
+}
+#view .v25-ledger-line span{color:var(--muted)!important;font-size:12px!important;white-space:nowrap!important}
+#view .v25-ledger-line strong{color:var(--navy)!important;font-size:13px!important;text-align:left!important;overflow-wrap:anywhere!important}
+#view .v25-ledger-pair{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important;padding:11px 0!important}
+#view .v25-ledger-pair div{display:grid!important;gap:5px!important;padding:10px!important;background:var(--paper)!important;border-radius:9px!important;min-width:0!important}
+#view .v25-ledger-pair small{font-size:11px!important;color:var(--muted)!important}
+#view .v25-ledger-pair strong{font-size:14px!important;color:var(--navy)!important;overflow-wrap:anywhere!important}
+#view .v25-ledger-bottom{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;border-top:1px solid var(--line)!important;padding:11px 0 2px!important}
+#view .v25-balanced{font-size:12px!important;color:var(--teal)!important;font-weight:800!important}
+#view .v25-unbalanced{font-size:12px!important;color:var(--red)!important;font-weight:800!important}
+#view .v25-ledger-reverse{
+ display:inline-flex!important;align-items:center!important;gap:6px!important;
+ min-height:40px!important;min-width:0!important;padding:7px 11px!important;
+ border:1px solid var(--line)!important;border-radius:10px!important;
+ font:inherit!important;font-size:11px!important;font-weight:750!important;
+ color:var(--navy)!important;background:var(--white)!important
+}
+#view .v25-ledger-reverse svg{width:16px;height:16px}
+#view .v25-ledger-reverse:disabled{opacity:.4!important;cursor:not-allowed!important}
+#view .v25-sub-nav{
+ display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;
+ margin:0 0 12px!important;width:100%!important;min-width:0!important
+}
+#view .v25-sub-nav button{
+ display:flex!important;align-items:center!important;justify-content:center!important;min-width:0!important;
+ width:100%!important;min-height:45px!important;padding:7px 6px!important;
+ background:var(--white)!important;color:var(--navy)!important;
+ border:1px solid var(--line)!important;border-radius:10px!important;
+ font:inherit!important;font-size:12px!important;font-weight:800!important;line-height:1.3!important
+}
+#view .v25-sub-nav button.active{background:var(--navy)!important;border-color:var(--gold)!important;color:var(--white)!important}
+/* Salary cycle: keep actions together, eliminate repeated heading and oversized card spacing. */
+#view .v25-cycle-page{gap:13px!important}
+#view .v25-cycle-page .v25-cycle-actions{
+ display:flex!important;align-items:center!important;justify-content:flex-start!important;
+ gap:9px!important;margin:0 0 4px!important;min-width:0!important
+}
+#view .v25-cycle-actions .btn{width:auto!important;min-width:110px!important;flex:0 1 auto!important;padding:9px 13px!important}
+#view .v25-cycle-page .v19-cycle-list{display:grid!important;grid-template-columns:1fr!important;gap:11px!important}
+#view .v25-cycle-page .v19-cycle-list-item{
+ display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important;
+ min-width:0!important;width:100%!important;min-height:83px!important;
+ padding:13px 12px!important;border-radius:13px!important;
+ text-align:right!important
+}
+#view .v25-cycle-page .v19-cycle-list-item>span{display:grid!important;gap:4px!important;min-width:0!important}
+#view .v25-cycle-page .v19-cycle-list-item small{font-size:10px!important;color:var(--muted)!important;line-height:1.4!important}
+#view .v25-cycle-page .v19-cycle-list-item strong{font-size:13px!important;color:var(--navy)!important;line-height:1.35!important;overflow-wrap:anywhere!important}
+/* Global rule: every operational action group stays on one horizontal row.
+   Long groups may scroll horizontally; controls must not wrap into extra rows. */
+#view :is(
+ .rk-manage-toolbar,.rk-account-actions,.rk-compact-footer,
+ .sectiontitle:has(> button),.v18-sectionhead,.v18-actions,
+ .row.spaced:has(>button),.actions,.rk-footer,
+ .v19-section-title:has(>button),
+ .rk-action-toolbar,.rk-form-actions
+){
+ display:flex!important;
+ flex-direction:row!important;
+ flex-wrap:nowrap!important;
+ align-items:center!important;
+ justify-content:space-between!important;
+ gap:8px!important;
+ min-width:0!important;
+ max-width:100%!important;
+ overflow-x:auto!important;
+ overflow-y:hidden!important;
+ scrollbar-width:thin!important
+}
+#view :is(
+ .rk-manage-toolbar,.rk-account-actions,.sectiontitle:has(>button),
+ .v18-sectionhead,.v19-section-title:has(>button)
+) > :is(h2,h3,strong){
+ min-width:0!important;
+ flex:1 1 auto!important;
+ overflow-wrap:anywhere!important;
+ margin:0!important
+}
+#view :is(
+ .rk-manage-toolbar,.rk-account-actions,.sectiontitle:has(>button),
+ .v18-sectionhead,.v18-actions,.row.spaced:has(>button),
+ .actions,.rk-footer,.v19-section-title:has(>button)
+) > :is(button,.btn){
+ display:inline-flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ flex:0 0 auto!important;
+ width:auto!important;
+ max-width:none!important;
+ min-width:42px!important;
+ min-height:43px!important;
+ padding:8px 11px!important;
+ gap:6px!important;
+ margin:0!important;
+ font-size:12px!important;
+ line-height:1.25!important;
+ white-space:nowrap!important
+}
+#view .rk-manage-toolbar>.btn.primary{
+ flex:0 0 auto!important;
+ min-width:92px!important;
+ width:auto!important
+}
+#view .v19-hilal-tabs,#view .v18-tabs,#view .rk-study-tabs{
+ display:grid!important;
+ grid-auto-flow:column!important;
+ grid-auto-columns:minmax(0,1fr)!important;
+ gap:7px!important;
+ width:100%!important;
+ min-width:0!important;
+ flex-wrap:nowrap!important;
+ overflow-x:auto!important;
+ scrollbar-width:thin!important
+}
+#view .v19-hilal-tabs>button,#view .v18-tabs>button,#view .rk-study-tabs>button{
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ width:100%!important;min-width:0!important;gap:6px!important;
+ padding:8px 5px!important;font-size:11px!important;white-space:normal!important
+}
+@media(max-width:740px){
+ #view .v25-toolbar{gap:7px!important}
+ #view .v25-toolbar .v25-control{min-height:45px!important;padding:8px 5px!important;font-size:12px!important;gap:5px!important}
+ #view .v25-toolbar .v25-control svg{width:16px!important;height:16px!important;flex-basis:16px!important}
+ #view .v25-ledger-tools{gap:5px!important}
+ #view .v25-ledger-tools .v25-control{font-size:11px!important;padding:7px 4px!important;gap:4px!important}
+ #view .v25-ledger-tools .v25-control svg{width:15px!important;height:15px!important;flex-basis:15px!important}
+ #view .v25-record{gap:8px!important;padding:11px 10px!important}
+ #view .v25-record-icon{flex-basis:35px!important;width:35px!important;height:35px!important}
+ #view .v25-record-extra{font-size:12px!important}
+ #view .v25-cycle-page .v19-cycle-list-item{padding:11px 9px!important;gap:6px!important}
+ #view .v25-cycle-page .v19-cycle-list-item strong{font-size:12px!important}
+}
+@media(max-width:365px){
+ #view .v25-toolbar{gap:4px!important}
+ #view .v25-toolbar .v25-control{font-size:11px!important;padding:8px 3px!important;gap:3px!important}
+ #view .v25-toolbar .v25-control svg{width:14px!important;height:14px!important;flex-basis:14px!important}
+ #view .v25-ledger-tools .v25-control{font-size:10px!important;gap:2px!important;padding:6px 2px!important}
+ #view .v25-ledger-tools .v25-control svg{width:13px!important;height:13px!important;flex-basis:13px!important}
+ #view .v25-record-extra{font-size:11px!important}
+ #view .v25-record-info strong{font-size:12px!important}
+}
