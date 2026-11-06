@@ -99,9 +99,17 @@ rkScheduledView=function(){
  return pageShell('scheduled',tools('scheduled'),scheduledList());
 };
 function documentsList(){
- const rows=(db.docs||[]).filter(x=>matches('documents',x,[x.name,x.kind,x.fileName].join(' '),x.fileName?'file':'virtual'));
+ const rows=(db.docs||[]).filter(x=>matches('documents',x,[x.name,x.kind,x.fileName,x.date].join(' '),x.fileName?'file':'virtual'));
  const kinds={receipt:'فاتورة أو إيصال',contract:'عقد',bank:'كشف حساب',investment:'مستند استثماري',other:'مستند آخر'};
- return rows.length?rows.map(x=>row('document',x.id,x.name,kinds[x.kind]||x.kind||'مستند',x.fileName||'دون ملف','file')).join(''):'<div class="v25-empty">لا توجد مستندات مطابقة.</div>';
+ return rows.length?rows.map(x=>{
+  const label=kinds[x.kind]||'مستند',filename=x.fileName||'لم يُرفق ملف';
+  return '<button class="v30-document-record" type="button" data-v25-record="document" data-v25-id="'+escV(x.id)+'" aria-label="تفاصيل المستند '+escV(x.name)+'">'+
+  '<header class="v30-document-head"><div><strong>'+escV(x.name)+'</strong><small>'+escV(label)+'</small></div>'+
+  '<span class="v30-document-status '+(x.fileName?'v30-document-attached':'v30-document-empty')+'">'+(x.fileName?'مرفق':'دون مرفق')+'</span></header>'+
+  '<div class="v30-document-body"><div><span>اسم الملف</span><strong>'+escV(filename)+'</strong></div>'+
+  '<div><span>تاريخ التسجيل</span><strong>'+escV(x.date||'غير محدد')+'</strong></div></div>'+
+  '<footer class="v30-document-foot"><span>تفاصيل المستند</span></footer></button>';
+ }).join(''):'<div class="v25-empty">لا توجد مستندات مطابقة.</div>';
 }
 rkDocumentsView=function(){
  rkEnsure();
