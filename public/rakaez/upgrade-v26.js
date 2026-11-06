@@ -61,7 +61,7 @@ interbankView=function(){
   return '<article class="v27-card v27-interbank-card">'+
    '<div class="v27-card-head"><strong>طلب تمويل بين المراكز</strong><span class="v27-state v27-state-study">للدراسة فقط</span></div>'+
    '<div class="v27-centers"><div><small>الجهة المقرضة</small><b>'+safe(labelCenter(f.from))+'</b></div><span class="v27-route-arrow" aria-hidden="true">←</span><div><small>الجهة المستفيدة</small><b>'+safe(labelCenter(f.to))+'</b></div></div>'+
-   '<div class="v27-metrics">'+metric('أصل التمويل',money(f.principal),'blue')+metric('التكلفة التقديرية',money(cost),'gold')+
+   '<div class="v27-metrics">'+metric('أصل التمويل',money(f.principal),'blue')+metric('التكلفة التقديرية',money(cost),'red')+
    metric('المعدل السنوي',percent(f.rate),'navy')+metric('المدة',safe(f.months)+' شهر','navy')+'</div>'+
    '</article>';
  }).join('');
@@ -80,7 +80,7 @@ fundings=function(){
   return '<article class="v27-card v27-funding-card"><div class="v27-card-head"><strong>'+safe(category?.name||'تمويل داخلي')+'</strong><span class="v27-state v27-state-internal">تمويل داخلي</span></div>'+route+
   '<div class="v27-metrics">'+metric('أصل التمويل',money(principal),'blue')+metric('المتبقي من الأصل',money(Math.max(0,principal-paid)),'gold')+
   metric('المعدل السنوي',percent(f.rate),'navy')+metric('المدة',safe(f.months)+' شهر','navy')+
-  metric('الربح البسيط التقديري',money(cost),'teal')+metric('إجمالي السداد المخطط',money(principal+cost),'navy')+'</div>'+
+  metric('الربح البسيط التقديري',money(cost),'red')+metric('إجمالي السداد المخطط',money(principal+cost),'navy')+'</div>'+
   '<div class="v27-card-footer"><button type="button" class="v27-subaction" data-v27-action="repay" data-v27-id="'+safe(f.id)+'">'+symbol('collect')+'<span>تسجيل سداد من الأصل</span></button></div></article>';
  }).join('');
  return '<section class="v27-screen" aria-label="عقود التمويل الداخلي">'+
