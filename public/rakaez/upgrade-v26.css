@@ -1267,3 +1267,78 @@
  #view .v30-fact strong{font-size:12px}
  #view .v30-export-actions{gap:5px}
 }
+
+
+/* Rakaez v30: document archive, classification, and attachment visibility. */
+#view .v30-document-record{
+ display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+ width:100%;max-width:100%;min-width:0;
+ text-align:right!important;gap:12px;
+ background:var(--white);color:var(--ink);
+ border:1px solid var(--line);
+ border-right:3px solid var(--blue);
+ border-radius:14px;padding:15px;
+ font:inherit;cursor:pointer;
+ box-shadow:0 3px 10px color-mix(in srgb,var(--navy) 5%,transparent)
+}
+#view .v30-document-head{
+ display:flex;align-items:flex-start;justify-content:space-between;
+ gap:12px;min-width:0
+}
+#view .v30-document-head>div{display:grid;gap:4px;min-width:0}
+#view .v30-document-head strong{
+ color:var(--navy);font-size:14px;font-weight:850;
+ line-height:1.6;overflow-wrap:anywhere
+}
+#view .v30-document-head small{
+ color:var(--muted);font-size:11px;line-height:1.5
+}
+#view .v30-document-status{
+ display:inline-flex;align-items:center;justify-content:center;
+ padding:6px 9px;border-radius:8px;
+ font-size:10px;font-weight:850;line-height:1.3;
+ white-space:nowrap;border:1px solid var(--line)
+}
+#view .v30-document-attached{
+ color:var(--teal);
+ border-color:color-mix(in srgb,var(--teal) 22%,var(--white));
+ background:color-mix(in srgb,var(--teal) 8%,var(--white))
+}
+#view .v30-document-empty{
+ color:var(--gold);
+ border-color:color-mix(in srgb,var(--gold) 22%,var(--white));
+ background:color-mix(in srgb,var(--gold) 8%,var(--white))
+}
+#view .v30-document-body{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:8px;min-width:0
+}
+#view .v30-document-body>div{
+ display:grid;align-content:start;gap:5px;
+ min-width:0;padding:10px;
+ border:1px solid var(--line);border-radius:10px;
+ background:var(--paper)
+}
+#view .v30-document-body span{
+ color:var(--muted);font-size:11px;line-height:1.5
+}
+#view .v30-document-body strong{
+ color:var(--navy);font-size:12px;line-height:1.6;
+ font-weight:800;overflow-wrap:anywhere
+}
+#view .v30-document-foot{
+ display:flex;justify-content:flex-end;
+ padding-top:10px;border-top:1px solid var(--line);
+ color:var(--teal);font-size:12px;font-weight:800
+}
+#view .v30-document-record:focus-visible{
+ outline:2px solid var(--teal);outline-offset:2px
+}
+@media(max-width:520px){
+ #view .v30-document-record{padding:12px;gap:10px}
+ #view .v30-document-head strong{font-size:13px}
+ #view .v30-document-body>div{padding:9px}
+}
+@media(max-width:360px){
+ #view .v30-document-body{grid-template-columns:minmax(0,1fr)}
+}
