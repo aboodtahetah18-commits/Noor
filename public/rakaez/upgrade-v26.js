@@ -658,3 +658,87 @@ render=function(){
 };
 render();
 })();
+
+
+/* Rakaez v31 — responsive company study catalogue. */
+(function(){
+'use strict';
+if(typeof researchView!=='function'||typeof researchRows!=='function'||typeof researchScores!=='function')return;
+let searchVisible=false,filtersVisible=false,marketFilter='all';
+const safe=v=>esc(String(v==null?'':v));
+const tick=v=>Number.isFinite(Number(v))?Number(v).toLocaleString('ar-SA-u-nu-latn',{maximumFractionDigits:2}):'—';
+const icons={
+ plus:'<path d="M12 5v14M5 12h14"/>',
+ filter:'<path d="M3 5h18l-7 8v7l-4-2v-5z"/>',
+ search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
+ export:'<path d="M12 3v12m-5-5 5 5 5-5M5 21h14"/>',
+ eye:'<path d="M2 12s4-7 10-7 10 7 10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>',
+ edit:'<path d="M12 20h9M15 5l4 4M4 20l1-5L16 4a2 2 0 0 1 3 3L8 18l-4 2Z"/>',
+ delete:'<path d="M4 7h16M9 7V4h6v3m3 0-1 13H7L6 7M10 11v6m4-6v6"/>'
+};
+const svg=n=>'<svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">'+icons[n]+'</svg>';
+const tool=(action,label,glyph,primary=false)=>'<button type="button" class="v31-action '+(primary?'v31-primary':'')+'" data-v31-action="'+action+'">'+svg(glyph)+'<span>'+label+'</span></button>';
+const small=(label,value,tone='navy')=>'<div class="v31-fact v31-'+tone+'"><small>'+label+'</small><strong>'+safe(value)+'</strong></div>';
+const rows=()=>{
+ const q=String(window.researchFilter||'').trim().toLocaleLowerCase('ar');
+ const filtered=(db.watchlist||[]).filter(x=>
+  (marketFilter==='all'||x.market===marketFilter)&&
+  [x.name,x.symbol,x.sector,x.market==='SA'?'السعودية':'أمريكا'].join(' ').toLocaleLowerCase('ar').includes(q));
+ return filtered.length?filtered.map(x=>{
+  const score=researchScores(x);
+  const market=x.market==='SA'?'السعودية':x.market==='US'?'أمريكا':'غير محدد';
+  const id=safe(x.id);
+  return '<article class="v31-company-card">'+
+   '<header class="v31-company-head"><div><h3>'+safe(x.name||'شركة دون اسم')+'</h3>'+
+   '<small>'+safe(x.symbol||'دون رمز')+' · '+safe(x.sector||'قطاع غير محدد')+'</small></div>'+
+   '<span class="v31-market">'+market+'</span></header>'+
+   '<div class="v31-company-facts">'+small('السعر المدخل',tick(x.price),'blue')+
+   small('عائد التوزيعات',tick(x.dividend)+'%','teal')+
+   small('اكتمال البيانات',tick(score.complete)+'%','navy')+'</div>'+
+   '<footer class="v31-company-actions">'+
+    '<button data-v31-action="detail" data-v31-id="'+id+'">'+svg('eye')+' عرض</button>'+
+    '<button data-v31-action="edit" data-v31-id="'+id+'">'+svg('edit')+' تعديل</button>'+
+    '<button class="v31-danger" data-v31-action="delete" data-v31-id="'+id+'">'+svg('delete')+' حذف</button>'+
+   '</footer></article>';
+ }).join(''):'<div class="v30-empty">لا توجد شركات مطابقة للبحث أو التصفية.</div>';
+};
+researchRows=rows;
+researchView=function(){
+ return '<section class="v31-study">'+
+  '<div class="v31-title"><h2>الشركات قيد الدراسة</h2></div>'+
+  '<div class="v31-toolbar" role="toolbar" aria-label="أدوات دراسة الشركات">'+
+   tool('add','إضافة','plus',true)+tool('filter','تصفية','filter')+
+   tool('search','بحث','search')+tool('export','تصدير','export')+'</div>'+
+   (searchVisible?'<div class="v31-search"><label for="v31Query">البحث في الشركات</label>'+
+    '<input id="v31Query" type="search" value="'+safe(window.researchFilter||'')+'" placeholder="اسم الشركة أو الرمز أو القطاع"></div>':'')+
+   (filtersVisible?'<div class="v31-filters" role="group" aria-label="التصفية حسب السوق">'+
+   [['all','الكل'],['SA','السعودية'],['US','أمريكا']].map(([key,label])=>
+    '<button type="button" class="'+(marketFilter===key?'active':'')+'" data-v31-filter="'+key+'">'+label+'</button>').join('')+'</div>':'')+
+   '<div class="v31-company-grid" id="v31ResearchResults">'+rows()+'</div>'+
+   '<p class="v30-note">بيانات الشركات مدخلة محلياً لأغراض الدراسة، وليست أسعاراً سوقية مباشرة أو توصية استثمارية.</p></section>';
+};
+document.addEventListener('click',function(event){
+ const filter=event.target.closest('[data-v31-filter]');
+ if(filter){
+  event.preventDefault();marketFilter=filter.dataset.v31Filter;filtersVisible=false;render();return;
+ }
+ const button=event.target.closest('[data-v31-action]');
+ if(!button)return;
+ event.preventDefault();
+ const action=button.dataset.v31Action,id=button.dataset.v31Id;
+ if(action==='add')return researchForm();
+ if(action==='detail')return researchDetail(id);
+ if(action==='edit')return researchForm(id);
+ if(action==='delete')return researchDelete(id);
+ if(action==='export')return researchExport();
+ if(action==='search'){searchVisible=!searchVisible;filtersVisible=false;render();if(searchVisible)document.getElementById('v31Query')?.focus({preventScroll:true});return}
+ if(action==='filter'){filtersVisible=!filtersVisible;searchVisible=false;render();return}
+},true);
+document.addEventListener('input',function(event){
+ if(event.target.id!=='v31Query')return;
+ window.researchFilter=event.target.value;
+ const target=document.getElementById('v31ResearchResults');
+ if(target)target.innerHTML=rows();
+});
+render();
+})();
