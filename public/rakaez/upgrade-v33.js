@@ -14,6 +14,7 @@ const guideLabels=Object.fromEntries(N.map(x=>[x[0],x[1]]));
 const navState={daily:true,periodic:false,reference:false};
 const escapeText=value=>typeof esc==='function'?esc(String(value??'')):String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 let helpSearch='';
+let lastNavigatedPage=page;
 
 function groupIdFor(id){return navGroups.find(g=>g.ids.includes(id))?.id || 'reference'}
 drawNav=function(){
@@ -21,7 +22,6 @@ drawNav=function(){
  if(!nav)return;
  nav.classList.add('rakaez-nav-flat','rk33-navigation');
  nav.setAttribute('aria-label','القائمة الجانبية الرئيسية');
- navState[groupIdFor(page)]=true;
  const defined=new Set(navGroups.flatMap(g=>g.ids));
  const overflow=N.map(item=>item[0]).filter(id=>!defined.has(id));
  const groups=navGroups.map(g=>({...g,ids:g.id==='reference'?[...g.ids,...overflow]:g.ids}));
@@ -89,7 +89,7 @@ function guideView(){
    '<div class="rk33-guide-topics">'+subset.map(id=>topicHTML(topicsById[id])).join('')+'</div>'+
    '</section>';
  }).join('');
- return '<main class="rk33-guide" aria-label="دليل استخدام منظومة ركائز">'+
+ return '<section class="rk33-guide" aria-label="دليل استخدام منظومة ركائز">'+
   '<header class="rk33-guide-intro"><div class="rk33-guide-eyebrow">مرجع الاستخدام</div>'+
   '<h2>دليل استخدام ركائز</h2>'+
   '<p>تعرف على وظيفة كل قسم وكيف تبدأ العمل فيه. الشرح مرتب مثل القائمة الجانبية، مع إمكانية الوصول مباشرة إلى الصفحة المعنية.</p></header>'+
@@ -104,7 +104,7 @@ function guideView(){
    '<span id="rk33GuideCount" aria-live="polite"></span></div>'+
    '<div class="rk33-guide-groups">'+sections+'</div>'+
    '<p class="rk33-guide-footer">هذا الدليل يشرح الوظائف الحالية للنسخة التجريبية. البيانات محفوظة على هذا الجهاز، ولا تنفذ المنصة تحويلات مصرفية تلقائيًا.</p>'+
-  '</main>';
+  '</section>';
 }
 function applyHelpSearch(){
  const input=document.getElementById('rk33GuideSearch');
@@ -124,6 +124,7 @@ function applyHelpSearch(){
 }
 const previousRender=render;
 render=function(){
+ if(page!==lastNavigatedPage){navState[groupIdFor(page)]=true;lastNavigatedPage=page;}
  const result=previousRender.apply(this,arguments);
  if(page==='guide'){
   const view=document.getElementById('view');
