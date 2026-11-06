@@ -137,11 +137,55 @@ function addMarksToBankHeadings(){
   el.insertAdjacentHTML('afterbegin',bankMark(bank));
  }
 }
+/* Shared identity rule: one meaning, one pictogram, on every occurrence.
+   These are association-styled symbols, not the banks' official trademarks. */
+function decorateBankNavigation(){
+ const nav=document.getElementById('nav');
+ if(!nav)return;
+ for(const button of nav.querySelectorAll('[data-rk33-page]')){
+  const bank=button.dataset.rk33Page;
+  if(!Object.prototype.hasOwnProperty.call(bankNames,bank))continue;
+  const slot=button.querySelector('.rakaez-nav-icon');
+  if(!slot||slot.dataset.rk35BankIcon===bank)continue;
+  slot.dataset.rk35BankIcon=bank;
+  slot.innerHTML=bankMark(bank);
+  button.setAttribute('aria-label',bankNameLabel(bank));
+ }
+}
+function decorateCurrentBankPage(){
+ const bank=page;
+ const title=document.getElementById('pageTitle');
+ if(title&&Object.prototype.hasOwnProperty.call(bankNames,bank)){
+  title.textContent=bankNameLabel(bank);
+  title.classList.add('rk35-branded-page-title');
+  title.insertAdjacentHTML('afterbegin',bankMark(bank));
+ }else if(title){
+  title.classList.remove('rk35-branded-page-title');
+ }
+ const root=document.getElementById('view');
+ if(!root)return;
+ const extra=root.querySelectorAll('.rk34-fee-card .rk34-cardidentity small');
+ for(const el of extra){
+  if(el.dataset.rk35Marked)continue;
+  const matched=Object.keys(bankNames).find(key=>el.textContent.trim()===bankNames[key]||el.textContent.trim()===bankLabels[key]);
+  if(!matched)continue;
+  el.dataset.rk35Marked='true';
+  el.classList.add('rk35-label-with-mark');
+  el.textContent=bankNames[matched];
+  el.insertAdjacentHTML('afterbegin',bankMark(matched));
+ }
+}
+function refreshBankSymbols(){
+ decorateBankNavigation();
+ decorateCurrentBankPage();
+}
+
 const oldRender=render;
 render=function(){
  const result=oldRender.apply(this,arguments);
  if(page==='interbank')updateList();
  addMarksToBankHeadings();
+ refreshBankSymbols();
  return result;
 };
 document.addEventListener('click',event=>{
