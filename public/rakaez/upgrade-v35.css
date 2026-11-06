@@ -269,3 +269,88 @@
  #view .rk35-financing *::before,
  #view .rk35-financing *::after{transition:none!important;animation:none!important}
 }
+
+
+/* Rakaez v35 identity extension — same pictograms in navigation and bank headers. */
+#nav.rk33-navigation .rk35-bankmark,
+#pageTitle.rk35-branded-page-title .rk35-bankmark{
+ display:inline-flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ flex:0 0 21px!important;
+ width:21px!important;
+ height:21px!important;
+ border:0!important;
+ border-radius:0!important;
+ background:transparent!important;
+}
+#nav.rk33-navigation .rk35-bankmark svg,
+#pageTitle.rk35-branded-page-title .rk35-bankmark svg{
+ display:block!important;
+ width:21px!important;
+ height:21px!important;
+ stroke:var(--white)!important;
+ overflow:visible!important;
+}
+#nav.rk33-navigation .rk35-bankmark-hilal .rk35-hilal-crescent,
+#pageTitle.rk35-branded-page-title .rk35-bankmark-hilal .rk35-hilal-crescent{
+ fill:var(--white)!important;
+ stroke:none!important;
+}
+#nav.rk33-navigation .rk35-bankmark .rk35-gold-fill,
+#pageTitle.rk35-branded-page-title .rk35-bankmark .rk35-gold-fill{
+ fill:var(--gold)!important;
+ stroke:none!important;
+}
+#nav.rk33-navigation .rk35-bankmark-malaa .rk35-leaf,
+#pageTitle.rk35-branded-page-title .rk35-bankmark-malaa .rk35-leaf{
+ stroke:var(--teal)!important;
+ fill:color-mix(in srgb,var(--teal) 40%,var(--white))!important;
+}
+#nav.rk33-navigation .rk35-bankmark-malaa .rk35-gold-stroke,
+#pageTitle.rk35-branded-page-title .rk35-bankmark-malaa .rk35-gold-stroke{
+ stroke:var(--gold)!important;
+}
+#nav.rk33-navigation .rk35-bankmark-assets .rk35-assets-top,
+#pageTitle.rk35-branded-page-title .rk35-bankmark-assets .rk35-assets-top{
+ stroke:var(--gold)!important;
+ fill:color-mix(in srgb,var(--gold) 45%,transparent)!important;
+}
+#nav.rk33-navigation .rk35-bankmark-assets .rk35-assets-mid,
+#pageTitle.rk35-branded-page-title .rk35-bankmark-assets .rk35-assets-mid{
+ stroke:var(--white)!important;
+ stroke-width:2.5!important;
+}
+#nav.rk33-navigation .rk35-bankmark-assets .rk35-assets-base,
+#pageTitle.rk35-branded-page-title .rk35-bankmark-assets .rk35-assets-base{
+ stroke:var(--teal)!important;
+ stroke-width:2.5!important;
+}
+#pageTitle.rk35-branded-page-title{
+ display:inline-flex!important;
+ align-items:center!important;
+ gap:9px!important;
+}
+#view .rk34-fee-card .rk35-label-with-mark{
+ display:inline-flex!important;
+ align-items:center!important;
+ gap:7px!important;
+ min-width:0!important;
+}
+#view .rk34-fee-card .rk35-label-with-mark .rk35-bankmark{
+ display:inline-flex!important;
+ height:20px!important;
+ width:20px!important;
+ flex:0 0 20px!important;
+}
+#view .rk34-fee-card .rk35-label-with-mark .rk35-bankmark svg{
+ width:20px!important;
+ height:20px!important;
+}
+@media(max-width:480px){
+ #pageTitle.rk35-branded-page-title{gap:6px!important}
+ #nav.rk33-navigation .rk35-bankmark svg,
+ #pageTitle.rk35-branded-page-title .rk35-bankmark svg{
+  height:19px!important;width:19px!important;
+ }
+}
