@@ -319,3 +319,186 @@ ledgerView=function(){
  return page.outerHTML;
 };
 })();
+
+
+/* Rakaez v30 — unified financial page composition.
+   Reuses existing database data, approved colour tokens and original mutation handlers. */
+(function(){
+'use strict';
+if(typeof db==='undefined'||typeof render!=='function'||typeof money!=='function')return;
+const safe=v=>esc(String(v==null?'':v));
+const amount=n=>money(Number(n)||0);
+const field=(label,value,tone='navy')=>'<div class="v30-field v30-tone-'+tone+'"><span>'+safe(label)+'</span><strong>'+value+'</strong></div>';
+const section=(title,action,label)=>'<header class="v30-section-heading"><h2>'+safe(title)+'</h2>'+
+ (action?'<button type="button" class="v30-add" data-v30-action="'+action+'"><span aria-hidden="true">＋</span> '+safe(label||'إضافة')+'</button>':'')+'</header>';
+const empty=label=>'<p class="v30-empty">'+safe(label)+'</p>';
+const intro=label=>'<p class="v30-subtext">'+safe(label)+'</p>';
+const cardAction=(action,id,description,content,className='')=>'<button type="button" class="v30-record '+className+'" data-v30-action="'+action+'" data-v30-id="'+safe(id)+'" aria-label="تفاصيل '+safe(description)+'">'+content+'</button>';
+const cardFooter=(label,action='عرض التفاصيل')=>'<footer class="v30-record-footer"><span>'+safe(label)+'</span><b>'+safe(action)+'</b></footer>';
+const pill=(label,tone)=>'<span class="v30-pill v30-pill-'+tone+'">'+safe(label)+'</span>';
+
+debtsView=function(){
+ const records=(db.debts||[]).slice().sort((a,b)=>String(a.due||a.date||'9999').localeCompare(String(b.due||b.date||'9999')));
+ return '<section class="v30-financial-page">'+section('الالتزامات المسجلة','add-debt','إضافة التزام')+
+ intro('الأصل المسجل والمسدّد والمتبقي والأقساط، دون خلطها بأرصدة البنوك.')+
+ '<div class="v30-record-grid">'+(records.map(d=>{
+  const principal=Number(d.principal||0),paid=Number(d.paid||0),left=Math.max(0,principal-paid);
+  const when=d.due||d.date||'غير محدد',cleared=left===0;
+  const head='<header class="v30-record-head"><strong>'+safe(d.name||'التزام مالي')+'</strong>'+pill(cleared?'مسدد':'قيد السداد',cleared?'success':'pending')+'</header>';
+  const content=head+'<div class="v30-fields">'+field('أصل الالتزام',amount(principal),'navy')+
+   field('المسدّد',amount(paid),'teal')+
+   field('المتبقي',amount(left),left>0?'red':'teal')+
+   field('القسط المسجل',amount(d.installment),'red')+'</div>'+
+   cardFooter('الاستحقاق: '+when);
+  return cardAction('view-debt',d.id,d.name,content,'v30-debt');
+ }).join('')||empty('لا توجد التزامات مسجلة.'))+'</div></section>';
+};
+
+feesView=function(){
+ const records=(db.fees||[]).slice();
+ return '<section class="v30-financial-page">'+section('الرسوم والاشتراكات المسجلة','add-fee','إضافة رسم')+
+ intro('كل رسم مع قيمته ودوريته والجهة المرتبطة به، دون احتساب دفع فعلي تلقائياً.')+
+ '<div class="v30-record-grid">'+(records.map(f=>{
+  const periods=typeof countPeriods==='function'?countPeriods(f):1;
+  const frequency=typeof periodLabel==='function'?periodLabel(f.period):String(f.period||'غير محددة');
+  const bank=f.bank&&typeof bankName==='function'?bankName(f.bank):'جهة غير محددة';
+  const total=Math.round(Number(f.amount||0)*Number(periods||0));
+  const content='<header class="v30-record-head"><strong>'+safe(f.name||'رسم مالي')+'</strong>'+pill(frequency,'neutral')+'</header>'+
+   '<p class="v30-record-note">'+safe(bank)+'</p>'+
+   '<div class="v30-fields">'+field('قيمة الرسم',amount(f.amount),'red')+
+   field('التكلفة السنوية التقديرية',amount(total),'red')+'</div>'+
+   cardFooter('الاستحقاق: '+(f.due||'غير محدد'));
+  return cardAction('view-fee',f.id,f.name,content,'v30-fee');
+ }).join('')||empty('لا توجد رسوم أو اشتراكات مسجلة.'))+'</div></section>';
+};
+
+reservesView=function(){
+ const banks=[['hilal','بنك الهلال','احتياطي التشغيل'],['malaa','بنك ملاءة','احتياطي الادخار'],['assets','بنك الأصول','احتياطي الاستثمار']];
+ return '<section class="v30-financial-page">'+section('الاحتياطيات المستهدفة')+
+ intro('هذه أهداف مالية للتخطيط، وليست مبالغ نقدية متاحة أو محوّلة.')+
+ '<div class="v30-record-grid">'+banks.map(([id,name,description])=>{
+  const content='<header class="v30-record-head"><strong>'+safe(name)+'</strong>'+pill('مستهدف','neutral')+'</header>'+
+   '<p class="v30-record-note">'+safe(description)+'</p>'+
+   '<div class="v30-fields v30-fields-single">'+field('المبلغ المستهدف',amount(db.reserves[id]),'blue')+'</div>'+
+   cardFooter('لم يُسجّل كرصيد نقدي','تعديل المستهدف');
+  return cardAction('edit-reserve',id,name,content,'v30-reserve');
+ }).join('')+'</div></section>';
+};
+
+rkDocumentsView=function(){
+ rkEnsure();
+ const labels={receipt:'فاتورة أو إيصال',contract:'عقد',bank:'كشف حساب',investment:'مستند استثماري',other:'مستند آخر'};
+ const documents=db.docs||[];
+ return '<section class="v30-financial-page">'+section('المستندات المحفوظة','add-document','إضافة مستند')+
+ intro('المرفقات والتصنيفات المرتبطة بسجلاتك المالية.')+
+ '<div class="v30-record-grid">'+(documents.map(d=>{
+  const kind=labels[d.kind]||'مستند';
+  const content='<header class="v30-record-head"><strong>'+safe(d.name||'مستند محفوظ')+'</strong>'+pill(kind,'neutral')+'</header>'+
+  '<div class="v30-fields v30-fields-single">'+field('الملف المرفق',safe(d.fileName||'دون ملف'),'navy')+'</div>'+
+  cardFooter('التاريخ: '+(d.date||'غير محدد'));
+  return cardAction('view-document',d.id,d.name,content,'v30-document');
+ }).join('')||empty('لا توجد مستندات محفوظة.'))+'</div></section>';
+};
+
+positionView=function(){
+ const b=v4Numbers();
+ const banks=[
+  {id:'hilal',name:'بنك الهلال',items:[['مخصص تشغيل الشهر',b.operatingBudget,'blue'],['مصروفات الشهر',b.spending,'red'],['الفرق بين المخصص والمصروف',b.operatingHeadroom,b.operatingHeadroom>=0?'teal':'red']]},
+  {id:'malaa',name:'بنك ملاءة',items:[['رصيد الادخار المسجل',b.saving,'teal'],['الاحتياطي المستهدف',db.reserves.malaa||0,'blue'],['الفرق عن المستهدف',b.saving-(db.reserves.malaa||0),b.saving-(db.reserves.malaa||0)>=0?'teal':'red']]},
+  {id:'assets',name:'بنك الأصول',items:[['القيمة السوقية المسجلة',b.investments,'blue'],['الاحتياطي المستهدف',db.reserves.assets||0,'navy'],['الفرق عن المستهدف',b.investments-(db.reserves.assets||0),b.investments-(db.reserves.assets||0)>=0?'teal':'red']]}
+ ];
+ const bankCards=banks.map(bank=>'<article class="v30-record v30-bank-record">'+
+  '<header class="v30-record-head"><strong>'+safe(bank.name)+'</strong>'+pill('مركز مالي','neutral')+'</header>'+
+  '<div class="v30-fields">'+bank.items.map(([label,num,tone])=>field(label,amount(num),tone)).join('')+'</div>'+
+  '<button type="button" class="v30-link-action" data-v30-action="open-bank" data-v30-id="'+bank.id+'">عرض تفاصيل البنك</button></article>').join('');
+ const obligations=[
+  ['الديون الخارجية المتبقية',b.debt,'red'],
+  ['أصل التمويل الداخلي التخطيطي',b.internal,'navy'],
+  ['الرسوم السنوية المتوقعة',b.annualFees,'red'],
+  ['الأهداف المالية المستقبلية',(db.goals||[]).reduce((n,g)=>n+Number(g.target||0),0),'blue']
+ ];
+ return '<section class="v30-financial-page">'+section('المراكز المالية بالتفصيل')+
+ intro('المبالغ المعروضة مختلفة الطبيعة ولا تُجمع في رصيد نقدي واحد.')+
+ '<div class="v30-record-grid">'+bankCards+'</div>'+
+ section('التزامات ومبالغ تخطيطية')+'<div class="v30-position-obligations">'+
+ obligations.map(([label,num,tone])=>field(label,amount(num),tone)).join('')+'</div>'+
+ '<p class="v30-caution">هذه قراءة جزئية للبيانات المدخلة، وليست ميزانية عمومية مكتملة. المخصصات الشهرية ليست نقداً مؤكداً ولا تُجمع الاستثمارات مرتين.</p>'+
+ '</section>';
+};
+
+reports=function(){
+ const categories=(db.categories||[]).filter(c=>!c.archived);
+ const records=categories.map(c=>{
+  const target=Math.round(Number(c.limit||0)*100),used=spent(c.id),left=target-used;
+  const percentage=target>0?Math.round(100*used/target):used>0?100:0;
+  const fill=Math.min(100,Math.max(0,percentage));
+  const status=left<0?'تجاوز الميزانية':percentage>=80?'قرب الحد':'ضمن الميزانية';
+  return '<article class="v30-record v30-report-item">'+
+   '<header class="v30-record-head"><strong>'+safe(c.name)+'</strong>'+pill(status,left<0?'danger':percentage>=80?'pending':'success')+'</header>'+
+   '<div class="v30-fields">'+field('الميزانية',amount(target),'blue')+field('المصروف الفعلي',amount(used),'red')+
+   field('المتبقي',amount(left),left>=0?'teal':'red')+'</div>'+
+   '<div class="v30-report-progress" role="progressbar" aria-label="استهلاك ميزانية '+safe(c.name)+'" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+fill+'"><span class="'+(left<0?'v30-progress-danger':percentage>=80?'v30-progress-warn':'')+'" style="width:'+fill+'%"></span></div>'+
+  '</article>';
+ }).join('');
+ return '<section class="v30-financial-page">'+section('انحرافات الميزانية')+
+ intro('مقارنة مخصصات البنود بالمصروفات الفعلية خلال الشهر المحدد. لم تُخصم أي مبالغ إضافية.')+
+ '<div class="v30-record-grid">'+(records||empty('لا توجد بنود للمراجعة.'))+'</div>'+
+ section('التصدير والمشاركة')+
+ '<div class="v30-export-actions">'+
+ '<button type="button" data-v30-action="export-transactions">تصدير سجل المعاملات</button>'+
+ '<button type="button" data-v30-action="print-report">طباعة التقرير أو حفظه</button>'+
+ '<button type="button" data-v30-action="backup">إنشاء نسخة احتياطية</button></div>'+
+ intro('التقرير مبني على السجلات المحلية ويحتاج إلى المطابقة مع كشوف الحساب عند الاعتماد المالي.')+
+ '</section>';
+};
+
+importView=function(){
+ return '<section class="v30-financial-page">'+section('استيراد ومراجعة المعاملات')+
+ intro('لا يُضاف أي قيد قبل معاينته واعتماده. تتم القراءة محلياً على جهازك.')+
+ '<div class="v30-import-grid"><section class="v30-record v30-import-card">'+
+ '<h3>استيراد كشف معاملات</h3><p>اختر ملف بيانات مفصولاً بفواصل يحتوي على التاريخ والوصف والمبلغ ونوع الحركة والتصنيف.</p>'+
+ '<label for="csvFile">ملف كشف المعاملات</label>'+
+ '<input type="file" accept=".csv,text/csv" id="csvFile" onchange="readCsv(this)">'+
+ '<small>راجع اتجاه كل حركة مالية قبل اعتمادها.</small></section>'+
+ '<section class="v30-record v30-import-card">'+
+ '<h3>تحليل رسالة مصرفية</h3>'+
+ '<p>يمكنك لصق نص رسالة مالية بعد إزالة البيانات الشخصية الحساسة.</p>'+
+ '<label for="sms">نص الرسالة</label>'+
+ '<textarea id="sms" rows="4" placeholder="الصق نص الرسالة هنا"></textarea>'+
+ '<button type="button" class="v30-add" data-v30-action="analyze-message">تحليل الرسالة</button>'+
+ '<small>لا تُقرأ رسائل الهاتف تلقائياً.</small></section></div>'+
+ section('مراجعة قبل الاعتماد')+
+ '<section class="v30-import-preview" id="importPreview">'+(importRows.length?previewRows():empty('اختر ملف كشف أو الصق رسالة لمراجعة الحركات.'))+'</section></section>';
+};
+
+const wrappedRender=render;
+render=function(){
+ const value=wrappedRender.apply(this,arguments);
+ const view=document.getElementById('view');
+ if(view){
+  view.classList.add('v30-ready');
+  const pages=['settings','goals','assets','hilal','malaa','externalBanks','transactions','spending','spending-followups','cycles','funding','ledger','interbank','receivables','scheduled','documents','import','reports','reserves','position','debts','fees'];
+  pages.forEach(name=>view.classList.toggle('v30-page-'+name,page===name));
+ }
+ return value;
+};
+document.addEventListener('click',event=>{
+ const button=event.target.closest('[data-v30-action]');
+ if(!button)return;
+ event.preventDefault();
+ const action=button.dataset.v30Action,id=button.dataset.v30Id||'';
+ if(action==='add-debt')return formV3('debts');
+ if(action==='add-fee')return formV3('fees');
+ if(action==='add-document')return rkOpen('document');
+ if(action==='view-debt')return detailV3('debts',id);
+ if(action==='view-fee')return detailV3('fees',id);
+ if(action==='edit-reserve')return formV3('reserves',id);
+ if(action==='view-document')return rkRecordView('document',id);
+ if(action==='open-bank')return navigate(id);
+ if(action==='export-transactions')return exportCsv();
+ if(action==='print-report')return window.print();
+ if(action==='backup')return exportJson();
+ if(action==='analyze-message')return readSMS();
+});
+render();
+})();
