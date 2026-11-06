@@ -208,14 +208,23 @@ v18Budgets=function(){
  '<span class="v22-budget-mark tone-'+catStyle(c)+'">'+catIcon(c)+'</span><strong>'+clean(c.name)+'</strong>'+
  '<span class="v22-budget-open">'+ico('view')+'</span></button>').join(''):'<div class="card v22-empty">لا توجد بنود.</div>')+'</div></section>';
 };
+/* Financial meaning has a unique symbol: list, money out, money in. */
+function financialIcon(kind){
+ const strokes={
+  all:'<path d="M9 6h12M9 12h12M9 18h12"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/>',
+  expense:'<path d="M12 17V5m-5 5 5-5 5 5"/><path d="M4 19h16"/>',
+  income:'<path d="M12 4v12m-5-5 5 5 5-5"/><path d="M4 20h16"/>'
+ };
+ return '<svg class="v23-financial-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(strokes[kind]||strokes.all)+'</svg>';
+}
 function transactionCard(t){
  const income=t.type==='income',c=category(t.category);
  return '<button type="button" class="v22-tx '+(income?'income':'expense')+'" data-v22-tx="'+clean(t.id)+'">'+
- '<span class="v22-tx-top"><span class="v22-tx-kind">'+ico(income?'chart':'wallet')+(income?' إيراد':' مصروف')+'</span>'+
+ '<span class="v22-tx-top"><span class="v22-tx-kind">'+financialIcon(income?'income':'expense')+(income?' إيراد':' مصروف')+'</span>'+
  '<strong class="v22-amount">'+(income?'+':'−')+money(t.amount)+'</strong></span>'+
  '<strong class="v22-tx-name">'+clean(t.description||'معاملة مالية')+'</strong>'+
  '<span class="v22-tx-meta">'+clean(t.date||'')+'</span>'+
- '<span class="v22-tx-bottom">'+(income?'<span class="v22-income-tag">إيراد</span>':c?badge(c.id):'<span class="v22-empty-link">دون بند</span>')+
+ '<span class="v22-tx-bottom">'+(income?'<span class="v22-income-tag">'+financialIcon('income')+' إيراد</span>':c?badge(c.id):'<span class="v22-empty-link">دون بند</span>')+
  '<span class="v22-open">'+ico('view')+' التفاصيل</span></span></button>';
 }
 function txList(){
@@ -224,9 +233,13 @@ function txList(){
  return records.length?records.map(transactionCard).join(''):'<div class="card v22-empty">لا توجد معاملات مطابقة.</div>';
 }
 transactions=function(){
- return '<section class="v22-transactions"><div class="v22-heading"><h2>المعاملات المالية</h2><button type="button" class="btn primary" onclick="openModal(\'transaction\')">'+ico('plus')+' إضافة معاملة</button></div>'+
- '<div class="v22-tx-tools"><label><span>'+ico('search')+'</span><input id="v22TxSearch" type="search" placeholder="ابحث عن معاملة" value="'+clean(searchText)+'"></label>'+
- '<div class="v22-filters">'+[['all','الكل'],['expense','المصروفات'],['income','الإيرادات']].map(x=>'<button type="button" class="'+(txMode===x[0]?'active':'')+'" data-v22-filter="'+x[0]+'">'+x[1]+'</button>').join('')+'</div></div>'+
+ return '<section class="v22-transactions"><div class="v22-heading v23-tx-head">'+
+ '<h2>المعاملات المالية</h2>'+
+ '<button type="button" class="btn primary v23-add-action" aria-label="إضافة معاملة" onclick="openModal(\'transaction\')">'+ico('plus')+'<span>إضافة</span></button>'+
+ '<label class="v23-search" for="v22TxSearch"><span class="v23-search-icon">'+ico('search')+'</span>'+
+ '<input id="v22TxSearch" type="search" placeholder="بحث" aria-label="بحث في المعاملات" value="'+clean(searchText)+'"></label></div>'+
+ '<div class="v22-filters v23-filter-strip" role="group" aria-label="تصفية المعاملات">'+
+ [['all','الكل'],['expense','المصروفات'],['income','الإيرادات']].map(x=>'<button type="button" class="v23-filter '+(txMode===x[0]?'active':'')+'" data-v22-filter="'+x[0]+'" aria-pressed="'+(txMode===x[0]?'true':'false')+'">'+financialIcon(x[0])+'<span>'+x[1]+'</span></button>').join('')+'</div>'+
  '<div class="v22-tx-grid" id="v22TxGrid">'+txList()+'</div></section>';
 };
 rkTransactionDetails=function(id){
@@ -236,7 +249,7 @@ rkTransactionDetails=function(id){
  ['الجهة',t.merchantEnglish||t.merchant||'—'],['الملاحظات',t.notes||'—']];
  document.getElementById('modalRoot').innerHTML='<div class="modalbg v22-dim"><section class="v22-detail" role="dialog" aria-modal="true" aria-label="تفاصيل المعاملة">'+
  '<header class="v22-dialog-head"><button class="v22-close" data-v22-close aria-label="إغلاق">'+ico('close')+'</button><div><h2>تفاصيل المعاملة</h2></div></header>'+
- '<div class="v22-detail-main"><div class="v22-tx-hero '+(isIncome?'income':'expense')+'"><span>'+ico(isIncome?'chart':'wallet')+(isIncome?' إيراد':' مصروف')+'</span>'+
+ '<div class="v22-detail-main"><div class="v22-tx-hero '+(isIncome?'income':'expense')+'"><span>'+financialIcon(isIncome?'income':'expense')+(isIncome?' إيراد':' مصروف')+'</span>'+
  '<strong class="v22-amount">'+(isIncome?'+':'−')+money(t.amount)+'</strong><h3>'+clean(t.description||'عملية مالية')+'</h3></div>'+
  '<div class="v22-facts">'+rows.map(x=>'<div><span>'+clean(x[0])+'</span><strong>'+clean(x[1])+'</strong></div>').join('')+'</div>'+
  (!isIncome&&category(t.category)?'<div class="v22-tags">'+badge(t.category)+'</div>':'')+'</div>'+
@@ -263,7 +276,7 @@ document.addEventListener('click',e=>{
  if(b.hasAttribute('data-v22-deletetx'))return rkRemoveTransaction(b.dataset.v22Deletetx);
  if(b.hasAttribute('data-v22-filter')){
   txMode=b.dataset.v22Filter;
-  document.querySelectorAll('[data-v22-filter]').forEach(x=>x.classList.toggle('active',x.dataset.v22Filter===txMode));
+  document.querySelectorAll('[data-v22-filter]').forEach(x=>{const active=x.dataset.v22Filter===txMode;x.classList.toggle('active',active);x.setAttribute('aria-pressed',String(active))});
   const list=document.getElementById('v22TxGrid');if(list)list.innerHTML=txList();
  }
 });
@@ -297,5 +310,23 @@ try{
   localStorage.setItem('rakaez-v22-example-bank','yes');
  }
 }catch(err){console.warn('Preview fixture could not be stored',err)}
+/* Do not inject the same settings gear into unrelated actions. */
+if(typeof rakaezDecorateButtons==='function'){
+ const originalDecorate=rakaezDecorateButtons;
+ rakaezDecorateButtons=function(root=document){
+  originalDecorate(root);
+  const scope=root?.querySelectorAll?root:document;
+  scope.querySelectorAll('button.rakaez-action-button').forEach(btn=>{
+   const emblem=btn.querySelector('.rakaez-action-icon');
+   if(!emblem)return;
+   const title=(btn.textContent||btn.getAttribute('aria-label')||'').replace(/\s+/g,' ').trim();
+   const descriptive=/حذف|إزالة|مسح|السابق|رجوع|التالي|إلغاء|إغلاق|إضافة|إنشاء|جديد|إثبات|حفظ|اعتماد|تأكيد|تطبيق|تعديل|تحرير|تفاصيل|عرض|فتح|مراجعة|رفع|استيراد|تصدير|تنزيل|تحميل|بحث|تصفية|تحديث|تجديد|تحويل|تمويل|سحب|إيداع|سداد|تقرير|رسم|تحليل|إعدادات|خيارات/;
+   if(!descriptive.test(title)){
+    emblem.remove();btn.classList.remove('rakaez-action-button');
+   }
+  });
+ };
+ rakaezDecorateButtons(document);
+}
 render();
 })();
