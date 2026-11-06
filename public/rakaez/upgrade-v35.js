@@ -56,7 +56,7 @@ function requestCard(record){
   '<header class="rk35-request-head">'+
    '<div class="rk35-request-ident">'+
     '<span class="rk35-document" aria-hidden="true">'+requestIcon+'</span>'+
-    '<span class="rk35-request-intro"><strong>طلب تمويل بين البنوك</strong>'+(meta?'<small>'+meta+'</small>':'')+'</span></div>'+
+    '<span class="rk35-request-intro"><strong>طلب تمويل بين المراكز</strong>'+(meta?'<small>'+meta+'</small>':'')+'</span></div>'+
    '<span class="rk35-status rk35-status-'+status.kind+'">'+escapeText(status.name)+'</span></header>'+
   '<div class="rk35-bank-route" aria-label="البنك المقرض والبنك المستفيد">'+
    bankEndpoint(record.from,'الجهة المقرضة')+'<span class="rk35-route-arrow">'+arrow+'</span>'+
@@ -106,8 +106,8 @@ function updateList(){
 interbankView=function(){
  const opts=options();
  return '<section class="rk35-financing" aria-label="طلبات التمويل بين البنوك">'+
-  '<header class="rk35-pagehead"><div><h2>طلبات التمويل بين البنوك</h2>'+
-   '<p>إدارة طلبات التمويل بين بنوك المنصة</p></div>'+
+  '<header class="rk35-pagehead"><div><h2>طلبات التمويل بين المراكز</h2>'+
+   '<p>إدارة طلبات التمويل بين بنوك ركائز</p></div>'+
    '<button type="button" class="rk35-create" data-rk35-new>'+plus+'<span>طلب جديد</span></button></header>'+
   '<div class="rk35-tools" role="search">'+
    '<label class="rk35-search"><span class="rk35-sr-only">البحث في الطلبات</span>'+
@@ -132,6 +132,7 @@ function addMarksToBankHeadings(){
   const bank=Object.keys(bankNames).find(key=>el.textContent.trim()===bankNames[key]||el.textContent.trim()===bankLabels[key]);
   if(!bank)continue;
   el.dataset.rk35Marked='true';
+  el.textContent=bankNames[bank];
   el.classList.add('rk35-label-with-mark');
   el.insertAdjacentHTML('afterbegin',bankMark(bank));
  }
