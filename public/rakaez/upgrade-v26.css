@@ -359,3 +359,122 @@
  #view .v29-journal-caption{font-size:10px}
  #view .v29-reverse{padding:8px 10px;min-height:43px;font-size:11px}
 }
+
+
+/* Rakaez v29 — consistent financial cards in receivables and schedules. */
+#view .v29-finance-record{
+ display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+ gap:10px!important;align-content:start;
+ text-align:right;width:100%;max-width:100%;min-width:0;
+ padding:14px!important;
+ background:var(--white);color:var(--ink);
+ border:1px solid var(--line);border-right:3px solid var(--navy);
+ border-radius:14px;
+ box-shadow:0 2px 8px color-mix(in srgb,var(--navy) 5%,transparent);
+ font:inherit;cursor:pointer
+}
+#view .v29-finance-head{
+ display:flex;justify-content:space-between;align-items:flex-start;
+ gap:12px;min-width:0
+}
+#view .v29-finance-head>div{display:grid;gap:4px;min-width:0}
+#view .v29-finance-head strong{
+ color:var(--navy);font-size:14px;font-weight:850;
+ line-height:1.5;overflow-wrap:anywhere
+}
+#view .v29-finance-head small{
+ font-size:11px;color:var(--muted);font-weight:650;
+ line-height:1.5;overflow-wrap:anywhere
+}
+#view .v29-finance-status{
+ display:inline-flex;align-items:center;justify-content:center;
+ flex:0 0 auto;white-space:nowrap;
+ padding:5px 8px;border-radius:8px;
+ font-size:10px;font-weight:850;line-height:1.4
+}
+#view .v29-finance-good{
+ color:var(--teal);
+ border:1px solid color-mix(in srgb,var(--teal) 25%,var(--white));
+ background:color-mix(in srgb,var(--teal) 8%,var(--white))
+}
+#view .v29-finance-danger{
+ color:var(--red);
+ border:1px solid color-mix(in srgb,var(--red) 25%,var(--white));
+ background:color-mix(in srgb,var(--red) 8%,var(--white))
+}
+#view .v29-finance-pending{
+ color:var(--gold);
+ border:1px solid color-mix(in srgb,var(--gold) 25%,var(--white));
+ background:color-mix(in srgb,var(--gold) 8%,var(--white))
+}
+#view .v29-finance-values{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:8px;min-width:0
+}
+#view .v29-finance-values.v29-finance-three{
+ grid-template-columns:repeat(3,minmax(0,1fr))
+}
+#view .v29-finance-value{
+ display:grid;align-content:center;gap:6px;min-width:0;
+ border:1px solid var(--line);
+ border-radius:10px;padding:11px;
+ background:var(--paper);text-align:right
+}
+#view .v29-finance-value span{
+ font-size:11px;color:var(--muted);font-weight:700;line-height:1.5
+}
+#view .v29-finance-value strong{
+ display:block;max-width:100%;overflow-wrap:anywhere;
+ font-size:14px;font-weight:850;line-height:1.5;
+ font-variant-numeric:tabular-nums;unicode-bidi:plaintext
+}
+#view .v29-finance-blue{
+ border-color:color-mix(in srgb,var(--blue) 22%,var(--white));
+ background:color-mix(in srgb,var(--blue) 6%,var(--white))
+}
+#view .v29-finance-blue strong{color:var(--blue)}
+#view .v29-finance-green{
+ border-color:color-mix(in srgb,var(--teal) 22%,var(--white));
+ background:color-mix(in srgb,var(--teal) 6%,var(--white))
+}
+#view .v29-finance-green strong{color:var(--teal)}
+#view .v29-finance-red{
+ border-color:color-mix(in srgb,var(--red) 22%,var(--white));
+ background:color-mix(in srgb,var(--red) 6%,var(--white))
+}
+#view .v29-finance-red strong{color:var(--red)}
+#view .v29-finance-gold{
+ border-color:color-mix(in srgb,var(--gold) 22%,var(--white));
+ background:color-mix(in srgb,var(--gold) 6%,var(--white))
+}
+#view .v29-finance-gold strong{color:var(--gold)}
+#view .v29-finance-neutral strong{color:var(--navy)}
+#view .v29-finance-foot{
+ display:flex;justify-content:space-between;align-items:center;
+ flex-wrap:nowrap;gap:12px;
+ border-top:1px solid var(--line);
+ padding-top:10px;font-size:11px;
+ color:var(--muted);line-height:1.5
+}
+#view .v29-finance-foot span{min-width:0;overflow-wrap:anywhere}
+#view .v29-finance-foot span:last-child{color:var(--teal);font-weight:800}
+#view .v29-finance-record:focus-visible{
+ outline:2px solid var(--teal);outline-offset:2px
+}
+#view .v29-spend-record .v25-record-extra{
+ color:var(--red)!important
+}
+@media(max-width:700px){
+ #view .v29-finance-values.v29-finance-three{
+  grid-template-columns:repeat(2,minmax(0,1fr))
+ }
+ #view .v29-finance-values.v29-finance-three>.v29-finance-value:last-child{
+  grid-column:1/-1
+ }
+}
+@media(max-width:360px){
+ #view .v29-finance-record{padding:11px!important}
+ #view .v29-finance-value{padding:8px}
+ #view .v29-finance-value strong{font-size:12px}
+ #view .v29-finance-head strong{font-size:13px}
+}
