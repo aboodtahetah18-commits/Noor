@@ -58,12 +58,19 @@ function pageShell(kind,buttons,content){
 function receivablesList(){
  const rows=(db.receivables||[]).filter(x=>{
   const left=Math.max(0,Number(x.principal||0)-Number(rkReceivableCollected(x.id)||0));
-  const key=left>0?'due':'paid';
-  return matches('receivables',x,[x.name,x.party,x.due].join(' '),key);
+  return matches('receivables',x,[x.name,x.party,x.due].join(' '),left>0?'due':'paid');
  });
  return rows.length?rows.map(x=>{
-  const left=Math.max(0,Number(x.principal||0)-Number(rkReceivableCollected(x.id)||0));
-  return row('receivable',x.id,x.name,x.party||'غير محدد',money(left),'wallet');
+  const principal=Number(x.principal||0),collected=Number(rkReceivableCollected(x.id)||0),remaining=Math.max(0,principal-collected);
+  const late=remaining>0&&x.due&&String(x.due)<new Date().toISOString().slice(0,10);
+  const status=remaining===0?'محصّل بالكامل':late?'متأخر':'قيد التحصيل';
+  return '<button type="button" class="v29-finance-record v29-receivable-record" data-v25-record="receivable" data-v25-id="'+escV(x.id)+'" aria-label="عرض تفاصيل المستحق '+escV(x.name)+'">'+
+  '<header class="v29-finance-head"><div><strong>'+escV(x.name)+'</strong><small>الجهة: '+escV(x.party||'غير محددة')+'</small></div><span class="v29-finance-status '+(remaining===0?'v29-finance-good':late?'v29-finance-danger':'v29-finance-pending')+'">'+status+'</span></header>'+
+  '<div class="v29-finance-values v29-finance-three">'+
+  '<div class="v29-finance-value v29-finance-blue"><span>أصل المستحق</span><strong>'+money(principal)+'</strong></div>'+
+  '<div class="v29-finance-value v29-finance-green"><span>المحصّل</span><strong>'+money(collected)+'</strong></div>'+
+  '<div class="v29-finance-value '+(late?'v29-finance-red':'v29-finance-gold')+'"><span>المتبقي</span><strong>'+money(remaining)+'</strong></div></div>'+
+  '<footer class="v29-finance-foot"><span>الاستحقاق: '+escV(x.due||'غير محدد')+'</span><span>تفاصيل المستحق</span></footer></button>';
  }).join(''):'<div class="v25-empty">لا توجد مستحقات مطابقة.</div>';
 }
 rkReceivablesView=function(){
@@ -71,8 +78,21 @@ rkReceivablesView=function(){
  return pageShell('receivables',tools('receivables'),receivablesList());
 };
 function scheduledList(){
- const rows=(db.scheduledOps||[]).filter(x=>matches('scheduled',x,[x.name,x.start,x.status].join(' '),x.status==='paused'?'paused':'planned'));
- return rows.length?rows.map(x=>row('scheduled',x.id,x.name,(x.status==='paused'?'متوقفة':'مجدولة')+' · '+(x.start||'—'),money(rkScheduledEstimated(x)),'calendar')).join(''):'<div class="v25-empty">لا توجد عمليات مجدولة مطابقة.</div>';
+ const kinds={allocation:'تخصيص مالي',transfer:'تحويل مالي',savings:'ادخار',saving:'ادخار',payment:'سداد',expense:'مصروف',income:'دخل',deposit:'إيداع',withdrawal:'سحب',investment:'استثمار',other:'عملية أخرى'};
+ const periods={daily:'يومي',weekly:'أسبوعي',monthly:'شهري',quarterly:'ربع سنوي',semiannual:'نصف سنوي',annual:'سنوي',yearly:'سنوي',once:'مرة واحدة',one_time:'مرة واحدة'};
+ const rows=(db.scheduledOps||[]).filter(x=>matches('scheduled',x,[x.name,x.start,x.status,kinds[x.kind]||'',periods[x.period]||''].join(' '),x.status==='paused'?'paused':'planned'));
+ return rows.length?rows.map(x=>{
+  const paused=x.status==='paused',kind=kinds[x.kind]||'عملية مجدولة',period=periods[x.period]||'غير محددة';
+  const outgoing=['payment','expense','withdrawal','transfer'].includes(x.kind);
+  const incoming=['income','deposit'].includes(x.kind);
+  const tone=outgoing?'v29-finance-red':incoming?'v29-finance-green':'v29-finance-blue';
+  return '<button type="button" class="v29-finance-record v29-scheduled-record" data-v25-record="scheduled" data-v25-id="'+escV(x.id)+'" aria-label="عرض العملية المجدولة '+escV(x.name)+'">'+
+  '<header class="v29-finance-head"><div><strong>'+escV(x.name)+'</strong><small>'+escV(kind)+' · '+escV(period)+'</small></div>'+
+  '<span class="v29-finance-status '+(paused?'v29-finance-pending':'v29-finance-good')+'">'+(paused?'موقوفة مؤقتاً':'مجدولة')+'</span></header>'+
+  '<div class="v29-finance-values"><div class="v29-finance-value '+tone+'"><span>المبلغ التقديري</span><strong>'+money(rkScheduledEstimated(x))+'</strong></div>'+
+  '<div class="v29-finance-value v29-finance-neutral"><span>أول استحقاق</span><strong>'+escV(x.start||'غير محدد')+'</strong></div></div>'+
+  '<footer class="v29-finance-foot"><span>'+escV(period)+'</span><span>تفاصيل العملية</span></footer></button>';
+ }).join(''):'<div class="v25-empty">لا توجد عمليات مجدولة مطابقة.</div>';
 }
 rkScheduledView=function(){
  rkEnsure();
@@ -121,7 +141,7 @@ function spendRows(){
  rkMerchantSnapshot=rkMerchantMonitored();
  const names={OVER:'تجاوز الميزانية',WATCH:'قرب الحد',RISING:'ارتفاع الإنفاق',NORMAL:'لا انحراف مثبت'};
  return rkMerchantSnapshot.slice(0,40).map((m,index)=>({...m,index})).filter(m=>matches('spending',m,[m.name,m.categoryName,names[m.pressure]].join(' '),m.pressure==='NORMAL'?'normal':'attention'))
- .map(m=>'<button type="button" class="v25-record" data-v25-merchant="'+m.index+'">'+
+ .map(m=>'<button type="button" class="v25-record v29-spend-record" data-v25-merchant="'+m.index+'">'+
  '<span class="v25-record-icon">'+icon('wallet')+'</span><span class="v25-record-info"><strong>'+escV(m.name)+'</strong><small>'+escV(names[m.pressure]||'مراجعة')+' · '+escV(m.categoryName)+'</small></span>'+
  '<span class="v25-record-extra">'+money(m.current)+'</span><span class="v25-record-eye">'+icon('eye')+'</span></button>').join('')||
  '<div class="v25-empty">لا توجد بيانات مراقبة مطابقة.</div>';
