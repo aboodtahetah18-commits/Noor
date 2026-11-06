@@ -80,7 +80,8 @@ rkScheduledView=function(){
 };
 function documentsList(){
  const rows=(db.docs||[]).filter(x=>matches('documents',x,[x.name,x.kind,x.fileName].join(' '),x.fileName?'file':'virtual'));
- return rows.length?rows.map(x=>row('document',x.id,x.name,x.kind||'مستند',x.fileName||'دون ملف','file')).join(''):'<div class="v25-empty">لا توجد مستندات مطابقة.</div>';
+ const kinds={receipt:'فاتورة أو إيصال',contract:'عقد',bank:'كشف حساب',investment:'مستند استثماري',other:'مستند آخر'};
+ return rows.length?rows.map(x=>row('document',x.id,x.name,kinds[x.kind]||x.kind||'مستند',x.fileName||'دون ملف','file')).join(''):'<div class="v25-empty">لا توجد مستندات مطابقة.</div>';
 }
 rkDocumentsView=function(){
  rkEnsure();
