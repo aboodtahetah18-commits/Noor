@@ -311,22 +311,7 @@ try{
  }
 }catch(err){console.warn('Preview fixture could not be stored',err)}
 /* Do not inject the same settings gear into unrelated actions. */
-if(typeof rakaezDecorateButtons==='function'){
- const originalDecorate=rakaezDecorateButtons;
- rakaezDecorateButtons=function(root=document){
-  originalDecorate(root);
-  const scope=root?.querySelectorAll?root:document;
-  scope.querySelectorAll('button.rakaez-action-button').forEach(btn=>{
-   const emblem=btn.querySelector('.rakaez-action-icon');
-   if(!emblem)return;
-   const title=(btn.textContent||btn.getAttribute('aria-label')||'').replace(/\s+/g,' ').trim();
-   const descriptive=/حذف|إزالة|مسح|السابق|رجوع|التالي|إلغاء|إغلاق|إضافة|إنشاء|جديد|إثبات|حفظ|اعتماد|تأكيد|تطبيق|تعديل|تحرير|تفاصيل|عرض|فتح|مراجعة|رفع|استيراد|تصدير|تنزيل|تحميل|بحث|تصفية|تحديث|تجديد|تحويل|تمويل|سحب|إيداع|سداد|تقرير|رسم|تحليل|إعدادات|خيارات/;
-   if(!descriptive.test(title)){
-    emblem.remove();btn.classList.remove('rakaez-action-button');
-   }
-  });
- };
- rakaezDecorateButtons(document);
-}
+/* Icon normalization is now owned by the semantic classifier in index.html. */
+
 render();
 })();
