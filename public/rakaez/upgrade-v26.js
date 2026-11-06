@@ -742,3 +742,105 @@ document.addEventListener('input',function(event){
 });
 render();
 })();
+
+
+/* Rakaez v32 — mobile-native legacy tables and document detail consistency.
+   Presentation-only: preserves original row actions, search, filters and local file handling. */
+(function(){
+ 'use strict';
+ if(typeof render!=='function'||typeof rkRecordView!=='function')return;
+ const safe=v=>esc(String(v==null?'':v));
+ const kinds={receipt:'فاتورة أو إيصال',contract:'عقد',bank:'كشف حساب',investment:'مستند استثماري',other:'مستند آخر'};
+ const iconPaths={
+  close:'<path d="M6 6l12 12M18 6 6 18"/>',
+  edit:'<path d="M12 20h9M15 5l4 4M4 20l1-5L16 4a2 2 0 0 1 3 3L8 18l-4 2Z"/>',
+  download:'<path d="M12 3v12m-5-5 5 5 5-5M5 21h14"/>'
+ };
+ const icon=name=>'<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">'+iconPaths[name]+'</svg>';
+ function decorateTable(table){
+  if(table.hasAttribute('data-v32-skip'))return;
+  const heading=table.tHead?.rows?.[0];
+  const headers=heading?Array.from(heading.cells).map(cell=>(cell.textContent||'').replace(/\s+/g,' ').trim()):[];
+  if(!headers.length||!table.tBodies?.length)return;
+  table.dataset.v32Responsive='true';
+  const wrapper=table.closest('.tablewrap');
+  if(wrapper)wrapper.classList.add('v32-tablewrap');
+  for(const body of table.tBodies){
+   for(const tr of body.rows){
+    const cells=Array.from(tr.cells);
+    if(!cells.length)continue;
+    if(cells.length===1&&Number(cells[0].colSpan)>1){
+     tr.classList.add('v32-table-empty-row');continue;
+    }
+    let index=0;
+    for(const cell of cells){
+     const label=headers[index]||'البيانات';
+     if(cell.dataset.v32Label!==label)cell.dataset.v32Label=label;
+     if(cell.colSpan>1)cell.classList.add('v32-wide-cell');
+     index+=Math.max(1,cell.colSpan||1);
+    }
+   }
+  }
+ }
+ function normalizeTables(){
+  const view=document.getElementById('view');
+  if(!view)return;
+  view.querySelectorAll('.tablewrap table').forEach(decorateTable);
+ }
+ let pending=false;
+ function schedule(){
+  if(pending)return;
+  pending=true;
+  queueMicrotask(()=>{pending=false;normalizeTables()});
+ }
+ const view=document.getElementById('view');
+ if(view){
+  const observer=new MutationObserver(schedule);
+  observer.observe(view,{childList:true,subtree:true});
+ }
+ const originalRecordView=rkRecordView;
+ rkRecordView=function(kind,id){
+  if(kind!=='document')return originalRecordView.apply(this,arguments);
+  rkEnsure();
+  const record=(db.docs||[]).find(x=>x.id===id);
+  if(!record)return;
+  const withFile=Boolean(record.fileName);
+  const fields=[['التصنيف',kinds[record.kind]||'مستند مالي'],
+    ['تاريخ التسجيل',record.date||'غير محدد'],
+    ['اسم الملف',record.fileName||'لا يوجد ملف مرفق'],
+    ['السجل المرتبط',record.related||'غير مرتبط']];
+  const data=fields.map(([label,value])=>'<div><span>'+safe(label)+'</span><strong>'+safe(value)+'</strong></div>').join('');
+  const openFile=withFile&&!record.isDemo?
+   '<button type="button" class="v27-subaction" data-v32-document-action="download" data-v32-id="'+safe(id)+'">'+icon('download')+'<span>فتح المرفق</span></button>':
+   '<span class="v32-unavailable-attachment">'+(withFile?'المرفق تجريبي':'لا يوجد مرفق لفتحه')+'</span>';
+  document.getElementById('modalRoot').innerHTML=
+  '<div class="modalbg v27-overlay" data-v32-document-overlay>'+
+   '<section class="v27-dialog v32-document-dialog" role="dialog" aria-modal="true" aria-label="تفاصيل المستند: '+safe(record.name)+'">'+
+   '<header class="v27-dialog-head">'+
+   '<button type="button" class="v27-close" data-v32-document-action="close" aria-label="إغلاق">'+icon('close')+'</button>'+
+   '<div class="v27-dialog-heading"><h2>'+safe(record.name||'مستند مالي')+'</h2><span>'+(withFile?'مرفق مسجل':'دون مرفق')+'</span></div></header>'+
+   '<div class="v27-dialog-body"><div class="v27-facts v32-document-facts">'+data+'</div></div>'+
+   '<footer class="v27-dialog-footer">'+openFile+
+   '<button type="button" class="v27-main-action" data-v32-document-action="edit" data-v32-id="'+safe(id)+'">'+icon('edit')+'<span>تعديل</span></button>'+
+   '</footer></section></div>';
+ };
+ document.addEventListener('click',event=>{
+  const btn=event.target.closest('[data-v32-document-action]');
+  if(btn){
+   event.preventDefault();
+   event.stopImmediatePropagation();
+   const action=btn.dataset.v32DocumentAction,id=btn.dataset.v32Id||'';
+   if(action==='close')return closeModal();
+   if(action==='edit')return rkOpen('document',id);
+   if(action==='download')return rkDocumentDownload(id);
+  }
+  if(event.target.matches('[data-v32-document-overlay]'))closeModal();
+ },true);
+ const oldRender=render;
+ render=function(){
+  const output=oldRender.apply(this,arguments);
+  schedule();
+  return output;
+ };
+ normalizeTables();
+})();
