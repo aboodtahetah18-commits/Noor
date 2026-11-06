@@ -136,3 +136,18 @@
  #view .v24-toolbar>.v24-action svg{width:15px!important;height:15px!important;flex-basis:15px!important}
  #view .v24-filter-choice{font-size:10px;gap:3px;padding:6px 2px}
 }
+
+/* Financial outflow across dashboard, budget item summaries and legacy transaction rows. */
+#view .rk-budget-spent b,
+#view .rk-budget-entry-spent,
+#view .rk-home-transaction>b.rk-outflow,
+#view .rk-transaction-row>b.rk-budget-tone-outflow,
+#view .rk-budget-state-over .rk-budget-entry-percent,
+#view .rk-status-over .rk-budget-fill{
+ color:var(--red)!important
+}
+#view .rk-budget-spent{
+ background:color-mix(in srgb,var(--red) 7%,var(--white))!important;
+ border-color:color-mix(in srgb,var(--red) 27%,var(--white))!important
+}
+#view .rk-status-over .rk-budget-fill{background:var(--red)!important}
