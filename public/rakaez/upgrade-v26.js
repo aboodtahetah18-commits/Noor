@@ -249,57 +249,72 @@ render();
 
 
 
-/* Rakaez v28 — compact journal cards with an expandable accounting breakdown.
-   Changes presentation only; reversal still uses the existing guarded handler. */
+/* Rakaez v29 — full, always-visible double-entry journal in genuine ledger order.
+   Every account and posting stays visible. Accounting/reversal functions are unchanged. */
 (function(){
 'use strict';
 if(typeof ledgerView!=='function'||typeof db==='undefined'||typeof money!=='function')return;
-const previousLedgerView=ledgerView;
-const textSafe=value=>esc(String(value===null||value===undefined?'':value));
-const accounts={
+const originalLedgerView=ledgerView;
+const escapeText=v=>esc(String(v===undefined||v===null?'':v));
+const accountNames={
  hilal:'نقد الهلال',malaa:'نقد ملاءة',assets:'نقد الأصول',
- salary:'إيراد الراتب',expense:'مصروفات التشغيل',outside:'الرصيد الافتتاحي'
+ salary:'إيراد الراتب',expense:'مصروفات التشغيل',
+ outside:'الرصيد الافتتاحي'
 };
-const reverseIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-2"/></svg>';
-const value=(label,n,kind)=>'<div class="v28-ledger-value v28-'+kind+'"><span>'+label+'</span><strong>'+money(n)+'</strong></div>';
-const accountLines=entry=>(entry.lines||[]).map(line=>{
- const debit=Number(line.debit||0),credit=Number(line.credit||0);
- const detail=(debit>0?'<span class="v28-amount-debit">مدين '+money(debit)+'</span>':'')+
-  (credit>0?'<span class="v28-amount-credit">دائن '+money(credit)+'</span>':'');
- return '<div class="v28-account-line"><strong>'+textSafe(accounts[line.account]||'حساب مالي آخر')+'</strong>'+
-  '<div class="v28-account-amounts">'+(detail||'<span>دون مبلغ</span>')+'</div></div>';
-}).join('');
-const journalCard=entry=>{
- const lines=entry.lines||[];
- const debit=lines.reduce((sum,line)=>sum+Number(line.debit||0),0);
- const credit=lines.reduce((sum,line)=>sum+Number(line.credit||0),0);
- const balanced=debit===credit&&debit>0;
+const reverseGlyph='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 14-5-5 5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-2"/></svg>';
+const monetary=n=>money(Number(n)||0);
+const amountCell=(n,type)=>Number(n)>0?
+ '<strong class="v29-amount v29-amount-'+type+'">'+monetary(n)+'</strong>':
+ '<span class="v29-empty-amount" aria-label="لا يوجد">—</span>';
+function postingLine(line){
+ return '<div class="v29-ledger-row" role="row">'+
+  '<div class="v29-account-name" role="cell">'+escapeText(accountNames[line.account]||'حساب آخر')+'</div>'+
+  '<div class="v29-ledger-cell v29-debit-cell" role="cell">'+amountCell(line.debit,'debit')+'</div>'+
+  '<div class="v29-ledger-cell v29-credit-cell" role="cell">'+amountCell(line.credit,'credit')+'</div></div>';
+}
+function journalCard(entry){
+ const lines=Array.isArray(entry.lines)?entry.lines:[];
+ const debit=lines.reduce((sum,line)=>sum+(Number(line.debit)||0),0);
+ const credit=lines.reduce((sum,line)=>sum+(Number(line.credit)||0),0);
+ const isBalanced=debit===credit&&debit>0;
  const isReversal=Boolean(entry.reversalOf);
  const wasReversed=(db.ledgerEntries||[]).some(other=>other.reversalOf===entry.id);
- const locked=isReversal||wasReversed;
- const state=balanced?'متوازن':'غير متوازن';
- const opposite=locked?'<span class="v28-reversed-tag">'+(isReversal?'قيد عكسي':'تم عكس القيد')+'</span>':
-  '<button type="button" class="v28-reverse-action" data-v25-reverse="'+textSafe(entry.id)+'" aria-label="عكس القيد '+textSafe(entry.description||'المالي')+'">'+reverseIcon+'<span>عكس القيد</span></button>';
- return '<article class="v28-ledger-card '+(balanced?'v28-balanced-card':'v28-unbalanced-card')+'">'+
-  '<header class="v28-ledger-header"><div class="v28-ledger-ident"><strong>'+textSafe(entry.description||'قيد مالي')+'</strong>'+
-  '<time datetime="'+textSafe(entry.date||'')+'">'+textSafe(entry.date||'تاريخ غير محدد')+'</time></div>'+
-  '<span class="v28-ledger-badge '+(balanced?'v28-state-good':'v28-state-warn')+'">'+state+'</span></header>'+
-  '<div class="v28-ledger-values">'+value('مدين',debit,'debit')+value('دائن',credit,'credit')+'</div>'+
-  '<div class="v28-ledger-footer">'+opposite+'</div>'+
-  '<details class="v28-ledger-breakdown"><summary>تفاصيل الحسابات <span>('+lines.length+')</span></summary>'+
-  '<div class="v28-ledger-account-list">'+(accountLines(entry)||'<p>لا توجد حسابات مرتبطة.</p>')+'</div></details></article>';
-};
+ const isLocked=isReversal||wasReversed;
+ const status=isBalanced?'متوازن':'غير متوازن';
+ const action=isLocked?
+  '<span class="v29-already-reversed">'+(isReversal?'قيد عكسي':'تم عكس القيد')+'</span>':
+  '<button type="button" class="v29-reverse" data-v25-reverse="'+escapeText(entry.id)+'" aria-label="عكس القيد: '+escapeText(entry.description||'قيد مالي')+'">'+reverseGlyph+'<span>عكس القيد</span></button>';
+ return '<article class="v29-journal-card '+(isBalanced?'v29-journal-balanced':'v29-journal-unbalanced')+'">'+
+  '<header class="v29-journal-head"><div class="v29-journal-identity">'+
+  '<strong>'+escapeText(entry.description||'قيد مالي')+'</strong>'+
+  '<time datetime="'+escapeText(entry.date||'')+'">'+escapeText(entry.date||'التاريخ غير محدد')+'</time></div>'+
+  '<span class="v29-journal-status '+(isBalanced?'v29-status-balanced':'v29-status-unbalanced')+'">'+status+'</span></header>'+
+  '<div class="v29-journal-table" role="table" aria-label="تفاصيل القيد المحاسبي">'+
+  '<div class="v29-ledger-row v29-ledger-columns" role="row">'+
+   '<div role="columnheader">الحساب</div>'+
+   '<div role="columnheader" class="v29-debit-label">مدين</div>'+
+   '<div role="columnheader" class="v29-credit-label">دائن</div></div>'+
+   (lines.map(postingLine).join('')||'<div class="v29-no-postings">لا توجد حسابات مرتبطة بالقيد.</div>')+
+  '<div class="v29-ledger-row v29-ledger-totals" role="row">'+
+   '<div role="cell">الإجمالي</div>'+
+   '<div class="v29-ledger-cell v29-debit-cell" role="cell">'+amountCell(debit,'debit')+'</div>'+
+   '<div class="v29-ledger-cell v29-credit-cell" role="cell">'+amountCell(credit,'credit')+'</div></div></div>'+
+  '<footer class="v29-journal-footer">'+
+  '<span class="v29-journal-caption">'+(isBalanced?'القيد متوازن ومثبت في دفتر الأستاذ':'تنبيه: لا يتساوى إجمالي المدين والدائن')+'</span>'+
+  action+'</footer></article>';
+}
 ledgerView=function(){
- const original=previousLedgerView.apply(this,arguments);
- const container=document.createElement('div');
- container.innerHTML=original;
- const page=container.querySelector('.v25-page');
- const list=page?.querySelector('.v25-list');
- if(!page||!list)return original;
- const rows=(db.ledgerEntries||[]).slice().sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
- page.classList.add('v28-ledger-page');
- list.classList.add('v28-ledger-grid');
- list.innerHTML=rows.length?rows.map(journalCard).join(''):
+ const original=originalLedgerView.apply(this,arguments);
+ const root=document.createElement('div');
+ root.innerHTML=original;
+ const page=root.querySelector('.v25-page');
+ const listing=page?.querySelector('.v25-list');
+ if(!page||!listing)return original;
+ const entries=(db.ledgerEntries||[]).slice().sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+ page.classList.add('v29-ledger-page');
+ listing.classList.add('v29-journal-grid');
+ listing.innerHTML=entries.length?
+  entries.map(journalCard).join(''):
   '<div class="v25-empty">لا توجد قيود يومية. يمكنك إضافة حركة مالية أو إثبات رصيد افتتاحي.</div>';
  return page.outerHTML;
 };
