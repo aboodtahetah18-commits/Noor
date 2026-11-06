@@ -1,0 +1,52 @@
+/* Rakaez v26 preview: unique icons by action, no decorative gears.
+   Brand colours and original typeface only. */
+#view button[data-rakaez-semantic-icon],
+#modalRoot button[data-rakaez-semantic-icon]{gap:7px!important}
+#view button[data-rakaez-semantic-icon] > .rakaez-action-icon,
+#modalRoot button[data-rakaez-semantic-icon] > .rakaez-action-icon{
+ display:inline-grid!important;place-items:center!important;
+ flex:0 0 23px!important;width:23px!important;height:23px!important;
+ border-radius:7px!important;
+ background:color-mix(in srgb,var(--teal) 8%,var(--white))!important;
+ color:var(--teal)!important
+}
+#view button[data-rakaez-semantic-icon] > svg,
+#modalRoot button[data-rakaez-semantic-icon] > svg{
+ flex:0 0 18px!important;width:18px!important;height:18px!important;
+ color:currentColor!important;stroke:currentColor!important
+}
+#view button[data-rakaez-semantic-icon] > .rakaez-action-icon svg,
+#modalRoot button[data-rakaez-semantic-icon] > .rakaez-action-icon svg{
+ display:block!important;max-width:18px!important;max-height:18px!important;
+ stroke:currentColor!important
+}
+#view button[data-rakaez-semantic-icon="expense"] > .rakaez-action-icon,
+#modalRoot button[data-rakaez-semantic-icon="expense"] > .rakaez-action-icon{
+ background:color-mix(in srgb,var(--red) 9%,var(--white))!important;
+ color:var(--red)!important
+}
+#view button[data-rakaez-semantic-icon="income"] > .rakaez-action-icon,
+#modalRoot button[data-rakaez-semantic-icon="income"] > .rakaez-action-icon{
+ background:color-mix(in srgb,var(--teal) 9%,var(--white))!important;
+ color:var(--teal)!important
+}
+#view button[data-rakaez-semantic-icon="delete"] > .rakaez-action-icon,
+#modalRoot button[data-rakaez-semantic-icon="delete"] > .rakaez-action-icon{
+ background:color-mix(in srgb,var(--red) 9%,var(--white))!important;
+ color:var(--red)!important
+}
+#view button.primary[data-rakaez-semantic-icon] > .rakaez-action-icon,
+#modalRoot button.primary[data-rakaez-semantic-icon] > .rakaez-action-icon{
+ background:color-mix(in srgb,var(--white) 16%,transparent)!important;
+ color:var(--white)!important
+}
+#view .v25-toolbar button .rakaez-action-icon,
+#view .v24-toolbar button .rakaez-action-icon{
+ background:transparent!important;color:inherit!important;
+ width:17px!important;height:17px!important;flex-basis:17px!important
+}
+/* Every meaningful action label remains visible: do not substitute a gear button for its text. */
+#view .v25-toolbar button > span:not(.rakaez-action-icon),
+#view .v24-toolbar button > span:not(.rakaez-action-icon){
+ display:inline!important;visibility:visible!important;opacity:1!important
+}
