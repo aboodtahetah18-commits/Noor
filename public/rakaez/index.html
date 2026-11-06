@@ -1972,7 +1972,25 @@ function intelligenceView(){let x=insightData();let banks=['الهلال','مل�
 function compactActions(root=document){root.querySelectorAll('button.btn').forEach(btn=>{
  if(btn.dataset.v6compact)return;
  let t=(btn.textContent||'').trim().replace(/\s+/g,' ');
- let labels=[[/إضافة|إنشاء|جديد|إثبات/,'إضافة','plus'],[/تعديل|تحرير/,'تعديل','settings'],[/حذف|إزالة/,'حذف','fund'],[/إلغاء|إغلاق/,'إلغاء','fund'],[/حفظ|اعتماد|تأكيد/,'حفظ','shield'],[/عرض|تفاصيل|مراجعة|فتح/,'عرض','chart'],[/تصدير|تنزيل|تحميل/,'تصدير','upload'],[/مطابقة/,'مطابقة','bank'],[/بحث/,'بحث','chart'],[/تحديث/,'تحديث','trend'],[/تمويل/,'تمويل','wallet'],[/سحب/,'سحب','wallet'],[/توزيع/,'توزيع','chart'],[/استيراد/,'استيراد','upload'],[/عكس/,'عكس','fund'],[/تسجيل/,'تسجيل','plus'],[/مسح|إعادة ضبط/,'مسح','fund']];
+ let labels=[
+ [/إضافة|إنشاء|جديد|إثبات|تسجيل/,'إضافة','plus'],
+ [/تعديل|تحرير/,'تعديل','edit'],
+ [/حذف|إزالة|مسح/,'حذف','delete'],
+ [/إلغاء|إغلاق/,'إلغاء','close'],
+ [/حفظ|اعتماد|تأكيد/,'حفظ','check'],
+ [/عرض|تفاصيل|مراجعة|فتح/,'عرض','view'],
+ [/تصدير|تنزيل|تحميل/,'تصدير','download'],
+ [/مطابقة/,'مطابقة','check'],
+ [/تصفية|فلترة/,'تصفية','filter'],
+ [/بحث/,'بحث','search'],
+ [/تحديث|تجديد/,'تحديث','refresh'],
+ [/تمويل/,'تمويل','wallet'],
+ [/سحب/,'سحب','wallet'],
+ [/توزيع/,'توزيع','chart'],
+ [/استيراد|رفع/,'استيراد','upload'],
+ [/عكس/,'عكس','refresh'],
+ [/إعادة ضبط/,'إعادة ضبط','refresh']
+ ]
  let match=labels.find(([re])=>re.test(t));if(!match)return;
  btn.innerHTML=ico(match[2])+`<span>${match[1]}</span>`;
  btn.dataset.v6compact='1';btn.title=t;
@@ -1993,11 +2011,11 @@ N.splice(N.findIndex(x=>x[0]==='assets')+1,0,['research','مركز الشركا�
 const v7num=v=>Number.isFinite(Number(v))?Number(v):0;
 function researchScores(r){let checks=[r.pe>0&&r.pe<=25,r.debt>=0&&r.debt<=60,r.growth>=8,r.roe>=12,r.fcf>0,r.dividend>=2];let known=[r.pe,r.debt,r.growth,r.roe,r.fcf,r.dividend].filter(x=>x!==''&&x!==null&&x!==undefined).length;return {score:Math.round(checks.filter(Boolean).length/6*100),complete:Math.round(known/6*100)}}
 function researchView(){let search=(window.researchFilter||'').toLowerCase();let rows=db.watchlist.filter(x=>(x.name+' '+x.symbol+' '+x.market).toLowerCase().includes(search));return `<div class="grid stats">${stat('الشركات السعودية',db.watchlist.filter(x=>x.market==='SA').length,'','var(--teal)','bank')}${stat('الشركات الأمريكية',db.watchlist.filter(x=>x.market==='US').length,'','var(--blue)','trend')}${stat('الشركات المسجلة',db.watchlist.length,'','var(--gold)','chart')}</div><div class="sectiontitle"><h2>الشركات والمؤشرات</h2><button class="btn primary" onclick="researchForm()">${ico('plus')} إضافة</button></div><section class="card"><div class="v7-toolbar"><input id="v7Search" placeholder="بحث" value="${esc(window.researchFilter||'')}" oninput="window.researchFilter=this.value;const pos=this.selectionStart;document.getElementById('v7List').innerHTML=researchRows();"/><button class="btn" onclick="researchExport()">${ico('upload')} تصدير</button></div><div id="v7List">${researchRows()}</div></section>`}
-function researchRows(){let q=(window.researchFilter||'').toLowerCase();let a=db.watchlist.filter(x=>(x.name+' '+x.symbol+' '+x.market).toLowerCase().includes(q));return `<div class="tablewrap"><table><thead><tr><th>الشركة</th><th>السوق</th><th>السعر</th><th>العائد</th><th>اكتمال البيانات</th><th>الإجراءات</th></tr></thead><tbody>${a.map(x=>{let z=researchScores(x);return `<tr><td><b>${esc(x.name)}</b><div class="v7-status">${esc(x.symbol)}</div></td><td>${x.market==='SA'?'السعودية':'أمريكا'}</td><td>${Number(x.price||0).toFixed(2)}</td><td>${Number(x.dividend||0).toFixed(2)}%</td><td>${z.complete}%</td><td><div class="row"><button class="btn" onclick="researchDetail('${x.id}')">${ico('chart')} عرض</button><button class="btn" onclick="researchForm('${x.id}')">${ico('settings')} تعديل</button><button class="btn warn" onclick="researchDelete('${x.id}')">${ico('fund')} حذف</button></div></td></tr>`}).join('')||'<tr><td colspan="6" class="empty">لا توجد شركات</td></tr>'}</tbody></table></div>`}
+function researchRows(){let q=(window.researchFilter||'').toLowerCase();let a=db.watchlist.filter(x=>(x.name+' '+x.symbol+' '+x.market).toLowerCase().includes(q));return `<div class="tablewrap"><table><thead><tr><th>الشركة</th><th>السوق</th><th>السعر</th><th>العائد</th><th>اكتمال البيانات</th><th>الإجراءات</th></tr></thead><tbody>${a.map(x=>{let z=researchScores(x);return `<tr><td><b>${esc(x.name)}</b><div class="v7-status">${esc(x.symbol)}</div></td><td>${x.market==='SA'?'السعودية':'أمريكا'}</td><td>${Number(x.price||0).toFixed(2)}</td><td>${Number(x.dividend||0).toFixed(2)}%</td><td>${z.complete}%</td><td><div class="row"><button class="btn" onclick="researchDetail('${x.id}')">${ico('view')} عرض</button><button class="btn" onclick="researchForm('${x.id}')">${ico('edit')} تعديل</button><button class="btn warn" onclick="researchDelete('${x.id}')">${ico('delete')} حذف</button></div></td></tr>`}).join('')||'<tr><td colspan="6" class="empty">لا توجد شركات</td></tr>'}</tbody></table></div>`}
 function rfield(id,label,v='',type='text'){return `<div class="field"><label for="${id}">${esc(label)}</label><input id="${id}" type="${type}" ${type==='number'?'step="any"':''} value="${esc(v)}"></div>`}
-function researchForm(id=''){let x=db.watchlist.find(y=>y.id===id)||{};let group=(title,fields)=>`<fieldset class="v7-group"><legend>${title}</legend><div class="formgrid">${fields}</div></fieldset>`;let fields=group('التعريف',rfield('rName','اسم الشركة',x.name)+rfield('rSymbol','الرمز',x.symbol)+`<div class="field"><label>السوق</label><select id="rMarket"><option value="SA" ${x.market!=='US'?'selected':''}>السعودية</option><option value="US" ${x.market==='US'?'selected':''}>أمريكا</option></select></div>`+rfield('rSector','القطاع',x.sector))+group('بيانات السوق',rfield('rPrice','السعر الحالي',x.price??'','number')+rfield('rDate','تاريخ السعر',x.date||iso(today),'date')+rfield('rPe','مكرر الربحية P/E',x.pe??'','number')+rfield('rDividend','عائد التوزيعات %',x.dividend??'','number'))+group('المؤشرات المالية',rfield('rGrowth','نمو الأرباح %',x.growth??'','number')+rfield('rRoe','العائد على حقوق الملكية %',x.roe??'','number')+rfield('rDebt','نسبة الديون %',x.debt??'','number')+rfield('rFcf','التدفق النقدي الحر (مليون)',x.fcf??'','number'))+group('المصدر',rfield('rSource','مصدر البيانات',x.source||'')+rfield('rNotes','ملاحظات',x.notes||''));document.getElementById('modalRoot').innerHTML=`<div class="modalbg" onclick="if(event.target===this)closeModal()"><div class="modal" role="dialog" aria-modal="true"><div class="v7-head"><h2>${id?'تعديل':'إضافة'} شركة</h2><button class="btn" onclick="closeModal()">✕</button></div><form onsubmit="event.preventDefault();researchSave('${id}')"><div class="v7-modal-body">${fields}</div><div class="v3footer v7-sticky"><button class="btn primary" type="submit">${ico('shield')} حفظ</button><button class="btn" type="button" onclick="closeModal()">${ico('fund')} إلغاء</button></div></form></div></div>`}
+function researchForm(id=''){let x=db.watchlist.find(y=>y.id===id)||{};let group=(title,fields)=>`<fieldset class="v7-group"><legend>${title}</legend><div class="formgrid">${fields}</div></fieldset>`;let fields=group('التعريف',rfield('rName','اسم الشركة',x.name)+rfield('rSymbol','الرمز',x.symbol)+`<div class="field"><label>السوق</label><select id="rMarket"><option value="SA" ${x.market!=='US'?'selected':''}>السعودية</option><option value="US" ${x.market==='US'?'selected':''}>أمريكا</option></select></div>`+rfield('rSector','القطاع',x.sector))+group('بيانات السوق',rfield('rPrice','السعر الحالي',x.price??'','number')+rfield('rDate','تاريخ السعر',x.date||iso(today),'date')+rfield('rPe','مكرر الربحية P/E',x.pe??'','number')+rfield('rDividend','عائد التوزيعات %',x.dividend??'','number'))+group('المؤشرات المالية',rfield('rGrowth','نمو الأرباح %',x.growth??'','number')+rfield('rRoe','العائد على حقوق الملكية %',x.roe??'','number')+rfield('rDebt','نسبة الديون %',x.debt??'','number')+rfield('rFcf','التدفق النقدي الحر (مليون)',x.fcf??'','number'))+group('المصدر',rfield('rSource','مصدر البيانات',x.source||'')+rfield('rNotes','ملاحظات',x.notes||''));document.getElementById('modalRoot').innerHTML=`<div class="modalbg" onclick="if(event.target===this)closeModal()"><div class="modal" role="dialog" aria-modal="true"><div class="v7-head"><h2>${id?'تعديل':'إضافة'} شركة</h2><button class="btn" onclick="closeModal()">✕</button></div><form onsubmit="event.preventDefault();researchSave('${id}')"><div class="v7-modal-body">${fields}</div><div class="v3footer v7-sticky"><button class="btn primary" type="submit">${ico('shield')} حفظ</button><button class="btn" type="button" onclick="closeModal()">${ico('close')} إلغاء</button></div></form></div></div>`}
 function researchSave(id){let x={id:id||rid(),name:val('rName').trim(),symbol:val('rSymbol').trim().toUpperCase(),market:val('rMarket'),sector:val('rSector'),source:val('rSource'),notes:val('rNotes'),date:val('rDate')};if(!x.name||!x.symbol)return alert('الاسم والرمز مطلوبان');for(let [key,field] of [['price','rPrice'],['pe','rPe'],['dividend','rDividend'],['growth','rGrowth'],['roe','rRoe'],['debt','rDebt'],['fcf','rFcf']]){let t=val(field);if(t!==''&&!Number.isFinite(Number(t)))return alert('قيمة رقمية غير صحيحة');x[key]=t===''?'':Number(t)}if(id){let i=db.watchlist.findIndex(t=>t.id===id);if(i>=0)db.watchlist[i]=x}else db.watchlist.push(x);audit(id?'تعديل شركة':'إضافة شركة',x.name);save();closeModal();render();toast('تم الحفظ')}
-function researchDetail(id){let x=db.watchlist.find(y=>y.id===id);if(!x)return;let z=researchScores(x);let line=(a,b)=>`<div class="metricline"><span>${a}</span><b>${esc(b??'—')}</b></div>`;document.getElementById('modalRoot').innerHTML=`<div class="modalbg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="v7-head"><h2>${esc(x.name)}</h2><button class="btn" onclick="closeModal()">✕</button></div><div class="v7-modal-body"><span class="v7-sect">البيانات</span>${line('الرمز',x.symbol)}${line('القطاع',x.sector)}${line('السعر',x.price)}${line('تاريخ السعر',x.date)}<span class="v7-sect">المؤشرات</span>${line('مكرر الربحية',x.pe)}${line('عائد التوزيع %',x.dividend)}${line('نمو الأرباح %',x.growth)}${line('العائد على حقوق الملكية %',x.roe)}${line('الديون %',x.debt)}${line('التدفق النقدي الحر',x.fcf)}${line('اكتمال المؤشرات',z.complete+'%')}${line('المصدر',x.source)}</div><div class="v3footer"><button class="btn primary" onclick="researchForm('${id}')">${ico('settings')} تعديل</button><button class="btn" onclick="closeModal()">${ico('fund')} إلغاء</button></div></div></div>`}
+function researchDetail(id){let x=db.watchlist.find(y=>y.id===id);if(!x)return;let z=researchScores(x);let line=(a,b)=>`<div class="metricline"><span>${a}</span><b>${esc(b??'—')}</b></div>`;document.getElementById('modalRoot').innerHTML=`<div class="modalbg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="v7-head"><h2>${esc(x.name)}</h2><button class="btn" onclick="closeModal()">✕</button></div><div class="v7-modal-body"><span class="v7-sect">البيانات</span>${line('الرمز',x.symbol)}${line('القطاع',x.sector)}${line('السعر',x.price)}${line('تاريخ السعر',x.date)}<span class="v7-sect">المؤشرات</span>${line('مكرر الربحية',x.pe)}${line('عائد التوزيع %',x.dividend)}${line('نمو الأرباح %',x.growth)}${line('العائد على حقوق الملكية %',x.roe)}${line('الديون %',x.debt)}${line('التدفق النقدي الحر',x.fcf)}${line('اكتمال المؤشرات',z.complete+'%')}${line('المصدر',x.source)}</div><div class="v3footer"><button class="btn primary" onclick="researchForm('${id}')">${ico('edit')} تعديل</button><button class="btn" onclick="closeModal()">${ico('close')} إلغاء</button></div></div></div>`}
 function researchDelete(id){let x=db.watchlist.find(y=>y.id===id);if(!x||!confirm('حذف '+x.name+'؟'))return;db.watchlist=db.watchlist.filter(y=>y.id!==id);save();render();toast('تم الحذف')}
 function researchExport(){let cols=['name','symbol','market','sector','price','date','pe','dividend','growth','roe','debt','fcf','source','notes'];let csv='\ufeff'+[cols.join(','),...db.watchlist.map(x=>cols.map(k=>'"'+String(x[k]??'').replace(/"/g,'""')+'"').join(','))].join('\r\n');let a=document.createElement('a');let url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.href=url;a.download='rakaez-companies.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),500)}
 /* Presentation-only: wrap all legacy modal fields into labeled groups. Existing IDs and handlers remain unchanged. */
@@ -2416,7 +2434,7 @@ document.head.appendChild(sheet)
 const V14_CYCLE_KEY='rakaez-cycle-v14';
 function ensureCycle(){if(!Array.isArray(db.salaryCycles))db.salaryCycles=[];if(!db.cycleDay)db.cycleDay=25;}
 function v14Period(date=new Date()){let y=date.getFullYear(),m=date.getMonth();if(date.getDate()<db.cycleDay)m--;return new Date(y,m,1).toISOString().slice(0,7)}
-function v14CycleView(){ensureCycle();let date=v14Period(),last=db.salaryCycles.find(x=>x.period===date),amounts=last?.amounts||Object.fromEntries(db.categories.filter(c=>!c.archived).map(c=>[c.id,Math.round(c.limit*100)]));let budget=Object.values(amounts).reduce((a,b)=>a+Number(b||0),0);let hilal=Math.round(db.salary*db.ratios.hilal/100);return `<section class="card"><div class="sectiontitle"><h2>دورة الراتب</h2><button class="btn primary" onclick="v14CycleForm()">${ico('plus')} إضافة</button></div><div class="metricline"><span>يوم الدورة</span><b>${db.cycleDay}</b></div><div class="metricline"><span>الفترة</span><b>${date}</b></div><div class="metricline"><span>الراتب</span><b>${money(db.salary)}</b></div><div class="metricline"><span>حالة الدورة</span><b>${last?.approved?'معتمدة':'بانتظار اعتماد'}</b></div><div class="metricline"><span>مخصص الهلال</span><b>${money(hilal)}</b></div><div class="metricline"><span>توزيع البنود</span><b>${money(budget)}</b></div><div class="items">${db.salaryCycles.slice().reverse().map(c=>`<div class="item"><strong>${esc(c.period)} — ${c.approved?'معتمدة':'مسودة'}</strong><div class="row"><button class="btn" onclick="v14CycleForm('${c.period}')">${ico('settings')} تعديل</button>${!c.approved?`<button class="btn primary" onclick="v14Approve('${c.period}')">${ico('shield')} اعتماد</button>`:''}</div></div>`).join('')}</div></section>`}
+function v14CycleView(){ensureCycle();let date=v14Period(),last=db.salaryCycles.find(x=>x.period===date),amounts=last?.amounts||Object.fromEntries(db.categories.filter(c=>!c.archived).map(c=>[c.id,Math.round(c.limit*100)]));let budget=Object.values(amounts).reduce((a,b)=>a+Number(b||0),0);let hilal=Math.round(db.salary*db.ratios.hilal/100);return `<section class="card"><div class="sectiontitle"><h2>دورة الراتب</h2><button class="btn primary" onclick="v14CycleForm()">${ico('plus')} إضافة</button></div><div class="metricline"><span>يوم الدورة</span><b>${db.cycleDay}</b></div><div class="metricline"><span>الفترة</span><b>${date}</b></div><div class="metricline"><span>الراتب</span><b>${money(db.salary)}</b></div><div class="metricline"><span>حالة الدورة</span><b>${last?.approved?'معتمدة':'بانتظار اعتماد'}</b></div><div class="metricline"><span>مخصص الهلال</span><b>${money(hilal)}</b></div><div class="metricline"><span>توزيع البنود</span><b>${money(budget)}</b></div><div class="items">${db.salaryCycles.slice().reverse().map(c=>`<div class="item"><strong>${esc(c.period)} — ${c.approved?'معتمدة':'مسودة'}</strong><div class="row"><button class="btn" onclick="v14CycleForm('${c.period}')">${ico('edit')} تعديل</button>${!c.approved?`<button class="btn primary" onclick="v14Approve('${c.period}')">${ico('shield')} اعتماد</button>`:''}</div></div>`).join('')}</div></section>`}
 function v14CycleForm(period=''){ensureCycle();let p=period||v14Period(),old=db.salaryCycles.find(x=>x.period===p);let values=old?.amounts||Object.fromEntries(db.categories.filter(c=>!c.archived).map(c=>[c.id,Math.round(c.limit*100)]));if(old?.approved)return alert('الدورة معتمدة؛ لا يمكن تعديلها مباشرة.');let form=`<div class="v7-modal-body"><div class="formgrid"><div class="field"><label>الفترة</label><input type="month" id="cyclePeriod" value="${esc(p)}" onchange="v14CycleForm(this.value)"></div><div class="field"><label>يوم الدورة</label><select id="cycleDay"><option value="25" ${db.cycleDay===25?'selected':''}>25</option><option value="27" ${db.cycleDay===27?'selected':''}>27</option></select></div>${db.categories.filter(c=>!c.archived).map(c=>`<div class="field"><label>${esc(c.name)} (ر.س)</label><input id="cycle_${esc(c.id)}" type="number" step="0.01" min="0" value="${(Number(values[c.id]||0)/100).toFixed(2)}" oninput="v14CycleCalc()"></div>`).join('')}</div><div class="calculations"><div><span>مخصص الهلال</span><b id="cycleAvailable"></b></div><div><span>إجمالي البنود</span><b id="cycleAssigned"></b></div><div><span>الفارق</span><b id="cycleDifference"></b></div></div></div>`;document.getElementById('modalRoot').innerHTML=`<div class="modalbg" onclick="if(event.target===this)closeModal()"><div class="modal" role="dialog" aria-modal="true"><div class="v7-head"><h2>دورة الراتب</h2><button class="btn" onclick="closeModal()">✕</button></div><form onsubmit="event.preventDefault();v14CycleSave()">${form}<div class="v3footer"><button class="btn primary" type="submit">${ico('shield')} حفظ</button></div></form></div></div>`;v14CycleCalc();}
 function v14CycleCalc(){let sum=db.categories.filter(c=>!c.archived).reduce((a,c)=>a+Math.round((Number(document.getElementById('cycle_'+c.id)?.value)||0)*100),0),available=Math.round(db.salary*db.ratios.hilal/100);for(let [id,n] of [['cycleAvailable',available],['cycleAssigned',sum],['cycleDifference',available-sum]]){let el=document.getElementById(id);if(el)el.textContent=money(n)}}
 function v14CycleSave(){ensureCycle();let p=document.getElementById('cyclePeriod')?.value,day=Number(document.getElementById('cycleDay')?.value);if(!/^\d{4}-\d{2}$/.test(p)||![25,27].includes(day))return alert('راجع الفترة واليوم');let amounts={};for(let c of db.categories.filter(c=>!c.archived)){let x=Number(document.getElementById('cycle_'+c.id)?.value);if(!Number.isFinite(x)||x<0)return alert('مبلغ غير صالح');amounts[c.id]=Math.round(x*100)}let sum=Object.values(amounts).reduce((a,b)=>a+b,0),max=Math.round(db.salary*db.ratios.hilal/100);if(sum>max)return alert('تجاوز توزيع الهلال المبلغ المخصص له');if(db.salaryCycles.some(x=>x.period===p&&x.approved))return alert('الدورة معتمدة');db.cycleDay=day;db.salaryCycles=db.salaryCycles.filter(x=>x.period!==p);db.salaryCycles.push({period:p,day,amounts,approved:false});save();closeModal();render();toast('تم حفظ المسودة')}
@@ -2468,26 +2486,47 @@ icons.download='<path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"/>';
 icons.search='<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>';
 icons.refresh='<path d="M20 7v5h-5M4 17v-5h5"/><path d="M6 9a7 7 0 0 1 12-2l2 5M4 12l2 5a7 7 0 0 0 12-2"/>';
 icons.menu='<path d="M4 6h16M4 12h16M4 18h16"/>';
+icons.expense='<path d="M5 5h14M12 7v12m-6-6 6 6 6-6"/>';
+icons.income='<path d="M5 19h14M12 17V5m-6 6 6-6 6 6"/>';
 
 function rakaezDecorateButtons(root=document){
  const patterns=[
- [/حذف|إزالة|مسح|تصفير|إعادة ضبط/,'delete'],
- [/السابق|رجوع/,'back'],[/التالي/,'forward'],[/إلغاء|إغلاق|✕|×/,'close'],
- [/إضافة|إنشاء|جديد|إثبات/,'plus'],[/حفظ|اعتماد|تأكيد|تطبيق/,'check'],
- [/تعديل|تحرير/,'edit'],[/عرض|تفاصيل|فتح|مراجعة/,'view'],
- [/رفع|استيراد/,'upload'],[/تصدير|تنزيل|تحميل/,'download'],
- [/بحث|تصفية/,'search'],[/تحديث|تجديد/,'refresh'],
- [/تحويل|تمويل|سحب|إيداع|سداد/,'wallet'],
- [/تقرير|رسم|تحليل/,'chart']
+  [/حذف|إزالة|مسح/,'delete'],
+  [/إعادة ضبط|تصفير/,'refresh'],
+  [/السابق|رجوع/,'back'],
+  [/التالي/,'forward'],
+  [/إلغاء|إغلاق|✕|×/,'close'],
+  [/إضافة|إنشاء|جديد|إثبات|تسجيل/,'plus'],
+  [/حفظ|اعتماد|تأكيد|تطبيق/,'check'],
+  [/تعديل|تحرير/,'edit'],
+  [/عرض|تفاصيل|فتح|مراجعة/,'view'],
+  [/رفع|استيراد/,'upload'],
+  [/تصدير|تنزيل|تحميل/,'download'],
+  [/تصفية|فلترة|الفلتر/,'filter'],
+  [/بحث/,'search'],
+  [/الكل/,'list'],
+  [/مصروف|سحب|خسارة/,'expense'],
+  [/إيراد|دخل/,'income'],
+  [/تحديث|تجديد/,'refresh'],
+  [/تحويل|تمويل|سداد|إيداع/,'wallet'],
+  [/تقرير|رسم|تحليل/,'chart'],
+  [/الإعدادات|إعدادات|ضبط النظام/,'settings']
  ];
+ if(!root||typeof root.querySelectorAll!=='function')return;
  root.querySelectorAll('button').forEach(btn=>{
   if(btn.dataset.rakaezDecorated||btn.querySelector('svg')||btn.matches('.rakaez-bell,.rakaez-nav-link,[data-step],.tabs button,.settings-tabs button'))return;
-  const title=(btn.textContent||btn.getAttribute('aria-label')||'').trim().replace(/\s+/g,' ');
+  const title=(btn.getAttribute('aria-label')||btn.textContent||'').trim().replace(/\s+/g,' ');
   if(!title)return;
-  const choice=btn.classList.contains('mobilemenu')?'menu':(patterns.find(p=>p[0].test(title))||[null,'settings'])[1];
-  if(btn.classList.contains('mobilemenu')||title==='✕'||title==='×'){btn.textContent='';btn.setAttribute('aria-label',choice==='menu'?'فتح القائمة':'إغلاق');}
+  const choice=btn.classList.contains('mobilemenu')?'menu':patterns.find(p=>p[0].test(title))?.[1];
+  // No fallback to gear: an unknown action retains a text label and no glyph.
+  if(!choice)return;
+  if(btn.classList.contains('mobilemenu')||title==='✕'||title==='×'){
+   btn.textContent='';
+   btn.setAttribute('aria-label',choice==='menu'?'فتح القائمة':'إغلاق');
+  }
   btn.insertAdjacentHTML('afterbegin','<span class="rakaez-action-icon" aria-hidden="true">'+ico(choice)+'</span>');
-  btn.classList.add('rakaez-action-button');btn.dataset.rakaezDecorated='1';
+  btn.classList.add('rakaez-action-button');
+  btn.dataset.rakaezDecorated='1';
   if(choice==='delete')btn.classList.add('rakaez-danger');
  });
 }
@@ -2849,20 +2888,27 @@ function rkDocumentDownload(id){
 /* Complete missing icon coverage without discarding action labels. */
 function rkIconForAction(label){
  if(/حذف|مسح|إزالة/.test(label))return 'delete';
+ if(/إعادة ضبط|تصفير/.test(label))return 'refresh';
  if(/السابق|رجوع|عودة/.test(label))return 'back';
  if(/التالي/.test(label))return 'forward';
  if(/إغلاق|إلغاء|✕|×/.test(label))return 'close';
- if(/تحديث|تجديد/.test(label))return 'refresh';
- if(/توزيع|أرباح|تقرير|تحليل/.test(label))return 'chart';
- if(/تعديل|إعداد|خصائص/.test(label))return 'edit';
- if(/حفظ|اعتماد|تأكيد/.test(label))return 'check';
- if(/عرض|فتح|تفاصيل|فحص/.test(label))return 'view';
+ if(/تصفية|فلترة|فلتر/.test(label))return 'filter';
  if(/بحث/.test(label))return 'search';
- if(/تصدير|تنزيل/.test(label))return 'download';
+ if(/الكل/.test(label))return 'list';
+ if(/مصروف|سحب|خسارة/.test(label))return 'expense';
+ if(/إيراد|دخل/.test(label))return 'income';
+ if(/تحديث|تجديد/.test(label))return 'refresh';
+ if(/إعدادات|الإعدادات|ضبط النظام/.test(label))return 'settings';
+ if(/تعديل|تحرير|خصائص/.test(label))return 'edit';
+ if(/حفظ|اعتماد|تأكيد|تطبيق/.test(label))return 'check';
+ if(/عرض|فتح|تفاصيل|فحص|معاينة/.test(label))return 'view';
+ if(/تصدير|تنزيل|تحميل/.test(label))return 'download';
  if(/رفع|استيراد/.test(label))return 'upload';
- if(/إضافة|إنشاء|تسجيل|جديد/.test(label))return 'plus';
- if(/قسط|تمويل|سداد|تحويل|إيداع|سحب|تحصيل/.test(label))return 'wallet';
- return 'settings';
+ if(/إضافة|إنشاء|تسجيل|جديد|إثبات/.test(label))return 'plus';
+ if(/توزيع|أرباح|تقرير|تحليل|رسم/.test(label))return 'chart';
+ if(/قسط|تمويل|سداد|تحويل|إيداع|تحصيل/.test(label))return 'wallet';
+ // No guessed icon. Ambiguous text-only buttons are preferable to incorrect symbols.
+ return null;
 }
 function rkEnsureAllButtonIcons(root=document){
  root.querySelectorAll('button').forEach(button=>{
@@ -2870,6 +2916,7 @@ function rkEnsureAllButtonIcons(root=document){
   const label=(button.textContent||button.getAttribute('aria-label')||'').trim();
   if(!label)return;
   const iconName=rkIconForAction(label);
+  if(!iconName)return;
   const svg=ico(iconName);
   if(label==='✕'||label==='×')button.textContent='';
   button.insertAdjacentHTML('afterbegin',svg);
