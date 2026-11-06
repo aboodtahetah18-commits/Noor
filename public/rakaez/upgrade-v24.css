@@ -1,0 +1,138 @@
+/* Rakaez V24 — strict financial colours and one-line mobile transaction tools.
+   Uses approved brand tokens only; does not add a new font or colour family. */
+:root{--red:#ce5361!important}
+/* Legacy global rules mistakenly recoloured outflows in gold. Restore the approved red. */
+#view .rk-budget-tone-outflow,#modalRoot .rk-budget-tone-outflow,
+#view .rakaez-numeric[data-tone="outflow"],#modalRoot .rakaez-numeric[data-tone="outflow"],
+#view .rk-transaction-row>b.rk-budget-tone-outflow,
+#view .v18-danger,#modalRoot .v18-danger,
+#view .v22-tx.expense .v22-amount,#view .v22-tx.expense .v22-tx-kind,
+#modalRoot .v22-tx-hero.expense .v22-amount,
+#modalRoot .v22-tx-hero.expense>span{color:var(--red)!important}
+#view .rakaez-numeric[data-tone="income"],#modalRoot .rakaez-numeric[data-tone="income"],
+#view .v22-tx.income .v22-amount,#modalRoot .v22-tx-hero.income .v22-amount{color:var(--teal)!important}
+#view .v22-tx.expense,#modalRoot .v22-tx-hero.expense{border-right-color:var(--red)!important}
+#view .v22-tx.income,#modalRoot .v22-tx-hero.income{border-right-color:var(--teal)!important}
+/* Keep the existing top navbar as the only page heading. */
+#view .v24-page{min-width:0;width:100%;display:grid;gap:0}
+#view .v24-toolbar{
+ display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ width:100%!important;min-width:0!important;gap:8px!important;
+ margin:0 0 13px!important;align-items:stretch!important
+}
+#view .v24-toolbar>.v24-action{
+ display:inline-flex!important;flex-direction:row!important;align-items:center!important;
+ justify-content:center!important;gap:7px!important;
+ flex:none!important;min-width:0!important;width:100%!important;max-width:none!important;
+ height:46px!important;min-height:46px!important;
+ border:1px solid var(--line)!important;border-radius:11px!important;
+ padding:7px 9px!important;background:var(--white)!important;color:var(--navy)!important;
+ font-family:inherit!important;font-weight:800!important;font-size:13px!important;line-height:1.25!important;
+ box-shadow:none!important;white-space:nowrap!important;cursor:pointer!important
+}
+#view .v24-toolbar>.v24-add{background:var(--teal)!important;border-color:var(--teal)!important;color:var(--white)!important}
+#view .v24-toolbar>.v24-filter[aria-expanded="true"],
+#view .v24-toolbar>.v24-search[aria-expanded="true"]{border-color:var(--teal)!important;background:color-mix(in srgb,var(--teal) 7%,var(--white))!important}
+#view .v24-toolbar>.v24-action svg{flex:0 0 19px!important;width:19px!important;height:19px!important;display:inline-block!important;stroke:currentColor!important}
+#view .v24-toolbar>.v24-action span{display:inline!important;position:static!important;visibility:visible!important;opacity:1!important;white-space:nowrap!important}
+#view .v24-toolbar>.v24-action:focus-visible{outline:2px solid var(--teal)!important;outline-offset:2px!important}
+#view .v24-utilities:empty{display:none}
+#view .v24-utilities{display:grid;gap:9px;margin:0 0 12px}
+#view .v24-search-panel{
+ display:grid;gap:5px;background:var(--white);padding:12px;
+ border:1px solid var(--line);border-radius:12px
+}
+#view .v24-search-panel label{font-size:11px;color:var(--muted);font-weight:750}
+#view .v24-search-panel input{
+ display:block;width:100%;min-width:0;min-height:45px;
+ padding:8px 11px;border:1px solid var(--line);border-radius:9px;
+ color:var(--navy);background:var(--paper);font:inherit;font-size:13px
+}
+#view .v24-filter-panel{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;
+ border:1px solid var(--line);border-radius:11px;overflow:hidden;background:var(--white)
+}
+#view .v24-filter-choice{
+ width:100%;min-width:0;min-height:48px;border:0;border-left:1px solid var(--line);
+ padding:7px 5px;display:flex;gap:5px;align-items:center;justify-content:center;
+ text-align:center;font:inherit;font-size:12px;font-weight:750;background:var(--white);color:var(--navy);
+ cursor:pointer
+}
+#view .v24-filter-choice:last-child{border-left:0}
+#view .v24-filter-choice.expense{color:var(--red)}
+#view .v24-filter-choice.income{color:var(--teal)}
+#view .v24-filter-choice.selected{background:var(--navy);color:var(--white)}
+#view .v24-filter-choice svg{width:17px;height:17px;flex:0 0 17px}
+#view .v24-filter-choice strong{font-size:12px}
+#view .v24-record-grid{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:12px;align-items:start;min-width:0
+}
+#view .v24-record{
+ display:grid!important;gap:10px!important;text-align:right!important;
+ min-width:0!important;width:100%!important;padding:16px!important;
+ border:1px solid var(--line)!important;border-right:4px solid var(--red)!important;
+ border-radius:15px!important;background:var(--white)!important;
+ color:var(--ink)!important;box-shadow:0 3px 12px color-mix(in srgb,var(--navy) 5%,transparent)!important;
+ font-family:inherit!important;cursor:pointer!important
+}
+#view .v24-record.income{border-right-color:var(--teal)!important}
+#view .v24-record-top{
+ display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap
+}
+#view .v24-record-kind{
+ display:inline-flex;align-items:center;gap:5px;font-size:12px;
+ color:var(--red);font-weight:800
+}
+#view .v24-record.income .v24-record-kind{color:var(--teal)}
+#view .v24-record-kind svg{width:18px;height:18px;flex:0 0 18px}
+#view .v24-amount{
+ display:inline-block!important;font-size:17px!important;font-weight:850!important;
+ font-variant-numeric:tabular-nums!important;color:var(--red)!important;
+ direction:ltr!important;unicode-bidi:isolate!important;white-space:nowrap!important
+}
+#view .v24-record.income .v24-amount{color:var(--teal)!important}
+#view .v24-record-name{
+ font-size:15px;font-weight:800;color:var(--navy);
+ line-height:1.55;overflow-wrap:anywhere
+}
+#view .v24-record-date{font-size:11px;color:var(--muted)}
+#view .v24-record-bottom{
+ display:flex;align-items:center;justify-content:space-between;
+ flex-wrap:wrap;gap:7px;padding-top:10px;border-top:1px solid var(--line)
+}
+#view .v24-category-tag{
+ display:inline-flex;align-items:center;gap:6px;max-width:100%;
+ padding:4px 9px 4px 5px;border-radius:999px;
+ background:var(--paper);font-size:11px;font-weight:750;color:var(--navy)
+}
+#view .v24-category-tag>.v22-inline-icon{
+ width:27px;height:27px;flex:0 0 27px;border-radius:7px
+}
+#view .v24-category-tag .v22-inline-icon svg{width:17px;height:17px}
+#view .v24-income-tag{
+ display:inline-flex;align-items:center;gap:5px;
+ color:var(--teal);font-size:11px;font-weight:800;
+ background:color-mix(in srgb,var(--teal) 9%,var(--white));
+ padding:6px 9px;border-radius:9px
+}
+#view .v24-income-tag svg{width:15px;height:15px}
+#view .v24-details{display:inline-flex;align-items:center;gap:5px;color:var(--teal);font-size:12px;font-weight:750}
+#view .v24-details svg{width:16px;height:16px}
+#view .v24-empty{padding:20px;text-align:center;color:var(--muted);font-size:13px}
+@media(max-width:900px){#view .v24-record-grid{grid-template-columns:1fr}}
+@media(max-width:740px){
+ #view .v24-toolbar{gap:7px!important;margin-bottom:12px!important}
+ #view .v24-toolbar>.v24-action{
+  height:45px!important;min-height:45px!important;gap:5px!important;
+  padding:7px 5px!important;font-size:12px!important
+ }
+ #view .v24-toolbar>.v24-action svg{width:17px!important;height:17px!important;flex-basis:17px!important}
+ #view .v24-record{padding:15px!important}
+}
+@media(max-width:350px){
+ #view .v24-toolbar{gap:4px!important}
+ #view .v24-toolbar>.v24-action{gap:3px!important;padding:6px 3px!important;font-size:11px!important}
+ #view .v24-toolbar>.v24-action svg{width:15px!important;height:15px!important;flex-basis:15px!important}
+ #view .v24-filter-choice{font-size:10px;gap:3px;padding:6px 2px}
+}
