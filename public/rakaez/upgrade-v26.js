@@ -502,3 +502,159 @@ document.addEventListener('click',event=>{
 });
 render();
 })();
+
+
+/* Rakaez v30 — complete remaining operational surfaces using existing brand tokens.
+   All entries are display-only references to current data; accounting rules remain untouched. */
+(function(){
+'use strict';
+if(typeof db==='undefined'||typeof render!=='function')return;
+const clean=v=>esc(String(v===undefined||v===null?'':v));
+const number=n=>money(Number(n)||0);
+const nOrZero=n=>Number.isFinite(Number(n))?Number(n):0;
+const headline=(heading,add,label)=>{
+ return '<header class="v30-pagehead"><h2>'+clean(heading)+'</h2>'+
+ (add?'<button class="btn primary v30-add" type="button" onclick="'+add+'">'+ico('plus')+' <span>'+clean(label||'إضافة')+'</span></button>':'')+'</header>';
+};
+const entry=(label,value,tone='navy')=>
+ '<div class="v30-fact v30-'+tone+'"><span>'+clean(label)+'</span><strong>'+value+'</strong></div>';
+const status=(text,tone='muted')=>
+ '<span class="v30-status v30-status-'+tone+'">'+clean(text)+'</span>';
+const empty=text=>'<div class="v30-empty">'+clean(text)+'</div>';
+const wrap=(kind,heading,add,label,children)=>
+ '<section class="v30-screen v30-'+kind+'">'+headline(heading,add,label)+
+ '<div class="v30-record-grid">'+(children||empty('لا توجد سجلات في هذا القسم.'))+'</div></section>';
+const oldDebtsView=debtsView;
+debtsView=function(){
+ const rows=(db.debts||[]).map(d=>{
+  const principal=nOrZero(d.principal),paid=nOrZero(d.paid),remaining=Math.max(0,principal-paid),ratio=principal>0?Math.max(0,Math.min(100,paid/principal*100)):0;
+  const date=d.due||d.date||'غير محدد';
+  return '<button class="v30-record v30-debt-record" type="button" onclick="detailV3(\'debts\',\''+clean(d.id)+'\')" aria-label="تفاصيل الالتزام '+clean(d.name)+'">'+
+   '<header class="v30-record-head"><div><strong>'+clean(d.name)+'</strong><small>الاستحقاق: '+clean(date)+'</small></div>'+status(remaining===0?'مسدد بالكامل':'التزام قائم',remaining===0?'teal':'gold')+'</header>'+
+   '<div class="v30-facts">'+entry('المتبقي',number(remaining),remaining===0?'teal':'red')+
+   entry('القسط الشهري',number(d.installment),'navy')+
+   entry('أصل الالتزام',number(principal),'blue')+
+   entry('المسدّد',number(paid),'teal')+'</div>'+
+   '<div class="v30-progress" role="progressbar" aria-label="نسبة السداد" aria-valuenow="'+ratio.toFixed(1)+'" aria-valuemin="0" aria-valuemax="100"><span style="width:'+ratio+'%"></span></div>'+
+   '<footer class="v30-record-foot"><span>نسبة السداد '+ratio.toFixed(1)+'%</span><span>عرض التفاصيل</span></footer></button>';
+ }).join('');
+ return wrap('debts','الالتزامات المسجلة',"formV3('debts')",'إضافة التزام',rows);
+};
+const oldFeesView=feesView;
+feesView=function(){
+ const rows=(db.fees||[]).map(f=>{
+  const frequency=typeof periodLabel==='function'?periodLabel(f.period):'رسوم دورية';
+  const bank=typeof bankName==='function'?bankName(f.bank):'بنك غير محدد';
+  return '<button type="button" class="v30-record v30-fee-record" onclick="detailV3(\'fees\',\''+clean(f.id)+'\')" aria-label="تفاصيل الرسم '+clean(f.name)+'">'+
+  '<header class="v30-record-head"><div><strong>'+clean(f.name)+'</strong><small>'+clean(bank)+'</small></div>'+status('رسم دوري','red')+'</header>'+
+  '<div class="v30-facts">'+entry('قيمة الرسم',number(f.amount),'red')+
+  entry('الدورية',clean(frequency),'navy')+'</div>'+
+  '<footer class="v30-record-foot"><span>'+clean(f.account||f.due||'الرسوم المسجلة')+'</span><span>عرض التفاصيل</span></footer></button>';
+ }).join('');
+ return wrap('fees','الرسوم والاشتراكات',"formV3('fees')",'إضافة رسم',rows);
+};
+const oldReservesView=reservesView;
+reservesView=function(){
+ const locations=[['hilal','بنك الهلال','التشغيل'],['malaa','بنك ملاءة','الادخار'],['assets','بنك الأصول','الاستثمار']];
+ const rows=locations.map(([id,name,category])=>
+  '<button class="v30-record v30-reserve-record" type="button" onclick="formV3(\'reserves\',\''+id+'\')" aria-label="تعديل احتياطي '+name+'">'+
+  '<header class="v30-record-head"><div><strong>'+name+'</strong><small>مخصص '+category+'</small></div>'+status('مستهدف','blue')+'</header>'+
+  '<div class="v30-facts v30-single-fact">'+entry('الاحتياطي المستهدف',number(db.reserves?.[id]||0),'blue')+'</div>'+
+  '<footer class="v30-record-foot"><span>هدف تخطيطي لا يمثل رصيداً نقدياً</span><span>تعديل المخصص</span></footer></button>').join('');
+ return wrap('reserves','الاحتياطيات المستهدفة',null,'',rows);
+};
+const oldGoalsView=goalsView;
+goalsView=function(){
+ const html=document.createElement('div');html.innerHTML=oldGoalsView();
+ const goals=html.querySelector('.rk-goal-list');
+ return '<section class="v30-screen v30-goals">'+headline('الأهداف المالية المسجلة',"formV3('goals')",'إضافة هدف')+
+  (goals?goals.outerHTML:empty('لا توجد أهداف مالية مسجلة.'))+'</section>';
+};
+const oldAssetsView=assets;
+assets=function(){
+ const root=document.createElement('div');root.innerHTML=oldAssetsView();
+ root.querySelector(':scope > .rk-assets-summary')?.remove();
+ return '<section class="v30-context-page v30-assets">'+root.innerHTML.replace('محافظي الاستثمارية','المحافظ الاستثمارية')+'</section>';
+};
+const oldHilalView=hilal;
+hilal=function(){
+ const root=document.createElement('div');root.innerHTML=oldHilalView();
+ root.querySelector(':scope > .grid.stats')?.remove();
+ return '<section class="v30-context-page v30-hilal">'+root.innerHTML+'</section>';
+};
+const oldMalaaView=malaa;
+malaa=function(){
+ const root=document.createElement('div');root.innerHTML=oldMalaaView();
+ root.querySelector(':scope > .rk-malaa-hero')?.remove();
+ return '<section class="v30-context-page v30-malaa">'+root.innerHTML+'</section>';
+};
+const oldPositionView=positionView;
+positionView=function(){
+ const root=document.createElement('div');root.innerHTML=oldPositionView();
+ root.querySelector(':scope > .grid.stats')?.remove();
+ return '<section class="v30-context-page v30-position">'+root.innerHTML+'</section>';
+};
+reports=function(){
+ const incomeValue=rkRecordedIncome(),outflow=spent();
+ const savings=(db.savings||[]).reduce((t,s)=>t+nOrZero(s.balance),0);
+ const investment=(db.holdings||[]).reduce((t,h)=>t+(h.kind==='محفظة استثمارية'?nOrZero(h.marketValue):nOrZero(h.quantity)*nOrZero(h.price)),0);
+ const budgetShare=Number(db.salary||0)*Number(db.ratios?.hilal||0)/100;
+ const operational=budgetShare-outflow;
+ const categories=(db.categories||[]).filter(c=>!c.archived);
+ const rows=categories.map(c=>{
+  const budget=nOrZero(c.limit)*100,used=spent(c.id),left=budget-used;
+  return '<div class="v30-report-line"><strong>'+clean(c.name)+'</strong>'+
+   '<div><span>المخصص '+number(budget)+'</span><span class="v30-red">المصروف '+number(used)+'</span></div>'+
+   '<b class="'+(left<0?'v30-red':'v30-teal')+'">'+(left<0?'تجاوز ':'متبقّي ')+number(Math.abs(left))+'</b></div>';
+ }).join('');
+ return '<section class="v30-screen v30-reports">'+
+  headline('تقرير الشهر '+clean(month),null,'')+
+  '<section class="v30-report-section" aria-label="كشف الحركة المالية"><h3>ملخص الحركة المسجلة</h3>'+
+  '<div class="v30-report-line"><strong>الدخل المسجل</strong><b class="v30-teal">'+number(incomeValue)+'</b></div>'+
+  '<div class="v30-report-line"><strong>المصروف الفعلي</strong><b class="v30-red">'+number(outflow)+'</b></div>'+
+  '<div class="v30-report-line"><strong>المتاح التشغيلي التقديري</strong><b class="'+(operational<0?'v30-red':'v30-teal')+'">'+number(operational)+'</b></div>'+
+  '<div class="v30-report-line"><strong>الادخار والاستثمار المسجلان</strong><b>'+number(savings+investment)+'</b></div></section>'+
+  '<section class="v30-report-section" aria-label="انحراف الميزانية"><h3>تفاصيل بنود الميزانية</h3>'+
+  (rows||empty('لا توجد بنود ميزانية مسجلة.'))+'</section>'+
+  '<section class="v30-report-section"><h3>التصدير والطباعة</h3>'+
+   '<div class="v30-export-actions"><button class="btn primary" onclick="exportCsv()">تصدير المعاملات</button>'+
+   '<button class="btn" onclick="window.print()">طباعة التقرير</button>'+
+   '<button class="btn" onclick="exportJson()">نسخة احتياطية</button></div>'+
+   '<p class="v30-note">هذه الأرقام مشتقة من السجلات المحلية، ولا تمثل مطابقة كشف حساب مصرفي.</p></section></section>';
+};
+importView=function(){
+ return '<section class="v30-screen v30-import">'+headline('استيراد البيانات المالية',null,'')+
+ '<div class="v30-import-grid">'+
+ '<section class="v30-report-section"><h3>استيراد كشف المعاملات</h3>'+
+ '<label class="v30-input-label" for="csvFile">اختيار ملف معاملات</label>'+
+ '<input type="file" id="csvFile" accept=".csv,text/csv" onchange="readCsv(this)" />'+
+ '<p class="v30-note">اختر ملفاً نصياً مفصولاً بفواصل. تتم معاينة العمليات قبل اعتمادها ولا يُنشأ اتصال بالبنك.</p></section>'+
+ '<section class="v30-report-section"><h3>تحليل رسالة مصرفية</h3>'+
+ '<label class="v30-input-label" for="sms">نص الرسالة</label>'+
+ '<textarea id="sms" rows="5" placeholder="الصق رسالة مصرفية بعد إزالة البيانات الحساسة"></textarea>'+
+ '<button class="btn primary v30-full-action" onclick="readSMS()">تحليل الرسالة ومعاينتها</button>'+
+ '<p class="v30-note">تُدخل الرسالة يدوياً ولا تُقرأ من الهاتف تلقائياً.</p></section></div>'+
+ '<section class="v30-report-section"><h3>المراجعة قبل الاعتماد</h3>'+
+ '<div id="importPreview">'+(importRows.length?previewRows():empty('لم تُحمّل أي معاملات للمراجعة.'))+'</div></section></section>';
+};
+const oldSettingsView=settings;
+settings=function(){
+ const root=document.createElement('div');root.innerHTML=oldSettingsView();
+ const tabs=root.querySelector('.settings-tabs');
+ if(tabs){tabs.setAttribute('role','tablist');tabs.setAttribute('aria-label','أقسام الإعدادات');}
+ const panel=root.querySelector('.settings-panel');
+ if(panel)panel.classList.add('v30-settings-panel');
+ const note=settingsTab==='salary'?'توزيع الراتب على المراكز وفق النسب المسجلة. الترحيل لا ينفذ أي تحويل بنكي.':
+ settingsTab==='budgets'?'تعديل حدود البنود التشغيلية للشهر.':'إدارة بيانات المنصة المحلية. احفظ نسخة احتياطية قبل إجراء عمليات الحذف.';
+ return '<section class="v30-screen v30-settings">'+root.innerHTML+
+  '<p class="v30-note v30-settings-notice">'+clean(note)+'</p></section>';
+};
+const oldRender=render;
+render=function(){
+ const result=oldRender.apply(this,arguments);
+ const view=document.getElementById('view');
+ if(view)view.dataset.v30Page=page;
+ return result;
+};
+render();
+})();
