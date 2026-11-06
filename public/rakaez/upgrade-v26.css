@@ -842,3 +842,428 @@
  #view .v30-add{padding:7px;font-size:10px}
  #view .v30-export-actions{grid-template-columns:minmax(0,1fr)}
 }
+
+
+/* Rakaez v30 — remaining operational pages, shared approved-palette components. */
+#view .v30-screen,#view .v30-context-page{
+ display:grid;gap:13px;
+ width:100%;max-width:100%;min-width:0;
+ color:var(--ink)
+}
+#view .v30-screen>*,
+#view .v30-context-page>*{min-width:0;max-width:100%}
+#view .v30-pagehead{
+ display:flex;flex-direction:row;flex-wrap:nowrap;
+ align-items:center;justify-content:space-between;
+ gap:12px;min-width:0;width:100%;
+ margin:0;padding:0
+}
+#view .v30-pagehead h2{
+ color:var(--navy);font-size:17px;
+ line-height:1.5;font-weight:850;
+ min-width:0;overflow-wrap:anywhere;
+ margin:0!important
+}
+#view .v30-pagehead .v30-add{
+ display:inline-flex!important;align-items:center;justify-content:center;
+ flex:0 0 auto;min-width:0!important;width:auto!important;
+ min-height:45px!important;margin:0!important;
+ white-space:nowrap;gap:7px;
+ padding:9px 13px!important;
+ background:var(--teal)!important;
+ color:var(--white)!important;
+ border-color:var(--teal)!important;
+ font-size:12px!important;font-weight:800!important
+}
+#view .v30-pagehead .v30-add svg{width:17px;height:17px;flex:0 0 17px;stroke:currentColor}
+#view .v30-record-grid{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+ align-items:start;gap:12px;min-width:0
+}
+#view .v30-record{
+ display:grid;gap:12px;
+ width:100%;min-width:0;max-width:100%;
+ padding:16px;
+ border:1px solid var(--line);
+ border-right:3px solid var(--navy);
+ border-radius:14px;background:var(--white);
+ box-shadow:0 3px 12px color-mix(in srgb,var(--navy) 5%,transparent);
+ color:var(--ink);font:inherit;text-align:right;cursor:pointer
+}
+#view .v30-debt-record,#view .v30-fee-record{border-right-color:var(--red)}
+#view .v30-reserve-record{border-right-color:var(--blue)}
+#view .v30-record-head{
+ display:flex;align-items:flex-start;
+ justify-content:space-between;gap:10px;
+ min-width:0
+}
+#view .v30-record-head>div{
+ display:grid;gap:5px;min-width:0
+}
+#view .v30-record-head strong{
+ color:var(--navy);font-size:14px;
+ font-weight:850;line-height:1.55;
+ overflow-wrap:anywhere
+}
+#view .v30-record-head small{
+ color:var(--muted);font-size:11px;
+ line-height:1.5;overflow-wrap:anywhere
+}
+#view .v30-status{
+ display:inline-flex;align-items:center;justify-content:center;
+ flex:0 0 auto;border:1px solid var(--line);
+ border-radius:9px;min-height:28px;
+ padding:5px 8px;
+ font-size:10px;font-weight:850;line-height:1.35;
+ white-space:nowrap
+}
+#view .v30-status-gold{
+ color:var(--gold);
+ border-color:color-mix(in srgb,var(--gold) 25%,var(--white));
+ background:color-mix(in srgb,var(--gold) 8%,var(--white))
+}
+#view .v30-status-teal{
+ color:var(--teal);
+ border-color:color-mix(in srgb,var(--teal) 25%,var(--white));
+ background:color-mix(in srgb,var(--teal) 8%,var(--white))
+}
+#view .v30-status-red{
+ color:var(--red);
+ border-color:color-mix(in srgb,var(--red) 25%,var(--white));
+ background:color-mix(in srgb,var(--red) 8%,var(--white))
+}
+#view .v30-status-blue{
+ color:var(--blue);
+ border-color:color-mix(in srgb,var(--blue) 25%,var(--white));
+ background:color-mix(in srgb,var(--blue) 8%,var(--white))
+}
+#view .v30-facts{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+ min-width:0;gap:8px
+}
+#view .v30-single-fact{grid-template-columns:minmax(0,1fr)}
+#view .v30-fact{
+ display:grid;align-content:center;gap:7px;
+ min-width:0;padding:11px;
+ border:1px solid var(--line);
+ border-radius:10px;background:var(--paper)
+}
+#view .v30-fact span{
+ color:var(--muted);font-size:11px;
+ font-weight:700;line-height:1.5
+}
+#view .v30-fact strong{
+ color:var(--navy);font-size:14px;
+ font-weight:850;line-height:1.55;
+ overflow-wrap:anywhere;unicode-bidi:plaintext
+}
+#view .v30-fact.v30-blue{
+ background:color-mix(in srgb,var(--blue) 6%,var(--white));
+ border-color:color-mix(in srgb,var(--blue) 20%,var(--white))
+}
+#view .v30-fact.v30-blue strong{color:var(--blue)}
+#view .v30-fact.v30-teal{
+ background:color-mix(in srgb,var(--teal) 6%,var(--white));
+ border-color:color-mix(in srgb,var(--teal) 20%,var(--white))
+}
+#view .v30-fact.v30-teal strong{color:var(--teal)}
+#view .v30-fact.v30-red{
+ background:color-mix(in srgb,var(--red) 6%,var(--white));
+ border-color:color-mix(in srgb,var(--red) 20%,var(--white))
+}
+#view .v30-fact.v30-red strong{color:var(--red)}
+#view .v30-record-foot{
+ display:flex;align-items:center;justify-content:space-between;
+ flex-wrap:nowrap;gap:10px;
+ min-width:0;
+ padding-top:10px;border-top:1px solid var(--line)
+}
+#view .v30-record-foot span{
+ font-size:11px;line-height:1.55;
+ color:var(--muted);min-width:0;
+ overflow-wrap:anywhere
+}
+#view .v30-record-foot span:last-child{
+ color:var(--teal);font-weight:850;
+ flex:0 0 auto
+}
+#view .v30-progress{
+ display:block;height:7px;
+ overflow:hidden;border-radius:99px;
+ background:var(--paper)
+}
+#view .v30-progress span{
+ display:block;height:100%;
+ border-radius:inherit;background:var(--teal)
+}
+#view .v30-empty{
+ grid-column:1/-1;
+ display:grid;place-items:center;
+ padding:24px 14px;
+ background:var(--white);
+ border:1px dashed var(--line);border-radius:13px;
+ font-size:12px;color:var(--muted);
+ line-height:1.6;text-align:center
+}
+#view .v30-record:focus-visible,
+#view .v30-add:focus-visible{
+ outline:2px solid var(--teal)!important;
+ outline-offset:2px!important
+}
+/* Actual per-record goal and asset data stays in their original functional cards. */
+#view .v30-goals .rk-goal-list{
+ display:grid;gap:11px;
+ grid-template-columns:repeat(2,minmax(0,1fr));min-width:0
+}
+#view .v30-goals .rk-goal-card{
+ min-width:0;padding:15px!important;border-radius:14px!important;
+ background:var(--white)!important;
+ border:1px solid var(--line)!important;
+ border-right:3px solid var(--teal)!important;
+ box-shadow:0 3px 10px color-mix(in srgb,var(--navy) 5%,transparent)!important
+}
+#view .v30-goals .rk-goal-values{
+ display:grid!important;
+ grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ gap:7px!important
+}
+#view .v30-goals .rk-goal-values>div{min-width:0}
+#view .v30-goals .rk-goal-values strong{
+ overflow-wrap:anywhere!important;font-size:12px!important
+}
+#view .v30-assets .rk-account-list,
+#view .v30-assets .rk-opportunities,
+#view .v30-hilal .rk-budget-shell,
+#view .v30-malaa .rk-malaa-main{
+ min-width:0;max-width:100%;border-color:var(--line)!important
+}
+#view .v30-assets :is(.rk-account-actions,.rk-assets-study-tabs),
+#view .v30-malaa :is(.rk-malaa-tabs,.rk-inline-toolbar){
+ max-width:100%;min-width:0
+}
+/* Financial report and importer resemble readable statements, not dashboard metric tiles. */
+#view .v30-report-section{
+ display:grid;gap:10px;
+ background:var(--white);
+ border:1px solid var(--line);
+ border-radius:14px;
+ padding:16px;min-width:0;
+ box-shadow:0 3px 11px color-mix(in srgb,var(--navy) 4%,transparent)
+}
+#view .v30-report-section>h3{
+ color:var(--navy);
+ font-size:14px;font-weight:850;
+ line-height:1.5;
+ margin:0 0 2px!important
+}
+#view .v30-report-line{
+ display:flex;align-items:center;justify-content:space-between;
+ flex-wrap:wrap;gap:10px;
+ min-width:0;padding:10px 0;
+ border-bottom:1px solid var(--line)
+}
+#view .v30-report-line:last-child{border-bottom:0}
+#view .v30-report-line strong{
+ font-size:12px;line-height:1.6;
+ color:var(--navy);font-weight:800;
+ min-width:0;overflow-wrap:anywhere
+}
+#view .v30-report-line b{
+ font-size:13px;color:var(--navy);
+ font-weight:850;line-height:1.6;
+ unicode-bidi:plaintext
+}
+#view .v30-report-line>div{
+ display:flex;align-items:center;justify-content:flex-start;
+ flex-wrap:wrap;gap:8px 14px;
+ width:100%;min-width:0
+}
+#view .v30-report-line>div span{
+ font-size:11px;line-height:1.5;
+ color:var(--muted);unicode-bidi:plaintext
+}
+#view .v30-report-line .v30-red,
+#view .v30-red{color:var(--red)!important}
+#view .v30-report-line .v30-teal,
+#view .v30-teal{color:var(--teal)!important}
+#view .v30-export-actions{
+ display:grid;
+ grid-template-columns:repeat(3,minmax(0,1fr));
+ align-items:stretch;gap:8px;min-width:0
+}
+#view .v30-export-actions>.btn{
+ display:inline-flex!important;align-items:center;justify-content:center;
+ min-width:0!important;width:100%!important;min-height:45px!important;
+ white-space:normal!important;line-height:1.4!important;
+ font-size:12px!important;padding:8px 7px!important;
+ margin:0!important
+}
+#view .v30-note{
+ color:var(--muted);font-size:12px;
+ line-height:1.8;margin:0
+}
+#view .v30-import-grid{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:12px;align-items:start;min-width:0
+}
+#view .v30-input-label{
+ color:var(--navy);font-size:12px;font-weight:800;
+ line-height:1.5
+}
+#view .v30-import #csvFile,
+#view .v30-import #sms{
+ display:block;width:100%;max-width:100%;
+ min-width:0;margin:0;
+ border:1px solid var(--line);
+ border-radius:10px;
+ background:var(--paper);
+ font:inherit;color:var(--ink);
+ padding:11px;font-size:13px
+}
+#view .v30-import #sms{
+ min-height:120px;resize:vertical;
+ overflow-wrap:anywhere
+}
+#view .v30-import .v30-full-action{
+ width:100%!important;min-height:45px!important;
+ margin:0!important;white-space:normal!important
+}
+#view .v30-import #importPreview{
+ min-width:0;max-width:100%;
+ overflow-x:auto
+}
+/* Tabbed settings: familiar, compact and contained. */
+#view .v30-settings .settings-tabs{
+ display:grid!important;
+ grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ gap:8px!important;min-width:0;max-width:100%
+}
+#view .v30-settings .settings-tabs>.btn{
+ display:inline-flex!important;align-items:center;justify-content:center;
+ gap:7px;min-width:0!important;width:100%!important;
+ min-height:45px!important;margin:0!important;
+ padding:8px!important;white-space:normal!important;
+ font-size:12px!important;font-weight:800!important;
+ border-radius:10px!important
+}
+#view .v30-settings .settings-tabs>.btn.active{
+ background:var(--navy)!important;
+ color:var(--white)!important;
+ border-color:var(--navy)!important
+}
+#view .v30-settings .settings-tabs svg{
+ width:17px;height:17px;flex:0 0 17px
+}
+#view .v30-settings .v30-settings-panel{
+ padding:16px!important;border:1px solid var(--line)!important;
+ min-width:0;max-width:100%;border-radius:14px!important
+}
+#view .v30-settings .formgrid{
+ display:grid!important;
+ grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ gap:12px!important;min-width:0
+}
+#view .v30-settings .formgrid .field{
+ min-width:0;width:100%
+}
+#view .v30-settings :is(input,select,textarea){
+ width:100%;min-width:0;max-width:100%;
+ min-height:47px;
+ border:1px solid var(--line);
+ color:var(--ink);background:var(--white);
+ border-radius:10px;padding:10px 12px
+}
+#view .v30-settings .settings-panel .actions{
+ display:flex!important;
+ flex-direction:row!important;
+ flex-wrap:nowrap!important;
+ justify-content:flex-start!important;
+ gap:8px!important;
+ width:100%!important;min-width:0!important;
+ margin-top:12px!important
+}
+#view .v30-settings .settings-panel .actions>.btn{
+ flex:1 1 0!important;min-width:0!important;width:100%!important;
+ min-height:45px!important;white-space:normal!important
+}
+#view .v30-settings .v30-settings-notice{
+ padding:11px 13px;
+ border:1px solid var(--line);
+ border-radius:11px;background:var(--white)
+}
+/* External banks and remaining record cards share consistent spacing. */
+#view .rk-external-grid{
+ display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ gap:11px!important;min-width:0
+}
+#view .rk-external-card{
+ min-width:0!important;
+ border:1px solid var(--line)!important;
+ border-right:3px solid var(--teal)!important;
+ border-radius:14px!important;padding:14px!important;
+ box-shadow:0 3px 10px color-mix(in srgb,var(--navy) 5%,transparent)!important
+}
+#view .rk-external-card .rk-external-fields{
+ display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ gap:8px!important;min-width:0
+}
+#view .rk-external-card .rk-external-fields>span{
+ min-width:0;overflow-wrap:anywhere
+}
+#view .rk-external-card .rk-external-fields b{
+ overflow-wrap:anywhere;color:var(--navy)
+}
+/* Every dialog stays inset on phones; action groups remain on one row. */
+#modalRoot .modal,
+#modalRoot .v27-dialog,
+#modalRoot .rk-record-detail{
+ box-sizing:border-box;
+ max-width:min(720px,calc(100vw - 24px))!important
+}
+#modalRoot :is(.v3footer,.rk-budget-detail-actions,.v27-dialog-footer){
+ flex-wrap:nowrap!important;
+ min-width:0!important;
+ max-width:100%!important
+}
+#modalRoot :is(.v3footer,.rk-budget-detail-actions,.v27-dialog-footer)>.btn{
+ min-width:0!important;
+ max-width:100%!important
+}
+@media(max-width:900px){
+ #view .v30-record-grid,
+ #view .v30-goals .rk-goal-list,
+ #view .v30-import-grid,
+ #view .rk-external-grid{
+  grid-template-columns:minmax(0,1fr)!important
+ }
+}
+@media(max-width:520px){
+ #view .v30-screen,#view .v30-context-page{gap:11px}
+ #view .v30-pagehead{gap:9px}
+ #view .v30-pagehead h2{font-size:15px}
+ #view .v30-pagehead .v30-add{font-size:11px!important;padding:9px 11px!important}
+ #view .v30-record-grid{gap:10px}
+ #view .v30-record{padding:12px;gap:10px}
+ #view .v30-record-head strong{font-size:13px}
+ #view .v30-record-head small{font-size:10px}
+ #view .v30-facts{gap:7px}
+ #view .v30-fact{padding:9px;gap:4px}
+ #view .v30-fact strong{font-size:13px}
+ #view .v30-fact span{font-size:10px}
+ #view .v30-status{font-size:10px}
+ #view .v30-report-section{padding:12px;gap:8px}
+ #view .v30-report-line{padding:9px 0}
+ #view .v30-export-actions>.btn{font-size:10px!important;padding:8px 4px!important}
+ #view .v30-settings .formgrid{grid-template-columns:minmax(0,1fr)!important}
+ #view .v30-settings .v30-settings-panel{padding:12px!important}
+ #view .v30-settings .settings-tabs>.btn{font-size:11px!important;padding:7px 4px!important}
+ #view .v30-goals .rk-goal-values{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ #view .v30-goals .rk-goal-values>div:last-child:nth-child(odd){grid-column:1/-1}
+ #view .rk-external-grid{grid-template-columns:minmax(0,1fr)!important}
+}
+@media(max-width:360px){
+ #view .v30-record-head{gap:6px}
+ #view .v30-record-head strong{font-size:12px}
+ #view .v30-fact strong{font-size:12px}
+ #view .v30-export-actions{gap:5px}
+}
