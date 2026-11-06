@@ -2539,7 +2539,7 @@ function rakaezSemanticPurpose(btn){
   [/متابعة الإجراءات|متابعة الحالات|سجل المتابعة/,'list'],
   [/تحليل|تقارير|إحصائيات|رسم بياني|مؤشرات/,'chart'],
   [/تحديث|تجديد/,'refresh'],
-  [/حركة مالية/,'wallet'],
+  [/حركة مالية/,'plus'],
   [/قائمة|سجل/,'list']
  ];
  return (rules.find(([test])=>test.test(t))||[])[1]||null;
@@ -2560,6 +2560,11 @@ function rakaezDecorateButtons(root=document){
    return;
   }
   if(btn.dataset.rakaezSemanticIcon===purpose)return;
+  // Icon-only menu and close controls must not display a second text glyph.
+  if(!shell&&!firstSVG&&(purpose==='menu'||/^[×✕xX]$/.test((btn.textContent||'').trim()))){
+   btn.textContent='';
+   btn.setAttribute('aria-label',purpose==='menu'?'فتح القائمة':'إغلاق');
+  }
   btn.dataset.rakaezSemanticIcon=purpose;
   const illustration=ico(purpose);
   if(shell){shell.innerHTML=illustration;}
