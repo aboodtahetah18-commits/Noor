@@ -250,7 +250,7 @@
    (rows||'<p class="rk44-subnote">لا توجد تحويلات حماية مسجلة بعد.</p>')+'</div></div></details>';
  }
  function applyFinancialAction(action,verb,detail,successMessage){
-  const keys=['rk44Transfers','rk44Yields','rk44StarterPolicy','rk44StarterMonths','ledgerEntries','audit'];
+  const keys=['rk44Transfers','rk44Yields','rk44StarterPolicy','rk44StarterMonths','rk44StartSchedule','rk44VerifiedStart','rk44VerifiedMonths','ledgerEntries','audit'];
   const original=Object.fromEntries(keys.map(k=>[k,{
    exists:Object.prototype.hasOwnProperty.call(db,k),
    value:Object.prototype.hasOwnProperty.call(db,k)?JSON.stringify(db[k]):null
@@ -310,42 +310,20 @@
  }
  const previousReserves=reservesView;
  reservesView=function(){
-  let data;
-  try{data=adaptive.assess(db,activePeriod());}
-  catch(err){return previousReserves();}
-  const h=data.banks.hilal,m=data.banks.malaa,a=data.banks.assets;
-  const hilal=bankCard('hilal','بنك الهلال','التشغيل وامتصاص الأزمات','هدف الحماية المتغير',fmt(h.target),'navy',
-   h,[metric('المحجوز داخليًا',fmt(h.recorded),'teal'),
-   metric('الفجوة الحالية',fmt(h.gap),h.gap>0?'red':'teal'),
-   metric('مدة الحماية',data.policy.hilal+' '+(data.policy.hilal===1?'شهر':'أشهر'),'blue')],null,data);
-  const malaa=bankCard('malaa','بنك ملاءة','السيولة والادخار المتاح','احتياطي السيولة المتغير',fmt(m.target),'navy',
-   m,[metric('السيولة خلال 3 أيام',fmt(m.recorded),'teal'),
-   metric('السيولة الفورية',fmt(m.instant),'blue'),
-   metric('نقص التغطية',fmt(m.gap),m.gap>0?'red':'teal')],null,data);
-  const assets=bankCard('assets','بنك الأصول','الاستثمارات والقدرة على النمو','قيمة الاستثمارات المسجلة',fmt(a.market),'blue',
-   a,[metric('فائض قابل للدراسة الاستثمارية',fmt(a.target),a.target?'teal':'navy'),
-   metric('الأصول الاستثمارية',String(data.investment.count),'teal'),
-   metric('هامش أمان قبل الاستثمار',fmt(a.safetyBuffer),'gold')],
-   'القيمة السوقية ليست رصيدًا فوريًا للسحب',data);
-  return '<section class="rk44-screen" aria-label="مركز الحماية والاستثمار">'+
-   '<header class="rk44-screen-title"><h2>الاحتياطيات المتغيرة والاستثمار</h2>'+
-   hint('يتغير احتياطي الحماية مع المصروفات والأقساط والديون والرسوم المسجلة. الأرصدة مدخلة محليًا، والاستثمارات ليست نقدًا متاحًا فورًا.')+
-   '</header>'+
-   starterPanel(data)+yieldPanel()+
-   '<details class="rk44-advanced"><summary>تفاصيل الحماية الوقائية طويلة المدى وحساباتها</summary><div class="rk44-advanced-body">'+
-   '<div class="rk44-topline">'+
-   metric('الاحتياج الشهري المحسوب',fmt(data.monthlyNeed),'navy')+
-   metric('إجمالي الادخار المسجل',fmt(data.savings.total),'teal')+
-   metric('فجوة السيولة الوقائية',fmt(data.gapToProtection),data.gapToProtection?'red':'teal')+'</div>'+
-   '<div class="rk44-bank-list">'+hilal+malaa+assets+'</div></div></details>'+
-   riskPanel(data)+liquidityPanel(data)+transferPanel(data)+scenarioPanel()+
-   '<p class="rk44-caution-note">لا تُنفّذ تحويلات أو مشتريات استثمارية تلقائيًا. تُثبت العمليات بعد المراجعة من صفحات البنوك المعنية. وقد تختلف السيولة الفعلية عن الأرصدة المدخلة حتى تتم المطابقة.</p>'+
+  const period=rkStartMonth(),status=adaptive.onboardingState(db,period);
+  return '<section class="rk44-screen" aria-label="تأسيس البنوك من معلومات موثقة">'+
+   '<header class="rk44-screen-title"><h2>الانطلاقة والحماية المالية</h2>'+
+   hint('الأهداف وأرقام الفائض القديمة كانت أمثلة وليست تحليلًا معتمدًا. لا تُستخدم حتى تثبت البيانات الفعلية.')+'</header>'+
+   rkVerifiedSetup(status)+rkVerifiedMonth(status,period)+
+   '<details class="rk44-advanced"><summary>مراجعة سجلات التحويلات القديمة دون تعديلها</summary>'+
+   '<div class="rk44-advanced-body">'+transferPanel()+'</div></details>'+
+   '<p class="rk44-caution-note">لا يُحذف تاريخ معاملاتك ولا تتغير الأرصدة عند جدولة البداية أو اعتماد معلومات التخطيط.</p>'+
    '</section>';
  };
  const originalRender=render;
  render=function(){
   const result=originalRender.apply(this,arguments);
-  if(['insights','debts','hilal','malaa','assets','position'].includes(page)){
+  if(db.rk44LegacyCalculationApproved===true && ['insights','debts','hilal','malaa','assets','position'].includes(page)){
    const root=document.getElementById('view');
    if(root&&!root.querySelector('.rk44-alert-inline')){
     try{
