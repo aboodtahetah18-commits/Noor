@@ -25,6 +25,12 @@ const mainMonths=()=>{
 let selectedPeriod=typeof month==='string'?month:new Date().toISOString().slice(0,7);
 // Exposes only the selected month for consistent read-only bank summaries.
 window.RakaezHilalSelectedPeriod=()=>selectedPeriod;
+function dynamicSafetyTarget(){
+ const engine=window.RakaezAdaptiveCore;
+ if(!engine||typeof engine.assess!=='function')return undefined;
+ try{return engine.assess(db,selectedPeriod).banks.hilal.target;}
+ catch(e){return undefined;}
+}
 const bankSymbol=()=>document.querySelector('#nav [data-rk33-page="hilal"] .rk35-bankmark')?.outerHTML||'';
 const tone=(amount,preferred='teal')=>amount<0?'red':preferred;
 function value(label,amount,style='navy',hint=''){
@@ -68,7 +74,7 @@ function ledgerList(){
 }
 const originalHilal=hilal;
 hilal=function(){
- const budget=core.monthly(db,selectedPeriod),res=core.reserve(db);
+ const budget=core.monthly(db,selectedPeriod),res=core.reserve(db,dynamicSafetyTarget());
  const salary=(db.salaryMonths||[]).includes(selectedPeriod);
  const pending=core.read(db).events.filter(e=>e.kind==='bank-transfer'&&e.status==='pending'&&e.from===selectedPeriod);
  const hasAvail=budget.free>0&&!budget.deficit;
@@ -77,7 +83,7 @@ hilal=function(){
  const notice=budget.deficit&&budget.posted?'<div class="rk39-warning" role="alert">تنبيه: المصروفات أو الالتزامات المسجلة تجاوزت المخصص المتاح. أوقف النظام عمليات سحب فائض جديدة حتى تتم التسوية.</div>':
   !budget.posted&&salary?'<div class="rk39-warning">راتب هذا الشهر مسجل، لكن المخصص التشغيلي لم يُثبّت بعد. راجع قيمة الشهر الفعلية ثم اختر «تثبيت مخصص الشهر».</div>':
   !salary&&!budget.posted?'<div class="rk39-warning">لم يُسجل راتب هذا الشهر. لا يوجد مخصص جديد مؤكد؛ يمكن متابعة مبالغ مرحّلة سابقة فقط إن وُجدت.</div>':'';
- const reserveTitle=res.target?'الاحتياطي المستهدف لبنك الهلال':'حدد هدف الاحتياطي من مخصصات البنوك';
+ const reserveTitle=res.target?'الاحتياطي المتغير لبنك الهلال':'لا يوجد احتياطي مستهدف محسوب';
  const progress=Math.min(100,Math.max(0,res.progress));
  return '<section class="rk39-page" aria-label="عمليات بنك الهلال">'+
   '<header class="rk39-header"><div class="rk39-bank-identity">'+mark+'<div><h2>مخصصات التشغيل</h2><p>حساب مخصص مستقل لكل شهر في بنك الهلال</p></div></div><label class="rk39-period">شهر المتابعة <select id="rk39Period">'+periodOptions(selectedPeriod)+'</select></label></header>'+
@@ -162,8 +168,8 @@ function submitForm(form){
   result=core.snapshotMonth(db,p,amt,'تمت مراجعته يدويًا في دورة الراتب');
  }
  if(kind==='rollover')result=core.rollover(db,p,String(fields.get('to')||''),amt,note);
- if(kind==='reserve-add')result=core.reserveAdd(db,p,amt,note);
- if(kind==='reserve-opening')result=core.reserveOpening(db,amt,fields.get('reference'),'رصيد افتتاحي موثق خارج مخصصات الأشهر');
+ if(kind==='reserve-add')result=core.reserveAdd(db,p,amt,note,dynamicSafetyTarget());
+ if(kind==='reserve-opening')result=core.reserveOpening(db,amt,fields.get('reference'),'رصيد افتتاحي موثق خارج مخصصات الأشهر',dynamicSafetyTarget());
  if(kind==='reserve-release')result=core.reserveRelease(db,p,amt,note);
  if(kind==='bank-transfer')result=core.requestTransfer(db,p,String(fields.get('targetBank')||''),amt,note);
  if(kind==='confirm')result=core.confirmTransfer(db,id,fields.get('reference'));
