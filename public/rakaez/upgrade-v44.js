@@ -68,7 +68,7 @@
    '<strong class="rk44-teal">لا يظهر ضغط مرتفع من الالتزامات المسجلة حاليًا.</strong>')+
    '<div class="rk44-response-actions">'+
    '<button type="button" data-rk44-page="debts">مراجعة الأقساط وسدادها</button>'+
-   '<button type="button" data-rk44-page="hilal">إدارة احتياطي الهلال</button>'+
+   '<button type="button" data-rk44-release>طلب تفعيل احتياطي الهلال</button>'+
    '<button type="button" data-rk44-page="interbank">التمويل بين البنوك</button></div></div></section>';
  }
  function scenarioPanel(){
@@ -144,6 +144,21 @@
  const bankPosition=Array.isArray(N)?N.find(row=>row[0]==='position'):null;
  if(bankPosition)bankPosition[1]='الوضع المالي للبنوك';
  document.addEventListener('click',event=>{
+  const release=event.target.closest('[data-rk44-release]');
+  if(release){
+   event.preventDefault();event.stopImmediatePropagation();
+   const registry=window.RakaezHilalCore;
+   const earmarked=registry&&typeof registry.reserve==='function'?registry.reserve(db).earmarked:0;
+   navigate('hilal');
+   if(earmarked>0){
+    const trigger=document.querySelector('#view [data-rk39-open="reserve-release"]');
+    if(trigger)trigger.click();
+    else alert('افتح عمليات الاحتياطي وسجّل إعادة التخصيص بعد مراجعة المبلغ.');
+   }else{
+    alert('لم يُسجّل احتياطي محجوز يمكن إعادة تخصيصه. راجع احتياطي الهلال والرصيد الفعلي أولًا.');
+   }
+   return;
+  }
   const button=event.target.closest('[data-rk44-page]');
   if(!button)return;
   event.preventDefault();event.stopImmediatePropagation();
