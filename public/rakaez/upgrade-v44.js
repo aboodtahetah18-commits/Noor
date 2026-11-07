@@ -107,12 +107,12 @@
     const requestId=y.transferIds[bank];
     const t=requestId?adaptive.transfers(db).find(x=>x.id===requestId):null;
     const state=t?({pending:'طلب قيد الانتظار',executed:'خرج ولم تصل مطابقته',matched:'مطابق',cancelled:'طلب ملغي'}[t.status]||'طلب مسجل'):'لم يعتمد طلب التحويل';
-    const btn=y.status==='recorded'&&!requestId&&y.splitAmounts[bank]>0?
-     '<button type="button" data-rk44-yield-split="'+safe(y.id)+'" data-rk44-yield-bank="'+bank+'">اعتماد طلب</button>':
+    const btn=y.status==='recorded'&&(!requestId||t?.status==='cancelled')&&y.splitAmounts[bank]>0?
+     '<button type="button" data-rk44-yield-split="'+safe(y.id)+'" data-rk44-yield-bank="'+bank+'">'+(t?.status==='cancelled'?'إعادة اعتماد الطلب':'اعتماد طلب')+'</button>':
      '<small>'+safe(state)+'</small>';
     return '<div class="rk44-yield-line"><span>'+safe(adaptive.bankNames[bank])+'</span><b>'+fmt(y.splitAmounts[bank])+'</b>'+btn+'</div>';
    }).join('');
-   const correction=y.status==='recorded'&&!Object.values(y.transferIds).some(Boolean)?
+   const correction=y.status==='recorded'&&!Object.values(y.transferIds).some(id=>id&&adaptive.transfers(db).find(t=>t.id===id)?.status!=='cancelled')?
     '<details class="rk44-yield-correction"><summary>تصحيح العائد</summary><form data-rk44-yield-reverse data-rk44-id="'+safe(y.id)+'">'+
     '<label>سبب العكس<input name="reason" minlength="5" maxlength="150" required></label>'+
     '<button type="submit">قيد عكسي مستقل</button></form></details>':'';
