@@ -494,3 +494,21 @@
  #view .rk44-starter-line{flex-wrap:wrap}
  #view .rk44-starter-line>b{max-width:100%}
 }
+
+
+/* التهيئة الواقعية: من دون قيم أو ألوان جديدة خارج متغيرات ركائز. */
+#view .rk44-start-state{display:grid;gap:6px;min-width:0;padding:10px 0;border-block:1px solid var(--line)}
+#view .rk44-start-state>strong{font-size:13px;font-weight:850;color:var(--navy);line-height:1.7}
+#view .rk44-start-state>small{font-size:11px;line-height:1.7;color:var(--muted);overflow-wrap:anywhere}
+#view .rk44-onboarding .rk44-starter-settings>summary{overflow-wrap:anywhere}
+#view .rk44-onboarding .rk44-starter-inputs label{line-height:1.7}
+#view .rk44-onboarding .rk44-starter-inputs input{direction:ltr;text-align:right}
+#view .rk44-onboarding .rk44-transfer-primary{width:100%;min-width:0;max-width:100%;box-sizing:border-box;min-height:40px}
+#view .rk44-onboarding .rk44-approval{display:flex;align-items:flex-start;gap:8px;font-size:11px;line-height:1.75}
+#view .rk44-onboarding .rk44-approval input{flex:0 0 auto;margin-top:4px}
+#view .rk44-onboarding h4{margin:0;font-size:12px;color:var(--navy)}
+#view .rk44-verified-start,#view .rk44-starter-month{min-width:0}
+@media(max-width:360px){
+ #view .rk44-onboarding{padding:11px;gap:9px}
+ #view .rk44-start-state{padding:8px 0}
+}
