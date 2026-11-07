@@ -1879,7 +1879,9 @@ function cents(id){let n=Number(getVal(id));return Number.isFinite(n)&&n>=0?Math
 function saveV3(type,id){let o={id:id||rid(),name:getVal('vName'),notes:getVal('vNotes'),date:getVal('vDate')};if(type==='reserves'){let n=cents('vAmount');if(!Number.isFinite(n))return alert('المبلغ غير صالح');db.reserves[id]=n;audit('تعديل مركز مالي',bankName(id));}
 else{if(!o.name)return alert('اسم البند مطلوب');if(type==='goals'){Object.assign(o,{target:cents('vTarget'),saved:cents('vSaved'),monthly:cents('vMonthly')});if(o.saved>o.target)return alert('المبلغ المخصص لا يتجاوز قيمة الهدف')}
 if(type==='debts'){Object.assign(o,{principal:cents('vPrincipal'),paid:cents('vPaid'),installment:cents('vInstallment'),rate:Number(getVal('vRate'))});if(o.paid>o.principal)return alert('المبلغ المسدد أكبر من أصل الالتزام');if(!Number.isFinite(o.rate)||o.rate<0)return alert('معدل غير صالح')}
-if(type==='fees')Object.assign(o,{bank:getVal('vBank'),account:getVal('vAccount'),amount:cents('vAmount'),period:getVal('vPeriod')});if(Object.values(o).some(v=>typeof v==='number'&&!Number.isFinite(v)))return alert('أدخل أرقاماً صحيحة');if(id){let i=db[type].findIndex(x=>x.id===id);if(i<0)return alert('تعذر العثور على السجل');db[type][i]=o}else db[type].push(o);audit(id?'تعديل سجل':'إضافة سجل',o.name)}save();closeModal();render();toast('تم حفظ البيانات')}
+if(type==='fees')Object.assign(o,{bank:getVal('vBank'),account:getVal('vAccount'),amount:cents('vAmount'),period:getVal('vPeriod')});if(Object.values(o).some(v=>typeof v==='number'&&!Number.isFinite(v)))return alert('أدخل أرقاماً صحيحة');if(id){let i=db[type].findIndex(x=>x.id===id);if(i<0)return alert('تعذر العثور على السجل');db[type][i]=type==='debts'&&db[type][i].repaymentMode==='capacity'?{
+ ...db[type][i],...o,repaymentMode:o.date||o.installment>0?'scheduled':'capacity'
+}:o}else db[type].push(o);audit(id?'تعديل سجل':'إضافة سجل',o.name)}save();closeModal();render();toast('تم حفظ البيانات')}
 
 function deleteV3(type,id){
  if(!['goals','debts','fees'].includes(type))return;
