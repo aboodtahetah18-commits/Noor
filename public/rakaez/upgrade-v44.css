@@ -173,3 +173,57 @@
  #view .rk44-policy{flex-wrap:wrap}
  #view .rk44-bank-head{flex-wrap:wrap}
 }
+
+
+/* Early intervention is compact and appears only when registered debts increase risk. */
+#view .rk44-alert-inline{
+ direction:rtl!important;
+ display:flex!important;
+ justify-content:space-between!important;
+ align-items:center!important;
+ flex-wrap:wrap!important;
+ gap:9px!important;
+ width:100%!important;
+ max-width:100%!important;
+ min-width:0!important;
+ padding:10px 13px!important;
+ margin:0 0 12px!important;
+ border:1px solid color-mix(in srgb,var(--red) 25%,var(--line))!important;
+ border-inline-start:3px solid var(--red)!important;
+ border-radius:10px!important;
+ background:color-mix(in srgb,var(--red) 5%,var(--white))!important;
+ color:var(--navy)!important;
+ box-sizing:border-box!important;
+}
+#view .rk44-alert-inline>span{
+ flex:1 1 210px!important;
+ min-width:0!important;
+ font-size:11px!important;
+ font-weight:750!important;
+ line-height:1.7!important;
+ color:var(--navy)!important;
+ overflow-wrap:anywhere!important;
+}
+#view .rk44-alert-inline>button{
+ display:inline-flex!important;
+ justify-content:center!important;
+ align-items:center!important;
+ width:auto!important;
+ min-width:0!important;
+ min-height:35px!important;
+ padding:7px 12px!important;
+ flex:0 0 auto!important;
+ border:1px solid var(--red)!important;
+ border-radius:8px!important;
+ background:var(--white)!important;
+ color:var(--red)!important;
+ font:inherit!important;
+ font-size:11px!important;
+ font-weight:800!important;
+ white-space:nowrap!important;
+ cursor:pointer!important;
+}
+@media(max-width:380px){
+ #view .rk44-alert-inline>span{flex-basis:100%!important}
+ #view .rk44-alert-inline>button{width:100%!important}
+}
