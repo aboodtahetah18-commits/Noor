@@ -512,3 +512,50 @@
  #view .rk44-onboarding{padding:11px;gap:9px}
  #view .rk44-start-state{padding:8px 0}
 }
+
+
+/* بنود المستخدم والمعالون والالتزامات المرنة — ألوان ركائز المتاحة فقط */
+#view .rk44-flexible{min-width:0;max-width:100%;box-sizing:border-box}
+#view .rk44-flexible .rk44-starter-settings{
+ display:grid;gap:9px;padding:9px 0;border-top:1px solid var(--line);min-width:0
+}
+#view .rk44-flexible .rk44-starter-settings>summary{display:list-item;font-size:12px;font-weight:800;color:var(--navy);cursor:pointer}
+#view .rk44-flexible .rk44-starter-settings>form,
+#view .rk44-flexible [data-rk44-detail-mode],
+#view .rk44-flexible [data-rk44-flex-preview]{display:grid;gap:10px;padding:9px 0;min-width:0}
+#view .rk44-flex-list{display:grid;gap:0;min-width:0}
+#view .rk44-flex-record{border-bottom:1px solid var(--line);padding:8px 0;min-width:0}
+#view .rk44-flex-record>summary{font-size:11px;font-weight:750;color:var(--navy);line-height:1.8;overflow-wrap:anywhere;cursor:pointer}
+#view .rk44-flex-record>form{display:grid;gap:9px;min-width:0;padding:9px 0}
+#view .rk44-flex-record small,
+#view .rk44-flexible [data-rk44-suggest-output]{font-size:10px;line-height:1.7;color:var(--muted)}
+#view .rk44-flexible .rk44-starter-inputs{min-width:0}
+#view .rk44-flexible .rk44-starter-inputs label{min-width:0;font-size:11px;line-height:1.65}
+#view .rk44-flexible .rk44-starter-inputs :is(input,select){
+ width:100%;min-width:0;max-width:100%;box-sizing:border-box;
+ min-height:39px;padding:7px 9px;font:inherit;font-size:12px;
+ background:var(--white);color:var(--navy);border:1px solid var(--line);border-radius:8px
+}
+#view .rk44-flex-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;min-width:0}
+#view .rk44-flex-actions>button{
+ min-width:0;width:100%;min-height:37px;max-width:100%;padding:7px 9px;
+ background:var(--white);color:var(--navy);border:1px solid var(--line);
+ font:inherit;font-size:11px;font-weight:750;line-height:1.6;border-radius:8px;cursor:pointer
+}
+#view .rk44-flex-actions button[type=submit]{background:var(--teal);color:var(--white);border-color:var(--teal)}
+#view .rk44-flex-actions button[data-rk44-detail-remove]{color:var(--red)}
+#view .rk44-flex-summary{display:grid;justify-items:center;text-align:center;gap:5px;padding:10px 6px;border-block:1px solid var(--line)}
+#view .rk44-flex-summary>span{font-size:11px;color:var(--muted);line-height:1.7}
+#view .rk44-flex-summary>strong{font-size:23px;font-weight:850;color:var(--navy);unicode-bidi:plaintext}
+#view .rk44-flex-summary>small{font-size:10px;line-height:1.75;color:var(--muted);overflow-wrap:anywhere}
+#view .rk44-flexible .rk44-approval{min-width:0;align-items:flex-start;line-height:1.8}
+#view .rk44-flexible .rk44-approval input[type=checkbox]{flex:0 0 auto;margin-top:5px}
+#view .rk44-flexible [data-rk44-flex-result]{display:grid;gap:7px;min-width:0;font-size:12px;line-height:1.7}
+#view .rk44-flexible [data-rk44-flex-result]>strong{font-size:13px;overflow-wrap:anywhere}
+#view .rk44-flexible .rk44-transfer-primary{min-height:39px;width:100%;max-width:100%;box-sizing:border-box}
+#view .rk44-flexible :is(input,select,button,summary):focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+@media(max-width:360px){
+ #view .rk44-flexible .rk44-starter-inputs{grid-template-columns:minmax(0,1fr)}
+ #view .rk44-flex-actions{gap:5px}
+ #view .rk44-flex-actions>button{font-size:10px;padding:7px 4px}
+}
