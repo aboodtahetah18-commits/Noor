@@ -15,7 +15,7 @@
  }
  function activePeriod(){
   const getter=typeof window!=='undefined'?window.RakaezHilalSelectedPeriod:null;
-  const p=typeof getter==='function'?getter():typeof month!=='undefined'?month:'';
+  const p=typeof month==='string'?month:typeof getter==='function'?getter():'';
   return /^\d{4}-(0[1-9]|1[0-2])$/.test(p)?p:new Date().toISOString().slice(0,7);
  }
  function bankIcon(id){
