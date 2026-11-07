@@ -201,12 +201,14 @@
    if(root&&!root.querySelector('.rk44-alert-inline')){
     try{
      const data=adaptive.assess(db,activePeriod());
-     if(data.critical||data.warning){
+     if(data.critical||data.warning||(data.gapToProtection>0&&data.incomeRecorded)){
       const banner=document.createElement('div');
       banner.className='rk44-alert-inline';
       banner.setAttribute('role','alert');
-      banner.innerHTML='<span>تنبيه الحماية: عبء القروض المسجلة '+(data.critical?'حرج':'مرتفع')+
-       '؛ أُوقف ترشيح فائض جديد للاستثمار حتى مراجعة السيولة.</span>'+
+      const warning=data.critical||data.warning?
+       'تنبيه الحماية: ضغط الالتزامات '+(data.critical?'حرج':'مرتفع')+'؛ أُوقف ترشيح فائض جديد للاستثمار.':
+       'تنبيه الحماية: النقد المتاح في الدفتر لا يغطي هدف السيولة المطلوب؛ أُوقف ترشيح الاستثمار.';
+      banner.innerHTML='<span>'+warning+'</span>'+
        '<button type="button" data-rk44-page="reserves">مراجعة الحماية</button>';
       root.prepend(banner);
      }
