@@ -67,8 +67,8 @@
    }
    return sum;
  }
- function reserve(db){
-   const target=Number(db?.reserves?.hilal)||0;
+ function reserve(db,targetOverride){
+   const target=Number.isSafeInteger(targetOverride)&&targetOverride>=0?targetOverride:(Number(db?.reserves?.hilal)||0);
    assert(int(target),'الاحتياطي المستهدف غير صحيح.');
    const earmarked=reserveBalance(db);
    return {target,earmarked,gap:Math.max(0,target-earmarked),progress:target>0?Math.min(100,Math.round(earmarked/target*1000)/10):0,excess:Math.max(0,earmarked-target)};
@@ -104,15 +104,15 @@
    period(from);period(to);assert(to>from,'يجب ترحيل الفائض إلى شهر لاحق.');available(db,from,amount);
    return commit(db,state=>{const e=makeEvent('rollover',{from,to,amount,note},'posted');state.events.push(e);return e;});
  }
- function reserveAdd(db,from,amount,note){
-   period(from);available(db,from,amount);const target=reserve(db);
+ function reserveAdd(db,from,amount,note,targetOverride){
+   period(from);available(db,from,amount);const target=reserve(db,targetOverride);
    assert(target.target>0,'حدد الاحتياطي المستهدف أولًا من مخصصات البنوك.');
    assert(amount<=target.gap,'المبلغ يتجاوز الفجوة الحالية للاحتياطي المستهدف.');
    return commit(db,state=>{const e=makeEvent('reserve-add',{from,amount,note},'posted');state.events.push(e);return e;});
  }
- function reserveOpening(db,amount,reference,note){
+ function reserveOpening(db,amount,reference,note,targetOverride){
    positive(amount);
-   const target=reserve(db);
+   const target=reserve(db,targetOverride);
    assert(target.target>0,'حدد الاحتياطي المستهدف أولًا.');
    assert(target.earmarked===0&&!read(db).events.some(e=>['reserve-opening','reserve-add','reserve-release'].includes(e.kind)),'لا يجوز تسجيل افتتاحي بعد بدء حركات الاحتياطي.');
    assert(amount<=target.target,'الرصيد الافتتاحي يتجاوز المستهدف الحالي.');
