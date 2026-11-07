@@ -121,18 +121,24 @@ function commitPayment(form){
   d.paid=oldPaid+cents;
   audit('تسجيل سداد قسط',String(d.name||'التزام')+' · '+date+' · '+money(cents));
   save();
-  render();
-  detailV3('debts',id);
-  if(typeof toast==='function')toast('تم تسجيل سداد القسط وتحديث المتبقي');
  }catch(error){
   d.paid=oldPaid;
   if(previousEvents===null)delete db.debtPaymentEvents;
   else db.debtPaymentEvents=previousEvents;
   if(previousAudit!==null)db.audit=previousAudit;
   alert('تعذر حفظ السداد؛ لم يتم اعتماد العملية. تحقق من مساحة التخزين وأعد المحاولة.');
- }finally{
   isPaymentSaving=false;
   if(btn&&btn.isConnected)btn.disabled=false;
+  return;
+ }
+ isPaymentSaving=false;
+ if(btn&&btn.isConnected)btn.disabled=false;
+ try{
+  render();
+  detailV3('debts',id);
+  if(typeof toast==='function')toast('تم تسجيل سداد القسط وتحديث المتبقي');
+ }catch(error){
+  alert('تم حفظ السداد بنجاح، لكن تعذر تحديث العرض. افتح الالتزامات من جديد.');
  }
 }
 
@@ -177,6 +183,8 @@ function updateFilterIndicator(){
 function adjustResearch(){
  const entry=Array.isArray(N)?N.find(n=>n[0]==='research'):null;
  if(entry)entry[1]='دراسة الأسهم والشركات';
+ const navLabel=document.querySelector('#nav [data-rk33-page="research"] .rakaez-nav-name');
+ if(navLabel)navLabel.textContent='دراسة الأسهم والشركات';
  if(typeof page==='undefined'||page!=='research')return;
  const title=document.getElementById('pageTitle');
  if(title)title.textContent='دراسة الأسهم والشركات';
@@ -189,8 +197,6 @@ function adjustResearch(){
   hint.innerHTML='لدراسة الأسهم والشركات قبل الاستثمار. <button type="button" data-rk41-to-assets>المحافظ والصناديق الاستثمارية في بنك الأصول</button>';
   section.querySelector('.v31-title')?.insertAdjacentElement('afterend',hint);
  }
- const navLabel=document.querySelector('#nav [data-rk33-page="research"] .rakaez-nav-name');
- if(navLabel)navLabel.textContent='دراسة الأسهم والشركات';
 }
 function addDebtPaymentActions(){
  if(typeof page==='undefined'||page!=='debts')return;
@@ -215,6 +221,13 @@ render=function(){
  adjustResearch();
  adjustFinancingControls();
  addDebtPaymentActions();
+ if(typeof page!=='undefined'&&page==='insights'){
+  const kpis=Array.from(document.querySelectorAll('#view .rk-summary-kpis .rk-summary-kpi'));
+  const net=kpis[2]?.querySelector('strong');
+  if(net)net.classList.toggle('rk41-negative',/^[-−]/.test(net.textContent.trim()));
+  const subtitle=document.querySelector('#view .rk-executive-dashboard .sectiontitle span');
+  if(subtitle)subtitle.textContent=subtitle.textContent.replace('مراكز المنصة','بنوك المنصة');
+ }
  return result;
 };
 
@@ -255,6 +268,7 @@ document.addEventListener('click',event=>{
   if(filtersExpanded)document.getElementById('rk35Search')?.focus();
   return;
  }
+ if(event.target.closest('[data-rk35-reset]'))queueMicrotask(updateFilterIndicator);
  const toAssets=event.target.closest('[data-rk41-to-assets]');
  if(toAssets){event.preventDefault();navigate('assets');return;}
  if(filtersExpanded&&!event.target.closest('#rk41FinancingFilters,.rk41-filter-toggle')){
