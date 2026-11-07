@@ -281,3 +281,82 @@ test('subsequent review must not silently move the scheduled month after a month
  assert.equal(JSON.stringify(db.rk44VerifiedStart),snapshot);
  assert.equal(db.rk44StartSchedule.startMonth,'2026-12');
 });
+
+
+test('category suggestion is editable, ambiguous labels remain unclassified',()=>{
+ assert.equal(core.categorySuggestion('بنزين السيارة').category,'تنقل');
+ assert.equal(core.categorySuggestion('رسوم المدرسة').category,'تعليم');
+ assert.equal(core.categorySuggestion('قسط تمويل').category,'التزامات');
+ assert.equal(core.categorySuggestion('شيء خاص').category,null);
+ assert.equal(core.categorySuggestion('').category,null);
+});
+test('dependents have daily yearly irregular and zero expense options',()=>{
+ assert.equal(core.monthlyEquivalent(120000,'yearly'),10000);
+ assert.equal(core.monthlyEquivalent(1200,'daily'),36500);
+ assert.equal(core.monthlyEquivalent(0,'none'),0);
+ assert.equal(core.monthlyEquivalent(50000,'asNeeded'),null);
+ assert.throws(()=>core.monthlyEquivalent(1000,'invalid'));
+});
+test('user details never double count an already linked dependent',()=>{
+ const db=fixture();const cash=bankTotal(db),before=JSON.stringify(db.ledgerEntries);
+ core.saveUserDetails(db,{items:[{id:'food',name:'مقاضي العائلة',amount:100000,frequency:'monthly',category:'معيشة'}],
+  dependents:[{id:'dad',name:'والدي',relation:'أب',amount:20000,frequency:'monthly',includedInItems:true},
+   {id:'sister',name:'أختي',relation:'أخت',amount:120000,frequency:'yearly',includedInItems:false},
+   {id:'other',name:'معال دون مصروف',relation:'قريب',amount:0,frequency:'none',includedInItems:false}]});
+ const s=core.userDetailsSummary(db);
+ assert.equal(s.monthlyKnown,110000);
+ assert.equal(s.incomplete,0);
+ assert.equal(bankTotal(db),cash);
+ assert.equal(JSON.stringify(db.ledgerEntries),before);
+});
+test('confirmed detailed essentials replace the former aggregate; debt line never double counts',()=>{
+ const db=fixture();db.transactions=[];db.salaryMonths=[];
+ core.confirmFinancialStart(db,{income:500000,essentials:200000,obligations:50000,recurring:10000,
+  opening:{hilal:0,malaa:0,assets:0}},'2026-11');
+ const old=core.verifiedStarterPlan(db,'2026-12');
+ assert.equal(old.costs,260000);
+ core.saveUserDetails(db,{useAsEssentials:true,
+  items:[{id:'a',name:'مقاضي',amount:100000,frequency:'monthly',category:'معيشة'},
+   {id:'b',name:'قسط',amount:50000,frequency:'monthly',category:'التزامات'},
+   {id:'c',name:'سفر',amount:90000,frequency:'monthly',category:'أهداف مستقبلية'}],
+  dependents:[{id:'p',name:'والد',relation:'أب',amount:120000,frequency:'yearly',includedInItems:false}]});
+ const plan=core.verifiedStarterPlan(db,'2026-12');
+ assert.equal(plan.essentials,110000);
+ assert.equal(plan.costs,170000);
+ assert.equal(plan.expenseSource,'تفصيل مصروفات معتمد');
+});
+test('flexible debt stays inside existing debt list without installment or synthetic cash',()=>{
+ const db=fixture(),balance=bankTotal(db),size=db.debts.length;
+ const debt=core.saveFlexibleDebt(db,{name:'دين لأحد الأقارب',amount:150000});
+ assert.equal(db.debts.length,size+1);
+ assert.equal(debt.repaymentMode,'capacity');
+ assert.equal(debt.installment,0);
+ assert.equal(debt.date,'');
+ assert.equal(bankTotal(db),balance);
+ assert.throws(()=>core.saveFlexibleDebt(db,{name:'سداد',amount:0}));
+});
+test('income-change repayment recommendation is proportional, protected, and requires verification',()=>{
+ const db=fixture();db.transactions=[];db.salaryMonths=[];db.debts=[];
+ core.saveFlexibleDebt(db,{name:'دين بلا تاريخ',amount:500000});
+ const unverified=core.flexibleRepaymentPreview(db,{previousIncome:500000,currentIncome:700000,
+  protectedAmount:100000,period:'2026-12'});
+ assert.equal(unverified.ready,false);
+ core.confirmFinancialStart(db,{income:500000,essentials:200000,obligations:50000,recurring:10000,
+  opening:{hilal:0,malaa:0,assets:0}},'2026-11');
+ const preview=core.flexibleRepaymentPreview(db,{previousIncome:500000,currentIncome:700000,
+  protectedAmount:100000,period:'2026-12'});
+ assert.equal(preview.ready,true);
+ assert.equal(preview.growth,0.4);
+ assert.equal(preview.newFree,340000);
+ assert.equal(preview.oldFree,140000);
+ assert.equal(preview.ceiling,200000);
+ assert.equal(preview.requiresApproval,true);
+ const fall=core.flexibleRepaymentPreview(db,{previousIncome:700000,currentIncome:500000,
+  protectedAmount:100000,period:'2026-12'});
+ assert.equal(fall.warning,true);
+ assert.equal(fall.ceiling,0);
+ const shortage=core.flexibleRepaymentPreview(db,{previousIncome:500000,currentIncome:520000,
+  protectedAmount:300000,period:'2026-12'});
+ assert.equal(shortage.warning,true);
+ assert.equal(shortage.ceiling,0);
+});
