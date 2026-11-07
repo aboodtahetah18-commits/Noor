@@ -98,9 +98,10 @@
     '<form data-rk44-edit-item data-id="'+safe(x.id)+'"><div class="rk44-starter-inputs">'+
     '<label>اسم البند<input name="name" required maxlength="100" value="'+safe(x.name)+'"></label>'+
     '<label>المبلغ بالريال<input type="number" name="amount" min="0" step="0.01" required value="'+(x.amount/100).toFixed(2)+'"></label>'+
+    '<label>المتبقي من المخصص (اختياري)<input type="number" name="remaining" step="0.01" placeholder="غير مدخل" value="'+(x.remaining===null||x.remaining===undefined?'':(x.remaining/100).toFixed(2))+'"></label>'+
     '<label>الدورية'+select('frequency',frequencyOptions,x.frequency)+'</label>'+
     '<label>التصنيف'+select('category',categories,x.category)+'</label></div>'+
-    '<small>المصدر: '+(x.categorySource==='manual'?'تصنيف معدل يدويًا':'اقتراح النظام')+
+    '<small>'+(x.remaining===null||x.remaining===undefined?'المتبقي غير مسجل':'المتبقي المعلن: '+fmt(x.remaining))+' · المصدر: '+(x.categorySource==='manual'?'تصنيف معدل يدويًا':'اقتراح النظام')+
     ' · التخمين الحالي: '+safe(suggested.category||'غير محدد')+'</small>'+
     '<div class="rk44-flex-actions"><button type="submit">حفظ تعديل البند</button>'+
     '<button type="button" data-rk44-detail-remove="item" data-id="'+safe(x.id)+'">حذف البند</button></div></form></details>';
@@ -128,6 +129,7 @@
    '<form data-rk44-add-item><div class="rk44-starter-inputs">'+
    '<label>اسم البند<input name="name" data-rk44-suggest-name required maxlength="100" placeholder="اكتب اسم البند بالتفصيل"></label>'+
    '<label>المخصص بالريال<input type="number" name="amount" min="0" step="0.01" required placeholder="المبلغ"></label>'+
+   '<label>المتبقي من المخصص (اختياري)<input name="remaining" type="number" step="0.01" placeholder="غير مدخل حتى تبدأ المتابعة"></label>'+
    '<label>دورية الصرف'+select('frequency',frequencyOptions,'monthly')+'</label>'+
    '<label>تصنيفه'+select('category',categories,'auto')+'</label></div>'+
    '<small data-rk44-suggest-output>اكتب اسم البند ليظهر التصنيف المقترح</small>'+
@@ -603,7 +605,12 @@
      if(!category)throw Error('لا يمكن تحديد تصنيف موثوق لهذا الاسم. اختر التصنيف المناسب يدويًا.');
      const isEdit=detailForm.hasAttribute('data-rk44-edit-item');
      const id=isEdit?detailForm.getAttribute('data-id'):identifier;
-     const row={id,name,amount:cents('amount'),frequency:find('frequency').value,
+     const remainingRaw=String(find('remaining')?.value??'').trim();
+     const remaining=remainingRaw===''?null:(()=>{
+      if(!/^-?(?:0|[1-9]\d*)(?:\.\d{1,2})?$/.test(remainingRaw))throw Error('أدخل المتبقي بالريال، أو اتركه فارغًا.');
+      return Math.round(Number(remainingRaw)*100);
+     })();
+     const row={id,name,amount:cents('amount'),remaining,frequency:find('frequency').value,
       category,categorySource:selected==='auto'?'suggestion':'manual'};
      if(isEdit){
       const idx=input.items.findIndex(v=>v.id===id);
