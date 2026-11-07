@@ -227,3 +227,31 @@
  #view .rk44-alert-inline>span{flex-basis:100%!important}
  #view .rk44-alert-inline>button{width:100%!important}
 }
+
+/* Single actionable early-warning strip, only rendered when risk increases. */
+#view .rk44-alert-inline{
+ display:flex!important;flex-direction:row!important;align-items:center!important;
+ justify-content:space-between!important;flex-wrap:wrap!important;gap:9px!important;
+ width:100%!important;max-width:100%!important;min-width:0!important;
+ margin:0 0 12px!important;padding:11px 13px!important;
+ border:1px solid color-mix(in srgb,var(--red) 26%,var(--line))!important;
+ border-inline-start:3px solid var(--red)!important;
+ border-radius:10px!important;background:var(--white)!important;color:var(--red)!important;
+ box-shadow:none!important;
+}
+#view .rk44-alert-inline>span{
+ min-width:0;flex:1 1 200px;
+ font-size:11px;font-weight:750;line-height:1.85;color:var(--red);
+}
+#view .rk44-alert-inline button{
+ display:inline-flex!important;align-items:center!important;justify-content:center!important;
+ flex:0 0 auto!important;min-height:35px!important;width:auto!important;
+ padding:7px 12px!important;margin:0!important;
+ border:1px solid var(--teal)!important;border-radius:9px!important;
+ background:var(--teal)!important;color:var(--white)!important;
+ font:inherit!important;font-weight:800!important;font-size:11px!important;
+ line-height:1.5!important;box-shadow:none!important;cursor:pointer!important;
+}
+#view .rk44-alert-inline button:focus-visible{
+ outline:2px solid var(--gold)!important;outline-offset:2px!important;
+}
