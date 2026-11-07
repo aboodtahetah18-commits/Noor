@@ -23,6 +23,8 @@ const mainMonths=()=>{
  return [...list].filter(p=>/^20\d{2}-(0[1-9]|1[0-2])$/.test(p)).sort().reverse();
 };
 let selectedPeriod=typeof month==='string'?month:new Date().toISOString().slice(0,7);
+// Exposes only the selected month for consistent read-only bank summaries.
+window.RakaezHilalSelectedPeriod=()=>selectedPeriod;
 const bankSymbol=()=>document.querySelector('#nav [data-rk33-page="hilal"] .rk35-bankmark')?.outerHTML||'';
 const tone=(amount,preferred='teal')=>amount<0?'red':preferred;
 function value(label,amount,style='navy',hint=''){
@@ -80,7 +82,7 @@ hilal=function(){
  return '<section class="rk39-page" aria-label="عمليات بنك الهلال">'+
   '<header class="rk39-header"><div class="rk39-bank-identity">'+mark+'<div><h2>مخصصات التشغيل</h2><p>حساب مخصص مستقل لكل شهر في بنك الهلال</p></div></div><label class="rk39-period">شهر المتابعة <select id="rk39Period">'+periodOptions(selectedPeriod)+'</select></label></header>'+
   notice+
-  '<section class="rk39-hero"><div class="rk39-feature"><small>المتبقي القابل للتخصيص في الشهر</small><strong class="rk39-'+tone(budget.free)+'">'+(budget.posted||budget.free>=0?financial(budget.free):'بانتظار التثبيت')+'</strong>'+
+  '<section class="rk39-hero"><div class="rk39-feature"><small>المتبقي القابل للتخصيص في الشهر</small><strong class="rk39-'+tone(budget.free)+'">'+(budget.posted||budget.free>0?financial(budget.free):'بانتظار التثبيت')+'</strong>'+
   '<p>بعد خصم المصروفات والعمليات المثبتة والحجوزات المعلقة؛ هذا رصيد تخصيص داخلي وليس رصيد الحساب البنكي.</p></div>'+
   '<dl class="rk39-kpis">'+value('مخصص الشهر المثبت',budget.allocation,'blue')+value('مصروفات الشهر المسجلة',budget.expenses,'red')+value('حجوزات تحويل معلقة',budget.holds,'gold')+'</dl></section>'+
   '<div class="rk39-split"><section class="rk39-reserve" aria-label="الاحتياطي المستهدف">'+
