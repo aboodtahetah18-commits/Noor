@@ -458,3 +458,22 @@
   grid-column:1/-1!important;
  }
 }
+
+
+/* Main dashboard: color by financial meaning, not by decorative tile order. */
+#view .rk-summary-kpis .rk-summary-kpi:nth-child(1) strong,
+#view .rk-summary-kpis .rk-summary-kpi:nth-child(4) strong,
+#view .rk-summary-kpis .rk-summary-kpi:nth-child(3) strong:not(.rk41-negative){
+ color:var(--teal)!important;
+}
+#view .rk-summary-kpis .rk-summary-kpi:nth-child(2) strong,
+#view .rk-summary-kpis .rk-summary-kpi:nth-child(6) strong,
+#view .rk-summary-kpis .rk-summary-kpi:nth-child(3) strong.rk41-negative{
+ color:var(--red)!important;
+}
+#view .rk-summary-kpis .rk-summary-kpi:nth-child(5) strong{
+ color:var(--blue)!important;
+}
+#view .rk-summary-chart-total b{
+ color:var(--red)!important;
+}
