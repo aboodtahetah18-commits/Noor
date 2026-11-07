@@ -180,7 +180,7 @@ let checkingModal=false;
 function decorateDialogs(){
  const root=document.getElementById('modalRoot');if(!root)return;
  const dialog=root.querySelector('[role="dialog"],.rk-record-detail,.modal:not(.modalbg)');
- if(!dialog)return;
+ if(!dialog||dialog.classList.contains('rk43-normalized')||dialog.querySelector('.rk43-modal-header'))return;
  const head=dialog.querySelector('.modalhead,.v27-dialog-head,.rk-budget-detail-dialog .modalhead,.v19-step-intro');
  if(!head||head.querySelector('[data-rk38-back]'))return;
  const back=document.createElement('button');back.type='button';back.className='rk38-modal-back';back.dataset.rk38Back='modal';
