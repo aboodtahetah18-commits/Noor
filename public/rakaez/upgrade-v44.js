@@ -289,7 +289,7 @@
     const from=transferForm.elements.namedItem('from').value;
     const to=transferForm.elements.namedItem('to').value;
     const raw=transferForm.elements.namedItem('amount').value.trim();
-    if(!/^(?:0|[1-9]\\d*)(?:\\.\\d{1,2})?$/.test(raw)||Number(raw)<=0){
+    if(!/^(?:0|[1-9]\d*)(?:\.\d{1,2})?$/.test(raw)||Number(raw)<=0){
      alert('أدخل مبلغًا صحيحًا بالريال بحد أقصى منزلتين عشريتين.');return;
     }
     if(!transferForm.elements.namedItem('approval').checked){
