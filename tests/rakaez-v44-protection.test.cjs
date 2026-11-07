@@ -360,3 +360,18 @@ test('income-change repayment recommendation is proportional, protected, and req
  assert.equal(shortage.warning,true);
  assert.equal(shortage.ceiling,0);
 });
+
+
+test('category allocation and remaining are distinct from cash and confirmed expenses',()=>{
+ const db=fixture(),originalEntries=JSON.stringify(db.ledgerEntries);
+ core.saveUserDetails(db,{items:[{id:'grocery',name:'مقاضي تفصيلية',category:'معيشة',frequency:'monthly',
+  amount:60000,remaining:15000}],dependents:[]});
+ const row=core.userDetails(db).items[0];
+ assert.equal(row.amount,60000);
+ assert.equal(row.remaining,15000);
+ assert.equal(core.userDetailsSummary(db).monthlyBudget,60000);
+ assert.equal(JSON.stringify(db.ledgerEntries),originalEntries);
+ const revision=core.saveUserDetails(db,{items:[{...row,remaining:-2500}],dependents:[]});
+ assert.equal(revision.items[0].remaining,-2500);
+ assert.equal(db.rk44UserDetailsHistory.length,1);
+});
