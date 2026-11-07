@@ -173,6 +173,253 @@
    '</section>';
  }
 
+
+ // معالج تأسيس واحد في نافذة منبثقة؛ لا تظهر الاستمارة داخل صفحة المركز المالي.
+ let wizardStep=0;
+ let wizardShown=false;
+ const emptyDraft=()=>({
+  profile:{marital:'undisclosed',children:'0',supported:'0',
+   salary:'',otherIncome:'',externalBank:'',salaryDay:'27'},
+  items:[],dependents:[],obligations:[],goals:[]
+ });
+ let wizardDraft=db.rk44WizardDraft&&typeof db.rk44WizardDraft==='object'?
+  JSON.parse(JSON.stringify(db.rk44WizardDraft)):emptyDraft();
+ const wizardTitles=['مرحبًا بك في ركائز','وضعك الأسري','الدخل ودورة الراتب',
+  'البنود الشهرية','المعالون','الالتزامات','الأهداف المالية','مراجعة واعتماد'];
+ const wizardFrequencies=[['monthly','شهري'],['daily','يومي'],['weekly','أسبوعي'],
+  ['yearly','سنوي'],['asNeeded','عند الحاجة'],['none','دون نفقة']];
+ function wizardCurrency(raw,required=false){
+  const text=String(raw??'').trim();
+  if(!text){
+   if(required)throw new Error('أدخل المبلغ المطلوب أو اكتب صفرًا صراحة.');
+   return null;
+  }
+  if(!/^(?:0|[1-9]\d*)(?:\.\d{1,2})?$/.test(text))throw new Error('أدخل مبلغًا صحيحًا بالريال بحد أقصى منزلتين عشريتين.');
+  const n=Math.round(Number(text)*100);
+  if(!Number.isSafeInteger(n)||n>100000000000)throw new Error('المبلغ أكبر من المسموح.');
+  return n;
+ }
+ function wizardSelect(group,index,key,options,value){
+  return '<select data-w-group="'+group+'" data-w-index="'+index+'" data-w-key="'+key+'">'+
+   options.map(([id,label])=>'<option value="'+safe(id)+'" '+(value===id?'selected':'')+'>'+safe(label)+'</option>').join('')+
+   '</select>';
+ }
+ function wizardInput(group,index,key,label,value,type='text',extra=''){
+  return '<label>'+safe(label)+'<input data-w-group="'+group+'" data-w-index="'+index+
+   '" data-w-key="'+key+'" type="'+type+'" '+extra+' value="'+safe(value??'')+'"></label>';
+ }
+ function wizardSelectField(group,index,key,label,choices,value){
+  return '<label>'+safe(label)+wizardSelect(group,index,key,choices,value)+'</label>';
+ }
+ function wizardItems(){
+  const categories=[['auto','اقتراح النظام'],...adaptive.categoryLabels.map(x=>[x,x])];
+  return '<p class="rk44-wizard-note">أضف البنود بأسمائها ومبالغها المتوقعة. يرشح ركائز التصنيف ويمكنك تغييره. المتبقي اختياري في البداية.</p>'+
+   wizardDraft.items.map((item,i)=>{
+    const suggestion=adaptive.categorySuggestion(item.name);
+    return '<div class="rk44-wizard-line"><div class="rk44-wizard-linehead"><strong>البند '+(i+1)+'</strong>'+
+     '<button type="button" data-w-remove="items" data-w-index="'+i+'">حذف</button></div>'+
+     '<div class="rk44-wizard-grid">'+
+     wizardInput('items',i,'name','اسم البند',item.name,'text','maxlength="100" placeholder="اسم تفصيلي"')+
+     wizardInput('items',i,'amount','المخصص المتوقع (ريال)',item.amount,'number','min="0" step="0.01"')+
+     wizardInput('items',i,'remaining','المتبقي (اختياري)',item.remaining,'number','step="0.01"')+
+     wizardSelectField('items',i,'frequency','دورية المصروف',wizardFrequencies,item.frequency)+
+     wizardSelectField('items',i,'category','التصنيف',categories,item.category)+
+     '</div><small data-w-suggestion="'+i+'">اقتراح النظام: '+safe(suggestion.category||'يحتاج تحديدًا منك')+'</small></div>';
+   }).join('')+
+   '<button type="button" data-w-add="items" class="rk44-wizard-add">إضافة بند آخر</button>';
+ }
+ function wizardDependents(){
+  return '<p class="rk44-wizard-note">يمكن أن تكون النفقة يومية أو سنوية أو عند الحاجة أو بلا نفقة. لا نفترض تكلفة ثابتة لأي فرد.</p>'+
+   wizardDraft.dependents.map((d,i)=>
+    '<div class="rk44-wizard-line"><div class="rk44-wizard-linehead"><strong>معال '+(i+1)+'</strong>'+
+    '<button type="button" data-w-remove="dependents" data-w-index="'+i+'">حذف</button></div>'+
+    '<div class="rk44-wizard-grid">'+
+    wizardInput('dependents',i,'name','الاسم أو الصفة',d.name,'text','maxlength="100"')+
+    wizardInput('dependents',i,'relation','صلة القرابة',d.relation,'text','maxlength="60"')+
+    wizardSelectField('dependents',i,'frequency','دورية النفقة',wizardFrequencies,d.frequency)+
+    wizardInput('dependents',i,'amount','قيمة النفقة عند وجودها (ريال)',d.amount,'number','min="0" step="0.01"')+
+    '</div><label class="rk44-wizard-check"><input type="checkbox" data-w-group="dependents" data-w-index="'+i+
+    '" data-w-key="includedInItems" '+(d.includedInItems?'checked':'')+'> هذه النفقة محسوبة بالفعل ضمن أحد البنود</label></div>').join('')+
+   '<button type="button" class="rk44-wizard-add" data-w-add="dependents">إضافة معال</button>';
+ }
+ function wizardDebts(){
+  return '<p class="rk44-wizard-note">الالتزام ذو موعد يستلزم قسطًا وتاريخ استحقاق. أما الالتزام المرن فيُراجع للسداد عند توافر فائض آمن، ولا يُفرض عليه قسط.</p>'+
+   wizardDraft.obligations.map((debt,i)=>
+    '<div class="rk44-wizard-line"><div class="rk44-wizard-linehead"><strong>التزام '+(i+1)+'</strong>'+
+    '<button type="button" data-w-remove="obligations" data-w-index="'+i+'">حذف</button></div>'+
+    '<div class="rk44-wizard-grid">'+
+    wizardInput('obligations',i,'name','اسم الالتزام أو الجهة',debt.name,'text','maxlength="100"')+
+    wizardInput('obligations',i,'remaining','المبلغ المتبقي (ريال)',debt.remaining,'number','min="0" step="0.01"')+
+    wizardSelectField('obligations',i,'mode','طريقة السداد',
+      [['scheduled','قسط بموعد'],['capacity','حسب القدرة دون استحقاق']],debt.mode)+
+    (debt.mode==='scheduled'?wizardInput('obligations',i,'installment','القسط الشهري (ريال)',debt.installment,'number','min="0.01" step="0.01"')+
+      wizardInput('obligations',i,'due','الاستحقاق القادم',debt.due,'date'):'')+
+    '</div></div>').join('')+
+   '<button type="button" class="rk44-wizard-add" data-w-add="obligations">إضافة التزام</button>';
+ }
+ function wizardGoals(){
+  return '<p class="rk44-wizard-note">أهداف السفر والسكن والزواج وتعليم الأبناء وغيرها اختيارية، ولا تعني ضرورة الاستدانة أو الاستثمار فورًا.</p>'+
+   wizardDraft.goals.map((goal,i)=>
+    '<div class="rk44-wizard-line"><div class="rk44-wizard-linehead"><strong>هدف '+(i+1)+'</strong>'+
+    '<button type="button" data-w-remove="goals" data-w-index="'+i+'">حذف</button></div>'+
+    '<div class="rk44-wizard-grid">'+
+    wizardInput('goals',i,'name','اسم الهدف',goal.name,'text','maxlength="100"')+
+    wizardInput('goals',i,'target','التكلفة المستهدفة (ريال)',goal.target,'number','min="0.01" step="0.01"')+
+    wizardInput('goals',i,'date','الموعد المرغوب (اختياري)',goal.date,'date')+
+    '</div></div>').join('')+
+   '<button type="button" class="rk44-wizard-add" data-w-add="goals">إضافة هدف آخر</button>';
+ }
+ function wizardReview(){
+  const p=wizardDraft.profile;
+  const assigned=wizardDraft.items.reduce((s,i)=>s+(wizardCurrency(i.amount)||0),0);
+  const known=wizardDraft.dependents.reduce((s,d)=>s+
+   (d.includedInItems?0:(adaptive.monthlyEquivalent(wizardCurrency(d.amount)||0,d.frequency)||0)),0);
+  const monthly=wizardDraft.items.reduce((s,i)=>s+
+   (['التزامات','أهداف مستقبلية'].includes(i.category==='auto'?adaptive.categorySuggestion(i.name).category:i.category)?
+    0:(adaptive.monthlyEquivalent(wizardCurrency(i.amount)||0,i.frequency)||0)),0)+known;
+  const installments=wizardDraft.obligations.reduce((s,d)=>s+(d.mode==='scheduled'?(wizardCurrency(d.installment)||0):0),0);
+  const salary=wizardCurrency(p.salary,true),income=salary+(wizardCurrency(p.otherIncome)||0);
+  const leftover=income-monthly-installments;
+  const reviewRow=(label,value)=>'<div class="rk44-wizard-reviewline"><span>'+safe(label)+'</span><strong>'+value+'</strong></div>';
+  return '<p class="rk44-wizard-note">راجع المعلومات قبل التأسيس. هذه توقعات من بياناتك وليست مبالغ وصلت للبنك الخارجي، ولا يتم توزيع نقد أو إنشاء استثمار.</p>'+
+   reviewRow('صافي الدخل المتوقع',fmt(income))+
+   reviewRow('مخصصات البنود المدخلة',fmt(assigned))+
+   reviewRow('المكافئ الشهري المعروف للمعيشة والإعالة',fmt(monthly))+
+   reviewRow('الأقساط الشهرية الجديدة',fmt(installments))+
+   reviewRow(leftover<0?'العجز التخطيطي':'الفائض التخطيطي',fmt(Math.abs(leftover)))+
+   reviewRow('البنود / المعالون',safe(wizardDraft.items.length+' / '+wizardDraft.dependents.length))+
+   reviewRow('الالتزامات / الأهداف',safe(wizardDraft.obligations.length+' / '+wizardDraft.goals.length))+
+   '<p class="rk44-wizard-note">لا تُستنتج دقة 100% من هذه الأرقام. المرحلة الأولى للتوقع، وبعد كل دورة راتب تُراجع المصروفات الفعلية، وبعد دورتين مكتملتين تبدأ توصيات مبنية على السجلات.</p>'+
+   '<label class="rk44-wizard-check"><input type="checkbox" id="rk44-wizard-approved"> أؤكد مراجعة بياناتي وأوافق على اعتمادها كتقديرات أولية قابلة للتعديل، دون إنشاء نقد أو تحويلات.</label>';
+ }
+ function wizardContent(){
+  const p=wizardDraft.profile;
+  if(wizardStep===0)return '<div class="rk44-wizard-welcome"><h3>مرحبًا بك في ركائز</h3>'+
+   '<p>لننظم ميزانيتك الشهرية، والتزاماتك، وطوارئك، وأهدافك المستقبلية، نحتاج بعض المعلومات الأولية.</p>'+
+   '<p>الراتب يصل إلى بنكك الحقيقي الخارجي. أما الهلال وملاءة والأصول فهي بنوك افتراضية داخل ركائز لتنظيم أموالك دون مضاعفتها.</p>'+
+   '<p>تملأ هذه الخطوات مرة واحدة. يبدأ النظام بالتوقعات، ثم يحسنها مع مراجعة دورات الراتب. ويمكنك تعديل بياناتك لاحقًا.</p></div>';
+  if(wizardStep===1)return '<p class="rk44-wizard-note">البيانات الأسرية تساعد في فهم الالتزامات، لكنها لا تفرض مصروفًا على الزواج أو الأبناء.</p>'+
+   '<div class="rk44-wizard-grid">'+
+   wizardSelectField('profile',0,'marital','الحالة الاجتماعية',
+    [['undisclosed','أفضل عدم التحديد'],['single','غير متزوج'],['married','متزوج'],['other','حالة أخرى']],p.marital)+
+   wizardInput('profile',0,'children','عدد الأبناء',p.children,'number','min="0" max="100" step="1"')+
+   wizardInput('profile',0,'supported','عدد الأشخاص الآخرين الذين تعيلهم',p.supported,'number','min="0" max="100" step="1"')+
+   '</div>';
+  if(wizardStep===2)return '<p class="rk44-wizard-note">الدخل يكون في حسابك البنكي الخارجي؛ لا نعتبره نقدًا لدى أي بنك افتراضي قبل تسجيل تخصيص صريح.</p>'+
+   '<div class="rk44-wizard-grid">'+
+   wizardInput('profile',0,'salary','صافي الراتب الشهري (ريال)',p.salary,'number','min="0" step="0.01" placeholder="مطلوب"')+
+   wizardInput('profile',0,'otherIncome','دخل منتظم إضافي (اختياري)',p.otherIncome,'number','min="0" step="0.01"')+
+   wizardInput('profile',0,'externalBank','اسم البنك الخارجي الحقيقي (اختياري)',p.externalBank,'text','maxlength="100"')+
+   wizardInput('profile',0,'salaryDay','يوم استلام الراتب',p.salaryDay,'number','min="1" max="31" step="1"')+
+   '</div>';
+  if(wizardStep===3)return wizardItems();
+  if(wizardStep===4)return wizardDependents();
+  if(wizardStep===5)return wizardDebts();
+  if(wizardStep===6)return wizardGoals();
+  return wizardReview();
+ }
+ function wizardPersistDraft(){
+  db.rk44WizardDraft=JSON.parse(JSON.stringify(wizardDraft));
+  save();
+ }
+ function wizardShow(){
+  const root=document.getElementById('modalRoot');
+  if(!root)return;
+  const back=wizardStep>0?'<button type="button" data-w-prev aria-label="السابق">→</button>':'<span></span>';
+  root.innerHTML='<div class="modalbg rk44-wizard-overlay" role="presentation">'+
+   '<section class="modal rk44-wizard" role="dialog" aria-modal="true" aria-labelledby="rk44-wizard-title" dir="rtl">'+
+   '<header class="rk44-wizard-head">'+back+'<h2 id="rk44-wizard-title">'+safe(wizardTitles[wizardStep])+'</h2>'+
+   '<button type="button" data-w-close aria-label="الإغلاق">×</button></header>'+
+   '<div class="rk44-wizard-body"><div class="rk44-wizard-step">الخطوة '+(wizardStep+1)+' من '+wizardTitles.length+
+   '</div>'+wizardContent()+'<p id="rk44-wizard-error" class="rk44-wizard-error" role="alert"></p></div>'+
+   '<footer class="rk44-wizard-footer"><button type="button" data-w-close>لاحقًا</button>'+
+   '<button type="button" data-w-next>'+ (wizardStep===0?'ابدأ التأسيس':wizardStep===7?'اعتماد البيانات':'التالي')+
+   '</button></footer></section></div>';
+  const focus=root.querySelector('.rk44-wizard-head [data-w-close]');
+  if(focus)focus.focus({preventScroll:true});
+ }
+ function wizardOpen(){
+  wizardStep=0;
+  wizardShow();
+ }
+ function wizardMaybeOpen(){
+  if(wizardShown||adaptive.wizardState(db).completed)return;
+  if(document.getElementById('modalRoot')?.innerHTML)return;
+  wizardShown=true;
+  wizardOpen();
+ }
+ function wizardMessage(message){
+  const el=document.getElementById('rk44-wizard-error');
+  if(el)el.textContent=String(message||'');
+ }
+ function wizardValidate(stage){
+  const p=wizardDraft.profile;
+  if(stage===2){
+   wizardCurrency(p.salary,true);
+   if(String(p.otherIncome||'').trim())wizardCurrency(p.otherIncome);
+   const day=Number(p.salaryDay);
+   if(!Number.isInteger(day)||day<1||day>31)throw Error('حدد يوم استلام الراتب بين 1 و31.');
+  }
+  if(stage===1){
+   if(![p.children,p.supported].every(v=>Number.isInteger(Number(v))&&Number(v)>=0&&Number(v)<=100))
+    throw Error('أدخل أعدادًا صحيحة لأفراد الأسرة.');
+  }
+  if(stage===3){
+   for(const item of wizardDraft.items){
+    if(!String(item.name||'').trim())throw Error('اكتب اسم كل بند أو احذفه.');
+    wizardCurrency(item.amount,true);
+    if(String(item.remaining||'').trim()&&!/^-?(?:0|[1-9]\d*)(?:\.\d{1,2})?$/.test(item.remaining))
+     throw Error('المتبقي يجب أن يكون مبلغًا صالحًا أو يترك فارغًا.');
+    if(item.category==='auto'&&!adaptive.categorySuggestion(item.name).category)
+     throw Error('اسم أحد البنود غير واضح؛ حدد تصنيفه بنفسك.');
+   }
+  }
+  if(stage===4){
+   for(const dep of wizardDraft.dependents){
+    if(!String(dep.name||'').trim())throw Error('اكتب اسم المعال أو احذفه.');
+    if(dep.frequency!=='none'&&dep.frequency!=='asNeeded')wizardCurrency(dep.amount,true);
+    else if(dep.amount!=='')wizardCurrency(dep.amount);
+   }
+  }
+  if(stage===5){
+   for(const d of wizardDraft.obligations){
+    if(!String(d.name||'').trim())throw Error('حدد اسم الدين أو احذفه.');
+    const remaining=wizardCurrency(d.remaining,true);
+    if(remaining<=0)throw Error('يجب أن يكون الدين المتبقي أكبر من صفر.');
+    if(d.mode==='scheduled'){
+     if(!d.due||!d.installment)throw Error('أكمل موعد وقيمة القسط أو اختر السداد المرن.');
+     wizardCurrency(d.installment,true);
+    }
+   }
+  }
+  if(stage===6){
+   for(const g of wizardDraft.goals){
+    if(!String(g.name||'').trim())throw Error('اكتب اسم الهدف أو احذفه.');
+    if(!(wizardCurrency(g.target,true)>0))throw Error('حدد قيمة موجبة للهدف.');
+   }
+  }
+ }
+ function wizardPayload(){
+  for(let i=1;i<=6;i++)wizardValidate(i);
+  const p=wizardDraft.profile;
+  const items=wizardDraft.items.map(item=>{
+   const suggestion=adaptive.categorySuggestion(item.name);
+   return {id:item.id,name:item.name,amount:wizardCurrency(item.amount,true),
+    remaining:item.remaining===''?null:Math.round(Number(item.remaining)*100),
+    frequency:item.frequency,category:item.category==='auto'?suggestion.category:item.category,
+    categorySource:item.category==='auto'?'suggestion':'manual'};
+  });
+  const deps=wizardDraft.dependents.map(d=>({id:d.id,name:d.name,relation:d.relation,
+   amount:wizardCurrency(d.amount)||0,frequency:d.frequency,includedInItems:d.includedInItems===true}));
+  return {salary:wizardCurrency(p.salary,true),
+   otherIncome:wizardCurrency(p.otherIncome),externalBank:p.externalBank,salaryDay:Number(p.salaryDay),
+   family:{marital:p.marital,children:Number(p.children),supported:Number(p.supported)},
+   details:{items,dependents:deps},
+   obligations:wizardDraft.obligations.map(x=>({name:x.name,remaining:wizardCurrency(x.remaining,true),
+    mode:x.mode,installment:x.mode==='scheduled'?wizardCurrency(x.installment,true):0,due:x.due})),
+   goals:wizardDraft.goals.map(x=>({name:x.name,target:wizardCurrency(x.target,true),date:x.date}))};
+ }
+
  function rkVerifiedSetup(state){
   const details=state.verified?state.values:null;
   const first=state.startMonth||adaptive.offset(rkStartMonth(),1);
@@ -320,7 +567,7 @@
    (rows||'<p class="rk44-subnote">لا توجد تحويلات حماية مسجلة بعد.</p>')+'</div></div></details>';
  }
  function applyFinancialAction(action,verb,detail,successMessage){
-  const keys=['rk44Transfers','rk44Yields','rk44StarterPolicy','rk44StarterMonths','rk44StartSchedule','rk44VerifiedStart','rk44VerifiedMonths','rk44UserDetails','rk44UserDetailsHistory','debts','ledgerEntries','audit'];
+  const keys=['rk44Transfers','rk44Yields','rk44StarterPolicy','rk44StarterMonths','rk44StartSchedule','rk44VerifiedStart','rk44VerifiedMonths','rk44Wizard','rk44WizardDraft','rk44WizardCycles','rk44UserDetails','rk44UserDetailsHistory','salary','goals','debts','ledgerEntries','audit'];
   const original=Object.fromEntries(keys.map(k=>[k,{
    exists:Object.prototype.hasOwnProperty.call(db,k),
    value:Object.prototype.hasOwnProperty.call(db,k)?JSON.stringify(db[k]):null
@@ -380,15 +627,40 @@
  }
  const previousReserves=reservesView;
  reservesView=function(){
-  const period=rkStartMonth(),status=adaptive.onboardingState(db,period);
-  return '<section class="rk44-screen" aria-label="تأسيس البنوك من معلومات موثقة">'+
-   '<header class="rk44-screen-title"><h2>الانطلاقة والحماية المالية</h2>'+
-   hint('الأهداف وأرقام الفائض القديمة كانت أمثلة وليست تحليلًا معتمدًا. لا تُستخدم حتى تثبت البيانات الفعلية.')+'</header>'+
-   rkVerifiedSetup(status)+flexibleToolsPanel()+rkVerifiedMonth(status,period)+
-   '<details class="rk44-advanced"><summary>مراجعة سجلات التحويلات القديمة دون تعديلها</summary>'+
-   '<div class="rk44-advanced-body">'+transferPanel()+'</div></details>'+
-   '<p class="rk44-caution-note">لا يُحذف تاريخ معاملاتك ولا تتغير الأرصدة عند جدولة البداية أو اعتماد معلومات التخطيط.</p>'+
-   '</section>';
+  const wizard=adaptive.wizardState(db);
+  if(!wizard.completed)return '<section class="rk44-screen rk44-onboarding-blank">'+
+   '<header class="rk44-screen-title"><h2>الانطلاقة والحماية المالية</h2></header>'+
+   '<section class="rk44-starter"><h3>تهيئة الميزانية الشهرية</h3>'+
+   '<p class="rk44-subnote">يتم إعداد بياناتك عبر نافذة التأسيس. لن تظهر أرقام أو توقعات قبل اعتماد معلوماتك.</p>'+
+   '<button type="button" class="rk44-transfer-primary" data-w-open>فتح نافذة التأسيس</button>'+
+   '</section></section>';
+  const phase=adaptive.wizardPhase(db),period=rkStartMonth();
+  const verified=adaptive.onboardingState(db,period);
+  const lastPeriod=adaptive.offset(period,-1);
+  const reviews=adaptive.wizardCycles(db);
+  const plan=adaptive.verifiedStarterPlan(db,period);
+  const stage='<p class="rk44-subnote">'+safe(phase.label)+
+   ' · جميع المبالغ أدناه تقديرات ما لم تسجل عملية فعلية ضمن دورة راتب مكتملة.</p>';
+  const review=lastPeriod>=wizard.record.startMonth&&!reviews.some(x=>x.period===lastPeriod)?
+   '<label class="rk44-approval"><input type="checkbox" data-w-cycle-confirm> أؤكد أن مصروفات الدورة المنتهية سُجلت وأنني راجعت عملياتها.</label>'+
+   '<button type="button" class="rk44-transfer-primary" data-w-cycle-review="'+safe(lastPeriod)+'">اعتماد مراجعة دورة '+safe(lastPeriod)+'</button>':
+   '<p class="rk44-subnote">يمكن اعتماد مراجعة كل دورة بعد انتهائها وإثبات استلام الراتب.</p>';
+  const forecast=plan.ready?
+   '<div class="rk44-starter-lines">'+
+   '<div class="rk44-starter-line"><strong>الراتب والدخل المنتظم المسجلان للتوقع</strong><b>'+fmt(plan.income)+'</b></div>'+
+   '<div class="rk44-starter-line"><strong>المصروفات والأقساط المتوقعة</strong><b>'+fmt(plan.costs)+'</b></div>'+
+   '<div class="rk44-starter-line"><strong>'+(plan.rawSurplus<0?'عجز تخطيطي':'فائض تخطيطي')+'</strong><b>'+fmt(Math.abs(plan.rawSurplus))+'</b></div>'+
+   '</div>':'';
+  return '<section class="rk44-screen">'+
+   '<header class="rk44-screen-title"><h2>الحماية المالية للبنوك الثلاثة</h2></header>'+
+   '<section class="rk44-starter"><div class="rk44-sectionhead"><h3>متابعة دورة الراتب</h3>'+
+   hint('بعد اعتماد التأسيس تتغير التوقعات من سجل المصروفات والأقساط. الانتقال للمرحلة التالية يحتاج مراجعة دورة مكتملة؛ الأرقام المستقبلية ليست حقائق مضمونة.')+'</div>'+
+   stage+forecast+
+   '<p class="rk44-subnote">الدورة الكاملة المجدولة تبدأ في '+safe(wizard.record.startMonth)+
+   '. لا يلزم إدخال عمليات الأشهر الجزئية السابقة. البنوك الثلاثة افتراضية ولا تستقبل الراتب الحقيقي.</p>'+
+   review+'</section>'+
+   '<details class="rk44-advanced"><summary>سجل تحويلات الحماية السابق</summary>'+
+   '<div class="rk44-advanced-body">'+transferPanel()+'</div></details></section>';
  };
  const originalRender=render;
  render=function(){
