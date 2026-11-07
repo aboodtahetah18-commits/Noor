@@ -330,7 +330,9 @@
   assert(['malaa','assets'].includes(targetBank),'جهة توزيع العائد غير صحيحة.');
   const row=yieldRecords(db).find(y=>y.id===yieldId);
   assert(row&&row.status==='recorded','العائد غير موجود أو تم عكسه.');
-  assert(!row.transferIds[targetBank],'سبق إنشاء طلب تحويل لهذا الجزء من العائد.');
+  const priorId=row.transferIds[targetBank];
+  const prior=priorId?transfers(db).find(x=>x.id===priorId):null;
+  assert(!priorId||(prior&&prior.status==='cancelled'),'سبق تسجيل طلب تحويل قائم أو منفذ لهذا الجزء من العائد.');
   const amount=row.splitAmounts[targetBank];
   assert(validAmount(amount),'لا يوجد مبلغ قابل للتحويل.');
   if(targetBank==='assets'){
@@ -347,8 +349,11 @@
  function reverseYield(db,id,reason){
   const row=yieldRecords(db).find(y=>y.id===id);
   assert(row&&row.status==='recorded','العائد غير قابل للعكس.');
-  assert(!Object.values(row.transferIds).some(Boolean),
-   'لا يمكن عكس العائد بعد إصدار طلب تحويل له؛ ألغ الطلبات أولًا عبر تسوية مستقلة.');
+  assert(!Object.values(row.transferIds).some(tid=>{
+   if(!tid)return false;
+   const op=transfers(db).find(t=>t.id===tid);
+   return !op||op.status!=='cancelled';
+  }),'لا يمكن عكس العائد ما دامت له تحويلات قائمة أو منفذة؛ ألغ الطلبات المعلقة أولًا.');
   const why=String(reason||'').trim();
   assert(why.length>=5,'اكتب سبب تصحيح العائد (خمسة أحرف على الأقل).');
   const original=journalEntries(db).find(e=>e.id===row.journalId);
