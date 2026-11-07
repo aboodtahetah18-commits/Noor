@@ -281,7 +281,7 @@
   const salary=wizardCurrency(p.salary,true),income=salary+(wizardCurrency(p.otherIncome)||0);
   const leftover=income-monthly-installments;
   const reviewRow=(label,value)=>'<div class="rk44-wizard-reviewline"><span>'+safe(label)+'</span><strong>'+value+'</strong></div>';
-  return '<p class="rk44-wizard-note">راجع المعلومات قبل التأسيس. هذه توقعات من بياناتك وليست مبالغ وصلت للبنك الخارجي، ولا يتم توزيع نقد أو إنشاء استثمار.</p>'+
+  return '<p class="rk44-wizard-note">راجع المعلومات قبل التأسيس. هذه توقعات من بياناتك وليست مبالغ وصلت للبنك الخارجي، ولا يتم توزيع نقد أو إنشاء استثمار.</p>'+ (wizardDraft.items.length===0?' <p class="rk44-wizard-error">لم تدخل بنود مصروفات؛ سيبقى التوقع المالي غير مكتمل حتى تسجلها.</p>':'')+
    reviewRow('صافي الدخل المتوقع',fmt(income))+
    reviewRow('مخصصات البنود المدخلة',fmt(assigned))+
    reviewRow('المكافئ الشهري المعروف للمعيشة والإعالة',fmt(monthly))+
@@ -636,21 +636,30 @@
    '</section></section>';
   const phase=adaptive.wizardPhase(db),period=rkStartMonth();
   const verified=adaptive.onboardingState(db,period);
-  const lastPeriod=adaptive.offset(period,-1);
-  const reviews=adaptive.wizardCycles(db);
-  const plan=adaptive.verifiedStarterPlan(db,period);
+  const reviews=adaptive.wizardCycles(db),today=new Date().toISOString().slice(0,10);
+  const plan=adaptive.wizardLearning(db,period);
+  let nextReview=null;
+  for(let i=0;i<36;i++){
+   const candidate=adaptive.offset(wizard.record.startMonth,i);
+   if(candidate>period)break;
+   if(reviews.some(x=>x.period===candidate))continue;
+   const end=adaptive.wizardDateBound(adaptive.offset(candidate,1),wizard.record.salaryDay);
+   if(today>=end){nextReview=candidate;break;}
+  }
   const stage='<p class="rk44-subnote">'+safe(phase.label)+
-   ' · جميع المبالغ أدناه تقديرات ما لم تسجل عملية فعلية ضمن دورة راتب مكتملة.</p>';
-  const review=lastPeriod>=wizard.record.startMonth&&!reviews.some(x=>x.period===lastPeriod)?
-   '<label class="rk44-approval"><input type="checkbox" data-w-cycle-confirm> أؤكد أن مصروفات الدورة المنتهية سُجلت وأنني راجعت عملياتها.</label>'+
-   '<button type="button" class="rk44-transfer-primary" data-w-cycle-review="'+safe(lastPeriod)+'">اعتماد مراجعة دورة '+safe(lastPeriod)+'</button>':
-   '<p class="rk44-subnote">يمكن اعتماد مراجعة كل دورة بعد انتهائها وإثبات استلام الراتب.</p>';
+   ' · التوقعات مبنية على بياناتك، أما العمليات المسجلة فتظل فعلية بتاريخها.</p>';
+  const review=nextReview?
+   '<label class="rk44-approval"><input type="checkbox" data-w-cycle-confirm> راجعت مصروفات دورة '+safe(nextReview)+'، وأؤكد تسجيل جميع عملياتها، بما فيها إن لم يوجد أي مصروف.</label>'+
+   '<button type="button" class="rk44-transfer-primary" data-w-cycle-review="'+safe(nextReview)+'">اعتماد مراجعة دورة '+safe(nextReview)+'</button>':
+   '<p class="rk44-subnote">تتاح مراجعة الدورة بعد مرور موعد الراتب التالي. لا يُشترط إدخال عمليات لم تحدث.</p>';
   const forecast=plan.ready?
    '<div class="rk44-starter-lines">'+
-   '<div class="rk44-starter-line"><strong>الراتب والدخل المنتظم المسجلان للتوقع</strong><b>'+fmt(plan.income)+'</b></div>'+
-   '<div class="rk44-starter-line"><strong>المصروفات والأقساط المتوقعة</strong><b>'+fmt(plan.costs)+'</b></div>'+
-   '<div class="rk44-starter-line"><strong>'+(plan.rawSurplus<0?'عجز تخطيطي':'فائض تخطيطي')+'</strong><b>'+fmt(Math.abs(plan.rawSurplus))+'</b></div>'+
-   '</div>':'';
+   '<div class="rk44-starter-line"><strong>الدخل المؤكد لغرض التوقع</strong><b>'+fmt(plan.verifiedIncome)+'</b></div>'+
+   '<div class="rk44-starter-line"><strong>المصروفات المتوقعة بعد التعلم</strong><b>'+fmt(plan.forecast)+'</b></div>'+
+   '<div class="rk44-starter-line"><strong>'+(plan.surplus<0?'عجز متوقع':'فائض متوقع')+'</strong><b>'+fmt(Math.abs(plan.surplus))+'</b></div>'+
+   '</div><p class="rk44-subnote">'+safe(plan.explanation)+
+   '. هذه التقديرات لا تغير بنود الميزانية المعتمدة دون موافقتك.</p>':
+   '<p class="rk44-subnote">'+safe(plan.reason||'لا توجد بيانات كافية للتوقع بعد')+'</p>';
   return '<section class="rk44-screen">'+
    '<header class="rk44-screen-title"><h2>الحماية المالية للبنوك الثلاثة</h2></header>'+
    '<section class="rk44-starter"><div class="rk44-sectionhead"><h3>متابعة دورة الراتب</h3>'+
