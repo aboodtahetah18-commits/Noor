@@ -127,7 +127,7 @@
   document.getElementById('modalRoot').innerHTML=
    '<div class="modalbg rk42-research-overlay" data-rk42-modal-overlay>'+
    '<section class="modal rk42-research-dialog" role="dialog" aria-modal="true" aria-label="تفاصيل '+safe(record.name)+'">'+
-   '<header class="rk42-research-head"><button type="button" data-rk42-close class="rk42-research-close" aria-label="إغلاق التفاصيل">×</button>'+
+   '<header class="modalhead rk42-research-head"><button type="button" onclick="closeModal()" data-rk42-close class="rk42-research-close" aria-label="إغلاق التفاصيل">×</button>'+
    '<div><h2>'+safe(record.name)+'</h2><span>'+maybe(record.symbol)+' · '+maybe(record.sector)+'</span></div>'+
    tooltip('مصدر بيانات الدراسة',source)+'</header>'+
    '<div class="rk42-research-content"><div class="rk42-research-price"><span>السعر المدخل</span>'+
