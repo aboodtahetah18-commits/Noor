@@ -104,27 +104,29 @@
    '<div class="rk44-transfer-history"><h4>الطلبات وحالة المطابقة</h4>'+
    (rows||'<p class="rk44-subnote">لا توجد تحويلات حماية مسجلة بعد.</p>')+'</div></div></details>';
  }
- function applyFinancialAction(action,verb,detail){
-  const had=Object.prototype.hasOwnProperty.call(db,'rk44Transfers');
-  const oldOps=had?JSON.stringify(db.rk44Transfers):null;
-  const oldEntries=JSON.stringify(db.ledgerEntries);
-  const oldAudit=JSON.stringify(db.audit);
+ function applyFinancialAction(action,verb,detail,successMessage){
+  const keys=['rk44Transfers','rk44Yields','rk44StarterPolicy','rk44StarterMonths','ledgerEntries','audit'];
+  const original=Object.fromEntries(keys.map(k=>[k,{
+   exists:Object.prototype.hasOwnProperty.call(db,k),
+   value:Object.prototype.hasOwnProperty.call(db,k)?JSON.stringify(db[k]):null
+  }]));
   try{
    const result=action();
    audit(verb,detail);
    save();
-   if(typeof toast==='function')toast('تم تسجيل العملية في دفتر الحماية');
-   try{render();}catch(renderError){/* لا يُعكس قيد حفظه الدفتر بسبب مشكلة عرض. */}
+   if(typeof toast==='function')toast(successMessage||'تم تسجيل العملية في مركز الحماية');
+   try{render()}catch(e){/* عملية محفوظة لا تُعكس بسبب تعثر عرضها. */}
    return result;
-  }catch(err){
-   if(had)db.rk44Transfers=JSON.parse(oldOps);else delete db.rk44Transfers;
-   db.ledgerEntries=JSON.parse(oldEntries);db.audit=JSON.parse(oldAudit);
-   alert(err.message||'تعذر حفظ عملية الحماية؛ لم تعتمد.');
-   render();
+  }catch(error){
+   for(const k of keys){
+    if(original[k].exists)db[k]=JSON.parse(original[k].value);
+    else delete db[k];
+   }
+   alert(error.message||'تعذر حفظ العملية. لم يعتمد التعديل.');
+   try{render()}catch(e){}
    return null;
   }
  }
-
  function riskPanel(data){
   const high=data.critical||data.warning;
   const shortage=data.gapToProtection;
@@ -184,11 +186,13 @@
    '<header class="rk44-screen-title"><h2>الاحتياطيات المتغيرة والاستثمار</h2>'+
    hint('يتغير احتياطي الحماية مع المصروفات والأقساط والديون والرسوم المسجلة. الأرصدة مدخلة محليًا، والاستثمارات ليست نقدًا متاحًا فورًا.')+
    '</header>'+
+   starterPanel(data)+yieldPanel()+
+   '<details class="rk44-advanced"><summary>تفاصيل الحماية الوقائية طويلة المدى وحساباتها</summary><div class="rk44-advanced-body">'+
    '<div class="rk44-topline">'+
    metric('الاحتياج الشهري المحسوب',fmt(data.monthlyNeed),'navy')+
    metric('إجمالي الادخار المسجل',fmt(data.savings.total),'teal')+
    metric('فجوة السيولة الوقائية',fmt(data.gapToProtection),data.gapToProtection?'red':'teal')+'</div>'+
-   '<div class="rk44-bank-list">'+hilal+malaa+assets+'</div>'+
+   '<div class="rk44-bank-list">'+hilal+malaa+assets+'</div></div></details>'+
    riskPanel(data)+liquidityPanel(data)+transferPanel(data)+scenarioPanel()+
    '<p class="rk44-caution-note">لا تُنفّذ تحويلات أو مشتريات استثمارية تلقائيًا. تُثبت العمليات بعد المراجعة من صفحات البنوك المعنية. وقد تختلف السيولة الفعلية عن الأرصدة المدخلة حتى تتم المطابقة.</p>'+
    '</section>';
@@ -264,6 +268,7 @@
    event.preventDefault();event.stopImmediatePropagation();
    if(page!=='reserves'){navigate('reserves');}
    const panel=document.getElementById('rk44-transfers');
+   const advanced=panel?.closest('.rk44-advanced');if(advanced)advanced.open=true;
    if(panel){panel.open=true;panel.scrollIntoView({behavior:'smooth',block:'nearest'});}
    return;
   }
