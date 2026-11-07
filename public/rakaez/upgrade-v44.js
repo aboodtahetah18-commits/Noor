@@ -51,7 +51,7 @@
  }
  function riskPanel(data){
   const high=data.critical||data.warning;
-  const shortage=data.banks.malaa.gap;
+  const shortage=data.gapToProtection;
   const level=high?'مرتفع':shortage>0?'بحاجة إلى تعزيز':'تحت المتابعة';
   return '<section class="rk44-risk" aria-label="الاستجابة المالية">'+
    '<div class="rk44-risk-title"><div><h3>الاستجابة المبكرة للالتزامات</h3>'+
@@ -63,7 +63,7 @@
    metric('عبء الأقساط من الراتب',data.debtRatio===null?'غير محسوب':(data.debtRatio*100).toFixed(1)+'%',high?'red':'navy')+
    metric('العجز عن تغطية السيولة',fmt(shortage),shortage>0?'red':'teal')+'</div>'+
    '<div class="rk44-response">'+
-   (high?'<strong class="rk44-red">تنبيه: عبء الأقساط مرتفع. أوقف أي استثمار جديد حتى مراجعة السيولة والالتزامات.</strong>':
+   (high?'<strong class="rk44-red">حالة حماية: عُلّق ترشيح فائض للاستثمار؛ راجع الأقساط والسيولة قبل أي استثمار جديد.</strong>':
    shortage>0?'<strong class="rk44-gold">يلزم تعزيز السيولة قبل زيادة المخاطرة الاستثمارية.</strong>':
    '<strong class="rk44-teal">لا يظهر ضغط مرتفع من الالتزامات المسجلة حاليًا.</strong>')+
    '<div class="rk44-response-actions">'+
@@ -100,18 +100,18 @@
    metric('السيولة الفورية',fmt(m.instant),'blue'),
    metric('نقص التغطية',fmt(m.gap),m.gap>0?'red':'teal')],null,data);
   const assets=bankCard('assets','بنك الأصول','الاستثمارات والقدرة على النمو','قيمة الاستثمارات المسجلة',fmt(a.market),'blue',
-   a,[metric('هدف حماية السيولة',fmt(a.target),'navy'),
+   a,[metric('فائض قابل للدراسة الاستثمارية',fmt(a.target),a.target?'teal':'navy'),
    metric('الأصول الاستثمارية',String(data.investment.count),'teal'),
    metric('سيولة داخل الأصول','غير مسجلة','gold')],
    'القيمة السوقية ليست رصيدًا فوريًا للسحب',data);
   return '<section class="rk44-screen" aria-label="مركز الحماية والاستثمار">'+
    '<header class="rk44-screen-title"><h2>الاحتياطيات المتغيرة والاستثمار</h2>'+
-   hint('لا تُستخدم مبالغ ثابتة كهدف للحماية. يحتسب النظام الهدف من مصروفات الأشهر السابقة والمخصصات والأقساط والرسوم وأثر القروض. لم تُضف هذه الحسابات أي أموال جديدة إلى السجلات.')+
+   hint('يتغير احتياطي الحماية مع المصروفات والأقساط والديون والرسوم المسجلة. الأرصدة مدخلة محليًا، والاستثمارات ليست نقدًا متاحًا فورًا.')+
    '</header>'+
    '<div class="rk44-topline">'+
    metric('الاحتياج الشهري المحسوب',fmt(data.monthlyNeed),'navy')+
    metric('إجمالي الادخار المسجل',fmt(data.savings.total),'teal')+
-   metric('الفائض المرشح لدراسة الاستثمار',fmt(data.investmentCandidate),data.investmentCandidate?'teal':'navy')+'</div>'+
+   metric('فجوة السيولة الوقائية',fmt(data.gapToProtection),data.gapToProtection?'red':'teal')+'</div>'+
    '<div class="rk44-bank-list">'+hilal+malaa+assets+'</div>'+
    riskPanel(data)+scenarioPanel()+
    '<p class="rk44-caution-note">لا تُنفّذ تحويلات أو مشتريات استثمارية تلقائيًا. تُثبت العمليات بعد المراجعة من صفحات البنوك المعنية. وقد تختلف السيولة الفعلية عن الأرصدة المدخلة حتى تتم المطابقة.</p>'+
@@ -121,6 +121,8 @@
  render=function(){const result=originalRender.apply(this,arguments);return result};
  const entry=Array.isArray(N)?N.find(item=>item[0]==='reserves'):null;
  if(entry)entry[1]='الاحتياطيات المتغيرة';
+ const bankPosition=Array.isArray(N)?N.find(row=>row[0]==='position'):null;
+ if(bankPosition)bankPosition[1]='الوضع المالي للبنوك';
  document.addEventListener('click',event=>{
   const button=event.target.closest('[data-rk44-page]');
   if(!button)return;
