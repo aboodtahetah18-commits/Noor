@@ -141,15 +141,15 @@
    '<label>دورية النفقة'+select('frequency',frequencyOptions,'none')+'</label></div>'+
    '<label class="rk44-approval"><input type="checkbox" name="included"> سجلت هذه النفقة ضمن بند سابق، فلا تُضاف مرة أخرى</label>'+
    '<button class="rk44-transfer-primary" type="submit">إضافة المعال</button></form></details>'+
-   '<div class="rk44-flex-summary"><span>إجمالي مكافئ شهري معروف من التفاصيل</span>'+
-   '<strong>'+fmt(summary.monthlyKnown)+'</strong><small>'+
+   '<div class="rk44-flex-summary"><span>المصروفات الأساسية المعروفة من البنود والمعالين</span>'+
+   '<strong>'+fmt(summary.monthlyBudget)+'</strong><small>'+ 'الأقساط والأهداف المستبعدة من الأساسيات: '+fmt(summary.excludedFromEssentials)+' · '+
    (summary.incomplete?'مصروفات غير منتظمة تحتاج مراجعة: '+summary.incomplete+' · ':'')+
    (summary.reconciledIntoBudget?'يحل التفصيل محل مصروفات الأساس القديمة دون إضافتها مرة أخرى':
     'تفاصيل للمراجعة، لا تُضاف فوق إجمالي المصروفات حتى تعتمد استبداله')+
    '</small></div>'+
    '<form data-rk44-detail-mode><label class="rk44-approval">'+
    '<input type="checkbox" name="useAsEssentials" '+(source.useAsEssentials?'checked':'')+
-   '> أعتمد استخدام البنود المعروفة والإنفاق غير المكرر للمعالين **بدل** إجمالي المصروفات الضرورية القديم. الأقساط والأهداف تُستثنى من الجمع.</label>'+
+   '> أعتمد استخدام البنود المعروفة والإنفاق غير المكرر للمعالين بدل إجمالي المصروفات الضرورية القديم. الأقساط والأهداف تُستثنى من الجمع.</label>'+
    '<button class="rk44-transfer-primary" type="submit">حفظ اختيار مصدر الميزانية</button></form>'+
    '<details class="rk44-starter-settings"><summary>3. التزامات بلا موعد سداد ثابت ('+flexibleDebts.length+')</summary>'+
    (flexibleDebts.length?'<div class="rk44-flex-list">'+flexibleDebts.map(d=>
@@ -178,7 +178,7 @@
    const value=amount===undefined?' placeholder="المبلغ أو 0"':' value="'+(amount/100).toFixed(2)+'"';
    return '<label>'+safe(label)+'<input type="number" name="'+id+'" min="0" step="0.01" inputmode="decimal" required'+value+'></label>';
   };
-  const fields=[['income','الراتب الفعلي الشهري'],['essentials','المصروفات الضرورية الشهرية'],
+  const fields=[['income','الراتب الفعلي الشهري'],['essentials','إجمالي الضروريات عند عدم استخدام تفصيل البنود'],
    ['obligations','الأقساط غير المكررة ضمن المصروفات'],['recurring','الرسوم الشهرية غير المكررة']];
   const banks=[['hilal','الهلال'],['malaa','ملاءة'],['assets','الأصول']];
   return '<section class="rk44-starter rk44-onboarding">'+
