@@ -411,6 +411,86 @@
   }
  },true);
  document.addEventListener('submit',event=>{
+
+  const planPolicy=event.target.closest('[data-rk44-starter-policy]');
+  const planMonth=event.target.closest('[data-rk44-starter-month]');
+  const yieldNew=event.target.closest('[data-rk44-yield-new]');
+  const yieldReverse=event.target.closest('[data-rk44-yield-reverse]');
+  if(planPolicy||planMonth||yieldNew||yieldReverse){
+   event.preventDefault();event.stopImmediatePropagation();
+   const moneyInput=(form,key)=>{
+    const val=String(form.elements.namedItem(key)?.value||'').trim();
+    if(!/^(?:0|[1-9]\d*)(?:\.\d{1,2})?$/.test(val))
+     throw Error('أدخل المبلغ بالريال بحد أقصى منزلتين عشريتين.');
+    const n=Math.round(Number(val)*100);
+    if(!Number.isSafeInteger(n)||n<0)throw Error('المبلغ غير صالح.');
+    return n;
+   };
+   const percent=(form,key)=>{
+    const val=String(form.elements.namedItem(key)?.value||'').trim();
+    if(!/^(?:0|[1-9]\d*)(?:\.\d{1,2})?$/.test(val))
+     throw Error('أدخل النسبة بمنزلتين عشريتين كحد أقصى.');
+    const n=Math.round(Number(val)*100);
+    if(!Number.isInteger(n)||n<0||n>10000)throw Error('النسبة يجب أن تكون بين 0 و100.');
+    return n;
+   };
+   try{
+    if(planPolicy){
+     if(!planPolicy.elements.namedItem('approval').checked)throw Error('اعتمد سياسة التخطيط أولًا.');
+     const input={
+      monthlySurplus:moneyInput(planPolicy,'monthly'),
+      milestones:{
+       hilal:moneyInput(planPolicy,'targetHilal'),
+       malaa:moneyInput(planPolicy,'targetMalaa'),
+       assets:moneyInput(planPolicy,'targetAssets')
+      },
+      shares:{
+       hilal:percent(planPolicy,'shareHilal'),
+       malaaEmergency:percent(planPolicy,'shareEmergency'),
+       malaaSavings:percent(planPolicy,'shareSavings'),
+       assets:percent(planPolicy,'shareAssets')
+      },
+      yieldShares:{malaa:percent(planPolicy,'yieldMalaa'),assets:percent(planPolicy,'yieldAssets')}
+     };
+     applyFinancialAction(()=>adaptive.saveStarterPolicy(db,input),'اعتماد سياسة الانطلاقة',
+      'المبلغ المتوقع '+input.monthlySurplus+' هللة','حُفظت السياسة دون إجراء مالي أو تغيير بيانات سابقة');
+    }
+    if(planMonth){
+     if(!planMonth.elements.namedItem('approval').checked)throw Error('اعتمد توزيع الشهر أولًا.');
+     const amount=moneyInput(planMonth,'actual');
+     applyFinancialAction(()=>adaptive.approveStarterMonth(db,activePeriod(),amount),
+      'اعتماد خطة الفائض الشهرية',activePeriod()+' — '+amount+' هللة',
+      'حُفظت خطة الفائض دون إيداع أو تحويل فعلي');
+    }
+    if(yieldNew){
+     if(!yieldNew.elements.namedItem('approval').checked)throw Error('يجب تأكيد تحصيل العائد.');
+     const input={amount:moneyInput(yieldNew,'amount'),
+      reference:yieldNew.elements.namedItem('reference').value.trim(),
+      date:yieldNew.elements.namedItem('date').value,
+      note:yieldNew.elements.namedItem('note').value};
+     const auto=yieldNew.elements.namedItem('autoRequests').checked;
+     applyFinancialAction(()=>{
+      const receipt=adaptive.recordRealizedYield(db,input);
+      if(auto){
+       for(const bank of ['malaa','assets']){
+        try{adaptive.requestYieldSplit(db,receipt.id,bank)}
+        catch(error){/* تتبقى الحصة المحمية كاقتراح، دون تنفيذ أو تلف القيد. */}
+       }
+      }
+      return receipt;
+     },'إثبات عائد محصل للهلال',input.reference+' — '+input.amount+' هللة',
+     'تم إثبات العائد وتحديد حصصه؛ يلزم إثبات تنفيذ أي طلب تحويل');
+    }
+    if(yieldReverse){
+     if(!confirm('إنشاء قيد عكسي مستقل دون حذف القيد الأصلي؟'))return;
+     const id=yieldReverse.getAttribute('data-rk44-id');
+     const reason=yieldReverse.elements.namedItem('reason').value.trim();
+     applyFinancialAction(()=>adaptive.reverseYield(db,id,reason),
+      'تصحيح عائد الهلال',id+' — '+reason,'تم إنشاء قيد عكسي موثق');
+    }
+   }catch(error){alert(error.message||'تعذّر اعتماد العملية.');}
+   return;
+  }
   const transferForm=event.target.closest('[data-rk44-transfer-new],[data-rk44-transfer-step]');
   if(transferForm){
    event.preventDefault();event.stopImmediatePropagation();
