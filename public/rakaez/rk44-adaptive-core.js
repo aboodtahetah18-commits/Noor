@@ -111,7 +111,9 @@
   const saved=savingsSummary(db),capital=invested(db);
   const hilalTarget=dynamicTarget(policy.hilal,0.4);
   const malaaTarget=dynamicTarget(policy.malaa,1);
-  const assetsTarget=dynamicTarget(policy.assets,0.5);
+  // Additional liquid cushion that remains untouched before any new investment.
+  // The assets-bank protection-month control must affect the eligibility rule.
+  const investmentSafetyBuffer=dynamicTarget(policy.assets,0.5);
   const held=heldHilal(db);
   const protectionRequired=hilalTarget+malaaTarget;
   const gapToProtection=Math.max(0,protectionRequired-saved.soonFree);
@@ -120,7 +122,7 @@
   const incomeRecorded=salaryHistory.some(p=>p===reference||p===offset(reference,-1)||p===offset(reference,-2));
   // Only surplus AFTER both banks' liquidity protection can be considered.
   // 12-day savings and market holdings are never treated as emergency cash.
-  const eligibleCash=Math.max(0,saved.soonFree-protectionRequired);
+  const eligibleCash=Math.max(0,saved.soonFree-protectionRequired-investmentSafetyBuffer);
   const investmentCandidate=(severe||warning||observedMonths<2||!incomeRecorded)?0:eligibleCash;
   const pressure=severe?'حرج':warning?'مرتفع':
    saved.nowFree<baseNeed||gapToProtection>0?'بحاجة إلى تعزيز السيولة':'تحت المتابعة';
@@ -129,7 +131,7 @@
    estimate:{...estimate,commitments,loanMonthly:debtMonthly,monthlyFees:Math.round(annualizedFee(db)/12)},
    riskBuffer,outstanding,debtMonthly,debtRatio,debtToYearIncome,costToIncome,
    pressure,critical:severe,warning,protectionRequired,gapToProtection,
-   incomeRecorded,observedMonths,eligibleCash,
+   incomeRecorded,observedMonths,eligibleCash,investmentSafetyBuffer,
    savings:saved,investment:capital,investmentCandidate,
    banks:{
     hilal:{target:hilalTarget,recorded:held,coverage:hilalTarget?held/hilalTarget:1,
@@ -138,7 +140,7 @@
       coverage:malaaTarget?saved.soonFree/malaaTarget:1,
       gap:Math.max(0,malaaTarget-saved.soonFree),kind:'سيولة مسجلة خلال ثلاثة أيام',confirmedLiquid:false},
     assets:{target:investmentCandidate,recorded:null,coverage:null,gap:null,kind:'استثمار الفائض بعد تغطية الحماية',
-      confirmedLiquid:false,market:capital.market}
+      safetyBuffer:investmentSafetyBuffer,confirmedLiquid:false,market:capital.market}
    }
   };
  }
