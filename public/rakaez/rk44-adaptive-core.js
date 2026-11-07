@@ -612,8 +612,8 @@
   return {ready:true,previousIncome:before,currentIncome:now,growth,
    costs,protectedAmount,newFree,oldFree,extraFree,debts,
    // No automatic collection. This ceiling is never a required or approved payment.
-   ceiling:Math.min(extraFree,debts.reduce((a,b)=>a+b.remaining,0)),
-   warning:now<before||now<costs+protectedAmount||p.rawSurplus<0,
+   ceiling:(now<before||now<costs+protectedAmount)?0:Math.min(extraFree,debts.reduce((a,b)=>a+b.remaining,0)),
+   warning:now<before||now<costs+protectedAmount,
    requiresApproval:true};
  }
 
