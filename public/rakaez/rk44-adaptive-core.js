@@ -262,7 +262,16 @@
   const status=onboardingState(db,period);
   if(!status.verified)return {ready:false,phase:status.phase,startMonth:status.startMonth,missing:status.missing};
   const p=status.values;
-  const baselineCosts=p.essentials+p.obligations+p.recurring;
+  const detail=userDetailsSummary(db);
+  const applicable=userDetails(db).useAsEssentials===true;
+  const recurringItems=detail.items.filter(i=>i.category!=='التزامات'&&i.category!=='أهداف مستقبلية')
+   .filter(i=>i.monthly!==null).reduce((sum,item)=>sum+item.monthly,0);
+  const dependentCosts=detail.dependents.filter(d=>d.monthly!==null)
+   .reduce((sum,d)=>sum+d.monthly,0);
+  // Detailed categories REPLACE the old lump-sum essentials; they are never added to it.
+  // Debts/goal targets in categories do not count as essential expenses again.
+  const monthlyEssentials=applicable?recurringItems+dependentCosts:p.essentials;
+  const baselineCosts=monthlyEssentials+p.obligations+p.recurring;
   // Use whichever is greater: approved full-month cost estimate or actual posted expenses.
   // Do not add transactions to the baseline or an installment may be counted twice.
   const recordedExpenses=sum((Array.isArray(db?.transactions)?db.transactions:[])
@@ -284,7 +293,9 @@
   const allocation={hilal,malaaEmergency,malaaSavings,assets:0};
   assert(Object.values(allocation).reduce((sum,x)=>sum+x,0)===amount,'لا تتوازن خطة الشهر.');
   return {ready:true,phase:status.phase,startMonth:status.startMonth,period,
-   income:p.income,essentials:p.essentials,obligations:p.obligations,recurring:p.recurring,
+   income:p.income,essentials:monthlyEssentials,obligations:p.obligations,recurring:p.recurring,
+   expenseSource:applicable?'تفصيل مصروفات معتمد':'إجمالي المصروفات المعتمد',
+   incompleteVariableExpenses:applicable?detail.incomplete:0,
    baselineCosts,recordedExpenses,costs,rawSurplus,affordable,amount,opening:{...p.opening},
    stageTargets,stageGaps:{hilal:hilalGap,malaa:malaaGap},
    allocation,investedAvailable:false,assetsGoal:null,
@@ -531,8 +542,8 @@
   const known=[...items,...dependents].filter(x=>x.monthly!==null);
   return {items,dependents,monthlyKnown:known.reduce((a,b)=>a+b.monthly,0),
    incomplete:[...items,...dependents].filter(x=>x.monthly===null).length,
-   // This is a parallel estimate, NEVER added to aggregate costs unless explicitly reconciled.
-   reconciledIntoBudget:false};
+   // Explicit substitution of the old aggregate is required; never sum both sources.
+   reconciledIntoBudget:source.useAsEssentials===true};
  }
  function saveUserDetails(db,input){
   assert(db&&typeof db==='object','البيانات غير متاحة.');
@@ -560,8 +571,10 @@
   const ids=[...items,...dependents].map(x=>x.id);
   assert(ids.length===new Set(ids).size,'هناك معرفات متكررة.');
   const prior=userDetails(db);
+  const useAsEssentials=input.useAsEssentials===true;
+  assert(!useAsEssentials||items.length+dependents.length>0,'أدخل بندًا أو معالًا قبل استبدال إجمالي المصروفات.');
   const next={items,dependents,updatedAt:new Date().toISOString(),
-   version:1,forecastMode:'separate-until-reconciled'};
+   version:1,useAsEssentials,forecastMode:useAsEssentials?'replaces-essentials':'separate-until-reconciled'};
   if(!Array.isArray(db.rk44UserDetailsHistory))db.rk44UserDetailsHistory=[];
   if(prior.updatedAt)db.rk44UserDetailsHistory.push({...prior});
   db.rk44UserDetails=next;
