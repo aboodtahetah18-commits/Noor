@@ -49,6 +49,82 @@
    'مدة الحماية في بنك الأصول تضيف هامش أمان سائل قبل اعتبار أي فائض قابلًا للاستثمار. لا تُعامل القيمة السوقية للمحافظ والأسهم كرصيد نقدي فوري، ولا يُنفَّذ شراء أو بيع تلقائيًا.')+'</div>'+
    '<footer class="rk44-actions">'+actions[id].map(([route,label],i)=>'<button type="button" class="'+(i===0?'rk44-primary':'')+'" data-rk44-page="'+route+'">'+safe(label)+'</button>').join('')+'</footer></article>';
  }
+
+ function liquidityPanel(data){
+  const p=data.liquidityPlan;
+  return '<section class="rk44-liquidity" aria-label="خطة توزيع السيولة">'+
+   '<div class="rk44-sectionhead"><h3>أولويات حماية السيولة</h3>'+
+   hint('الاحتياج الفوري حد احترازي محسوب، وليس مبلغًا مخصومًا من البنك. النقد المطابق هو الأقل بين الادخار المسجل ونقد ملاءة المتاح في دفتر الأستاذ؛ لا تجمع القيمتين باعتبارهما نقدًا جديدًا.')+'</div>'+
+   '<div class="rk44-liquidity-grid">'+
+   metric('حماية فورية مطلوبة',fmt(p.immediateRequired),'navy')+
+   metric('الالتزامات الشهرية القريبة',fmt(p.upcomingCommitments),'red')+
+   metric('السيولة المسجلة خلال 3 أيام',fmt(p.liquidRecorded),'teal')+
+   metric('نقد مطابق متاح في الدفتر',fmt(p.reconciledCash),'blue')+
+   metric('هامش الأمان قبل الاستثمار',fmt(p.investmentBuffer),'navy')+
+   metric('فائض معتمد للدراسة فقط',fmt(p.investable),p.investable?'teal':'navy')+
+   '</div><p class="rk44-subnote">إذا لم تُثبت أرصدة نقدية في دفتر الأستاذ، يتوقف ترشيح الاستثمار حفاظًا على الأموال؛ لا تُحوّل أرقام الادخار أو الأهداف تلقائيًا إلى نقد مؤكد.</p></section>';
+ }
+ function transferPanel(data){
+  const names=adaptive.bankNames;
+  const options=Object.entries(names).map(([id,name])=>'<option value="'+id+'">'+safe(name)+'</option>').join('');
+  const ledger=Object.entries(names).map(([id,name])=>
+   '<div class="rk44-ledger-bank"><span>'+safe(name)+'</span><strong>'+fmt(adaptive.cashBalance(db,id))+
+   '</strong><small>متاح للطلبات: '+fmt(adaptive.availableBankCash(db,id))+'</small></div>').join('');
+  const rows=adaptive.transfers(db).slice().reverse().map(op=>{
+   const pending=op.status==='pending',executed=op.status==='executed';
+   const status={pending:'طلب معتمد بانتظار التنفيذ',executed:'خرج من المصدر — بانتظار مطابقة الوصول',
+    matched:'تمت مطابقة وصول المبلغ',cancelled:'أُلغي قبل التنفيذ'}[op.status]||'غير محددة';
+   const ref=pending?'<form data-rk44-transfer-step="execute" data-rk44-id="'+safe(op.id)+'" class="rk44-step-form">'+
+    '<label>مرجع إثبات خروج المبلغ<input name="reference" minlength="5" maxlength="100" required placeholder="مرجع التنفيذ من البنك"></label>'+
+    '<button type="submit">إثبات التنفيذ</button>'+
+    '<button type="button" data-rk44-transfer-cancel="'+safe(op.id)+'">إلغاء الطلب</button></form>':
+    executed?'<form data-rk44-transfer-step="match" data-rk44-id="'+safe(op.id)+'" class="rk44-step-form">'+
+    '<label>مرجع إثبات وصول المبلغ<input name="reference" minlength="5" maxlength="100" required placeholder="مرجع الوصول في البنك المستفيد"></label>'+
+    '<button type="submit">مطابقة وصول المبلغ</button></form>':'';
+   return '<article class="rk44-transfer-row"><div class="rk44-transfer-heading"><strong>'+
+    safe(names[op.from]||op.from)+' ← '+safe(names[op.to]||op.to)+'</strong>'+
+    '<b class="rk44-navy">'+fmt(op.amount)+'</b></div>'+
+    '<span class="rk44-transfer-status">'+safe(status)+'</span>'+
+    (op.note?'<small>'+safe(op.note)+'</small>':'')+
+    (op.executionReference?'<small>مرجع التنفيذ: '+safe(op.executionReference)+'</small>':'')+
+    (op.destinationReference?'<small>مرجع الوصول: '+safe(op.destinationReference)+'</small>':'')+ref+'</article>';
+  }).join('');
+  const open=adaptive.transfers(db).some(op=>['pending','executed'].includes(op.status))?' open':'';
+  return '<details class="rk44-transfer-panel" id="rk44-transfers"'+open+'>'+
+   '<summary><span>سجل تحويلات الحماية بين البنوك</span><small>'+adaptive.transfers(db).length+' عملية</small></summary>'+
+   '<div class="rk44-transfer-content"><div class="rk44-ledger-banks">'+ledger+'</div>'+
+   hint('التحويل يتم عبر دفتر الأستاذ النقدي V5 فقط. الطلب يحجز المبلغ ولا يرحله. إثبات التنفيذ يخصمه من البنك المصدر ويضعه قيد التحويل؛ المطابقة تُثبته في بنك الوصول. لا تُعدّل أرصدة الادخار أو المحافظ أو النقد المصرفي الحقيقي آليًا.')+
+   '<form data-rk44-transfer-new class="rk44-transfer-form"><div class="rk44-transfer-fields">'+
+   '<label>البنك المصدر<select name="from" required>'+options.replace('value="malaa"','value="malaa" selected')+'</select></label>'+
+   '<label>البنك المستفيد<select name="to" required>'+options.replace('value="hilal"','value="hilal" selected')+'</select></label>'+
+   '<label>المبلغ (ريال)<input name="amount" type="number" inputmode="decimal" min="0.01" step="0.01" required></label>'+
+   '<label class="rk44-transfer-note">سبب التحويل<input name="note" maxlength="180" placeholder="الغرض من التمويل أو دعم السيولة"></label></div>'+
+   '<label class="rk44-approval"><input type="checkbox" name="approval" required> أعتمد تسجيل طلب التحويل بعد مراجعة رصيد المصدر. لا يُنفّذ تحويل مصرفي فعلي.</label>'+
+   '<button type="submit" class="rk44-transfer-primary">تسجيل طلب التحويل المعتمد</button></form>'+
+   '<div class="rk44-transfer-history"><h4>الطلبات وحالة المطابقة</h4>'+
+   (rows||'<p class="rk44-subnote">لا توجد تحويلات حماية مسجلة بعد.</p>')+'</div></div></details>';
+ }
+ function applyFinancialAction(action,verb,detail){
+  const had=Object.prototype.hasOwnProperty.call(db,'rk44Transfers');
+  const oldOps=had?JSON.stringify(db.rk44Transfers):null;
+  const oldEntries=JSON.stringify(db.ledgerEntries);
+  const oldAudit=JSON.stringify(db.audit);
+  try{
+   const result=action();
+   audit(verb,detail);
+   save();
+   render();
+   if(typeof toast==='function')toast('تم تسجيل العملية في دفتر الحماية');
+   return result;
+  }catch(err){
+   if(had)db.rk44Transfers=JSON.parse(oldOps);else delete db.rk44Transfers;
+   db.ledgerEntries=JSON.parse(oldEntries);db.audit=JSON.parse(oldAudit);
+   alert(err.message||'تعذر حفظ عملية الحماية؛ لم تعتمد.');
+   render();
+   return null;
+  }
+ }
+
  function riskPanel(data){
   const high=data.critical||data.warning;
   const shortage=data.gapToProtection;
@@ -69,7 +145,7 @@
    '<div class="rk44-response-actions">'+
    '<button type="button" data-rk44-page="debts">مراجعة الأقساط وسدادها</button>'+
    '<button type="button" data-rk44-release>طلب تفعيل احتياطي الهلال</button>'+
-   '<button type="button" data-rk44-page="interbank">التمويل بين البنوك</button></div></div></section>';
+   '<button type="button" data-rk44-open-transfer>إدارة تحويلات الحماية</button></div></div></section>';
  }
  function scenarioPanel(){
   return '<details class="rk44-scenario"><summary>اختبار تأثير قرض جديد على قوة البنوك</summary>'+
@@ -113,7 +189,7 @@
    metric('إجمالي الادخار المسجل',fmt(data.savings.total),'teal')+
    metric('فجوة السيولة الوقائية',fmt(data.gapToProtection),data.gapToProtection?'red':'teal')+'</div>'+
    '<div class="rk44-bank-list">'+hilal+malaa+assets+'</div>'+
-   riskPanel(data)+scenarioPanel()+
+   riskPanel(data)+liquidityPanel(data)+transferPanel(data)+scenarioPanel()+
    '<p class="rk44-caution-note">لا تُنفّذ تحويلات أو مشتريات استثمارية تلقائيًا. تُثبت العمليات بعد المراجعة من صفحات البنوك المعنية. وقد تختلف السيولة الفعلية عن الأرصدة المدخلة حتى تتم المطابقة.</p>'+
    '</section>';
  };
@@ -159,6 +235,22 @@
    }
    return;
   }
+  const transferOpen=event.target.closest('[data-rk44-open-transfer]');
+  if(transferOpen){
+   event.preventDefault();event.stopImmediatePropagation();
+   if(page!=='reserves'){navigate('reserves');}
+   const panel=document.getElementById('rk44-transfers');
+   if(panel){panel.open=true;panel.scrollIntoView({behavior:'smooth',block:'nearest'});}
+   return;
+  }
+  const cancel=event.target.closest('[data-rk44-transfer-cancel]');
+  if(cancel){
+   event.preventDefault();event.stopImmediatePropagation();
+   if(!confirm('إلغاء طلب التحويل قبل تنفيذه؟'))return;
+   const id=cancel.getAttribute('data-rk44-transfer-cancel');
+   applyFinancialAction(()=>adaptive.cancelTransfer(db,id),'إلغاء تحويل حماية',id);
+   return;
+  }
   const button=event.target.closest('[data-rk44-page]');
   if(!button)return;
   event.preventDefault();event.stopImmediatePropagation();
@@ -190,6 +282,34 @@
   }
  },true);
  document.addEventListener('submit',event=>{
+  const transferForm=event.target.closest('[data-rk44-transfer-new],[data-rk44-transfer-step]');
+  if(transferForm){
+   event.preventDefault();event.stopImmediatePropagation();
+   if(transferForm.hasAttribute('data-rk44-transfer-new')){
+    const from=transferForm.elements.namedItem('from').value;
+    const to=transferForm.elements.namedItem('to').value;
+    const raw=transferForm.elements.namedItem('amount').value.trim();
+    if(!/^(?:0|[1-9]\\d*)(?:\\.\\d{1,2})?$/.test(raw)||Number(raw)<=0){
+     alert('أدخل مبلغًا صحيحًا بالريال بحد أقصى منزلتين عشريتين.');return;
+    }
+    if(!transferForm.elements.namedItem('approval').checked){
+     alert('يجب اعتماد تسجيل الطلب صراحة.');return;
+    }
+    const amount=Math.round(Number(raw)*100);
+    const note=transferForm.elements.namedItem('note').value;
+    applyFinancialAction(()=>adaptive.requestTransfer(db,{from,to,amount,note}),
+     'اعتماد طلب تحويل حماية',from+' ← '+to+' — '+amount+' هللة');
+   }else{
+    const id=transferForm.getAttribute('data-rk44-id');
+    const ref=transferForm.elements.namedItem('reference').value.trim();
+    const stage=transferForm.getAttribute('data-rk44-transfer-step');
+    if(stage==='execute')applyFinancialAction(()=>adaptive.executeTransfer(db,id,ref),
+      'إثبات خروج تحويل حماية',id+' — '+ref);
+    if(stage==='match')applyFinancialAction(()=>adaptive.matchTransfer(db,id,ref),
+      'مطابقة وصول تحويل حماية',id+' — '+ref);
+   }
+   return;
+  }
   const form=event.target.closest('[data-rk44-scenario]');
   if(!form)return;
   event.preventDefault();event.stopImmediatePropagation();
