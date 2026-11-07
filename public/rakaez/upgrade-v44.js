@@ -55,6 +55,31 @@
  function rkStartMonth(){
   const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0');
  }
+
+ function rkCertifiedSummary(){
+  const state=adaptive.onboardingState(db,rkStartMonth());
+  const heading=state.verified?(state.phase==='scheduled'?'بداية الدورة الكاملة مجدولة':'الحسابات مبنية على البيانات المؤكدة'):'المعلومات غير مكتملة';
+  const note=!state.verified?
+   'لا يعرض النظام راتبًا أو فائضًا أو أهدافًا من الأرقام التجريبية. أدخل البيانات الفعلية وراجعها من صفحة الانطلاقة.':
+   state.phase==='scheduled'?'تبدأ الدورة الكاملة في '+safe(state.startMonth)+'. الشهر الجاري للتسجيل الجزئي فقط.':
+   'البيانات الأساسية مؤكدة. الملخص التالي تخطيطي ولا يغير الأرصدة البنكية.';
+  let content='';
+  if(state.phase==='active'){
+   const p=adaptive.verifiedStarterPlan(db,rkStartMonth());
+   if(p.ready)content='<div class="rk44-starter-lines">'+
+    '<div class="rk44-starter-line"><strong>الراتب المعتمد للحساب</strong><b>'+fmt(p.income)+'</b></div>'+
+    '<div class="rk44-starter-line"><strong>الضروريات والأقساط والرسوم</strong><b>'+fmt(p.costs)+'</b></div>'+
+    '<div class="rk44-starter-line"><strong>'+(p.rawSurplus<0?'العجز الحسابي':'الفائض الحسابي')+'</strong><b>'+fmt(Math.abs(p.rawSurplus))+'</b></div>'+
+    '</div>';
+  }
+  return '<section class="rk44-starter rk44-certified-summary">'+
+   '<header class="rk44-sectionhead"><h3>'+heading+'</h3>'+
+   hint('تم تعليق لوحات الاستنتاجات القديمة لأنها تعتمد على بيانات لم تُراجع. لا يساوي الدخل المخطط إيداعًا مصرفيًا ولا تمثل أرقام الأمثلة أهدافًا معتمدة.')+'</header>'+
+   '<p class="rk44-subnote">'+note+'</p>'+content+
+   '<button type="button" class="rk44-transfer-primary" data-rk44-page="reserves">الانتقال إلى إعداد الانطلاقة المالية</button>'+
+   '</section>';
+ }
+
  function rkVerifiedSetup(state){
   const details=state.verified?state.values:null;
   const first=state.startMonth||adaptive.offset(rkStartMonth(),1);
@@ -275,6 +300,10 @@
  const originalRender=render;
  render=function(){
   const result=originalRender.apply(this,arguments);
+  if(['insights','position','reports'].includes(page)){
+   const root=document.getElementById('view');
+   if(root)root.innerHTML=rkCertifiedSummary();
+  }
   if(db.rk44LegacyCalculationApproved===true && ['insights','debts','hilal','malaa','assets','position'].includes(page)){
    const root=document.getElementById('view');
    if(root&&!root.querySelector('.rk44-alert-inline')){
