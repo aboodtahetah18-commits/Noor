@@ -51,8 +51,22 @@
   return null;
  }
  function arrangeHeader(dialog){
-  let head=Array.from(dialog.children).find(child=>child.matches?.(headerSelector));
-  if(!head)head=dialog.querySelector(headerSelector);
+  const directHeads=Array.from(dialog.children).filter(child=>child.matches?.(headerSelector));
+  const preference=['rk41-debt-head','rk42-research-head','v27-dialog-head','rk39-dialog-head','modalhead','v7-head','v3header'];
+  let head=directHeads.sort((a,b)=>{
+   const rank=node=>{const i=preference.findIndex(cls=>node.classList.contains(cls));return i<0?99:i;};
+   return rank(a)-rank(b);
+  })[0]||dialog.querySelector(headerSelector);
+  // If an old repair routine injected a second title bar, retain the original
+  // financial header and merge its title before discarding the duplicate.
+  for(const duplicate of directHeads.filter(node=>node!==head)){
+   const missingTitle=!head?.querySelector('h1,h2,h3');
+   if(missingTitle){
+    const heading=duplicate.querySelector('h1,h2,h3');
+    if(heading)head.prepend(heading);
+   }
+   duplicate.remove();
+  }
   if(!head){
    head=document.createElement('header');
    head.className='modalhead';
@@ -67,6 +81,12 @@
   }
   // Do not rebuild an already arranged heading; keep focus and input state intact.
   if(head.classList.contains('rk43-arranged')){
+   // Older decorators may add an extra close button later; never let it
+   // become another heading control or start a second row.
+   const controls=Array.from(head.querySelectorAll(':scope > button'));
+   controls.forEach(button=>{
+    if(!button.matches('.rk43-back,.rk43-close'))button.remove();
+   });
    dialog.classList.add('rk43-normalized');
    return;
   }
@@ -85,11 +105,11 @@
   if(!close.getAttribute('onclick')&&!close.hasAttribute('data-rk42-close')&&!close.hasAttribute('data-v27-action')&&!close.hasAttribute('data-rk39-close')){
    close.setAttribute('onclick','closeModal()');
   }
-  const center=document.createElement('div');
+  const center=head.querySelector(':scope > .rk43-heading')||document.createElement('div');
   center.className='rk43-heading';
   // Move heading and inline status only; preserve all buttons' native listeners.
   for(const child of Array.from(head.childNodes)){
-   if(child===back||child===close)continue;
+   if(child===back||child===close||child===center)continue;
    if(child.nodeType===1&&child.matches?.('button')){
     if(isBack(child)||isClose(child)){child.remove();continue;}
    }
