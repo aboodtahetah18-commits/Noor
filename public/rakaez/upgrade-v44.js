@@ -718,6 +718,88 @@
  if(bankPosition)bankPosition[1]='الوضع المالي للبنوك';
  document.addEventListener('click',event=>{
 
+
+  // أول جلسة: الترحيب داخل نافذة واحدة، ثم حفظ المسودة أو اعتماد التأسيس صراحةً.
+  const wizardOpenButton=event.target.closest('[data-w-open]');
+  if(wizardOpenButton){
+   event.preventDefault();event.stopImmediatePropagation();
+   wizardOpen();return;
+  }
+  if(event.target.closest('.rk44-wizard')){
+   const close=event.target.closest('[data-w-close]');
+   if(close){
+    event.preventDefault();event.stopImmediatePropagation();
+    wizardPersistDraft();
+    document.getElementById('modalRoot').innerHTML='';
+    return;
+   }
+   const back=event.target.closest('[data-w-prev]');
+   if(back){
+    event.preventDefault();event.stopImmediatePropagation();
+    wizardStep=Math.max(0,wizardStep-1);
+    wizardPersistDraft();wizardShow();return;
+   }
+   const add=event.target.closest('[data-w-add]');
+   if(add){
+    event.preventDefault();event.stopImmediatePropagation();
+    const kind=add.getAttribute('data-w-add');
+    if(kind==='items')wizardDraft.items.push({id:'wi-'+Date.now()+'-'+wizardDraft.items.length,
+     name:'',amount:'',remaining:'',frequency:'monthly',category:'auto'});
+    if(kind==='dependents')wizardDraft.dependents.push({id:'wd-'+Date.now()+'-'+wizardDraft.dependents.length,
+     name:'',relation:'',amount:'',frequency:'none',includedInItems:false});
+    if(kind==='obligations')wizardDraft.obligations.push({name:'',remaining:'',mode:'capacity',installment:'',due:''});
+    if(kind==='goals')wizardDraft.goals.push({name:'',target:'',date:''});
+    wizardPersistDraft();wizardShow();return;
+   }
+   const remove=event.target.closest('[data-w-remove]');
+   if(remove){
+    event.preventDefault();event.stopImmediatePropagation();
+    const type=remove.getAttribute('data-w-remove');
+    const index=Number(remove.getAttribute('data-w-index'));
+    if(['items','dependents','obligations','goals'].includes(type)&&
+     Number.isInteger(index)&&index>=0&&index<wizardDraft[type].length){
+     wizardDraft[type].splice(index,1);
+     wizardPersistDraft();wizardShow();
+    }
+    return;
+   }
+   const next=event.target.closest('[data-w-next]');
+   if(next){
+    event.preventDefault();event.stopImmediatePropagation();
+    try{
+     if(wizardStep>0&&wizardStep<7)wizardValidate(wizardStep);
+     if(wizardStep<7){
+      wizardStep++;
+      wizardPersistDraft();wizardShow();
+      return;
+     }
+     if(!document.getElementById('rk44-wizard-approved')?.checked)
+      throw Error('راجع البيانات ووافق على التأسيس قبل الاعتماد.');
+     const data=wizardPayload();
+     const result=applyFinancialAction(()=>{
+      const approved=adaptive.confirmWizard(db,data,rkStartMonth());
+      delete db.rk44WizardDraft;
+      return approved;
+     },'اعتماد تأسيس ركائز','توقعات مالية معتمدة مع دورة راتب أولية',
+      'اعتمدت بياناتك الأولية؛ ستُحسّن التوقعات بعد مراجعة دورات الراتب');
+     if(result)document.getElementById('modalRoot').innerHTML='';
+    }catch(error){wizardMessage(error.message||'راجع المدخلات قبل المتابعة.');}
+    return;
+   }
+  }
+  const cycleReview=event.target.closest('[data-w-cycle-review]');
+  if(cycleReview){
+   event.preventDefault();event.stopImmediatePropagation();
+   const box=document.querySelector('[data-w-cycle-confirm]');
+   if(!box?.checked){alert('راجع عمليات الدورة وأكد اكتمالها أولًا.');return;}
+   if(!confirm('اعتماد مراجعة دورة راتب مكتملة؟ لن تُعدّل أي عملية قديمة.'))return;
+   const period=cycleReview.getAttribute('data-w-cycle-review');
+   applyFinancialAction(()=>adaptive.reviewWizardCycle(db,period),
+    'اعتماد مراجعة دورة راتب',period,
+    'تم حفظ مراجعة الدورة، ويستخدمها ركائز لتحسين المقارنات القادمة');
+   return;
+  }
+
   const removeDetail=event.target.closest('[data-rk44-detail-remove]');
   if(removeDetail){
    event.preventDefault();event.stopImmediatePropagation();
@@ -825,6 +907,42 @@
   if(label)label.textContent=suggestion.category?
    'اقتراح التصنيف: '+suggestion.category+' — '+suggestion.reason:
    'التصنيف غير واضح؛ اختر تصنيفًا يدويًا قبل الحفظ';
+ },true);
+
+
+ document.addEventListener('input',event=>{
+  const element=event.target.closest('[data-w-group][data-w-key]');
+  if(!element||!element.closest('.rk44-wizard'))return;
+  const group=element.getAttribute('data-w-group');
+  const key=element.getAttribute('data-w-key');
+  const index=Number(element.getAttribute('data-w-index'));
+  const row=group==='profile'?wizardDraft.profile:
+   ['items','dependents','obligations','goals'].includes(group)?wizardDraft[group]?.[index]:null;
+  if(!row||!Object.hasOwn(row,key))return;
+  row[key]=element.type==='checkbox'?element.checked:element.value;
+  if(group==='items'&&key==='name'){
+   const note=element.closest('.rk44-wizard-line')?.querySelector('[data-w-suggestion]');
+   const suggested=adaptive.categorySuggestion(element.value);
+   if(note)note.textContent='اقتراح النظام: '+(suggested.category||'يحتاج تحديدًا منك');
+  }
+ },true);
+ document.addEventListener('change',event=>{
+  const element=event.target.closest('[data-w-group][data-w-key]');
+  if(!element||!element.closest('.rk44-wizard'))return;
+  const group=element.getAttribute('data-w-group'),key=element.getAttribute('data-w-key');
+  const index=Number(element.getAttribute('data-w-index'));
+  const row=group==='profile'?wizardDraft.profile:wizardDraft[group]?.[index];
+  if(row&&Object.hasOwn(row,key)){
+   row[key]=element.type==='checkbox'?element.checked:element.value;
+   if(group==='obligations'&&key==='mode')wizardShow();
+  }
+ },true);
+ document.addEventListener('keydown',event=>{
+  if(event.key==='Escape'&&document.querySelector('#modalRoot .rk44-wizard')){
+   event.preventDefault();event.stopImmediatePropagation();
+   wizardPersistDraft();
+   document.getElementById('modalRoot').innerHTML='';
+  }
  },true);
 
  document.addEventListener('submit',event=>{
@@ -1076,4 +1194,5 @@
   }
  },true);
  render();
+ wizardMaybeOpen();
 })();
