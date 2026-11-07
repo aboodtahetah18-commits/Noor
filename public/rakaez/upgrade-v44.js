@@ -99,6 +99,47 @@
    '</div></section>';
  }
 
+
+ function yieldPanel(){
+  const policy=adaptive.starterPolicy(db),revenue=adaptive.yieldRecords(db);
+  const block=y=>{
+   const parts=['malaa','assets'].map(bank=>{
+    const requestId=y.transferIds[bank];
+    const t=requestId?adaptive.transfers(db).find(x=>x.id===requestId):null;
+    const state=t?({pending:'طلب قيد الانتظار',executed:'خرج ولم تصل مطابقته',matched:'مطابق',cancelled:'طلب ملغي'}[t.status]||'طلب مسجل'):'لم يعتمد طلب التحويل';
+    const btn=y.status==='recorded'&&!requestId&&y.splitAmounts[bank]>0?
+     '<button type="button" data-rk44-yield-split="'+safe(y.id)+'" data-rk44-yield-bank="'+bank+'">اعتماد طلب</button>':
+     '<small>'+safe(state)+'</small>';
+    return '<div class="rk44-yield-line"><span>'+safe(adaptive.bankNames[bank])+'</span><b>'+fmt(y.splitAmounts[bank])+'</b>'+btn+'</div>';
+   }).join('');
+   const correction=y.status==='recorded'&&!Object.values(y.transferIds).some(Boolean)?
+    '<details class="rk44-yield-correction"><summary>تصحيح العائد</summary><form data-rk44-yield-reverse data-rk44-id="'+safe(y.id)+'">'+
+    '<label>سبب العكس<input name="reason" minlength="5" maxlength="150" required></label>'+
+    '<button type="submit">قيد عكسي مستقل</button></form></details>':'';
+   return '<article class="rk44-yield-record"><div class="rk44-transfer-heading"><strong>عائد بتاريخ '+safe(y.date)+'</strong>'+
+    '<b>'+fmt(y.amount)+'</b></div><small>مرجع التحصيل: '+safe(y.reference)+'</small>'+
+    (y.status==='reversed'?'<small>تم عكس القيد: '+safe(y.reversalReason||'')+'</small>':parts+correction)+'</article>';
+  };
+  return '<section class="rk44-starter rk44-yields" aria-label="توزيع عوائد الهلال">'+
+   '<header class="rk44-sectionhead"><h3>عوائد الهلال المحصلة</h3>'+
+   hint('القروض التي يأخذها البنك تُنشئ التزامًا وليست ربحًا. لا يسجل النظام عائدًا إلا بعد إثبات وصوله فعليًا. يُحسب توزيع العائد تلقائيًا ثم تُنشأ طلبات التحويل بعد تفويضك؛ التنفيذ والمطابقة والشراء الاستثماري ليست تلقائية.')+'</header>'+
+   '<div class="rk44-yield-ratios"><span>حصة ملاءة <b>'+policy.yieldShares.malaa/100+'%</b></span>'+
+   '<span>حصة الأصول <b>'+policy.yieldShares.assets/100+'%</b></span></div>'+
+   '<details class="rk44-starter-settings"><summary>تسجيل عائد تم تحصيله فعلًا في الهلال</summary>'+
+   '<form data-rk44-yield-new><div class="rk44-starter-inputs">'+
+   '<label>قيمة العائد (ريال)<input name="amount" required type="number" min="0.01" step="0.01"></label>'+
+   '<label>تاريخ الاستلام<input name="date" type="date" required value="'+new Date().toISOString().slice(0,10)+'"></label>'+
+   '<label>مرجع التحصيل<input name="reference" required minlength="5" maxlength="100"></label>'+
+   '<label>مصدر الربح أو البيان<input name="note" maxlength="180"></label></div>'+
+   '<label class="rk44-approval"><input type="checkbox" name="approval" required> أؤكد استلام هذا العائد فعليًا وأنه لم يسجل مسبقًا في دفتر الأستاذ.</label>'+
+   '<label class="rk44-approval"><input type="checkbox" name="autoRequests"> أفوض إنشاء طلبات توزيع حصص ملاءة والأصول آليًا إن سمحت السيولة، دون تنفيذ أي تحويل مصرفي.</label>'+
+   '<button type="submit" class="rk44-transfer-primary">إثبات تحصيل العائد</button></form></details>'+
+   '<div class="rk44-yield-records"><h4>العوائد المقيدة في دفتر الأستاذ</h4>'+
+   (revenue.length?revenue.slice().reverse().slice(0,15).map(block).join(''):
+    '<p class="rk44-subnote">لا توجد عوائد محصلة. الأرباح المستقبلية والقروض المستلمة ليست نقدًا متاحًا.</p>')+
+   '</div></section>';
+ }
+
  function liquidityPanel(data){
   const p=data.liquidityPlan;
   return '<section class="rk44-liquidity" aria-label="خطة توزيع السيولة">'+
