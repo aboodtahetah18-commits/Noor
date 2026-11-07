@@ -375,3 +375,65 @@ test('category allocation and remaining are distinct from cash and confirmed exp
  assert.equal(revision.items[0].remaining,-2500);
  assert.equal(db.rk44UserDetailsHistory.length,1);
 });
+
+
+test('wizard confirmation is explicit and does not create money in any virtual bank',()=>{
+ const db=fixture();
+ const beforeJournal=JSON.stringify(db.ledgerEntries);
+ const beforeTransactions=JSON.stringify(db.transactions);
+ const beforeCash=bankTotal(db);
+ const data={salary:575700,otherIncome:null,externalBank:'بنك حقيقي مستقل',salaryDay:27,
+  family:{marital:'married',children:2,supported:1},
+  details:{items:[{id:'i1',name:'مقاضي المنزل',category:'معيشة',categorySource:'suggestion',amount:110000,remaining:null,frequency:'monthly'}],
+   dependents:[{id:'d1',name:'والدي',relation:'أب',amount:120000,frequency:'yearly',includedInItems:false}]},
+  obligations:[{name:'التزام مرن لم يسبق تسجيله',remaining:300000,mode:'capacity'}],
+  goals:[{name:'ادخار لشراء منزل',target:18000000,date:'2032-01-01'}]};
+ const result=core.confirmWizard(db,data,'2026-11');
+ assert.equal(core.wizardState(db).completed,true);
+ assert.equal(core.wizardPhase(db).level,1);
+ assert.equal(result.wizard.estimatedExpenses,120000);
+ assert.equal(db.salary,575700);
+ assert.equal(db.rk44VerifiedStart.startMonth,'2026-12');
+ assert.equal(db.rk44UserDetails.items.length,1);
+ assert.equal(db.debts.at(-1).repaymentMode,'capacity');
+ assert.equal(db.goals.at(-1).name,'ادخار لشراء منزل');
+ assert.equal(JSON.stringify(db.transactions),beforeTransactions);
+ assert.equal(JSON.stringify(db.ledgerEntries),beforeJournal);
+ assert.equal(bankTotal(db),beforeCash);
+ assert.throws(()=>core.confirmWizard(db,data,'2026-11'));
+});
+test('wizard rejects duplicate debts and invalid salary without changing original records',()=>{
+ const db=fixture();
+ const before=JSON.stringify(db);
+ const data={salary:null,salaryDay:27,family:{marital:'single'},
+  details:{items:[],dependents:[]},obligations:[],goals:[]};
+ assert.throws(()=>core.confirmWizard(db,data,'2026-11'));
+ assert.equal(JSON.stringify(db),before);
+ const data2={...data,salary:500000,obligations:[{name:db.debts[0]?.name||'قرض قائم',
+  remaining:100000,mode:'capacity'}]};
+ if(db.debts.length>0){
+  assert.throws(()=>core.confirmWizard(db,data2,'2026-11'));
+  assert.equal(JSON.stringify(db),before);
+ }
+});
+test('payday-to-payday cycle review requires actual salary and closed period',()=>{
+ const db=fixture();db.salaryMonths=[];
+ const data={salary:500000,salaryDay:27,externalBank:'بنك خارجي',family:{marital:'single'},
+  details:{items:[{id:'a',name:'الغذاء',amount:100000,remaining:null,category:'معيشة',frequency:'monthly'}],
+   dependents:[]},obligations:[],goals:[]};
+ core.confirmWizard(db,data,'2026-11');
+ assert.equal(core.wizardDateBound('2027-02',31),'2027-02-28');
+ assert.throws(()=>core.reviewWizardCycle(db,'2026-12','2026-12-28'));
+ db.salaryMonths.push('2026-12');
+ db.transactions.push({id:'rev-exp',type:'expense',date:'2027-01-02',amount:10000});
+ const a=core.reviewWizardCycle(db,'2026-12','2027-02-01');
+ assert.equal(a.record.start,'2026-12-27');
+ assert.equal(a.record.end,'2027-01-27');
+ assert.equal(a.record.expenses,10000);
+ assert.equal(core.wizardPhase(db).level,2);
+ assert.throws(()=>core.reviewWizardCycle(db,'2026-12','2027-02-01'));
+ db.salaryMonths.push('2027-01');
+ const b=core.reviewWizardCycle(db,'2027-01','2027-03-01');
+ assert.equal(b.record.start,'2027-01-27');
+ assert.equal(core.wizardPhase(db).level,3);
+});
