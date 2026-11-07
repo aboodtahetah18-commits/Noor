@@ -118,7 +118,27 @@
    '</section>';
  };
  const originalRender=render;
- render=function(){const result=originalRender.apply(this,arguments);return result};
+ render=function(){
+  const result=originalRender.apply(this,arguments);
+  if(['insights','debts','hilal','malaa','assets','position'].includes(page)){
+   const root=document.getElementById('view');
+   if(root&&!root.querySelector('.rk44-alert-inline')){
+    try{
+     const data=adaptive.assess(db,activePeriod());
+     if(data.critical||data.warning){
+      const banner=document.createElement('div');
+      banner.className='rk44-alert-inline';
+      banner.setAttribute('role','alert');
+      banner.innerHTML='<span>تنبيه الحماية: عبء القروض المسجلة '+(data.critical?'حرج':'مرتفع')+
+       '؛ أُوقف ترشيح فائض جديد للاستثمار حتى مراجعة السيولة.</span>'+
+       '<button type="button" data-rk44-page="reserves">مراجعة الحماية</button>';
+      root.prepend(banner);
+     }
+    }catch(error){/* A bad financial entry must never hide the page. */}
+   }
+  }
+  return result;
+ };
  const entry=Array.isArray(N)?N.find(item=>item[0]==='reserves'):null;
  if(entry)entry[1]='الاحتياطيات المتغيرة';
  const bankPosition=Array.isArray(N)?N.find(row=>row[0]==='position'):null;
