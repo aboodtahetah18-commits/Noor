@@ -204,7 +204,7 @@
   const month=periodRegex.test(String(period))?period:new Date().toISOString().slice(0,7);
   const saved=db?.rk44VerifiedStart;
   if(!saved||saved.version!==1||!saved.approvedAt)return {
-   phase:'unverified',period:month,startMonth:null,verified:false,missing:
+   phase:'unverified',period:month,startMonth:periodRegex.test(db?.rk44StartSchedule?.startMonth||'')?db.rk44StartSchedule.startMonth:null,verified:false,missing:
    ['الراتب الفعلي','المصروفات الأساسية','الأقساط','الرسوم والالتزامات الأخرى','أرصدة افتتاح البنوك']
   };
   const ready=onboardingFields.every(key=>Number.isSafeInteger(saved[key])&&saved[key]>=0)
@@ -214,6 +214,19 @@
   return {phase:month<saved.startMonth?'scheduled':'active',period:month,startMonth:saved.startMonth,
    verified:true,missing:[],source:'بيانات أدخلها المستخدم واعتمدها',values:saved};
  }
+
+ function scheduleNextMonth(db,baseMonth){
+  assert(db&&typeof db==='object','بيانات المنصة غير متاحة.');
+  const now=periodRegex.test(String(baseMonth))?baseMonth:new Date().toISOString().slice(0,7);
+  const old=db.rk44StartSchedule;
+  if(old?.approvedAt)return old;
+  assert(!Array.isArray(db.rk44VerifiedMonths)||db.rk44VerifiedMonths.length===0,
+   'لا يجوز إعادة جدولة بداية مالية بدأت فعليًا.');
+  const record={version:1,startMonth:offset(now,1),approvedAt:new Date().toISOString(),
+   reason:'بدء دورة كاملة من الشهر القادم دون مطالبة بعمليات الشهر الجزئي'};
+  db.rk44StartSchedule=record;return record;
+ }
+
  function confirmFinancialStart(db,input,baseMonth){
   assert(db&&typeof db==='object'&&input,'بيانات البداية غير متاحة.');
   const now=periodRegex.test(String(baseMonth))?baseMonth:new Date().toISOString().slice(0,7);
@@ -231,7 +244,8 @@
     'أدخل الرصيد الافتتاحي المؤكد لكل بنك، أو صفرًا إن لم يكن فيه رصيد.');
    opening[k]=v;
   }
-  const startMonth=offset(now,1);
+  const startMonth=periodRegex.test(db?.rk44StartSchedule?.startMonth||'')?
+   db.rk44StartSchedule.startMonth:offset(now,1);
   const original=db.rk44VerifiedStart;
   if(original?.startMonth&&original.startMonth<=now &&
      (Array.isArray(db.rk44VerifiedMonths)&&db.rk44VerifiedMonths.length)){
@@ -550,5 +564,5 @@
   transfers,requestTransfer,executeTransfer,matchTransfer,cancelTransfer,transitBalance,
   starterDefaults,starterPolicy,starterProjection,saveStarterPolicy,approveStarterMonth,
   splitAmounts,yieldRecords,recordRealizedYield,requestYieldSplit,reverseYield,
-  onboardingState,confirmFinancialStart,verifiedStarterPlan,approveVerifiedMonth});
+  onboardingState,scheduleNextMonth,confirmFinancialStart,verifiedStarterPlan,approveVerifiedMonth});
 });
