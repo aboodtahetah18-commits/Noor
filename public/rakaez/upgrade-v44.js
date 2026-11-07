@@ -51,6 +51,61 @@
  }
 
 
+
+ function rkStartMonth(){
+  const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0');
+ }
+ function rkVerifiedSetup(state){
+  const details=state.verified?state.values:null;
+  const first=state.startMonth||adaptive.offset(rkStartMonth(),1);
+  const input=(id,label,amount)=>{
+   const value=amount===undefined?' placeholder="المبلغ أو 0"':' value="'+(amount/100).toFixed(2)+'"';
+   return '<label>'+safe(label)+'<input type="number" name="'+id+'" min="0" step="0.01" inputmode="decimal" required'+value+'></label>';
+  };
+  const fields=[['income','الراتب الفعلي الشهري'],['essentials','المصروفات الضرورية الشهرية'],
+   ['obligations','الأقساط غير المكررة ضمن المصروفات'],['recurring','الرسوم الشهرية غير المكررة']];
+  const banks=[['hilal','الهلال'],['malaa','ملاءة'],['assets','الأصول']];
+  return '<section class="rk44-starter rk44-onboarding">'+
+   '<header class="rk44-sectionhead"><h3>تأسيس البنوك من بياناتك</h3>'+
+   hint('لا يُعتمد أي راتب أو فائض أو هدف من الأمثلة. يجب مراجعة البيانات الفعلية وإثباتها أولًا؛ الأشهر الجزئية لا يلزم استكمالها.')+'</header>'+
+   '<div class="rk44-start-state"><strong>'+(state.verified?'المدخلات مؤكدة — '+(state.phase==='scheduled'?'في انتظار الدورة الكاملة':'الدورة الكاملة فعالة'):'التحليل معلق: البيانات غير مؤكدة')+
+   '</strong><small>موعد بداية أول شهر كامل: '+safe(first)+'</small></div>'+
+   (!state.startMonth?'<button type="button" class="rk44-transfer-primary" data-rk44-schedule-next>جدولة بداية الشهر القادم</button>':
+    '<p class="rk44-subnote">بداية الدورة محفوظة في '+safe(first)+'. الشهر الجاري للتسجيل الجزئي دون استدراك البنود الفائتة.</p>')+
+   '<details class="rk44-starter-settings" '+(state.verified?'':'open')+'><summary>مراجعة الدخل والمصروفات والأرصدة</summary>'+
+   '<form data-rk44-verified-start><div class="rk44-starter-inputs">'+
+   fields.map(([key,label])=>input(key,label,details?.[key])).join('')+'</div>'+
+   '<h4>أرصدة البنوك عند البداية (أدخل صفرًا إن لم يوجد)</h4><div class="rk44-starter-inputs">'+
+   banks.map(([key,label])=>input('opening_'+key,'الرصيد الافتتاحي — '+label,details?.opening?.[key])).join('')+'</div>'+
+   '<p class="rk44-subnote">إدخال الرصيد هنا لأغراض التخطيط فقط، ولا ينشئ نقدًا أو يقيد مبلغًا في البنك.</p>'+
+   '<label class="rk44-approval"><input type="checkbox" name="approval" required> أؤكد صحة المدخلات وعدم احتساب الالتزام مرتين.</label>'+
+   '<button type="submit" class="rk44-transfer-primary">اعتماد بيانات البداية</button></form></details></section>';
+ }
+ function rkVerifiedMonth(state,period){
+  if(!state.verified)return '<section class="rk44-starter"><p class="rk44-subnote">لا يمكن احتساب الفائض أو الأهداف؛ بيانات الراتب والمصروفات والالتزامات غير مؤكدة، وليست صفرًا.</p></section>';
+  if(state.phase==='scheduled')return '<section class="rk44-starter"><p class="rk44-subnote">تبدأ الحسابات عند الدخول إلى شهر '+safe(state.startMonth)+'. سجل فقط ما يحدث الآن؛ لا يلزم اعتماد أي خطة لهذا الشهر الجزئي.</p></section>';
+  const p=adaptive.verifiedStarterPlan(db,period);
+  const row=(label,value,note)=>'<div class="rk44-starter-line"><div><strong>'+safe(label)+'</strong><small>'+safe(note)+'</small></div><b>'+fmt(value)+'</b></div>';
+  const plan=p.allocation;
+  const records=p.monthlyHistory;
+  return '<section class="rk44-starter"><header class="rk44-sectionhead"><h3>خطة الحماية وفق القدرة المالية</h3>'+
+   hint('الفائض = الدخل المؤكد ناقص المصروفات الأساسية والأقساط والرسوم غير المكررة. الأولوية لالتزامات الهلال ثم طوارئ ملاءة، ولا نضع هدفًا استثماريًا افتراضيًا.')+'</header>'+
+   '<div class="rk44-starter-main"><span>'+(p.rawSurplus<0?'العجز':'الفائض الحسابي بعد الالتزامات')+'</span>'+
+   '<strong>'+fmt(Math.abs(p.rawSurplus))+'</strong><small>تقدير من بياناتك، وليس نقدًا مصرفيًا جديدًا</small></div>'+
+   '<div class="rk44-starter-lines">'+
+   row('الهلال: حماية الالتزامات',plan.hilal,'هدف أولي: '+fmt(p.stageTargets.hilal))+
+   row('ملاءة: طوارئ',plan.malaaEmergency,'هدف أولي: '+fmt(p.stageTargets.malaa))+
+   row('ملاءة: ادخار إضافي',plan.malaaSavings,'المتبقي بعد الأولويات')+
+   row('الأصول: استثمار',plan.assets,'لا استثمار تلقائي ولا هدف مفترض')+'</div>'+
+   '<div class="rk44-starter-month"><h4>دورة شهر '+safe(period)+'</h4>'+
+   (records.length?'<p class="rk44-subnote">تم اعتماد خطة هذا الشهر بقيمة '+fmt(records[0].amount)+'.</p>':
+    '<form data-rk44-verified-month><label>الفائض المحقق (ريال)<input type="number" name="amount" min="0" step="0.01" required value="'+(p.amount/100).toFixed(2)+'"></label>'+
+    '<label class="rk44-approval"><input type="checkbox" name="approval" required> أعتمد تخطيطًا لهذا الشهر دون نقل أموال.</label>'+
+    '<button type="submit" class="rk44-transfer-primary" '+((db.salaryMonths||[]).includes(period)?'':'disabled')+'>اعتماد خطة الشهر</button></form>')+
+   (!(db.salaryMonths||[]).includes(period)?'<p class="rk44-subnote">يُسجل راتب الشهر الحالي فقط في بنك الهلال قبل اعتماد خطة الشهر.</p>':'')+
+   '</div></section>';
+ }
+
  function starterPanel(data){
   const p=adaptive.starterProjection(db,activePeriod()),policy=p.policy;
   const parts=p.allocation;
