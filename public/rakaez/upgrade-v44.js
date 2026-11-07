@@ -371,6 +371,15 @@
  const bankPosition=Array.isArray(N)?N.find(row=>row[0]==='position'):null;
  if(bankPosition)bankPosition[1]='الوضع المالي للبنوك';
  document.addEventListener('click',event=>{
+  const scheduleButton=event.target.closest('[data-rk44-schedule-next]');
+  if(scheduleButton){
+   event.preventDefault();event.stopImmediatePropagation();
+   if(!confirm('بدء الدورة المالية الكاملة من الشهر القادم؟ يمكنك تسجيل هذا الشهر جزئيًا دون استكمال ما فات.'))return;
+   applyFinancialAction(()=>adaptive.scheduleNextMonth(db,rkStartMonth()),
+    'جدولة دورة البداية','بداية شهر كامل بعد شهر '+rkStartMonth(),
+    'تم اعتماد بداية الشهر القادم دون تعديل الأرصدة');
+   return;
+  }
   const release=event.target.closest('[data-rk44-release]');
   if(release){
    event.preventDefault();event.stopImmediatePropagation();
@@ -444,6 +453,42 @@
   }
  },true);
  document.addEventListener('submit',event=>{
+  const onboardingForm=event.target.closest('[data-rk44-verified-start]');
+  const verifiedMonthForm=event.target.closest('[data-rk44-verified-month]');
+  if(onboardingForm||verifiedMonthForm){
+   event.preventDefault();event.stopImmediatePropagation();
+   const cents=(form,name)=>{
+    const v=String(form.elements.namedItem(name)?.value||'').trim();
+    if(!/^(?:0|[1-9]\d*)(?:\.\d{1,2})?$/.test(v))throw Error('أدخل مبلغًا صحيحًا بالريال، أو صفراً عند عدم وجوده.');
+    const n=Math.round(Number(v)*100);
+    if(!Number.isSafeInteger(n)||n<0)throw Error('القيمة المالية غير صالحة.');
+    return n;
+   };
+   try{
+    if(onboardingForm){
+     if(!onboardingForm.elements.namedItem('approval').checked)throw Error('يجب تأكيد المدخلات.');
+     const data={
+      income:cents(onboardingForm,'income'),essentials:cents(onboardingForm,'essentials'),
+      obligations:cents(onboardingForm,'obligations'),recurring:cents(onboardingForm,'recurring'),
+      opening:{
+       hilal:cents(onboardingForm,'opening_hilal'),malaa:cents(onboardingForm,'opening_malaa'),
+       assets:cents(onboardingForm,'opening_assets')
+      }
+     };
+     applyFinancialAction(()=>adaptive.confirmFinancialStart(db,data,rkStartMonth()),
+      'توثيق بيانات بداية البنوك','مدخلات راتب ومصروفات وأقساط وأرصدة — موعد '+rkStartMonth(),
+      'حُفظت بياناتك دون إنشاء رصيد أو تعديل سجل قديم');
+    }
+    if(verifiedMonthForm){
+     if(!verifiedMonthForm.elements.namedItem('approval').checked)throw Error('اعتمد الخطة قبل حفظها.');
+     const amount=cents(verifiedMonthForm,'amount');
+     applyFinancialAction(()=>adaptive.approveVerifiedMonth(db,rkStartMonth(),amount),
+      'اعتماد توزيع شهر موثق',rkStartMonth()+' — '+amount+' هللة',
+      'حُفظ توزيع الشهر دون تنفيذ إيداع أو تحويل مصرفي');
+    }
+   }catch(error){alert(error.message||'تعذر اعتماد العملية.');}
+   return;
+  }
 
   const planPolicy=event.target.closest('[data-rk44-starter-policy]');
   const planMonth=event.target.closest('[data-rk44-starter-month]');
