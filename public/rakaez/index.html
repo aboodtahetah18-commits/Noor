@@ -2065,6 +2065,7 @@ function v10RepairDialogs(){
   const footers=modal.querySelectorAll('.v3footer,.actions,.wiz-actions');
   footers.forEach(f=>[...f.querySelectorAll('button')].forEach(b=>{
    const label=b.textContent.replace(/\s+/g,'').replace(/[✕×]/g,'');
+   if(b.classList.contains('rk43-cancel'))return;
    if(/^(إلغاء|إغلاق|الغاء)$/.test(label)||b.hasAttribute('data-cancel'))b.remove();
   }));
   // Add the single close action at the top of modals that do not have one.
@@ -2356,6 +2357,7 @@ icons.next='<path d="M9 18l6-6-6-6"/><path d="M3 12h12"/>';
  function normalizeFooter(footer){
    [...footer.querySelectorAll('button,.btn')].forEach(btn=>{
      const label=cleanLabel(btn.textContent);
+     if(btn.classList.contains('rk43-cancel'))return;
      if(/^(إلغاء|إغلاق|الغاء)$/.test(label)||btn.hasAttribute('data-cancel')){btn.remove();return;}
    });
    const buttons=[...footer.querySelectorAll('button,.btn')].filter(btn=>btn.closest('.modal'));
