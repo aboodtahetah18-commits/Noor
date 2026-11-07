@@ -657,7 +657,7 @@
    '<p class="rk44-subnote">تتاح مراجعة الدورة بعد مرور موعد الراتب التالي. لا يُشترط إدخال عمليات لم تحدث.</p>';
   const forecast=plan.ready?
    '<div class="rk44-starter-lines">'+
-   '<div class="rk44-starter-line"><strong>الدخل المؤكد لغرض التوقع</strong><b>'+fmt(plan.verifiedIncome)+'</b></div>'+
+   '<div class="rk44-starter-line"><strong>الدخل الذي أدخلته للتوقع</strong><b>'+fmt(plan.verifiedIncome)+'</b></div>'+
    '<div class="rk44-starter-line"><strong>المصروفات المتوقعة بعد التعلم</strong><b>'+fmt(plan.forecast)+'</b></div>'+
    '<div class="rk44-starter-line"><strong>'+(plan.surplus<0?'عجز متوقع':'فائض متوقع')+'</strong><b>'+fmt(Math.abs(plan.surplus))+'</b></div>'+
    '</div><p class="rk44-subnote">'+safe(plan.explanation)+
