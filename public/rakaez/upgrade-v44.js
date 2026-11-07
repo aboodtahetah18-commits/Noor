@@ -34,7 +34,7 @@
    '<header class="rk44-bank-head"><div class="rk44-bank-id">'+bankIcon(id)+
    '<div><h3>'+safe(title)+'</h3><small>'+safe(subtitle)+'</small></div></div>'+
    '<span class="rk44-status '+(id==='assets'?'rk44-neutral':info.gap>0?'rk44-watch':'rk44-good')+'">'+
-   (id==='assets'?'استثمار':info.gap>0?'يحتاج تعزيزًا':'تغطية مكتملة')+'</span></header>'+
+   (id==='assets'?'استثمار':info.gap>0?'يحتاج تعزيزًا':id==='hilal'?'حجز داخلي مكتمل':'سيولة مسجلة كافية')+'</span></header>'+
    '<div class="rk44-hero"><span>'+safe(mainLabel)+'</span><strong class="rk44-'+toneMain+'">'+main+'</strong>'+
    (year?'<small>'+safe(year)+'</small>':'')+'</div>'+
    '<div class="rk44-metrics">'+metrics.join('')+'</div>'+
@@ -46,7 +46,7 @@
    'يحسب الهدف من الصرف المتوقع، والأقساط القائمة، وأثر المديونية. المحجوز في سجل الهلال تخصيص إداري وليس رصيدًا مصرفيًا موثقًا.':
    id==='malaa'?
    'تحتسب التغطية من شرائح الادخار التي يمكن الوصول إليها خلال ثلاثة أيام، بعد حجز طلبات السحب المعلقة؛ ولا تعتبر الأرصدة تأكيدًا مباشرًا من البنك.':
-   'تحتسب حاجة السيولة قبل زيادة الاستثمار. لا تُعامل القيمة السوقية للمحافظ والأسهم كرصيد نقدي يمكن السحب منه فورًا.')+'</div>'+
+   'مدة الحماية في بنك الأصول تضيف هامش أمان سائل قبل اعتبار أي فائض قابلًا للاستثمار. لا تُعامل القيمة السوقية للمحافظ والأسهم كرصيد نقدي فوري، ولا يُنفَّذ شراء أو بيع تلقائيًا.')+'</div>'+
    '<footer class="rk44-actions">'+actions[id].map(([route,label],i)=>'<button type="button" class="'+(i===0?'rk44-primary':'')+'" data-rk44-page="'+route+'">'+safe(label)+'</button>').join('')+'</footer></article>';
  }
  function riskPanel(data){
@@ -102,7 +102,7 @@
   const assets=bankCard('assets','بنك الأصول','الاستثمارات والقدرة على النمو','قيمة الاستثمارات المسجلة',fmt(a.market),'blue',
    a,[metric('فائض قابل للدراسة الاستثمارية',fmt(a.target),a.target?'teal':'navy'),
    metric('الأصول الاستثمارية',String(data.investment.count),'teal'),
-   metric('سيولة داخل الأصول','غير مسجلة','gold')],
+   metric('هامش أمان قبل الاستثمار',fmt(a.safetyBuffer),'gold')],
    'القيمة السوقية ليست رصيدًا فوريًا للسحب',data);
   return '<section class="rk44-screen" aria-label="مركز الحماية والاستثمار">'+
    '<header class="rk44-screen-title"><h2>الاحتياطيات المتغيرة والاستثمار</h2>'+
