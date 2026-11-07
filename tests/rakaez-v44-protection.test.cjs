@@ -132,3 +132,62 @@ test('large loan and income/expense/liquidity shocks change risk without changin
  assert.equal(stress.investmentCandidate,0);
  assert.equal(JSON.stringify(db),before);
 });
+
+
+test('starter plan from zero distributes 800 riyals with no cash creation',()=>{
+ const db=fixture();db.ledgerOpening={hilal:0,malaa:0,assets:0};db.ledgerEntries=[];db.savings=[];db.holdings=[];
+ const old=JSON.stringify(db),p=core.starterProjection(db,'2026-10');
+ assert.equal(p.amount,80000);
+ assert.equal(p.allocation.hilal,30000);
+ assert.equal(p.allocation.malaaEmergency,30000);
+ assert.equal(p.allocation.malaaSavings,10000);
+ assert.equal(p.allocation.assets,10000);
+ assert.equal(p.investedAvailable,false);
+ assert.equal(JSON.stringify(db),old);
+});
+test('monthly plan is one-time, needs registered salary, and never posts bank cash',()=>{
+ const db=fixture(),policy={monthlySurplus:80000,milestones:{hilal:600000,malaa:1000000,assets:2500000},
+  shares:{hilal:3750,malaaEmergency:3750,malaaSavings:1250,assets:1250},
+  yieldShares:{malaa:6000,assets:4000}};
+ assert.throws(()=>core.approveStarterMonth(db,'2026-10',80000));
+ core.saveStarterPolicy(db,policy);
+ assert.throws(()=>core.approveStarterMonth(db,'2026-11',80000));
+ const totalBefore=db.ledgerEntries.length,cashBefore=bankTotal(db);
+ const plan=core.approveStarterMonth(db,'2026-10',80000);
+ assert.equal(plan.status,'planned');
+ assert.equal(db.ledgerEntries.length,totalBefore);
+ assert.equal(bankTotal(db),cashBefore);
+ assert.throws(()=>core.approveStarterMonth(db,'2026-10',80000));
+ assert.throws(()=>core.saveStarterPolicy(db,{...policy,shares:{...policy.shares,assets:1500}}));
+});
+test('recorded yield balances cash and proposed 60/40 without auto funding; assets remain gated',()=>{
+ const db=fixture();db.ledgerOpening.hilal=0;db.ledgerOpening.malaa=0;db.savings=[];
+ const before=bankTotal(db);
+ const y=core.recordRealizedYield(db,{amount:10000,date:'2026-10-15',reference:'YIELD-RK-2026-01'});
+ assert.equal(core.cashBalance(db,'hilal'),10000);
+ assert.equal(bankTotal(db),before+10000);
+ assert.equal(y.splitAmounts.malaa,6000);
+ assert.equal(y.splitAmounts.assets,4000);
+ const e=db.ledgerEntries.at(-1);
+ assert.equal(e.lines.reduce((t,l)=>t+l.debit,0),e.lines.reduce((t,l)=>t+l.credit,0));
+ assert.equal(e.lines.find(l=>l.account==='yieldIncome').credit,10000);
+ assert.throws(()=>core.recordRealizedYield(db,{amount:10000,date:'2026-10-15',reference:'YIELD-RK-2026-01'}));
+ const request=core.requestYieldSplit(db,y.id,'malaa');
+ assert.equal(request.status,'pending');
+ assert.equal(core.cashBalance(db,'hilal'),10000);
+ assert.equal(core.availableBankCash(db,'hilal'),4000);
+ assert.throws(()=>core.requestYieldSplit(db,y.id,'malaa'));
+ assert.throws(()=>core.requestYieldSplit(db,y.id,'assets'));
+ assert.throws(()=>core.reverseYield(db,y.id,'عكس غير متاح بعد التحويل'));
+});
+test('yield reversal creates separate balanced journal, no deletion or double reversal',()=>{
+ const db=fixture();db.ledgerOpening.hilal=0;
+ const y=core.recordRealizedYield(db,{amount:12000,date:'2026-10-15',reference:'YIELD-RK-REV-01'});
+ const n=db.ledgerEntries.length;
+ core.reverseYield(db,y.id,'تصحيح مبلغ العائد');
+ assert.equal(core.cashBalance(db,'hilal'),0);
+ assert.equal(db.ledgerEntries.length,n+1);
+ assert.equal(db.ledgerEntries.at(-1).reversalOf,y.journalId);
+ assert.equal(db.rk44Yields[0].status,'reversed');
+ assert.throws(()=>core.reverseYield(db,y.id,'عكس ثان'));
+});
