@@ -437,3 +437,37 @@ test('payday-to-payday cycle review requires actual salary and closed period',()
  assert.equal(b.record.start,'2027-01-27');
  assert.equal(core.wizardPhase(db).level,3);
 });
+
+
+test('forecast learning progresses after reviewed cycles without changing approved monthly budgets',()=>{
+ const db=fixture();
+ db.transactions=[];db.salaryMonths=[];
+ core.confirmWizard(db,{salary:500000,salaryDay:27,family:{marital:'single'},
+  details:{items:[{id:'i1',name:'المقاضي',amount:200000,frequency:'monthly',category:'معيشة'}],
+   dependents:[]},obligations:[],goals:[]},'2026-11');
+ const savedDetails=JSON.stringify(db.rk44UserDetails);
+ const base=core.wizardLearning(db,'2026-12');
+ assert.equal(base.ready,true);assert.equal(base.level,1);assert.equal(base.forecast,200000);
+ db.salaryMonths.push('2026-12','2027-01');
+ db.transactions.push({id:'one',date:'2026-12-28',type:'expense',amount:250000},
+  {id:'two',date:'2027-01-28',type:'expense',amount:180000});
+ core.reviewWizardCycle(db,'2026-12','2027-02-01');
+ const second=core.wizardLearning(db,'2027-01');
+ assert.equal(second.level,2);
+ assert.equal(second.forecast,216667);
+ core.reviewWizardCycle(db,'2027-01','2027-03-01');
+ const third=core.wizardLearning(db,'2027-02');
+ assert.equal(third.level,3);
+ assert.equal(third.forecast,206000);
+ assert.equal(third.requiresApprovalToChangeBudget,true);
+ assert.equal(JSON.stringify(db.rk44UserDetails),savedDetails);
+});
+test('no expense detail leaves predictions unavailable even when a salary is provided',()=>{
+ const db=fixture();db.transactions=[];db.salaryMonths=[];
+ core.confirmWizard(db,{salary:575700,salaryDay:27,family:{marital:'single'},
+  details:{items:[],dependents:[]},obligations:[],goals:[]},'2026-11');
+ assert.equal(core.wizardState(db).completed,true);
+ assert.equal(core.wizardLearning(db,'2026-12').ready,false);
+ assert.equal(db.rk44Wizard.expensesProvided,false);
+ assert.equal(db.ledgerEntries.length,0);
+});
