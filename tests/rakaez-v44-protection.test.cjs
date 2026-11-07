@@ -240,3 +240,44 @@ test('confirmed yield split ratios may be used only after explicit financial ver
  core.reverseYield(db,y.id,'تصحيح العائد');
  assert.equal(core.cashBalance(db,'hilal'),0);
 });
+
+
+test('a confirmed zero salary is not inferred from missing data and creates no forced savings',()=>{
+ const db=fixture();
+ const inputs={income:0,essentials:10000,obligations:0,recurring:0,opening:{hilal:0,malaa:0,assets:0}};
+ core.confirmFinancialStart(db,inputs,'2026-11');
+ assert.equal(core.onboardingState(db,'2026-12').verified,true);
+ const plan=core.verifiedStarterPlan(db,'2026-12');
+ assert.equal(plan.rawSurplus,-10000);
+ assert.equal(plan.amount,0);
+ assert.equal(plan.allocation.assets,0);
+ const record=core.approveVerifiedMonth(db,'2026-12',0);
+ assert.equal(record.amount,0);
+});
+test('new spending above the approved budget reduces surplus without double counting',()=>{
+ const db=fixture();
+ db.transactions=[];
+ core.confirmFinancialStart(db,{income:100000,essentials:20000,obligations:10000,recurring:5000,
+  opening:{hilal:0,malaa:0,assets:0}},'2026-11');
+ const before=core.verifiedStarterPlan(db,'2026-12');
+ assert.equal(before.amount,65000);
+ db.transactions.push({id:'actual-1',type:'expense',date:'2026-12-12',amount:90000});
+ const after=core.verifiedStarterPlan(db,'2026-12');
+ assert.equal(after.recordedExpenses,90000);
+ assert.equal(after.costs,90000);
+ assert.equal(after.amount,10000);
+ assert.equal(after.allocation.assets,0);
+});
+test('subsequent review must not silently move the scheduled month after a monthly plan was recorded',()=>{
+ const db=fixture();
+ const args={income:100000,essentials:10000,obligations:10000,recurring:0,
+  opening:{hilal:0,malaa:0,assets:0}};
+ core.scheduleNextMonth(db,'2026-11');
+ core.confirmFinancialStart(db,args,'2026-11');
+ db.salaryMonths.push('2026-12');
+ core.approveVerifiedMonth(db,'2026-12',50000);
+ const snapshot=JSON.stringify(db.rk44VerifiedStart);
+ assert.throws(()=>core.confirmFinancialStart(db,{...args,income:200000},'2026-12'));
+ assert.equal(JSON.stringify(db.rk44VerifiedStart),snapshot);
+ assert.equal(db.rk44StartSchedule.startMonth,'2026-12');
+});
