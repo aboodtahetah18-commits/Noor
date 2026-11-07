@@ -1,0 +1,460 @@
+/* Rakaez v41 — semantic financial figures and a single filter action.
+   Colors, font and symbols inherit from the approved Rakaez identity. */
+#modalRoot .rk41-debt-overlay{
+ position:fixed!important;
+ inset:0!important;
+ display:flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ z-index:2500!important;
+ box-sizing:border-box!important;
+ padding:14px!important;
+ overflow:auto!important;
+}
+#modalRoot .rk41-debt-dialog{
+ display:block!important;
+ direction:rtl!important;
+ box-sizing:border-box!important;
+ width:min(100%,610px)!important;
+ max-width:610px!important;
+ max-height:calc(100dvh - 28px)!important;
+ overflow:auto!important;
+ margin:auto!important;
+ padding:0!important;
+ background:var(--white)!important;
+ border:1px solid var(--line)!important;
+ border-radius:18px!important;
+ box-shadow:0 18px 48px color-mix(in srgb,var(--navy) 24%,transparent)!important;
+ color:var(--navy)!important;
+}
+#modalRoot .rk41-debt-head{
+ position:sticky!important;
+ top:0!important;
+ z-index:2!important;
+ display:flex!important;
+ align-items:center!important;
+ justify-content:flex-start!important;
+ gap:14px!important;
+ padding:16px 19px!important;
+ min-width:0!important;
+ background:var(--navy)!important;
+ border-bottom:3px solid var(--gold)!important;
+ color:var(--white)!important;
+}
+#modalRoot .rk41-debt-head h2{
+ margin:0!important;
+ min-width:0!important;
+ font-size:clamp(15px,4vw,19px)!important;
+ font-weight:850!important;
+ line-height:1.6!important;
+ color:var(--white)!important;
+ overflow-wrap:anywhere!important;
+}
+#modalRoot .rk41-go-back{
+ display:inline-flex!important;
+ flex-direction:row!important;
+ justify-content:center!important;
+ align-items:center!important;
+ gap:5px!important;
+ flex:0 0 auto!important;
+ margin:0!important;
+ padding:7px 10px!important;
+ min-width:0!important;
+ min-height:36px!important;
+ background:color-mix(in srgb,var(--white) 13%,var(--navy))!important;
+ border:1px solid color-mix(in srgb,var(--white) 31%,var(--navy))!important;
+ border-radius:9px!important;
+ color:var(--white)!important;
+ font:inherit!important;
+ font-size:11px!important;
+ font-weight:800!important;
+ line-height:1.4!important;
+ cursor:pointer!important;
+}
+#modalRoot .rk41-go-back svg{
+ display:block!important;
+ flex:0 0 18px!important;
+ width:18px!important;
+ height:18px!important;
+ stroke:var(--white)!important;
+ transform:none!important;
+}
+#modalRoot .rk41-debt-body{
+ display:grid!important;
+ gap:16px!important;
+ padding:20px!important;
+ min-width:0!important;
+ max-width:100%!important;
+}
+#modalRoot .rk41-balance{
+ display:flex!important;
+ flex-direction:column!important;
+ align-items:center!important;
+ justify-content:center!important;
+ gap:7px!important;
+ padding:5px 0 17px!important;
+ text-align:center!important;
+ border-bottom:1px solid var(--line)!important;
+}
+#modalRoot .rk41-balance span{
+ font-size:12px!important;
+ color:var(--muted)!important;
+ font-weight:750!important;
+}
+#modalRoot .rk41-balance strong{
+ font-size:clamp(24px,6vw,33px)!important;
+ font-weight:900!important;
+ text-align:center!important;
+ line-height:1.4!important;
+}
+#modalRoot .rk41-number{
+ unicode-bidi:plaintext!important;
+ font-variant-numeric:tabular-nums!important;
+ overflow-wrap:anywhere!important;
+}
+#modalRoot .rk41-red{color:var(--red)!important}
+#modalRoot .rk41-teal{color:var(--teal)!important}
+#modalRoot .rk41-navy{color:var(--navy)!important}
+#modalRoot .rk41-debt-facts{
+ display:grid!important;
+ grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ margin:0!important;
+ gap:0!important;
+ min-width:0!important;
+ width:100%!important;
+ padding:0!important;
+}
+#modalRoot .rk41-debt-fact{
+ display:grid!important;
+ align-content:center!important;
+ gap:6px!important;
+ min-width:0!important;
+ padding:12px 10px!important;
+ border:0!important;
+ border-bottom:1px solid var(--line)!important;
+ border-radius:0!important;
+ background:transparent!important;
+}
+#modalRoot .rk41-debt-fact:nth-child(odd){
+ border-inline-end:1px solid var(--line)!important;
+}
+#modalRoot .rk41-debt-fact dt{
+ margin:0!important;
+ color:var(--muted)!important;
+ font-size:11px!important;
+ font-weight:650!important;
+ line-height:1.5!important;
+}
+#modalRoot .rk41-debt-fact dd{
+ margin:0!important;
+ font-size:clamp(13px,3.3vw,17px)!important;
+ font-weight:850!important;
+ line-height:1.6!important;
+ text-align:right!important;
+}
+#modalRoot .rk41-progress-caption{
+ display:flex!important;
+ align-items:center!important;
+ justify-content:space-between!important;
+ font-size:11px!important;
+ color:var(--muted)!important;
+}
+#modalRoot .rk41-progress-caption b{
+ font-size:13px!important;
+ font-weight:850!important;
+}
+#modalRoot .rk41-progress{
+ height:6px!important;
+ width:100%!important;
+ background:var(--paper)!important;
+ border-radius:99px!important;
+ overflow:hidden!important;
+ margin-top:-7px!important;
+}
+#modalRoot .rk41-progress>span{
+ display:block!important;
+ height:100%!important;
+ border-radius:inherit!important;
+ background:var(--teal)!important;
+}
+#modalRoot .rk41-debt-note{
+ margin:0!important;
+ font-size:12px!important;
+ line-height:1.9!important;
+ color:var(--muted)!important;
+}
+#modalRoot .rk41-pay-history{
+ display:grid!important;
+ gap:5px!important;
+ padding:10px 0!important;
+ border-top:1px solid var(--line)!important;
+}
+#modalRoot .rk41-pay-history h3{
+ margin:0 0 6px!important;
+ color:var(--navy)!important;
+ font-size:13px!important;
+ font-weight:850!important;
+}
+#modalRoot .rk41-history-line{
+ display:flex!important;
+ align-items:center!important;
+ justify-content:space-between!important;
+ gap:12px!important;
+ padding:7px 0!important;
+ border-bottom:1px solid var(--line)!important;
+ font-size:12px!important;
+}
+#modalRoot .rk41-history-line time{
+ color:var(--muted)!important;
+ direction:ltr!important;
+ unicode-bidi:isolate!important;
+}
+#modalRoot .rk41-history-line strong{
+ font-size:13px!important;
+ font-weight:850!important;
+}
+#modalRoot .rk41-finance-caveat{
+ padding:10px 12px!important;
+ margin:0!important;
+ color:var(--muted)!important;
+ font-size:11px!important;
+ line-height:1.8!important;
+ border-inline-start:2px solid var(--gold)!important;
+ background:var(--paper)!important;
+}
+#modalRoot .rk41-debt-footer{
+ display:flex!important;
+ flex-direction:row!important;
+ align-items:center!important;
+ justify-content:center!important;
+ flex-wrap:wrap!important;
+ gap:8px!important;
+ margin:0!important;
+ padding:13px 18px!important;
+ border-top:1px solid var(--line)!important;
+ background:var(--white)!important;
+}
+#modalRoot .rk41-debt-footer button,
+#view .rk41-debt-inline-pay{
+ display:inline-flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ flex:0 1 auto!important;
+ gap:5px!important;
+ width:auto!important;
+ min-width:0!important;
+ min-height:38px!important;
+ max-width:100%!important;
+ border-radius:9px!important;
+ padding:8px 13px!important;
+ font:inherit!important;
+ font-size:12px!important;
+ font-weight:800!important;
+ line-height:1.5!important;
+ text-align:center!important;
+ white-space:normal!important;
+ box-shadow:none!important;
+ cursor:pointer!important;
+}
+#modalRoot .rk41-payment-primary,
+#view .rk41-debt-inline-pay{
+ background:var(--teal)!important;
+ border:1px solid var(--teal)!important;
+ color:var(--white)!important;
+}
+#modalRoot .rk41-secondary{
+ background:var(--white)!important;
+ border:1px solid var(--line)!important;
+ color:var(--navy)!important;
+}
+#modalRoot .rk41-danger-action{
+ background:var(--white)!important;
+ border:1px solid color-mix(in srgb,var(--red) 32%,var(--line))!important;
+ color:var(--red)!important;
+}
+#modalRoot :is(.rk41-debt-dialog button,.rk41-payment-form input):focus-visible,
+#view :is(.rk41-filter-toggle,.rk41-debt-inline-pay):focus-visible{
+ outline:2px solid var(--teal)!important;
+ outline-offset:2px!important;
+}
+#modalRoot .rk41-payment-form{
+ display:grid!important;
+ gap:14px!important;
+ padding:20px 0 0!important;
+ background:var(--white)!important;
+}
+#modalRoot .rk41-payment-for{
+ margin:0 20px!important;
+ color:var(--navy)!important;
+ font-size:14px!important;
+ font-weight:850!important;
+}
+#modalRoot .rk41-payment-remaining{
+ display:flex!important;
+ align-items:center!important;
+ justify-content:space-between!important;
+ gap:10px!important;
+ padding:5px 20px 13px!important;
+ border-bottom:1px solid var(--line)!important;
+ font-size:12px!important;
+ color:var(--muted)!important;
+}
+#modalRoot .rk41-payment-remaining strong{
+ font-size:18px!important;
+ font-weight:850!important;
+}
+#modalRoot .rk41-payment-form>label{
+ display:grid!important;
+ gap:7px!important;
+ margin:0 20px!important;
+ color:var(--navy)!important;
+ font-size:12px!important;
+ font-weight:750!important;
+}
+#modalRoot .rk41-payment-form input{
+ display:block!important;
+ width:100%!important;
+ min-width:0!important;
+ min-height:43px!important;
+ padding:10px 12px!important;
+ border:1px solid var(--line)!important;
+ border-radius:9px!important;
+ background:var(--white)!important;
+ color:var(--navy)!important;
+ font:inherit!important;
+ font-size:14px!important;
+}
+#modalRoot .rk41-payment-form>.rk41-finance-caveat{
+ margin:0 20px!important;
+}
+#view .rk34-debt-card .rk34-cardfoot{
+ display:flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ gap:9px!important;
+}
+#view .rk41-debt-inline-pay{
+ min-height:35px!important;
+ padding:7px 10px!important;
+ font-size:11px!important;
+}
+#view .rk41-financing-actions{
+ display:flex!important;
+ flex-wrap:nowrap!important;
+ align-items:center!important;
+ justify-content:center!important;
+ gap:8px!important;
+ min-width:0!important;
+}
+#view .rk41-financing-actions .rk35-create{
+ min-height:38px!important;
+ padding:7px 13px!important;
+ font-size:12px!important;
+ font-weight:800!important;
+ box-shadow:none!important;
+}
+#view .rk41-filter-toggle{
+ display:inline-flex!important;
+ flex-direction:row!important;
+ align-items:center!important;
+ justify-content:center!important;
+ gap:6px!important;
+ min-height:38px!important;
+ width:auto!important;
+ min-width:0!important;
+ padding:8px 12px!important;
+ border-radius:9px!important;
+ background:var(--white)!important;
+ border:1px solid var(--line)!important;
+ color:var(--navy)!important;
+ font:inherit!important;
+ font-size:12px!important;
+ font-weight:800!important;
+ white-space:nowrap!important;
+ cursor:pointer!important;
+}
+#view .rk41-filter-toggle svg{
+ display:block!important;
+ width:17px!important;
+ height:17px!important;
+ stroke:currentColor!important;
+ flex:0 0 17px!important;
+}
+#view .rk41-filter-toggle.rk41-filter-active{
+ border-color:var(--teal)!important;
+ color:var(--teal)!important;
+}
+#view .rk41-filter-panel{
+ display:block!important;
+ min-width:0!important;
+ padding:14px!important;
+ margin:0 0 4px!important;
+ border:1px solid var(--line)!important;
+ border-radius:12px!important;
+ background:var(--white)!important;
+ box-shadow:0 3px 12px color-mix(in srgb,var(--navy) 5%,transparent)!important;
+}
+#view .rk41-filter-panel[hidden]{display:none!important}
+#view .rk41-filter-panel .rk35-tools{
+ display:grid!important;
+ grid-template-columns:minmax(0,1.6fr) minmax(0,1fr) minmax(0,1fr) 38px!important;
+ gap:8px!important;
+ align-items:center!important;
+ padding:0!important;
+}
+#view .rk41-investment-hint{
+ margin:5px 0 12px!important;
+ padding:0!important;
+ color:var(--muted)!important;
+ font-size:12px!important;
+ line-height:1.8!important;
+}
+#view .rk41-investment-hint button{
+ margin-inline-start:7px!important;
+ padding:3px 0!important;
+ border:0!important;
+ background:transparent!important;
+ color:var(--teal)!important;
+ font:inherit!important;
+ font-size:12px!important;
+ font-weight:800!important;
+ cursor:pointer!important;
+}
+@media(max-width:710px){
+ #view .rk35-pagehead{flex-wrap:wrap!important}
+ #view .rk41-financing-actions{
+  width:auto!important;
+  max-width:100%!important;
+  margin-inline-start:auto!important;
+ }
+ #view .rk41-filter-panel .rk35-tools{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ }
+ #view .rk41-filter-panel .rk35-search{
+  grid-column:1/-1!important;
+ }
+ #view .rk41-filter-panel .rk35-reset{
+  grid-column:1/-1!important;
+  width:100%!important;
+  min-height:38px!important;
+ }
+}
+@media(max-width:480px){
+ #modalRoot .rk41-debt-overlay{padding:9px!important}
+ #modalRoot .rk41-debt-dialog{max-height:calc(100dvh - 18px)!important}
+ #modalRoot .rk41-debt-head{padding:12px!important;gap:10px!important}
+ #modalRoot .rk41-debt-body{padding:13px!important;gap:12px!important}
+ #modalRoot .rk41-debt-fact{padding:10px 7px!important}
+ #modalRoot .rk41-debt-fact dd{font-size:13px!important}
+ #modalRoot .rk41-debt-footer{padding:12px!important}
+ #modalRoot .rk41-debt-footer button{padding:8px 10px!important;font-size:11px!important}
+ #view .rk35-pagehead{gap:9px!important}
+ #view .rk41-financing-actions{gap:7px!important}
+ #view .rk41-filter-panel{padding:10px!important}
+ #view .rk41-filter-panel .rk35-tools{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ }
+ #view .rk41-filter-panel .rk35-search{
+  grid-column:1/-1!important;
+ }
+}
