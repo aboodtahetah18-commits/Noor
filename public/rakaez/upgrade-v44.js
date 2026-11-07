@@ -172,6 +172,7 @@
   const n=Number(selector.value);
   if(!Number.isInteger(n)||n<1||n>6){alert('مدة حماية غير صالحة.');render();return;}
   const prior=db.rk44Policy?{...db.rk44Policy}:undefined;
+  const previousAudit=Array.isArray(db.audit)?db.audit.slice():null;
   const p=adaptive.monthsPolicy(db);
   db.rk44Policy={...p,[id]:n};
   try{
@@ -182,6 +183,8 @@
   }catch(err){
    if(prior)db.rk44Policy=prior;
    else delete db.rk44Policy;
+   if(previousAudit!==null)db.audit=previousAudit;
+   else delete db.audit;
    alert('تعذر حفظ السياسة. لم يعتمد التعديل.');
    render();
   }
