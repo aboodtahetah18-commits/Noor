@@ -85,15 +85,15 @@
 }
 #view .rk44-help:not([open])>p{display:none!important}
 #view .rk44-actions{
- display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:7px;
- padding:0;margin:0;min-width:0;
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch;gap:6px;
+ padding:0;margin:0;min-width:0;width:100%;
 }
 #view .rk44-actions button,
 #view .rk44-response-actions button,
 #view .rk44-scenario button{
  display:inline-flex;align-items:center;justify-content:center;
- width:auto;min-width:0;max-width:100%;
- min-height:35px;padding:7px 11px;
+ width:100%;min-width:0;max-width:100%;box-sizing:border-box;
+ min-height:40px;padding:7px 6px;white-space:normal;text-align:center;overflow-wrap:anywhere;
  border:1px solid var(--line);border-radius:8px;
  color:var(--navy);background:var(--white);font:inherit;
  font-size:11px;line-height:1.5;font-weight:750;cursor:pointer;box-shadow:none;
@@ -116,7 +116,7 @@
 #view .rk44-risk-values{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));min-width:0;border-block:1px solid var(--line);padding:7px 0}
 #view .rk44-response{display:grid;gap:11px;min-width:0}
 #view .rk44-response>strong{font-size:12px;line-height:1.85;font-weight:750}
-#view .rk44-response-actions{display:flex;align-items:center;justify-content:center;gap:7px;flex-wrap:wrap}
+#view .rk44-response-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch;gap:6px;width:100%;min-width:0}
 #view .rk44-scenario{
  padding:0 15px;background:var(--white);border:1px solid var(--line);
  border-radius:11px;min-width:0;
@@ -157,7 +157,7 @@
  #view .rk44-hero strong{font-size:clamp(20px,5.3vw,26px)}
  #view .rk44-metrics .rk44-metric{padding:6px 4px}
  #view .rk44-metrics .rk44-metric strong{font-size:clamp(11px,3.4vw,15px)}
- #view .rk44-actions button,#view .rk44-response-actions button{font-size:10px;padding:7px 9px}
+ #view .rk44-actions button,#view .rk44-response-actions button{font-size:10px;padding:7px 4px;min-height:46px;line-height:1.5}
  #view .rk44-risk{padding:13px 12px}
  #view .rk44-risk-title h3{font-size:13px}
  #view .rk44-scenario-fields{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -390,4 +390,12 @@
 @media(max-width:390px){
  #view .rk44-cash-link>span,#view .rk44-cash-link>small{flex-basis:100%}
  #view .rk44-cash-link>button{flex:1 1 auto}
+}
+
+/* ثلاثة إجراءات متساوية في صف واحد حتى في الجوال الصغير؛ الأسطر داخل الزر لا خارجه. */
+@media(max-width:360px){
+ #view .rk44-actions,#view .rk44-response-actions{gap:4px}
+ #view .rk44-actions button,#view .rk44-response-actions button{
+  font-size:9.5px;line-height:1.45;padding:7px 2px;
+ }
 }
