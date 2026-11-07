@@ -560,7 +560,10 @@
    if(type==='item'){
     const picked=String(record?.category||'');
     assert(categoryLabels.includes(picked),'اختر تصنيفًا معتمدًا، أو اختر أخرى.');
-    return {id,name,amount,frequency,category:picked,categorySource:
+    const remaining=record?.remaining===undefined||record?.remaining===null?null:record.remaining;
+    assert(remaining===null||(Number.isSafeInteger(remaining)&&remaining>=-100000000000&&remaining<=100000000000),
+     'المتبقي المدخل يجب أن يكون مبلغًا صحيحًا بالهللة أو يترك فارغًا.');
+    return {id,name,amount,frequency,remaining,category:picked,categorySource:
      record.categorySource==='manual'?'manual':'suggestion'};
    }
    return {id,name,amount,frequency,relation:String(record.relation||'غير محدد').slice(0,60),
