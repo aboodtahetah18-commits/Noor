@@ -362,6 +362,16 @@
    if(panel){panel.open=true;panel.scrollIntoView({behavior:'smooth',block:'nearest'});}
    return;
   }
+
+  const yieldButton=event.target.closest('[data-rk44-yield-split]');
+  if(yieldButton){
+   event.preventDefault();event.stopImmediatePropagation();
+   const id=yieldButton.dataset.rk44YieldSplit,bank=yieldButton.dataset.rk44YieldBank;
+   if(!confirm('اعتماد طلب تحويل حصة العائد إلى '+(adaptive.bankNames[bank]||bank)+'؟ سيظل التنفيذ والمطابقة يدويين.'))return;
+   applyFinancialAction(()=>adaptive.requestYieldSplit(db,id,bank),'اعتماد توزيع عائد',id+' — '+bank,
+    'طلب تحويل معتمد — يتطلب إثبات التنفيذ والوصول');
+   return;
+  }
   const cancel=event.target.closest('[data-rk44-transfer-cancel]');
   if(cancel){
    event.preventDefault();event.stopImmediatePropagation();
