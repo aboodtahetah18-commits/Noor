@@ -87,19 +87,125 @@
    return nonNegative(h.quantity)*nonNegative(h.price);
   })};
  }
+
+ const bankNames=Object.freeze({hilal:'بنك الهلال',malaa:'بنك ملاءة',assets:'بنك الأصول'});
+ const assert=(condition,message)=>{if(!condition)throw new Error(message);};
+ const validAmount=n=>Number.isSafeInteger(n)&&n>0;
+ const journalEntries=db=>Array.isArray(db?.ledgerEntries)?db.ledgerEntries:[];
+ const transfers=db=>Array.isArray(db?.rk44Transfers)?db.rk44Transfers:[];
+ function cashBalance(db,bank){
+  assert(Object.prototype.hasOwnProperty.call(bankNames,bank),'البنك غير معروف.');
+  const initial=Number(db?.ledgerOpening?.[bank]||0);
+  let balance=Number.isSafeInteger(initial)?initial:0;
+  for(const entry of journalEntries(db)){
+   for(const line of (Array.isArray(entry.lines)?entry.lines:[])){
+    if(line.account!==bank)continue;
+    balance+=Number(line.debit||0)-Number(line.credit||0);
+   }
+  }
+  return Number.isSafeInteger(balance)?balance:0;
+ }
+ function pendingLegacyHilal(db){
+  return sum((Array.isArray(db?.rk39?.events)?db.rk39.events:[])
+   .filter(e=>e.kind==='bank-transfer'&&['pending','confirmed'].includes(e.status)),e=>e.amount);
+ }
+ function availableBankCash(db,bank,excludeId){
+  const committed=sum(transfers(db).filter(e=>e.from===bank&&e.status==='pending'&&e.id!==excludeId),e=>e.amount);
+  const otherHolds=bank==='malaa'?savingsSummary(db).pending:bank==='hilal'?pendingLegacyHilal(db):0;
+  return Math.max(0,cashBalance(db,bank)-committed-otherHolds);
+ }
+ function ensureOperations(db){
+  assert(db&&typeof db==='object','قاعدة البيانات غير متاحة.');
+  if(!Object.prototype.hasOwnProperty.call(db,'rk44Transfers'))db.rk44Transfers=[];
+  assert(Array.isArray(db.rk44Transfers),'سجل تحويلات الحماية غير صالح.');
+  assert(Array.isArray(db.ledgerEntries),'دفتر الأستاذ غير متاح؛ افتح الدفتر وسجّل رصيدًا موثقًا.');
+  return db.rk44Transfers;
+ }
+ function operationId(){
+  return 'rk44-'+(typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():
+   Date.now().toString(36)+'-'+Math.random().toString(36).slice(2));
+ }
+ function requestTransfer(db,input){
+  assert(input&&Object.prototype.hasOwnProperty.call(bankNames,input.from)&&
+   Object.prototype.hasOwnProperty.call(bankNames,input.to)&&input.from!==input.to,'اختر بنكين مختلفين.');
+  assert(validAmount(input.amount),'أدخل مبلغًا صحيحًا بالهللة أكبر من صفر.');
+  assert(availableBankCash(db,input.from)>=input.amount,'النقد المثبت في دفتر المصدر بعد الحجوزات لا يكفي لهذا الطلب.');
+  const rows=ensureOperations(db);
+  const op={id:operationId(),from:input.from,to:input.to,amount:input.amount,status:'pending',
+   note:String(input.note||'').trim().slice(0,180),createdAt:new Date().toISOString(),
+   executionReference:null,destinationReference:null,executedAt:null,matchedAt:null};
+  rows.push(op);return op;
+ }
+ function findTransfer(db,id){
+  const op=transfers(db).find(e=>e.id===id);
+  assert(op,'تعذر العثور على طلب التحويل.');return op;
+ }
+ function reference(ref){
+  const value=String(ref||'').trim();
+  assert(value.length>=5&&value.length<=100,'أدخل مرجعًا موثقًا من 5 إلى 100 حرف.');
+  return value;
+ }
+ function postTransferJournal(db,op,stage){
+  const isOutgoing=stage==='out';
+  const id='rk44-ledger-'+op.id+'-'+stage;
+  assert(!journalEntries(db).some(e=>e.id===id),'سبق تسجيل قيد هذه المرحلة.');
+  const lines=isOutgoing?
+   [{account:'transit',debit:op.amount,credit:0},{account:op.from,debit:0,credit:op.amount}]:
+   [{account:op.to,debit:op.amount,credit:0},{account:'transit',debit:0,credit:op.amount}];
+  assert(lines.reduce((v,l)=>v+l.debit,0)===lines.reduce((v,l)=>v+l.credit,0),
+   'القيد المحاسبي غير متوازن.');
+  const entry={id,date:new Date().toISOString().slice(0,10),kind:'rk44-transfer',
+   description:(isOutgoing?'تحويل قيد التنفيذ: ':'مطابقة وصول تحويل: ')+bankNames[op.from]+' ← '+bankNames[op.to],
+   rk44TransferId:op.id,rk44Stage:stage,lines,createdAt:new Date().toISOString()};
+  db.ledgerEntries.push(entry);
+  return entry;
+ }
+ function executeTransfer(db,id,externalRef){
+  ensureOperations(db);const op=findTransfer(db,id);
+  assert(op.status==='pending','لا يمكن إثبات عملية ليست في مرحلة الطلب.');
+  const ref=reference(externalRef);
+  assert(!transfers(db).some(e=>e.id!==id&&e.executionReference===ref),'مرجع التنفيذ مستخدم سابقًا.');
+  assert(availableBankCash(db,op.from,id)>=op.amount,'الرصيد المتاح لا يغطي التنفيذ؛ لم يتغير الدفتر.');
+  const entry=postTransferJournal(db,op,'out');
+  op.status='executed';op.executionReference=ref;op.executedAt=new Date().toISOString();
+  return {operation:op,entry};
+ }
+ function transitBalance(db){
+  return journalEntries(db).reduce((total,e)=>total+(Array.isArray(e.lines)?e.lines:[])
+   .filter(l=>l.account==='transit').reduce((v,l)=>v+Number(l.debit||0)-Number(l.credit||0),0),0);
+ }
+ function matchTransfer(db,id,arrivalRef){
+  ensureOperations(db);const op=findTransfer(db,id);
+  assert(op.status==='executed','لا يمكن المطابقة قبل إثبات التنفيذ.');
+  const ref=reference(arrivalRef);
+  assert(!transfers(db).some(e=>e.id!==id&&e.destinationReference===ref),'مرجع الوصول مستخدم سابقًا.');
+  assert(journalEntries(db).some(e=>e.rk44TransferId===op.id&&e.rk44Stage==='out'),
+   'قيد خروج المبلغ غير موجود؛ لا يمكن مطابقة الوصول.');
+  assert(transitBalance(db)>=op.amount,'حساب المبالغ قيد التحويل لا يغطي المطابقة.');
+  const entry=postTransferJournal(db,op,'in');
+  op.status='matched';op.destinationReference=ref;op.matchedAt=new Date().toISOString();
+  return {operation:op,entry};
+ }
+ function cancelTransfer(db,id){
+  ensureOperations(db);const op=findTransfer(db,id);
+  assert(op.status==='pending','لا يمكن إلغاء تحويل خرج فعليًا دون إجراء تصحيح مستقل.');
+  op.status='cancelled';op.cancelledAt=new Date().toISOString();return op;
+ }
+
  function assess(db,period,overrides){
   const reference=periodRegex.test(String(period))?period:new Date().toISOString().slice(0,7);
   const policy=monthsPolicy(db);
   const opts=overrides||{};
   const extraLoan=money(opts.loanAmount),extraInstallment=money(opts.loanInstallment);
+  const expenseShock=money(opts.extraMonthlyExpense),liquidityShock=money(opts.liquidityReduction);
   const estimate=expenseEstimate(db,reference);
   const outstanding=sum(debtList(db),d=>money(d.principal)-money(d.paid))+extraLoan;
   const debtMonthly=service(db)+extraInstallment;
   const commitments=debtMonthly+Math.round(annualizedFee(db)/12);
   // Simulated debt service is an incremental prospective obligation.
-  const baseNeed=Math.max(estimate.actual,estimate.planned+commitments);
+  const baseNeed=Math.max(estimate.actual+expenseShock,estimate.planned+commitments+expenseShock);
   const riskBuffer=Math.round(outstanding*0.05);
-  const salary=money(db?.salary);
+  const salary=opts.salaryOverride===undefined?money(db?.salary):money(opts.salaryOverride);
   const debtRatio=salary?debtMonthly/salary:null;
   const debtToYearIncome=salary?outstanding/(salary*12):outstanding?Infinity:0;
   const costToIncome=salary?baseNeed/salary:baseNeed?Infinity:0;
@@ -109,6 +215,7 @@
   const dynamicTarget=(months,weight)=>
    Math.max(0,Math.round(baseNeed*months+riskBuffer*weight));
   const saved=savingsSummary(db),capital=invested(db);
+  if(liquidityShock){saved.nowFree=Math.max(0,saved.nowFree-liquidityShock);saved.soonFree=Math.max(0,saved.soonFree-liquidityShock);}
   const hilalTarget=dynamicTarget(policy.hilal,0.4);
   const malaaTarget=dynamicTarget(policy.malaa,1);
   // Additional liquid cushion that remains untouched before any new investment.
@@ -122,7 +229,9 @@
   const incomeRecorded=salaryHistory.some(p=>p===reference||p===offset(reference,-1)||p===offset(reference,-2));
   // Only surplus AFTER both banks' liquidity protection can be considered.
   // 12-day savings and market holdings are never treated as emergency cash.
-  const eligibleCash=Math.max(0,saved.soonFree-protectionRequired-investmentSafetyBuffer);
+  const ledgerCash=availableBankCash(db,'malaa');
+  const reconciledCash=Math.min(saved.soonFree,ledgerCash);
+  const eligibleCash=Math.max(0,reconciledCash-protectionRequired-investmentSafetyBuffer);
   const investmentCandidate=(severe||warning||observedMonths<2||!incomeRecorded)?0:eligibleCash;
   const pressure=severe?'حرج':warning?'مرتفع':
    saved.nowFree<baseNeed||gapToProtection>0?'بحاجة إلى تعزيز السيولة':'تحت المتابعة';
@@ -131,6 +240,12 @@
    estimate:{...estimate,commitments,loanMonthly:debtMonthly,monthlyFees:Math.round(annualizedFee(db)/12)},
    riskBuffer,outstanding,debtMonthly,debtRatio,debtToYearIncome,costToIncome,
    pressure,critical:severe,warning,protectionRequired,gapToProtection,
+   liquidityPlan:{immediateRequired:Math.max(commitments,Math.round(baseNeed*0.5)),
+    upcomingCommitments:commitments,liquidRecorded:saved.soonFree,
+    reconciledCash,investmentBuffer:investmentSafetyBuffer,investable:investmentCandidate,
+    ledgerBalances:Object.fromEntries(Object.keys(bankNames).map(k=>[k,cashBalance(db,k)])),
+    transit:transitBalance(db)},
+   stress:{extraMonthlyExpense:expenseShock,liquidityReduction:liquidityShock,salary},
    incomeRecorded,observedMonths,eligibleCash,investmentSafetyBuffer,
    savings:saved,investment:capital,investmentCandidate,
    banks:{
@@ -162,5 +277,6 @@
    debtRatio:after.debtRatio};
  }
  return Object.freeze({defaults,monthsPolicy,offset,expenseEstimate,savingsSummary,
-  debtList,assess,installment,scenario});
+  debtList,assess,installment,scenario,bankNames,cashBalance,availableBankCash,
+  transfers,requestTransfer,executeTransfer,matchTransfer,cancelTransfer,transitBalance});
 });
