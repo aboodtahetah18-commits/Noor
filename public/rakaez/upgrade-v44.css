@@ -559,3 +559,112 @@
  #view .rk44-flex-actions{gap:5px}
  #view .rk44-flex-actions>button{font-size:10px;padding:7px 4px}
 }
+
+
+/* نافذة تأسيس ركائز الواحدة — ألوان ومتغيرات الهوية الحالية فقط */
+#modalRoot .rk44-wizard-overlay{
+ position:fixed!important;inset:0!important;z-index:205!important;
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ padding:12px!important;overflow-y:auto!important;
+ background:var(--navy)!important;pointer-events:auto!important;
+}
+#modalRoot .rk44-wizard{
+ box-sizing:border-box;width:min(610px,100%)!important;max-width:100%!important;
+ max-height:calc(100dvh - 24px)!important;height:auto;min-height:0;
+ padding:0!important;margin:0!important;overflow:hidden!important;
+ display:flex;flex-direction:column;direction:rtl;text-align:right;
+ background:var(--white);color:var(--navy);border:1px solid var(--line);
+ border-radius:13px!important;box-shadow:none!important;
+}
+#modalRoot .rk44-wizard-head{
+ display:grid;grid-template-columns:40px minmax(0,1fr) 40px;gap:8px;
+ align-items:center;padding:12px 15px;border-bottom:1px solid var(--line);
+ min-width:0;flex:0 0 auto;
+}
+#modalRoot .rk44-wizard-head h2{
+ margin:0!important;min-width:0;text-align:center;line-height:1.6;font-size:15px;
+ font-weight:850;color:var(--navy);overflow-wrap:anywhere;
+}
+#modalRoot .rk44-wizard-head>button{
+ min-width:0;width:40px;height:40px;padding:0;display:grid;place-items:center;
+ border:1px solid var(--line);background:var(--white);color:var(--navy);
+ border-radius:9px;font:inherit;font-size:21px;cursor:pointer;
+}
+#modalRoot .rk44-wizard-body{
+ flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;
+ padding:16px;display:grid;align-content:start;gap:13px;min-width:0;max-width:100%;
+}
+#modalRoot .rk44-wizard-step{
+ color:var(--muted);font-size:11px;font-weight:700;line-height:1.6;
+ padding-bottom:9px;border-bottom:1px solid var(--line);
+}
+#modalRoot .rk44-wizard-welcome{display:grid;gap:11px;padding:7px 0;min-width:0}
+#modalRoot .rk44-wizard-welcome h3{font-size:19px;font-weight:850;color:var(--navy);margin:0!important;text-align:center}
+#modalRoot .rk44-wizard-welcome p{font-size:13px;line-height:1.95;color:var(--navy);margin:0!important;overflow-wrap:anywhere}
+#modalRoot .rk44-wizard-note{font-size:11px;font-weight:550;line-height:1.9;color:var(--muted);margin:0!important;overflow-wrap:anywhere}
+#modalRoot .rk44-wizard-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;min-width:0}
+#modalRoot .rk44-wizard-grid label{display:grid;gap:6px;align-content:start;min-width:0;font-size:11px;font-weight:750;line-height:1.65;color:var(--navy)}
+#modalRoot .rk44-wizard-grid :is(input,select){
+ width:100%;max-width:100%;min-width:0;box-sizing:border-box;
+ min-height:42px;padding:8px 10px;border:1px solid var(--line);
+ border-radius:8px;background:var(--white);color:var(--navy);
+ font:inherit;font-size:12px;line-height:1.5;
+}
+#modalRoot .rk44-wizard-grid input[type=number]{direction:ltr;text-align:right}
+#modalRoot .rk44-wizard-grid input[type=date]{direction:ltr;text-align:right}
+#modalRoot .rk44-wizard-line{display:grid;gap:11px;padding:12px 0;border-bottom:1px solid var(--line);min-width:0}
+#modalRoot .rk44-wizard-linehead{display:flex;align-items:center;justify-content:space-between;gap:10px}
+#modalRoot .rk44-wizard-linehead strong{font-size:12px;color:var(--navy);font-weight:850}
+#modalRoot .rk44-wizard-linehead button{
+ min-height:32px;padding:4px 10px;border:1px solid var(--line);border-radius:8px;
+ background:var(--white);color:var(--red);font:inherit;font-size:11px;cursor:pointer;
+}
+#modalRoot .rk44-wizard-line>small{font-size:11px;line-height:1.8;color:var(--muted)}
+#modalRoot .rk44-wizard-add{
+ min-height:40px;width:100%;padding:8px 12px;border-radius:8px;
+ border:1px solid var(--teal);background:var(--white);color:var(--teal);
+ font:inherit;font-size:12px;font-weight:800;cursor:pointer;
+}
+#modalRoot .rk44-wizard-check{display:flex;align-items:flex-start;gap:9px;font-size:12px;line-height:1.8;color:var(--navy);font-weight:650}
+#modalRoot .rk44-wizard-check>input{flex:0 0 auto;margin-top:5px;accent-color:var(--teal)}
+#modalRoot .rk44-wizard-reviewline{
+ display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;
+ gap:9px;padding:9px 0;border-bottom:1px solid var(--line);min-width:0;
+}
+#modalRoot .rk44-wizard-reviewline span{color:var(--muted);font-size:11px;flex:1 1 160px}
+#modalRoot .rk44-wizard-reviewline strong{color:var(--navy);font-size:13px;unicode-bidi:plaintext}
+#modalRoot .rk44-wizard-error:not(:empty){font-size:12px;line-height:1.7;color:var(--red);font-weight:700;padding:8px 0}
+#modalRoot .rk44-wizard-error:empty{display:none}
+#modalRoot .rk44-wizard-footer{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;
+ padding:12px 15px;border-top:1px solid var(--line);flex:0 0 auto;min-width:0;
+ background:var(--white);
+}
+#modalRoot .rk44-wizard-footer>button{
+ width:100%;min-width:0;max-width:100%;box-sizing:border-box;
+ min-height:42px;border-radius:9px;padding:8px 10px;
+ background:var(--white);color:var(--navy);border:1px solid var(--line);
+ font:inherit;font-size:12px;font-weight:800;line-height:1.6;cursor:pointer;
+}
+#modalRoot .rk44-wizard-footer>button[data-w-next]{
+ background:var(--teal);color:var(--white);border-color:var(--teal);
+}
+#modalRoot .rk44-wizard :is(input,select,button):focus-visible{
+ outline:2px solid var(--teal);outline-offset:2px;
+}
+#view .rk44-onboarding-blank .rk44-starter{max-width:100%;min-width:0}
+#view .rk44-onboarding-blank .rk44-starter button{max-width:100%;min-width:0;box-sizing:border-box}
+@media(max-width:550px){
+ #modalRoot .rk44-wizard-overlay{padding:8px!important}
+ #modalRoot .rk44-wizard{max-height:calc(100dvh - 16px)!important}
+ #modalRoot .rk44-wizard-head{padding:9px 11px;gap:6px}
+ #modalRoot .rk44-wizard-head h2{font-size:14px}
+ #modalRoot .rk44-wizard-body{padding:12px;gap:11px}
+ #modalRoot .rk44-wizard-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ #modalRoot .rk44-wizard-footer{padding:10px 12px;gap:8px}
+}
+@media(max-width:375px){
+ #modalRoot .rk44-wizard-grid{grid-template-columns:minmax(0,1fr)}
+ #modalRoot .rk44-wizard-head{grid-template-columns:36px minmax(0,1fr) 36px}
+ #modalRoot .rk44-wizard-head>button{width:36px;height:36px}
+}
