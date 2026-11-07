@@ -299,10 +299,10 @@
  }
 
  const starterDefaults=Object.freeze({
-  monthlySurplus:80000,
-  milestones:Object.freeze({hilal:600000,malaa:1000000,assets:2500000}),
-  shares:Object.freeze({hilal:3750,malaaEmergency:3750,malaaSavings:1250,assets:1250}),
-  yieldShares:Object.freeze({malaa:6000,assets:4000})
+  monthlySurplus:0,
+  milestones:Object.freeze({hilal:0,malaa:0,assets:0}),
+  shares:Object.freeze({hilal:0,malaaEmergency:0,malaaSavings:0,assets:0}),
+  yieldShares:Object.freeze({malaa:0,assets:0})
  });
  const starterKeys=Object.keys(starterDefaults.shares);
  function safeCents(value,limit=100000000000){
@@ -336,7 +336,7 @@
    return {monthlySurplus,milestones,
     shares:validShares(raw.shares,starterKeys),
     yieldShares:validShares(raw.yieldShares,['malaa','assets']),
-    configured:true};
+    configured:raw.version>=2&&onboardingState(db,new Date().toISOString().slice(0,7)).verified};
   }catch(e){
    // Fail safe: no invalid policy is ever interpreted as authority to spend.
    return {...starterPolicy({}),invalid:true};
@@ -355,6 +355,8 @@
  function starterProjection(db,period,customSurplus){
   assert(periodRegex.test(period),'الشهر غير صالح.');
   const policy=starterPolicy(db);
+  if(!policy.configured)return {ready:false,period,amount:null,allocation:null,policy,protection:null,
+   investedAvailable:false,monthlyHistory:[],reason:'لا توجد سياسة موثقة قابلة للتنفيذ'};
   const amount=customSurplus===undefined?policy.monthlySurplus:safeCents(customSurplus,50000000);
   const allocation=splitAmounts(amount,policy.shares,starterKeys);
   const protection=assess(db,period);
@@ -376,7 +378,9 @@
   }
   const shares=validShares(input?.shares,starterKeys);
   const yieldShares=validShares(input?.yieldShares,['malaa','assets']);
-  const next={version:1,monthlySurplus,milestones,shares,yieldShares,
+  assert(onboardingState(db,new Date().toISOString().slice(0,7)).verified,
+   'لا يمكن اعتماد توزيع مالي قبل تأكيد بيانات البداية.');
+  const next={version:2,monthlySurplus,milestones,shares,yieldShares,
    approvedAt:new Date().toISOString()};
   db.rk44StarterPolicy=next;
   return next;
@@ -410,6 +414,7 @@
   assert(/^\d{4}-\d{2}-\d{2}$/.test(date)&&
    new Date(date+'T00:00:00Z').toISOString().slice(0,10)===date,'تاريخ العائد غير صحيح.');
   assert(!yieldRecords(db).some(r=>r.reference===ref),'مرجع هذا العائد مسجل مسبقًا.');
+  assert(starterPolicy(db).configured,'لا يمكن افتراض نسب توزيع العوائد. راجع بياناتك ونسب التوزيع واعتمدها أولًا.');
   const ratios=starterPolicy(db).yieldShares;
   const splits=splitAmounts(amount,ratios,['malaa','assets']);
   const id=operationId();
