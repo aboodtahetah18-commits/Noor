@@ -566,7 +566,7 @@
  position:fixed!important;inset:0!important;z-index:205!important;
  display:flex!important;align-items:center!important;justify-content:center!important;
  padding:12px!important;overflow-y:auto!important;
- background:var(--navy)!important;pointer-events:auto!important;
+ background:rgba(10,22,38,.70)!important;pointer-events:auto!important;
 }
 #modalRoot .rk44-wizard{
  box-sizing:border-box;width:min(610px,100%)!important;max-width:100%!important;
