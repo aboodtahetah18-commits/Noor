@@ -23,7 +23,7 @@
  }
  const actions={
   hilal:[['hilal','تغذية أو استخدام الاحتياطي'],['debts','سداد الالتزامات'],['transactions','مراجعة المصروفات']],
-  malaa:[['malaa','مراجعة السيولة'],['interbank','طلب تمويل بين البنوك'],['assets','استثمار الفائض بعد الحماية']],
+  malaa:[['malaa','مراجعة السيولة'],['transfer','تحويل معتمد بين البنوك'],['assets','استثمار الفائض بعد الحماية']],
   assets:[['assets','إدارة الاستثمارات'],['research','دراسة الأسهم والشركات'],['malaa','فحص السيولة المتاحة']]
  };
  function bankCard(id,title,subtitle,mainLabel,main,toneMain,info,metrics,year,snapshot){
@@ -47,7 +47,7 @@
    id==='malaa'?
    'تحتسب التغطية من شرائح الادخار التي يمكن الوصول إليها خلال ثلاثة أيام، بعد حجز طلبات السحب المعلقة؛ ولا تعتبر الأرصدة تأكيدًا مباشرًا من البنك.':
    'مدة الحماية في بنك الأصول تضيف هامش أمان سائل قبل اعتبار أي فائض قابلًا للاستثمار. لا تُعامل القيمة السوقية للمحافظ والأسهم كرصيد نقدي فوري، ولا يُنفَّذ شراء أو بيع تلقائيًا.')+'</div>'+
-   '<footer class="rk44-actions">'+actions[id].map(([route,label],i)=>'<button type="button" class="'+(i===0?'rk44-primary':'')+'" data-rk44-page="'+route+'">'+safe(label)+'</button>').join('')+'</footer></article>';
+   '<footer class="rk44-actions">'+actions[id].map(([route,label],i)=>'<button type="button" class="'+(i===0?'rk44-primary':'')+'" '+(route==='transfer'?'data-rk44-open-transfer':'data-rk44-page="'+route+'"')+'>'+safe(label)+'</button>').join('')+'</footer></article>';
  }
 
  function liquidityPanel(data){
@@ -113,8 +113,8 @@
    const result=action();
    audit(verb,detail);
    save();
-   render();
    if(typeof toast==='function')toast('تم تسجيل العملية في دفتر الحماية');
+   try{render();}catch(renderError){/* لا يُعكس قيد حفظه الدفتر بسبب مشكلة عرض. */}
    return result;
   }catch(err){
    if(had)db.rk44Transfers=JSON.parse(oldOps);else delete db.rk44Transfers;
