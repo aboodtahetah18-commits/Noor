@@ -264,13 +264,9 @@
   const p=status.values;
   const detail=userDetailsSummary(db);
   const applicable=userDetails(db).useAsEssentials===true;
-  const recurringItems=detail.items.filter(i=>i.category!=='التزامات'&&i.category!=='أهداف مستقبلية')
-   .filter(i=>i.monthly!==null).reduce((sum,item)=>sum+item.monthly,0);
-  const dependentCosts=detail.dependents.filter(d=>d.monthly!==null)
-   .reduce((sum,d)=>sum+d.monthly,0);
   // Detailed categories REPLACE the old lump-sum essentials; they are never added to it.
   // Debts/goal targets in categories do not count as essential expenses again.
-  const monthlyEssentials=applicable?recurringItems+dependentCosts:p.essentials;
+  const monthlyEssentials=applicable?detail.monthlyBudget:p.essentials;
   const baselineCosts=monthlyEssentials+p.obligations+p.recurring;
   // Use whichever is greater: approved full-month cost estimate or actual posted expenses.
   // Do not add transactions to the baseline or an installment may be counted twice.
@@ -540,7 +536,11 @@
   const dependents=source.dependents.map(d=>({...d,
    monthly:d.includedInItems?0:monthlyEquivalent(d.amount,d.frequency)}));
   const known=[...items,...dependents].filter(x=>x.monthly!==null);
+  const expenseItems=items.filter(i=>!['التزامات','أهداف مستقبلية'].includes(i.category));
+  const monthlyBudget=[...expenseItems,...dependents].filter(x=>x.monthly!==null)
+   .reduce((a,b)=>a+b.monthly,0);
   return {items,dependents,monthlyKnown:known.reduce((a,b)=>a+b.monthly,0),
+   monthlyBudget,excludedFromEssentials:known.reduce((a,b)=>a+b.monthly,0)-monthlyBudget,
    incomplete:[...items,...dependents].filter(x=>x.monthly===null).length,
    // Explicit substitution of the old aggregate is required; never sum both sources.
    reconciledIntoBudget:source.useAsEssentials===true};
