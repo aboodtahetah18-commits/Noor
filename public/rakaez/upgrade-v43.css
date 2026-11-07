@@ -1,0 +1,295 @@
+/* ركائز 43: نافذة واحدة، رأس واحد، وأزرار إجراءات بعرض كامل.
+   جميع الألوان والخطوط من متغيرات هوية ركائز القائمة. */
+#modalRoot .rk43-normalized{
+ direction:rtl!important;
+ box-sizing:border-box!important;
+ max-width:100%!important;
+}
+#modalRoot .rk43-normalized .rk43-modal-header{
+ position:relative!important;
+ display:grid!important;
+ grid-template-columns:minmax(72px,1fr) minmax(0,2.4fr) minmax(45px,1fr)!important;
+ grid-template-rows:auto!important;
+ align-items:center!important;
+ justify-items:stretch!important;
+ column-gap:8px!important;
+ row-gap:0!important;
+ flex-wrap:nowrap!important;
+ direction:rtl!important;
+ width:100%!important;
+ max-width:100%!important;
+ min-height:64px!important;
+ height:auto!important;
+ padding:12px 17px!important;
+ margin:0!important;
+ border:0!important;
+ border-bottom:3px solid var(--gold)!important;
+ border-radius:0!important;
+ background:var(--navy)!important;
+ box-shadow:none!important;
+ box-sizing:border-box!important;
+ color:var(--white)!important;
+}
+#modalRoot .rk43-normalized .rk43-modal-header>.rk43-back{
+ position:static!important;
+ display:inline-flex!important;
+ grid-column:1!important;
+ grid-row:1!important;
+ flex-direction:row!important;
+ align-items:center!important;
+ justify-content:center!important;
+ justify-self:start!important;
+ align-self:center!important;
+ gap:5px!important;
+ min-width:0!important;
+ max-width:100%!important;
+ width:auto!important;
+ min-height:38px!important;
+ height:auto!important;
+ padding:8px 11px!important;
+ margin:0!important;
+ border:1px solid color-mix(in srgb,var(--white) 35%,transparent)!important;
+ border-radius:9px!important;
+ background:color-mix(in srgb,var(--white) 10%,var(--navy))!important;
+ box-shadow:none!important;
+ color:var(--white)!important;
+ font:inherit!important;
+ font-weight:750!important;
+ font-size:11px!important;
+ line-height:1.4!important;
+ white-space:nowrap!important;
+ cursor:pointer!important;
+}
+#modalRoot .rk43-normalized .rk43-modal-header>.rk43-back svg{
+ display:block!important;
+ width:17px!important;
+ height:17px!important;
+ flex:0 0 17px!important;
+ stroke:var(--white)!important;
+ transform:none!important;
+}
+#modalRoot .rk43-normalized .rk43-modal-header>.rk43-back span{
+ color:var(--white)!important;
+ font:inherit!important;
+ line-height:inherit!important;
+ white-space:nowrap!important;
+}
+#modalRoot .rk43-normalized .rk43-modal-header>.rk43-heading{
+ display:flex!important;
+ flex-direction:column!important;
+ grid-column:2!important;
+ grid-row:1!important;
+ justify-content:center!important;
+ align-items:center!important;
+ justify-self:stretch!important;
+ gap:3px!important;
+ min-width:0!important;
+ width:100%!important;
+ margin:0!important;
+ padding:0!important;
+ color:var(--white)!important;
+ text-align:center!important;
+ overflow-wrap:anywhere!important;
+}
+#modalRoot .rk43-normalized .rk43-modal-header>.rk43-heading h1,
+#modalRoot .rk43-normalized .rk43-modal-header>.rk43-heading h2,
+#modalRoot .rk43-normalized .rk43-modal-header>.rk43-heading h3{
+ display:block!important;
+ margin:0!important;
+ padding:0!important;
+ min-width:0!important;
+ max-width:100%!important;
+ font:inherit!important;
+ color:var(--white)!important;
+ font-size:clamp(14px,3.6vw,19px)!important;
+ line-height:1.5!important;
+ font-weight:850!important;
+ text-align:center!important;
+ overflow-wrap:anywhere!important;
+}
+#modalRoot .rk43-normalized .rk43-modal-header>.rk43-heading>div{
+ display:grid!important;
+ flex:none!important;
+ justify-items:center!important;
+ min-width:0!important;
+ width:100%!important;
+ gap:3px!important;
+ text-align:center!important;
+}
+#modalRoot .rk43-normalized .rk43-modal-header>.rk43-heading :is(span,small){
+ margin:0!important;
+ color:color-mix(in srgb,var(--white) 76%,var(--navy))!important;
+ font-size:10px!important;
+ line-height:1.5!important;
+ text-align:center!important;
+}
+#modalRoot .rk43-normalized .rk43-modal-header>.rk43-close{
+ position:static!important;
+ display:inline-flex!important;
+ grid-column:3!important;
+ grid-row:1!important;
+ align-items:center!important;
+ justify-content:center!important;
+ justify-self:end!important;
+ align-self:center!important;
+ flex:0 0 38px!important;
+ width:38px!important;
+ height:38px!important;
+ min-width:38px!important;
+ min-height:38px!important;
+ max-width:38px!important;
+ max-height:38px!important;
+ padding:7px!important;
+ margin:0!important;
+ border:1px solid color-mix(in srgb,var(--white) 35%,transparent)!important;
+ border-radius:9px!important;
+ background:color-mix(in srgb,var(--white) 11%,var(--navy))!important;
+ color:var(--white)!important;
+ box-shadow:none!important;
+ font:inherit!important;
+ font-size:22px!important;
+ font-weight:600!important;
+ line-height:1!important;
+ cursor:pointer!important;
+}
+#modalRoot .rk43-normalized .rk43-modal-header>.rk43-close svg{
+ display:block!important;
+ width:18px!important;
+ height:18px!important;
+ flex:0 0 18px!important;
+ stroke:var(--white)!important;
+}
+#modalRoot .rk43-normalized .rk43-modal-header>.rk43-back:focus-visible,
+#modalRoot .rk43-normalized .rk43-modal-header>.rk43-close:focus-visible{
+ outline:2px solid var(--gold)!important;
+ outline-offset:2px!important;
+}
+/* The old header back no longer creates a second dark row. */
+#modalRoot .rk43-normalized>.v3header,
+#modalRoot .rk43-normalized>.rk43-modal-header{
+ box-sizing:border-box!important;
+}
+#modalRoot .rk43-normalized .rk43-action-strip{
+ display:grid!important;
+ grid-template-columns:repeat(var(--rk43-cols,2),minmax(0,1fr))!important;
+ align-items:stretch!important;
+ justify-content:stretch!important;
+ gap:9px!important;
+ box-sizing:border-box!important;
+ min-width:0!important;
+ width:100%!important;
+ max-width:100%!important;
+ margin:0!important;
+ padding:12px 16px 16px!important;
+ border-top:1px solid var(--line)!important;
+ background:var(--white)!important;
+ border-radius:0!important;
+ flex-wrap:nowrap!important;
+ box-shadow:none!important;
+}
+#modalRoot .rk43-normalized .rk43-action-strip>button,
+#modalRoot .rk43-normalized .rk43-action-strip>.btn{
+ display:inline-flex!important;
+ justify-content:center!important;
+ align-items:center!important;
+ flex:1 1 0!important;
+ width:100%!important;
+ min-width:0!important;
+ max-width:100%!important;
+ min-height:43px!important;
+ height:auto!important;
+ margin:0!important;
+ padding:10px 11px!important;
+ border-radius:9px!important;
+ box-sizing:border-box!important;
+ font:inherit!important;
+ font-size:12px!important;
+ line-height:1.45!important;
+ font-weight:800!important;
+ text-align:center!important;
+ white-space:normal!important;
+ overflow-wrap:anywhere!important;
+ box-shadow:none!important;
+}
+#modalRoot .rk43-normalized .rk43-action-strip>button svg{
+ width:16px!important;
+ height:16px!important;
+ flex:0 0 16px!important;
+}
+#modalRoot .rk43-normalized .rk43-action-strip .rk43-cancel{
+ background:var(--white)!important;
+ border:1px solid var(--line)!important;
+ color:var(--navy)!important;
+}
+#modalRoot .rk43-normalized .rk43-action-strip>button:focus-visible{
+ outline:2px solid var(--teal)!important;
+ outline-offset:2px!important;
+}
+#modalRoot .rk43-normalized .rk43-action-strip.rk43-three-actions>button:last-child{
+ grid-column:1/-1!important;
+}
+#modalRoot .rk43-normalized .rk43-wizard-actions{
+ width:100%!important;
+ max-width:100%!important;
+ padding:12px 16px!important;
+ box-sizing:border-box!important;
+}
+#modalRoot .rk43-normalized .rk43-wizard-actions>button{
+ min-width:0!important;
+ width:100%!important;
+ min-height:43px!important;
+ box-sizing:border-box!important;
+}
+/* Avoid the big gap between modal header and its first form control. */
+#modalRoot .rk43-normalized .rk41-payment-form{
+ margin:0!important;
+}
+@media(max-width:500px){
+ #modalRoot .rk43-normalized .rk43-modal-header{
+  grid-template-columns:minmax(69px,.95fr) minmax(0,2.5fr) minmax(38px,.95fr)!important;
+  gap:5px!important;
+  min-height:61px!important;
+  padding:11px 12px!important;
+ }
+ #modalRoot .rk43-normalized .rk43-modal-header>.rk43-back{
+  min-height:35px!important;
+  padding:7px 8px!important;
+  gap:4px!important;
+  font-size:10px!important;
+ }
+ #modalRoot .rk43-normalized .rk43-modal-header>.rk43-back svg{
+  width:15px!important;
+  height:15px!important;
+  flex-basis:15px!important;
+ }
+ #modalRoot .rk43-normalized .rk43-modal-header>.rk43-heading h2,
+ #modalRoot .rk43-normalized .rk43-modal-header>.rk43-heading h1{
+  font-size:clamp(13px,3.6vw,16px)!important;
+ }
+ #modalRoot .rk43-normalized .rk43-modal-header>.rk43-close{
+  width:35px!important;height:35px!important;
+  min-width:35px!important;min-height:35px!important;
+  max-width:35px!important;max-height:35px!important;
+ }
+ #modalRoot .rk43-normalized .rk43-action-strip{
+  padding:12px!important;
+  gap:8px!important;
+ }
+ #modalRoot .rk43-normalized .rk43-action-strip>button{
+  min-height:43px!important;
+  padding:9px 8px!important;
+  font-size:11px!important;
+ }
+}
+@media(max-width:355px){
+ #modalRoot .rk43-normalized .rk43-modal-header{
+  grid-template-columns:minmax(61px,1fr) minmax(0,2fr) 35px!important;
+  padding:10px 8px!important;
+ }
+ #modalRoot .rk43-normalized .rk43-modal-header>.rk43-back span{
+  font-size:9px!important;
+ }
+ #modalRoot .rk43-normalized .rk43-action-strip>button{
+  font-size:10px!important;
+ }
+}
