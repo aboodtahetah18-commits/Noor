@@ -72,7 +72,7 @@
     posted?'مخصص مثبت للشهر '+p:free>0?'رصيد مرحّل دون مخصص جديد':'مخصص الشهر غير مثبت';
   const hilal=card('hilal','بنك الهلال','التشغيل','المتبقي القابل للتخصيص',hMain,hColor,hStatus,[
    stat('الحصة المخططة',fmt(salaryPlan),'blue'),
-   stat('المخصص المثبت',fmt(assigned),posted?'teal':'navy'),
+   stat('المخصص المثبت',!monthData?'غير متاح':posted?fmt(assigned):'لم يُثبّت',posted?'teal':'navy'),
    stat('مصروفات الشهر',fmt(expenses),'red')
   ],['الاحتياطي المستهدف',fmt(banks.hilal),'navy'],[
    ['transactions','المعاملات'],['cycles','دورة الراتب'],['funding','التمويل الداخلي'],['fees','الرسوم الدورية']
