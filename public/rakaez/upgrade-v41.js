@@ -31,9 +31,10 @@ function modalFrame(body,label){
   body+'</section></div>';
 }
 function topBar(title){
- return '<header class="rk41-debt-head">'+
-  '<button type="button" class="rk41-go-back" data-rk41-close aria-label="رجوع إلى الالتزامات">'+arrowRight+'<span>رجوع</span></button>'+
-  '<h2>'+safe(title)+'</h2></header>';
+ return '<header class="modalhead rk41-debt-head rk43-modal-header">'+
+  '<button type="button" class="rk41-go-back rk43-back" data-rk43-back aria-label="رجوع">'+arrowRight+'<span>رجوع</span></button>'+
+  '<div class="rk43-heading"><h2>'+safe(title)+'</h2></div>'+
+  '<button type="button" class="rk43-close" onclick="closeModal()" aria-label="إغلاق النافذة">&times;</button></header>';
 }
 const nativeDetail=detailV3;
 detailV3=function(type,id){
