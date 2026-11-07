@@ -101,8 +101,11 @@
   const riskBuffer=Math.min(Math.round(outstanding*0.08),baseNeed*2);
   const salary=money(db?.salary);
   const debtRatio=salary?debtMonthly/salary:null;
-  const severe=debtRatio!==null&&debtRatio>=0.5;
-  const warning=debtRatio!==null&&debtRatio>=0.35;
+  const debtToYearIncome=salary?outstanding/(salary*12):outstanding?Infinity:0;
+  const costToIncome=salary?baseNeed/salary:baseNeed?Infinity:0;
+  // Consider a large outstanding loan even if its current installment is small.
+  const severe=(debtRatio!==null&&debtRatio>=0.5)||debtToYearIncome>=2.5||costToIncome>1;
+  const warning=severe||(debtRatio!==null&&debtRatio>=0.35)||debtToYearIncome>=1.25||costToIncome>=0.9;
   const dynamicTarget=(months,weight)=>
    Math.max(0,Math.round(baseNeed*months+riskBuffer*weight));
   const saved=savingsSummary(db),capital=invested(db);
@@ -110,15 +113,23 @@
   const malaaTarget=dynamicTarget(policy.malaa,1);
   const assetsTarget=dynamicTarget(policy.assets,0.5);
   const held=heldHilal(db);
-  const investmentCandidate=(severe||warning)?0:
-   Math.max(0,Math.min(saved.total-malaaTarget,saved.soonFree-baseNeed));
+  const protectionRequired=hilalTarget+malaaTarget;
+  const gapToProtection=Math.max(0,protectionRequired-saved.soonFree);
+  const observedMonths=estimate.monthsUsed;
+  const salaryHistory=Array.isArray(db?.salaryMonths)?db.salaryMonths:[];
+  const incomeRecorded=salaryHistory.some(p=>p===reference||p===offset(reference,-1)||p===offset(reference,-2));
+  // Only surplus AFTER both banks' liquidity protection can be considered.
+  // 12-day savings and market holdings are never treated as emergency cash.
+  const eligibleCash=Math.max(0,saved.soonFree-protectionRequired);
+  const investmentCandidate=(severe||warning||observedMonths<2||!incomeRecorded)?0:eligibleCash;
   const pressure=severe?'حرج':warning?'مرتفع':
-   saved.nowFree<baseNeed?'بحاجة إلى تعزيز السيولة':'تحت المتابعة';
+   saved.nowFree<baseNeed||gapToProtection>0?'بحاجة إلى تعزيز السيولة':'تحت المتابعة';
   return {
    period:reference,policy,monthlyNeed:baseNeed,
    estimate:{...estimate,commitments,loanMonthly:debtMonthly,monthlyFees:Math.round(annualizedFee(db)/12)},
-   riskBuffer,outstanding,debtMonthly,debtRatio,
-   pressure,critical:severe,warning,
+   riskBuffer,outstanding,debtMonthly,debtRatio,debtToYearIncome,costToIncome,
+   pressure,critical:severe,warning,protectionRequired,gapToProtection,
+   incomeRecorded,observedMonths,eligibleCash,
    savings:saved,investment:capital,investmentCandidate,
    banks:{
     hilal:{target:hilalTarget,recorded:held,coverage:hilalTarget?held/hilalTarget:1,
@@ -126,7 +137,7 @@
     malaa:{target:malaaTarget,recorded:saved.soonFree,instant:saved.nowFree,
       coverage:malaaTarget?saved.soonFree/malaaTarget:1,
       gap:Math.max(0,malaaTarget-saved.soonFree),kind:'سيولة مسجلة خلال ثلاثة أيام',confirmedLiquid:false},
-    assets:{target:assetsTarget,recorded:null,coverage:null,gap:null,kind:'سيولة الاستثمار غير مسجلة',
+    assets:{target:investmentCandidate,recorded:null,coverage:null,gap:null,kind:'استثمار الفائض بعد تغطية الحماية',
       confirmedLiquid:false,market:capital.market}
    }
   };
