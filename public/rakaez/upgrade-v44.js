@@ -213,6 +213,28 @@
     }catch(error){/* A bad financial entry must never hide the page. */}
    }
   }
+
+  // Bank-specific cash reconciliation is derived from V5, never added to savings or investments.
+  const root=document.getElementById('view');
+  if(root&&['hilal','malaa','assets'].includes(page)&&!root.querySelector('.rk44-cash-link')){
+   try{
+    const cash=adaptive.cashBalance(db,page),free=adaptive.availableBankCash(db,page);
+    const labels={hilal:'نقد بنك الهلال في دفتر الأستاذ',malaa:'نقد بنك ملاءة في دفتر الأستاذ',assets:'نقد بنك الأصول في دفتر الأستاذ'};
+    const strip=document.createElement('div');
+    strip.className='rk44-cash-link';
+    strip.innerHTML='<span>'+safe(labels[page])+'</span><strong>'+fmt(cash)+
+     '</strong><small>المتاح لطلبات التحويل بعد الحجوزات: '+fmt(free)+'</small>'+
+     '<button type="button" data-rk44-page="reserves">حركة الحماية</button>';
+    root.prepend(strip);
+   }catch(err){/* Does not block reading legacy bank pages. */}
+  }
+  if(root&&page==='interbank'&&!root.querySelector('.rk44-cash-link')){
+   const strip=document.createElement('div');
+   strip.className='rk44-cash-link';
+   strip.innerHTML='<span>طلبات التمويل هنا تخطيطية ولا تنقل النقد.</span>'+
+    '<button type="button" data-rk44-open-transfer>فتح تحويلات الحماية المعتمدة</button>';
+   root.prepend(strip);
+  }
   return result;
  };
  const entry=Array.isArray(N)?N.find(item=>item[0]==='reserves'):null;
