@@ -719,6 +719,7 @@
    salaryDay:day,salaryCalendar:'gregorian',family:{marital,children,supported},
    startMonth:clone.rk44VerifiedStart.startMonth,estimatedExpenses:essentials,
    uncertainEntries:detail.incomplete,
+   expensesProvided:details.items.length+details.dependents.length>0,
    nonCashInternalBanks:true,hasNoAutomaticTransfers:true};
   // Apply validated changes as one batch; existing cash, ledger and transactions stay untouched.
   db.rk44VerifiedStart=clone.rk44VerifiedStart;
@@ -730,6 +731,39 @@
   db.rk44Wizard=wizard;
   return {wizard,details:detail,debtsAdded:newDebts.length,goalsAdded:addedGoals.length};
  }
+
+ function wizardLearning(db,period){
+  const state=wizardState(db);
+  if(!state.completed)return {ready:false,reason:'لم يعتمد التأسيس بعد.'};
+  const history=wizardCycles(db).filter(e=>e.period<period)
+   .slice().sort((a,b)=>a.period.localeCompare(b.period));
+  const record=state.record;
+  const obligations=Math.max(0,Number(db?.rk44VerifiedStart?.obligations)||0);
+  const baseline=Math.max(obligations,
+   Math.max(0,record.estimatedExpenses||0)+obligations);
+  if(!record.expensesProvided)
+   return {ready:false,level:0,reason:'لم تدخل بنود مصروفات كافية لبناء توقع؛ العمليات الحقيقية وحدها لا تكفي قبل مراجعتها.',
+    reviewed:history.length};
+  const recent=history.slice(-2);
+  // First cycle stays conservative. After two reviewed cycles the new forecast
+  // mixes planned and observed spending, without modifying approved allocations.
+  let forecast=baseline;
+  if(recent.length===1)forecast=Math.max(obligations,Math.round(
+   (baseline*2+Math.max(obligations,recent[0].expenses))/3));
+  if(recent.length>=2)forecast=Math.max(obligations,Math.round(
+   baseline*0.25+Math.max(obligations,recent[0].expenses)*0.3+
+   Math.max(obligations,recent[1].expenses)*0.45));
+  const verifiedIncome=Math.max(0,Number(db?.rk44VerifiedStart?.income)||0);
+  const surplus=verifiedIncome-forecast;
+  return {ready:true,level:recent.length>=2?3:recent.length===1?2:1,
+   reviewed:history.length,baseline,forecast,verifiedIncome,
+   surplus,change:forecast-baseline,requiresApprovalToChangeBudget:true,
+   explanation:recent.length>=2?
+    'ترجيح المصروفات المسجلة في دورتين مراجعتين مع الاحتفاظ بهامش من التقدير الأولي':
+    recent.length===1?'مزج التقدير الأولي مع أول دورة مراجعة، دون تعديل بنودك المعتمدة':
+    'توقع أولي بناءً على البنود والالتزامات المدخلة؛ لم تراجع أي دورة كاملة بعد'};
+ }
+
  function reviewWizardCycle(db,period,today){
   assert(wizardState(db).completed,'أكمل معالج التأسيس أولاً.');
   assert(periodRegex.test(period),'الشهر غير صالح.');
@@ -846,5 +880,5 @@
   onboardingState,scheduleNextMonth,confirmFinancialStart,verifiedStarterPlan,approveVerifiedMonth,
   categorySuggestion,categoryLabels,monthlyEquivalent,userDetails,userDetailsSummary,
   saveUserDetails,saveFlexibleDebt,flexibleRepaymentPreview,
-  wizardState,wizardCycles,wizardPhase,confirmWizard,reviewWizardCycle,wizardDateBound});
+  wizardState,wizardCycles,wizardPhase,wizardLearning,confirmWizard,reviewWizardCycle,wizardDateBound});
 });
