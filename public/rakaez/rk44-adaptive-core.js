@@ -741,8 +741,10 @@
   const obligations=Math.max(0,Number(db?.rk44VerifiedStart?.obligations)||0);
   const baseline=Math.max(obligations,
    Math.max(0,record.estimatedExpenses||0)+obligations);
-  if(!record.expensesProvided)
-   return {ready:false,level:0,reason:'لم تدخل بنود مصروفات كافية لبناء توقع؛ العمليات الحقيقية وحدها لا تكفي قبل مراجعتها.',
+  if(!record.expensesProvided||record.uncertainEntries>0)
+   return {ready:false,level:0,reason:!record.expensesProvided?
+    'لم تدخل بنود مصروفات كافية لبناء توقع؛ راجع مصروفاتك أولاً.':
+    'توجد مصروفات غير منتظمة لم تحدد قيمتها الشهرية؛ لا يمكن الجزم بفائض آمن قبل مراجعتها.',
     reviewed:history.length};
   const recent=history.slice(-2);
   // First cycle stays conservative. After two reviewed cycles the new forecast
