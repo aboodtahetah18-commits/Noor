@@ -1,0 +1,105 @@
+/* ركائز 39 — واجهة تشغيلية رصينة ضمن هوية المنصة فقط. */
+#view .rk39-page{direction:rtl;max-width:1220px;width:100%;min-width:0;margin:0 auto;display:grid;gap:15px;color:var(--navy);font-family:inherit}
+#view .rk39-header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 3px}
+#view .rk39-bank-identity{display:flex;align-items:center;gap:11px;min-width:0}
+#view .rk39-bank-identity>.rk35-bankmark{display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;flex:0 0 48px;border-radius:12px;background:var(--navy)}
+#view .rk39-bank-identity>.rk35-bankmark svg{width:34px;height:34px}
+#view .rk39-bank-identity h2{color:var(--navy);font-size:19px;font-weight:850;margin:0;line-height:1.5}
+#view .rk39-bank-identity p{margin:2px 0 0;color:var(--muted);font-size:12px}
+#view .rk39-period{display:flex;align-items:center;gap:9px;font-size:12px;font-weight:800;color:var(--navy)}
+#view .rk39-period select{width:auto;min-width:125px;min-height:39px;background:var(--white);border:1px solid var(--line);border-radius:9px;padding:7px;color:var(--navy);font-size:13px}
+#view .rk39-warning{background:color-mix(in srgb,var(--gold) 9%,var(--white));color:var(--navy);border-right:3px solid var(--gold);padding:10px 12px;font-size:12px;line-height:1.85;border-radius:8px}
+#view .rk39-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:0;align-items:stretch;border:1px solid var(--line);border-radius:14px;background:var(--white);overflow:hidden;box-shadow:0 2px 10px color-mix(in srgb,var(--navy) 5%,transparent)}
+#view .rk39-feature{display:grid;align-content:center;gap:7px;padding:21px 18px;background:color-mix(in srgb,var(--teal) 6%,var(--white))}
+#view .rk39-feature small{font-size:12px;font-weight:750;color:var(--muted)}
+#view .rk39-feature strong{font-size:clamp(23px,3.2vw,34px);font-weight:900;line-height:1.4;font-variant-numeric:tabular-nums;unicode-bidi:plaintext;overflow-wrap:anywhere}
+#view .rk39-feature p{font-size:11px;color:var(--muted);line-height:1.85;max-width:440px;margin:0}
+#view .rk39-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:center;margin:0;padding:14px 8px}
+#view .rk39-number{display:grid;gap:7px;min-width:0;padding:8px 10px;align-content:center;text-align:center}
+#view .rk39-number+.rk39-number{border-right:1px solid var(--line)}
+#view .rk39-number span{color:var(--muted);font-size:11px;font-weight:750;line-height:1.55}
+#view .rk39-number strong{font-size:clamp(13px,1.5vw,19px);font-weight:850;line-height:1.4;font-variant-numeric:tabular-nums;unicode-bidi:plaintext;overflow-wrap:anywhere}
+#view .rk39-number small{color:var(--muted);font-size:11px;line-height:1.5}
+#view .rk39-teal{color:var(--teal)!important}#view .rk39-blue{color:var(--blue)!important}#view .rk39-red{color:var(--red)!important}#view .rk39-gold{color:var(--gold)!important}#view .rk39-navy{color:var(--navy)!important}
+#view .rk39-split{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);gap:14px;align-items:stretch}
+#view .rk39-reserve,#view .rk39-operations,#view .rk39-history,#view .rk39-audit{min-width:0;background:var(--white);border:1px solid var(--line);border-radius:14px;padding:16px;display:grid;align-content:start;gap:13px}
+#view .rk39-reserve{border-top:3px solid var(--gold)}
+#view .rk39-reserve>header{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;border-bottom:1px solid var(--line);padding-bottom:10px}
+#view .rk39-reserve h3,#view .rk39-operations h3,#view .rk39-history h3,#view .rk39-audit h3{margin:0;font-size:16px;font-weight:850;line-height:1.5;color:var(--navy)}
+#view .rk39-reserve>header>span{font-size:10px;color:var(--gold);font-weight:800}
+#view .rk39-reserve-main{display:flex;align-items:center;gap:14px}
+#view .rk39-reserve-main>dl{margin:0;flex:1;min-width:0;display:grid}
+#view .rk39-reserve-main .rk39-number{grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px;border:0;border-bottom:1px solid var(--line);padding:10px 3px;text-align:right}
+#view .rk39-reserve-main .rk39-number:last-child{border:0}
+#view .rk39-reserve-main .rk39-number strong{text-align:left;font-size:15px}
+#view .rk39-ring{--rk39-progress:0%;flex:0 0 102px;width:102px;height:102px;display:grid;place-items:center;border-radius:50%;background:conic-gradient(var(--teal) var(--rk39-progress),var(--line) 0);position:relative}
+#view .rk39-ring:before{content:"";width:77px;height:77px;position:absolute;border-radius:50%;background:var(--white)}
+#view .rk39-ring strong{position:relative;font-size:22px;font-weight:850;color:var(--navy)}
+#view .rk39-disclaimer,#view .rk39-notes{font-size:11px;line-height:1.9;color:var(--muted);margin:0}
+#view .rk39-operations>header{border-bottom:1px solid var(--line);padding-bottom:10px}
+#view .rk39-operations>header p{margin:3px 0 0;color:var(--muted);font-size:11px;line-height:1.6}
+#view .rk39-controls{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px;min-width:0}
+#view .rk39-action,#modalRoot .rk39-action{display:inline-flex;align-items:center;justify-content:center;min-height:37px;width:auto;max-width:100%;padding:8px 13px;border-radius:9px;border:1px solid var(--line);background:var(--white);color:var(--navy);font:inherit;font-size:11px;font-weight:800;line-height:1.4;cursor:pointer;white-space:normal;text-align:center}
+#view .rk39-action.rk39-primary,#modalRoot .rk39-action.rk39-primary{background:var(--teal);border-color:var(--teal);color:var(--white)}
+#view .rk39-action:disabled{opacity:.46;cursor:not-allowed}
+#view .rk39-action:focus-visible,#modalRoot .rk39-action:focus-visible,#view .rk39-text-link:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+#view .rk39-text-link{display:inline-flex;border:0;border-bottom:1px solid color-mix(in srgb,var(--teal) 40%,var(--white));padding:5px 2px;background:transparent;font:inherit;color:var(--teal);font-size:11px;font-weight:800;cursor:pointer;white-space:normal}
+#view .rk39-operation-info{display:grid;gap:10px;padding-top:12px;border-top:1px solid var(--line)}
+#view .rk39-operation-info>div{display:grid;gap:4px;padding:0 0 8px;border-bottom:1px solid var(--line)}
+#view .rk39-operation-info b{font-size:12px;color:var(--navy)}
+#view .rk39-operation-info span{font-size:11px;color:var(--muted);line-height:1.7}
+#view .rk39-operation-links{display:flex;justify-content:center;gap:13px;flex-wrap:wrap}
+#view .rk39-lower{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:14px}
+#view .rk39-history>header,#view .rk39-audit>header{display:flex;justify-content:space-between;align-items:baseline;gap:9px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:9px}
+#view .rk39-history>header small,#view .rk39-audit>header small{font-size:11px;color:var(--muted)}
+#view .rk39-history-head,#view .rk39-history-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.2fr);align-items:center;gap:5px;padding:11px 2px;text-align:right}
+#view .rk39-history-head{background:var(--paper);font-size:10px;color:var(--muted);font-weight:750;border-radius:7px;padding:7px}
+#view .rk39-history-row{width:100%;border:0;border-bottom:1px solid var(--line);background:transparent;min-width:0;font:inherit;font-size:11px;color:var(--navy);cursor:pointer}
+#view .rk39-history-row strong{font-size:12px;font-weight:850;unicode-bidi:plaintext;overflow-wrap:anywhere;text-align:left}
+#view .rk39-history-row.rk39-alert{border-right:2px solid var(--red)}
+#view .rk39-history-row:hover{background:var(--paper)}
+#view .rk39-entry{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;padding:11px 2px;border-bottom:1px solid var(--line)}
+#view .rk39-entry>div:first-child{display:grid;gap:3px;min-width:0}
+#view .rk39-entry h4{font-size:12px;font-weight:850;margin:0;color:var(--navy)}
+#view .rk39-entry small{font-size:10px;color:var(--muted);line-height:1.6;overflow-wrap:anywhere}
+#view .rk39-entry-amount{display:grid;gap:4px;justify-items:end;min-width:0}
+#view .rk39-entry-amount strong{font-size:13px;color:var(--teal);font-weight:850;unicode-bidi:plaintext}
+#view .rk39-status{color:var(--muted);font-size:10px;max-width:160px;text-align:left}
+#view .rk39-entry-controls{grid-column:1/-1;display:flex;flex-wrap:wrap;justify-content:flex-start;gap:7px}
+#view .rk39-entry-controls .rk39-action{min-height:32px;padding:6px 10px}
+#view .rk39-muted{margin:0;color:var(--muted);font-size:12px;line-height:1.9}
+#view .rk39-existing-budget{min-width:0;border:1px solid var(--line);border-radius:11px;background:var(--white);overflow:hidden}
+#view .rk39-existing-budget summary{cursor:pointer;padding:14px 16px;font-size:13px;font-weight:850;color:var(--navy)}
+#view .rk39-existing-content{padding:12px;border-top:1px solid var(--line)}
+#view .rk39-existing-content :is(.v30-context-page,.rk-budget-shell){max-width:100%;min-width:0}
+#view .rk39-notes{padding:0 3px 8px}
+#modalRoot .rk39-overlay{position:fixed;inset:0;z-index:320;display:flex;align-items:center;justify-content:center;padding:14px;background:color-mix(in srgb,var(--navy) 72%,transparent);overflow-y:auto}
+#modalRoot .rk39-dialog{direction:rtl;display:flex;flex-direction:column;max-height:calc(100dvh - 28px);width:min(520px,100%);max-width:100%;min-width:0;background:var(--white);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 12px 25px color-mix(in srgb,var(--navy) 20%,transparent)}
+#modalRoot .rk39-dialog-head{display:flex;align-items:center;justify-content:space-between;padding:13px 15px;background:var(--navy);border-bottom:2px solid var(--gold);gap:10px}
+#modalRoot .rk39-dialog-head h2{margin:0;color:var(--white);font-size:16px;font-weight:850}
+#modalRoot .rk39-dialog-close{border:1px solid color-mix(in srgb,var(--white) 35%,transparent);padding:6px 10px;border-radius:8px;background:transparent;color:var(--white);font:inherit;font-size:12px;cursor:pointer}
+#modalRoot .rk39-dialog form{display:flex;flex-direction:column;min-height:0;overflow:auto}
+#modalRoot .rk39-dialog-fields{padding:16px;display:grid;gap:13px;overflow-y:auto}
+#modalRoot .rk39-field{display:grid;gap:6px;min-width:0;color:var(--navy);font-weight:750;font-size:12px}
+#modalRoot .rk39-field>input,#modalRoot .rk39-field>select{display:block;width:100%;min-width:0;min-height:44px;padding:9px 12px;background:var(--paper);color:var(--navy);border:1px solid var(--line);border-radius:9px;font:inherit;font-size:13px}
+#modalRoot .rk39-field>input:focus,#modalRoot .rk39-field>select:focus{outline:2px solid var(--teal);outline-offset:1px}
+#modalRoot .rk39-accept{display:flex;align-items:flex-start;gap:10px;font-size:12px;line-height:1.8;font-weight:650;color:var(--navy)}
+#modalRoot .rk39-accept input{flex:0 0 17px;margin:4px 0 0}
+#modalRoot .rk39-dialog-note{font-size:11px;line-height:1.85;color:var(--muted);margin:0}
+#modalRoot .rk39-form-error{font-size:12px;color:var(--red);margin:0;padding:8px 10px;border:1px solid var(--red);border-radius:8px}
+#modalRoot .rk39-form-error[hidden]{display:none}
+#modalRoot .rk39-dialog-foot{display:flex;justify-content:center;align-items:center;gap:8px;padding:12px 15px;border-top:1px solid var(--line)}
+@media(max-width:900px){#view .rk39-hero{grid-template-columns:minmax(0,1fr)}#view .rk39-split,#view .rk39-lower{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:520px){
+ #view .rk39-page{gap:12px}#view .rk39-header{gap:9px}
+ #view .rk39-bank-identity h2{font-size:16px}#view .rk39-bank-identity>.rk35-bankmark{width:40px;height:40px;flex-basis:40px}
+ #view .rk39-feature{padding:15px}#view .rk39-feature strong{font-size:clamp(21px,6vw,30px)}
+ #view .rk39-kpis{grid-template-columns:repeat(3,minmax(0,1fr));padding:8px 3px}
+ #view .rk39-number{padding:8px 4px;gap:5px}#view .rk39-number span{font-size:10px}#view .rk39-number strong{font-size:clamp(12px,3.1vw,15px)}
+ #view .rk39-reserve,#view .rk39-operations,#view .rk39-history,#view .rk39-audit{padding:12px;gap:10px}
+ #view .rk39-reserve-main{gap:10px}#view .rk39-ring{width:80px;height:80px;flex-basis:80px}#view .rk39-ring:before{width:59px;height:59px}#view .rk39-ring strong{font-size:18px}
+ #view .rk39-reserve-main .rk39-number{gap:4px;padding:8px 2px}#view .rk39-reserve-main .rk39-number strong{font-size:clamp(12px,3.2vw,15px)}
+ #view .rk39-controls{gap:6px}#view .rk39-action{font-size:10px;min-height:35px;padding:7px 9px}
+ #view .rk39-entry{grid-template-columns:minmax(0,1fr) auto}#view .rk39-entry-amount strong{font-size:12px}
+ #modalRoot .rk39-dialog-fields{padding:13px}#modalRoot .rk39-dialog-head{padding:12px 13px}
+}

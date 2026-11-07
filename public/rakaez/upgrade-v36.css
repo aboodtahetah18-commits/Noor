@@ -1,0 +1,390 @@
+/* ركائز — معيار العرض الموحد 36 (مسودة محلية، غير منشورة).
+   No new fonts, external imagery, or colors beyond the platform identity.
+   Financial numbers are visually emphasized, while account data remains legible. */
+
+/* 1 — One clean surface per record; no nested decorative boxes. */
+#view.rk36-design {
+  width:100%; max-width:100%; min-width:0;
+  color:var(--ink); direction:rtl;
+}
+#view.rk36-design :is(
+  .rk34-screen,.rk35-financing,.v30-screen,.v30-context-page,
+  .v30-financial-page,.v25-page,.v31-study,.v27-screen
+){width:100%;max-width:100%;min-width:0;}
+#view.rk36-design :is(
+  .rk34-card,.rk35-request,.v27-card,.v31-company-card,.v29-finance-record,
+  .v30-record,.v30-document-record,.rk-external-card,.v25-ledger-entry,
+  .v29-journal-card,.rk-malaa-offer,.rk-investment-card
+){
+  box-sizing:border-box;max-width:100%;min-width:0;
+  border-radius:13px!important;
+  box-shadow:0 2px 9px color-mix(in srgb,var(--navy) 5%,transparent)!important;
+}
+#view.rk36-design :is(
+  .v30-record,.v30-document-record,.rk-external-card,.rk-malaa-offer,
+  .rk-investment-card
+){
+  background:var(--white)!important;
+  border:1px solid var(--line)!important;
+  border-inline-start:3px solid var(--navy)!important;
+}
+#view.rk36-design :is(
+  .v30-record-grid,.rk34-cardgrid,.rk35-records,.v31-company-grid,
+  .rk-external-grid,.v25-list,.rk-investments-list
+){gap:11px!important;min-width:0!important;}
+
+/* 2 — The approved centered-value rule, using hairline separators only. */
+#view.rk36-design :is(.v30-facts,.v30-fields,.v29-finance-values,
+  .v27-metrics,.v31-company-facts,.rk34-values,.rk-goal-values,
+  .v19-fact-grid,.v25-ledger-pair).rk36-figures {
+  display:grid!important;gap:0!important;
+  min-width:0!important;
+  background:transparent!important;
+  border-top:1px solid var(--line)!important;
+  border-bottom:1px solid var(--line)!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  padding:4px 0!important;
+}
+#view.rk36-design :is(
+  .v30-fact,.v30-field,.v29-finance-value,.v27-metric,
+  .v31-fact,.rk34-figure,.rk-goal-values>div,.v19-fact-grid>div,
+  .v25-ledger-pair>div
+){
+  min-width:0!important;
+  margin:0!important;
+  padding:10px 8px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  text-align:center!important;
+  justify-content:center!important;
+  justify-items:center!important;
+}
+#view.rk36-design :is(
+  .v30-fact,.v30-field,.v29-finance-value,.v27-metric,
+  .v31-fact,.rk34-figure,.rk-goal-values>div,.v19-fact-grid>div
+):not(:first-child){border-inline-start:1px solid var(--line)!important;}
+#view.rk36-design :is(
+  .v30-fact span,.v30-field span,.v29-finance-value span,
+  .v27-metric span,.v31-fact small,.rk34-figure dt,
+  .rk-goal-values span,.v19-fact-grid small
+){
+  text-align:center!important;
+  font-size:11px!important;line-height:1.5!important;
+  color:var(--muted)!important;font-weight:650!important;
+  overflow-wrap:anywhere!important;
+}
+#view.rk36-design :is(
+  .v30-fact strong,.v30-field strong,.v29-finance-value strong,
+  .v27-metric strong,.v31-fact strong,.rk34-figure dd,
+  .rk-goal-values strong,.v19-fact-grid strong
+){
+  text-align:center!important;font-weight:850!important;
+  font-size:clamp(12px,1.6vw,17px)!important;
+  font-variant-numeric:tabular-nums!important;
+  unicode-bidi:plaintext!important;
+  overflow-wrap:anywhere!important;
+  min-width:0!important;max-width:100%!important;
+}
+/* Keep explicit semantics visible: expense red, receivables green, reference blue. */
+#view.rk36-design :is(
+  .v29-finance-red strong,.v27-red strong,.v31-red strong,
+  .v30-red strong,.v30-tone-red strong,.rk34-red,
+  .rk35-stat-cost dd,.v29-amount-debit
+){color:var(--red)!important;}
+#view.rk36-design :is(
+  .v29-finance-green strong,.v27-teal strong,.v31-teal strong,
+  .v30-teal strong,.v30-tone-teal strong,.rk34-teal,
+  .rk35-stat-principal dd,.v29-amount-credit
+){color:var(--teal)!important;}
+#view.rk36-design :is(
+  .v29-finance-blue strong,.v27-blue strong,.v31-blue strong,
+  .v30-blue strong,.v30-tone-blue strong,.rk34-blue
+){color:var(--blue)!important;}
+#view.rk36-design :is(
+  .v29-finance-gold strong,.v27-gold strong,.v30-tone-gold strong,.rk34-gold
+){color:var(--gold)!important;}
+
+/* 3 — Compact, centered controls (not giant boxes). */
+#view.rk36-design :is(
+  .btn,.v31-action,.rk34-action,.v27-main-action,.v27-subaction,
+  .rk35-create,.rk35-reset,.v25-toolbar button,.v30-add,
+  .v30-link-action,.v31-company-actions button,.rk35-financing button
+){
+  box-sizing:border-box;
+  min-height:37px!important;
+  max-width:100%!important;
+  padding:7px 11px!important;
+  border-radius:9px!important;
+  font-size:11px!important;
+  line-height:1.4!important;
+  font-weight:750!important;
+  box-shadow:none!important;
+}
+#view.rk36-design :is(.rk36-actions,.rk34-cardfoot,.v27-card-footer,
+  .v31-company-actions,.v30-export-actions,.rk-account-actions){
+  display:flex!important;flex-direction:row!important;
+  flex-wrap:wrap!important;align-items:center!important;
+  justify-content:center!important;gap:7px!important;
+  min-width:0!important;
+}
+#view.rk36-design :is(.rk36-actions,.v31-company-actions) > button {
+  flex:0 1 auto!important;width:auto!important;min-width:0!important;
+}
+#view.rk36-design button:focus-visible {
+  outline:2px solid var(--teal)!important;outline-offset:2px!important;
+}
+
+/* 4 — Keep hierarchy and bank identity consistent everywhere. */
+#view.rk36-design :is(.rk34-pagehead,.v30-pagehead,.v27-pagehead,
+  .v31-title,.rk35-pagehead,.v25-toolbar){
+  max-width:100%;min-width:0;
+}
+#view.rk36-design :is(.rk34-pagehead h2,.v30-pagehead h2,
+  .v27-pagehead h2,.v31-title h2,.rk35-pagehead h2){
+  margin:0!important;color:var(--navy)!important;
+  font-size:clamp(14px,1.6vw,19px)!important;
+  line-height:1.65!important;
+  overflow-wrap:anywhere!important;
+}
+#view.rk36-design .rk36-bank-name {
+  display:inline-flex!important;align-items:center!important;
+  justify-content:center!important;gap:7px!important;
+  flex-wrap:wrap!important;min-width:0!important;
+}
+#view.rk36-design .rk36-bank-name .rk35-bankmark {
+  flex:0 0 22px!important;width:22px!important;height:22px!important;
+  border:0!important;background:transparent!important;
+}
+#view.rk36-design .rk36-bank-name .rk35-bankmark svg{
+  width:22px!important;height:22px!important;
+}
+
+/* 5 — Banking: one main area and light text rows. */
+#view[data-rk36-page="hilal"] :is(.rk-budget-shell,.rk-budget-entry),
+#view[data-rk36-page="malaa"] :is(.rk-malaa-main,.rk-malaa-offer),
+#view[data-rk36-page="assets"] :is(.rk-account-group,.rk-opportunities),
+#view[data-rk36-page="externalBanks"] .rk-external-card {
+  border-color:var(--line)!important;
+  box-shadow:0 2px 9px color-mix(in srgb,var(--navy) 5%,transparent)!important;
+}
+#view[data-rk36-page="malaa"] .rk-malaa-offer,
+#view[data-rk36-page="assets"] .rk-investment-card,
+#view[data-rk36-page="externalBanks"] .rk-external-card{
+  text-align:center!important;
+  padding:13px!important;
+}
+#view[data-rk36-page="malaa"] :is(.rk-malaa-offer,.rk-malaa-main),
+#view[data-rk36-page="assets"] :is(.rk-account-body,.rk-opportunities),
+#view[data-rk36-page="hilal"] .rk-budget-shell {
+  max-width:100%!important;min-width:0!important;
+}
+#view[data-rk36-page="malaa"] .rk-malaa-tabs,
+#view[data-rk36-page="assets"] .rk-account-actions{
+  display:flex!important;flex-direction:row!important;
+  align-items:center!important;justify-content:center!important;
+  gap:7px!important;flex-wrap:wrap!important;
+}
+#view[data-rk36-page="malaa"] .rk-malaa-tabs button{
+  min-height:40px!important;padding:8px 10px!important;
+  font-size:11px!important;white-space:normal!important;
+}
+#view[data-rk36-page="assets"] :is(.rk-account-title,.rk-investments-list),
+#view[data-rk36-page="malaa"] :is(.rk-malaa-offer-identity,.rk-malaa-heading){
+  min-width:0!important;max-width:100%!important;
+}
+#view[data-rk36-page="externalBanks"] .rk-external-card {
+  display:grid!important;gap:10px!important;
+}
+
+/* 6 — Operations: clean readable rows, same rule as the approved finance card. */
+#view[data-rk36-page="transactions"] :is(.tablewrap,.rk-smart-table),
+#view[data-rk36-page="spending"] :is(.v25-page,.v25-list),
+#view[data-rk36-page="spending-followups"] :is(.v25-page,.v25-list){
+  min-width:0!important;max-width:100%!important;
+}
+#view[data-rk36-page="spending"] .v25-record,
+#view[data-rk36-page="spending-followups"] .v25-record{
+  border:1px solid var(--line)!important;
+  border-inline-start:3px solid var(--navy)!important;
+  background:var(--white)!important;
+  border-radius:11px!important;
+  padding:11px 12px!important;
+  box-shadow:none!important;
+}
+#view[data-rk36-page="spending"] .v25-record-extra{
+  color:var(--red)!important;font-size:15px!important;font-weight:850!important;
+}
+#view[data-rk36-page="scheduled"] .v29-finance-record,
+#view[data-rk36-page="receivables"] .v29-finance-record{
+  display:grid!important;gap:10px!important;padding:13px!important;
+}
+#view[data-rk36-page="scheduled"] .v29-finance-value,
+#view[data-rk36-page="receivables"] .v29-finance-value{
+  background:transparent!important;border:0!important;
+  border-radius:0!important;padding:10px 8px!important;
+}
+#view[data-rk36-page="scheduled"] .v29-finance-value:not(:first-child),
+#view[data-rk36-page="receivables"] .v29-finance-value:not(:first-child){
+  border-inline-start:1px solid var(--line)!important;
+}
+#view[data-rk36-page="scheduled"] .v29-finance-foot,
+#view[data-rk36-page="receivables"] .v29-finance-foot{
+  justify-content:center!important;gap:10px!important;
+}
+
+/* 7 — Ledger remains a true debit-credit table: nothing is collapsed. */
+#view[data-rk36-page="ledger"] .v29-journal-card{
+  border-radius:13px!important;
+}
+#view[data-rk36-page="ledger"] .v29-journal-table{
+  min-width:0!important;padding:9px 12px!important;
+}
+#view[data-rk36-page="ledger"] .v29-ledger-row{
+  border-bottom:1px solid var(--line)!important;
+}
+#view[data-rk36-page="ledger"] .v29-debit-cell .v29-amount{
+  color:var(--red)!important;
+}
+#view[data-rk36-page="ledger"] .v29-credit-cell .v29-amount{
+  color:var(--teal)!important;
+}
+#view[data-rk36-page="ledger"] .v29-journal-footer{
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  flex-wrap:wrap!important;gap:8px!important;
+}
+
+/* 8 — Salary cycles, reports, documents, settings and import. */
+#view[data-rk36-page="cycles"] :is(.v19-cycle-list,.v19-record-grid),
+#view[data-rk36-page="reports"] .v30-report-section,
+#view[data-rk36-page="documents"] .v30-document-record,
+#view[data-rk36-page="settings"] .settings-panel,
+#view[data-rk36-page="import"] .v30-report-section{
+  min-width:0!important;max-width:100%!important;
+}
+#view[data-rk36-page="cycles"] .v19-cycle-list-item{
+  border:1px solid var(--line)!important;
+  border-inline-start:3px solid var(--navy)!important;
+  padding:12px!important;border-radius:12px!important;
+  background:var(--white)!important;
+  box-shadow:none!important;
+}
+#view[data-rk36-page="cycles"] .v19-cycle-list-item > span{
+  border:0!important;border-radius:0!important;
+  background:transparent!important;min-width:0!important;
+}
+#view[data-rk36-page="reports"] .v30-report-section,
+#view[data-rk36-page="import"] .v30-report-section {
+  border:1px solid var(--line)!important;border-radius:12px!important;
+  background:var(--white)!important;
+  box-shadow:none!important;
+}
+#view[data-rk36-page="reports"] .v30-report-line {
+  display:flex!important;align-items:baseline!important;
+  justify-content:space-between!important;gap:10px!important;
+  border-bottom:1px solid var(--line)!important;
+  padding:11px 0!important;background:transparent!important;
+}
+#view[data-rk36-page="reports"] .v30-report-line:last-child{
+  border-bottom:0!important;
+}
+#view[data-rk36-page="documents"] .v30-document-body{
+  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:0!important;background:transparent!important;
+  border-top:1px solid var(--line)!important;
+  border-bottom:1px solid var(--line)!important;
+}
+#view[data-rk36-page="documents"] .v30-document-body > div{
+  border:0!important;background:transparent!important;
+  border-radius:0!important;padding:10px 8px!important;
+  text-align:center!important;min-width:0!important;
+}
+#view[data-rk36-page="documents"] .v30-document-body > div:not(:first-child){
+  border-inline-start:1px solid var(--line)!important;
+}
+#view[data-rk36-page="settings"] .formgrid .field,
+#view[data-rk36-page="import"] :is(.field,.v30-input-label){
+  background:transparent!important;box-shadow:none!important;
+}
+#view[data-rk36-page="settings"] .settings-tabs,
+#view[data-rk36-page="import"] .v30-export-actions{
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  flex-wrap:wrap!important;gap:8px!important;
+}
+
+/* 9 — Keep real forms accessible; neutralize nested dialog ornamentation. */
+#modalRoot .v27-dialog,
+#modalRoot .v32-document-dialog,
+#modalRoot .modal{
+  max-width:calc(100vw - 22px)!important;
+  box-sizing:border-box!important;
+}
+#modalRoot .v27-dialog :is(.v27-facts>div,.v27-metric),
+#modalRoot .v32-document-facts>div{
+  background:transparent!important;
+  box-shadow:none!important;
+  border:0!important;
+  border-radius:0!important;
+  border-bottom:1px solid var(--line)!important;
+}
+#modalRoot :is(.v27-dialog-footer,.rk-budget-detail-actions,.v30-export-actions){
+  gap:8px!important;align-items:center!important;justify-content:center!important;
+}
+#modalRoot :is(.v27-dialog-footer,.rk-budget-detail-actions) button{
+  min-height:39px!important;padding:8px 11px!important;
+  border-radius:9px!important;font-size:11px!important;
+  font-weight:750!important;
+}
+
+/* 10 — Phone layout: prioritise readability and touch access over decoration. */
+@media(max-width:900px){
+  #view.rk36-design :is(.v30-record-grid,.rk34-cardgrid,
+    .rk35-records,.v31-company-grid,.rk-external-grid){
+    grid-template-columns:minmax(0,1fr)!important;
+  }
+}
+@media(max-width:600px){
+  #view.rk36-design :is(.rk34-card,.rk35-request,.v27-card,
+    .v31-company-card,.v29-finance-record,.v30-record,
+    .v30-document-record,.rk-external-card){
+    padding:12px!important;
+  }
+  #view.rk36-design :is(.v30-facts,.v30-fields,.v29-finance-values,
+    .v27-metrics,.rk34-values,.rk-goal-values,.v19-fact-grid){
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+  #view.rk36-design .v31-company-facts{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+  #view.rk36-design :is(.v30-fact,.v30-field,.v29-finance-value,
+    .v27-metric,.rk34-figure,.rk-goal-values>div,.v19-fact-grid>div){
+    padding:9px 6px!important;
+  }
+  #view.rk36-design :is(.v30-facts,.v30-fields,.v29-finance-values,
+    .v27-metrics,.rk34-values,.rk-goal-values,.v19-fact-grid)
+    > :nth-child(odd){border-inline-start:0!important;}
+  #view.rk36-design :is(.v30-facts,.v30-fields,.v29-finance-values,
+    .v27-metrics,.rk34-values,.rk-goal-values,.v19-fact-grid)
+    > :nth-child(n+3){border-top:1px solid var(--line)!important;}
+  #view.rk36-design :is(.v30-fact strong,.v30-field strong,
+    .v29-finance-value strong,.v27-metric strong,.rk34-figure dd){
+    font-size:clamp(12px,3.6vw,16px)!important;
+  }
+  #view[data-rk36-page="documents"] .v30-document-body{
+    grid-template-columns:minmax(0,1fr)!important;
+  }
+  #view[data-rk36-page="documents"] .v30-document-body > div:not(:first-child){
+    border-inline-start:0!important;border-top:1px solid var(--line)!important;
+  }
+  #view.rk36-design :is(.rk34-pagehead,.v30-pagehead,.v27-pagehead,
+    .rk35-pagehead){gap:7px!important;}
+  #view.rk36-design :is(.rk34-pagehead h2,.v30-pagehead h2,
+    .v27-pagehead h2,.rk35-pagehead h2){font-size:14px!important;}
+}
+@media(prefers-reduced-motion:reduce){
+  #view.rk36-design *,#view.rk36-design *::before,#view.rk36-design *::after{
+    transition:none!important;animation:none!important;
+  }
+}

@@ -1,0 +1,195 @@
+/* ركائز 37 — ربط البنوك وجميع الصفحات، بتصميم مركزي بلا صناديق متكررة.
+ * Uses only --navy, --teal, --blue, --gold, --red, --paper, --ink,
+ * --muted, --line, --white and the platform's inherited typeface. */
+#view.rk37-linked {min-width:0!important;max-width:100%!important;}
+#view.rk37-linked .rk37-context {
+  display:flex;align-items:center;justify-content:flex-start;
+  flex-wrap:wrap;gap:5px 7px;min-width:0;max-width:100%;
+  padding:3px 0 12px;margin:0 0 8px;
+  background:transparent;border:0;border-bottom:1px solid var(--line);
+  font:inherit;line-height:1.5;direction:rtl;
+}
+#view.rk37-linked .rk37-context>span {
+  display:block;margin-inline-end:7px;white-space:nowrap;
+  color:var(--muted);font-size:11px;font-weight:750;
+}
+#view.rk37-linked .rk37-link,
+#modalRoot .rk37-link {
+  display:inline-flex;flex-direction:row;align-items:center;justify-content:center;
+  flex:0 0 auto;width:auto!important;min-width:0!important;
+  min-height:34px!important;max-width:100%;padding:6px 9px!important;
+  background:transparent!important;color:var(--navy)!important;
+  border:0!important;border-radius:7px!important;
+  font:inherit!important;font-size:11px!important;
+  line-height:1.5!important;font-weight:700!important;
+  white-space:normal;box-shadow:none!important;text-decoration:none;
+  cursor:pointer;
+}
+#view.rk37-linked .rk37-link-context:hover,
+#view.rk37-linked .rk37-link:focus-visible,
+#modalRoot .rk37-link:focus-visible {
+  background:color-mix(in srgb,var(--teal) 8%,var(--white))!important;
+  color:var(--teal)!important;outline:2px solid var(--teal);outline-offset:1px;
+}
+#view.rk37-linked .rk37-link-context:not(:last-child)::after {
+  content:'·';margin-inline-start:10px;color:var(--line);font-weight:800;
+}
+#view .rk37-center {
+  display:grid;gap:19px;direction:rtl;
+  max-width:1060px;width:100%;min-width:0;
+  margin:0 auto;padding:0;color:var(--ink);
+}
+#view .rk37-center-head {display:grid;gap:6px;padding:3px 0 11px;border-bottom:2px solid var(--gold)}
+#view .rk37-center-head h2 {margin:0!important;color:var(--navy);font-size:19px;font-weight:850;line-height:1.55}
+#view .rk37-center-head p {margin:0!important;color:var(--muted);font-size:12px;line-height:1.85}
+#view .rk37-ledger-summary {
+  display:grid;gap:9px;min-width:0;padding:13px 15px;
+  background:var(--white);border:1px solid var(--line);
+  border-inline-start:3px solid var(--navy);border-radius:12px;
+  box-shadow:0 2px 9px color-mix(in srgb,var(--navy) 5%,transparent);
+}
+#view .rk37-ledger-summary h3,
+#view .rk37-center-banks>h3 {
+  margin:0!important;color:var(--navy);font-size:15px;font-weight:850;line-height:1.5;
+}
+#view .rk37-ledger-summary>dl {
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:0;margin:2px 0 0;padding:10px 0 7px;
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+}
+#view .rk37-ledger-summary>p {
+  margin:0!important;color:var(--muted);font-size:11px;line-height:1.85;
+}
+#view .rk37-center-banks {display:grid;gap:11px;min-width:0}
+#view .rk37-bank {
+  display:grid;gap:11px;min-width:0;max-width:100%;
+  padding:15px 16px;background:var(--white);
+  border:1px solid var(--line);border-inline-start:3px solid var(--teal);
+  border-radius:13px;box-shadow:0 2px 9px color-mix(in srgb,var(--navy) 5%,transparent);
+}
+#view .rk37-bank:nth-of-type(3) {border-inline-start-color:var(--blue)}
+#view .rk37-bank-head {
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:10px;min-width:0;
+}
+#view .rk37-bank-title {display:flex;align-items:center;gap:10px;min-width:0}
+#view .rk37-bank-title>.rk35-bankmark {
+  display:grid;place-items:center;width:31px;height:31px;flex:0 0 31px;
+  border:0;background:transparent;box-shadow:none;
+}
+#view .rk37-bank-title>.rk35-bankmark svg {width:29px;height:29px}
+#view .rk37-bank-title>div {display:grid;gap:3px;min-width:0}
+#view .rk37-bank-title h3 {margin:0!important;color:var(--navy);font-size:15px;line-height:1.45;font-weight:850}
+#view .rk37-bank-title p {margin:0!important;color:var(--muted);font-size:11px;line-height:1.55}
+#view .rk37-banklink {
+  display:inline-flex;flex-direction:row;align-items:center;justify-content:center;gap:6px;
+  min-width:0;min-height:37px;width:auto;max-width:100%;padding:7px 11px;
+  background:var(--white);border:1px solid var(--line);border-radius:9px;
+  box-shadow:none;color:var(--navy);font:inherit;font-weight:800;font-size:11px;
+  line-height:1.45;cursor:pointer;
+}
+#view .rk37-banklink .rk35-bankmark {display:none}
+#view .rk37-banklink-primary {border-color:var(--teal);color:var(--teal)}
+#view .rk37-banklink:hover {background:color-mix(in srgb,var(--teal) 7%,var(--white))}
+#view .rk37-bank-figures {
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));min-width:0;
+  margin:0;padding:10px 0 8px;gap:0;
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+}
+#view .rk37-datum {
+  display:grid;align-content:start;justify-items:center;gap:5px;min-width:0;
+  margin:0!important;padding:9px 10px!important;
+  background:transparent!important;border:0!important;border-radius:0!important;
+  box-shadow:none!important;text-align:center;
+}
+#view .rk37-datum:not(:first-child) {border-inline-start:1px solid var(--line)!important}
+#view .rk37-datum dt {color:var(--muted);font-size:11px;font-weight:700;line-height:1.6;overflow-wrap:anywhere;text-align:center}
+#view .rk37-datum dd {
+  min-width:0;max-width:100%;margin:0!important;
+  font-size:clamp(14px,1.5vw,18px);font-weight:850;line-height:1.55;
+  font-variant-numeric:tabular-nums;unicode-bidi:plaintext;overflow-wrap:anywhere;
+}
+#view .rk37-datum.rk37-teal dd {color:var(--teal)}
+#view .rk37-datum.rk37-red dd {color:var(--red)}
+#view .rk37-datum.rk37-blue dd {color:var(--blue)}
+#view .rk37-datum.rk37-gold dd {color:var(--gold)}
+#view .rk37-datum.rk37-navy dd {color:var(--navy)}
+#view .rk37-datum small {min-width:0;color:var(--muted);font-size:10px;line-height:1.6;text-align:center;overflow-wrap:anywhere}
+#view .rk37-bank-note {margin:0!important;color:var(--muted);font-size:11px;line-height:1.8}
+#view .rk37-bank-related {
+  display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:5px;
+  border-top:1px solid var(--line);padding-top:9px;
+}
+#view .rk37-bank-related>span {color:var(--muted);font-size:11px;margin-inline-end:5px}
+#view .rk37-bank-related>.rk37-link {color:var(--teal)!important}
+#view .rk37-references>dl {grid-template-columns:repeat(2,minmax(0,1fr))}
+#view .rk37-references .rk37-datum:nth-child(3) {border-inline-start:0!important}
+#view .rk37-references .rk37-datum:nth-child(n+3) {border-top:1px solid var(--line)!important}
+#view .rk37-center-disclaimer {
+  margin:0!important;padding:9px 12px;
+  background:var(--paper);border-inline-start:2px solid var(--gold);
+  color:var(--muted);font-size:11px;line-height:1.9;
+}
+/* Displaying a bank's icon is not enough — its label can open the bank page. */
+#view.rk37-linked .rk37-inline-bank {
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  gap:6px!important;min-height:35px!important;width:auto!important;
+  max-width:100%!important;min-width:0!important;
+  padding:6px 10px!important;margin:0!important;
+  border:0!important;border-radius:7px!important;
+  background:transparent!important;box-shadow:none!important;
+  color:var(--navy)!important;font:inherit!important;
+  font-weight:800!important;font-size:12px!important;line-height:1.5!important;
+  text-align:center!important;cursor:pointer!important;
+}
+#view .rk35-route-bank.rk37-inline-bank {
+  background:color-mix(in srgb,var(--blue) 8%,var(--white))!important;
+  border-radius:999px!important;
+}
+#view.rk37-linked .rk37-inline-bank:hover,
+#view.rk37-linked .rk37-inline-bank:focus-visible {
+  color:var(--teal)!important;background:color-mix(in srgb,var(--teal) 7%,var(--white))!important;
+  outline:2px solid var(--teal);outline-offset:1px;
+}
+#view .rk37-inline-bank .rk35-bankmark {width:23px;height:23px;flex:0 0 23px}
+#view .rk37-inline-bank .rk35-bankmark svg {width:22px;height:22px}
+/* Detail windows have simple related links; not a nested card or inert controls. */
+#modalRoot .rk37-modal-nav {
+  display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:5px;
+  padding:8px 12px;border-top:1px solid var(--line);
+  background:var(--white);min-width:0;
+}
+#modalRoot .rk37-modal-nav>span {color:var(--muted);font-size:10px;margin-inline-end:6px}
+@media(max-width:900px) {
+  #view .rk37-ledger-summary>dl {grid-template-columns:repeat(2,minmax(0,1fr))}
+  #view .rk37-ledger-summary>dl .rk37-datum:nth-child(3) {border-inline-start:0!important}
+  #view .rk37-ledger-summary>dl .rk37-datum:nth-child(n+3) {border-top:1px solid var(--line)!important}
+  #view .rk37-bank-figures {grid-template-columns:repeat(2,minmax(0,1fr))}
+  #view .rk37-bank-figures .rk37-datum:nth-child(odd) {border-inline-start:0!important}
+  #view .rk37-bank-figures .rk37-datum:nth-child(n+3) {border-top:1px solid var(--line)!important}
+}
+@media(max-width:600px) {
+  #view .rk37-center {gap:14px}
+  #view .rk37-center-head h2 {font-size:16px}
+  #view .rk37-center-head p {font-size:11px}
+  #view .rk37-bank {gap:9px;padding:12px}
+  #view .rk37-bank-head {gap:8px}
+  #view .rk37-bank-title h3 {font-size:14px}
+  #view .rk37-bank-title>.rk35-bankmark {width:25px;height:25px;flex-basis:25px}
+  #view .rk37-bank-title>.rk35-bankmark svg {width:25px;height:25px}
+  #view .rk37-banklink {min-height:35px;padding:6px 8px;font-size:10px}
+  #view .rk37-datum {padding:8px 6px!important}
+  #view .rk37-datum dt {font-size:10px}
+  #view .rk37-datum dd {font-size:clamp(13px,3.4vw,16px)}
+  #view .rk37-datum small {font-size:9px}
+  #view .rk37-context {gap:3px 5px}
+  #view.rk37-linked .rk37-link {font-size:10px!important;padding:6px 7px!important}
+  #view .rk37-ledger-summary {padding:12px}
+}
+@media(max-width:350px) {
+  #view .rk37-bank-head {flex-direction:column;align-items:flex-start}
+  #view .rk37-bank-figures .rk37-datum dd {font-size:13px}
+}
+@media(prefers-reduced-motion:reduce){
+  #view .rk37-bank *,#view .rk37-context *,#modalRoot .rk37-modal-nav * {transition:none!important;animation:none!important}
+}
