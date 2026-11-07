@@ -369,3 +369,25 @@
  #view .rk44-transfer-fields label:nth-child(3){grid-column:auto}
  #view .rk44-transfer-fields .rk44-transfer-note{grid-column:auto}
 }
+
+
+/* Contextual V5 cash link on each bank; financial source labels remain distinct. */
+#view .rk44-cash-link{
+ display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;
+ direction:rtl;gap:9px;min-width:0;max-width:100%;box-sizing:border-box;
+ margin:0 0 11px;padding:10px 12px;border-block:1px solid var(--line);
+ color:var(--navy);background:var(--white);
+}
+#view .rk44-cash-link>span{flex:1 1 175px;font-size:11px;font-weight:750;line-height:1.7;overflow-wrap:anywhere}
+#view .rk44-cash-link>strong{font-size:15px;font-weight:850;color:var(--teal);unicode-bidi:plaintext}
+#view .rk44-cash-link>small{flex:1 1 170px;font-size:10px;color:var(--muted);line-height:1.7}
+#view .rk44-cash-link>button{
+ flex:0 0 auto;max-width:100%;min-height:34px;padding:6px 10px;
+ background:var(--white);color:var(--navy);border:1px solid var(--line);
+ border-radius:8px;font:inherit;font-size:11px;font-weight:750;cursor:pointer;
+}
+#view .rk44-cash-link>button:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+@media(max-width:390px){
+ #view .rk44-cash-link>span,#view .rk44-cash-link>small{flex-basis:100%}
+ #view .rk44-cash-link>button{flex:1 1 auto}
+}
