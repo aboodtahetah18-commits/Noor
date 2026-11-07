@@ -223,7 +223,7 @@
   const investmentSafetyBuffer=dynamicTarget(policy.assets,0.5);
   const held=heldHilal(db);
   const protectionRequired=hilalTarget+malaaTarget;
-  const gapToProtection=Math.max(0,protectionRequired-saved.soonFree);
+  const recordedGapToProtection=Math.max(0,protectionRequired-saved.soonFree);
   const observedMonths=estimate.monthsUsed;
   const salaryHistory=Array.isArray(db?.salaryMonths)?db.salaryMonths:[];
   const incomeRecorded=salaryHistory.some(p=>p===reference||p===offset(reference,-1)||p===offset(reference,-2));
@@ -231,6 +231,7 @@
   // 12-day savings and market holdings are never treated as emergency cash.
   const ledgerCash=availableBankCash(db,'malaa');
   const reconciledCash=Math.min(saved.soonFree,ledgerCash);
+  const gapToProtection=Math.max(0,protectionRequired-reconciledCash);
   const eligibleCash=Math.max(0,reconciledCash-protectionRequired-investmentSafetyBuffer);
   const investmentCandidate=(severe||warning||observedMonths<2||!incomeRecorded)?0:eligibleCash;
   const pressure=severe?'حرج':warning?'مرتفع':
@@ -239,7 +240,7 @@
    period:reference,policy,monthlyNeed:baseNeed,
    estimate:{...estimate,commitments,loanMonthly:debtMonthly,monthlyFees:Math.round(annualizedFee(db)/12)},
    riskBuffer,outstanding,debtMonthly,debtRatio,debtToYearIncome,costToIncome,
-   pressure,critical:severe,warning,protectionRequired,gapToProtection,
+   pressure,critical:severe,warning,protectionRequired,gapToProtection,recordedGapToProtection,
    liquidityPlan:{immediateRequired:Math.max(commitments,Math.round(baseNeed*0.5)),
     upcomingCommitments:commitments,liquidRecorded:saved.soonFree,
     reconciledCash,investmentBuffer:investmentSafetyBuffer,investable:investmentCandidate,
@@ -252,8 +253,8 @@
     hilal:{target:hilalTarget,recorded:held,coverage:hilalTarget?held/hilalTarget:1,
       gap:Math.max(0,hilalTarget-held),kind:'تخصيص داخلي',confirmedLiquid:false},
     malaa:{target:malaaTarget,recorded:saved.soonFree,instant:saved.nowFree,
-      coverage:malaaTarget?saved.soonFree/malaaTarget:1,
-      gap:Math.max(0,malaaTarget-saved.soonFree),kind:'سيولة مسجلة خلال ثلاثة أيام',confirmedLiquid:false},
+      confirmedCash:reconciledCash,coverage:malaaTarget?reconciledCash/malaaTarget:1,
+      gap:Math.max(0,malaaTarget-reconciledCash),kind:'سيولة مسجلة خلال ثلاثة أيام — التغطية بحسب النقد المطابق',confirmedLiquid:false},
     assets:{target:investmentCandidate,recorded:null,coverage:null,gap:null,kind:'استثمار الفائض بعد تغطية الحماية',
       safetyBuffer:investmentSafetyBuffer,confirmedLiquid:false,market:capital.market}
    }
