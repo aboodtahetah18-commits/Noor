@@ -126,8 +126,8 @@
    (records.length?'<p class="rk44-subnote">تم اعتماد خطة هذا الشهر بقيمة '+fmt(records[0].amount)+'.</p>':
     '<form data-rk44-verified-month><label>الفائض المحقق (ريال)<input type="number" name="amount" min="0" step="0.01" required value="'+(p.amount/100).toFixed(2)+'"></label>'+
     '<label class="rk44-approval"><input type="checkbox" name="approval" required> أعتمد تخطيطًا لهذا الشهر دون نقل أموال.</label>'+
-    '<button type="submit" class="rk44-transfer-primary" '+((db.salaryMonths||[]).includes(period)?'':'disabled')+'>اعتماد خطة الشهر</button></form>')+
-   (!(db.salaryMonths||[]).includes(period)?'<p class="rk44-subnote">يُسجل راتب الشهر الحالي فقط في بنك الهلال قبل اعتماد خطة الشهر.</p>':'')+
+    '<button type="submit" class="rk44-transfer-primary" '+((p.income===0||(db.salaryMonths||[]).includes(period))?'':'disabled')+'>اعتماد خطة الشهر</button></form>')+
+   (p.income>0&&!(db.salaryMonths||[]).includes(period)?'<p class="rk44-subnote">يُسجل راتب الشهر الحالي فقط في بنك الهلال قبل اعتماد خطة الشهر.</p>':'')+
    '</div></section>';
  }
 
