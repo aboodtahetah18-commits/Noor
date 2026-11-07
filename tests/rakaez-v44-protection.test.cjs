@@ -21,6 +21,30 @@ function fixture(){
 }
 const bankTotal=db=>Object.keys(core.bankNames).reduce((v,id)=>v+core.cashBalance(db,id),0);
 
+test('longer protection duration increases the Hilal target and gap by one monthly need per month',()=>{
+ const db=fixture();
+ db.rk44Policy={hilal:1,malaa:3,assets:1};
+ const first=core.assess(db,'2026-10');
+ assert.ok(first.monthlyNeed>0);
+ const oneTarget=first.banks.hilal.target;
+ const oneGap=first.banks.hilal.gap;
+ db.rk44Policy.hilal=2;
+ const second=core.assess(db,'2026-10');
+ assert.equal(second.banks.hilal.target-oneTarget,first.monthlyNeed);
+ assert.equal(second.banks.hilal.gap-oneGap,first.monthlyNeed);
+ assert.equal(second.banks.hilal.recorded,first.banks.hilal.recorded);
+ db.rk44Policy.hilal=3;
+ const third=core.assess(db,'2026-10');
+ assert.equal(third.banks.hilal.target-second.banks.hilal.target,first.monthlyNeed);
+});
+test('increasing assets protection duration cannot increase eligible investment surplus',()=>{
+ const db=fixture(); db.rk44Policy={hilal:1,malaa:1,assets:1};
+ const short=core.assess(db,'2026-10');
+ db.rk44Policy.assets=6;
+ const long=core.assess(db,'2026-10');
+ assert.ok(long.investmentSafetyBuffer>short.investmentSafetyBuffer);
+ assert.ok(long.investmentCandidate<=short.investmentCandidate);
+});
 test('read-only protection assessment does not alter stored transactions or ledgers',()=>{
  const db=fixture(),original=JSON.stringify(db);
  const result=core.assess(db,'2026-10');
