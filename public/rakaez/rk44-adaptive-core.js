@@ -208,7 +208,7 @@
    ['الراتب الفعلي','المصروفات الأساسية','الأقساط','الرسوم والالتزامات الأخرى','أرصدة افتتاح البنوك']
   };
   const ready=onboardingFields.every(key=>Number.isSafeInteger(saved[key])&&saved[key]>=0)
-   &&saved.income>0&&startBanks.every(k=>Number.isSafeInteger(saved.opening?.[k])&&saved.opening[k]>=0)
+   &&startBanks.every(k=>Number.isSafeInteger(saved.opening?.[k])&&saved.opening[k]>=0)
    &&periodRegex.test(saved.startMonth);
   if(!ready)return {phase:'unverified',period:month,startMonth:null,verified:false,missing:['إعادة مراجعة بيانات البداية']};
   return {phase:month<saved.startMonth?'scheduled':'active',period:month,startMonth:saved.startMonth,
@@ -236,7 +236,7 @@
     'الراتب والمصروفات والأقساط والرسوم يجب أن تكون مبالغ مؤكدة بالهللة؛ الصفر مسموح.');
    received[k]=input[k];
   }
-  assert(received.income>0,'لا يمكن حساب القدرة المالية دون إدخال راتب فعلي مؤكد.');
+  // صفر الدخل مقبول إذا أكده المستخدم صراحة؛ لا يُفسر الحقل الفارغ كصفر.
   const opening={};
   for(const k of startBanks){
    const v=input.opening?.[k];
@@ -245,7 +245,8 @@
    opening[k]=v;
   }
   const startMonth=periodRegex.test(db?.rk44StartSchedule?.startMonth||'')?
-   db.rk44StartSchedule.startMonth:offset(now,1);
+   db.rk44StartSchedule.startMonth:periodRegex.test(db?.rk44VerifiedStart?.startMonth||'')?
+   db.rk44VerifiedStart.startMonth:offset(now,1);
   const original=db.rk44VerifiedStart;
   if(original?.startMonth&&original.startMonth<=now &&
      (Array.isArray(db.rk44VerifiedMonths)&&db.rk44VerifiedMonths.length)){
@@ -261,7 +262,12 @@
   const status=onboardingState(db,period);
   if(!status.verified)return {ready:false,phase:status.phase,startMonth:status.startMonth,missing:status.missing};
   const p=status.values;
-  const costs=p.essentials+p.obligations+p.recurring;
+  const baselineCosts=p.essentials+p.obligations+p.recurring;
+  // Use whichever is greater: approved full-month cost estimate or actual posted expenses.
+  // Do not add transactions to the baseline or an installment may be counted twice.
+  const recordedExpenses=sum((Array.isArray(db?.transactions)?db.transactions:[])
+   .filter(t=>t?.type==='expense'&&String(t.date||'').slice(0,7)===period),t=>t.amount);
+  const costs=Math.max(baselineCosts,recordedExpenses);
   const rawSurplus=p.income-costs;
   const affordable=Math.max(0,rawSurplus);
   const amount=limit===undefined?affordable:limit;
@@ -279,7 +285,7 @@
   assert(Object.values(allocation).reduce((sum,x)=>sum+x,0)===amount,'لا تتوازن خطة الشهر.');
   return {ready:true,phase:status.phase,startMonth:status.startMonth,period,
    income:p.income,essentials:p.essentials,obligations:p.obligations,recurring:p.recurring,
-   costs,rawSurplus,affordable,amount,opening:{...p.opening},
+   baselineCosts,recordedExpenses,costs,rawSurplus,affordable,amount,opening:{...p.opening},
    stageTargets,stageGaps:{hilal:hilalGap,malaa:malaaGap},
    allocation,investedAvailable:false,assetsGoal:null,
    note:'مرحلة حماية أولية مشتقة من البيانات المؤكدة. لا تُرحّل أي أموال أو استثمارات.',
@@ -288,7 +294,7 @@
  function approveVerifiedMonth(db,period,amount){
   const plan=verifiedStarterPlan(db,period,amount);
   assert(plan.ready&&plan.phase==='active','الشهر القادم هو بداية الدورة الكاملة؛ لا تطالب الأشهر السابقة بالتخصيص.');
-  assert(Array.isArray(db.salaryMonths)&&db.salaryMonths.includes(period),
+  assert(plan.income===0||(Array.isArray(db.salaryMonths)&&db.salaryMonths.includes(period)),
    'سجّل استلام راتب هذا الشهر قبل اعتماد الفائض، دون تسجيل أشهر فاتت.');
   assert(!plan.monthlyHistory.length,'اعتمدت خطة هذا الشهر مسبقًا، ولن تتكرر.');
   const entry={id:operationId(),period,kind:'verified-month-plan',amount:plan.amount,
