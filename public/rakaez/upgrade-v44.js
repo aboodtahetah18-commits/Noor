@@ -106,55 +106,79 @@
    '</div></section>';
  }
 
- function starterPanel(data){
-  const p=adaptive.starterProjection(db,activePeriod()),policy=p.policy;
-  const parts=p.allocation;
-  const percent=n=>(n/100).toFixed(2).replace(/\.?0+$/,'');
-  const field=(name,label,value,step='0.01')=>'<label>'+safe(label)+
-   '<input name="'+name+'" type="number" required min="0" step="'+step+'" value="'+safe(value)+'"></label>';
-  const item=(label,value,note)=>'<div class="rk44-starter-line"><div><strong>'+safe(label)+
-   '</strong><small>'+safe(note)+'</small></div><b>'+fmt(value)+'</b></div>';
-  return '<section class="rk44-starter" aria-label="الانطلاقة المالية التدريجية">'+
-   '<header class="rk44-sectionhead"><h3>الانطلاقة المالية من الصفر</h3>'+
-   hint('هذه أهداف مرحلية وأرقام تخطيطية وليست ديونًا أو أرصدة مؤكدة. لا يُصفّر النظام البيانات السابقة. الاعتماد الشهري لا ينشئ نقدًا أو يحوّل أموالًا.')+'</header>'+
-   '<div class="rk44-starter-main"><span>فائض شهري متوقع بعد جميع الالتزامات</span>'+
-   '<strong>'+fmt(p.amount)+'</strong><small>'+(policy.configured?'سياسة توزيع معتمدة':'نموذج مبدئي غير معتمد')+'</small></div>'+
+
+ function starterPanel(){
+  const period=activePeriod(),state=adaptive.onboardingState(db,period);
+  const calendarMonth=new Date().getFullYear()+'-'+String(new Date().getMonth()+1).padStart(2,'0');
+  const nextMonth=adaptive.offset(calendarMonth,1);
+  const first=state.startMonth||nextMonth;
+  const field=(key,label,note)=>
+   '<label>'+safe(label)+'<input name="'+key+'" type="number" min="0" step="0.01" required'+
+   ' inputmode="decimal" placeholder="أدخل المبلغ الفعلي دون أمثلة" autocomplete="off">'+
+   (note?'<small>'+safe(note)+'</small>':'')+'</label>';
+  const heading='<header class="rk44-sectionhead"><h3>الانطلاقة المالية المنظّمة</h3>'+
+   hint('البيانات التجريبية والأهداف المذكورة في الشروحات ليست بيانات شخصية. يبدأ الحساب فقط بعد إدخال الراتب والمصروفات والأقساط والرسوم والأرصدة الحقيقية أو الصفر المؤكد. لا تُمس السجلات أو الأرصدة السابقة.')+'</header>';
+  if(!state.verified){
+   return '<section class="rk44-starter rk44-onboarding" aria-label="بدء تشغيل البنوك">'+heading+
+    '<div class="rk44-starter-main"><span>حالة الحساب المالي</span>'+
+    '<strong class="rk44-onboarding-message">البيانات غير مكتملة</strong>'+
+    '<small>لم يُحسب أي هدف أو فائض أو توزيع بعد.</small></div>'+
+    '<div class="rk44-onboarding-period"><strong>الشهر الجاري: فترة تسجيل اختيارية</strong>'+
+    '<p class="rk44-subnote">ابدأ إدخال المصروفات متى شئت، حتى من منتصف الشهر. لا يُطلب تعويض البنود أو الأشهر السابقة؛ تبدأ الدورة النظامية من أول شهر كامل في '+safe(first)+'.</p>'+
+    '<button type="button" class="rk44-onboarding-action" data-rk44-start-next '+(state.startMonth?'disabled':'')+'>'+
+    (state.startMonth?'تم تحديد بداية الدورة: '+safe(first):'تحديد بدء الدورة من '+safe(nextMonth))+'</button></div>'+
+    '<details class="rk44-starter-settings rk44-onboarding-settings"><summary>إدخال بيانات البداية واعتمادها عند الجاهزية</summary>'+
+    '<form data-rk44-onboarding><p class="rk44-subnote">جميع الحقول بلا قيم افتراضية. أدخل الصفر بنفسك إذا لم يكن لديك قسط أو رصيد؛ ولا تستخدم أرقام الشرح.</p>'+
+    '<div class="rk44-starter-inputs">'+
+    field('income','الراتب الشهري المستلم (ريال)','أدخل الراتب الفعلي لا راتب المثال في الإعدادات')+
+    field('essentials','المصروفات الأساسية الشهرية (ريال)','المعيشة والنقل والفواتير دون الأقساط الموضحة أدناه')+
+    field('obligations','إجمالي الأقساط الشهرية (ريال)','أدخل صفرًا إن لم توجد أقساط')+
+    field('recurring','رسوم والتزامات دورية أخرى (ريال)','لا تكرر مبلغًا أدخلته في المصروفات أو الأقساط')+
+    field('openingHilal','نقد الهلال عند البداية (ريال)','أدخل صفرًا إن كنت تبدأ بلا رصيد')+
+    field('openingMalaa','نقد ملاءة عند البداية (ريال)','أدخل صفرًا إن كنت تبدأ بلا رصيد')+
+    field('openingAssets','نقد الأصول عند البداية (ريال)','لا تدخل القيمة السوقية للمحافظ كنقد')+
+    '</div>'+
+    '<label class="rk44-approval"><input type="checkbox" name="approval" required> أؤكد أن هذه بياناتي الفعلية وليست أمثلة، وأن الشهر الجاري يمكن أن يبقى جزئيًا.</label>'+
+    '<button type="submit" class="rk44-transfer-primary">اعتماد بيانات البداية للشهر الكامل التالي</button></form></details>'+
+    '<div class="rk44-onboarding-links"><button type="button" data-rk44-page="settings">الراتب والميزانيات</button>'+
+    '<button type="button" data-rk44-page="debts">الأقساط والديون</button>'+
+    '<button type="button" data-rk44-page="ledger">الأرصدة ودفتر الأستاذ</button></div>'+
+    '</section>';
+  }
+  if(state.phase==='scheduled'){
+   return '<section class="rk44-starter rk44-onboarding" aria-label="الدورة المجدولة">'+heading+
+    '<div class="rk44-starter-main"><span>بيانات البداية</span><strong class="rk44-onboarding-message">تمت المراجعة</strong>'+
+    '<small>تبدأ الخطة الكاملة مع شهر '+safe(state.startMonth)+'</small></div>'+
+    '<p class="rk44-subnote">هذا الشهر فترة تهيئة اختيارية. يمكنك التسجيل جزئيًا دون توزيع إلزامي أو ترحيل تلقائي، ولن تُعرض أهداف مالية نهائية قبل بدء الدورة.</p>'+
+    '</section>';
+  }
+  const p=adaptive.verifiedStarterPlan(db,period);
+  if(!p.ready)return '<section class="rk44-starter rk44-onboarding">'+heading+
+   '<p class="rk44-subnote">البيانات تحتاج مراجعة قبل بدء الحساب.</p></section>';
+  const item=(label,value,detail)=>
+   '<div class="rk44-starter-line"><div><strong>'+safe(label)+'</strong>'+
+   '<small>'+safe(detail)+'</small></div><b>'+fmt(value)+'</b></div>';
+  return '<section class="rk44-starter" aria-label="الانطلاقة المحسوبة من بيانات فعلية">'+heading+
+   '<div class="rk44-starter-main"><span>الفائض المحسوب من بيانات البداية المعتمدة</span><strong>'+
+   fmt(p.affordable)+'</strong><small>الراتب '+fmt(p.income)+' − المصروفات والأقساط والرسوم '+fmt(p.costs)+'</small></div>'+
    '<div class="rk44-starter-lines">'+
-   item('الهلال: حماية التشغيل',parts.hilal,'هدف مرحلي توضيحي '+fmt(policy.milestones.hilal))+
-   item('ملاءة: صندوق الطوارئ',parts.malaaEmergency,'سيولة فورية قابلة للاستخدام')+
-   item('ملاءة: ادخار وأموال إضافية',parts.malaaSavings,'الهدف الإجمالي لملاءة '+fmt(policy.milestones.malaa))+
-   item('الأصول: مخصص استثماري',parts.assets,'هدف استثماري توضيحي '+fmt(policy.milestones.assets))+
-   '</div><p class="rk44-subnote">حصة الأصول '+(p.investedAvailable?'يمكن دراستها دون تنفيذ شراء تلقائي.':'مؤجلة للاستثمار الفعلي حتى استكمال الحماية.')+
-   ' المقترح الشهري قابل للتغيير حسب فائضك الحقيقي.</p>'+
-   '<details class="rk44-starter-settings"><summary>تعديل الأهداف والنسب والفائض الشهري</summary>'+
-   '<form data-rk44-starter-policy><div class="rk44-starter-inputs">'+
-   field('monthly','الفائض المتوقع (ريال)',(policy.monthlySurplus/100).toFixed(2))+
-   field('targetHilal','هدف الهلال (ريال)',(policy.milestones.hilal/100).toFixed(2))+
-   field('targetMalaa','هدف ملاءة (ريال)',(policy.milestones.malaa/100).toFixed(2))+
-   field('targetAssets','هدف الأصول (ريال)',(policy.milestones.assets/100).toFixed(2))+'</div>'+
-   '<h4>نسب التوزيع من الفائض (المجموع 100%)</h4><div class="rk44-starter-inputs">'+
-   field('shareHilal','الهلال %',percent(policy.shares.hilal))+
-   field('shareEmergency','طوارئ ملاءة %',percent(policy.shares.malaaEmergency))+
-   field('shareSavings','ادخار ملاءة %',percent(policy.shares.malaaSavings))+
-   field('shareAssets','الأصول %',percent(policy.shares.assets))+'</div>'+
-   '<h4>نسب توزيع الأرباح المحصلة (المجموع 100%)</h4><div class="rk44-starter-inputs">'+
-   field('yieldMalaa','ملاءة %',percent(policy.yieldShares.malaa))+
-   field('yieldAssets','الأصول %',percent(policy.yieldShares.assets))+'</div>'+
-   '<label class="rk44-approval"><input type="checkbox" name="approval" required> أعتمد إعدادات التخطيط دون إيداعات أو تحويلات فعلية.</label>'+
-   '<button class="rk44-transfer-primary" type="submit">حفظ سياسة الانطلاقة</button></form></details>'+
-   '<div class="rk44-starter-month"><h4>خطة شهر '+safe(p.period)+'</h4>'+
+   item('الهلال — الالتزامات القريبة',p.allocation.hilal,'هدف أولي محسوب '+fmt(p.stageTargets.hilal))+
+   item('ملاءة — صندوق الطوارئ',p.allocation.malaaEmergency,'احتياج أساسي مستهدف '+fmt(p.stageTargets.malaa))+
+   item('ملاءة — ادخار إضافي',p.allocation.malaaSavings,'بعد تغطية أولويات الحماية')+
+   item('الأصول — استثمار',p.allocation.assets,'مؤجل حتى وجود سيولة وفائض قابل للاستثمار')+'</div>'+
+   '<p class="rk44-subnote">هذه توزيعـات تخطيطية من الأرقام التي أدخلتها؛ يُراجع فائض كل شهر قبل اعتماده، ولا تُنشأ قيود أو تحويلات مصرفية تلقائيًا.</p>'+
+   '<div class="rk44-starter-month"><h4>خطة شهر '+safe(period)+'</h4>'+
    (p.monthlyHistory.length?
-    '<p class="rk44-subnote">سبق اعتماد خطة هذا الشهر بقيمة '+fmt(p.monthlyHistory[0].amount)+'. لا تُغيرها التعديلات الجديدة تلقائيًا.</p>':
-    '<form data-rk44-starter-month><label>الفائض الفعلي بعد الخصومات (ريال)'+
-    '<input name="actual" type="number" required min="0" step="0.01" value="'+(p.amount/100).toFixed(2)+'"></label>'+
-    '<label class="rk44-approval"><input type="checkbox" name="approval" required> راجعت التزاماتي وأوافق على حفظ توزيع مخطط دون أي قيد نقدي.</label>'+
-    '<button type="submit" class="rk44-transfer-primary" '+(policy.configured&&p.salaryRegistered?'':'disabled')+
+    '<p class="rk44-subnote">سبق اعتماد خطة الشهر بقيمة '+fmt(p.monthlyHistory[0].amount)+'؛ لا تُعاد أو تُغير بصمت.</p>':
+    '<form data-rk44-verified-month><label>الفائض الفعلي بعد جميع الخصومات (ريال)'+
+    '<input name="amount" type="number" min="0" step="0.01" max="'+(p.affordable/100).toFixed(2)+
+    '" value="'+(p.affordable/100).toFixed(2)+'" required></label>'+
+    '<label class="rk44-approval"><input type="checkbox" name="approval" required> راجعت فعليًا مصروفات هذا الشهر، وأوافق على حفظ خطة دون قيد نقدي.</label>'+
+    '<button class="rk44-transfer-primary" type="submit" '+((db.salaryMonths||[]).includes(period)?'':'disabled')+
     '>اعتماد خطة الشهر</button></form>')+
-   (!p.salaryRegistered?'<p class="rk44-subnote">يلزم تسجيل استلام راتب الشهر في بنك الهلال قبل تثبيت خطة شهرية، ويمكنك حفظ السياسة الآن.</p>':'')+
+   (!(db.salaryMonths||[]).includes(period)?'<p class="rk44-subnote">ثبّت استلام راتب الشهر في سجل دورة الراتب قبل اعتماد الخطة.</p>':'')+
    '</div></section>';
  }
-
-
  function yieldPanel(){
   const policy=adaptive.starterPolicy(db),revenue=adaptive.yieldRecords(db);
   const block=y=>{
