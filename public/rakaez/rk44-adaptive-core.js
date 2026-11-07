@@ -194,6 +194,96 @@
 
 
  /* سياسة الانطلاقة: مبالغ مخططة فقط. لا تصنع نقدًا ولا تعدّل البيانات التاريخية. */
+
+ /* بيانات الانطلاقة الموثقة منفصلة تمامًا عن بيانات العرض التجريبية القديمة.
+  * كل مبلغ بالهللة. لا تتأثر القيود والأرصدة عند حفظ إعدادات البدء.
+  */
+ const onboardingFields=['income','essentials','obligations','recurring'];
+ const startBanks=['hilal','malaa','assets'];
+ function onboardingState(db,period){
+  const month=periodRegex.test(String(period))?period:new Date().toISOString().slice(0,7);
+  const saved=db?.rk44VerifiedStart;
+  if(!saved||saved.version!==1||!saved.approvedAt)return {
+   phase:'unverified',period:month,startMonth:null,verified:false,missing:
+   ['الراتب الفعلي','المصروفات الأساسية','الأقساط','الرسوم والالتزامات الأخرى','أرصدة افتتاح البنوك']
+  };
+  const ready=onboardingFields.every(key=>Number.isSafeInteger(saved[key])&&saved[key]>=0)
+   &&saved.income>0&&startBanks.every(k=>Number.isSafeInteger(saved.opening?.[k])&&saved.opening[k]>=0)
+   &&periodRegex.test(saved.startMonth);
+  if(!ready)return {phase:'unverified',period:month,startMonth:null,verified:false,missing:['إعادة مراجعة بيانات البداية']};
+  return {phase:month<saved.startMonth?'scheduled':'active',period:month,startMonth:saved.startMonth,
+   verified:true,missing:[],source:'بيانات أدخلها المستخدم واعتمدها',values:saved};
+ }
+ function confirmFinancialStart(db,input,baseMonth){
+  assert(db&&typeof db==='object'&&input,'بيانات البداية غير متاحة.');
+  const now=periodRegex.test(String(baseMonth))?baseMonth:new Date().toISOString().slice(0,7);
+  const received={};
+  for(const k of onboardingFields){
+   assert(typeof input[k]==='number'&&Number.isSafeInteger(input[k])&&input[k]>=0&&input[k]<=100000000000,
+    'الراتب والمصروفات والأقساط والرسوم يجب أن تكون مبالغ مؤكدة بالهللة؛ الصفر مسموح.');
+   received[k]=input[k];
+  }
+  assert(received.income>0,'لا يمكن حساب القدرة المالية دون إدخال راتب فعلي مؤكد.');
+  const opening={};
+  for(const k of startBanks){
+   const v=input.opening?.[k];
+   assert(typeof v==='number'&&Number.isSafeInteger(v)&&v>=0&&v<=100000000000,
+    'أدخل الرصيد الافتتاحي المؤكد لكل بنك، أو صفرًا إن لم يكن فيه رصيد.');
+   opening[k]=v;
+  }
+  const startMonth=offset(now,1);
+  const original=db.rk44VerifiedStart;
+  if(original?.startMonth&&original.startMonth<=now &&
+     (Array.isArray(db.rk44VerifiedMonths)&&db.rk44VerifiedMonths.length)){
+   throw new Error('بدأت دورة موثقة بالفعل؛ لا يجوز تغيير أساس الأشهر السابقة. استخدم تحديثًا مؤرخًا للدورة التالية.');
+  }
+  const entry={version:1,...received,opening,startMonth,
+   approvedAt:new Date().toISOString(),beginMode:'next-full-month',
+   priorDataPreserved:true};
+  db.rk44VerifiedStart=entry;
+  return entry;
+ }
+ function verifiedStarterPlan(db,period,limit){
+  const status=onboardingState(db,period);
+  if(!status.verified)return {ready:false,phase:status.phase,startMonth:status.startMonth,missing:status.missing};
+  const p=status.values;
+  const costs=p.essentials+p.obligations+p.recurring;
+  const rawSurplus=p.income-costs;
+  const affordable=Math.max(0,rawSurplus);
+  const amount=limit===undefined?affordable:limit;
+  assert(Number.isSafeInteger(amount)&&amount>=0&&amount<=affordable,
+   'الفائض المعتمد لا يمكن أن يتجاوز المتبقي بعد جميع الالتزامات.');
+  // المرحلة الأولى: التزامات الهلال القريبة، ثم ضروريات ملاءة؛
+  // لا يوجد هدف استثماري مفترض، ولا يُجمع المبلغ نفسه مرتين.
+  const stageTargets={hilal:p.obligations+p.recurring,malaa:p.essentials,assets:null};
+  const hilalGap=Math.max(0,stageTargets.hilal-p.opening.hilal);
+  const malaaGap=Math.max(0,stageTargets.malaa-p.opening.malaa);
+  const hilal=Math.min(amount,hilalGap);
+  const malaaEmergency=Math.min(amount-hilal,malaaGap);
+  const malaaSavings=Math.max(0,amount-hilal-malaaEmergency);
+  const allocation={hilal,malaaEmergency,malaaSavings,assets:0};
+  assert(Object.values(allocation).reduce((sum,x)=>sum+x,0)===amount,'لا تتوازن خطة الشهر.');
+  return {ready:true,phase:status.phase,startMonth:status.startMonth,period,
+   income:p.income,essentials:p.essentials,obligations:p.obligations,recurring:p.recurring,
+   costs,rawSurplus,affordable,amount,opening:{...p.opening},
+   stageTargets,stageGaps:{hilal:hilalGap,malaa:malaaGap},
+   allocation,investedAvailable:false,assetsGoal:null,
+   note:'مرحلة حماية أولية مشتقة من البيانات المؤكدة. لا تُرحّل أي أموال أو استثمارات.',
+   monthlyHistory:(Array.isArray(db?.rk44VerifiedMonths)?db.rk44VerifiedMonths:[]).filter(e=>e.period===period)};
+ }
+ function approveVerifiedMonth(db,period,amount){
+  const plan=verifiedStarterPlan(db,period,amount);
+  assert(plan.ready&&plan.phase==='active','الشهر القادم هو بداية الدورة الكاملة؛ لا تطالب الأشهر السابقة بالتخصيص.');
+  assert(Array.isArray(db.salaryMonths)&&db.salaryMonths.includes(period),
+   'سجّل استلام راتب هذا الشهر قبل اعتماد الفائض، دون تسجيل أشهر فاتت.');
+  assert(!plan.monthlyHistory.length,'اعتمدت خطة هذا الشهر مسبقًا، ولن تتكرر.');
+  const entry={id:operationId(),period,kind:'verified-month-plan',amount:plan.amount,
+   allocation:{...plan.allocation},source:'confirmed-onboarding',status:'planned',
+   approvedAt:new Date().toISOString(),description:'توزيع تخطيطي دون إضافة نقد أو تغيير أرصدة البنوك'};
+  if(!Array.isArray(db.rk44VerifiedMonths))db.rk44VerifiedMonths=[];
+  db.rk44VerifiedMonths.push(entry);return entry;
+ }
+
  const starterDefaults=Object.freeze({
   monthlySurplus:80000,
   milestones:Object.freeze({hilal:600000,malaa:1000000,assets:2500000}),
@@ -459,5 +549,6 @@
   debtList,assess,installment,scenario,bankNames,cashBalance,availableBankCash,
   transfers,requestTransfer,executeTransfer,matchTransfer,cancelTransfer,transitBalance,
   starterDefaults,starterPolicy,starterProjection,saveStarterPolicy,approveStarterMonth,
-  splitAmounts,yieldRecords,recordRealizedYield,requestYieldSplit,reverseYield});
+  splitAmounts,yieldRecords,recordRealizedYield,requestYieldSplit,reverseYield,
+  onboardingState,confirmFinancialStart,verifiedStarterPlan,approveVerifiedMonth});
 });
