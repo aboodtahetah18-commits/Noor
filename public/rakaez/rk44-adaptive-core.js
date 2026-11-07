@@ -485,6 +485,125 @@
   return row;
  }
 
+
+ /* استكمال التأسيس: تصنيف قابل للتصحيح، إعالة بدوريات مختلفة، وديون مرنة في السجل الأصلي. */
+ const categoryRules=[
+  ['التزامات',/(?:قسط|قرض|دين|تمويل|سلفة|سداد)/],
+  ['تعليم',/(?:مدرس|رسوم دراس|جامع|تعليم|دروس)/],
+  ['صحة',/(?:علاج|طبيب|دواء|مستشفى|أسنان|صحة)/],
+  ['أسرة وإعالة',/(?:نفقة|والد|والدة|أبناء|طفل|أطفال|عائلة|أسرة|معال)/],
+  ['سكن وفواتير',/(?:إيجار|سكن|كهرباء|ماء|انترنت|إنترنت|اتصالات|جوال)/],
+  ['معيشة',/(?:مقاضي|بقالة|غذاء|طعام|خبز|سوبر|تموين)/],
+  ['تنقل',/(?:وقود|بنزين|سيارة|مواصلات|نقل|صيانة مركبة)/],
+  ['ترفيه وكماليات',/(?:مطعم|كافيه|قهوة|ترفيه|تسوق|كماليات|ألعاب)/],
+  ['أهداف مستقبلية',/(?:سفر|منزل جديد|زواج|هدف|ادخار|استثمار)/]
+ ];
+ const categoryLabels=Object.freeze(['التزامات','تعليم','صحة','أسرة وإعالة',
+  'سكن وفواتير','معيشة','تنقل','ترفيه وكماليات','أهداف مستقبلية','أخرى']);
+ function categorySuggestion(name){
+  const text=String(name||'').trim();
+  if(!text)return {category:null,confidence:'غير محدد',reason:'اكتب اسم البند أولاً'};
+  for(const [category,pattern] of categoryRules){
+   if(pattern.test(text))return {category,confidence:'اقتراح قابل للتعديل',
+    reason:'تصنيف مبدئي بناءً على كلمات اسم البند، وليس حكمًا ملزمًا على ضرورته'};
+  }
+  return {category:null,confidence:'بحاجة لمراجعة المستخدم',
+   reason:'الاسم غير واضح؛ لن يُفرض تصنيف تلقائي'};
+ }
+ function monthlyEquivalent(amount,frequency){
+  assert(Number.isSafeInteger(amount)&&amount>=0,'المبلغ الدوري يجب أن يكون بالهللة وغير سالب.');
+  const ratios={daily:[365,12],weekly:[52,12],monthly:[1,1],yearly:[1,12],none:[0,1]};
+  if(frequency==='asNeeded')return null;
+  assert(Object.hasOwn(ratios,frequency),'دورية المصروف غير معروفة.');
+  const [n,d]=ratios[frequency];
+  return Math.round(amount*n/d);
+ }
+ function userDetails(db){
+  const source=db?.rk44UserDetails;
+  return source&&Array.isArray(source.items)&&Array.isArray(source.dependents)?
+   source:{items:[],dependents:[],updatedAt:null};
+ }
+ function userDetailsSummary(db){
+  const source=userDetails(db);
+  const items=source.items.map(i=>({...i,monthly:monthlyEquivalent(i.amount,i.frequency)}));
+  const dependents=source.dependents.map(d=>({...d,
+   monthly:d.includedInItems?0:monthlyEquivalent(d.amount,d.frequency)}));
+  const known=[...items,...dependents].filter(x=>x.monthly!==null);
+  return {items,dependents,monthlyKnown:known.reduce((a,b)=>a+b.monthly,0),
+   incomplete:[...items,...dependents].filter(x=>x.monthly===null).length,
+   // This is a parallel estimate, NEVER added to aggregate costs unless explicitly reconciled.
+   reconciledIntoBudget:false};
+ }
+ function saveUserDetails(db,input){
+  assert(db&&typeof db==='object','البيانات غير متاحة.');
+  assert(Array.isArray(input?.items)&&Array.isArray(input?.dependents) &&
+   input.items.length<=100&&input.dependents.length<=40,'عدد الإدخالات غير صالح.');
+  const make=(record,type,index)=>{
+   const name=String(record?.name||'').trim();
+   assert(name.length>=2&&name.length<=100,'أدخل اسمًا واضحًا لا يتجاوز مئة حرف.');
+   const amount=record?.amount;
+   safeCents(amount,100000000000);
+   const frequency=String(record?.frequency||'');
+   monthlyEquivalent(amount,frequency);
+   const id=String(record?.id||operationId()).slice(0,80);
+   if(type==='item'){
+    const picked=String(record?.category||'');
+    assert(categoryLabels.includes(picked),'اختر تصنيفًا معتمدًا، أو اختر أخرى.');
+    return {id,name,amount,frequency,category:picked,categorySource:
+     record.categorySource==='manual'?'manual':'suggestion'};
+   }
+   return {id,name,amount,frequency,relation:String(record.relation||'غير محدد').slice(0,60),
+    includedInItems:record.includedInItems===true};
+  };
+  const items=input.items.map((v,i)=>make(v,'item',i));
+  const dependents=input.dependents.map((v,i)=>make(v,'dependent',i));
+  const ids=[...items,...dependents].map(x=>x.id);
+  assert(ids.length===new Set(ids).size,'هناك معرفات متكررة.');
+  const prior=userDetails(db);
+  const next={items,dependents,updatedAt:new Date().toISOString(),
+   version:1,forecastMode:'separate-until-reconciled'};
+  if(!Array.isArray(db.rk44UserDetailsHistory))db.rk44UserDetailsHistory=[];
+  if(prior.updatedAt)db.rk44UserDetailsHistory.push({...prior});
+  db.rk44UserDetails=next;
+  return next;
+ }
+ function saveFlexibleDebt(db,input){
+  assert(db&&typeof db==='object','البيانات غير متاحة.');
+  const name=String(input?.name||'').trim();
+  assert(name.length>=2&&name.length<=100,'اكتب اسم الدين أو الجهة.');
+  const amount=safeCents(input?.amount,100000000000);
+  assert(amount>0,'أدخل مبلغًا متبقيًا أكبر من صفر.');
+  if(!Array.isArray(db.debts))db.debts=[];
+  const row={id:operationId(),name,principal:amount,paid:0,installment:0,date:'',
+   rate:0,notes:'التزام مرن بلا موعد إلزامي، يتحدد السداد بعد حماية الاحتياجات وبموافقة المستخدم',
+   repaymentMode:'capacity',createdAt:new Date().toISOString()};
+  db.debts.push(row);
+  return row;
+ }
+ function flexibleRepaymentPreview(db,opts){
+  const before=opts?.previousIncome,now=opts?.currentIncome,protectedAmount=opts?.protectedAmount;
+  if(![before,now,protectedAmount].every(x=>Number.isSafeInteger(x)&&x>=0)){
+   return {ready:false,reason:'يلزم الدخل السابق والحالي ومبلغ حماية الالتزامات والمصروفات قبل اقتراح دفعة.'};
+  }
+  const verified=onboardingState(db,opts.period);
+  if(!verified.verified)return {ready:false,reason:'لم تعتمد بيانات المصروفات والالتزامات؛ لا يمكن ترشيح سداد.'};
+  const p=verifiedStarterPlan(db,opts.period);
+  const costs=p.costs;
+  const newFree=Math.max(0,now-costs-protectedAmount);
+  const oldFree=Math.max(0,before-costs-protectedAmount);
+  const extraFree=Math.max(0,newFree-oldFree);
+  const growth=before>0?(now-before)/before:null;
+  const debts=(Array.isArray(db.debts)?db.debts:[]).filter(d=>d.repaymentMode==='capacity')
+   .map(d=>({...d,remaining:Math.max(0,Number(d.principal||0)-Number(d.paid||0))}))
+   .filter(d=>d.remaining>0);
+  return {ready:true,previousIncome:before,currentIncome:now,growth,
+   costs,protectedAmount,newFree,oldFree,extraFree,debts,
+   // No automatic collection. This ceiling is never a required or approved payment.
+   ceiling:Math.min(extraFree,debts.reduce((a,b)=>a+b.remaining,0)),
+   warning:now<before||now<costs+protectedAmount||p.rawSurplus<0,
+   requiresApproval:true};
+ }
+
  function assess(db,period,overrides){
   const reference=periodRegex.test(String(period))?period:new Date().toISOString().slice(0,7);
   const policy=monthsPolicy(db);
@@ -575,5 +694,7 @@
   transfers,requestTransfer,executeTransfer,matchTransfer,cancelTransfer,transitBalance,
   starterDefaults,starterPolicy,starterProjection,saveStarterPolicy,approveStarterMonth,
   splitAmounts,yieldRecords,recordRealizedYield,requestYieldSplit,reverseYield,
-  onboardingState,scheduleNextMonth,confirmFinancialStart,verifiedStarterPlan,approveVerifiedMonth});
+  onboardingState,scheduleNextMonth,confirmFinancialStart,verifiedStarterPlan,approveVerifiedMonth,
+  categorySuggestion,categoryLabels,monthlyEquivalent,userDetails,userDetailsSummary,
+  saveUserDetails,saveFlexibleDebt,flexibleRepaymentPreview});
 });
