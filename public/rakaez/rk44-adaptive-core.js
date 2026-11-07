@@ -620,6 +620,139 @@
    requiresApproval:true};
  }
 
+
+ /* معالج التأسيس الوحيد: توقع أولي ثم مراجعات مرتبطة بدورات استلام الراتب. */
+ function wizardState(db){
+  const w=db?.rk44Wizard;
+  return w&&w.version===1&&w.approvedAt?{completed:true,record:w}:{completed:false,record:null};
+ }
+ function wizardAmount(raw,field,required=false){
+  if(raw===null||raw===undefined||raw===''){
+   if(required)throw new Error('أكمل الحقل المالي المطلوب: '+field);
+   return null;
+  }
+  const n=Number(raw);
+  assert(Number.isSafeInteger(n)&&n>=0&&n<=100000000000,'قيمة غير صالحة: '+field);
+  return n;
+ }
+ function wizardDateBound(yearMonth,day){
+  assert(periodRegex.test(yearMonth),'شهر الدورة غير صحيح.');
+  const [year,month]=yearMonth.split('-').map(Number);
+  const last=new Date(Date.UTC(year,month,0)).getUTCDate();
+  return new Date(Date.UTC(year,month-1,Math.min(day,last))).toISOString().slice(0,10);
+ }
+ function wizardCycles(db){
+  const records=Array.isArray(db?.rk44WizardCycles)?db.rk44WizardCycles:[];
+  return records.filter(x=>x?.approvedAt&&x?.period&&x?.status==='reviewed');
+ }
+ function wizardPhase(db){
+  if(!wizardState(db).completed)return {level:0,label:'التأسيس لم يكتمل'};
+  const count=wizardCycles(db).length;
+  return {level:count>=2?3:count===1?2:1,
+   label:count>=2?'تشغيل بتوقعات مستندة إلى دورتين مراجعتين':
+    count===1?'مرحلة المعايرة بعد أول دورة':'مرحلة التوقع الأولي'};
+ }
+ function confirmWizard(db,input,period){
+  assert(db&&typeof db==='object'&&input&&typeof input==='object','مدخلات التأسيس غير متاحة.');
+  const saved=wizardState(db);
+  assert(!saved.completed||input.reconfirm===true,'اعتمدت مرحلة التأسيس مسبقًا؛ استخدم المراجعة لتعديلها.');
+  assert(periodRegex.test(period),'تاريخ التأسيس غير صحيح.');
+  const salary=wizardAmount(input.salary,'صافي الراتب',true);
+  const otherIncome=wizardAmount(input.otherIncome,'الدخل الإضافي');
+  const day=Number(input.salaryDay);
+  assert(Number.isInteger(day)&&day>=1&&day<=31,'حدد يوم نزول الراتب بين 1 و31.');
+  const family=input.family||{};
+  const marital=String(family.marital||'undisclosed');
+  assert(['single','married','other','undisclosed'].includes(marital),'الحالة الاجتماعية غير صحيحة.');
+  const children=Number(family.children||0),supported=Number(family.supported||0);
+  assert([children,supported].every(x=>Number.isInteger(x)&&x>=0&&x<=100),'عدد أفراد الأسرة غير صحيح.');
+  const details=input.details||{};
+  assert(Array.isArray(details.items)&&Array.isArray(details.dependents),'تفاصيل البنود والإعالة غير صحيحة.');
+  const obligations=Array.isArray(input.obligations)?input.obligations:[];
+  const goals=Array.isArray(input.goals)?input.goals:[];
+  assert(obligations.length<=50&&goals.length<=50,'عدد السجلات أكبر من الحد.');
+  const clone=JSON.parse(JSON.stringify(db));
+  saveUserDetails(clone,{items:details.items,dependents:details.dependents,
+   useAsEssentials:details.items.length+details.dependents.length>0});
+  const detail=userDetailsSummary(clone);
+  const newDebts=obligations.map((debt,i)=>{
+   const name=String(debt?.name||'').trim();
+   assert(name.length>=2&&name.length<=100,'أدخل اسم الالتزام '+(i+1));
+   const remaining=wizardAmount(debt.remaining,'متبقي الدين',true);
+   assert(remaining>0,'يجب أن يكون الدين المتبقي موجبًا.');
+   const mode=debt.mode==='scheduled'?'scheduled':debt.mode==='capacity'?'capacity':null;
+   assert(mode,'اختر نوع الالتزام.');
+   const installment=mode==='scheduled'?wizardAmount(debt.installment,'القسط الشهري',true):0;
+   const due=mode==='scheduled'?String(debt.due||''):'';
+   if(mode==='scheduled')assert(installment>0&&/^\d{4}-\d{2}-\d{2}$/.test(due),'حدد قسطًا وتاريخ استحقاق للالتزام المنتظم.');
+   return {id:operationId(),name,principal:remaining,paid:0,installment,date:due,rate:0,
+    repaymentMode:mode,notes:'سجل من معالج التأسيس دون حركة نقدية',wizardSource:true,
+    createdAt:new Date().toISOString()};
+  });
+  const existingNames=new Set((Array.isArray(db.debts)?db.debts:[]).map(d=>String(d.name||'').trim().toLowerCase()));
+  for(const d of newDebts){
+   assert(!existingNames.has(d.name.toLowerCase()),'يوجد التزام مسجل بالاسم نفسه: '+d.name);
+   assert(!newDebts.some(x=>x!==d&&x.name.toLowerCase()===d.name.toLowerCase()),
+    'اسم الالتزام مكرر: '+d.name);
+  }
+  const addedGoals=goals.map((goal,i)=>{
+   const name=String(goal?.name||'').trim();
+   assert(name.length>=2&&name.length<=100,'أدخل اسم الهدف '+(i+1));
+   const target=wizardAmount(goal.target,'قيمة الهدف',true);
+   const date=String(goal.date||'');
+   assert(target>0,'حدد تكلفة الهدف المراد التخطيط له.');
+   if(date)assert(/^\d{4}-\d{2}-\d{2}$/.test(date),'تاريخ الهدف غير صالح.');
+   return {id:operationId(),name,target,saved:0,monthly:0,date,notes:'هدف تأسيسي يحتاج خطة معتمدة',wizardSource:true};
+  });
+  const existingGoals=new Set((Array.isArray(db.goals)?db.goals:[]).map(x=>String(x.name||'').trim().toLowerCase()));
+  for(const g of addedGoals)assert(!existingGoals.has(g.name.toLowerCase()),'يوجد هدف مسجل بالاسم نفسه: '+g.name);
+  const legacyInstallments=(Array.isArray(db.debts)?db.debts:[])
+   .reduce((sum,d)=>sum+Math.max(0,Number(d.installment)||0),0);
+  const fixed=legacyInstallments+newDebts.reduce((sum,d)=>sum+d.installment,0);
+  // Explicit details replace the aggregate expense estimate; no cost is counted twice.
+  const essentials=detail.monthlyBudget;
+  confirmFinancialStart(clone,{income:salary+(otherIncome||0),essentials,
+   obligations:fixed,recurring:0,opening:{hilal:0,malaa:0,assets:0}},period);
+  const approvedAt=new Date().toISOString();
+  const wizard={version:1,approvedAt,source:'user-confirmed-estimates',
+   salary,otherIncome,externalBank:String(input.externalBank||'').trim().slice(0,100),
+   salaryDay:day,salaryCalendar:'gregorian',family:{marital,children,supported},
+   startMonth:clone.rk44VerifiedStart.startMonth,estimatedExpenses:essentials,
+   uncertainEntries:detail.incomplete,
+   nonCashInternalBanks:true,hasNoAutomaticTransfers:true};
+  // Apply validated changes as one batch; existing cash, ledger and transactions stay untouched.
+  db.rk44VerifiedStart=clone.rk44VerifiedStart;
+  db.rk44UserDetails=clone.rk44UserDetails;
+  db.rk44UserDetailsHistory=clone.rk44UserDetailsHistory||[];
+  db.debts=[...(db.debts||[]),...newDebts];
+  db.goals=[...(db.goals||[]),...addedGoals];
+  db.salary=salary;
+  db.rk44Wizard=wizard;
+  return {wizard,details:detail,debtsAdded:newDebts.length,goalsAdded:addedGoals.length};
+ }
+ function reviewWizardCycle(db,period,today){
+  assert(wizardState(db).completed,'أكمل معالج التأسيس أولاً.');
+  assert(periodRegex.test(period),'الشهر غير صالح.');
+  const base=wizardState(db).record;
+  assert(period>=base.startMonth,'لا يجوز اعتماد دورة سابقة لموعد بدء المتابعة.');
+  const day=base.salaryDay;
+  const start=wizardDateBound(period,day),end=wizardDateBound(offset(period,1),day);
+  const now=typeof today==='string'?today:new Date().toISOString().slice(0,10);
+  assert(now>=end,'لم تنته دورة الراتب بعد.');
+  assert(Array.isArray(db.salaryMonths)&&db.salaryMonths.includes(period),
+   'أثبت نزول راتب هذه الدورة في بنك الهلال أولاً.');
+  assert(!wizardCycles(db).some(x=>x.period===period),'سبق اعتماد مراجعة هذه الدورة.');
+  const tx=(Array.isArray(db.transactions)?db.transactions:[])
+   .filter(t=>t?.type==='expense'&&String(t.date||'')>=start&&String(t.date||'')<end);
+  const spent=tx.reduce((total,t)=>total+Math.max(0,Number(t.amount)||0),0);
+  const record={id:operationId(),status:'reviewed',period,start,end,expenses:spent,
+   transactionsCount:tx.length,approvedAt:new Date().toISOString(),
+   isSnapshot:true,description:'مراجعة دورة راتب مكتملة بإقرار المستخدم؛ دون تغيير قيود تاريخية'};
+  if(!Array.isArray(db.rk44WizardCycles))db.rk44WizardCycles=[];
+  db.rk44WizardCycles.push(record);
+  return {record,phase:wizardPhase(db)};
+ }
+
  function assess(db,period,overrides){
   const reference=periodRegex.test(String(period))?period:new Date().toISOString().slice(0,7);
   const policy=monthsPolicy(db);
@@ -712,5 +845,6 @@
   splitAmounts,yieldRecords,recordRealizedYield,requestYieldSplit,reverseYield,
   onboardingState,scheduleNextMonth,confirmFinancialStart,verifiedStarterPlan,approveVerifiedMonth,
   categorySuggestion,categoryLabels,monthlyEquivalent,userDetails,userDetailsSummary,
-  saveUserDetails,saveFlexibleDebt,flexibleRepaymentPreview});
+  saveUserDetails,saveFlexibleDebt,flexibleRepaymentPreview,
+  wizardState,wizardCycles,wizardPhase,confirmWizard,reviewWizardCycle,wizardDateBound});
 });
