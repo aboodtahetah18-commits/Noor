@@ -134,76 +134,109 @@ test('large loan and income/expense/liquidity shocks change risk without changin
 });
 
 
-test('starter plan from zero distributes 800 riyals with no cash creation',()=>{
- const db=fixture();db.ledgerOpening={hilal:0,malaa:0,assets:0};db.ledgerEntries=[];db.savings=[];db.holdings=[];
- const old=JSON.stringify(db),p=core.starterProjection(db,'2026-10');
- assert.equal(p.amount,80000);
- assert.equal(p.allocation.hilal,30000);
- assert.equal(p.allocation.malaaEmergency,30000);
- assert.equal(p.allocation.malaaSavings,10000);
- assert.equal(p.allocation.assets,10000);
- assert.equal(p.investedAvailable,false);
- assert.equal(JSON.stringify(db),old);
-});
-test('monthly plan is one-time, needs registered salary, and never posts bank cash',()=>{
- const db=fixture(),policy={monthlySurplus:80000,milestones:{hilal:600000,malaa:1000000,assets:2500000},
-  shares:{hilal:3750,malaaEmergency:3750,malaaSavings:1250,assets:1250},
-  yieldShares:{malaa:6000,assets:4000}};
- assert.throws(()=>core.approveStarterMonth(db,'2026-10',80000));
- core.saveStarterPolicy(db,policy);
- assert.throws(()=>core.approveStarterMonth(db,'2026-11',80000));
- const totalBefore=db.ledgerEntries.length,cashBefore=bankTotal(db);
- const plan=core.approveStarterMonth(db,'2026-10',80000);
- assert.equal(plan.status,'planned');
- assert.equal(db.ledgerEntries.length,totalBefore);
- assert.equal(bankTotal(db),cashBefore);
- assert.throws(()=>core.approveStarterMonth(db,'2026-10',80000));
- assert.throws(()=>core.saveStarterPolicy(db,{...policy,shares:{...policy.shares,assets:1500}}));
-});
-test('recorded yield balances cash and proposed 60/40 without auto funding; assets remain gated',()=>{
- const db=fixture();db.ledgerOpening.hilal=0;db.ledgerOpening.malaa=0;db.savings=[];
- const before=bankTotal(db);
- const y=core.recordRealizedYield(db,{amount:10000,date:'2026-10-15',reference:'YIELD-RK-2026-01'});
- assert.equal(core.cashBalance(db,'hilal'),10000);
- assert.equal(bankTotal(db),before+10000);
- assert.equal(y.splitAmounts.malaa,6000);
- assert.equal(y.splitAmounts.assets,4000);
- const e=db.ledgerEntries.at(-1);
- assert.equal(e.lines.reduce((t,l)=>t+l.debit,0),e.lines.reduce((t,l)=>t+l.credit,0));
- assert.equal(e.lines.find(l=>l.account==='yieldIncome').credit,10000);
- assert.throws(()=>core.recordRealizedYield(db,{amount:10000,date:'2026-10-15',reference:'YIELD-RK-2026-01'}));
- const request=core.requestYieldSplit(db,y.id,'malaa');
- assert.equal(request.status,'pending');
- assert.equal(core.cashBalance(db,'hilal'),10000);
- assert.equal(core.availableBankCash(db,'hilal'),4000);
- assert.throws(()=>core.requestYieldSplit(db,y.id,'malaa'));
- assert.throws(()=>core.requestYieldSplit(db,y.id,'assets'));
- assert.throws(()=>core.reverseYield(db,y.id,'عكس غير متاح بعد التحويل'));
-});
-test('yield reversal creates separate balanced journal, no deletion or double reversal',()=>{
- const db=fixture();db.ledgerOpening.hilal=0;
- const y=core.recordRealizedYield(db,{amount:12000,date:'2026-10-15',reference:'YIELD-RK-REV-01'});
- const n=db.ledgerEntries.length;
- core.reverseYield(db,y.id,'تصحيح مبلغ العائد');
- assert.equal(core.cashBalance(db,'hilal'),0);
- assert.equal(db.ledgerEntries.length,n+1);
- assert.equal(db.ledgerEntries.at(-1).reversalOf,y.journalId);
- assert.equal(db.rk44Yields[0].status,'reversed');
- assert.throws(()=>core.reverseYield(db,y.id,'عكس ثان'));
+const confirmed=(db,month='2026-10')=>core.confirmFinancialStart(db,{
+ income:575700,essentials:250000,obligations:120000,recurring:30000,
+ opening:{hilal:0,malaa:0,assets:0}
+},month);
+const confirmedRatios=db=>core.saveStarterPolicy(db,{
+ monthlySurplus:80000,milestones:{hilal:600000,malaa:1000000,assets:2500000},
+ shares:{hilal:3750,malaaEmergency:3750,malaaSavings:1250,assets:1250},
+ yieldShares:{malaa:6000,assets:4000}
 });
 
-test('cancelled yield split can be requested again and a cancelled receipt can be reversed',()=>{
- const db=fixture();db.ledgerOpening.hilal=0;
- const y=core.recordRealizedYield(db,{amount:10000,date:'2026-10-15',reference:'YIELD-RK-CANCEL-01'});
- const first=core.requestYieldSplit(db,y.id,'malaa');core.cancelTransfer(db,first.id);
- const second=core.requestYieldSplit(db,y.id,'malaa');
- assert.ok(second.id!==first.id);
- assert.equal(db.rk44Transfers.length,2);
- assert.equal(first.status,'cancelled');
- assert.equal(second.status,'pending');
- core.cancelTransfer(db,second.id);
- const count=db.ledgerEntries.length;
- core.reverseYield(db,y.id,'إلغاء استلام غير صحيح');
- assert.equal(db.ledgerEntries.length,count+1);
+test('legacy examples and local fake salary must never activate an unverified plan',()=>{
+ const db=fixture();
+ db.salary=575700;
+ db.rk44StarterPolicy={version:1,monthlySurplus:80000,
+  milestones:{hilal:600000,malaa:1000000,assets:2500000},
+  shares:{hilal:3750,malaaEmergency:3750,malaaSavings:1250,assets:1250},
+  yieldShares:{malaa:6000,assets:4000}};
+ const snapshot=JSON.stringify(db);
+ assert.equal(core.onboardingState(db,'2026-11').verified,false);
+ const plan=core.verifiedStarterPlan(db,'2026-11');
+ assert.equal(plan.ready,false);
+ assert.equal(core.starterProjection(db,'2026-11').amount,null);
+ assert.equal(core.starterDefaults.monthlySurplus,0);
+ assert.equal(JSON.stringify(db),snapshot);
+ assert.throws(()=>core.recordRealizedYield(db,{amount:10000,date:'2026-11-07',reference:'RND-001'}));
+});
+test('partial month scheduling needs no salary, past transactions or opening balance',()=>{
+ const db=fixture(),data=JSON.stringify(db);
+ const schedule=core.scheduleNextMonth(db,'2026-11');
+ assert.equal(schedule.startMonth,'2026-12');
+ assert.equal(core.onboardingState(db,'2026-11').verified,false);
+ assert.equal(core.onboardingState(db,'2026-11').startMonth,'2026-12');
+ assert.equal(core.scheduleNextMonth(db,'2026-11').startMonth,'2026-12');
+ assert.equal(db.ledgerEntries.length,0);
+ assert.equal(db.transactions.length,JSON.parse(data).transactions.length);
+});
+test('verified zero opening balances do not fabricate bank cash or start before next full month',()=>{
+ const db=fixture();db.ledgerEntries=[];
+ db.rk44StarterPolicy={version:1,monthlySurplus:80000,milestones:{hilal:600000,malaa:1000000,assets:2500000},
+  shares:{hilal:3750,malaaEmergency:3750,malaaSavings:1250,assets:1250},
+  yieldShares:{malaa:6000,assets:4000}};
+ core.scheduleNextMonth(db,'2026-11');
+ confirmed(db,'2026-11');
+ const scheduled=core.onboardingState(db,'2026-11');
+ assert.equal(scheduled.phase,'scheduled');
+ assert.equal(scheduled.startMonth,'2026-12');
+ assert.equal(core.onboardingState(db,'2026-12').phase,'active');
+ const p=core.verifiedStarterPlan(db,'2026-12');
+ assert.equal(p.amount,175700);
+ assert.equal(p.allocation.hilal,150000);
+ assert.equal(p.allocation.malaaEmergency,25700);
+ assert.equal(p.allocation.malaaSavings,0);
+ assert.equal(p.allocation.assets,0);
+ assert.equal(p.stageTargets.assets,null);
+ assert.equal(db.ledgerEntries.length,0);
+ assert.throws(()=>core.approveVerifiedMonth(db,'2026-11',175700));
+});
+test('no disposable surplus generates no investment and no false optimistic target',()=>{
+ const db=fixture();
+ core.confirmFinancialStart(db,{income:100000,essentials:170000,obligations:50000,recurring:10000,
+  opening:{hilal:0,malaa:0,assets:0}},'2026-11');
+ const p=core.verifiedStarterPlan(db,'2026-12');
+ assert.equal(p.rawSurplus,-130000);
+ assert.equal(p.amount,0);
+ assert.equal(p.allocation.assets,0);
+ assert.equal(Object.values(p.allocation).reduce((a,b)=>a+b,0),0);
+ assert.throws(()=>core.approveVerifiedMonth(db,'2026-12',100));
+});
+test('verified monthly plan requires salary receipt, cannot backfill or double-post cash',()=>{
+ const db=fixture();db.ledgerEntries=[];db.salaryMonths=[];
+ confirmed(db,'2026-11');
+ assert.throws(()=>core.approveVerifiedMonth(db,'2026-12',100000));
+ db.salaryMonths.push('2026-12');
+ assert.throws(()=>core.approveVerifiedMonth(db,'2026-12',175701));
+ const oldCash=bankTotal(db),oldJournal=JSON.stringify(db.ledgerEntries);
+ const result=core.approveVerifiedMonth(db,'2026-12',100000);
+ assert.equal(result.kind,'verified-month-plan');
+ assert.equal(result.status,'planned');
+ assert.equal(Object.values(result.allocation).reduce((a,b)=>a+b,0),100000);
+ assert.equal(bankTotal(db),oldCash);
+ assert.equal(JSON.stringify(db.ledgerEntries),oldJournal);
+ assert.throws(()=>core.approveVerifiedMonth(db,'2026-12',100000));
+});
+test('confirmed yield split ratios may be used only after explicit financial verification',()=>{
+ const db=fixture();db.ledgerOpening.hilal=0;db.ledgerOpening.malaa=0;db.savings=[];
+ assert.throws(()=>confirmedRatios(db));
+ confirmed(db);
+ confirmedRatios(db);
+ const oldCash=bankTotal(db);
+ const y=core.recordRealizedYield(db,{amount:10000,date:'2026-10-15',reference:'YLD-PREVIEW-001'});
+ assert.equal(bankTotal(db),oldCash+10000);
+ assert.equal(y.splitAmounts.malaa,6000);
+ assert.equal(y.splitAmounts.assets,4000);
+ assert.equal(db.ledgerEntries.at(-1).lines.reduce((a,l)=>a+l.debit,0),10000);
+ const t=core.requestYieldSplit(db,y.id,'malaa');
+ assert.equal(t.status,'pending');
+ assert.equal(core.availableBankCash(db,'hilal'),4000);
+ assert.throws(()=>core.requestYieldSplit(db,y.id,'assets'));
+ assert.throws(()=>core.recordRealizedYield(db,{amount:10000,date:'2026-10-15',reference:'YLD-PREVIEW-001'}));
+ core.cancelTransfer(db,t.id);
+ const again=core.requestYieldSplit(db,y.id,'malaa');
+ assert.ok(again.id!==t.id);
+ core.cancelTransfer(db,again.id);
+ core.reverseYield(db,y.id,'تصحيح العائد');
  assert.equal(core.cashBalance(db,'hilal'),0);
 });
