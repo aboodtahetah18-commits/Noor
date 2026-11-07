@@ -52,7 +52,12 @@
   const free=monthData?.free??0;
   const pending=monthData?.holds??0;
   const salaryPlan=Math.round(number(db.salary)*number(db.ratios?.hilal)/100);
-  const banks=db.reserves||{};
+  const liveReserve=window.RakaezAdaptiveCore?.assess?.(db,p);
+  const banks=liveReserve?{
+   hilal:liveReserve.banks.hilal.target,
+   malaa:liveReserve.banks.malaa.target,
+   assets:liveReserve.banks.assets.target
+  }:db.reserves||{};
   const allSavings=Array.isArray(db.savings)?db.savings:[];
   const instant=number(allSavings.find(s=>s.id==='instant')?.balance);
   const sums=typeof v4Numbers==='function'?v4Numbers():{};
@@ -74,23 +79,23 @@
    stat('الحصة المخططة',fmt(salaryPlan),'blue'),
    stat('المخصص المثبت',!monthData?'غير متاح':posted?fmt(assigned):'لم يُثبّت',posted?'teal':'navy'),
    stat('مصروفات الشهر',fmt(expenses),'red')
-  ],['الاحتياطي المستهدف',fmt(banks.hilal),'navy'],[
+  ],['الاحتياطي المتغير',fmt(banks.hilal),'navy'],[
    ['transactions','المعاملات'],['cycles','دورة الراتب'],['funding','التمويل الداخلي'],['fees','الرسوم الدورية']
   ],'تظهر الحصة المخططة من نسبة الراتب، أما المخصص المثبت فيُقرأ حصريًا من سجل شهر '+p+'. المصروفات تؤخذ من معاملات الشهر، والحجوزات المعلقة '+fmt(pending)+'. المخصص ليس رصيدًا بنكيًا.');
   const malaa=card('malaa','بنك ملاءة','الادخار','رصيد الادخار المسجل',fmt(savings),'teal','وفق أرصدة الادخار المدخلة',[
    stat('الرصيد الفوري',fmt(instant),'blue'),
-   stat('الاحتياطي المستهدف',fmt(banks.malaa),'navy'),
+   stat('الاحتياطي المتغير',fmt(banks.malaa),'navy'),
    stat('طلبات سحب معلقة',String(pendingWithdrawals),'gold')
   ],null,[
    ['goals','الأهداف المالية'],['scheduled','العمليات المجدولة'],['receivables','المستحقات'],['interbank','التمويل بين البنوك']
-  ],'رصيد الادخار والرصيد الفوري من السجلات المحلية، وليس من اتصال حي بالبنك. الاحتياطي المستهدف مبلغ تخطيطي ولا يضاف إلى الرصيد.');
+  ],'رصيد الادخار والرصيد الفوري من السجلات المحلية، وليس من اتصال مصرفي حي. يتم احتساب هدف الحماية تلقائيًا من المصروفات والالتزامات، ولا يضاف إلى الرصيد.');
   const assets=card('assets','بنك الأصول','الاستثمار','القيمة السوقية المدخلة',fmt(savedMarket),'blue','حسب تقييمات الأصول المسجلة',[
    stat('الأصول المسجلة',String(holdings.length),'navy'),
    stat('بلا تقييم مكتمل',String(unpriced),unpriced?'gold':'teal'),
-   stat('الاحتياطي المستهدف',fmt(banks.assets),'navy')
+   stat('احتياطي الاستثمار المتغير',fmt(banks.assets),'navy')
   ],null,[
    ['research','دراسة الأسهم والشركات'],['documents','المستندات'],['reports','التقارير'],['interbank','التمويل بين البنوك']
-  ],'القيمة السوقية تعتمد على آخر بيانات أدخلتها. الأصول غير المقيّمة ليست صفرًا بالضرورة. لا يُطرح الاحتياطي التخطيطي من قيمة الاستثمارات.');
+  ],'القيمة السوقية تعتمد على آخر بيانات أدخلتها. الاحتياطي المتغير للأصول هدف سيولة قبل زيادة الاستثمار وليس قيمة نقدية مثبتة، والأصول غير المقيّمة ليست صفرًا بالضرورة.');
   return '<section class="rk42-banks" aria-label="البنوك بالتفصيل">'+
    '<header class="rk42-pagehead"><h2>البنوك بالتفصيل</h2>'+
    tooltip('طريقة قراءة الأرقام','القيم الأساسية تختلف بين البنوك: مخصصات تشغيل، ادخار، واستثمارات. لا تُجمع في رصيد نقدي واحد، وتُعرض التفاصيل المحاسبية داخل البنك المعني.')+
