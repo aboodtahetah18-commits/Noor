@@ -1,0 +1,175 @@
+/* Rakaez 44 — dynamic protection & investment, restrained official RTL layout. */
+#view .rk44-screen{
+ display:grid;gap:14px;direction:rtl;width:100%;max-width:1030px;min-width:0;margin:0 auto;
+ color:var(--ink);
+}
+#view .rk44-screen-title{display:flex;align-items:center;justify-content:flex-start;gap:8px}
+#view .rk44-screen-title h2{margin:0!important;padding:0!important;font-size:18px;font-weight:850;line-height:1.6;color:var(--navy)}
+#view .rk44-topline{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;
+ padding:13px 0;border-block:1px solid var(--line);background:var(--white);
+ border-radius:10px;min-width:0;
+}
+#view .rk44-metric{display:grid;justify-items:center;align-content:center;gap:5px;padding:9px 8px;min-width:0;text-align:center}
+#view .rk44-metric+.rk44-metric{border-inline-start:1px solid var(--line)}
+#view .rk44-metric>span{font-size:11px;font-weight:650;color:var(--muted);line-height:1.55;overflow-wrap:anywhere}
+#view .rk44-metric>strong{
+ font-size:clamp(14px,1.8vw,19px);font-weight:850;line-height:1.5;
+ unicode-bidi:plaintext;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;min-width:0;
+}
+#view .rk44-teal{color:var(--teal)!important}
+#view .rk44-blue{color:var(--blue)!important}
+#view .rk44-red{color:var(--red)!important}
+#view .rk44-gold{color:var(--gold)!important}
+#view .rk44-navy{color:var(--navy)!important}
+#view .rk44-bank-list{display:grid;grid-template-columns:1fr;gap:12px;min-width:0}
+#view .rk44-card{
+ display:grid;gap:12px;padding:18px;min-width:0;
+ border:1px solid var(--line);border-inline-start:3px solid var(--teal);
+ border-radius:13px;background:var(--white);
+ box-shadow:0 2px 8px color-mix(in srgb,var(--navy) 5%,transparent);
+}
+#view .rk44-hilal{border-inline-start-color:var(--navy)}
+#view .rk44-assets{border-inline-start-color:var(--blue)}
+#view .rk44-bank-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;min-width:0}
+#view .rk44-bank-id{display:flex;align-items:center;gap:10px;min-width:0}
+#view .rk44-bank-id .rk35-bankmark{display:grid;place-items:center;width:34px;flex:0 0 34px;height:34px}
+#view .rk44-bank-id .rk35-bankmark svg{width:32px!important;height:32px!important}
+#view .rk44-bank-id>div:last-child{display:grid;gap:3px;min-width:0}
+#view .rk44-bank-id h3{margin:0!important;font-size:16px;line-height:1.5;color:var(--navy);font-weight:850;overflow-wrap:anywhere}
+#view .rk44-bank-id small{font-size:11px;color:var(--muted);line-height:1.5}
+#view .rk44-status{flex:0 0 auto;padding:5px 8px;border-radius:7px;font-size:10px;font-weight:800;line-height:1.4;white-space:nowrap}
+#view .rk44-watch,.rk44-screen .rk44-caution{color:var(--gold);background:color-mix(in srgb,var(--gold) 9%,var(--white))}
+#view .rk44-good{color:var(--teal);background:color-mix(in srgb,var(--teal) 9%,var(--white))}
+#view .rk44-neutral{color:var(--blue);background:color-mix(in srgb,var(--blue) 9%,var(--white))}
+#view .rk44-hero{
+ display:grid;justify-items:center;align-content:center;gap:5px;
+ text-align:center;padding:13px 9px;border-block:1px solid var(--line);
+}
+#view .rk44-hero>span{font-size:12px;font-weight:650;color:var(--muted)}
+#view .rk44-hero>strong{
+ font-size:clamp(22px,3.5vw,30px);line-height:1.5;font-weight:900;
+ font-variant-numeric:tabular-nums;unicode-bidi:plaintext;overflow-wrap:anywhere;
+ max-width:100%;
+}
+#view .rk44-hero>small{font-size:10px;color:var(--muted);line-height:1.6}
+#view .rk44-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;min-width:0}
+#view .rk44-progressrow{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px;color:var(--muted)}
+#view .rk44-progressrow strong{font-size:13px;font-weight:850}
+#view .rk44-progress{height:6px;background:var(--paper);border-radius:99px;overflow:hidden;margin-top:-7px}
+#view .rk44-progress span{display:block;height:100%;background:var(--teal);border-radius:99px}
+#view .rk44-policy{
+ display:flex;align-items:center;justify-content:space-between;gap:9px;
+ min-width:0;padding:10px 0;border-block:1px solid var(--line)
+}
+#view .rk44-policy>label{display:inline-flex;align-items:center;flex-wrap:wrap;gap:9px;color:var(--muted);font-weight:700;font-size:11px}
+#view .rk44-policy select{
+ width:auto;min-height:36px;max-width:150px;background:var(--white);border:1px solid var(--line);
+ border-radius:8px;color:var(--navy);padding:5px 9px;font:inherit;font-size:11px;font-weight:800;
+}
+#view .rk44-help{position:relative;display:inline-flex;align-items:center;flex:0 0 auto}
+#view .rk44-help summary{
+ display:grid;place-items:center;width:31px;height:31px;border:1px solid var(--line);
+ border-radius:50%;background:var(--white);color:var(--teal);
+ list-style:none;cursor:pointer;
+}
+#view .rk44-help summary::-webkit-details-marker{display:none}
+#view .rk44-help summary svg{display:block;width:17px;height:17px}
+#view .rk44-help p{
+ position:absolute;inset-inline-end:0;top:calc(100% + 6px);
+ z-index:30;margin:0!important;box-sizing:border-box;
+ width:min(300px,76vw);max-width:calc(100vw - 38px);
+ padding:12px 14px;border:1px solid var(--line);border-radius:10px;
+ background:var(--white);color:var(--navy);font-size:11px;font-weight:600;line-height:1.85;
+ box-shadow:0 5px 17px color-mix(in srgb,var(--navy) 12%,transparent);text-align:right;
+}
+#view .rk44-help:not([open])>p{display:none!important}
+#view .rk44-actions{
+ display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:7px;
+ padding:0;margin:0;min-width:0;
+}
+#view .rk44-actions button,
+#view .rk44-response-actions button,
+#view .rk44-scenario button{
+ display:inline-flex;align-items:center;justify-content:center;
+ width:auto;min-width:0;max-width:100%;
+ min-height:35px;padding:7px 11px;
+ border:1px solid var(--line);border-radius:8px;
+ color:var(--navy);background:var(--white);font:inherit;
+ font-size:11px;line-height:1.5;font-weight:750;cursor:pointer;box-shadow:none;
+}
+#view .rk44-actions .rk44-primary,
+#view .rk44-scenario .rk44-simulate{
+ background:var(--teal);color:var(--white);border-color:var(--teal);
+}
+#view .rk44-risk{
+ display:grid;gap:12px;padding:17px 18px;
+ border-radius:12px;border:1px solid var(--line);background:var(--white);
+}
+#view .rk44-risk-title{display:flex;align-items:center;justify-content:space-between;gap:10px}
+#view .rk44-risk-title>div{display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-width:0}
+#view .rk44-risk-title h3{margin:0!important;color:var(--navy);font-size:15px;font-weight:850;line-height:1.5}
+#view .rk44-risk-badge{display:inline-flex;align-items:center;font-size:10px;line-height:1.5;padding:4px 8px;border-radius:7px;font-weight:800;white-space:nowrap}
+#view .rk44-danger{background:color-mix(in srgb,var(--red) 10%,var(--white));color:var(--red)}
+#view .rk44-caution{background:color-mix(in srgb,var(--gold) 10%,var(--white));color:var(--gold)}
+#view .rk44-healthy{background:color-mix(in srgb,var(--teal) 10%,var(--white));color:var(--teal)}
+#view .rk44-risk-values{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));min-width:0;border-block:1px solid var(--line);padding:7px 0}
+#view .rk44-response{display:grid;gap:11px;min-width:0}
+#view .rk44-response>strong{font-size:12px;line-height:1.85;font-weight:750}
+#view .rk44-response-actions{display:flex;align-items:center;justify-content:center;gap:7px;flex-wrap:wrap}
+#view .rk44-scenario{
+ padding:0 15px;background:var(--white);border:1px solid var(--line);
+ border-radius:11px;min-width:0;
+}
+#view .rk44-scenario>summary{
+ padding:14px 0;font-weight:800;color:var(--navy);font-size:12px;line-height:1.5;
+ cursor:pointer;
+}
+#view .rk44-scenario form{display:grid;gap:11px;padding:4px 0 15px}
+#view .rk44-scenario-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;min-width:0}
+#view .rk44-scenario-fields label{display:grid;gap:6px;min-width:0;color:var(--muted);font-size:11px;font-weight:700}
+#view .rk44-scenario-fields input{
+ width:100%;min-height:41px;padding:8px;border:1px solid var(--line);
+ border-radius:8px;background:var(--white);color:var(--navy);font:inherit;font-size:13px;
+}
+#view .rk44-scenario .rk44-simulate{justify-self:center;min-height:38px;padding:8px 14px}
+#view .rk44-scenario-result{display:grid;gap:10px;padding-bottom:10px}
+#view .rk44-scenario-result:empty{display:none}
+#view .rk44-stress-result{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border-block:1px solid var(--line);padding:8px 0}
+#view .rk44-scenario-result p{margin:0!important;color:var(--muted);font-size:11px;line-height:1.8}
+#view .rk44-scenario-result button{justify-self:center}
+#view .rk44-caution-note{margin:0!important;font-size:11px;line-height:1.8;color:var(--muted)}
+#view .rk44-screen :is(button,summary,select,input):focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+@media(max-width:650px){
+ #view .rk44-screen{gap:11px}
+ #view .rk44-screen-title h2{font-size:16px}
+ #view .rk44-topline{padding:9px 0}
+ #view .rk44-topline .rk44-metric{padding:7px 4px}
+ #view .rk44-metric>span{font-size:10px}
+ #view .rk44-metric>strong{font-size:clamp(12px,3.3vw,15px)}
+ #view .rk44-card{padding:13px 12px;gap:10px}
+ #view .rk44-bank-id h3{font-size:14px}
+ #view .rk44-bank-id small{font-size:10px}
+ #view .rk44-bank-id{gap:6px}
+ #view .rk44-bank-id .rk35-bankmark{width:27px;height:27px;flex-basis:27px}
+ #view .rk44-bank-id .rk35-bankmark svg{width:26px!important;height:26px!important}
+ #view .rk44-status{font-size:9px}
+ #view .rk44-hero strong{font-size:clamp(20px,5.3vw,26px)}
+ #view .rk44-metrics .rk44-metric{padding:6px 4px}
+ #view .rk44-metrics .rk44-metric strong{font-size:clamp(11px,3.4vw,15px)}
+ #view .rk44-actions button,#view .rk44-response-actions button{font-size:10px;padding:7px 9px}
+ #view .rk44-risk{padding:13px 12px}
+ #view .rk44-risk-title h3{font-size:13px}
+ #view .rk44-scenario-fields{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #view .rk44-scenario-fields label:first-child{grid-column:1/-1}
+ #view .rk44-stress-result{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #view .rk44-stress-result .rk44-metric:last-child{grid-column:1/-1;border-top:1px solid var(--line)}
+}
+@media(max-width:360px){
+ #view .rk44-topline{grid-template-columns:minmax(0,1fr)}
+ #view .rk44-topline .rk44-metric{padding:7px 6px;border-inline-start:0;border-bottom:1px solid var(--line)}
+ #view .rk44-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #view .rk44-metrics .rk44-metric:last-child{grid-column:1/-1;border-top:1px solid var(--line)}
+ #view .rk44-policy{flex-wrap:wrap}
+ #view .rk44-bank-head{flex-wrap:wrap}
+}
