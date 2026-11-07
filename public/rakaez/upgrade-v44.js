@@ -80,6 +80,97 @@
    '</section>';
  }
 
+
+ function flexibleToolsPanel(){
+  const source=adaptive.userDetails(db),summary=adaptive.userDetailsSummary(db);
+  const frequencyOptions=[['daily','يومي'],['weekly','أسبوعي'],['monthly','شهري'],
+   ['yearly','سنوي'],['asNeeded','عند الحاجة دون موعد'],['none','لا توجد نفقة']];
+  const select=(name,opts,chosen)=>{
+   return '<select name="'+name+'">'+opts.map(([v,label])=>
+    '<option value="'+safe(v)+'" '+(String(chosen)===String(v)?'selected':'')+'>'+safe(label)+'</option>').join('')+'</select>';
+  };
+  const categories=[['auto','اقتراح النظام'],...adaptive.categoryLabels.map(x=>[x,x])];
+  const categoryItems=source.items.map(x=>{
+   const suggested=adaptive.categorySuggestion(x.name);
+   const monthly=adaptive.monthlyEquivalent(x.amount,x.frequency);
+   return '<details class="rk44-flex-record"><summary>'+safe(x.name)+
+    ' · '+safe(x.category)+' · '+(monthly===null?'غير منتظم':fmt(monthly)+'/شهر')+'</summary>'+
+    '<form data-rk44-edit-item data-id="'+safe(x.id)+'"><div class="rk44-starter-inputs">'+
+    '<label>اسم البند<input name="name" required maxlength="100" value="'+safe(x.name)+'"></label>'+
+    '<label>المبلغ بالريال<input type="number" name="amount" min="0" step="0.01" required value="'+(x.amount/100).toFixed(2)+'"></label>'+
+    '<label>الدورية'+select('frequency',frequencyOptions,x.frequency)+'</label>'+
+    '<label>التصنيف'+select('category',categories,x.category)+'</label></div>'+
+    '<small>المصدر: '+(x.categorySource==='manual'?'تصنيف معدل يدويًا':'اقتراح النظام')+
+    ' · التخمين الحالي: '+safe(suggested.category||'غير محدد')+'</small>'+
+    '<div class="rk44-flex-actions"><button type="submit">حفظ تعديل البند</button>'+
+    '<button type="button" data-rk44-detail-remove="item" data-id="'+safe(x.id)+'">حذف البند</button></div></form></details>';
+  }).join('');
+  const dependents=source.dependents.map(d=>{
+   const monthly=adaptive.monthlyEquivalent(d.amount,d.frequency);
+   return '<details class="rk44-flex-record"><summary>'+safe(d.name)+
+    ' · '+safe(d.relation)+' · '+(d.includedInItems?'ضمن بند موجود':monthly===null?'غير منتظم':fmt(monthly)+'/شهر')+
+    '</summary><form data-rk44-edit-dependent data-id="'+safe(d.id)+'"><div class="rk44-starter-inputs">'+
+    '<label>الاسم أو الصفة<input name="name" maxlength="100" required value="'+safe(d.name)+'"></label>'+
+    '<label>صلة القرابة<input name="relation" maxlength="60" value="'+safe(d.relation)+'"></label>'+
+    '<label>المبلغ بالريال<input type="number" name="amount" min="0" step="0.01" required value="'+(d.amount/100).toFixed(2)+'"></label>'+
+    '<label>الدورية'+select('frequency',frequencyOptions,d.frequency)+'</label></div>'+
+    '<label class="rk44-approval"><input type="checkbox" name="included" '+(d.includedInItems?'checked':'')+
+    '> النفقة موجودة أصلًا ضمن بند آخر، فلا تُجمع مرة ثانية</label>'+
+    '<div class="rk44-flex-actions"><button type="submit">حفظ تعديل المعال</button>'+
+    '<button type="button" data-rk44-detail-remove="dependent" data-id="'+safe(d.id)+'">حذف المعال</button></div></form></details>';
+  }).join('');
+  const flexibleDebts=(Array.isArray(db.debts)?db.debts:[]).filter(d=>d.repaymentMode==='capacity');
+  return '<section class="rk44-starter rk44-flexible" aria-label="البنود المرنة والإعالة والالتزامات">'+
+   '<header class="rk44-sectionhead"><h3>تفصيل البنود والإعالة والالتزامات المرنة</h3>'+
+   hint('يصنف ركائز اسم البند بشكل مبدئي فقط ويمكنك تعديله. يُحسب الدعم اليومي والسنوي وفق دوريّته، ولا يُفرض على المعال مبلغ ثابت. الديون بلا تاريخ استحقاق لا تنشئ أقساطًا، ولا تُسدد تلقائيًا.')+'</header>'+
+   '<details class="rk44-starter-settings"><summary>1. بنودك الخاصة — تصنيف مقترح قابل للتعديل ('+source.items.length+')</summary>'+
+   '<div class="rk44-flex-list">'+categoryItems+'</div>'+
+   '<form data-rk44-add-item><div class="rk44-starter-inputs">'+
+   '<label>اسم البند<input name="name" data-rk44-suggest-name required maxlength="100" placeholder="اكتب اسم البند بالتفصيل"></label>'+
+   '<label>المخصص بالريال<input type="number" name="amount" min="0" step="0.01" required placeholder="المبلغ"></label>'+
+   '<label>دورية الصرف'+select('frequency',frequencyOptions,'monthly')+'</label>'+
+   '<label>تصنيفه'+select('category',categories,'auto')+'</label></div>'+
+   '<small data-rk44-suggest-output>اكتب اسم البند ليظهر التصنيف المقترح</small>'+
+   '<button class="rk44-transfer-primary" type="submit">إضافة البند</button></form></details>'+
+   '<details class="rk44-starter-settings"><summary>2. الأشخاص الذين تعيلهم ('+source.dependents.length+')</summary>'+
+   '<div class="rk44-flex-list">'+dependents+'</div>'+
+   '<form data-rk44-add-dependent><div class="rk44-starter-inputs">'+
+   '<label>الاسم أو الصفة<input name="name" required maxlength="100" placeholder="مثلاً: أحد الوالدين"></label>'+
+   '<label>صلة القرابة<input name="relation" maxlength="60" placeholder="والد، والدة، ابن، آخر"></label>'+
+   '<label>المبلغ عند وجود نفقة<input type="number" name="amount" min="0" step="0.01" required placeholder="0 إذا لا توجد"></label>'+
+   '<label>دورية النفقة'+select('frequency',frequencyOptions,'none')+'</label></div>'+
+   '<label class="rk44-approval"><input type="checkbox" name="included"> سجلت هذه النفقة ضمن بند سابق، فلا تُضاف مرة أخرى</label>'+
+   '<button class="rk44-transfer-primary" type="submit">إضافة المعال</button></form></details>'+
+   '<div class="rk44-flex-summary"><span>إجمالي مكافئ شهري معروف من التفاصيل</span>'+
+   '<strong>'+fmt(summary.monthlyKnown)+'</strong><small>'+
+   (summary.incomplete?'مصروفات غير منتظمة تحتاج مراجعة: '+summary.incomplete+' · ':'')+
+   (summary.reconciledIntoBudget?'يحل التفصيل محل مصروفات الأساس القديمة دون إضافتها مرة أخرى':
+    'تفاصيل للمراجعة، لا تُضاف فوق إجمالي المصروفات حتى تعتمد استبداله')+
+   '</small></div>'+
+   '<form data-rk44-detail-mode><label class="rk44-approval">'+
+   '<input type="checkbox" name="useAsEssentials" '+(source.useAsEssentials?'checked':'')+
+   '> أعتمد استخدام البنود المعروفة والإنفاق غير المكرر للمعالين **بدل** إجمالي المصروفات الضرورية القديم. الأقساط والأهداف تُستثنى من الجمع.</label>'+
+   '<button class="rk44-transfer-primary" type="submit">حفظ اختيار مصدر الميزانية</button></form>'+
+   '<details class="rk44-starter-settings"><summary>3. التزامات بلا موعد سداد ثابت ('+flexibleDebts.length+')</summary>'+
+   (flexibleDebts.length?'<div class="rk44-flex-list">'+flexibleDebts.map(d=>
+    '<div class="rk44-starter-line"><div><strong>'+safe(d.name)+'</strong><small>سداد حسب القدرة، دون قسط إلزامي · يظهر أيضًا في صفحة الالتزامات</small></div>'+
+    '<b>'+fmt(Math.max(0,Number(d.principal||0)-Number(d.paid||0)))+'</b></div>').join('')+'</div>':'')+
+   '<form data-rk44-flex-debt><div class="rk44-starter-inputs">'+
+   '<label>اسم الدين أو الجهة<input name="name" required maxlength="100" placeholder="اسم الالتزام"></label>'+
+   '<label>المتبقي من الدين (ريال)<input type="number" name="amount" min="0.01" step="0.01" required></label></div>'+
+   '<label class="rk44-approval"><input name="approval" type="checkbox" required> أؤكد أنه التزام فعلي غير مسجل من قبل، وليس له قسط أو موعد سداد إلزامي.</label>'+
+   '<button type="submit" class="rk44-transfer-primary">إضافة إلى سجل الالتزامات في الهلال</button></form>'+
+   '<form data-rk44-flex-preview><h4>محاكاة التحسن في الدخل دون اقتطاع تلقائي</h4>'+
+   '<div class="rk44-starter-inputs">'+
+   '<label>الدخل السابق (ريال)<input type="number" name="before" step="0.01" min="0" required placeholder="قبل التحسن"></label>'+
+   '<label>الدخل الجديد (ريال)<input type="number" name="after" step="0.01" min="0" required placeholder="بعد التحسن"></label>'+
+   '<label>مخصص الحماية الإضافي غير المحسوب في المصروفات (ريال)<input type="number" name="protected" step="0.01" min="0" required placeholder="0 إن لم يوجد"></label></div>'+
+   '<button type="submit" class="rk44-transfer-primary">اختبار قدرة السداد</button>'+
+   '<div data-rk44-flex-result aria-live="polite"></div></form></details>'+
+   '<p class="rk44-subnote">الدفعات المقترحة ليست استحقاقات ولا تُرحَّل ماليًا. زيادة الراتب وحدها لا تكفي؛ يجب أن يكون هناك فائض فعلي بعد ضروريات الحياة والأقساط والحماية.</p>'+
+   '</section>';
+ }
+
  function rkVerifiedSetup(state){
   const details=state.verified?state.values:null;
   const first=state.startMonth||adaptive.offset(rkStartMonth(),1);
@@ -227,7 +318,7 @@
    (rows||'<p class="rk44-subnote">لا توجد تحويلات حماية مسجلة بعد.</p>')+'</div></div></details>';
  }
  function applyFinancialAction(action,verb,detail,successMessage){
-  const keys=['rk44Transfers','rk44Yields','rk44StarterPolicy','rk44StarterMonths','rk44StartSchedule','rk44VerifiedStart','rk44VerifiedMonths','ledgerEntries','audit'];
+  const keys=['rk44Transfers','rk44Yields','rk44StarterPolicy','rk44StarterMonths','rk44StartSchedule','rk44VerifiedStart','rk44VerifiedMonths','rk44UserDetails','rk44UserDetailsHistory','debts','ledgerEntries','audit'];
   const original=Object.fromEntries(keys.map(k=>[k,{
    exists:Object.prototype.hasOwnProperty.call(db,k),
    value:Object.prototype.hasOwnProperty.call(db,k)?JSON.stringify(db[k]):null
@@ -291,7 +382,7 @@
   return '<section class="rk44-screen" aria-label="تأسيس البنوك من معلومات موثقة">'+
    '<header class="rk44-screen-title"><h2>الانطلاقة والحماية المالية</h2>'+
    hint('الأهداف وأرقام الفائض القديمة كانت أمثلة وليست تحليلًا معتمدًا. لا تُستخدم حتى تثبت البيانات الفعلية.')+'</header>'+
-   rkVerifiedSetup(status)+rkVerifiedMonth(status,period)+
+   rkVerifiedSetup(status)+flexibleToolsPanel()+rkVerifiedMonth(status,period)+
    '<details class="rk44-advanced"><summary>مراجعة سجلات التحويلات القديمة دون تعديلها</summary>'+
    '<div class="rk44-advanced-body">'+transferPanel()+'</div></details>'+
    '<p class="rk44-caution-note">لا يُحذف تاريخ معاملاتك ولا تتغير الأرصدة عند جدولة البداية أو اعتماد معلومات التخطيط.</p>'+
