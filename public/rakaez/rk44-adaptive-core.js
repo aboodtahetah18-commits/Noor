@@ -98,7 +98,7 @@
   const commitments=debtMonthly+Math.round(annualizedFee(db)/12);
   // Simulated debt service is an incremental prospective obligation.
   const baseNeed=Math.max(estimate.actual,estimate.planned+commitments);
-  const riskBuffer=Math.min(Math.round(outstanding*0.08),baseNeed*2);
+  const riskBuffer=Math.round(outstanding*0.05);
   const salary=money(db?.salary);
   const debtRatio=salary?debtMonthly/salary:null;
   const debtToYearIncome=salary?outstanding/(salary*12):outstanding?Infinity:0;
