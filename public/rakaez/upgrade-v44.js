@@ -443,6 +443,23 @@
  const bankPosition=Array.isArray(N)?N.find(row=>row[0]==='position'):null;
  if(bankPosition)bankPosition[1]='الوضع المالي للبنوك';
  document.addEventListener('click',event=>{
+
+  const removeDetail=event.target.closest('[data-rk44-detail-remove]');
+  if(removeDetail){
+   event.preventDefault();event.stopImmediatePropagation();
+   if(!confirm('حذف هذا السجل من تفاصيل الميزانية؟ لن تُحذف أي معاملة مالية أصلية.'))return;
+   const old=adaptive.userDetails(db),id=removeDetail.getAttribute('data-id');
+   const type=removeDetail.getAttribute('data-rk44-detail-remove');
+   const input={items:old.items.map(x=>({...x})),dependents:old.dependents.map(x=>({...x})),
+    useAsEssentials:old.useAsEssentials===true};
+   if(type==='item')input.items=input.items.filter(x=>x.id!==id);
+   else if(type==='dependent')input.dependents=input.dependents.filter(x=>x.id!==id);
+   else return;
+   if(!input.items.length&&!input.dependents.length)input.useAsEssentials=false;
+   applyFinancialAction(()=>adaptive.saveUserDetails(db,input),'حذف تفصيل من الميزانية',
+    'السجل: '+id,'تم حذف التفصيل مع حفظ تاريخ المراجعات دون تعديل قيود مالية');
+   return;
+  }
   const scheduleButton=event.target.closest('[data-rk44-schedule-next]');
   if(scheduleButton){
    event.preventDefault();event.stopImmediatePropagation();
@@ -524,7 +541,96 @@
    render();
   }
  },true);
+
+ document.addEventListener('input',event=>{
+  const name=event.target.closest('[data-rk44-suggest-name]');
+  if(!name)return;
+  const form=name.closest('[data-rk44-add-item]');
+  const suggestion=adaptive.categorySuggestion(name.value);
+  const label=form?.querySelector('[data-rk44-suggest-output]');
+  if(label)label.textContent=suggestion.category?
+   'اقتراح التصنيف: '+suggestion.category+' — '+suggestion.reason:
+   'التصنيف غير واضح؛ اختر تصنيفًا يدويًا قبل الحفظ';
+ },true);
+
  document.addEventListener('submit',event=>{
+
+  const detailForm=event.target.closest('[data-rk44-add-item],[data-rk44-edit-item],[data-rk44-add-dependent],[data-rk44-edit-dependent],[data-rk44-detail-mode],[data-rk44-flex-debt],[data-rk44-flex-preview]');
+  if(detailForm){
+   event.preventDefault();event.stopImmediatePropagation();
+   const find=n=>detailForm.elements.namedItem(n);
+   const cents=n=>{
+    const raw=String(find(n)?.value??'').trim();
+    if(!/^(?:0|[1-9]\d*)(?:\.\d{1,2})?$/.test(raw))throw Error('أدخل مبلغًا بالريال بحد أقصى منزلتين عشريتين.');
+    const amount=Math.round(Number(raw)*100);
+    if(!Number.isSafeInteger(amount)||amount<0)throw Error('المبلغ غير صالح.');
+    return amount;
+   };
+   try{
+    if(detailForm.hasAttribute('data-rk44-flex-preview')){
+     const before=cents('before'),after=cents('after'),protectedAmount=cents('protected');
+     const result=adaptive.flexibleRepaymentPreview(db,{
+      previousIncome:before,currentIncome:after,protectedAmount,period:rkStartMonth()});
+     const el=detailForm.querySelector('[data-rk44-flex-result]');
+     if(el){
+      if(!result.ready)el.textContent=result.reason;
+      else el.innerHTML='<p class="rk44-subnote">التغير النسبي في الدخل: '+
+       (result.growth===null?'لا يُحسب من دخل سابق صفر':(result.growth*100).toFixed(1)+'%')+
+       ' · الفائض الآمن بعد المصروفات والحماية: '+fmt(result.newFree)+
+       ' · الزيادة في الفائض المتاح: '+fmt(result.extraFree)+'</p>'+
+       '<strong class="'+(result.warning?'rk44-red':'rk44-teal')+'">'+
+       (result.warning?'لا يُقترح سداد إضافي حتى تتوفر الحماية':'سقف دراسة السداد المبكر: '+fmt(result.ceiling))+
+       '</strong><p class="rk44-subnote">هذا الحد الأقصى للمراجعة وليس دفعة إلزامية؛ يتطلب اختيار الدين والتحقق من الرصيد الحقيقي واعتمادك قبل السداد.</p>';
+     }
+     return;
+    }
+    if(detailForm.hasAttribute('data-rk44-flex-debt')){
+     if(!find('approval').checked)throw Error('أكد أن هذا الدين لم يسجّل من قبل.');
+     const name=String(find('name').value||'').trim(),amount=cents('amount');
+     applyFinancialAction(()=>adaptive.saveFlexibleDebt(db,{name,amount}),
+      'إضافة التزام مرن','التزام دون تاريخ استحقاق — '+name,
+      'تم تسجيل التزام بلا قسط إلزامي؛ لا توجد حركة نقدية');
+     return;
+    }
+    const old=adaptive.userDetails(db);
+    const input={items:old.items.map(x=>({...x})),dependents:old.dependents.map(x=>({...x})),
+     useAsEssentials:old.useAsEssentials===true};
+    const identifier='rk44-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
+    if(detailForm.hasAttribute('data-rk44-add-item')||detailForm.hasAttribute('data-rk44-edit-item')){
+     const name=String(find('name').value||'').trim();
+     const suggested=adaptive.categorySuggestion(name),selected=String(find('category').value);
+     const category=selected==='auto'?suggested.category:selected;
+     if(!category)throw Error('لا يمكن تحديد تصنيف موثوق لهذا الاسم. اختر التصنيف المناسب يدويًا.');
+     const isEdit=detailForm.hasAttribute('data-rk44-edit-item');
+     const id=isEdit?detailForm.getAttribute('data-id'):identifier;
+     const row={id,name,amount:cents('amount'),frequency:find('frequency').value,
+      category,categorySource:selected==='auto'?'suggestion':'manual'};
+     if(isEdit){
+      const idx=input.items.findIndex(v=>v.id===id);
+      if(idx<0)throw Error('لم يُعثر على البند.');
+      input.items[idx]=row;
+     }else input.items.push(row);
+    }
+    if(detailForm.hasAttribute('data-rk44-add-dependent')||detailForm.hasAttribute('data-rk44-edit-dependent')){
+     const isEdit=detailForm.hasAttribute('data-rk44-edit-dependent');
+     const id=isEdit?detailForm.getAttribute('data-id'):identifier;
+     const row={id,name:String(find('name').value||'').trim(),relation:String(find('relation').value||'').trim(),
+      amount:cents('amount'),frequency:find('frequency').value,includedInItems:find('included').checked};
+     if(isEdit){
+      const idx=input.dependents.findIndex(v=>v.id===id);
+      if(idx<0)throw Error('لم يُعثر على المعال.');
+      input.dependents[idx]=row;
+     }else input.dependents.push(row);
+    }
+    if(detailForm.hasAttribute('data-rk44-detail-mode')){
+     input.useAsEssentials=find('useAsEssentials').checked;
+    }
+    applyFinancialAction(()=>adaptive.saveUserDetails(db,input),'تحديث تفصيل الميزانية',
+     'عدد البنود '+input.items.length+'؛ عدد المعالين '+input.dependents.length,
+     'تم حفظ التصنيف والتكرار والمبالغ دون حركة مالية');
+   }catch(e){alert(e.message||'تعذر حفظ التفصيل.');}
+   return;
+  }
   const onboardingForm=event.target.closest('[data-rk44-verified-start]');
   const verifiedMonthForm=event.target.closest('[data-rk44-verified-month]');
   if(onboardingForm||verifiedMonthForm){
