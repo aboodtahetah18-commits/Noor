@@ -192,6 +192,179 @@
   op.status='cancelled';op.cancelledAt=new Date().toISOString();return op;
  }
 
+
+ /* سياسة الانطلاقة: مبالغ مخططة فقط. لا تصنع نقدًا ولا تعدّل البيانات التاريخية. */
+ const starterDefaults=Object.freeze({
+  monthlySurplus:80000,
+  milestones:Object.freeze({hilal:600000,malaa:1000000,assets:2500000}),
+  shares:Object.freeze({hilal:3750,malaaEmergency:3750,malaaSavings:1250,assets:1250}),
+  yieldShares:Object.freeze({malaa:6000,assets:4000})
+ });
+ const starterKeys=Object.keys(starterDefaults.shares);
+ function safeCents(value,limit=100000000000){
+  assert(Number.isSafeInteger(value)&&value>=0&&value<=limit,'أدخل مبلغًا صحيحًا بالهللة ضمن الحد المسموح.');
+  return value;
+ }
+ function validShares(shares,keys){
+  assert(shares&&typeof shares==='object','النسب غير متاحة.');
+  let total=0;
+  for(const k of keys){
+   const part=Number(shares[k]);
+   assert(Number.isInteger(part)&&part>=0&&part<=10000,'نسبة التوزيع غير صالحة.');
+   total+=part;
+  }
+  assert(total===10000,'يجب أن يساوي مجموع النسب 100%.');
+  return Object.fromEntries(keys.map(k=>[k,Number(shares[k])]));
+ }
+ function starterPolicy(db){
+  const raw=db?.rk44StarterPolicy;
+  if(!raw)return {
+   monthlySurplus:starterDefaults.monthlySurplus,
+   milestones:{...starterDefaults.milestones},
+   shares:{...starterDefaults.shares},
+   yieldShares:{...starterDefaults.yieldShares},
+   configured:false
+  };
+  try{
+   const monthlySurplus=safeCents(Number(raw.monthlySurplus),50000000);
+   const milestones=Object.fromEntries(Object.keys(starterDefaults.milestones).map(k=>
+    [k,safeCents(Number(raw.milestones?.[k]),100000000000)]));
+   return {monthlySurplus,milestones,
+    shares:validShares(raw.shares,starterKeys),
+    yieldShares:validShares(raw.yieldShares,['malaa','assets']),
+    configured:true};
+  }catch(e){
+   // Fail safe: no invalid policy is ever interpreted as authority to spend.
+   return {...starterPolicy({}),invalid:true};
+  }
+ }
+ function splitAmounts(amount,shares,keys){
+  safeCents(amount);
+  const ratios=validShares(shares,keys);
+  const values={};let allocated=0;
+  keys.forEach((key,i)=>{
+   const value=i===keys.length-1?amount-allocated:Math.floor(amount*ratios[key]/10000);
+   values[key]=value;allocated+=value;
+  });
+  return values;
+ }
+ function starterProjection(db,period,customSurplus){
+  assert(periodRegex.test(period),'الشهر غير صالح.');
+  const policy=starterPolicy(db);
+  const amount=customSurplus===undefined?policy.monthlySurplus:safeCents(customSurplus,50000000);
+  const allocation=splitAmounts(amount,policy.shares,starterKeys);
+  const protection=assess(db,period);
+  const investedAvailable=allocation.assets>0 &&
+   protection.investmentCandidate>=allocation.assets && !policy.invalid;
+  const total=Object.values(allocation).reduce((a,b)=>a+b,0);
+  assert(total===amount,'فشل توازن توزيع الفائض.');
+  return {period,amount,allocation,policy,protection,investedAvailable,
+   salaryRegistered:Array.isArray(db?.salaryMonths)&&db.salaryMonths.includes(period),
+   monthlyHistory:(Array.isArray(db?.rk44StarterMonths)?db.rk44StarterMonths:[])
+    .filter(r=>r.period===period)};
+ }
+ function saveStarterPolicy(db,input){
+  assert(db&&typeof db==='object','بيانات المنصة غير متاحة.');
+  const monthlySurplus=safeCents(input?.monthlySurplus,50000000);
+  const milestones={};
+  for(const k of Object.keys(starterDefaults.milestones)){
+   milestones[k]=safeCents(input?.milestones?.[k],100000000000);
+  }
+  const shares=validShares(input?.shares,starterKeys);
+  const yieldShares=validShares(input?.yieldShares,['malaa','assets']);
+  const next={version:1,monthlySurplus,milestones,shares,yieldShares,
+   approvedAt:new Date().toISOString()};
+  db.rk44StarterPolicy=next;
+  return next;
+ }
+ function approveStarterMonth(db,period,amount){
+  assert(periodRegex.test(period),'الشهر غير صالح.');
+  assert(starterPolicy(db).configured&&!starterPolicy(db).invalid,'اعتمد إعدادات الانطلاقة أولًا.');
+  assert(Array.isArray(db?.salaryMonths)&&db.salaryMonths.includes(period),
+   'سجّل استلام راتب الشهر في دورة الراتب قبل اعتماد خطة توزيع فائضه.');
+  const existing=Array.isArray(db.rk44StarterMonths)?db.rk44StarterMonths:[];
+  assert(!existing.some(r=>r.period===period),'سبق اعتماد خطة لهذا الشهر، لا يجوز تكرارها.');
+  const projection=starterProjection(db,period,amount);
+  assert(projection.amount<=money(db?.salary),'الفائض المدخل يتجاوز الراتب المسجل؛ راجع القيمة.');
+  const record={id:operationId(),period,kind:'starter-plan',amount:projection.amount,
+   allocation:{...projection.allocation},
+   milestones:{...projection.policy.milestones},
+   shares:{...projection.policy.shares},
+   status:'planned',approvedAt:new Date().toISOString(),
+   description:'توزيع تخطيطي بعد الالتزامات — لا ينشئ نقدًا ولا يحوّل بين البنوك'};
+  if(!Array.isArray(db.rk44StarterMonths))db.rk44StarterMonths=[];
+  db.rk44StarterMonths.push(record);
+  return record;
+ }
+ function yieldRecords(db){return Array.isArray(db?.rk44Yields)?db.rk44Yields:[];}
+ function recordRealizedYield(db,input){
+  assert(db&&Array.isArray(db.ledgerEntries),'يجب تفعيل دفتر الأستاذ قبل تسجيل العائد.');
+  const amount=safeCents(input?.amount);
+  assert(amount>0,'مبلغ العائد يجب أن يكون أكبر من صفر.');
+  const ref=reference(input?.reference);
+  const date=String(input?.date||'');
+  assert(/^\d{4}-\d{2}-\d{2}$/.test(date)&&
+   new Date(date+'T00:00:00Z').toISOString().slice(0,10)===date,'تاريخ العائد غير صحيح.');
+  assert(!yieldRecords(db).some(r=>r.reference===ref),'مرجع هذا العائد مسجل مسبقًا.');
+  const ratios=starterPolicy(db).yieldShares;
+  const splits=splitAmounts(amount,ratios,['malaa','assets']);
+  const id=operationId();
+  const journal={id:'rk44-yield-entry-'+id,date,kind:'rk44-yield',
+   description:'إثبات عائد مالي محصل لبنك الهلال — '+ref,
+   rk44YieldId:id,lines:[
+    {account:'hilal',debit:amount,credit:0},
+    {account:'yieldIncome',debit:0,credit:amount}
+   ],createdAt:new Date().toISOString()};
+  assert(!journalEntries(db).some(e=>e.id===journal.id),'قيد العائد مكرر.');
+  const row={id,kind:'realized-yield',sourceBank:'hilal',amount,reference:ref,
+   date,note:String(input.note||'').trim().slice(0,180),status:'recorded',
+   ratios:{...ratios},splitAmounts:splits,
+   transferIds:{malaa:null,assets:null},journalId:journal.id,
+   recordedAt:new Date().toISOString()};
+  db.ledgerEntries.push(journal);
+  if(!Array.isArray(db.rk44Yields))db.rk44Yields=[];
+  db.rk44Yields.push(row);
+  return row;
+ }
+ function requestYieldSplit(db,yieldId,targetBank){
+  assert(['malaa','assets'].includes(targetBank),'جهة توزيع العائد غير صحيحة.');
+  const row=yieldRecords(db).find(y=>y.id===yieldId);
+  assert(row&&row.status==='recorded','العائد غير موجود أو تم عكسه.');
+  assert(!row.transferIds[targetBank],'سبق إنشاء طلب تحويل لهذا الجزء من العائد.');
+  const amount=row.splitAmounts[targetBank];
+  assert(validAmount(amount),'لا يوجد مبلغ قابل للتحويل.');
+  if(targetBank==='assets'){
+   const assessment=assess(db,row.date.slice(0,7));
+   assert(!assessment.warning && assessment.investmentCandidate>=amount,
+    'توزيع الاستثمار مؤجل حتى استكمال السيولة الوقائية وتوفر فائض نقدي فعلي.');
+  }
+  const request=requestTransfer(db,{from:'hilal',to:targetBank,amount,
+   note:'توزيع العائد المحصل '+row.reference});
+  request.sourceYieldId=yieldId;
+  row.transferIds[targetBank]=request.id;
+  return request;
+ }
+ function reverseYield(db,id,reason){
+  const row=yieldRecords(db).find(y=>y.id===id);
+  assert(row&&row.status==='recorded','العائد غير قابل للعكس.');
+  assert(!Object.values(row.transferIds).some(Boolean),
+   'لا يمكن عكس العائد بعد إصدار طلب تحويل له؛ ألغ الطلبات أولًا عبر تسوية مستقلة.');
+  const why=String(reason||'').trim();
+  assert(why.length>=5,'اكتب سبب تصحيح العائد (خمسة أحرف على الأقل).');
+  const original=journalEntries(db).find(e=>e.id===row.journalId);
+  assert(original,'قيد العائد الأصلي غير موجود.');
+  assert(availableBankCash(db,'hilal')>=row.amount,'النقد الحالي لا يكفي لعكس العائد.');
+  const reverseId='rk44-yield-reversal-'+id;
+  assert(!journalEntries(db).some(e=>e.id===reverseId),'سبق عكس العائد.');
+  db.ledgerEntries.push({id:reverseId,kind:'rk44-yield-reversal',
+   date:new Date().toISOString().slice(0,10),description:'تصحيح العائد '+row.reference,
+   reversalOf:row.journalId,rk44YieldId:id,
+   lines:original.lines.map(l=>({account:l.account,debit:l.credit,credit:l.debit})),
+   createdAt:new Date().toISOString()});
+  row.status='reversed';row.reversedAt=new Date().toISOString();row.reversalReason=why;
+  return row;
+ }
+
  function assess(db,period,overrides){
   const reference=periodRegex.test(String(period))?period:new Date().toISOString().slice(0,7);
   const policy=monthsPolicy(db);
@@ -279,5 +452,7 @@
  }
  return Object.freeze({defaults,monthsPolicy,offset,expenseEstimate,savingsSummary,
   debtList,assess,installment,scenario,bankNames,cashBalance,availableBankCash,
-  transfers,requestTransfer,executeTransfer,matchTransfer,cancelTransfer,transitBalance});
+  transfers,requestTransfer,executeTransfer,matchTransfer,cancelTransfer,transitBalance,
+  starterDefaults,starterPolicy,starterProjection,saveStarterPolicy,approveStarterMonth,
+  splitAmounts,yieldRecords,recordRealizedYield,requestYieldSplit,reverseYield});
 });
