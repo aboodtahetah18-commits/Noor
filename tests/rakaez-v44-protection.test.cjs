@@ -191,3 +191,19 @@ test('yield reversal creates separate balanced journal, no deletion or double re
  assert.equal(db.rk44Yields[0].status,'reversed');
  assert.throws(()=>core.reverseYield(db,y.id,'عكس ثان'));
 });
+
+test('cancelled yield split can be requested again and a cancelled receipt can be reversed',()=>{
+ const db=fixture();db.ledgerOpening.hilal=0;
+ const y=core.recordRealizedYield(db,{amount:10000,date:'2026-10-15',reference:'YIELD-RK-CANCEL-01'});
+ const first=core.requestYieldSplit(db,y.id,'malaa');core.cancelTransfer(db,first.id);
+ const second=core.requestYieldSplit(db,y.id,'malaa');
+ assert.ok(second.id!==first.id);
+ assert.equal(db.rk44Transfers.length,2);
+ assert.equal(first.status,'cancelled');
+ assert.equal(second.status,'pending');
+ core.cancelTransfer(db,second.id);
+ const count=db.ledgerEntries.length;
+ core.reverseYield(db,y.id,'إلغاء استلام غير صحيح');
+ assert.equal(db.ledgerEntries.length,count+1);
+ assert.equal(core.cashBalance(db,'hilal'),0);
+});
