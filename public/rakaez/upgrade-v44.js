@@ -82,7 +82,7 @@
  }
  function activePeriod(){
   const fn=window.RakaezHilalSelectedPeriod;
-  const candidate=typeof fn==='function'?fn():typeof month==='string'?month:null;
+  const candidate=typeof month==='string'?month:typeof fn==='function'?fn():null;
   return /^20\d{2}-(0[1-9]|1[0-2])$/.test(String(candidate))?candidate:new Date().toISOString().slice(0,7);
  }
  const previousReserves=reservesView;
