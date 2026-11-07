@@ -58,13 +58,16 @@
 
  function rkCertifiedSummary(){
   const state=adaptive.onboardingState(db,rkStartMonth());
-  const heading=state.verified?(state.phase==='scheduled'?'بداية الدورة الكاملة مجدولة':'الحسابات مبنية على البيانات المؤكدة'):'المعلومات غير مكتملة';
-  const note=!state.verified?
+  const wizard=adaptive.wizardState(db);
+  const insufficient=!wizard.completed||wizard.record.expensesProvided===false;
+  const heading=insufficient?'المعلومات غير مكتملة':state.verified?(state.phase==='scheduled'?'بداية الدورة الكاملة مجدولة':'الحسابات مبنية على البيانات المؤكدة'):'المعلومات غير مكتملة';
+  const note=insufficient?
+   'أكمل نافذة التأسيس مع إدخال بنود المصروفات لتظهر التوقعات، أو واصل تسجيل عملياتك حتى تتوفر بيانات كافية.':!state.verified?
    'لا يعرض النظام راتبًا أو فائضًا أو أهدافًا من الأرقام التجريبية. أدخل البيانات الفعلية وراجعها من صفحة الانطلاقة.':
    state.phase==='scheduled'?'تبدأ الدورة الكاملة في '+safe(state.startMonth)+'. الشهر الجاري للتسجيل الجزئي فقط.':
    'البيانات الأساسية مؤكدة. الملخص التالي تخطيطي ولا يغير الأرصدة البنكية.';
   let content='';
-  if(state.phase==='active'){
+  if(!insufficient&&state.phase==='active'){
    const p=adaptive.verifiedStarterPlan(db,rkStartMonth());
    if(p.ready)content='<div class="rk44-starter-lines">'+
     '<div class="rk44-starter-line"><strong>الراتب المعتمد للحساب</strong><b>'+fmt(p.income)+'</b></div>'+
