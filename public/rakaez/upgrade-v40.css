@@ -1,0 +1,26 @@
+/* ركائز 40 — لا شرائط انتقال مكررة فوق المحتوى. */
+#view .rk37-context,
+#view .rk38-navigation-back,
+#modalRoot .rk37-modal-nav { display:none!important; }
+.topbar .rk-mobilemenu[data-rk40-mode="back"] {
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:0!important;
+  border-radius:12px!important;
+  background:var(--teal)!important;
+  color:var(--white)!important;
+  border:0!important;
+  box-shadow:none!important;
+  cursor:pointer;
+}
+.topbar .rk-mobilemenu[data-rk40-mode="back"] svg{
+  display:block!important;
+  width:24px!important;
+  height:24px!important;
+  stroke:currentColor!important;
+}
+.topbar .rk-mobilemenu[data-rk40-mode="back"]:focus-visible{
+  outline:2px solid var(--gold)!important;
+  outline-offset:3px!important;
+}
