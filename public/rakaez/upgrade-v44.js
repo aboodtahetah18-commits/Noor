@@ -50,6 +50,55 @@
    '<footer class="rk44-actions">'+actions[id].map(([route,label],i)=>'<button type="button" class="'+(i===0?'rk44-primary':'')+'" '+(route==='transfer'?'data-rk44-open-transfer':'data-rk44-page="'+route+'"')+'>'+safe(label)+'</button>').join('')+'</footer></article>';
  }
 
+
+ function starterPanel(data){
+  const p=adaptive.starterProjection(db,activePeriod()),policy=p.policy;
+  const parts=p.allocation;
+  const percent=n=>(n/100).toFixed(2).replace(/\.?0+$/,'');
+  const field=(name,label,value,step='0.01')=>'<label>'+safe(label)+
+   '<input name="'+name+'" type="number" required min="0" step="'+step+'" value="'+safe(value)+'"></label>';
+  const item=(label,value,note)=>'<div class="rk44-starter-line"><div><strong>'+safe(label)+
+   '</strong><small>'+safe(note)+'</small></div><b>'+fmt(value)+'</b></div>';
+  return '<section class="rk44-starter" aria-label="الانطلاقة المالية التدريجية">'+
+   '<header class="rk44-sectionhead"><h3>الانطلاقة المالية من الصفر</h3>'+
+   hint('هذه أهداف مرحلية وأرقام تخطيطية وليست ديونًا أو أرصدة مؤكدة. لا يُصفّر النظام البيانات السابقة. الاعتماد الشهري لا ينشئ نقدًا أو يحوّل أموالًا.')+'</header>'+
+   '<div class="rk44-starter-main"><span>فائض شهري متوقع بعد جميع الالتزامات</span>'+
+   '<strong>'+fmt(p.amount)+'</strong><small>'+(policy.configured?'سياسة توزيع معتمدة':'نموذج مبدئي غير معتمد')+'</small></div>'+
+   '<div class="rk44-starter-lines">'+
+   item('الهلال: حماية التشغيل',parts.hilal,'هدف مرحلي توضيحي '+fmt(policy.milestones.hilal))+
+   item('ملاءة: صندوق الطوارئ',parts.malaaEmergency,'سيولة فورية قابلة للاستخدام')+
+   item('ملاءة: ادخار وأموال إضافية',parts.malaaSavings,'الهدف الإجمالي لملاءة '+fmt(policy.milestones.malaa))+
+   item('الأصول: مخصص استثماري',parts.assets,'هدف استثماري توضيحي '+fmt(policy.milestones.assets))+
+   '</div><p class="rk44-subnote">حصة الأصول '+(p.investedAvailable?'يمكن دراستها دون تنفيذ شراء تلقائي.':'مؤجلة للاستثمار الفعلي حتى استكمال الحماية.')+
+   ' المقترح الشهري قابل للتغيير حسب فائضك الحقيقي.</p>'+
+   '<details class="rk44-starter-settings"><summary>تعديل الأهداف والنسب والفائض الشهري</summary>'+
+   '<form data-rk44-starter-policy><div class="rk44-starter-inputs">'+
+   field('monthly','الفائض المتوقع (ريال)',(policy.monthlySurplus/100).toFixed(2))+
+   field('targetHilal','هدف الهلال (ريال)',(policy.milestones.hilal/100).toFixed(2))+
+   field('targetMalaa','هدف ملاءة (ريال)',(policy.milestones.malaa/100).toFixed(2))+
+   field('targetAssets','هدف الأصول (ريال)',(policy.milestones.assets/100).toFixed(2))+'</div>'+
+   '<h4>نسب التوزيع من الفائض (المجموع 100%)</h4><div class="rk44-starter-inputs">'+
+   field('shareHilal','الهلال %',percent(policy.shares.hilal))+
+   field('shareEmergency','طوارئ ملاءة %',percent(policy.shares.malaaEmergency))+
+   field('shareSavings','ادخار ملاءة %',percent(policy.shares.malaaSavings))+
+   field('shareAssets','الأصول %',percent(policy.shares.assets))+'</div>'+
+   '<h4>نسب توزيع الأرباح المحصلة (المجموع 100%)</h4><div class="rk44-starter-inputs">'+
+   field('yieldMalaa','ملاءة %',percent(policy.yieldShares.malaa))+
+   field('yieldAssets','الأصول %',percent(policy.yieldShares.assets))+'</div>'+
+   '<label class="rk44-approval"><input type="checkbox" name="approval" required> أعتمد إعدادات التخطيط دون إيداعات أو تحويلات فعلية.</label>'+
+   '<button class="rk44-transfer-primary" type="submit">حفظ سياسة الانطلاقة</button></form></details>'+
+   '<div class="rk44-starter-month"><h4>خطة شهر '+safe(p.period)+'</h4>'+
+   (p.monthlyHistory.length?
+    '<p class="rk44-subnote">سبق اعتماد خطة هذا الشهر بقيمة '+fmt(p.monthlyHistory[0].amount)+'. لا تُغيرها التعديلات الجديدة تلقائيًا.</p>':
+    '<form data-rk44-starter-month><label>الفائض الفعلي بعد الخصومات (ريال)'+
+    '<input name="actual" type="number" required min="0" step="0.01" value="'+(p.amount/100).toFixed(2)+'"></label>'+
+    '<label class="rk44-approval"><input type="checkbox" name="approval" required> راجعت التزاماتي وأوافق على حفظ توزيع مخطط دون أي قيد نقدي.</label>'+
+    '<button type="submit" class="rk44-transfer-primary" '+(policy.configured&&p.salaryRegistered?'':'disabled')+
+    '>اعتماد خطة الشهر</button></form>')+
+   (!p.salaryRegistered?'<p class="rk44-subnote">يلزم تسجيل استلام راتب الشهر في بنك الهلال قبل تثبيت خطة شهرية، ويمكنك حفظ السياسة الآن.</p>':'')+
+   '</div></section>';
+ }
+
  function liquidityPanel(data){
   const p=data.liquidityPlan;
   return '<section class="rk44-liquidity" aria-label="خطة توزيع السيولة">'+
