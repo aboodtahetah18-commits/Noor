@@ -8,12 +8,26 @@ const cycleSteps=['تسوية البنود','الالتزامات','التوزي
 let openedPeriod='',cycleStep=0,loanDraft=null,loanStep=0,loanEditId='';
 const nowISO=()=>new Date().toLocaleDateString('en-CA');
 const periodShift=(p,n)=>v18PeriodAdd(p,n);
-const upcomingPeriod=()=>{const d=new Date(),p=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');return d.getDate()<=Number(db.cycleDay||25)?p:periodShift(p,1)};
+const cycleSalaryDay=()=>{
+ const wizard=window.RakaezAdaptiveCore?.wizardState(db);
+ const value=wizard?.completed?Number(wizard.record.salaryDay):Number(db.cycleDay||25);
+ return Number.isInteger(value)&&value>=1&&value<=31?value:25;
+};
+const upcomingPeriod=()=>{
+ const d=new Date(),p=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+ const proposed=d.getDate()<=cycleSalaryDay()?p:periodShift(p,1);
+ const wizard=window.RakaezAdaptiveCore?.wizardState(db);
+ return wizard?.completed&&proposed<wizard.record.startMonth?wizard.record.startMonth:proposed;
+};
 const cents=v=>Math.round(Number(v||0)*100);
 const cash=v=>money(Number(v||0));
 const field=(id,label,value='',type='text',extra='')=>`<div class="v19-field"><label for="${id}">${esc(label)}</label><input type="${type}" id="${id}" value="${esc(value)}" ${extra}></div>`;
 const option=(value,label,current)=>`<option value="${esc(value)}" ${String(value)===String(current)?'selected':''}>${esc(label)}</option>`;
-const formatDay=period=>`${period}-${String(db.cycleDay||25).padStart(2,'0')}`;
+const formatDay=period=>{
+ const [year,month]=period.split('-').map(Number);
+ const validDay=Math.min(cycleSalaryDay(),new Date(year,month,0).getDate());
+ return period+'-'+String(validDay).padStart(2,'0');
+};
 const personTime=()=>new Intl.DateTimeFormat('ar-SA-u-nu-latn',{weekday:'long',hour:'2-digit',minute:'2-digit',hour12:true}).format(new Date());
 const note=(s)=>`<p class="v19-help">${s}</p>`;
 const persist=(msg,detail)=>{if(msg)audit(msg,detail||openedPeriod);save()};
@@ -27,7 +41,7 @@ function categorySnapshot(period){
  });
 }
 function buildPlan(period){ensure();const previous=periodShift(period,-1);return {
- id:rid(),period,day:db.cycleDay||25,salary:Number(db.salary||0),status:'draft',step:0,createdAt:new Date().toISOString(),closePeriod:previous,
+ id:rid(),period,day:cycleSalaryDay(),salary:Number(db.salary||0),status:'draft',step:0,createdAt:new Date().toISOString(),closePeriod:previous,
  categories:categorySnapshot(previous),obligations:null,allocations:Object.fromEntries(v18ActiveCategories().map(c=>[c.id,Math.round(Number(c.limit||0)*100)])),
  approvedAt:null,receivedAt:null,tasks:[],ratios:{...db.ratios}
 };}
@@ -77,7 +91,7 @@ function tasksFor(plan){const tasks=[{id:'receipt',name:'تأكيد نزول ا�
 }
 function summaryBox(label,value,sub=''){return `<div class="v19-fact"><span>${esc(label)}</span><strong>${value}</strong>${sub?`<small>${esc(sub)}</small>`:''}</div>`}
 function statusText(p){return p?.status==='completed'?'مكتملة':p?.status==='approved'?'بانتظار تنفيذ التحويلات':p?.status==='tracking'?'قيد المتابعة':p?.status==='draft'?'مسودة':p?.status==='legacy'?(p.approved?'معتمدة من إصدار سابق':'مسودة سابقة'):'لم تبدأ'}
-function pageList(){ensure();const current=upcomingPeriod(),plans=db.rkCyclesV19.slice();(db.salaryCycles||[]).filter(c=>!plans.some(p=>p.period===c.period)).forEach(c=>plans.push({period:c.period,day:c.day||db.cycleDay||25,salary:c.salary??null,status:'legacy',approved:!!c.approved}));if(!plans.some(p=>p.period===current)){plans.push({period:current,day:db.cycleDay||25,salary:db.salary,status:'new'})}plans.sort((a,b)=>b.period.localeCompare(a.period));
+function pageList(){ensure();const current=upcomingPeriod(),plans=db.rkCyclesV19.slice();(db.salaryCycles||[]).filter(c=>!plans.some(p=>p.period===c.period)).forEach(c=>plans.push({period:c.period,day:c.day||db.cycleDay||25,salary:c.salary??null,status:'legacy',approved:!!c.approved}));if(!plans.some(p=>p.period===current)){plans.push({period:current,day:cycleSalaryDay(),salary:db.salary,status:'new'})}plans.sort((a,b)=>b.period.localeCompare(a.period));
  return `<section class="v19-cycle-page"><header class="v19-section-title"><h2>دورة الراتب</h2><button class="btn primary" data-v19-action="new-cycle">${ico('plus')} دورة جديدة</button></header>
  <div class="v19-cycle-list">${plans.map(p=>`<button class="v19-cycle-list-item" type="button" ${p.status==='legacy'?`data-v19-legacy="${esc(p.period)}"`:`data-v19-open="${esc(p.period)}"`}><span><small>تاريخ الدورة</small><strong>${esc(p.period)}-${String(p.day||25).padStart(2,'0')}</strong></span><span><small>الراتب</small><strong>${p.salary==null?'غير محفوظ':cash(p.salary)}</strong></span><span><small>حالة الدورة</small><strong>${statusText(p)}</strong></span></button>`).join('')}</div>
  ${note('اضغط على الدورة لفتح مساحة العمل الكاملة. تأكيد السداد والتحويلات يدوي، وليس تنفيذًا مصرفيًا تلقائيًا.')}</section>`;
