@@ -328,10 +328,10 @@
  function wizardShow(){
   const root=document.getElementById('modalRoot');
   if(!root)return;
-  const back=wizardStep>0?'<button type="button" class="rk44-wizard-back" data-w-prev aria-label="الخطوة السابقة">→ <span>رجوع</span></button>':
-   '<button type="button" class="rk44-wizard-back" data-w-close aria-label="العودة إلى المنصة">→ <span>رجوع</span></button>';
+  const back=wizardStep>0?'<button type="button" class="rk44-wizard-back" data-w-prev aria-label="الخطوة السابقة"><span aria-hidden="true">→</span><span>رجوع</span></button>':
+   '<span class="rk44-wizard-spacer" aria-hidden="true"></span>';
   root.innerHTML='<div class="modalbg rk44-wizard-overlay" role="presentation">'+
-   '<section class="modal rk44-wizard" role="dialog" aria-modal="true" aria-labelledby="rk44-wizard-title" dir="rtl">'+
+   '<section class="rk44-wizard" role="dialog" aria-modal="true" aria-labelledby="rk44-wizard-title" dir="rtl">'+
    '<header class="rk44-wizard-head">'+back+'<h2 id="rk44-wizard-title">'+safe(wizardTitles[wizardStep])+'</h2>'+
    '<button type="button" class="rk44-wizard-dismiss" data-w-close aria-label="إغلاق النافذة">×</button></header>'+
    '<div class="rk44-wizard-body"><div class="rk44-wizard-step">الخطوة '+(wizardStep+1)+' من '+wizardTitles.length+
