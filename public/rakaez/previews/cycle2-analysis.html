@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>ركائز | التحليل وإعداد الدورة الجديدة — معاينة محلية</title>
+<style>
+:root{--navy:#182a42;--teal:#0c8b79;--blue:#427cc5;--gold:#c59639;--red:#ce5361;--paper:#f4f7fb;--ink:#243246;--muted:#718299;--line:#dae3ed;--white:#fff}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;max-width:100%;overflow-x:hidden}
+body{font:14px/1.85 Tahoma,Arial,sans-serif;color:var(--ink);background:var(--paper)}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.apphead{background:var(--navy);color:var(--white);border-bottom:3px solid var(--gold);padding:17px 19px}
+.headrow{display:flex;justify-content:space-between;gap:12px;align-items:center;max-width:660px;margin:auto}
+.headrow strong{font-size:19px}.headrow small{font-size:11px;color:#d4ddeb}
+.shell{width:min(650px,100%);margin:20px auto;padding:0 14px 35px}
+.card{background:var(--white);border:1px solid var(--line);border-radius:15px;padding:17px;margin:12px 0;min-width:0}
+.card h2,.card h3{font-size:16px;color:var(--navy);margin:0 0 8px}
+.muted{color:var(--muted);font-size:12px;line-height:1.85;margin:6px 0}.mini{font-size:11px;color:var(--muted)}
+.keyline{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}.keyline:last-child{border-bottom:0}
+.keyline strong{color:var(--navy)}.mark{color:var(--teal);border:1px solid var(--line);border-radius:9px;padding:3px 8px;font-size:11px;font-weight:750}
+.btn{display:inline-flex;justify-content:center;align-items:center;gap:7px;min-height:43px;background:var(--white);color:var(--navy);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-weight:750;font-size:12px;line-height:1.55;min-width:0;max-width:100%}
+.btn.primary{background:var(--teal);border-color:var(--teal);color:var(--white)}.btn.secondary{background:var(--navy);border-color:var(--navy);color:var(--white)}.btn.danger{color:var(--red)}.btn.block{width:100%}
+.btn svg,.icon{width:18px;height:18px;vertical-align:middle;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.btn:active{transform:translateY(1px)}.buttonrow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.overlay{position:fixed;inset:0;background:rgba(24,42,66,.72);z-index:10;display:flex;align-items:center;justify-content:center;padding:9px}
+.overlay.sub{z-index:30;background:rgba(24,42,66,.84)}
+.dialog{background:var(--white);width:min(660px,100%);max-height:calc(100dvh - 18px);border:2px solid var(--gold);border-radius:17px;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.dialog-head{display:grid;grid-template-columns:75px minmax(0,1fr) 47px;gap:8px;align-items:center;padding:11px 12px;background:var(--navy);color:var(--white);border-bottom:3px solid var(--gold);flex:0 0 auto}
+.dialog-head h2{text-align:center;font-size:15px;color:#fff;margin:0;line-height:1.55}
+.navback,.close{background:#354b67;color:#fff;border:1px solid #7890a9;border-radius:10px;min-height:43px;display:flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;font-weight:bold;font-size:12px}
+.close{width:43px;color:var(--navy);background:#fff;border-color:#fff;font-size:24px;line-height:1}
+.dialog-main{overflow-y:auto;overscroll-behavior:contain;min-height:0;flex:1;padding:15px;scrollbar-width:thin}
+.dialog-footer{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:12px 15px;border-top:1px solid var(--line);background:#fff;flex:0 0 auto}
+.stepmeta{display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid var(--line);padding:0 0 11px;margin-bottom:15px;color:var(--muted);font-size:11px}
+.stepdots{display:flex;gap:5px}.stepdots span{height:6px;width:18px;border-radius:4px;background:var(--line)}.stepdots span.active{background:var(--teal)}
+.sectionhead{display:flex;align-items:center;justify-content:space-between;gap:9px;min-width:0;margin:0 0 10px}.sectionhead h3{margin:0;font-size:15px}
+.info-btn{width:31px;height:31px;display:grid;place-items:center;border:1px solid var(--line);border-radius:50%;background:#fff;color:var(--teal);font-weight:800;flex:none}
+.data-quality{display:grid;gap:8px;padding:12px;border:1px solid var(--line);border-radius:13px;margin:10px 0;background:var(--paper)}
+.data-quality div{display:flex;justify-content:space-between;gap:12px;align-items:center}.data-quality b{font-size:12px;color:var(--navy)}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.field{display:grid;gap:4px;min-width:0}.field label{font-size:11px;font-weight:750;color:var(--navy)}.field input,.field select,.field textarea,.amount{width:100%;min-width:0;border:1px solid var(--line);border-radius:9px;padding:9px 10px;min-height:42px;font:inherit;font-size:12px;color:var(--navy);background:#fff}
+.field textarea{min-height:82px;resize:vertical}.amount{direction:ltr;text-align:right;font-variant-numeric:tabular-nums;font-weight:750}.field .hint{color:var(--muted);font-size:10px}.full{grid-column:1/-1}
+.pill{border:1px solid var(--line);border-radius:999px;padding:3px 9px;color:var(--muted);font-size:10px;font-weight:750;white-space:nowrap}.pill.good{color:var(--teal);border-color:rgba(12,139,121,.3)}.pill.warn{color:var(--red);border-color:rgba(206,83,97,.32)}.pill.blue{color:var(--blue);border-color:rgba(66,124,197,.33)}
+.number{font-weight:850;font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:plaintext;white-space:nowrap}.number.good{color:var(--teal)}.number.blue{color:var(--blue)}.number.bad{color:var(--red)}
+.report-entry{margin:8px 0;background:#fff;border:1px solid var(--line);border-right:4px solid var(--blue);border-radius:12px;overflow:hidden}
+.report-entry.report-essential{border-right-color:var(--teal)}.report-entry.report-scheduled{border-right-color:var(--gold)}.report-entry.report-unclassified{border-right-color:var(--red)}
+.report-link{display:grid;grid-template-columns:minmax(0,1fr) auto 20px;align-items:center;gap:11px;width:100%;background:transparent;color:var(--navy);text-align:right;border:0;padding:11px 12px;min-height:65px}
+.report-link strong{display:block;font-size:13px}.report-link small{font-size:10px;color:var(--muted);display:block}.report-amount{font-size:12px;font-weight:800;white-space:nowrap;color:var(--blue)}
+.asset{border:1px solid var(--line);border-right:4px solid var(--teal);border-radius:13px;margin:12px 0;padding:12px;background:#fff;min-width:0}
+.asset.optional{border-right-color:var(--blue)}.asset.scheduled{border-right-color:var(--gold)}.asset.missing{border-right-color:var(--red)}
+.asset-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.asset-name{font-size:14px;color:var(--navy);font-weight:800}.asset-head small{display:block;font-size:10px;color:var(--muted)}
+.asset-numbers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:11px 0}.asset-numbers>div{background:var(--paper);border-radius:9px;padding:8px 6px;display:grid;gap:3px;text-align:center;min-width:0}.asset-numbers small{color:var(--muted);font-size:10px}.asset-numbers .number{font-size:12px}
+details.evidence{border-top:1px solid var(--line);margin-top:9px;padding-top:8px}details.evidence>summary{cursor:pointer;color:var(--navy);font-weight:750;font-size:11px;display:flex;justify-content:space-between;gap:9px}details.evidence[open]>summary{margin-bottom:9px}
+.evidence-body{background:var(--paper);border-radius:9px;padding:10px}.note{font-size:11px;color:var(--ink);line-height:1.85;margin:6px 0}.checks{display:flex;gap:8px;align-items:flex-start;font-size:11px;line-height:1.7}.checks input{accent-color:var(--teal);margin-top:4px}
+.hintbox{color:var(--muted);font-size:11px;border:1px solid var(--line);border-radius:10px;padding:10px;margin:10px 0}.warning{border-right:3px solid var(--red);background:var(--paper);color:var(--red);padding:10px;margin:12px 0;border-radius:8px;font-size:11px}.notice{border-right:3px solid var(--teal);background:var(--paper);color:var(--navy);padding:10px;margin:12px 0;border-radius:8px;font-size:11px}
+.editline{display:grid;grid-template-columns:minmax(0,1fr) 115px;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}.editline:last-child{border-bottom:0}.editline strong{font-size:12px;color:var(--navy)}.editline small{display:block;font-size:10px;color:var(--muted)}
+.summaryline{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line)}.summaryline:last-child{border:0}.summaryline span{font-size:12px}.summaryline b{font-size:13px}
+.split{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.split .metric{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}.split .metric small{display:block;font-size:10px;color:var(--muted)}.split .metric strong{display:block;font-size:16px}
+.filebar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:11px}.filebar input{max-width:100%;min-width:0;font-size:11px}
+.entry{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;border-bottom:1px solid var(--line);padding:9px 0}.entry:last-child{border:0}.entry small{font-size:10px;color:var(--muted);display:block}
+.empty{text-align:center;color:var(--muted);font-size:12px;padding:22px 9px;line-height:2}
+.confirm-box{display:grid;gap:11px;padding:13px;background:var(--paper);border:1px solid var(--line);border-radius:12px}
+@media(max-width:390px){.dialog-main{padding:12px}.dialog-footer{padding:10px 12px;gap:8px}.dialog-head{grid-template-columns:65px minmax(0,1fr) 43px;gap:6px}.dialog-head h2{font-size:13px}.navback{font-size:11px}.btn{padding:8px 7px;font-size:11px}.asset-numbers .number{font-size:11px}}
+@media(max-width:330px){.asset-numbers{grid-template-columns:repeat(2,minmax(0,1fr))}.grid2{grid-template-columns:1fr}.editline{grid-template-columns:minmax(0,1fr) 100px}.split{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<header class="apphead"><div class="headrow"><strong>ركائز</strong><small>التحليل وتخطيط الدورة الجديدة • معاينة محلية</small></div></header>
+<main class="shell" id="home"></main>
+<div id="modal"></div><div id="submodal"></div>
+<script>
+'use strict';
+const el=id=>document.getElementById(id);
+const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=c=>(c/100).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+' ر.س';
+const num=c=>(c/100).toFixed(2);
+const amount=v=>{const s=String(v??'').trim();if(!/^(?:0|[1-9]\d*)(?:\.\d{1,2})?$/.test(s))throw Error('أدخل مبلغًا صحيحًا بالريال بحد أقصى منزلتين عشريتين.');const n=Math.round(Number(s)*100);if(!Number.isSafeInteger(n)||n>999999999999)throw Error('المبلغ غير صالح.');return n};
+const span=(n,c='blue')=>`<b class="number ${c}">${money(n)}</b>`;
+const svg=(name)=>{
+ const paths={calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/>',report:'<path d="M4 19V5M4 19h17M8 14l4-4 4 2 4-6"/>',shield:'<path d="m12 2 9 4v6c0 5-4 8-9 10-5-2-9-5-9-10V6Z"/><path d="m9 12 2 2 4-4"/>',next:'<path d="M5 12h14m-6-6 6 6-6 6"/>',edit:'<path d="m3 21 4-.8L19 8l-3-3L4 17Z"/><path d="m14 7 3 3"/>',info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>',wallet:'<rect x="2" y="5" width="20" height="16" rx="3"/><path d="M2 9h20M16 15h3"/>',check:'<path d="m5 12 4 4L19 6"/>',file:'<path d="M6 2h8l5 5v15H6Z"/><path d="M14 2v5h5M9 12h7M9 16h7"/>'};
+ return `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true">${paths[name]||paths.info}</svg>`;
+};
+const btn=(label,click,kind='',ic='')=>`<button class="btn ${kind}" type="button" onclick="${click}">${ic?svg(ic):''}${esc(label)}</button>`;
+const kindLabels={essential:'ضروري',optional:'اختياري',scheduled:'التزام منتظم',irregular:'غير منتظم',unclassified:'غير مصنف'};
+let view=0,expanded={},demo=false,ack=false,priorReviewDone=true;
+const newState=()=>({cycles:[],items:[],nextIncome:null,proposed:{},overrides:{},approved:null,hasImport:false,transactions:[],dataStatus:'empty',reviewed:false,confirmedRecords:false});
+let S=newState();
+const id=()=>('i'+Math.random().toString(36).slice(2,10));
+const emptyItem=(name,kind='unclassified',planned=0)=>({id:id(),name,kind,planned,upcoming:0,regular:false,isPaused:false,account:'',dueInfo:'',explanation:''});
+const round50=c=>Math.round(c/5000)*5000;
+const med=values=>{const s=values.slice().sort((a,b)=>a-b);return s.length?s.length%2?s[(s.length-1)/2]:(s[s.length/2-1]+s[s.length/2])/2:0};
+const sum=(a)=>a.reduce((t,x)=>t+x,0);
+function demoLoad(){
+ demo=true;ack=false;S=newState();
+ S.items=[
+  {id:'rent',name:'السكن والفواتير الأساسية',kind:'essential',planned:190000,upcoming:190000,regular:true,account:'حساب التشغيل',dueInfo:'فواتير شهرية مؤكدة'},
+  {id:'food',name:'مقاضي المنزل',kind:'essential',planned:100000,upcoming:0,regular:true,account:'حساب المعيشة',dueInfo:''},
+  {id:'rest',name:'المطاعم والمقاهي',kind:'optional',planned:60000,upcoming:0,regular:true,account:'حساب المعيشة',dueInfo:''},
+  {id:'fuel',name:'الوقود',kind:'essential',planned:55000,upcoming:0,regular:true,account:'حساب التشغيل',dueInfo:''},
+  {id:'install',name:'القسط الشهري',kind:'scheduled',planned:80000,upcoming:80000,regular:true,account:'حساب الراتب',dueInfo:'قسط مستحق في الدورة القادمة'},
+  {id:'sub',name:'الاشتراكات',kind:'optional',planned:12000,upcoming:10000,regular:true,isPaused:false,account:'حساب الراتب',dueInfo:'تجديد اشتراكات نشطة'},
+  {id:'maint',name:'صيانة المركبة',kind:'irregular',planned:20000,upcoming:0,regular:false,account:'حساب التشغيل',dueInfo:'لا موعد صيانة مؤكد للدورة القادمة'},
+  {id:'family',name:'الإعالة',kind:'essential',planned:40000,upcoming:40000,regular:true,account:'حساب التشغيل',dueInfo:'مساعدة دورية مؤكدة'}
+ ];
+ const vals=[[185000,108000,78000,53000,80000,12000,10000,40000],[190000,112000,72000,51000,80000,10000,36000,40000]];
+ S.cycles=[
+  {key:'2026-09',label:'دورة 27 أغسطس – 26 سبتمبر',income:620000,complete:true,matched:true},
+  {key:'2026-10',label:'دورة 27 سبتمبر – 26 أكتوبر',income:640000,complete:true,matched:true}
+ ];
+ for(let c=0;c<2;c++)S.items.forEach((it,j)=>{
+  const a=vals[c][j];
+  const portions=it.kind==='irregular'?(c===1?[a]:[a]):[Math.floor(a/3),Math.floor(a/3),a-Math.floor(a/3)*2];
+  portions.forEach((v,k)=>S.transactions.push({id:id(),cycle:S.cycles[c].key,item:it.id,value:v,date:c===0?`2026-09-${[3,10,19][k]||19}`:`2026-10-${[4,12,20][k]||20}`,merchant:it.name,reference:id(),confirmed:true}));
+ });
+ S.nextIncome=640000;S.reviewed=true;S.dataStatus='demo';recalculate();openWizard(0);
+}
+function clearDemo(){demo=false;S=newState();expanded={};renderHome();if(view>=0)renderWizard();}
+function isSubscription(i){return i.subscription===true||/اشتراك|subscription/i.test(i.name)}
+function requiredDue(i){return i.isPaused&&isSubscription(i)?0:(i.upcoming||0)}
+function actuals(item){return S.cycles.map(c=>sum(S.transactions.filter(t=>t.item===item.id&&t.cycle===c.key&&t.confirmed).map(t=>t.value)));}
+function sampleCount(item){return S.cycles.map(c=>S.transactions.filter(t=>t.item===item.id&&t.cycle===c.key&&t.confirmed).length);}
+function trustedCycles(){return S.cycles.filter(c=>c.complete&&c.matched)}
+function trust(item){const cycles=trustedCycles();const counts=sampleCount(item).filter((_,i)=>S.cycles[i].complete&&S.cycles[i].matched),has=counts.filter(x=>x>0).length;
+ if(!cycles.length||has===0)return {level:0,label:'غير كافٍ',detail:'لا توجد دورة مكتملة ومطابقة مع معاملات مؤكدة لهذا البند.'};
+ if(cycles.length===1||has===1)return {level:1,label:'مبدئي',detail:'دورة واحدة أو معاملات غير منتظمة؛ لا تُعتمد زيادة أو تخفيض تلقائيًا.'};
+ if(cycles.length===2)return {level:2,label:'متوسط',detail:'دورتان مكتملتان؛ التوقع قابل للمراجعة، وليس ضمانًا للتكلفة المقبلة.'};
+ return {level:3,label:'أفضل نسبيًا',detail:'ثلاث دورات أو أكثر مع مطابقة؛ يظل التقدير معرضًا للتغير.'};
+}
+function evaluate(item){
+ const allCounts=sampleCount(item),allValues=actuals(item);
+ const counts=allCounts.filter((_,i)=>S.cycles[i].complete&&S.cycles[i].matched);
+ const values=allValues.filter((_,i)=>S.cycles[i].complete&&S.cycles[i].matched);
+ const q=trust(item),l=values.length?values[values.length-1]:null;
+ const avg=values.length?Math.round(sum(values)/values.length):null;
+ let suggested=item.planned,action='الإبقاء مؤقتًا',why='المبلغ المعتمد سابقًا هو المرجع حتى توجد أدلة كافية.',factors=[],risk='';
+ if(item.kind==='unclassified'){action='تصنيف مطلوب';why='لا يمكن تحديد ضرورة البند أو خفضه قبل تحديد تصنيفه من المستخدم.';}
+ else if(q.level>=2){
+  if(item.isPaused&&isSubscription(item)){suggested=0;action='توقف مؤقت';why='أكّد المستخدم توقف الاشتراك للدورة القادمة. لا تُسجل عملية نقدية تلقائيًا.'}
+  else if(item.kind==='scheduled'||item.upcoming>0&&item.kind==='essential'){
+   suggested=Math.max(item.upcoming||0,item.planned,med(values));
+   action=suggested>item.planned?'زيادة لحماية الاستحقاق':'الإبقاء على الالتزام';
+   why='المبلغ المستحق القادم محدد، لذلك لا يُخفض لمجرد انخفاض الصرف سابقًا.';
+  } else if(item.kind==='essential'){
+   const history=Math.max(med(values),item.upcoming||0);
+   if(history>=item.planned*1.06){suggested=Math.max(item.upcoming,round50(history));action='زيادة مدروسة';why='الصرف الفعلي للضرورة تجاوز المخصص في دورتين؛ يُقترح تغطيته بدل إخفاء العجز.'}
+   else {suggested=Math.max(item.planned,item.upcoming);action='الإبقاء للحماية';why='لا توجد أدلة كافية على إمكانية خفض بند ضروري بأمان.';}
+  } else if(item.kind==='optional'){
+   const high=values.every(v=>v>item.planned*1.05),low=values.every(v=>v<item.planned*.7);
+   if(high){suggested=item.planned;action='ضبط الإنفاق، لا مكافأة التجاوز';why='تجاوز المصروف السقف في الدورتين؛ نحافظ على السقف ونقترح متابعة أسباب الصرف، لا زيادته تلقائيًا.'}
+   else if(low){suggested=Math.max(item.upcoming||0,round50(Math.max(...values)));action='خفض تجريبي محدود';why='الصرف أقل من المخصص في دورتين؛ يمكن خفض الفرق إذا لم توجد حاجة معلّقة.'}
+   else {suggested=Math.max(item.planned,item.upcoming||0);action='الإبقاء';why='التغير غير منتظم أو صغير؛ لا دليل كافٍ لتغيير المبلغ.'}
+  } else {
+   suggested=Math.max(item.planned,item.upcoming||0);action='مراجعة موعد الصيانة';why='هذا مصروف غير منتظم؛ لا نكرر أعلى فاتورة من شهر سابق دون موعد أو تكلفة مؤكدة.'
+  }
+ }
+ if(values.length>=2&&counts.some(v=>v>0)){
+ const totalTransactions=sum(counts),eligible=new Set(trustedCycles().map(c=>c.key));
+ const trans=S.transactions.filter(t=>t.item===item.id&&t.confirmed&&eligible.has(t.cycle));
+ if(totalTransactions>0){
+ const largest=Math.max(...trans.map(t=>t.value));
+ if(largest>=sum(values)*.45)factors.push('عملية مرتفعة تمثل جزءًا كبيرًا من الصرف؛ تحقق إن كانت استثنائية.');
+ const avgTicket=Math.round(sum(values)/totalTransactions);factors.push('متوسط مبلغ العملية المسجلة: '+money(avgTicket)+'، من '+totalTransactions+' عمليات.');
+ if(counts[0]>=2&&counts[1]>=2){const t0=values[0]/counts[0],t1=values[1]/counts[1];if(t1>t0*1.12)factors.push('متوسط العملية ارتفع بين الدورتين؛ راجع الكمية والأسعار قبل افتراض سبب محدد.');}
+ }
+ }
+ if(item.kind==='essential'&&values.length>=2&&values.every(v=>v>=item.planned*1.06))factors.push('تجاوز ضرورتين متتاليتين للمخصص');
+ if(item.kind==='optional'&&values.length>=2&&values.every(v=>v>item.planned*1.05))factors.push('تجاوز متكرر يحتاج متابعة سلوك الإنفاق');
+ if(values.length>=2&&values[1]>values[0]*1.15)factors.push('ارتفاع الصرف بين دورتين؛ يلزم معرفة ما إذا تغيرت الكميات أو الأسعار.');
+ if(values.length>=2&&values[1]<values[0]*.8)factors.push('انخفاض واضح في الصرف؛ تحقق من تأجيل مشتريات أو بقاء استحقاقات قبل خفض الخطة.');
+ if(item.kind==='irregular'&&values.length>=2&&Math.abs(values[0]-values[1])>item.planned*.4)factors.push('تذبذب موسمي أو صيانة غير دورية؛ يلزم موعد فعلي');
+ if(item.upcoming)factors.push((item.isPaused&&isSubscription(item)?'استحقاق أُوقف بناء على تأكيد المستخدم: ':'استحقاق قادم مسجل: ')+money(item.upcoming));
+ if(!S.cycles.every(c=>c.complete&&c.matched))factors.push('بعض الدورات غير مكتملة المطابقة');
+ if(counts.some(n=>n===0))factors.push('توجد دورة مكتملة بلا معاملات مؤكدة لهذا البند');
+ if(trustedCycles().length<2)factors.push('نحتاج دورة مطابقة إضافية لتقييم التكرار');
+ if(item.kind==='scheduled'&&suggested<item.upcoming)risk='لا يغطي الاستحقاق';
+ return {item,values,counts,q,avg,latest:l,suggested,action,why,factors,risk};
+}
+function recalculate(){S.proposed={};S.items.forEach(item=>{S.proposed[item.id]=evaluate(item).suggested});}
+function planned(item){return Object.hasOwn(S.overrides,item.id)?S.overrides[item.id]:(S.proposed[item.id]??item.planned)}
+const income=()=>S.nextIncome??0;
+const totalPlan=()=>sum(S.items.map(planned));
+const dueShort=()=>sum(S.items.map(i=>Math.max(0,requiredDue(i)-planned(i))));
+const remain=()=>income()-totalPlan();
+function go(n){view=n;renderWizard();}
+function openWizard(n=0){view=n;renderHome();renderWizard();}
+function closeWizard(){view=-1;el('modal').innerHTML='';renderHome()}
+function renderHome(){
+ const filled=S.cycles.length>0;
+ el('home').innerHTML=`<section class="card"><div class="sectionhead"><h2>رحلة الدورة المالية</h2><span class="pill good">مرحلة المراجعة السابقة منتهية في المعاينة</span></div>
+ <div class="keyline"><span>${svg('check')} مراجعة الدورة السابقة</span><b class="mark">منجزة في المثال</b></div>
+ <div class="keyline"><span>${svg('report')} تحليل الدورة الجديدة</span><b class="mark">${S.approved?'خطة محفوظة':'المرحلة التالية'}</b></div>
+ <p class="muted">بدل تكرار صفحات المراجعة، تُستخدم نتائجها لإعداد ميزانية الدورة القادمة.</p>
+ <div class="buttonrow">${btn(S.approved?'عرض الخطة':'ابدأ تحليل الدورة', 'openWizard(0)','primary','next')}${btn('ماذا سنراجع؟','toggleInfo()','','info')}</div><div id="help" hidden class="hintbox">يُقارن ركائز البنود بالمصروف المؤكد في الدورات المكتملة ويأخذ في الاعتبار الاستحقاقات والضرورة والتذبذب. كل تغيير يحتاج موافقتك؛ التوقعات ليست أرصدة فعلية.</div></section>
+ <section class="card"><div class="keyline"><strong>مصدر البيانات</strong><span class="pill ${filled?'blue':'warn'}">${filled?(demo?'مثال توضيحي':'مدخلات محلية'):'لم تُقدَّم بيانات'}</span></div>
+ ${filled?`<p class="muted">${S.cycles.length} دورة في السجل، ${S.items.length} بند، ${S.transactions.length} معاملة مؤكدة.</p>`:'<p class="muted">لا يمكن إصدار توصيات دقيقة قبل إدخال مصروفات وإيرادات مؤكدة. يمكنك تجربة مثال وهمي أو استيراد بياناتك محليًا.</p>'}
+ <div class="buttonrow">${btn('تجربة مثال توضيحي','demoLoad()','','report')}${btn('بيانات جديدة','clearDemo()','','edit')}</div></section>
+ ${S.approved?`<section class="card"><h3>خطة الدورة القادمة المعتمدة في المعاينة</h3><div class="keyline"><span>إجمالي المخصصات</span>${span(S.approved.total,'blue')}</div><div class="keyline"><span>الغير موزع</span>${span(S.approved.remaining,'good')}</div><p class="muted">حفظ محلي مؤقت داخل الجلسة فقط؛ لا ينشئ أموالًا أو تحويلات ولا يمس الدورة التاريخية.</p></section>`:''}`;
+}
+function toggleInfo(){const h=el('help');if(h)h.hidden=!h.hidden}
+const titles=['مصادر البيانات','تقرير وتحليل البنود','توزيع الدورة الجديدة','مراجعة واعتماد الخطة'];
+function renderWizard(){
+ if(view<0){el('modal').innerHTML='';return}
+ let content=view===0?evidencePage():view===1?reportPage():view===2?allocationPage():approvalPage();
+ el('modal').innerHTML=`<div class="overlay" role="presentation"><section class="dialog" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+ <header class="dialog-head"><button class="navback" type="button" onclick="back()">${svg('next')} رجوع</button><h2 id="modal-title">${titles[view]}</h2><button class="close" type="button" aria-label="إغلاق" onclick="closeWizard()">×</button></header>
+ <div class="dialog-main"><div class="stepmeta"><span>الخطوة ${view+1} من 4</span><div class="stepdots">${titles.map((_,i)=>`<span class="${i===view?'active':''}"></span>`).join('')}</div></div>${content}<p id="err" class="warning" hidden></p></div>
+ <footer class="dialog-footer">${btn('السابق','back()','','next')}${btn(view===3?'اعتماد المسودة':view===2?'مراجعة التوزيع':'التالي',view===3?'approve()':'forward()','primary',view===3?'check':'next')}</footer>
+ </section></div>`;
+ const focus=el('modal-title');if(focus)focus.scrollIntoView({block:'nearest'});
+}
+function error(msg){const t=el('err');if(t){t.hidden=false;t.textContent=msg}}
+function back(){if(view===0){closeWizard();return}go(view-1)}
+function forward(){
+ if(view===0&&!S.items.length){error('أضف البنود والبيانات أو افتح المثال التوضيحي قبل المتابعة.');return}
+ if(view===2&&Object.values(S.overrides).some(x=>x===null)){error('راجع المبالغ المعدلة غير الصالحة.');return}
+ if(view===2&&S.nextIncome===null){error('أدخل الدخل المتوقع للدورة القادمة.');return}
+ if(view===2&&remain()<0){error('الخطة تتجاوز الدخل المتوقع؛ راجع بنودها قبل المتابعة.');return}
+ go(Math.min(3,view+1));
+}
+function evidencePage(){
+ return `<div class="sectionhead"><h3>${svg('file')} بيانات الدورات السابقة</h3><button class="info-btn" type="button" title="تعتمد الاقتراحات على معاملات مؤكدة فقط، ولا تُعتبر بيانات المثال بياناتك." onclick="toggleEvidenceHelp()">i</button></div>
+ <p id="evidence-help" class="hintbox" hidden>استخدم أعمدة CSV المطلوبة: دورة،تاريخ،بند،مبلغ،نوع. اختيارية: مرجع،تصنيف،مخصص سابق،مستحق قادم،الحساب. لن تُحسب التحويلات والتخصيصات مصروفات. النوع «مصروف» أو «دخل». الأدلة لا تعتمد تلقائيًا حتى تؤكد اكتمال الدورة ومطابقتها.</p>
+ <div class="data-quality"><div><span>الحالة</span><b>${S.cycles.length?(demo?'بيانات توضيحية وليست حقيقية':'بيانات مستوردة للمراجعة'):'بيانات غير متوفرة'}</b></div><div><span>الدورات</span><b>${S.cycles.length}</b></div><div><span>العمليات</span><b>${S.transactions.length}</b></div></div>
+ ${S.cycles.map((c,i)=>`<div class="asset"><div class="asset-head"><strong class="asset-name">${esc(c.label||c.key)}</strong><span class="pill ${c.complete&&c.matched?'good':'warn'}">${c.complete&&c.matched?'مكتملة ومطابقة':'بحاجة تأكيد'}</span></div><div class="keyline"><span>${c.complete&&c.matched?'الدخل المؤكد':'الدخل المسجل للمراجعة'}</span>${span(c.income,'good')}</div><div class="keyline"><span>${c.complete&&c.matched?'مصروفات مطابقة':'مصروفات مسجلة للمراجعة'}</span>${span(sum(S.transactions.filter(t=>t.cycle===c.key&&t.confirmed).map(t=>t.value)),'bad')}</div><label class="checks"><input type="checkbox" ${c.complete&&c.matched?'checked':''} onchange="cycleConfirm(${i},this.checked)"> أؤكد اكتمال معاملات هذه الدورة ومطابقتها (للمعاينة فقط)</label></div>`).join('')}
+ <div class="buttonrow">${btn('مثال وهمي','demoLoad()','','report')}${btn('إضافة بند','openItemEditor()','','edit')}</div>
+ <div class="filebar"><label class="btn" for="csv-file">${svg('file')} استيراد كشف CSV</label><input type="file" id="csv-file" accept=".csv,text/csv" onchange="importCSV(this)"></div>
+ <p class="muted">يُستبعد من الصرف: تحويلات الحسابات، التخصيصات الداخلية، والإيداعات؛ لمنع احتساب المال مرتين.</p>`;
+}
+function toggleEvidenceHelp(){const n=el('evidence-help');if(n)n.hidden=!n.hidden}
+function cycleConfirm(i,on){const c=S.cycles[i];if(!c)return;c.complete=Boolean(on);c.matched=Boolean(on);S.approved=null;recalculate();renderWizard()}
+function reportPage(){
+ if(!S.items.length)return '<div class="empty">لا يوجد بند لتحليله؛ ارجع لمصادر البيانات.</div>';
+ const incomplete=S.cycles.filter(c=>!c.complete||!c.matched).length;
+ const q=S.items.filter(i=>trust(i).level>=2).length;
+ const evaluated=S.items.map(i=>evaluate(i));
+ const biggestOver=evaluated.filter(r=>r.latest!==null&&r.latest>r.item.planned).sort((a,b)=>(b.latest-b.item.planned)-(a.latest-a.item.planned))[0];
+ const confirmedCycles=trustedCycles(),incomes=confirmedCycles.map(c=>c.income),incomeLast=incomes.at(-1),incomePrev=incomes.at(-2);
+ const lastExpense=confirmedCycles.length?sum(S.transactions.filter(t=>t.cycle===confirmedCycles.at(-1).key&&t.confirmed).map(t=>t.value)):0;
+ const cashflow=incomeLast===undefined?null:incomeLast-lastExpense;
+ return `<div class="sectionhead"><h3>${svg('report')} تقرير كل بند</h3><span class="pill ${q===S.items.length?'good':'warn'}">${q} من ${S.items.length} أدلتها كافية نسبيًا</span></div>
+ <div class="data-quality">
+ ${incomeLast===undefined?'':`<div><span>آخر دخل مسجل / المصروف المؤكد</span><b>${money(incomeLast)} / ${money(lastExpense)}</b></div>`}
+ ${cashflow===null?'':`<div><span>فرق الدخل والمصروف (ليس رصيدًا بنكيًا)</span><b class="number ${cashflow>=0?'good':'bad'}">${money(cashflow)}</b></div>`}
+ ${incomePrev===undefined?'':`<div><span>تغير الدخل عن الدورة السابقة</span><b class="number ${incomeLast>=incomePrev?'good':'bad'}">${incomeLast>=incomePrev?'+':'−'} ${money(Math.abs(incomeLast-incomePrev))}</b></div>`}
+ ${biggestOver?`<div><span>أكبر تجاوز مثبت للمخصص</span><b>${esc(biggestOver.item.name)}: ${money(biggestOver.latest-biggestOver.item.planned)}</b></div>`:''}
+ </div>
+ ${incomplete?`<div class="warning">توجد دورات غير مطابقة؛ تبقى الاقتراحات أولية حتى تؤكد البيانات.</div>`:''}
+ ${S.items.map(item=>{
+  const r=evaluate(item),delta=(r.latest??0)-item.planned;
+  return `<div class="report-entry report-${esc(item.kind)}" data-item="${esc(item.id)}"><button class="report-link" type="button" onclick="openItemReport('${esc(item.id)}')"><span><strong>${esc(item.name)}</strong><small>${esc(r.action)} · ${esc(r.q.label)}${delta>0?' · تجاوز +'+money(delta):''}</small></span><span class="report-amount">${money(r.suggested)}</span>${svg('next')}</button></div>`;
+ }).join('')}
+ <p class="muted">الاقتراح لا يعتمد تجاوز بند اختياري كسبب تلقائي لزيادته، ولا يخفض الضروريات أو الأقساط لمجرد قلة الصرف.</p>`;
+}
+function openItemReport(itemId){
+ const item=S.items.find(x=>x.id===itemId);if(!item)return;
+ const r=evaluate(item),last=r.latest??0,delta=last-item.planned;
+ el('submodal').innerHTML=`<div class="overlay sub"><section class="dialog" role="dialog" aria-modal="true" aria-labelledby="item-report-title">
+ <header class="dialog-head"><button type="button" class="navback" onclick="closeItemEditor()">${svg('next')} رجوع</button><h2 id="item-report-title">تحليل: ${esc(item.name)}</h2><button type="button" class="close" aria-label="إغلاق" onclick="closeItemEditor()">×</button></header>
+ <div class="dialog-main" data-item="${esc(item.id)}"><div class="asset-head"><div><strong class="asset-name">${esc(item.name)}</strong><small>${esc(kindLabels[item.kind])}</small></div><span class="pill ${r.q.level>=2?'good':'warn'}">${esc(r.q.label)}</span></div>
+ <div class="asset-numbers"><div><small>المخصص السابق</small>${span(item.planned,'blue')}</div><div><small>مصروف آخر دورة</small>${span(last,'bad')}</div><div><small>الفرق</small>${span(Math.abs(delta),delta>0?'bad':'good')}</div></div>
+ <div class="keyline"><span data-recommend-action>${esc(r.action)}</span><b data-recommend class="number blue">${money(r.suggested)}</b></div>
+ <p class="note"><strong>سبب القرار:</strong> <span data-reason>${esc(r.why)}</span></p>
+ ${S.cycles.map((c,i)=>`<div class="keyline"><span>${esc(c.label||c.key)} · ${sampleCount(item)[i]} عمليات ${c.complete&&c.matched?'':'(غير مطابقة)'}</span>${span(actuals(item)[i]||0,'bad')}</div>`).join('')}
+ <div class="hintbox">موثوقية التقرير: ${esc(r.q.detail)}</div>
+ ${r.factors.map(x=>`<p class="note">• ${esc(x)}</p>`).join('')}
+ ${item.account?`<p class="note">الحساب المرتبط: ${esc(item.account)}</p>`:''}
+ <div class="keyline"><span>الاستحقاق القادم</span><b data-due class="number bad">${money(requiredDue(item))}</b></div>
+ ${isSubscription(item)?`<label class="checks"><input type="checkbox" ${item.isPaused?'checked':''} onchange="pauseItem('${esc(item.id)}',this.checked)"> تم تأكيد وقف الاشتراك للدورة القادمة</label>`:''}
+ </div><footer class="dialog-footer">${btn('العودة للتقرير','closeItemEditor()')}${btn('تعديل بيانات البند',`openItemEditor('${esc(item.id)}')`,'primary','edit')}</footer>
+ </section></div>`;
+}
+function pauseItem(i,v){
+ const item=S.items.find(x=>x.id===i);if(!item||!isSubscription(item))return;
+ item.isPaused=v;S.approved=null;recalculate();
+ const card=document.querySelector(`[data-item="${i}"]`),r=evaluate(item);
+ if(card){const sum=card.querySelector('[data-recommend]');if(sum)sum.textContent=money(r.suggested);
+ const action=card.querySelector('[data-recommend-action]');if(action)action.textContent=r.action;
+ const due=card.querySelector('[data-due]');if(due)due.textContent=money(requiredDue(item));
+ const why=card.querySelector('[data-reason]');if(why)why.textContent=r.why;}
+}
+function allocationPage(){
+ const n=income(),spent=totalPlan(),free=remain(),q=S.items.filter(i=>trust(i).level>=2).length;
+ return `<div class="sectionhead"><h3>${svg('wallet')} ميزانية الدورة المقبلة</h3><button class="info-btn" type="button" title="الراتب المتوقع ليس رصيدًا؛ لا تخصم البنود ولا تنشئ تحويلات حتى تؤكد وصول الراتب لاحقًا." onclick="infoAllocation()">i</button></div>
+ <p class="mini" id="allocation-help" hidden>هذه خطة مقترحة فقط. الدخل القادم متوقع حتى يثبت وصوله، وتخصيص البنود ليس مصروفًا أو حوالة.</p>
+ <div class="grid2"><div class="field"><label>الدخل المتوقع القادم (ريال)</label><input id="next-income" type="number" min="0" step="0.01" class="amount" value="${S.nextIncome===null?'':num(n)}" oninput="setIncome(this.value)" placeholder="يلزم إدخاله"></div>
+ <div class="field"><label>مصدر المقترح</label><div class="data-quality" style="margin:0;min-height:42px;justify-content:center;font-size:11px">${q===S.items.length&&q?'دورتان مؤكدتان أو أكثر':'مبدئي — أدلة ناقصة'}</div></div></div>
+ ${S.cycles.length>0&&S.nextIncome!==null&&S.nextIncome<S.cycles.at(-1).income*.9?'<div class="warning">الدخل المتوقع أقل من آخر دخل مسجل بأكثر من 10%؛ راجع الضروريات والاستحقاقات قبل زيادة البنود الاختيارية.</div>':''}
+ <div class="split" style="margin:12px 0"><div class="metric"><small>مجموع المخصصات</small><strong id="total-plan" class="number blue">${money(spent)}</strong></div><div class="metric"><small>${free>=0?'غير موزع':'عجز تخطيطي'}</small><strong id="remaining-plan" class="number ${free>=0?'good':'bad'}">${money(Math.abs(free))}</strong></div></div>
+ ${S.items.map(item=>{const r=evaluate(item),override=Object.hasOwn(S.overrides,item.id);
+  return `<div class="editline"><div><strong>${esc(item.name)}</strong><small>المقترح ${money(S.proposed[item.id]??0)} · ${esc(r.action)}</small><small>${esc(item.kind==='scheduled'?'قسط/استحقاق':kindLabels[item.kind])}${override?' · تعديل يدوي':''}</small></div><input class="amount" aria-label="تخصيص ${esc(item.name)}" data-budget="${esc(item.id)}" type="number" min="0" step="0.01" value="${num(planned(item))}" oninput="setBudget('${esc(item.id)}',this.value)"></div>`}).join('')}
+ <div class="buttonrow" style="margin-top:12px">${btn('تحديث غير المعدّل','refreshSuggestions()','','report')}${btn('استعادة المقترحات','resetOverrides()','','edit')}</div>
+ <div id="alloc-warning" class="warning" ${free<0||dueShort()>0?'':'hidden'}>${free<0?'الخطة أكبر من الدخل المتوقع.':''}${dueShort()>0?' يوجد استحقاق غير مغطّى':''}</div>
+ <div class="hintbox">لا يُعاد ضبط تعديلاتك اليدوية عند تحديث المقترح. البنود غير المعتمدة أو منخفضة الموثوقية لا تُغيّر تلقائيًا دون مراجعة.</div>`;
+}
+function infoAllocation(){const h=el('allocation-help');if(h)h.hidden=!h.hidden}
+function setIncome(v){try{S.nextIncome=amount(v);S.approved=null;updateAllocationNumbers()}catch(e){S.nextIncome=null;updateAllocationNumbers()}}
+function setBudget(i,v){try{const cents=amount(v);S.overrides[i]=cents;S.approved=null;updateAllocationNumbers()}catch(e){S.overrides[i]=null;updateAllocationNumbers()}}
+function updateAllocationNumbers(){
+ const safePlan=Object.values(S.overrides).every(x=>x===null||Number.isSafeInteger(x)&&x>=0);
+ const total=totalPlan(),rest=remain(),warning=el('alloc-warning');
+ if(el('total-plan'))el('total-plan').textContent=money(total);
+ if(el('remaining-plan')){el('remaining-plan').textContent=money(Math.abs(rest));el('remaining-plan').className='number '+(rest>=0?'good':'bad')}
+ if(warning){warning.hidden=rest>=0&&dueShort()===0&&safePlan&&S.nextIncome!==null;
+ warning.textContent=S.nextIncome===null?'أدخل الدخل المتوقع قبل المتابعة.':!safePlan?'توجد قيمة غير صالحة.':dueShort()>0?'هناك استحقاق لا يغطيه التوزيع.':rest<0?'خطة المخصصات تتجاوز الدخل المتوقع.':''}
+}
+function refreshSuggestions(){recalculate();S.approved=null;renderWizard()}
+function resetOverrides(){S.overrides={};recalculate();S.approved=null;renderWizard()}
+function approvalPage(){
+ const leftover=remain(),plannedSum=totalPlan();
+ return `<div class="sectionhead"><h3>${svg('shield')} مراجعة الاعتماد</h3><span class="pill blue">خطة، وليست حركة نقدية</span></div>
+ <div class="summaryline"><span>الدخل المتوقع القادم</span>${span(income(),'good')}</div>
+ <div class="summaryline"><span>مجموع مخصصات البنود</span>${span(plannedSum,'blue')}</div>
+ <div class="summaryline"><span>المتبقي غير الموزع</span>${span(Math.max(0,leftover),leftover<0?'bad':'good')}</div>
+ ${S.items.filter(i=>planned(i)!==i.planned).map(i=>`<div class="summaryline"><span>${esc(i.name)} <small class="mini">(${esc(evaluate(i).action)})</small></span>${span(planned(i),'blue')}</div>`).join('')}
+ ${S.cycles.length<2||!S.cycles.every(c=>c.complete&&c.matched)?'<div class="warning">أدلة قليلة أو غير مطابقة. يجب اعتماد تغييراتك مع العلم أن التقدير أولي.</div>':''}
+ ${dueShort()>0?'<div class="warning">يوجد استحقاق قادم لم تغطه المخصصات. لا يُسمح بالاعتماد.</div>':''}
+ <div class="confirm-box"><label class="checks"><input type="checkbox" id="approve-data" onchange="S.confirmedRecords=this.checked"> راجعت المصروفات والإيرادات السابقة، وأعلم أن بيانات المثال غير حقيقية إن كنت أستخدمها.</label>
+ <label class="checks"><input type="checkbox" id="approve-plan" onchange="ack=this.checked"> أعتمد مخصصات الدورة القادمة كخطة مبدئية، ولا تعتبر نقدًا مستلمًا أو تحويلًا منفذًا.</label></div>
+ <p class="muted">التوزيع النهائي يُفعّل بعد تأكيد نزول الراتب، والتحويلات والسداد تُسجّل عند تنفيذها فقط.</p>`;
+}
+function approve(){
+ if(S.items.some(i=>i.kind==='unclassified')){error('صنّف البنود غير المصنفة قبل اعتماد التوزيع.');return}
+ if(S.nextIncome===null||income()<=0){error('يلزم إدخال راتب متوقع موجب.');return}
+ if(Object.values(S.overrides).some(x=>x===null)){error('أكمل المبالغ المعدلة أو استعد المقترح.');return}
+ if(remain()<0){error('التوزيع يتجاوز الدخل المتوقع.');return}
+ if(dueShort()>0){error('لم تُغطَّ جميع الاستحقاقات القريبة.');return}
+ if(!S.confirmedRecords||!ack){error('راجع البيانات وأكد اعتماد الخطة أولًا.');return}
+ S.approved={date:new Date().toISOString(),nextIncome:S.nextIncome,total:totalPlan(),remaining:remain(),lines:S.items.map(i=>({name:i.name,budget:planned(i),kind:i.kind,account:i.account})),reasons:S.items.map(i=>({item:i.name,evidence:evaluate(i).why}))};
+ ack=false;closeWizard();
+}
+function openItemEditor(itemId=''){
+ const item=S.items.find(i=>i.id===itemId),initial=item||emptyItem('');
+ el('submodal').innerHTML=`<div class="overlay sub"><section class="dialog" role="dialog" aria-modal="true" aria-labelledby="item-modal-title">
+  <header class="dialog-head"><button type="button" class="navback" onclick="closeItemEditor()">${svg('next')} رجوع</button><h2 id="item-modal-title">${item?'تعديل بيانات البند':'إضافة بند'}</h2><button class="close" onclick="closeItemEditor()" type="button" aria-label="إغلاق">×</button></header>
+  <div class="dialog-main"><div class="grid2">
+  <div class="field full"><label>اسم البند</label><input id="item-name" maxlength="100" value="${esc(initial.name)}"></div>
+  <div class="field"><label>التصنيف بعد مراجعتك</label><select id="item-kind">${Object.entries(kindLabels).map(([k,label])=>`<option value="${k}" ${k===initial.kind?'selected':''}>${esc(label)}</option>`).join('')}</select></div>
+  <div class="field"><label>المخصص المعتمد سابقًا (ريال)</label><input id="item-planned" class="amount" min="0" type="number" step="0.01" value="${num(initial.planned)}"></div>
+  <div class="field"><label>استحقاق مؤكد للدورة القادمة (ريال)</label><input id="item-upcoming" class="amount" min="0" type="number" step="0.01" value="${num(initial.upcoming||0)}"></div>
+  <div class="field"><label>الحساب المرتبط (اختياري)</label><input id="item-account" value="${esc(initial.account||'')}" maxlength="100"></div>
+  <div class="field full"><label>سبب الاستحقاق القادم (اختياري)</label><input id="item-due" value="${esc(initial.dueInfo||'')}" maxlength="140"></div>
+  ${isSubscription(initial)?`<label class="checks full"><input type="checkbox" id="item-paused" ${initial.isPaused?'checked':''}> أؤكد إيقاف هذا الاشتراك عند مزود الخدمة للدورة القادمة</label>`:''}
+  </div><p class="muted">هذه بيانات خطة فقط، ولا تُنشئ مصروفًا أو قرضًا أو تحول مبلغًا بين الحسابات.</p><div id="item-error" class="warning" hidden></div></div>
+  <footer class="dialog-footer">${btn('إلغاء','closeItemEditor()')}${btn('حفظ بيانات البند',`saveItemEditor('${esc(itemId)}')`,'primary','check')}</footer>
+  </section></div>`;
+}
+function closeItemEditor(){el('submodal').innerHTML=''}
+function saveItemEditor(itemId){try{
+ const name=el('item-name').value.trim(),kind=el('item-kind').value;
+ if(name.length<2||name.length>100)throw Error('أدخل اسم بند صحيحًا.');
+ if(!kindLabels[kind])throw Error('حدد نوع البند.');
+ if(S.items.some(i=>i.id!==itemId&&i.name===name))throw Error('يوجد بند بنفس الاسم.');
+ const plannedAmount=amount(el('item-planned').value),upcoming=amount(el('item-upcoming').value);
+ const account=el('item-account').value.trim(),dueInfo=el('item-due').value.trim();
+ let target=S.items.find(i=>i.id===itemId);
+ if(!target){target=emptyItem(name,kind,plannedAmount);S.items.push(target)}
+ Object.assign(target,{name,kind,planned:plannedAmount,upcoming,account,dueInfo});
+ if(el('item-paused'))target.isPaused=el('item-paused').checked;
+ S.approved=null;recalculate();closeItemEditor();renderWizard();
+ }catch(e){let warn=el('item-error');if(warn){warn.hidden=false;warn.textContent=e.message}}
+}
+
+function csvGrid(source){
+ const rows=[],row=[];let part='',quoted=false;const txt=String(source||'').replace(/^\uFEFF/,'');
+ for(let i=0;i<txt.length;i++){
+  const ch=txt[i];
+  if(quoted){
+   if(ch==='"'&&txt[i+1]==='"'){part+='"';i++}
+   else if(ch==='"'){quoted=false}
+   else part+=ch;
+  }else if(ch==='"'){quoted=true}
+  else if(ch===','){row.push(part);part=''}
+  else if(ch==='\r'||ch==='\n'){
+   if(ch==='\r'&&txt[i+1]==='\n')i++;
+   row.push(part);part='';
+   if(row.some(v=>v.trim()))rows.push(row.slice());row.length=0;
+  }else part+=ch;
+ }
+ if(quoted)throw Error('علامة الاقتباس في CSV لم تُغلق.');
+ if(part||row.length){row.push(part);if(row.some(v=>v.trim()))rows.push(row)}
+ return rows;
+}
+function parseCSV(t){
+ const grid=csvGrid(t);if(grid.length<2)throw Error('ملف CSV فارغ.');
+ const cols=grid[0].map(s=>s.trim());
+ const idx=names=>names.map(n=>cols.indexOf(n)).find(i=>i>=0)??-1;
+ const map={cycle:idx(['دورة','cycle']),date:idx(['تاريخ','date']),item:idx(['بند','item']),amount:idx(['مبلغ','amount']),kind:idx(['نوع','kind']),ref:idx(['مرجع','reference']),category:idx(['تصنيف','category']),planned:idx(['مخصص سابق','planned']),upcoming:idx(['مستحق قادم','upcoming']),account:idx(['الحساب','account']),dueInfo:idx(['سبب الاستحقاق','dueInfo'])};
+ if([map.cycle,map.date,map.item,map.amount,map.kind].some(i=>i<0))throw Error('الأعمدة المطلوبة: دورة،تاريخ،بند،مبلغ،نوع.');
+ const rows=[];
+ for(const [i,values] of grid.slice(1).entries()){
+  if(values.length!==cols.length)throw Error('الصف '+(i+2)+' لا يطابق عدد الأعمدة.');
+  const row=Object.fromEntries(Object.entries(map).map(([k,n])=>[k,n>=0?values[n].trim():'']));
+  if(!/^\d{4}-\d{2}$/.test(row.cycle)||!/^\d{4}-\d{2}-\d{2}$/.test(row.date))throw Error('دورة أو تاريخ غير صحيحين في الصف '+(i+2));
+  const d=new Date(row.date+'T00:00:00Z');
+  if(!Number.isFinite(d.getTime())||d.toISOString().slice(0,10)!==row.date)throw Error('تاريخ غير صحيح في الصف '+(i+2));
+  if(!['مصروف','دخل','expense','income','تحويل','transfer','تخصيص','allocation'].includes(row.kind))throw Error('نوع حركة غير معروف في الصف '+(i+2));
+  if(row.planned)row.plannedAmount=amount(row.planned);
+  if(row.upcoming)row.upcomingAmount=amount(row.upcoming);
+  row.value=amount(row.amount);if(row.value===0)continue;
+  rows.push(row);
+ }
+ return rows;
+}
+function ingestRows(rows){
+ if(!rows.length)throw Error('لم يتم العثور على حركات قابلة للتحليل.');
+ const cycles=[...new Set(rows.map(r=>r.cycle))].sort();
+ if(cycles.length>12)throw Error('الحد التجريبي 12 دورة.');
+ const transactions=[],items=[],periods=[];
+ const names=new Map();
+ for(const key of cycles){
+  const entries=rows.filter(r=>r.cycle===key);
+  const incomes=entries.filter(r=>['دخل','income'].includes(r.kind));
+  periods.push({key,label:'دورة '+key,income:sum(incomes.map(x=>x.value)),complete:false,matched:false});
+ }
+ const seen=new Set();
+ const types={'ضروري':'essential','اختياري':'optional','التزام منتظم':'scheduled','غير منتظم':'irregular'};
+ for(const r of rows){
+  if(!['مصروف','expense'].includes(r.kind))continue;
+  const key=r.ref||`${r.cycle}/${r.date}/${r.item}/${r.value}`;
+  if(seen.has(key))throw Error('يوجد مرجع مصروف مكرر: '+key);seen.add(key);
+  const name=r.item.trim();if(!name)throw Error('يوجد مصروف دون اسم بند.');
+  if(!names.has(name)){
+   const type=(types[r.category]||(Object.keys(kindLabels).includes(r.category)?r.category:'unclassified'));
+   const item=emptyItem(name,type,r.plannedAmount??0);
+   item.upcoming=r.upcomingAmount??0;item.account=r.account||'';item.dueInfo=r.dueInfo||'';
+   names.set(name,item);items.push(item);
+  }else{
+   const old=names.get(name);
+   if(r.plannedAmount!==undefined&&old.planned!==r.plannedAmount)throw Error('مخصصات متعارضة لنفس البند: '+name);
+   if(r.upcomingAmount!==undefined&&old.upcoming!==r.upcomingAmount)throw Error('استحقاقات متعارضة لنفس البند: '+name);
+   if(r.category&&old.kind!==(types[r.category]||r.category))throw Error('تصنيفات متعارضة لنفس البند: '+name);
+  }
+  transactions.push({id:id(),item:names.get(name).id,cycle:r.cycle,value:r.value,date:r.date,merchant:name,reference:key,confirmed:true});
+ }
+ if(!items.length)throw Error('لا توجد مصروفات مصنفة في الملف.');
+ return {items,cycles:periods,transactions};
+}
+async function importCSV(input){try{
+ const file=input.files?.[0];if(!file)return;
+ if(file.size>2_000_000)throw Error('حجم الملف يتجاوز 2 ميجابايت في المعاينة.');
+ const raw=await file.text();const next=ingestRows(parseCSV(raw));
+ demo=false;S={...newState(),...next,hasImport:true,dataStatus:'imported',nextIncome:next.cycles.at(-1)?.income||null};
+ recalculate();renderHome();renderWizard();
+ }catch(e){error(e.message)}finally{if(input)input.value=''}}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&view>=0){e.preventDefault();closeWizard()}});
+view=0;renderHome();renderWizard();
+</script>
+</body></html>
