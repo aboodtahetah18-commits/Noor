@@ -6,7 +6,10 @@ if(typeof db==='undefined'||typeof v18Ensure!=='function')return;
 const bankNames={hilal:'بنك الهلال',malaa:'بنك ملاءة',assets:'بنك الأصول'};
 const cycleSteps=['تسوية البنود','الالتزامات','التوزيع الجديد','المراجعة','المتابعة'];
 let openedPeriod='',cycleStep=0,loanDraft=null,loanStep=0,loanEditId='';
-const nowISO=()=>new Date().toLocaleDateString('en-CA');
+const nowISO=()=>{
+ const d=new Date();
+ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+};
 const periodShift=(p,n)=>v18PeriodAdd(p,n);
 const cycleSalaryDay=()=>{
  const wizard=window.RakaezAdaptiveCore?.wizardState(db);
