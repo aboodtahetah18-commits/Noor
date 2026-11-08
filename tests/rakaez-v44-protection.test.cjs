@@ -641,3 +641,15 @@ test('legacy reviewed snapshot remains informative but cannot authorize automati
  assert.deepEqual(r.legacySnapshots,['2026-12']);
  assert.equal(r.canApply,false);
 });
+
+test('undated non-monthly confirmed fee is flagged for review, not silently dropped as zero',()=>{
+ const db=reviewedCategoryFixture();
+ db.fees=[{id:'f-annual',name:'تأمين سنوي',period:'annual',amount:250000,date:'',status:'active'}];
+ const snapshot=JSON.stringify(db);
+ const r=core.cycleCategoryAnalysis(db,'2027-02',{income:500000,available:120000});
+ assert.equal(r.unconfirmedFutureFees.length,1);
+ assert.equal(r.unconfirmedFutureFees[0].name,'تأمين سنوي');
+ assert.equal(r.canApply,false);
+ assert.equal(r.blocked,true);
+ assert.equal(JSON.stringify(db),snapshot);
+});

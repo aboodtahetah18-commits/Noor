@@ -77,7 +77,33 @@ function syncCycleDraft(plan){
  return true;
 }
 
-function feeAmount(f){return f.period==='شهري'||f.period==='monthly'||f.period==='month'?Number(f.amount||0):0}
+function feeAmount(f){return Number(f?.amount)||0}
+function cycleFeeDue(f,period){
+ const units={monthly:1,month:1,'شهري':1,quarterly:3,semiannual:6,annual:12,once:0};
+ const interval=units[String(f?.period||'monthly')];
+ if(interval===undefined)return null;
+ const start=formatDay(period),end=formatDay(periodShift(period,1));
+ const due=String(f?.date||'');
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(due)){
+  // Without a confirmed due date, only monthly recurring fees are reserved.
+  return interval===1?{date:start,unverifiedDue:true}:null;
+ }
+ const y=Number(due.slice(0,4)),m=Number(due.slice(5,7)),day=Number(due.slice(8,10));
+ if(m<1||m>12||day<1||day>new Date(Date.UTC(y,m,0)).getUTCDate())return null;
+ if(interval===0)return due>=start&&due<end?{date:due,unverifiedDue:false}:null;
+ if(due>=end)return null;
+ const byMonth=(year,month)=>year*12+month;
+ const delta=byMonth(Number(start.slice(0,4)),Number(start.slice(5,7)))-
+  byMonth(y,m);
+ const earliest=Math.max(0,Math.floor(delta/interval)-1);
+ for(let k=earliest;k<=earliest+3;k++){
+  const first=new Date(Date.UTC(y,m-1+k*interval,1));
+  const last=new Date(Date.UTC(first.getUTCFullYear(),first.getUTCMonth()+1,0)).getUTCDate();
+  const date=first.getUTCFullYear()+'-'+String(first.getUTCMonth()+1).padStart(2,'0')+'-'+String(Math.min(day,last)).padStart(2,'0');
+  if(date>=start&&date<end)return {date,unverifiedDue:false};
+ }
+ return null;
+}
 function scheduledEstimate(x){try{return typeof rkScheduledEstimated==='function'?Number(rkScheduledEstimated(x)||0):Number(x.amount||0)}catch{return Number(x.amount||0)}}
 function makeObligations(period){v18Ensure();const rows=[];
  (db.hilalPayments||[]).filter(p=>p.period===period&&p.status!=='paid'&&db.hilalFinancings.some(f=>f.id===p.financingId&&f.status==='active')).forEach(p=>{
@@ -88,10 +114,17 @@ function makeObligations(period){v18Ensure();const rows=[];
   rows.push({id:'debt:'+d.id,reference:d.id,source:'debt',bank:'hilal',name:`قسط ${d.name}`,categoryId:d.categoryId||'',amount:Math.min(d.installment,d.principal-d.paid),kind:'debt',included:true,locked:true,dueDate:d.date||formatDay(period)});
  });
  (db.goals||[]).filter(g=>Number(g.monthly||0)>0).forEach(g=>rows.push({id:'goal:'+g.id,reference:g.id,source:'goal',bank:'assets',name:'مساهمة هدف '+g.name,amount:Number(g.monthly),kind:'goal',included:false,locked:false,dueDate:formatDay(period)}));
- (db.fees||[]).filter(x=>feeAmount(x)>0&&!['paused','stopped','cancelled','canceled','suspended'].includes(x.status)).forEach(f=>rows.push({id:'fee:'+f.id,reference:f.id,source:'fee',bank: f.bank==='assets'?'assets':f.bank==='malaa'?'malaa':'hilal',name:f.name,categoryId:f.categoryId||'',amount:feeAmount(f),kind:'fee',included:true,locked:true,dueDate:formatDay(period)}));
+ (db.fees||[]).filter(f=>feeAmount(f)>0&&!['paused','stopped','cancelled','canceled','suspended'].includes(f.status)).forEach(f=>{
+  const due=cycleFeeDue(f,period);if(!due)return;
+  rows.push({id:'fee:'+f.id,reference:f.id,source:'fee',
+   bank:f.bank==='assets'?'assets':f.bank==='malaa'?'malaa':'hilal',
+   name:f.name,categoryId:f.categoryId||'',amount:feeAmount(f),kind:'fee',
+   included:true,locked:true,dueDate:due.date,unverifiedDue:due.unverifiedDue});
+ });
  (db.scheduledOps||[]).filter(x=>x.status==='planned'&&scheduledEstimate(x)>0&&(!x.start||String(x.start).slice(0,7)<=period)).forEach(op=>{
   const bank=op.bank==='malaa'?'malaa':op.bank==='assets'?'assets':'hilal';
-  rows.push({id:'scheduled:'+op.id,reference:op.id,source:'scheduled',bank,name:op.name,categoryId:op.categoryId||'',amount:scheduledEstimate(op),kind:'bill',included:true,locked:false,dueDate:op.start||formatDay(period)});
+  const optional=['allocation','saving','savings','investment','transfer'].includes(op.kind);
+  rows.push({id:'scheduled:'+op.id,reference:op.id,source:'scheduled',bank,name:op.name,categoryId:op.categoryId||'',amount:scheduledEstimate(op),kind:optional?'optional':'bill',included:!optional,locked:false,dueDate:op.start||formatDay(period)});
  });
  (db.rkSavingsFeesV19||[]).filter(x=>x.active&&x.startPeriod<=period).forEach(f=>{
    rows.push({id:'savingsfee:'+f.id,reference:f.id,source:'savingsfee',bank:'malaa',name:`رسوم ادخار ${f.name}`,categoryId:f.categoryId||'',amount:f.monthly,kind:'fee',included:true,locked:true,dueDate:formatDay(period)});
@@ -162,7 +195,7 @@ function drawStep1(plan){const deficits=shortagePlan(plan),availableCoverage=cov
 function drawStep2(plan){refreshObligations(plan);const due=totalO(plan),analysis=cycleAnalysis(plan);
  return `<div class="v19-step-intro"><h2>مراجعة الالتزامات عبر البنوك الثلاثة</h2><p>الأقساط والرسوم والفواتير ذات العلاقة تُراجع قبل توزيع الراتب. يمكنك إيقاف فاتورة ملغاة مع توثيق السبب، ولا يمكن إسقاط قسط قائم دون تسويته.</p></div>
  <div class="v19-fact-grid">${summaryBox('الراتب المخطط',cash(plan.salary))}${summaryBox('الالتزامات المستحقة',cash(due))}${summaryBox('المتاح بعد الالتزامات',cash(plan.salary-due))}</div>
- ${['hilal','malaa','assets'].map(bank=>`<section class="v19-ob-group"><h3>${bankNames[bank]}</h3>${plan.obligations.filter(x=>x.bank===bank).map(x=>`<div class="v19-ob-row"><div><strong>${esc(x.name)}</strong><small>${esc(x.dueDate||'')} · ${esc(x.kind==='bill'?'فاتورة/عملية مجدولة':x.kind==='fee'?'رسوم': 'قسط أو التزام')}</small></div><b>${cash(x.amount)}</b>${x.locked?`<span class="v19-status">التزام قائم</span>`:`<label class="v19-toggle"><input type="checkbox" data-v19-ob="${esc(x.id)}" ${x.included?'checked':''}> مستحق</label>`}</div>`).join('')||'<p class="v19-muted">لا توجد التزامات مسجلة لهذا البنك.</p>'}</section>`).join('')}
+ ${['hilal','malaa','assets'].map(bank=>`<section class="v19-ob-group"><h3>${bankNames[bank]}</h3>${plan.obligations.filter(x=>x.bank===bank).map(x=>`<div class="v19-ob-row"><div><strong>${esc(x.name)}</strong><small>${esc(x.dueDate||'')} · ${x.unverifiedDue?'موعد يحتاج تأكيد · ':''}${esc(x.kind==='bill'?'فاتورة/عملية مجدولة':x.kind==='fee'?'رسوم': 'قسط أو التزام')}</small></div><b>${cash(x.amount)}</b>${x.locked?`<span class="v19-status">التزام قائم</span>`:`<label class="v19-toggle"><input type="checkbox" data-v19-ob="${esc(x.id)}" ${x.included?'checked':''}> مستحق</label>`}</div>`).join('')||'<p class="v19-muted">لا توجد التزامات مسجلة لهذا البنك.</p>'}</section>`).join('')}
  ${note('إلغاء احتساب فاتورة من هذه الدورة لا يحذف سجلها الأصلي، ولا يمثل إثبات سداد. تحتاج الالتزامات القائمة إلى تسوية منفصلة.')}`;
 }
 
@@ -179,6 +212,7 @@ function cycleSignature(report){
  return JSON.stringify({periods:report.reviewedPeriods||[],available:report.available,
   income:report.income,stale:report.changedSnapshots||[],legacy:report.legacySnapshots||[],
   invalid:report.invalidTransactions||0,duplicates:report.duplicateTransactionIds||0,
+  unknownFees:(report.unconfirmedFutureFees||[]).map(x=>[x.id,x.amount,x.period]),
   uncategorized:report.uncategorizedTransactions||0,incomplete:report.incompleteDetails||0,
   obligations:(report.obligations||[]).map(o=>[o.id,o.source,o.reference,o.amount,o.dueDate,o.locked,o.categoryId]),
   items:(report.items||[]).map(r=>[r.id,r.previous,r.suggested,r.confidence,
@@ -201,6 +235,8 @@ function cycleReportIntro(report,plan){
  if(report.totalDebtRemaining>0)warnings.push('إجمالي الديون المتبقية المسجلة: '+cash(report.totalDebtRemaining)+'؛ ليس مبلغًا مستحق السداد كاملًا هذا الشهر.');
  if(report.uncategorizedTransactions)warnings.push('يوجد '+report.uncategorizedTransactions+' مصروف غير مصنف؛ راجع التصنيف.');
  if(report.incompleteDetails)warnings.push('يوجد '+report.incompleteDetails+' مصروف غير منتظم لم يحدد تقديره.');
+ if(report.unconfirmedFutureFees?.length)warnings.push('توجد رسوم دورية غير شهرية دون تاريخ استحقاق، ولا تُحتسب التزامات مؤكدة لهذا الشهر: '+report.unconfirmedFutureFees.map(x=>x.name).join('، ')+'.');
+ if(report.incomeShock)warnings.push('حدث تغير جذري في الدخل المتوقع؛ يجب مراجعة الأولويات والأقساط وملاءمة المخصصات يدويًا.');
  if(report.overAvailable)warnings.push('مجموع الاقتراحات يتجاوز نصيب الهلال؛ يجب تعديل المبالغ قبل التطبيق.');
  const canApply=cycleCanAutoApply(report);
  return '<div class="v19-fact-grid">'+

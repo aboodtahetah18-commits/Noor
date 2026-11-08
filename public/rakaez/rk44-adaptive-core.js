@@ -915,6 +915,13 @@
   const income=Number.isSafeInteger(opts.income)&&opts.income>=0?opts.income:
    (Number.isSafeInteger(db?.rk44VerifiedStart?.income)?db.rk44VerifiedStart.income:null);
   const available=Number.isSafeInteger(opts.available)&&opts.available>=0?opts.available:null;
+  const nonMonthlyFeePeriods=new Set(['quarterly','semiannual','annual','once']);
+  const unconfirmedFutureFees=(Array.isArray(db?.fees)?db.fees:[])
+   .filter(f=>f&&Number(f.amount)>0&&nonMonthlyFeePeriods.has(f.period)&&
+    !['paused','stopped','cancelled','canceled','suspended'].includes(f.status)&&
+    !/^\d{4}-\d{2}-\d{2}$/.test(String(f.date||'')))
+   .map(f=>({id:String(f.id||''),name:String(f.name||'رسم دوري'),
+    period:String(f.period),amount:Number(f.amount)}));
   const obligations=(Array.isArray(opts.upcomingObligations)?opts.upcomingObligations:[])
    .filter(o=>o&&o.included!==false&&Number.isSafeInteger(o.amount)&&o.amount>=0)
    .map(o=>({id:String(o.id||''),name:String(o.name||''),amount:o.amount,
@@ -1049,7 +1056,7 @@
   });
   const suggestedTotal=items.reduce((sum,item)=>sum+item.suggested,0);
   const dataIssues=stalePeriods.length||legacyPeriods.length||unclassified||invalid.length||
-   duplicateIds.length||uncertain;
+   duplicateIds.length||uncertain||unconfirmedFutureFees.length;
   const noCashVerification=true; // Important: internal allocation is not a bank balance.
   const overAvailable=available!==null&&suggestedTotal>available;
   const noActiveTransactions=activeRecords.every(c=>c.tx.length===0);
@@ -1061,7 +1068,7 @@
    reviewedCount:cycles.length,reviewedPeriods:cycles.map(c=>c.period),
    changedSnapshots:stalePeriods,legacySnapshots:legacyPeriods,uncategorizedTransactions:unclassified,
    invalidTransactions:invalid.length,duplicateTransactionIds:duplicateIds.length,
-   incompleteDetails:uncertain,obligations,obligationsSum,addedObligations,
+   incompleteDetails:uncertain,unconfirmedFutureFees,obligations,obligationsSum,addedObligations,
    totalDebtRemaining,flexibleDebts,newlyReportedFlexibleDebt,incomeChange,incomeShock,
    missingApprovedAllocation,items,suggestedTotal,
    overAvailable,unallocated:available===null?null:available-suggestedTotal,
