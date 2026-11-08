@@ -328,17 +328,18 @@
  function wizardShow(){
   const root=document.getElementById('modalRoot');
   if(!root)return;
-  const back=wizardStep>0?'<button type="button" data-w-prev aria-label="السابق">→</button>':'<span></span>';
+  const back=wizardStep>0?'<button type="button" class="rk44-wizard-back" data-w-prev aria-label="الخطوة السابقة">→ <span>رجوع</span></button>':
+   '<button type="button" class="rk44-wizard-back" data-w-close aria-label="العودة إلى المنصة">→ <span>رجوع</span></button>';
   root.innerHTML='<div class="modalbg rk44-wizard-overlay" role="presentation">'+
    '<section class="modal rk44-wizard" role="dialog" aria-modal="true" aria-labelledby="rk44-wizard-title" dir="rtl">'+
    '<header class="rk44-wizard-head">'+back+'<h2 id="rk44-wizard-title">'+safe(wizardTitles[wizardStep])+'</h2>'+
-   '<button type="button" data-w-close aria-label="الإغلاق">×</button></header>'+
+   '<button type="button" class="rk44-wizard-dismiss" data-w-close aria-label="إغلاق النافذة">×</button></header>'+
    '<div class="rk44-wizard-body"><div class="rk44-wizard-step">الخطوة '+(wizardStep+1)+' من '+wizardTitles.length+
    '</div>'+wizardContent()+'<p id="rk44-wizard-error" class="rk44-wizard-error" role="alert"></p></div>'+
    '<footer class="rk44-wizard-footer"><button type="button" data-w-close>لاحقًا</button>'+
    '<button type="button" data-w-next>'+ (wizardStep===0?'ابدأ التأسيس':wizardStep===7?'اعتماد البيانات':'التالي')+
    '</button></footer></section></div>';
-  const focus=root.querySelector('.rk44-wizard-head [data-w-close]');
+  const focus=root.querySelector('.rk44-wizard-head .rk44-wizard-dismiss');
   if(focus)focus.focus({preventScroll:true});
  }
  function wizardOpen(){
