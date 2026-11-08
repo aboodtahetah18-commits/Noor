@@ -34,9 +34,16 @@ const persist=(msg,detail)=>{if(msg)audit(msg,detail||openedPeriod);save()};
 function ensure(){v18Ensure();if(!Array.isArray(db.rkCyclesV19))db.rkCyclesV19=[];if(!Array.isArray(db.rkSavingsFeesV19))db.rkSavingsFeesV19=[];}
 function categorySnapshot(period){
  const old=db.salaryCycles?.find(c=>c.period===period),rows=v18ActiveCategories();
+ const core=window.RakaezAdaptiveCore;
+ const start=core?.wizardDateBound?core.wizardDateBound(period,cycleSalaryDay()):formatDay(period);
+ const nextPeriod=periodShift(period,1);
+ const end=core?.wizardDateBound?core.wizardDateBound(nextPeriod,cycleSalaryDay()):formatDay(nextPeriod);
+ // A salary cycle is payday-to-payday, never the calendar month.
+ // Expenses on the following payday belong to the following cycle.
  return rows.map(cat=>{
   const limit=Number(old?.amounts?.[cat.id]??Math.round(Number(cat.limit||0)*100));
-  const spent=db.transactions.filter(t=>t.type==='expense'&&t.category===cat.id&&String(t.date).slice(0,7)===period).reduce((s,t)=>s+Number(t.amount||0),0);
+  const spent=(Array.isArray(db.transactions)?db.transactions:[]).filter(t=>t.type==='expense'&&t.category===cat.id&&
+   String(t.date||'')>=start&&String(t.date||'')<end).reduce((sum,t)=>sum+Number(t.amount||0),0);
   return {categoryId:cat.id,name:cat.name,limit,spent,balance:limit-spent,cover:0,destination:'none',targetId:'',feeRate:0,deficitChoice:'next'};
  });
 }
@@ -230,6 +237,9 @@ function canNext(plan){if(cycleStep===0){
  return true;
 }
 function approveCycle(){const plan=getPlan(openedPeriod);if(!plan||plan.status!=='draft')return;
+ if(nowISO()<formatDay(plan.period))
+  return alert('لا يمكن إغلاق ميزانية الدورة السابقة واعتماد التوزيع الجديد قبل حلول يوم الراتب. احتفظ بالمسودة حتى اكتمال المصروفات والاستحقاقات.');
+
  const report=cycleAnalysis(plan);
  if(report.changedSnapshots?.length)return alert('تغيّرت مصروفات دورة سبق اعتماد مراجعتها؛ يلزم إعادة التحقق قبل اعتماد توزيع جديد.');
  if(report.ready&&(!plan.analysisReviewedAt||plan.analysisSignature!==cycleSignature(report)))
