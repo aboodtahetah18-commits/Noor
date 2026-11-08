@@ -541,3 +541,103 @@ test('no wizard or reviewed cycles returns no invented report',()=>{
  assert.equal(core.cycleCategoryAnalysis(db,'2026-12').ready,false);
  assert.equal(JSON.stringify(db),before);
 });
+
+
+function transitionFixture(firstSpending,{categoryName='مقاضي',categoryClass='معيشة'}={}){
+ const db=fixture();db.transactions=[];db.salaryMonths=[];
+ db.categories=[{id:'regular',name:categoryName,limit:600}];
+ core.confirmWizard(db,{salary:500000,salaryDay:27,family:{marital:'single'},
+  details:{items:[{id:'regular-detail',name:categoryName,amount:60000,
+   category:categoryClass,frequency:'monthly'}],dependents:[]},
+  obligations:[],goals:[]},'2026-11');
+ db.salaryMonths.push('2026-12');
+ if(firstSpending!==null)db.transactions.push({id:'tx-1',date:'2026-12-28',
+  type:'expense',category:'regular',amount:firstSpending});
+ db.salaryCycles=[{period:'2026-12',approved:true,amounts:{regular:60000}}];
+ core.reviewWizardCycle(db,'2026-12','2027-02-01');
+ return db;
+}
+test('second-cycle: first reviewed overrun triggers cautious increase, not full extrapolation',()=>{
+ const db=transitionFixture(70000),before=JSON.stringify(db);
+ const r=core.cycleCategoryAnalysis(db,'2027-01',{income:500000,available:200000});
+ assert.equal(r.reviewedCount,1);
+ assert.equal(r.items[0].recommendation,'increase');
+ assert.equal(r.items[0].previous,60000);
+ assert.equal(r.items[0].suggested,65000);
+ assert.equal(r.canApply,false);
+ assert.equal(JSON.stringify(db),before);
+});
+test('second-cycle: first-month remainder never causes automatic cuts',()=>{
+ const db=transitionFixture(10000);
+ const r=core.cycleCategoryAnalysis(db,'2027-01',{income:500000,available:200000});
+ assert.equal(r.items[0].lastRemaining,50000);
+ assert.equal(r.items[0].suggested,60000);
+ assert.equal(r.items[0].recommendation,'keep');
+ const zero=transitionFixture(null);
+ assert.equal(core.cycleCategoryAnalysis(zero,'2027-01',{income:500000,available:100000}).items[0].suggested,60000);
+});
+test('repeated optional underspending allows only a limited decrease',()=>{
+ const db=transitionFixture(10000,{categoryName:'الترفيه',categoryClass:'ترفيه وكماليات'});
+ db.salaryMonths.push('2027-01');
+ db.transactions.push({id:'tx-2',date:'2027-01-28',type:'expense',category:'regular',amount:20000});
+ db.salaryCycles.push({period:'2027-01',approved:true,amounts:{regular:60000}});
+ core.reviewWizardCycle(db,'2027-01','2027-03-01');
+ const r=core.cycleCategoryAnalysis(db,'2027-02',{income:500000,available:100000});
+ assert.equal(r.items[0].recommendation,'decrease');
+ assert.equal(r.items[0].suggested,48000);
+ assert.equal(r.items[0].confidence,'مبدئية');
+});
+test('changed category after approval is detected even when financial total is unchanged',()=>{
+ const db=transitionFixture(70000);
+ db.transactions[0].category='unknown';
+ const r=core.cycleCategoryAnalysis(db,'2027-01',{income:500000,available:150000});
+ assert.deepEqual(r.changedSnapshots,['2026-12']);
+ assert.equal(r.uncategorizedTransactions,1);
+ assert.equal(r.canApply,false);
+});
+test('duplicate id or noninteger expense blocks automatic proposals',()=>{
+ const db=transitionFixture(70000);
+ db.transactions.push({id:'tx-1',date:'2026-12-29',type:'expense',category:'regular',amount:100});
+ db.transactions.push({id:'bad-amount',date:'2027-01-01',type:'expense',category:'regular',amount:'7.25'});
+ const r=core.cycleCategoryAnalysis(db,'2027-01',{income:500000,available:150000});
+ assert.equal(r.duplicateTransactionIds,1);
+ assert.equal(r.invalidTransactions,1);
+ assert.equal(r.canApply,false);
+});
+test('new flexible debt is reported as remaining debt, not invented income or a fixed installment',()=>{
+ const db=reviewedCategoryFixture(),cashBefore=JSON.stringify(db.ledgerEntries);
+ db.debts.push({id:'family-new',name:'دين جديد',principal:90000,paid:5000,
+  installment:0,repaymentMode:'capacity',createdAt:'2027-01-28T11:00:00.000Z'});
+ const r=core.cycleCategoryAnalysis(db,'2027-02',{income:500000,available:120000});
+ assert.equal(r.totalDebtRemaining,85000);
+ assert.equal(r.newlyReportedFlexibleDebt.length,1);
+ assert.equal(r.newlyReportedFlexibleDebt[0].remaining,85000);
+ assert.equal(r.canApply,false);
+ assert.equal(JSON.stringify(db.ledgerEntries),cashBefore);
+});
+test('committed future bill belongs in reserved obligations and never inflates budget cash',()=>{
+ const db=reviewedCategoryFixture();
+ const obligations=[{id:'debt:fixed',source:'debt',reference:'fixed',name:'قسط مستحق',
+  amount:15000,categoryId:'food',locked:true,included:true,dueDate:'2027-02-15'}];
+ const r=core.cycleCategoryAnalysis(db,'2027-02',{income:500000,available:90000,
+  upcomingObligations:obligations});
+ assert.equal(r.obligationsSum,15000);
+ assert.equal(r.items[0].overlap,true);
+ assert.equal(r.items[0].recommendation,'review');
+ assert.equal(r.canApply,false);
+});
+test('income shock reduces financial room without fictitious bank transfer',()=>{
+ const db=reviewedCategoryFixture(),before=JSON.stringify(db);
+ const r=core.cycleCategoryAnalysis(db,'2027-02',{income:30000,available:10000});
+ assert.equal(r.overAvailable,true);
+ assert.equal(r.incomeChange,30000-db.rk44VerifiedStart.income);
+ assert.equal(r.canApply,false);
+ assert.equal(JSON.stringify(db),before);
+});
+test('legacy reviewed snapshot remains informative but cannot authorize automatic plan',()=>{
+ const db=reviewedCategoryFixture();
+ delete db.rk44WizardCycles[0].expenseSignature;
+ const r=core.cycleCategoryAnalysis(db,'2027-02',{income:500000,available:150000});
+ assert.deepEqual(r.legacySnapshots,['2026-12']);
+ assert.equal(r.canApply,false);
+});

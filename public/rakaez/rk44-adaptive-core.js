@@ -766,6 +766,15 @@
     'توقع أولي بناءً على البنود والالتزامات المدخلة؛ لم تراجع أي دورة كاملة بعد'};
  }
 
+
+ function cycleExpenseSignature(expenses){
+  // Exact, canonical fingerprint of financially relevant fields, with no merchant or card data.
+  return JSON.stringify(expenses.map(t=>[
+   String(t.id||''),String(t.date||''),Number(t.amount),
+   String(t.category||''),t.exceptional===true||t.isExceptional===true?1:0
+  ]).sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b))));
+ }
+
  function reviewWizardCycle(db,period,today){
   assert(wizardState(db).completed,'أكمل معالج التأسيس أولاً.');
   assert(periodRegex.test(period),'الشهر غير صالح.');
@@ -782,7 +791,7 @@
    .filter(t=>t?.type==='expense'&&String(t.date||'')>=start&&String(t.date||'')<end);
   const spent=tx.reduce((total,t)=>total+Math.max(0,Number(t.amount)||0),0);
   const record={id:operationId(),status:'reviewed',period,start,end,expenses:spent,
-   transactionsCount:tx.length,approvedAt:new Date().toISOString(),
+   transactionsCount:tx.length,expenseSignature:cycleExpenseSignature(tx),approvedAt:new Date().toISOString(),
    isSnapshot:true,description:'مراجعة دورة راتب مكتملة بإقرار المستخدم؛ دون تغيير قيود تاريخية'};
   if(!Array.isArray(db.rk44WizardCycles))db.rk44WizardCycles=[];
   db.rk44WizardCycles.push(record);
@@ -859,108 +868,205 @@
  }
 
  /* تحليل بنود دورة الراتب التالية — قراءة فقط؛ يستخدم سجلات المراجعة والميزانية الأصلية. */
+
+ /* دورة الراتب الثانية وما بعدها: تقرير مشروح، دون أي تنفيذ محاسبي أو تغيير في db. */
  function cycleCategoryAnalysis(db,period,options){
   assert(periodRegex.test(String(period)),'شهر خطة الدورة غير صالح.');
-  const opts=options||{}, state=wizardState(db);
-  if(!state.completed)return {ready:false,canApply:false,reason:'لم تعتمد بيانات التأسيس؛ لا يمكن تقديم توصية موثوقة.'};
+  const state=wizardState(db),opts=options||{};
+  const unavailable=reason=>({ready:false,canApply:false,reason,items:[],reviewedCount:0});
+  if(!state.completed)return unavailable('لم يعتمد التأسيس؛ لا يمكن بناء توصية مالية مؤسَّسة.');
   const cycles=wizardCycles(db).filter(x=>x.period<period)
-   .slice().sort((a,b)=>a.period.localeCompare(b.period)).slice(-3);
-  if(!cycles.length)return {ready:false,canApply:false,reason:'لم تعتمد مراجعة أي دورة راتب مكتملة قبل هذه الخطة.'};
-  const categories=(Array.isArray(db.categories)?db.categories:[])
+   .slice().sort((a,b)=>a.period.localeCompare(b.period)).slice(-6);
+  if(!cycles.length)return unavailable('لا توجد دورة راتب مكتملة ومراجعة؛ تبدأ التوصيات بعد مراجعة الدورة الأولى.');
+  const categories=(Array.isArray(db?.categories)?db.categories:[])
    .filter(c=>c&&!c.archived&&String(c.id||'').trim());
-  if(!categories.length)return {ready:false,canApply:false,reason:'لا توجد بنود مالية نشطة؛ أدخل البنود وراجعها أولًا.'};
-  const categoryIds=new Set(categories.map(c=>String(c.id)));
-  const transactions=(Array.isArray(db.transactions)?db.transactions:[])
-   .filter(t=>t&&t.type==='expense'&&Number.isSafeInteger(Number(t.amount))&&Number(t.amount)>=0);
-  const approved=(Array.isArray(db.salaryCycles)?db.salaryCycles:[])
-   .filter(x=>x&&x.approved&&x.period);
-  const data=cycles.map(c=>{
+  if(!categories.length)return unavailable('أضف بنود الميزانية الفعلية قبل تحليل الدورة الثانية.');
+  const ids=categories.map(c=>String(c.id)),categoryIds=new Set(ids);
+  const raw=(Array.isArray(db?.transactions)?db.transactions:[]).filter(t=>t?.type==='expense');
+  const invalid=[],duplicateIds=[],seenIds=new Set();
+  const approved=(Array.isArray(db?.salaryCycles)?db.salaryCycles:[])
+   .filter(x=>x?.approved&&periodRegex.test(String(x.period)));
+  const priorPlan=approved.filter(c=>c.period<period).sort((a,b)=>b.period.localeCompare(a.period))[0]||null;
+  const reports=cycles.map(c=>{
    const start=c.start||wizardDateBound(c.period,state.record.salaryDay);
    const end=c.end||wizardDateBound(offset(c.period,1),state.record.salaryDay);
-   const expenses=transactions.filter(t=>String(t.date||'')>=start&&String(t.date||'')<end);
-   const total=expenses.reduce((s,t)=>s+Number(t.amount),0);
-   const invalidSnapshot=Number.isSafeInteger(c.expenses)&&total!==c.expenses;
-   const uncategorized=expenses.filter(t=>!categoryIds.has(String(t.category||''))).length;
-   return {period:c.period,start,end,expenses,total,invalidSnapshot,uncategorized};
+   const tx=raw.filter(t=>String(t.date||'')>=start&&String(t.date||'')<end);
+   tx.forEach(t=>{
+    if(!Number.isSafeInteger(t.amount)||t.amount<0)invalid.push(t.id||t.date||'عملية مجهولة');
+    if(t.id!==undefined&&t.id!==null&&String(t.id)){
+     const id=String(t.id);
+     if(seenIds.has(id))duplicateIds.push(id);
+     else seenIds.add(id);
+    }
+   });
+   const actual=tx.reduce((n,t)=>n+(Number.isSafeInteger(t.amount)&&t.amount>=0?t.amount:0),0);
+   const signature=cycleExpenseSignature(tx);
+   const stale=Number.isSafeInteger(c.expenses)&&c.expenses!==actual||
+     Number.isSafeInteger(c.transactionsCount)&&c.transactionsCount!==tx.length||
+     typeof c.expenseSignature==='string'&&c.expenseSignature!==signature;
+   return {period:c.period,start,end,tx,actual,signature,stale,
+    legacySignature:typeof c.expenseSignature!=='string',
+    unclassified:tx.filter(t=>!categoryIds.has(String(t.category||''))).length};
   });
-  const unmatched=data.reduce((n,c)=>n+c.uncategorized,0);
-  const changedSnapshots=data.filter(c=>c.invalidSnapshot).map(c=>c.period);
-  const detail=userDetailsSummary(db);
-  const uncertain=detail.incomplete;
-  const previous=approved.filter(c=>c.period<period).sort((a,b)=>b.period.localeCompare(a.period))[0]||null;
+  const stalePeriods=reports.filter(x=>x.stale).map(x=>x.period);
+  const legacyPeriods=reports.filter(x=>x.legacySignature).map(x=>x.period);
+  const unclassified=reports.reduce((n,r)=>n+r.unclassified,0);
+  const details=userDetailsSummary(db),uncertain=details.incomplete;
   const income=Number.isSafeInteger(opts.income)&&opts.income>=0?opts.income:
    (Number.isSafeInteger(db?.rk44VerifiedStart?.income)?db.rk44VerifiedStart.income:null);
   const available=Number.isSafeInteger(opts.available)&&opts.available>=0?opts.available:null;
-  const items=categories.map(cat=>{
-   const id=String(cat.id);
-   const saved=previous&&Object.hasOwn(previous.amounts||{},id)?Number(previous.amounts[id]):null;
-   const current=Math.max(0,Math.round(Number(cat.limit||0)*100));
-   const prior=Number.isSafeInteger(saved)&&saved>=0?saved:current;
-   const history=data.map(c=>{
-    const own=c.expenses.filter(t=>String(t.category||'')===id);
-    const routine=own.filter(t=>t.exceptional!==true&&t.isExceptional!==true);
-    const extraordinary=own.filter(t=>t.exceptional===true||t.isExceptional===true);
-    const actual=routine.reduce((n,t)=>n+Number(t.amount),0);
-    const exceptional=extraordinary.reduce((n,t)=>n+Number(t.amount),0);
-    const cyclePlan=approved.find(x=>x.period===c.period);
-    const allocated=cyclePlan&&Object.hasOwn(cyclePlan.amounts||{},id)?
-     Number(cyclePlan.amounts[id]):null;
-    return {period:c.period,actual,exceptional,count:routine.length,allocated,
-     exceeded:Number.isSafeInteger(allocated)?actual>allocated:null};
+  const obligations=(Array.isArray(opts.upcomingObligations)?opts.upcomingObligations:[])
+   .filter(o=>o&&o.included!==false&&Number.isSafeInteger(o.amount)&&o.amount>=0)
+   .map(o=>({id:String(o.id||''),name:String(o.name||''),amount:o.amount,
+    source:String(o.source||''),reference:String(o.reference||''),categoryId:String(o.categoryId||''),
+    locked:o.locked===true,dueDate:String(o.dueDate||'')}));
+  const obligationsSum=obligations.reduce((n,o)=>n+o.amount,0);
+  const previousCycle=(Array.isArray(db?.rkCyclesV19)?db.rkCyclesV19:[])
+   .filter(x=>x?.period<period&&x?.status!=='draft').sort((a,b)=>b.period.localeCompare(a.period))[0]||null;
+  const oldObKeys=new Set((previousCycle?.obligations||[]).filter(o=>o.included!==false)
+   .map(o=>String(o.source||'')+':'+String(o.reference||'')));
+  const addedObligations=previousCycle?obligations.filter(o=>!oldObKeys.has(o.source+':'+o.reference)):[];
+  const planSplit=opts.planSplit||null;
+  const budgetCommitmentIds=new Set(obligations.filter(o=>o.categoryId).map(o=>o.categoryId));
+  const debtRecords=(Array.isArray(db?.debts)?db.debts:[])
+   .filter(d=>d&&Number.isSafeInteger(d.principal)&&Number.isSafeInteger(d.paid||0)&&d.principal>d.paid);
+  const totalDebtRemaining=debtRecords.reduce((sum,d)=>sum+d.principal-(d.paid||0),0);
+  const flexibleDebts=debtRecords.filter(d=>d.repaymentMode==='capacity'||
+   !Number.isSafeInteger(d.installment)||d.installment===0)
+   .map(d=>({id:String(d.id||''),name:String(d.name||'دين مرن'),
+    remaining:d.principal-(d.paid||0),newSinceLastReview:
+     !!d.createdAt&&String(d.createdAt).slice(0,10)>=reports.at(-1).start}));
+  const newlyReportedFlexibleDebt=flexibleDebts.filter(d=>d.newSinceLastReview);
+  const incomeReference=Number.isSafeInteger(state.record.salary)?state.record.salary:
+   (Number.isSafeInteger(db?.rk44VerifiedStart?.income)?db.rk44VerifiedStart.income:null);
+  const incomeChange=income===null||incomeReference===null?null:income-incomeReference;
+  const incomeShock=incomeChange!==null&&incomeReference>0&&
+   Math.abs(incomeChange)/incomeReference>=0.15;
+  const missingApprovedAllocation=!priorPlan||
+   categories.some(c=>!Object.hasOwn(priorPlan.amounts||{},String(c.id)));
+  const activeRecords=reports.slice(-3);
+  const items=categories.map(category=>{
+   const id=String(category.id),name=String(category.name||id);
+   const saved=priorPlan?.amounts&&Object.hasOwn(priorPlan.amounts,id)?
+    priorPlan.amounts[id]:null;
+   const existing=Math.round(Number(category.limit||0)*100);
+   const previous=Number.isSafeInteger(saved)&&saved>=0?saved:
+    (Number.isSafeInteger(existing)&&existing>=0?existing:0);
+   const history=activeRecords.map(c=>{
+    const own=c.tx.filter(t=>String(t.category||'')===id);
+    const valid=own.filter(t=>Number.isSafeInteger(t.amount)&&t.amount>=0);
+    const regular=valid.filter(t=>t.exceptional!==true&&t.isExceptional!==true);
+    const exceptional=valid.filter(t=>t.exceptional===true||t.isExceptional===true);
+    const actual=regular.reduce((n,t)=>n+t.amount,0);
+    const unusual=exceptional.reduce((n,t)=>n+t.amount,0);
+    const monthPlan=approved.find(x=>x.period===c.period);
+    const allocation=monthPlan?.amounts&&Object.hasOwn(monthPlan.amounts,id)?
+     Number(monthPlan.amounts[id]):null;
+    return {period:c.period,actual,exceptional:unusual,total:actual+unusual,
+     count:regular.length,allocated:Number.isSafeInteger(allocation)?allocation:null,
+     exceeded:Number.isSafeInteger(allocation)?actual+unusual>allocation:null};
    });
-   const recent=history[history.length-1],earlier=history[history.length-2]||null;
-   const recorded=history.reduce((n,h)=>n+h.count,0);
-   const recurring=history.reduce((n,h)=>n+h.actual,0);
+   const last=history.at(-1),earlier=history.at(-2)||null;
+   const transactionCount=history.reduce((n,h)=>n+h.count,0);
+   const totalRegular=history.reduce((n,h)=>n+h.actual,0);
    const exceptional=history.reduce((n,h)=>n+h.exceptional,0);
-   const average=recorded?Math.round(recurring/recorded):null;
-   const mean=Math.round(recurring/history.length);
-   const trend=earlier?recent.actual-earlier.actual:null;
-   const overspent=history.filter(h=>h.exceeded===true).length;
-   const detailRow=detail.items.find(x=>String(x.name||'').trim()===String(cat.name||'').trim());
-   const irregular=detailRow&&['yearly','asNeeded'].includes(detailRow.frequency);
-   const amounts=history.map(h=>h.actual);
-   const positive=amounts.filter(x=>x>0).length;
-   let suggested=prior,reason='لا توجد دورات كافية لاقتراح تغيير موثوق؛ أُبقي المخصص السابق للمراجعة اليدوية.';
-   if(history.length>=2&&positive>=2&&!irregular){
-    const weighted=Math.round((amounts.at(-2)*2+amounts.at(-1)*3)/5);
-    if(weighted>prior){
+   const averageTransaction=transactionCount?Math.round(totalRegular/transactionCount):null;
+   const observedMean=Math.round(totalRegular/history.length);
+   const trend=earlier?last.actual-earlier.actual:null;
+   const overspendCount=history.filter(h=>h.exceeded===true).length;
+   const detail=details.items.find(x=>String(x.id||'')===id||
+    String(x.name||'').trim()===name.trim());
+   const irregular=!!detail&&['yearly','asNeeded'].includes(detail.frequency);
+   const optional=/ترفيه|كماليات|مطعم|كافيه|تسوق|هوايات|سفر/.test(name)||
+    ['ترفيه وكماليات','أهداف مستقبلية'].includes(detail?.category);
+   const obligatory=!!detail&&detail.category==='التزامات'||
+    /قسط|دين|تمويل|اشتراك|فاتورة|إيجار|رسوم/.test(name);
+   const overlap=budgetCommitmentIds.has(id);
+   const positiveCycles=history.filter(h=>h.actual>0).length;
+   const lastUnspent=Number.isSafeInteger(last.allocated)?last.allocated-last.total:null;
+   let suggested=previous,reason='لا يوجد دليل كافٍ لتعديل المخصص؛ يُحتفظ بالمبلغ السابق حتى مراجعة الاحتياج.';
+   let recommendation='keep';
+   const risk=[];
+   // A single reviewed cycle may justify cautious increases, never a cut based only on non-use.
+   if(irregular){
+    reason='دورية البند سنوية أو عند الحاجة؛ لا يُخفض تلقائيًا لمجرد غياب مصروف خلال دورة واحدة.';
+    risk.push('تحقق من موعد المصروف غير المنتظم وخطة تجميع مبلغه.');
+   }else if(overlap||obligatory){
+    reason='قد يتضمن هذا البند التزامًا مفصولًا في جدول الاستحقاقات؛ راجع الربط لمنع حجزه مرتين.';
+    risk.push('ضرورة التحقق من أن مبلغ القسط أو الفاتورة لا يُحتسب ضمن المخصص والاستحقاق معًا.');
+    recommendation='review';
+   }else if(history.length===1){
+    if(last.actual>previous){
+     suggested=Math.round(previous+(last.actual-previous)*0.5);
+     if(suggested===previous)suggested=Math.min(last.actual,previous+1);
+     reason='مصروف الدورة الأولى تجاوز المخصص؛ زيادة حذرة تغطي نصف الفرق المرصود، وتحتاج تأكيد استمرار الحاجة.';
+     recommendation='increase';
+    }else if(last.actual<previous){
+     reason='تبقى من المخصص مبلغ خلال أول دورة، لكن دورة واحدة لا تثبت إمكانية التخفيض بأمان.';
+    }else{
+     reason='المصروف في الدورة الأولى مماثل للمخصص؛ الإبقاء مناسب حاليًا.';
+    }
+   }else if(positiveCycles>=2){
+    const weighted=Math.round((history.at(-2).actual*2+last.actual*3)/5);
+    if(weighted>previous){
      suggested=weighted;
-     reason='ارتفع متوسط المصروف المتكرر في دورتين مراجعتين؛ الاقتراح مبني على القيم المسجلة وليس على افتراض ارتفاع الأسعار.';
-    }else if(weighted<prior){
-     suggested=Math.max(weighted,Math.ceil(prior*0.8));
-     reason='كان المصروف المتكرر أقل من المخصص؛ خُفض الاقتراح بحذر وبحد أقصى 20% من المخصص السابق.';
-    }else reason='المصروف المتكرر قريب من المخصص السابق؛ لا حاجة لتغيير غير مبرر.';
-   }else if(irregular){
-    reason='هذا البند مسجل بدورية سنوية أو عند الحاجة؛ لا تكفي عينات شهرية قصيرة لتخفيض مخصصه.';
-   }else if(history.length>=2&&positive<2){
-    reason='لا توجد عمليتان دوريتان موزعتان على دورتين مختلفتين؛ غياب الصرف لا يثبت زوال الحاجة.';
+     reason='مصروف متكرر أعلى من المخصص في دورتين؛ رُجح الإنفاق الأحدث دون اعتبار زيادة السعر حقيقة مؤكدة.';
+     recommendation='increase';
+    }else if(weighted<previous){
+     if(optional&&history.length>=2){
+      suggested=Math.max(weighted,Math.ceil(previous*0.8));
+      if(suggested<previous){
+       reason='البند اختياري وسُجل إنفاق أقل من المخصص في دورتين؛ اقتراح تخفيض حذر لا يتجاوز 20%.';
+       recommendation='decrease';
+      }
+     }else{
+      reason='المصروف المتكرر أقل من المخصص، لكن البند قد يكون ضروريًا؛ تُراجع فرصة التخفيض دون اقتطاع تلقائي.';
+     }
+    }else reason='المصروف المتكرر قريب من المخصص؛ لا يُقترح تغيير.';
+   }else{
+    reason='بيانات الصرف المتكرر متفرقة بين الدورات؛ لا يُقترح خفض اعتمادًا على فترات لم يُصرف فيها.';
    }
-   const warnings=[];
-   if(exceptional>0)warnings.push('استُبعد المصروف الاستثنائي من تقدير الإنفاق المتكرر دون حذف العملية الأصلية.');
-   if(irregular)warnings.push('مصروف غير شهري؛ يلزم مراجعة موعد استحقاقه القادم.');
-   if(/قسط|دين|تمويل|اشتراك|فاتورة/.test(String(cat.name||'')))
-    warnings.push('تحقق من أن الالتزام لا يُحتسب أيضًا ضمن الاستحقاقات المحجوزة.');
-   if(changedSnapshots.length)warnings.push('تغيّرت مصروفات دورة معتمدة بعد مراجعتها؛ أعد المطابقة والمراجعة.');
-   if(unmatched)warnings.push('توجد معاملات غير مصنفة في الدورات المرجعية.');
-   const confidence=changedSnapshots.length||unmatched||uncertain?'منخفضة':
-    history.length>=3&&positive>=2?'متوسطة':
-    history.length>=2&&positive>=2?'مبدئية':'غير كافية';
-   return {id,name:String(cat.name||id),previous:prior,lastActual:recent.actual,
-    lastExceptional:recent.exceptional,averageTransaction:average,
-    observedMean:mean,transactionCount:recorded,reviewedPeriods:history.length,
-    history,trend,overspendCount:overspent,suggested,
-    change:suggested-prior,reason,warnings,confidence,
-    irregular:!!irregular,source:'سجل المصروفات الفعلي + الدورات المراجعة + المخصص المعتمد',
+   if(exceptional){
+    risk.push('استُبعد '+exceptional+' هللة من الحساب المتكرر لكونها مصروفًا استثنائيًا؛ لا يعني ذلك توفرها نقدًا.');
+   }
+   if(lastUnspent!==null&&lastUnspent>0)
+    risk.push('المتبقي المحسوب من المخصص ليس رصيدًا بنكيًا متحققًا.');
+   if(stalePeriods.length)risk.push('تغيرت تفاصيل عمليات بعد اعتماد مراجعة الدورة.');
+   if(legacyPeriods.length)risk.push('هناك مراجعة قديمة لا تحتوي بصمة تفاصيل العمليات.');
+   if(unclassified||invalid.length||duplicateIds.length)risk.push('جودة السجل تحتاج مراجعة أو تصنيف معاملات.');
+   if(uncertain)risk.push('مصروفات غير منتظمة لم يُحدد تقديرها.');
+   const confidence=stalePeriods.length||invalid.length||duplicateIds.length||unclassified||
+    uncertain||legacyPeriods.length||missingApprovedAllocation?'منخفضة':
+    history.length>=3&&positiveCycles>=2?'متوسطة':
+    history.length===2&&positiveCycles>=2?'مبدئية':'أولية';
+   return {id,name,previous,lastActual:last.actual,lastExceptional:last.exceptional,
+    lastTotal:last.total,lastRemaining:lastUnspent,averageTransaction,observedMean,
+    transactionCount,reviewedPeriods:history.length,history,trend,overspendCount,
+    suggested,change:suggested-previous,recommendation,reason,warnings:risk,
+    confidence,irregular,optional,obligatory,overlap,
+    source:'مصروفات فعلية بحسب حدود دورة الراتب + مخصصات معتمدة + مراجعة المستخدم',
     requiresManualApproval:true};
   });
-  const suggestedTotal=items.reduce((n,row)=>n+row.suggested,0);
-  const blocked=changedSnapshots.length>0||unmatched>0||uncertain>0;
-  return {ready:true,canApply:cycles.length>=2&&!blocked,
-   blocked,income,available,reviewedPeriods:cycles.map(c=>c.period),
-   reviewedCount:cycles.length,changedSnapshots,uncategorizedTransactions:unmatched,
-   incompleteDetails:uncertain,items,suggestedTotal,
-   overAvailable:available!==null&&suggestedTotal>available,
-   note:'التحليل مبني على دورات راتب راجعها المستخدم. لا يثبت المطابقة مع كشف البنك ولا يغيّر الرصيد أو المخصصات دون موافقة.'};
+  const suggestedTotal=items.reduce((sum,item)=>sum+item.suggested,0);
+  const dataIssues=stalePeriods.length||legacyPeriods.length||unclassified||invalid.length||
+   duplicateIds.length||uncertain;
+  const noCashVerification=true; // Important: internal allocation is not a bank balance.
+  const overAvailable=available!==null&&suggestedTotal>available;
+  const noActiveTransactions=activeRecords.every(c=>c.tx.length===0);
+  const canApply=cycles.length>=2&&!dataIssues&&!overAvailable&&!noActiveTransactions&&
+   !items.some(x=>x.overlap||x.obligatory)&&
+   !addedObligations.some(x=>!x.locked)&&!newlyReportedFlexibleDebt.length&&
+   !incomeShock&&!missingApprovedAllocation;
+  return {ready:true,canApply:!!canApply,blocked:!!dataIssues,income,available,
+   reviewedCount:cycles.length,reviewedPeriods:cycles.map(c=>c.period),
+   changedSnapshots:stalePeriods,legacySnapshots:legacyPeriods,uncategorizedTransactions:unclassified,
+   invalidTransactions:invalid.length,duplicateTransactionIds:duplicateIds.length,
+   incompleteDetails:uncertain,obligations,obligationsSum,addedObligations,
+   totalDebtRemaining,flexibleDebts,newlyReportedFlexibleDebt,incomeChange,incomeShock,
+   missingApprovedAllocation,items,suggestedTotal,
+   overAvailable,unallocated:available===null?null:available-suggestedTotal,
+   noCashVerification,planSplit,
+   note:'المتبقي والفائض ناتجان عن مخصصات تخطيطية، وليس نقدًا مؤكدًا. تخصيص البنود لا يحرك الأموال، والتوصية تتطلب اعتماد المستخدم.'};
  }
 
  function installment(amount,months,annualPercent){
