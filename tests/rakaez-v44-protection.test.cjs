@@ -471,3 +471,73 @@ test('no expense detail leaves predictions unavailable even when a salary is pro
  assert.equal(db.rk44Wizard.expensesProvided,false);
  assert.equal(db.ledgerEntries.length,0);
 });
+
+
+function reviewedCategoryFixture(){
+ const db=fixture();
+ db.transactions=[];db.salaryMonths=[];db.categories=[{id:'food',name:'مقاضي',limit:600}];
+ core.confirmWizard(db,{salary:500000,salaryDay:27,family:{marital:'single'},
+  details:{items:[{id:'food-detail',name:'مقاضي',amount:60000,frequency:'monthly',
+   category:'معيشة'}],dependents:[]},obligations:[],goals:[]},'2026-11');
+ db.salaryMonths.push('2026-12','2027-01');
+ db.transactions.push(
+  {id:'food-1',date:'2026-12-28',type:'expense',category:'food',amount:50000},
+  {id:'food-2',date:'2027-01-28',type:'expense',category:'food',amount:70000},
+  {id:'once',date:'2027-02-01',type:'expense',category:'food',amount:30000,exceptional:true}
+ );
+ db.salaryCycles=[
+  {period:'2026-12',approved:true,amounts:{food:60000}},
+  {period:'2027-01',approved:true,amounts:{food:60000}}
+ ];
+ core.reviewWizardCycle(db,'2026-12','2027-02-01');
+ core.reviewWizardCycle(db,'2027-01','2027-03-01');
+ return db;
+}
+test('next-cycle report uses only completed payday cycles and leaves money unchanged',()=>{
+ const db=reviewedCategoryFixture(),before=JSON.stringify(db);
+ const r=core.cycleCategoryAnalysis(db,'2027-02',{income:500000,available:120000});
+ assert.equal(r.ready,true);
+ assert.equal(r.canApply,true);
+ assert.equal(r.reviewedCount,2);
+ assert.equal(r.items.length,1);
+ assert.equal(r.items[0].lastActual,70000);
+ assert.equal(r.items[0].lastExceptional,30000);
+ assert.equal(r.items[0].observedMean,60000);
+ assert.equal(r.items[0].suggested,62000);
+ assert.equal(r.items[0].averageTransaction,60000);
+ assert.equal(r.items[0].confidence,'مبدئية');
+ assert.equal(JSON.stringify(db),before);
+});
+test('missing or altered reviewed evidence blocks automatic allocation',()=>{
+ const db=reviewedCategoryFixture();
+ const one=core.cycleCategoryAnalysis(db,'2027-01',{income:500000,available:120000});
+ assert.equal(one.reviewedCount,1);
+ assert.equal(one.canApply,false);
+ db.transactions[0].amount+=500;
+ const stale=core.cycleCategoryAnalysis(db,'2027-02',{income:500000,available:120000});
+ assert.deepEqual(stale.changedSnapshots,['2026-12']);
+ assert.equal(stale.canApply,false);
+ assert.equal(stale.blocked,true);
+});
+test('uncategorized expenses and insufficient bank share never become trusted suggestions',()=>{
+ const db=reviewedCategoryFixture();
+ db.transactions[1].category='unknown';
+ const r=core.cycleCategoryAnalysis(db,'2027-02',{income:500000,available:20000});
+ assert.equal(r.uncategorizedTransactions,1);
+ assert.equal(r.canApply,false);
+ assert.equal(r.overAvailable,true);
+});
+test('irregular category is not cut from two ordinary salary cycles',()=>{
+ const db=reviewedCategoryFixture();
+ core.saveUserDetails(db,{useAsEssentials:true,
+  items:[{id:'annual',name:'مقاضي',amount:720000,frequency:'yearly',category:'معيشة'}],
+  dependents:[]});
+ const r=core.cycleCategoryAnalysis(db,'2027-02',{income:500000,available:120000});
+ assert.equal(r.items[0].irregular,true);
+ assert.equal(r.items[0].suggested,60000);
+});
+test('no wizard or reviewed cycles returns no invented report',()=>{
+ const db=fixture(),before=JSON.stringify(db);
+ assert.equal(core.cycleCategoryAnalysis(db,'2026-12').ready,false);
+ assert.equal(JSON.stringify(db),before);
+});

@@ -857,6 +857,112 @@
    }
   };
  }
+
+ /* تحليل بنود دورة الراتب التالية — قراءة فقط؛ يستخدم سجلات المراجعة والميزانية الأصلية. */
+ function cycleCategoryAnalysis(db,period,options){
+  assert(periodRegex.test(String(period)),'شهر خطة الدورة غير صالح.');
+  const opts=options||{}, state=wizardState(db);
+  if(!state.completed)return {ready:false,canApply:false,reason:'لم تعتمد بيانات التأسيس؛ لا يمكن تقديم توصية موثوقة.'};
+  const cycles=wizardCycles(db).filter(x=>x.period<period)
+   .slice().sort((a,b)=>a.period.localeCompare(b.period)).slice(-3);
+  if(!cycles.length)return {ready:false,canApply:false,reason:'لم تعتمد مراجعة أي دورة راتب مكتملة قبل هذه الخطة.'};
+  const categories=(Array.isArray(db.categories)?db.categories:[])
+   .filter(c=>c&&!c.archived&&String(c.id||'').trim());
+  if(!categories.length)return {ready:false,canApply:false,reason:'لا توجد بنود مالية نشطة؛ أدخل البنود وراجعها أولًا.'};
+  const categoryIds=new Set(categories.map(c=>String(c.id)));
+  const transactions=(Array.isArray(db.transactions)?db.transactions:[])
+   .filter(t=>t&&t.type==='expense'&&Number.isSafeInteger(Number(t.amount))&&Number(t.amount)>=0);
+  const approved=(Array.isArray(db.salaryCycles)?db.salaryCycles:[])
+   .filter(x=>x&&x.approved&&x.period);
+  const data=cycles.map(c=>{
+   const start=c.start||wizardDateBound(c.period,state.record.salaryDay);
+   const end=c.end||wizardDateBound(offset(c.period,1),state.record.salaryDay);
+   const expenses=transactions.filter(t=>String(t.date||'')>=start&&String(t.date||'')<end);
+   const total=expenses.reduce((s,t)=>s+Number(t.amount),0);
+   const invalidSnapshot=Number.isSafeInteger(c.expenses)&&total!==c.expenses;
+   const uncategorized=expenses.filter(t=>!categoryIds.has(String(t.category||''))).length;
+   return {period:c.period,start,end,expenses,total,invalidSnapshot,uncategorized};
+  });
+  const unmatched=data.reduce((n,c)=>n+c.uncategorized,0);
+  const changedSnapshots=data.filter(c=>c.invalidSnapshot).map(c=>c.period);
+  const detail=userDetailsSummary(db);
+  const uncertain=detail.incomplete;
+  const previous=approved.filter(c=>c.period<period).sort((a,b)=>b.period.localeCompare(a.period))[0]||null;
+  const income=Number.isSafeInteger(opts.income)&&opts.income>=0?opts.income:
+   (Number.isSafeInteger(db?.rk44VerifiedStart?.income)?db.rk44VerifiedStart.income:null);
+  const available=Number.isSafeInteger(opts.available)&&opts.available>=0?opts.available:null;
+  const items=categories.map(cat=>{
+   const id=String(cat.id);
+   const saved=previous&&Object.hasOwn(previous.amounts||{},id)?Number(previous.amounts[id]):null;
+   const current=Math.max(0,Math.round(Number(cat.limit||0)*100));
+   const prior=Number.isSafeInteger(saved)&&saved>=0?saved:current;
+   const history=data.map(c=>{
+    const own=c.expenses.filter(t=>String(t.category||'')===id);
+    const routine=own.filter(t=>t.exceptional!==true&&t.isExceptional!==true);
+    const extraordinary=own.filter(t=>t.exceptional===true||t.isExceptional===true);
+    const actual=routine.reduce((n,t)=>n+Number(t.amount),0);
+    const exceptional=extraordinary.reduce((n,t)=>n+Number(t.amount),0);
+    const cyclePlan=approved.find(x=>x.period===c.period);
+    const allocated=cyclePlan&&Object.hasOwn(cyclePlan.amounts||{},id)?
+     Number(cyclePlan.amounts[id]):null;
+    return {period:c.period,actual,exceptional,count:routine.length,allocated,
+     exceeded:Number.isSafeInteger(allocated)?actual>allocated:null};
+   });
+   const recent=history[history.length-1],earlier=history[history.length-2]||null;
+   const recorded=history.reduce((n,h)=>n+h.count,0);
+   const recurring=history.reduce((n,h)=>n+h.actual,0);
+   const exceptional=history.reduce((n,h)=>n+h.exceptional,0);
+   const average=recorded?Math.round(recurring/recorded):null;
+   const mean=Math.round(recurring/history.length);
+   const trend=earlier?recent.actual-earlier.actual:null;
+   const overspent=history.filter(h=>h.exceeded===true).length;
+   const detailRow=detail.items.find(x=>String(x.name||'').trim()===String(cat.name||'').trim());
+   const irregular=detailRow&&['yearly','asNeeded'].includes(detailRow.frequency);
+   const amounts=history.map(h=>h.actual);
+   const positive=amounts.filter(x=>x>0).length;
+   let suggested=prior,reason='لا توجد دورات كافية لاقتراح تغيير موثوق؛ أُبقي المخصص السابق للمراجعة اليدوية.';
+   if(history.length>=2&&positive>=2&&!irregular){
+    const weighted=Math.round((amounts.at(-2)*2+amounts.at(-1)*3)/5);
+    if(weighted>prior){
+     suggested=weighted;
+     reason='ارتفع متوسط المصروف المتكرر في دورتين مراجعتين؛ الاقتراح مبني على القيم المسجلة وليس على افتراض ارتفاع الأسعار.';
+    }else if(weighted<prior){
+     suggested=Math.max(weighted,Math.ceil(prior*0.8));
+     reason='كان المصروف المتكرر أقل من المخصص؛ خُفض الاقتراح بحذر وبحد أقصى 20% من المخصص السابق.';
+    }else reason='المصروف المتكرر قريب من المخصص السابق؛ لا حاجة لتغيير غير مبرر.';
+   }else if(irregular){
+    reason='هذا البند مسجل بدورية سنوية أو عند الحاجة؛ لا تكفي عينات شهرية قصيرة لتخفيض مخصصه.';
+   }else if(history.length>=2&&positive<2){
+    reason='لا توجد عمليتان دوريتان موزعتان على دورتين مختلفتين؛ غياب الصرف لا يثبت زوال الحاجة.';
+   }
+   const warnings=[];
+   if(exceptional>0)warnings.push('استُبعد المصروف الاستثنائي من تقدير الإنفاق المتكرر دون حذف العملية الأصلية.');
+   if(irregular)warnings.push('مصروف غير شهري؛ يلزم مراجعة موعد استحقاقه القادم.');
+   if(/قسط|دين|تمويل|اشتراك|فاتورة/.test(String(cat.name||'')))
+    warnings.push('تحقق من أن الالتزام لا يُحتسب أيضًا ضمن الاستحقاقات المحجوزة.');
+   if(changedSnapshots.length)warnings.push('تغيّرت مصروفات دورة معتمدة بعد مراجعتها؛ أعد المطابقة والمراجعة.');
+   if(unmatched)warnings.push('توجد معاملات غير مصنفة في الدورات المرجعية.');
+   const confidence=changedSnapshots.length||unmatched||uncertain?'منخفضة':
+    history.length>=3&&positive>=2?'متوسطة':
+    history.length>=2&&positive>=2?'مبدئية':'غير كافية';
+   return {id,name:String(cat.name||id),previous:prior,lastActual:recent.actual,
+    lastExceptional:recent.exceptional,averageTransaction:average,
+    observedMean:mean,transactionCount:recorded,reviewedPeriods:history.length,
+    history,trend,overspendCount:overspent,suggested,
+    change:suggested-prior,reason,warnings,confidence,
+    irregular:!!irregular,source:'سجل المصروفات الفعلي + الدورات المراجعة + المخصص المعتمد',
+    requiresManualApproval:true};
+  });
+  const suggestedTotal=items.reduce((n,row)=>n+row.suggested,0);
+  const blocked=changedSnapshots.length>0||unmatched>0||uncertain>0;
+  return {ready:true,canApply:cycles.length>=2&&!blocked,
+   blocked,income,available,reviewedPeriods:cycles.map(c=>c.period),
+   reviewedCount:cycles.length,changedSnapshots,uncategorizedTransactions:unmatched,
+   incompleteDetails:uncertain,items,suggestedTotal,
+   overAvailable:available!==null&&suggestedTotal>available,
+   note:'التحليل مبني على دورات راتب راجعها المستخدم. لا يثبت المطابقة مع كشف البنك ولا يغيّر الرصيد أو المخصصات دون موافقة.'};
+ }
+
  function installment(amount,months,annualPercent){
   const principal=money(amount),term=Number(months),rate=Number(annualPercent);
   if(!Number.isInteger(term)||term<1||term>600)throw new Error('مدة القرض يجب أن تكون بين شهر و600 شهر.');
@@ -882,5 +988,5 @@
   onboardingState,scheduleNextMonth,confirmFinancialStart,verifiedStarterPlan,approveVerifiedMonth,
   categorySuggestion,categoryLabels,monthlyEquivalent,userDetails,userDetailsSummary,
   saveUserDetails,saveFlexibleDebt,flexibleRepaymentPreview,
-  wizardState,wizardCycles,wizardPhase,wizardLearning,confirmWizard,reviewWizardCycle,wizardDateBound});
+  wizardState,wizardCycles,wizardPhase,wizardLearning,confirmWizard,reviewWizardCycle,wizardDateBound,cycleCategoryAnalysis});
 });

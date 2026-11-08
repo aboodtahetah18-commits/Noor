@@ -103,12 +103,75 @@ function drawStep2(plan){refreshObligations(plan);const due=totalO(plan);
  ${['hilal','malaa','assets'].map(bank=>`<section class="v19-ob-group"><h3>${bankNames[bank]}</h3>${plan.obligations.filter(x=>x.bank===bank).map(x=>`<div class="v19-ob-row"><div><strong>${esc(x.name)}</strong><small>${esc(x.dueDate||'')} · ${esc(x.kind==='bill'?'فاتورة/عملية مجدولة':x.kind==='fee'?'رسوم': 'قسط أو التزام')}</small></div><b>${cash(x.amount)}</b>${x.locked?`<span class="v19-status">التزام قائم</span>`:`<label class="v19-toggle"><input type="checkbox" data-v19-ob="${esc(x.id)}" ${x.included?'checked':''}> مستحق</label>`}</div>`).join('')||'<p class="v19-muted">لا توجد التزامات مسجلة لهذا البنك.</p>'}</section>`).join('')}
  ${note('إلغاء احتساب فاتورة من هذه الدورة لا يحذف سجلها الأصلي، ولا يمثل إثبات سداد. تحتاج الالتزامات القائمة إلى تسوية منفصلة.')}`;
 }
-function drawStep3(plan){const split=bankSplit(plan),total=allocationSum(plan);
- return `<div class="v19-step-intro"><h2>التوزيع الجديد من الصفر</h2><p>يبدأ كل بند بمخصص جديد للمستقبل فقط، دون نقل المصروفات القديمة إلى الشهر الجديد. تُخصم الالتزامات أولًا ثم توزّع المبالغ على البنوك.</p></div>
+
+function cycleAnalysis(plan){
+ const core=window.RakaezAdaptiveCore;
+ if(!core||typeof core.cycleCategoryAnalysis!=='function')
+  return {ready:false,canApply:false,reason:'محرك تحليل البنود غير متاح؛ لا تعتمد التوزيع التلقائي.'};
+ try{return core.cycleCategoryAnalysis(db,plan.period,{
+  income:Math.round(Number(plan.salary)||0),available:bankSplit(plan).hilal
+ })}catch(error){return {ready:false,canApply:false,reason:'تعذّر فحص السجل المالي: '+String(error.message||'يرجى مراجعة البيانات.')}}
+}
+function cycleSignature(report){
+ return JSON.stringify((report.items||[]).map(r=>[r.id,r.previous,
+  r.history.map(h=>[h.period,h.actual,h.exceptional,h.count,h.allocated])]));
+}
+function cycleCanAutoApply(report){
+ return report.ready&&report.canApply&&!report.overAvailable&&
+  !report.items.some(r=>r.warnings.some(w=>w.includes('ضمن الاستحقاقات')));
+}
+function cycleReportIntro(report,plan){
+ if(!report.ready)return '<p class="v19-warning">'+esc(report.reason)+
+  ' القيم الظاهرة أدناه مخصصات حالية وليست توصيات مبنية على بيانات مكتملة.</p>';
+ const warnings=[];
+ if(report.changedSnapshots.length)warnings.push('تغيّرت معاملات دورة سبق اعتماد مراجعتها: '+report.changedSnapshots.join('، '));
+ if(report.uncategorizedTransactions)warnings.push('يوجد '+report.uncategorizedTransactions+' مصروف غير مصنف؛ راجع التصنيف.');
+ if(report.incompleteDetails)warnings.push('يوجد '+report.incompleteDetails+' مصروف غير منتظم لم يحدد تقديره.');
+ if(report.overAvailable)warnings.push('مجموع الاقتراحات يتجاوز نصيب الهلال؛ يجب تعديل المبالغ قبل التطبيق.');
+ const canApply=cycleCanAutoApply(report);
+ return '<div class="v19-fact-grid">'+
+  summaryBox('دورات راتب تمت مراجعتها',String(report.reviewedCount))+
+  summaryBox('إجمالي المقترح للميزانية',cash(report.suggestedTotal))+
+  summaryBox('المتاح لبنود الهلال بعد الاستحقاقات',cash(report.available||0))+'</div>'+
+  '<p class="v19-help">مصادر التحليل: '+esc(report.reviewedPeriods.join('، '))+
+  '. لم تؤكد مطابقة هذه البيانات مع كشوف البنوك، ولا يُنفذ أي تحويل أو استثمار تلقائي.</p>'+
+  warnings.map(x=>'<p class="v19-warning">'+esc(x)+'</p>').join('')+
+  '<div class="v19-review-actions">'+
+  (canApply?'<button type="button" class="btn" data-v19-action="apply-analysis">تطبيق الاقتراحات بعد المراجعة</button>':'')+
+  '<button type="button" class="btn primary" data-v19-action="confirm-analysis">'+
+  (plan.analysisReviewedAt?'تمت مراجعة التقرير — إعادة التأكيد':'راجعت تقرير البنود')+
+  '</button></div>';
+}
+function cycleAllocationField(category,plan,report){
+ const row=report.ready?report.items.find(x=>x.id===String(category.id)):null;
+ const id=String(category.id),chosen=Number(plan.allocations[id]||0);
+ const explain=row?
+  '<details><summary>شرح المقترح والمخاطر</summary>'+
+  '<p class="v19-help">المخصص السابق: '+cash(row.previous)+
+  ' · صرف آخر دورة: '+cash(row.lastActual)+
+  ' · المتوسط على الدورات المراجعة: '+cash(row.observedMean)+
+  ' · متوسط العملية: '+(row.averageTransaction===null?'غير متاح':cash(row.averageTransaction))+
+  ' · مرات تجاوز المخصص الموثقة: '+row.overspendCount+
+  ' · التغير عن الدورة السابقة: '+(row.trend===null?'غير متاح':cash(row.trend))+
+  ' · مصروفات استثنائية مستبعدة: '+cash(row.history.reduce((n,h)=>n+h.exceptional,0))+
+  '.</p><p class="v19-help">'+esc(row.reason)+'</p>'+
+  (row.warnings.length?'<p class="v19-warning">'+esc(row.warnings.join(' | '))+'</p>':'')+
+  '<p class="v19-help">'+esc(row.source)+'</p></details>':'<small>لم تتوفر دورات مراجعة كافية؛ الإدخال اليدوي فقط.</small>';
+ const inputId='v19-allocation-'+id;
+ return '<div class="v19-field"><label for="'+esc(inputId)+'">'+esc(category.name)+'</label>'+
+  '<input id="'+esc(inputId)+'" type="number" inputmode="decimal" data-v19-allocation="'+esc(id)+
+  '" min="0" step="0.01" value="'+(chosen/100).toFixed(2)+'">'+
+  (row?'<small>المقترح: '+cash(row.suggested)+' · الثقة: '+esc(row.confidence)+'</small>':'')+
+  (plan.manualReasons?.[id]?'<small>سبب التعديل اليدوي: '+esc(plan.manualReasons[id])+'</small>':'')+
+  explain+'</div>';
+}
+
+function drawStep3(plan){const split=bankSplit(plan),total=allocationSum(plan),analysis=cycleAnalysis(plan);
+ return `<div class="v19-step-intro"><h2>التحليل والتوزيع الجديد</h2><p>تُراجع مصروفات الدورات المكتملة قبل تعديل المخصصات. القيم المحفوظة أوليًا ليست اقتراحات آلية، ومخصصات الهلال لا تمثل تحويلًا بنكيًا.</p></div>
  <div class="v19-fact-grid">${summaryBox('الراتب',cash(plan.salary))}${summaryBox('الالتزامات المحجوزة',cash(totalO(plan)))}${summaryBox('الصافي للتوزيع',cash(split.net))}</div>
- <section class="v19-ob-group"><h3>التوزيع بين البنوك</h3><div class="v19-three-banks">${Object.keys(bankNames).map(bank=>`<div>${ico(bank==='hilal'?'moon':bank==='malaa'?'shield':'trend')}<span>${bankNames[bank]} (${Number(plan.ratios?.[bank]||0)}%)</span><strong>${cash(split[bank])}</strong></div>`).join('')}</div></section>
- <section class="v19-ob-group"><div class="v19-section-title"><h3>بنود الهلال الشهر الجديد</h3><button class="btn" type="button" data-v19-action="reset-allocations">${ico('refresh')} إعادة توزيع مقترح</button></div>
- <div class="v19-alloc-grid">${v18ActiveCategories().map(c=>`<div class="v19-field"><label>${esc(c.name)}</label><input type="number" data-v19-allocation="${esc(c.id)}" min="0" step="0.01" value="${(Number(plan.allocations[c.id]||0)/100).toFixed(2)}"></div>`).join('')}</div>
+ ${cycleReportIntro(analysis,plan)}<section class="v19-ob-group"><h3>التوزيع بين البنوك</h3><div class="v19-three-banks">${Object.keys(bankNames).map(bank=>`<div>${ico(bank==='hilal'?'moon':bank==='malaa'?'shield':'trend')}<span>${bankNames[bank]} (${Number(plan.ratios?.[bank]||0)}%)</span><strong>${cash(split[bank])}</strong></div>`).join('')}</div></section>
+ <section class="v19-ob-group"><div class="v19-section-title"><h3>تقارير ومخصصات بنود الهلال</h3></div>
+ <div class="v19-alloc-grid">${v18ActiveCategories().map(c=>cycleAllocationField(c,plan,analysis)).join('')}</div>
  <div class="v19-total ${total>split.hilal?'is-negative':''}"><span>إجمالي البنود</span><strong>${cash(total)}</strong><span>المتاح للهلال بعد الالتزامات: ${cash(split.hilal)}</span></div>
  ${total<split.hilal?note(`يتبقى ${cash(split.hilal-total)} احتياطيًا تشغيليًا غير موزّع، وليس مصروفًا.`):''}
  </section>`;
@@ -130,9 +193,9 @@ function drawStep5(plan){return `<div class="v19-step-intro"><h2>المتابع�
 }
 function cycleShell(){const plan=getPlan(openedPeriod);if(!plan)return;const ready=plan.status!=='draft',idx=ready?4:cycleStep;
  const content=[drawStep1,drawStep2,drawStep3,drawStep4,drawStep5][idx](plan);
- document.getElementById('modalRoot').innerHTML=`<div class="v19-workspace-bg" role="presentation"><section class="v19-workspace" role="dialog" aria-modal="true" aria-label="دورة الراتب"><header class="v19-workspace-header"><button type="button" data-v19-action="close-cycle" class="v19-close" aria-label="إغلاق">${ico('close')}</button><div><h1>دورة الراتب ${esc(plan.period)}</h1><p>التاريخ ${esc(formatDay(plan.period))} · ${statusText(plan)}</p></div></header>
+ document.getElementById('modalRoot').innerHTML=`<div class="v19-workspace-bg" role="presentation"><section class="v19-workspace" role="dialog" aria-modal="true" aria-label="دورة الراتب"><header class="v19-workspace-header"><button type="button" data-v19-action="previous" class="v19-close" aria-label="السابق" ${idx===0||ready?'disabled':''}>${ico('back')}</button><div style="flex:1;text-align:center"><h1>دورة الراتب ${esc(plan.period)}</h1><p>التاريخ ${esc(formatDay(plan.period))} · ${statusText(plan)}</p></div><button type="button" data-v19-action="close-cycle" class="v19-close" aria-label="إغلاق">${ico('close')}</button></header>
  <nav class="v19-progress">${cycleSteps.map((s,i)=>`<button type="button" class="${i===idx?'active':''} ${i<idx?'done':''}" data-v19-step="${i}" ${ready&&i!==4?'disabled':''}>${i+1}. ${s}</button>`).join('')}</nav><main class="v19-workspace-main">${content}</main>
- <footer class="v19-workspace-footer"><button type="button" class="btn primary" data-v19-action="next" ${idx===3||ready?'disabled':''}>التالي ${ico('forward')}</button><button type="button" class="btn v19-save" data-v19-action="save-cycle">${ico('check')} حفظ المسودة</button><button type="button" class="btn" data-v19-action="previous" ${idx===0||ready?'disabled':''}>${ico('back')} السابق</button></footer></section></div>`;
+ <footer class="v19-workspace-footer"><button type="button" class="btn primary" data-v19-action="next" ${idx===3||ready?'disabled':''}>التالي ${ico('forward')}</button><button type="button" class="btn v19-save" data-v19-action="save-cycle">${ico('check')} حفظ المسودة</button></footer></section></div>`;
  const scroller=document.querySelector('.v19-workspace-main');if(scroller)scroller.scrollTop=0;
 }
 function openLegacy(period){
@@ -153,6 +216,11 @@ function canNext(plan){if(cycleStep===0){
  return true;
 }
 function approveCycle(){const plan=getPlan(openedPeriod);if(!plan||plan.status!=='draft')return;
+ const report=cycleAnalysis(plan);
+ if(report.changedSnapshots?.length)return alert('تغيّرت مصروفات دورة سبق اعتماد مراجعتها؛ يلزم إعادة التحقق قبل اعتماد توزيع جديد.');
+ if(report.ready&&(!plan.analysisReviewedAt||plan.analysisSignature!==cycleSignature(report)))
+  return alert('راجع تقرير البنود الحالي وأكد المراجعة بعد آخر تغيير في المصروفات.');
+
  if(totalO(plan)>plan.salary||allocationSum(plan)>bankSplit(plan).hilal)return alert('التوزيع غير متوازن. راجع الالتزامات والمخصصات.');
  if(deficitRemaining(plan)>0){const ok=confirm(`يوجد عجز سابق غير مغطى قدره ${cash(deficitRemaining(plan))}. سيبقى عجزًا مرحلًا ظاهرًا ولن يُعتبر مسددًا. هل تريد اعتماد توزيع الشهر الجديد مع إبقاء العجز مفتوحًا؟`);if(!ok)return}
  if(!confirm('اعتماد خطة الدورة وتحديث مخصصات البنود الجديدة؟ لن يجري النظام أي تحويل أو خصم مصرفي.'))return;
@@ -276,7 +344,32 @@ function performAction(action,id){const plan=openedPeriod?getPlan(openedPeriod,f
   case 'next':if(plan&&canNext(plan)&&cycleStep<3){cycleStep++;saveEdits();cycleShell()}return;
   case 'previous':if(plan&&cycleStep>0){cycleStep--;saveEdits();cycleShell()}return;
   case 'combine-surpluses':if(!plan||plan.status!=='draft')return;plan.combineSurplus=true;plan.categories.forEach(c=>{if(c.balance>c.cover&&c.destination==='none')c.destination='assets'});persist('تجميع فوائض البنود للاستثمار');cycleShell();return;
-  case 'reset-allocations':if(!plan||plan.status!=='draft')return;if(!confirm('إعادة مخصصات البنود الحالية كاقتراح توزيع؟'))return;plan.allocations=Object.fromEntries(v18ActiveCategories().map(c=>[c.id,cents(c.limit)]));persist('إعادة اقتراح التوزيع');cycleShell();return;
+  case 'confirm-analysis':{
+  if(!plan||plan.status!=='draft')return;
+  const report=cycleAnalysis(plan);
+  if(report.changedSnapshots?.length)return alert('تغيرت معاملات دورة معتمدة بعد مراجعتها. صحح المطابقة وأعد مراجعة المصدر أولًا.');
+  if(report.ready&&report.blocked&&!confirm('توجد بيانات ناقصة أو غير مصنفة. هل أكملت المراجعة اليدوية لهذه الملاحظات؟'))return;
+  plan.analysisReviewedAt=new Date().toISOString();
+  plan.analysisSignature=cycleSignature(report);
+  plan.analysisEvidence={periods:report.reviewedPeriods||[],dataQuality:report.blocked?'requires-confirmation':'reviewed',source:'rk44-adaptive-core'};
+  persist('إقرار مراجعة تحليل بنود الدورة',plan.period);
+  cycleShell();toast('حُفظ إقرار مراجعة البنود دون تغيير المخصصات');return;
+ }
+ case 'apply-analysis':{
+  if(!plan||plan.status!=='draft')return;
+  const report=cycleAnalysis(plan);
+  if(!cycleCanAutoApply(report))return alert('لا يجوز تطبيق اقتراحات تلقائية قبل اكتمال مراجعة الدورات والمطابقة وتغطية الاستحقاقات.');
+  if(report.suggestedTotal>bankSplit(plan).hilal)return alert('تتجاوز الاقتراحات نصيب الهلال المتاح بعد الاستحقاقات.');
+  if(!confirm('تطبيق المخصصات المقترحة استنادًا إلى الدورات المراجعة؟ لا ينفذ هذا أي تحويل أو خصم بنكي.'))return;
+  plan.allocations=Object.fromEntries(report.items.map(x=>[x.id,x.suggested]));
+  plan.manualReasons={};
+  plan.analysisReviewedAt=new Date().toISOString();
+  plan.analysisSignature=cycleSignature(report);
+  plan.analysisEvidence={periods:report.reviewedPeriods,dataQuality:'reviewed',source:'rk44-adaptive-core',
+   suggestions:report.items.map(x=>({id:x.id,value:x.suggested,reason:x.reason,confidence:x.confidence}))};
+  persist('تطبيق مقترحات بنود مستندة إلى مراجعة الدورات',plan.period);
+  cycleShell();toast('تم تطبيق الاقتراحات على المسودة فقط');return;
+ }
   case 'approve':return approveCycle();
   case 'confirm-task':return confirmTask(id);
   case 'reduce-deficit':{if(!plan||plan.status!=='draft')return;const row=plan.categories.find(x=>x.categoryId===id);if(!row)return;const old=Number(plan.allocations[id]||0)/100;const raw=prompt('أدخل مخصص الشهر القادم بعد خفض الإنفاق (ر.س):',String(old));if(raw===null)return;const value=Number(raw);if(!Number.isFinite(value)||value<0||value>100000000)return alert('مخصص غير صالح.');plan.allocations[id]=cents(value);persist('خفض مخصص بند في الدورة القادمة',row.name);cycleShell();toast('تم تعديل مخصص الشهر القادم فقط؛ العجز السابق لا يُعد مسددًا.');return;}
@@ -307,7 +400,20 @@ document.addEventListener('change',event=>{
  saveEdits();if(field!=='feeRate')cycleShell();return;
  }
  const obId=input.dataset.v19Ob;if(obId){const ob=plan.obligations.find(x=>x.id===obId);if(!ob||ob.locked)return;const selected=input.checked;if(!selected){const reason=prompt('سبب إلغاء/تأجيل استحقاق هذا الشهر (يُحفظ في سجل المراجعة):','فاتورة أُلغيت');if(!reason?.trim()){input.checked=true;return}ob.skippedReason=reason.trim()}else ob.skippedReason='';ob.included=selected;persist('تعديل استحقاق في دورة',ob.name);cycleShell();return}
- const catId=input.dataset.v19Allocation;if(catId){const v=cents(input.value);if(!Number.isFinite(v)||v<0){alert('مخصص غير صالح');return}plan.allocations[catId]=v;saveEdits();cycleShell()}
+ const catId=input.dataset.v19Allocation;if(catId){
+  const v=cents(input.value),before=Number(plan.allocations[catId]||0);
+  if(!Number.isFinite(v)||v<0||v>100000000000){alert('مخصص غير صالح');input.value=(before/100).toFixed(2);return}
+  if(v===before)return;
+  const explanation=prompt('اكتب سبب تعديل مخصص هذا البند (يلزم حفظ سبب القرار):','');
+  if(!explanation?.trim()){input.value=(before/100).toFixed(2);return}
+  if(!plan.manualReasons)plan.manualReasons={};
+  plan.manualReasons[catId]=explanation.trim().slice(0,500);
+  plan.allocations[catId]=v;
+  const prevScroll=document.querySelector('.v19-workspace-main')?.scrollTop||0;
+  audit('تعديل مخصص بعد تقرير الدورة',catId+' — '+before+' إلى '+v+' هللة؛ '+plan.manualReasons[catId]);
+  saveEdits();cycleShell();
+  const scroller=document.querySelector('.v19-workspace-main');if(scroller)scroller.scrollTop=prevScroll;
+ }
 });
 setInterval(()=>{const clock=document.getElementById('v19Clock');if(clock)clock.textContent=personTime()},30000);
 // Preserve existing brand; styles live in the companion CSS file.
