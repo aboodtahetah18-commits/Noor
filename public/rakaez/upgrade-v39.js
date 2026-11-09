@@ -36,10 +36,19 @@ const tone=(amount,preferred='teal')=>amount<0?'red':preferred;
 function value(label,amount,style='navy',hint=''){
  return '<div class="rk39-number rk39-'+style+'"><span>'+escaping(label)+'</span><strong>'+financial(amount)+'</strong>'+(hint?'<small>'+escaping(hint)+'</small>':'')+'</div>';
 }
+const actionIcons={'reserve-add':'plus','reserve-opening':'shield','reserve-release':'refresh',snapshot:'calendar',rollover:'forward','bank-transfer':'bank'};
+const pageIcons={reserves:'edit',transactions:'plus',cycles:'calendar',fees:'fund',ledger:'list'};
+const fullActionNames={'reserve-add':'تغذية الاحتياطي','reserve-opening':'تثبيت احتياطي افتتاحي','reserve-release':'إعادة تخصيص الاحتياطي',snapshot:'تثبيت مخصص الشهر',rollover:'ترحيل الفائض','bank-transfer':'طلب تحويل بين البنوك'};
+const semanticIcon=name=>typeof ico==='function'?ico(name):'';
 function action(key,title,extra='',disabled=false,variant='secondary'){
- return '<button type="button" class="rk39-action rk39-'+variant+'" data-rk39-open="'+escaping(key)+'" '+(extra?'data-rk39-id="'+escaping(extra)+'" ':'')+(disabled?'disabled ':'')+'>'+escaping(title)+'</button>';
+ return '<button type="button" class="rk39-action rk39-'+variant+'" data-rk39-open="'+escaping(key)+'" '+(extra?'data-rk39-id="'+escaping(extra)+'" ':'')+(disabled?'disabled ':'')+
+ ' aria-label="'+escaping(fullActionNames[key]||title)+'" title="'+escaping(fullActionNames[key]||title)+'">'+semanticIcon(actionIcons[key]||'help')+'<span>'+escaping(title)+'</span></button>';
 }
-function toPage(target,title){return '<button type="button" class="rk39-text-link" data-rk39-go="'+target+'">'+escaping(title)+'</button>'}
+function toPage(target,title){return '<button type="button" class="rk39-text-link" data-rk39-go="'+target+'" aria-label="'+escaping(title)+'">'+semanticIcon(pageIcons[target]||'list')+'<span>'+escaping(title)+'</span></button>'}
+function hint(label,description){
+ return '<details class="rk39-hint"><summary aria-label="معلومات: '+escaping(label)+'" title="معلومات: '+escaping(label)+'">'+semanticIcon('help')+'</summary>'+
+  '<div class="rk39-hint-body">'+escaping(description)+'</div></details>';
+}
 function periodOptions(current){return mainMonths().map(p=>'<option value="'+p+'" '+(p===current?'selected':'')+'>'+labelPeriod(p)+'</option>').join('')}
 function rowsHistory(){
  const months=mainMonths().filter(p=>core.read(db).months[p]||(db.salaryMonths||[]).includes(p)||core.history(db,p).length);
@@ -83,30 +92,32 @@ hilal=function(){
  const notice=budget.deficit&&budget.posted?'<div class="rk39-warning" role="alert">تنبيه: المصروفات أو الالتزامات المسجلة تجاوزت المخصص المتاح. أوقف النظام عمليات سحب فائض جديدة حتى تتم التسوية.</div>':
   !budget.posted&&salary?'<div class="rk39-warning">راتب هذا الشهر مسجل، لكن المخصص التشغيلي لم يُثبّت بعد. راجع قيمة الشهر الفعلية ثم اختر «تثبيت مخصص الشهر».</div>':
   !salary&&!budget.posted?'<div class="rk39-warning">لم يُسجل راتب هذا الشهر. لا يوجد مخصص جديد مؤكد؛ يمكن متابعة مبالغ مرحّلة سابقة فقط إن وُجدت.</div>':'';
- const reserveTitle=res.target?'الاحتياطي المتغير لبنك الهلال':'لا يوجد احتياطي مستهدف محسوب';
+ const reserveTitle=res.target?'الاحتياطي المتغير':'احتياطي غير محسوب';
  const progress=Math.min(100,Math.max(0,res.progress));
  return '<section class="rk39-page" aria-label="عمليات بنك الهلال">'+
-  '<header class="rk39-header"><div class="rk39-bank-identity">'+mark+'<div><h2>مخصصات التشغيل</h2><p>حساب مخصص مستقل لكل شهر في بنك الهلال</p></div></div><label class="rk39-period">شهر المتابعة <select id="rk39Period">'+periodOptions(selectedPeriod)+'</select></label></header>'+
+  '<header class="rk39-header"><div class="rk39-bank-identity">'+mark+'<h2>مخصصات التشغيل</h2>'+hint('المخصص الشهري','لكل شهر مخصص مستقل. التخصيص الداخلي لا يُنشئ رصيدًا مصرفيًا جديدًا.')+'</div><label class="rk39-period"><span>الشهر</span><select id="rk39Period" aria-label="شهر المتابعة">'+periodOptions(selectedPeriod)+'</select></label></header>'+
   notice+
-  '<section class="rk39-hero"><div class="rk39-feature"><small>المتبقي القابل للتخصيص في الشهر</small><strong class="rk39-'+tone(budget.free)+'">'+(budget.posted||budget.free>0?financial(budget.free):'بانتظار التثبيت')+'</strong>'+
-  '<p>بعد خصم المصروفات والعمليات المثبتة والحجوزات المعلقة؛ هذا رصيد تخصيص داخلي وليس رصيد الحساب البنكي.</p></div>'+
+  '<section class="rk39-hero"><div class="rk39-feature"><div class="rk39-feature-title"><small>المتبقي للتخصيص</small>'+
+  hint('المتبقي للتخصيص','المتبقي بعد المصروفات والحجوزات. رصيد إداري داخل ركائز، وليس رصيد حساب بنكي.')+'</div>'+
+  '<strong class="rk39-'+tone(budget.free)+'">'+(budget.posted||budget.free>0?financial(budget.free):'بانتظار التثبيت')+'</strong></div>'+
   '<dl class="rk39-kpis">'+value('مخصص الشهر المثبت',budget.allocation,'blue')+value('مصروفات الشهر المسجلة',budget.expenses,'red')+value('حجوزات تحويل معلقة',budget.holds,'gold')+'</dl></section>'+
   '<div class="rk39-split"><section class="rk39-reserve" aria-label="الاحتياطي المستهدف">'+
-  '<header><h3>'+reserveTitle+'</h3><span>أولوية عالية</span></header>'+
+  '<header class="rk39-section-head"><div class="rk39-title-row"><h3>'+reserveTitle+'</h3>'+
+  hint('حساب الاحتياطي','الهدف يتغير وفق المصروفات والالتزامات ومدة الحماية. المحجوز مخصص إداري وليس نقدًا مؤكدًا قبل المطابقة.')+
+  '</div><span class="rk39-priority">أولوية عالية</span></header>'+
   '<div class="rk39-reserve-main"><div class="rk39-ring" style="--rk39-progress:'+progress+'%" role="progressbar" aria-label="نسبة تغطية هدف الاحتياطي من سجل الحجز الداخلي" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+progress+'"><strong>'+progress+'%</strong></div>'+
   '<dl>'+value('الهدف',res.target,'navy')+value('المحجوز في السجل',res.earmarked,'teal')+value('المطلوب لإكمال الهدف',res.gap,'red')+'</dl></div>'+
-  '<p class="rk39-disclaimer">مبلغ محجوز إداريًا من المخصصات. لا يصبح نقدًا مؤكدًا إلا بعد مطابقته مع الحساب البنكي.</p>'+
-  '<div class="rk39-controls">'+action('reserve-add','تغذية الاحتياطي','',!hasAvail||res.gap<=0,'primary')+action('reserve-opening','تثبيت افتتاحي','',res.earmarked>0||core.history(db).some(e=>e.kind==='reserve-add'||e.kind==='reserve-release'||e.kind==='reserve-opening'))+action('reserve-release','إعادة تخصيص','',res.earmarked<=0)+toPage('reserves','تعديل الهدف')+'</div></section>'+
-  '<section class="rk39-operations" aria-label="إجراءات تشغيلية فعلية"><header><h3>عمليات المخصص</h3><p>عمليات محفوظة في سجل مستقل، لا توصيات شكلية.</p></header>'+
-  '<div class="rk39-controls">'+action('snapshot','تثبيت مخصص الشهر','',budget.posted||!salary,'primary')+
-  action('rollover','ترحيل فائض','',!hasAvail)+action('bank-transfer','طلب تحويل لبنك','',!hasAvail)+toPage('transactions','تسجيل مصروف فعلي')+'</div>'+
-  '<div class="rk39-operation-info"><div><b>مخصص كل شهر مستقل</b><span>لا يتحول إلى نقد جديد ولا يمتزج بفائض شهر آخر إلا بعملية ترحيل معتمدة.</span></div>'+
-  '<div><b>الحركات بين البنوك</b><span>يُحجز المبلغ عند الطلب، ويخصم عند إثبات تنفيذ خارجي، ولا يضاف لرصيد البنك المستفيد تلقائيًا.</span></div></div>'+
+  '<div class="rk39-controls rk39-quick-actions">'+action('reserve-add','تغذية','',!hasAvail||res.gap<=0,'primary')+action('reserve-opening','افتتاحي','',res.earmarked>0||core.history(db).some(e=>e.kind==='reserve-add'||e.kind==='reserve-release'||e.kind==='reserve-opening'))+action('reserve-release','إعادة تخصيص','',res.earmarked<=0)+toPage('reserves','تعديل')+'</div></section>'+
+  '<section class="rk39-operations" aria-label="إجراءات تشغيلية فعلية"><header class="rk39-section-head"><div class="rk39-title-row"><h3>عمليات المخصص</h3>'+
+  hint('العمليات التشغيلية','التثبيت والترحيل والتخصيص عمليات مسجلة. التحويل لا يكتمل إلا عند إثبات التنفيذ ومطابقة الوصول، ولا ينشئ نقدًا جديدًا.')+
+  '</div></header>'+
+  '<div class="rk39-controls rk39-quick-actions">'+action('snapshot','تثبيت','',budget.posted||!salary,'primary')+
+  action('rollover','ترحيل','',!hasAvail)+action('bank-transfer','تحويل','',!hasAvail)+toPage('transactions','مصروف')+'</div>'+
   '<div class="rk39-operation-links">'+toPage('cycles','دورة الراتب')+toPage('fees','الرسوم')+toPage('ledger','دفتر الأستاذ')+'</div></section></div>'+
   '<div class="rk39-lower"><section class="rk39-history"><header><h3>أرصدة المخصصات حسب الشهر</h3><small>اضغط على الشهر لمتابعته</small></header><div class="rk39-history-head"><span>الشهر</span><span>الحالة</span><span>غير المخصص</span></div>'+rowsHistory()+'</section>'+
   '<section class="rk39-audit"><header><h3>سجل عمليات المخصص</h3><small>'+(pending.length?'تحويلات معلقة: '+pending.length:'لا توجد تحويلات معلقة لهذا الشهر')+'</small></header>'+ledgerList()+'</section></div>'+
   '<details class="rk39-existing-budget"><summary>بنود الميزانية التشغيلية وتفاصيل المصروفات</summary><div class="rk39-existing-content">'+legacy+'</div></details>'+
-  '<p class="rk39-notes">المخصص الشهري حساب تخصيص إداري مستقل لكل شهر، أما المصروفات فتُقرأ من المعاملات الفعلية الموجودة في النظام. الاحتياطي هنا مخصص محجوز لا إثبات لرصيد مصرفي. التحويل بين البنوك يتطلب تنفيذًا خارجيًا ومطابقة وصول مستقلة.</p></section>';
+  '</section>';
 };
 function nextPeriod(p){const [y,m]=p.split('-').map(Number),d=new Date(y,m,1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
 const kinds={'reserve-opening':'إثبات احتياطي افتتاحي موثق',snapshot:'تثبيت مخصص الشهر',rollover:'ترحيل فائض إلى شهر لاحق','reserve-add':'تغذية الاحتياطي المستهدف','reserve-release':'إعادة تخصيص من الاحتياطي','bank-transfer':'طلب تحويل بين البنوك',confirm:'إثبات تنفيذ تحويل خارجي',cancel:'إلغاء طلب تحويل',match:'مطابقة وصول التحويل'};
