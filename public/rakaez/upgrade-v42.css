@@ -319,3 +319,35 @@
  #view .rk42-bank-figures .rk42-stat dd{font-size:12px}
  #view .rk42-bank-figures .rk42-stat dt{font-size:9px}
 }
+
+
+/* Compact information icons across Rakaez: no large grey circles or detached rows */
+#view .rk42-info,
+#modalRoot .rk42-info{
+ vertical-align:middle!important;align-items:center!important;
+ flex:0 0 22px!important;min-width:22px!important;
+ max-width:22px!important;width:22px!important;
+}
+#view .rk42-info>summary,
+#modalRoot .rk42-info>summary{
+ display:inline-grid!important;place-items:center!important;
+ width:22px!important;min-width:22px!important;
+ max-width:22px!important;height:24px!important;
+ min-height:24px!important;padding:0!important;margin:0!important;
+ background:transparent!important;border:0!important;
+ color:var(--teal)!important;box-shadow:none!important;
+ border-radius:0!important;flex:0 0 22px!important;
+}
+#view .rk42-info>summary svg,
+#modalRoot .rk42-info>summary svg{
+ width:16px!important;height:16px!important;min-width:16px!important;
+}
+#view .rk42-info:focus-within>summary,
+#modalRoot .rk42-info:focus-within>summary{
+ outline:2px solid var(--teal)!important;outline-offset:2px!important;
+}
+#view .rk39-page .rk39-warning>.rk42-info{
+ display:inline-flex!important;flex:0 0 22px!important;
+ width:22px!important;height:24px!important;
+ margin-inline-start:4px!important;vertical-align:middle!important;
+}
