@@ -1268,3 +1268,54 @@
  #view .rk44-bank-head h3{font-size:13px!important}
  #view .rk44-metric>strong{font-size:clamp(11px,3.3vw,14px)!important}
 }
+
+/* Focus layout — ledger cash remains visible without another full-width dashboard */
+#view .rk44-cash-link>strong.rk44-ledger-negative{color:var(--red)!important}
+#view .rk39-focus .rk44-hilal-ledger{
+ display:grid!important;grid-template-columns:minmax(0,1fr) auto auto!important;
+ align-items:center!important;gap:8px!important;
+ padding:10px 16px!important;margin:0 16px!important;
+ border:0!important;border-bottom:1px solid var(--line)!important;
+ background:var(--white)!important;
+ min-width:0!important;max-width:calc(100% - 32px)!important;
+}
+#view .rk39-focus .rk44-hilal-ledger>span{
+ flex:none!important;font-size:11px!important;font-weight:700!important;
+ color:var(--muted)!important;
+}
+#view .rk39-focus .rk44-hilal-ledger>strong{
+ font-size:clamp(12px,3.5vw,16px)!important;
+ text-align:center!important;white-space:nowrap!important;
+}
+#view .rk39-focus .rk44-hilal-ledger-more{
+ position:relative!important;min-width:0!important;
+}
+#view .rk39-focus .rk44-hilal-ledger-more>summary{
+ font-size:11px!important;font-weight:750!important;
+ color:var(--teal)!important;cursor:pointer!important;
+ list-style:none!important;white-space:nowrap!important;
+}
+#view .rk39-focus .rk44-hilal-ledger-more>summary::-webkit-details-marker{display:none!important}
+#view .rk39-focus .rk44-hilal-ledger-more>div{
+ position:absolute!important;top:calc(100% + 7px)!important;
+ inset-inline-end:0!important;z-index:65!important;
+ display:grid!important;gap:9px!important;
+ width:min(280px,72vw)!important;
+ padding:12px!important;border:1px solid var(--line)!important;
+ border-radius:9px!important;background:var(--white)!important;
+ box-shadow:0 5px 15px color-mix(in srgb,var(--navy) 11%,transparent)!important;
+}
+#view .rk39-focus .rk44-hilal-ledger-more:not([open])>div{display:none!important}
+#view .rk39-focus .rk44-hilal-ledger-more button{
+ min-height:36px!important;
+ border:1px solid var(--line)!important;
+ border-radius:8px!important;padding:7px!important;
+ font-size:11px!important;
+}
+@media(max-width:370px){
+ #view .rk39-focus .rk44-hilal-ledger{
+  padding:10px 0!important;margin:0 12px!important;
+  max-width:calc(100% - 24px)!important;gap:5px!important;
+ }
+ #view .rk39-focus .rk44-hilal-ledger>strong{font-size:12px!important}
+}
