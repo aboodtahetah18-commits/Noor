@@ -107,7 +107,7 @@ hilal=function(){
   '</div><span class="rk39-priority">أولوية عالية</span></header>'+
   '<div class="rk39-reserve-main"><div class="rk39-ring" style="--rk39-progress:'+progress+'%" role="progressbar" aria-label="نسبة تغطية هدف الاحتياطي من سجل الحجز الداخلي" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+progress+'"><strong>'+progress+'%</strong></div>'+
   '<dl>'+value('الهدف',res.target,'navy')+value('المحجوز في السجل',res.earmarked,'teal')+value('المطلوب لإكمال الهدف',res.gap,'red')+'</dl></div>'+
-  '<div class="rk39-controls rk39-quick-actions">'+action('reserve-add','تغذية','',!hasAvail||res.gap<=0,'primary')+action('reserve-opening','افتتاحي','',res.earmarked>0||core.history(db).some(e=>e.kind==='reserve-add'||e.kind==='reserve-release'||e.kind==='reserve-opening'))+action('reserve-release','إعادة تخصيص','',res.earmarked<=0)+toPage('reserves','تعديل')+'</div></section>'+
+  '<div class="rk39-controls rk39-quick-actions">'+action('reserve-add','تغذية','',!hasAvail||res.gap<=0,'primary')+action('reserve-opening','افتتاحي','',res.earmarked>0||core.history(db).some(e=>e.kind==='reserve-add'||e.kind==='reserve-release'||e.kind==='reserve-opening'))+action('reserve-release','تخصيص','',res.earmarked<=0)+toPage('reserves','تعديل')+'</div></section>'+
   '<section class="rk39-operations" aria-label="إجراءات تشغيلية فعلية"><header class="rk39-section-head"><div class="rk39-title-row"><h3>عمليات المخصص</h3>'+
   hint('العمليات التشغيلية','التثبيت والترحيل والتخصيص عمليات مسجلة. التحويل لا يكتمل إلا عند إثبات التنفيذ ومطابقة الوصول، ولا ينشئ نقدًا جديدًا.')+
   '</div></header>'+
