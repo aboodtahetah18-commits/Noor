@@ -23,7 +23,7 @@
    /^(رجوع|الرجوع|عودة|العودة)/.test(name.trim());
  };
  // نافذة تأسيس 44 لها رأس وتنقّل مستقلان؛ التطبيع العام ينشئ رأسًا وزر إغلاق مكررين.
- const isModal=el=>el&&el.nodeType===1&&el.matches?.(dialogSelector)&&!el.classList.contains('modalbg')&&!el.classList.contains('rk44-wizard');
+ const isModal=el=>el&&el.nodeType===1&&el.matches?.(dialogSelector)&&!el.classList.contains('modalbg')&&!el.classList.contains('rk44-wizard')&&!el.classList.contains('rk39-workspace');
  function createBack(){
   const button=document.createElement('button');
   button.type='button';button.className='rk43-back';button.dataset.rk43Back='1';
