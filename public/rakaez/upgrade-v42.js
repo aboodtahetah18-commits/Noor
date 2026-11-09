@@ -163,15 +163,9 @@
  function compactNotes(){
   const view=document.getElementById('view');if(!view)return;
   if(page==='hilal'){
-   const explain=[
-    ['.rk39-bank-identity p','حساب المخصصات'],
-    ['.rk39-feature p','المتبقي القابل للتخصيص'],
-    ['.rk39-reserve .rk39-disclaimer','الاحتياطي المستهدف'],
-    ['.rk39-operations header p','عمليات المخصصات'],
-    ['.rk39-operation-info','شرح العمليات'],
-    ['.rk39-notes','ملاحظات محاسبية']
-   ];
-   for(const [selector,title] of explain)wrapNode(view.querySelector(selector),title);
+   // The Hilal operational screen already owns one contextual information button
+   // next to each section title. Do not wrap its paragraphs a second time or
+   // move explanations into new standalone rows beneath cards.
    const warning=view.querySelector('.rk39-warning');
    if(warning&&!warning.dataset.rk42Shortened){
     warning.dataset.rk42Shortened='true';
