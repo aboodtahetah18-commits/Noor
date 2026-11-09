@@ -226,8 +226,15 @@
  outline:2px solid var(--teal)!important;
  outline-offset:2px!important;
 }
-#modalRoot .rk43-normalized.rk43-normalized .rk43-action-strip.rk43-three-actions>button:last-child{
- grid-column:1/-1!important;
+#modalRoot .rk43-normalized.rk43-normalized .rk43-action-strip.rk43-many-actions{
+ grid-template-columns:none!important;
+ grid-auto-flow:column!important;
+ grid-auto-columns:minmax(110px,1fr)!important;
+ overflow-x:auto!important;
+ overscroll-behavior-inline:contain!important;
+}
+#modalRoot .rk43-normalized.rk43-normalized .rk43-action-strip.rk43-many-actions>button{
+ grid-column:auto!important;
 }
 #modalRoot .rk43-normalized.rk43-normalized .rk43-wizard-actions{
  width:100%!important;
