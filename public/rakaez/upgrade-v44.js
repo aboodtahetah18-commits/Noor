@@ -709,11 +709,22 @@
     const cash=adaptive.cashBalance(db,page),free=adaptive.availableBankCash(db,page);
     const labels={hilal:'نقد بنك الهلال في دفتر الأستاذ',malaa:'نقد بنك ملاءة في دفتر الأستاذ',assets:'نقد بنك الأصول في دفتر الأستاذ'};
     const strip=document.createElement('div');
-    strip.className='rk44-cash-link';
-    strip.innerHTML='<span>'+safe(labels[page])+'</span><strong>'+fmt(cash)+
-     '</strong><small>المتاح لطلبات التحويل بعد الحجوزات: '+fmt(free)+'</small>'+
-     '<button type="button" data-rk44-page="reserves">حركة الحماية</button>';
-    root.prepend(strip);
+    if(page==='hilal'&&root.querySelector('.rk39-focus-figures')){
+     // Show the ledger balance, including deficits, without a second dashboard.
+     strip.className='rk44-cash-link rk44-hilal-ledger';
+     strip.innerHTML='<span>نقد دفتر الأستاذ</span>'+
+      '<strong class="'+(cash<0?'rk44-ledger-negative':'')+'">'+fmt(cash)+'</strong>'+
+      '<details class="rk44-hilal-ledger-more"><summary>تفاصيل</summary>'+
+      '<div><small>المتاح للتحويل بعد الحجوزات: '+fmt(free)+'</small>'+
+      '<button type="button" data-rk44-page="reserves">حركة الحماية</button></div></details>';
+     root.querySelector('.rk39-focus-figures').after(strip);
+    }else{
+     strip.className='rk44-cash-link';
+     strip.innerHTML='<span>'+safe(labels[page])+'</span><strong class="'+(cash<0?'rk44-ledger-negative':'')+'">'+fmt(cash)+
+      '</strong><small>المتاح لطلبات التحويل بعد الحجوزات: '+fmt(free)+'</small>'+
+      '<button type="button" data-rk44-page="reserves">حركة الحماية</button>';
+     root.prepend(strip);
+    }
    }catch(err){/* Does not block reading legacy bank pages. */}
   }
   if(root&&page==='interbank'&&!root.querySelector('.rk44-cash-link')){
