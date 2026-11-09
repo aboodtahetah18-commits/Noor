@@ -82,42 +82,114 @@ function ledgerList(){
  }).join('');
 }
 const originalHilal=hilal;
-hilal=function(){
- const budget=core.monthly(db,selectedPeriod),res=core.reserve(db,dynamicSafetyTarget());
+function hilalState(){
+ const budget=core.monthly(db,selectedPeriod);
+ const res=core.reserve(db,dynamicSafetyTarget());
  const salary=(db.salaryMonths||[]).includes(selectedPeriod);
  const pending=core.read(db).events.filter(e=>e.kind==='bank-transfer'&&e.status==='pending'&&e.from===selectedPeriod);
- const hasAvail=budget.free>0&&!budget.deficit;
- let legacy='';try{legacy=originalHilal()}catch(e){legacy='<p class="rk39-muted">تعذر عرض التفاصيل التشغيلية القديمة.</p>'}
- const mark=bankSymbol();
- const notice=budget.deficit&&budget.posted?'<div class="rk39-warning" role="alert">تنبيه: المصروفات أو الالتزامات المسجلة تجاوزت المخصص المتاح. أوقف النظام عمليات سحب فائض جديدة حتى تتم التسوية.</div>':
-  !budget.posted&&salary?'<div class="rk39-warning">راتب هذا الشهر مسجل، لكن المخصص التشغيلي لم يُثبّت بعد. راجع قيمة الشهر الفعلية ثم اختر «تثبيت مخصص الشهر».</div>':
-  !salary&&!budget.posted?'<div class="rk39-warning">لم يُسجل راتب هذا الشهر. لا يوجد مخصص جديد مؤكد؛ يمكن متابعة مبالغ مرحّلة سابقة فقط إن وُجدت.</div>':'';
- const reserveTitle=res.target?'الاحتياطي المتغير':'احتياطي غير محسوب';
+ return {budget,res,salary,pending,hasAvail:budget.free>0&&!budget.deficit};
+}
+function hilalReservePanel(state){
+ const {res,hasAvail}=state;
  const progress=Math.min(100,Math.max(0,res.progress));
- return '<section class="rk39-page" aria-label="عمليات بنك الهلال">'+
-  '<header class="rk39-header"><div class="rk39-bank-identity">'+mark+'<h2>مخصصات التشغيل</h2>'+hint('المخصص الشهري','لكل شهر مخصص مستقل. التخصيص الداخلي لا يُنشئ رصيدًا مصرفيًا جديدًا.')+'</div><label class="rk39-period"><span>الشهر</span><select id="rk39Period" aria-label="شهر المتابعة">'+periodOptions(selectedPeriod)+'</select></label></header>'+
-  notice+
-  '<section class="rk39-hero"><div class="rk39-feature"><div class="rk39-feature-title"><small>المتبقي للتخصيص</small>'+
-  hint('المتبقي للتخصيص','المتبقي بعد المصروفات والحجوزات. رصيد إداري داخل ركائز، وليس رصيد حساب بنكي.')+'</div>'+
-  '<strong class="rk39-'+tone(budget.free)+'">'+(budget.posted||budget.free>0?financial(budget.free):'بانتظار التثبيت')+'</strong></div>'+
-  '<dl class="rk39-kpis">'+value('مخصص الشهر المثبت',budget.allocation,'blue')+value('مصروفات الشهر المسجلة',budget.expenses,'red')+value('حجوزات تحويل معلقة',budget.holds,'gold')+'</dl></section>'+
-  '<div class="rk39-split"><section class="rk39-reserve" aria-label="الاحتياطي المستهدف">'+
-  '<header class="rk39-section-head"><div class="rk39-title-row"><h3>'+reserveTitle+'</h3>'+
-  hint('حساب الاحتياطي','الهدف يتغير وفق المصروفات والالتزامات ومدة الحماية. المحجوز مخصص إداري وليس نقدًا مؤكدًا قبل المطابقة.')+
-  '</div><span class="rk39-priority">أولوية عالية</span></header>'+
-  '<div class="rk39-reserve-main"><div class="rk39-ring" style="--rk39-progress:'+progress+'%" role="progressbar" aria-label="نسبة تغطية هدف الاحتياطي من سجل الحجز الداخلي" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+progress+'"><strong>'+progress+'%</strong></div>'+
-  '<dl>'+value('الهدف',res.target,'navy')+value('المحجوز في السجل',res.earmarked,'teal')+value('المطلوب لإكمال الهدف',res.gap,'red')+'</dl></div>'+
-  '<div class="rk39-controls rk39-quick-actions">'+action('reserve-add','تغذية','',!hasAvail||res.gap<=0,'primary')+action('reserve-opening','افتتاحي','',res.earmarked>0||core.history(db).some(e=>e.kind==='reserve-add'||e.kind==='reserve-release'||e.kind==='reserve-opening'))+action('reserve-release','تخصيص','',res.earmarked<=0)+toPage('reserves','تعديل')+'</div></section>'+
-  '<section class="rk39-operations" aria-label="إجراءات تشغيلية فعلية"><header class="rk39-section-head"><div class="rk39-title-row"><h3>عمليات المخصص</h3>'+
-  hint('العمليات التشغيلية','التثبيت والترحيل والتخصيص عمليات مسجلة. التحويل لا يكتمل إلا عند إثبات التنفيذ ومطابقة الوصول، ولا ينشئ نقدًا جديدًا.')+
-  '</div></header>'+
-  '<div class="rk39-controls rk39-quick-actions">'+action('snapshot','تثبيت','',budget.posted||!salary,'primary')+
-  action('rollover','ترحيل','',!hasAvail)+action('bank-transfer','تحويل','',!hasAvail)+toPage('transactions','مصروف')+'</div>'+
-  '<div class="rk39-operation-links">'+toPage('cycles','دورة الراتب')+toPage('fees','الرسوم')+toPage('ledger','دفتر الأستاذ')+'</div></section></div>'+
-  '<div class="rk39-lower"><section class="rk39-history"><header><h3>أرصدة المخصصات حسب الشهر</h3><small>اضغط على الشهر لمتابعته</small></header><div class="rk39-history-head"><span>الشهر</span><span>الحالة</span><span>غير المخصص</span></div>'+rowsHistory()+'</section>'+
-  '<section class="rk39-audit"><header><h3>سجل عمليات المخصص</h3><small>'+(pending.length?'تحويلات معلقة: '+pending.length:'لا توجد تحويلات معلقة لهذا الشهر')+'</small></header>'+ledgerList()+'</section></div>'+
-  '<details class="rk39-existing-budget"><summary>بنود الميزانية التشغيلية وتفاصيل المصروفات</summary><div class="rk39-existing-content">'+legacy+'</div></details>'+
-  '</section>';
+ return '<section class="rk39-ws-section" aria-label="الاحتياطي المالي">'+
+  '<header class="rk39-ws-section-title"><h3>الاحتياطي المتغير</h3>'+
+   hint('كيف يُحسب الهدف؟','الهدف متغير بحسب المصروفات والالتزامات وفترة الحماية. الحجز الداخلي لا يمثل نقدًا مصرفيًا حتى تتم المطابقة.')+'</header>'+
+  '<div class="rk39-ws-reserve-stats">'+
+  value('الهدف',res.target,'navy')+value('المحجوز',res.earmarked,'teal')+
+  value('الفجوة',res.gap,'red')+'</div>'+
+  '<div class="rk39-ws-meter"><span style="width:'+progress+'%"></span></div>'+
+  '<div class="rk39-controls rk39-quick-actions">'+
+    action('reserve-add','تغذية','',!hasAvail||res.gap<=0,'primary')+
+    action('reserve-opening','افتتاحي','',res.earmarked>0||core.history(db).some(e=>e.kind==='reserve-add'||e.kind==='reserve-release'||e.kind==='reserve-opening'))+
+    action('reserve-release','تخصيص','',res.earmarked<=0)+
+    toPage('reserves','تعديل')+
+  '</div></section>';
+}
+function hilalOperationsPanel(state){
+ const {budget,salary,hasAvail}=state;
+ return '<section class="rk39-ws-section" aria-label="عمليات دورة الراتب">'+
+   '<header class="rk39-ws-section-title"><h3>إجراءات المخصص</h3>'+
+   hint('سجل العمليات','التخصيص لا ينشئ نقدًا جديدًا. التحويل لا يكتمل قبل إثبات تنفيذه ومطابقة الوصول.')+'</header>'+
+   '<div class="rk39-controls rk39-quick-actions">'+
+     action('rollover','ترحيل','',!hasAvail)+
+     action('bank-transfer','تحويل','',!hasAvail)+
+     toPage('cycles','الراتب')+
+     toPage('fees','الرسوم')+'</div>'+
+   '<div class="rk39-ws-subaction">'+
+     (budget.posted?'<span class="rk39-ws-status rk39-ws-done">المخصص مثبت</span>':
+     (salary?action('snapshot','تثبيت المخصص','',false,'primary'):
+     '<span class="rk39-ws-status">يلزم تسجيل الراتب قبل التثبيت</span>'))+
+     toPage('transactions','تسجيل مصروف')+
+   '</div></section>';
+}
+function hilalRecordsPanel(state){
+ let legacy='';
+ try{legacy=originalHilal()}catch(e){legacy='<p class="rk39-muted">تعذر عرض التفاصيل التشغيلية القديمة.</p>'}
+ return '<div class="rk39-ws-records">'+
+ '<section class="rk39-history"><header><h3>الأرصدة الشهرية</h3></header>'+
+ '<div class="rk39-history-head"><span>الشهر</span><span>الحالة</span><span>غير المخصص</span></div>'+rowsHistory()+'</section>'+
+ '<section class="rk39-audit"><header><h3>العمليات المسجلة</h3><small>'+
+  (state.pending.length?'تحويلات معلقة: '+state.pending.length:'لا توجد تحويلات معلقة')+
+  '</small></header>'+ledgerList()+'</section>'+
+ '<div class="rk39-ws-subaction">'+toPage('ledger','دفتر الأستاذ')+toPage('transactions','المعاملات')+'</div>'+
+ '<details class="rk39-existing-budget"><summary>بنود الميزانية والتفاصيل القديمة</summary>'+
+ '<div class="rk39-existing-content">'+legacy+'</div></details></div>';
+}
+function openBankWorkspace(tab='reserve'){
+ const root=document.getElementById('modalRoot');if(!root)return;
+ const state=hilalState();
+ const tabs={reserve:'الحماية',operations:'العمليات',records:'السجلات'};
+ if(!Object.prototype.hasOwnProperty.call(tabs,tab))tab='reserve';
+ const body=tab==='reserve'?hilalReservePanel(state):
+  tab==='operations'?hilalOperationsPanel(state):hilalRecordsPanel(state);
+ root.innerHTML='<div class="rk39-ws-overlay" data-rk39-workspace-overlay>'+
+  '<section class="rk39-workspace" role="dialog" aria-modal="true" aria-labelledby="rk39-ws-title">'+
+   '<header class="rk39-ws-header"><span aria-hidden="true"></span>'+
+   '<h2 id="rk39-ws-title">إدارة بنك الهلال</h2>'+
+   '<button type="button" class="rk39-ws-close" data-rk39-workspace-close aria-label="إغلاق نافذة الإدارة">×</button></header>'+
+   '<nav class="rk39-ws-tabs" aria-label="أقسام إدارة بنك الهلال">'+
+    Object.entries(tabs).map(([id,label])=>'<button type="button" data-rk39-workspace-tab="'+id+'"'+
+      (tab===id?' class="active" aria-current="page"':'')+'>'+label+'</button>').join('')+
+   '</nav>'+
+   '<div class="rk39-ws-content">'+body+'</div>'+
+  '</section></div>';
+ root.querySelector('.rk39-ws-close')?.focus();
+}
+hilal=function(){
+ const state=hilalState();
+ const {budget,salary,pending}=state;
+ const posted=!!budget.posted;
+ const status=posted?(budget.deficit?'يحتاج معالجة':'مثبت'):salary?'بانتظار التثبيت':'الراتب غير مسجل';
+ const brief=posted&&budget.deficit?'يوجد تجاوز في مخصص الشهر':
+   !posted&&salary?'يلزم تثبيت مخصص هذا الشهر':
+   !posted?'سجّل الراتب قبل اعتماد المخصص':'';
+ const primary=salary&&!posted?action('snapshot','تثبيت المخصص','',false,'primary'):
+  !salary&&!posted?toPage('cycles','دورة الراتب'):toPage('transactions','تسجيل مصروف');
+ return '<section class="rk39-page rk39-focus-page" aria-label="بنك الهلال — مخصصات التشغيل">'+
+   '<header class="rk39-header"><div class="rk39-bank-identity"><h2>مخصصات التشغيل</h2>'+
+   hint('المخصص الشهري','مخصص التشغيل مقيد داخل النظام ولا يعد رصيدًا مصرفيًا جديدًا. لكل شهر سجل مستقل.')+
+   '</div><label class="rk39-period"><span>الشهر</span><select id="rk39Period" aria-label="شهر المتابعة">'+
+     periodOptions(selectedPeriod)+'</select></label></header>'+
+   '<section class="rk39-focus" aria-label="ملخص دورة الراتب">'+
+    '<div class="rk39-focus-head"><span>حالة الدورة</span><b class="'+(posted&&budget.deficit?'rk39-red':posted?'rk39-teal':'rk39-gold')+'">'+status+'</b></div>'+
+    '<div class="rk39-focus-balance"><div><small>المتبقي للتخصيص</small>'+
+     hint('المتبقي','المتبقي حساب إداري بعد المصروفات والحجوزات، وليس رصيد الحساب البنكي.')+'</div>'+
+     '<strong class="rk39-'+(posted?tone(budget.free):'navy')+'">'+
+      (posted?financial(budget.free):'بانتظار التثبيت')+'</strong></div>'+
+    (brief?'<p class="rk39-focus-note" role="status">'+brief+'</p>':'')+
+    '<dl class="rk39-focus-figures">'+value('مخصص الشهر',budget.allocation,'blue')+
+     value('مصروفات الشهر',budget.expenses,'red')+
+     value('حوالات معلقة',budget.holds,'gold')+'</dl>'+
+    '<div class="rk39-focus-actions">'+primary+
+      '<button type="button" class="rk39-manage-btn" data-rk39-workspace-open>'+
+        semanticIcon('settings')+'<span>إدارة البنك</span></button></div>'+
+   '</section>'+
+   '<button type="button" class="rk39-focus-footer" data-rk39-workspace-open data-rk39-workspace-section="records">'+
+    semanticIcon('list')+'<span>سجلات الدورة وتفاصيلها</span>'+
+    '<small>'+(pending.length?pending.length+' حوالة معلقة':'عرض عند الحاجة')+'</small>'+
+    semanticIcon('forward')+'</button>'+
+ '</section>';
 };
 function nextPeriod(p){const [y,m]=p.split('-').map(Number),d=new Date(y,m,1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
 const kinds={'reserve-opening':'إثبات احتياطي افتتاحي موثق',snapshot:'تثبيت مخصص الشهر',rollover:'ترحيل فائض إلى شهر لاحق','reserve-add':'تغذية الاحتياطي المستهدف','reserve-release':'إعادة تخصيص من الاحتياطي','bank-transfer':'طلب تحويل بين البنوك',confirm:'إثبات تنفيذ تحويل خارجي',cancel:'إلغاء طلب تحويل',match:'مطابقة وصول التحويل'};
@@ -197,15 +269,36 @@ function submitForm(form){
  if(toast){toast.textContent='تم حفظ العملية في سجل المخصصات المحلي.';setTimeout(()=>{if(toast.textContent.includes('تم حفظ العملية'))toast.textContent=''},2800);}
 }
 document.addEventListener('click',event=>{
+ const workspaceOpen=event.target.closest('[data-rk39-workspace-open]');
+ if(workspaceOpen){
+  event.preventDefault();event.stopImmediatePropagation();
+  openBankWorkspace(workspaceOpen.dataset.rk39WorkspaceSection||'reserve');return;
+ }
+ const workspaceTab=event.target.closest('[data-rk39-workspace-tab]');
+ if(workspaceTab){
+  event.preventDefault();event.stopImmediatePropagation();
+  openBankWorkspace(workspaceTab.dataset.rk39WorkspaceTab);return;
+ }
+ const workspaceClose=event.target.closest('[data-rk39-workspace-close]');
+ if(workspaceClose||event.target.matches('[data-rk39-workspace-overlay]')){
+  event.preventDefault();event.stopImmediatePropagation();
+  document.getElementById('modalRoot').innerHTML='';return;
+ }
  const open=event.target.closest('[data-rk39-open]');
  if(open){event.preventDefault();event.stopImmediatePropagation();modalForm(open.dataset.rk39Open,open.dataset.rk39Id||'');return;}
  const goto=event.target.closest('[data-rk39-go]');
- if(goto){event.preventDefault();event.stopImmediatePropagation();navigate(goto.dataset.rk39Go);return;}
+ if(goto){event.preventDefault();event.stopImmediatePropagation();document.getElementById('modalRoot').innerHTML='';navigate(goto.dataset.rk39Go);return;}
  const previous=event.target.closest('[data-rk39-month]');
- if(previous){event.preventDefault();selectedPeriod=previous.dataset.rk39Month;render();return;}
+ if(previous){event.preventDefault();selectedPeriod=previous.dataset.rk39Month;document.getElementById('modalRoot').innerHTML='';render();return;}
  const closer=event.target.closest('[data-rk39-close]');
  if(closer){event.preventDefault();event.stopImmediatePropagation();document.getElementById('modalRoot').innerHTML='';return;}
  if(event.target.matches('[data-rk39-overlay]'))document.getElementById('modalRoot').innerHTML='';
+},true);
+document.addEventListener('keydown',event=>{
+ if(event.key==='Escape'&&document.querySelector('#modalRoot .rk39-workspace')){
+  event.preventDefault();event.stopImmediatePropagation();
+  document.getElementById('modalRoot').innerHTML='';
+ }
 },true);
 document.addEventListener('change',event=>{
  if(event.target.id==='rk39Period'){selectedPeriod=event.target.value;render();}
