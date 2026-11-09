@@ -44,7 +44,8 @@ function action(key,title,extra='',disabled=false,variant='secondary'){
  return '<button type="button" class="rk39-action rk39-'+variant+'" data-rk39-open="'+escaping(key)+'" '+(extra?'data-rk39-id="'+escaping(extra)+'" ':'')+(disabled?'disabled ':'')+
  ' aria-label="'+escaping(fullActionNames[key]||title)+'" title="'+escaping(fullActionNames[key]||title)+'">'+semanticIcon(actionIcons[key]||'help')+'<span>'+escaping(title)+'</span></button>';
 }
-function toPage(target,title){return '<button type="button" class="rk39-text-link" data-rk39-go="'+target+'" aria-label="'+escaping(title)+'">'+semanticIcon(pageIcons[target]||'list')+'<span>'+escaping(title)+'</span></button>'}
+const fullPageNames={reserves:'الاحتياطي المالي',transactions:'تسجيل ومراجعة المصروفات',cycles:'دورة الراتب',fees:'الرسوم الدورية',ledger:'دفتر الأستاذ'};
+function toPage(target,title){return '<button type="button" class="rk39-text-link" data-rk39-go="'+target+'" aria-label="'+escaping(fullPageNames[target]||title)+'" title="'+escaping(fullPageNames[target]||title)+'">'+semanticIcon(pageIcons[target]||'list')+'<span>'+escaping(title)+'</span></button>'}
 function hint(label,description){
  return '<details class="rk39-hint"><summary aria-label="معلومات: '+escaping(label)+'" title="معلومات: '+escaping(label)+'">'+semanticIcon('help')+'</summary>'+
   '<div class="rk39-hint-body">'+escaping(description)+'</div></details>';
@@ -118,9 +119,9 @@ function hilalOperationsPanel(state){
      toPage('fees','الرسوم')+'</div>'+
    '<div class="rk39-ws-subaction">'+
      (budget.posted?'<span class="rk39-ws-status rk39-ws-done">المخصص مثبت</span>':
-     (salary?action('snapshot','تثبيت المخصص','',false,'primary'):
+     (salary?action('snapshot','تثبيت','',false,'primary'):
      '<span class="rk39-ws-status">يلزم تسجيل الراتب قبل التثبيت</span>'))+
-     toPage('transactions','تسجيل مصروف')+
+     toPage('transactions','صرف')+
    '</div></section>';
 }
 function hilalRecordsPanel(state){
@@ -160,24 +161,25 @@ hilal=function(){
  const state=hilalState();
  const {budget,salary,pending}=state;
  const posted=!!budget.posted;
- const status=posted?(budget.deficit?'يحتاج معالجة':'مثبت'):salary?'بانتظار التثبيت':'الراتب غير مسجل';
+ const status=posted?(budget.deficit?'عجز':'مثبت'):salary?'غير مثبت':'دون راتب';
  const brief=posted&&budget.deficit?'يوجد تجاوز في مخصص الشهر':
    !posted&&salary?'يلزم تثبيت مخصص هذا الشهر':
    !posted?'سجّل الراتب قبل اعتماد المخصص':'';
- const primary=salary&&!posted?action('snapshot','تثبيت المخصص','',false,'primary'):
-  !salary&&!posted?toPage('cycles','دورة الراتب'):toPage('transactions','تسجيل مصروف');
+ const primary=salary&&!posted?action('snapshot','تثبيت','',false,'primary'):
+  !salary&&!posted?toPage('cycles','دورة الراتب'):toPage('transactions','صرف');
  return '<section class="rk39-page rk39-focus-page" aria-label="بنك الهلال — مخصصات التشغيل">'+
    '<header class="rk39-header"><div class="rk39-bank-identity"><h2>مخصصات التشغيل</h2>'+
+   '<span class="rk39-inline-status '+(posted&&budget.deficit?'rk39-red':posted?'rk39-teal':'rk39-gold')+'" role="status" title="'+escaping(brief||status)+'">'+escaping(status)+'</span>'+
    hint('المخصص الشهري','مخصص التشغيل مقيد داخل النظام ولا يعد رصيدًا مصرفيًا جديدًا. لكل شهر سجل مستقل.')+
    '</div><label class="rk39-period"><span>الشهر</span><select id="rk39Period" aria-label="شهر المتابعة">'+
      periodOptions(selectedPeriod)+'</select></label></header>'+
    '<section class="rk39-focus" aria-label="ملخص دورة الراتب">'+
-    '<div class="rk39-focus-head"><span>حالة الدورة</span><b class="'+(posted&&budget.deficit?'rk39-red':posted?'rk39-teal':'rk39-gold')+'">'+status+'</b></div>'+
+    ''+
     '<div class="rk39-focus-balance"><div><small>المتبقي للتخصيص</small>'+
      hint('المتبقي','المتبقي حساب إداري بعد المصروفات والحجوزات، وليس رصيد الحساب البنكي.')+'</div>'+
      '<strong class="rk39-'+(posted?tone(budget.free):'navy')+'">'+
-      (posted?financial(budget.free):'بانتظار التثبيت')+'</strong></div>'+
-    (brief?'<p class="rk39-focus-note" role="status">'+brief+'</p>':'')+
+      (posted?financial(budget.free):'—')+'</strong></div>'+
+    ''+
     '<dl class="rk39-focus-figures">'+value('مخصص الشهر',budget.allocation,'blue')+
      value('مصروفات الشهر',budget.expenses,'red')+
      value('حوالات معلقة',budget.holds,'gold')+'</dl>'+
