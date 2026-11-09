@@ -22,10 +22,11 @@
   return '<div class="rk44-metric"><span>'+safe(label)+'</span><strong class="rk44-'+color+'">'+value+'</strong></div>';
  }
  const actions={
-  hilal:[['hilal','تغذية أو استخدام الاحتياطي'],['debts','سداد الالتزامات'],['transactions','مراجعة المصروفات']],
-  malaa:[['malaa','مراجعة السيولة'],['transfer','تحويل معتمد بين البنوك'],['assets','استثمار الفائض بعد الحماية']],
-  assets:[['assets','إدارة الاستثمارات'],['research','دراسة الأسهم والشركات'],['malaa','فحص السيولة المتاحة']]
+  hilal:[['hilal','احتياطي','تغذية أو استخدام الاحتياطي','shield'],['debts','سداد','سداد الالتزامات','fund'],['transactions','مصروفات','مراجعة المصروفات','plus']],
+  malaa:[['malaa','سيولة','مراجعة السيولة','wallet'],['transfer','تحويل','تحويل معتمد بين البنوك','bank'],['assets','استثمار','استثمار الفائض بعد الحماية','trend']],
+  assets:[['assets','محافظ','إدارة الاستثمارات','wallet'],['research','دراسة','دراسة الأسهم والشركات','chart'],['malaa','سيولة','فحص السيولة المتاحة','shield']]
  };
+ const actionSymbol=name=>typeof ico==='function'?ico(name):'';
  function bankCard(id,title,subtitle,mainLabel,main,toneMain,info,metrics,year,snapshot){
   const opts=Array.from({length:6},(_,i)=>{
    const count=i+1;return '<option value="'+count+'" '+(snapshot.policy[id]===count?'selected':'')+'>'+count+' '+(count===1?'شهر':'أشهر')+'</option>';
@@ -34,7 +35,7 @@
    '<header class="rk44-bank-head"><div class="rk44-bank-id">'+bankIcon(id)+
    '<div><h3>'+safe(title)+'</h3><small>'+safe(subtitle)+'</small></div></div>'+
    '<span class="rk44-status '+(id==='assets'?'rk44-neutral':info.gap>0?'rk44-watch':'rk44-good')+'">'+
-   (id==='assets'?'استثمار':info.gap>0?'يحتاج تعزيزًا':id==='hilal'?'حجز داخلي مكتمل':'سيولة مسجلة كافية')+'</span></header>'+
+   (id==='assets'?'استثمار':info.gap>0?'تعزيز':id==='hilal'?'مكتمل':'كافٍ')+'</span></header>'+
    '<div class="rk44-hero"><span>'+safe(mainLabel)+'</span><strong class="rk44-'+toneMain+'">'+main+'</strong>'+
    (year?'<small>'+safe(year)+'</small>':'')+'</div>'+
    '<div class="rk44-metrics">'+metrics.join('')+'</div>'+
@@ -47,7 +48,7 @@
    id==='malaa'?
    'الهدف = الاحتياج الشهري × مدة الحماية + هامش المديونية بالكامل (5% من الدين المتبقي). التغطية تُقاس بالنقد الأقل بين الادخار السائل خلال 3 أيام ودفتر ملاءة بعد الحجوزات؛ الفجوة = الهدف ناقص النقد المتاح، وبحد أدنى صفر. الأرقام محلية وليست مطابقة كشف بنك تلقائية.':
    'هامش أمان الاستثمار = الاحتياج الشهري × مدة الحماية + نصف هامش المديونية (5% من الدين المتبقي). زيادة المدة تقلل الفائض المقترح للاستثمار. لا تُحسب الأسهم والمحافظ كنقد فوري، ولا يتم الاستثمار أو البيع دون موافقتك.')+'</div>'+
-   '<footer class="rk44-actions">'+actions[id].map(([route,label],i)=>'<button type="button" class="'+(i===0?'rk44-primary':'')+'" '+(route==='transfer'?'data-rk44-open-transfer':'data-rk44-page="'+route+'"')+'>'+safe(label)+'</button>').join('')+'</footer></article>';
+   '<footer class="rk44-actions">'+actions[id].map(([route,label,full,icon],i)=>'<button type="button" class="'+(i===0?'rk44-primary':'')+'" '+(route==='transfer'?'data-rk44-open-transfer':'data-rk44-page="'+route+'"')+' aria-label="'+safe(full)+'" title="'+safe(full)+'">'+actionSymbol(icon)+'<span>'+safe(label)+'</span></button>').join('')+'</footer></article>';
  }
 
 
