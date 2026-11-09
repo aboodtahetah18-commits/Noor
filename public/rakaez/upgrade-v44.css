@@ -1008,3 +1008,118 @@
  #view .v30-export-actions{gap:5px!important}
  #view .v30-export-actions>button{font-size:10px!important;padding:6px 3px!important}
 }
+
+
+/* Rakaez button audit: prevent second action row in remaining page toolbars */
+#view :is(.rk-row-buttons,.rk-work-actions,.rk-record-actions,.rk-manage-toolbar,.rk-inline-toolbar,.v19-card-actions,.rk39-controls,.rk39-entry-controls,.rakaez-mode-actions,.rk-account-actions,.rk-malaa-tabs,.settings-tabs),
+#view.rk36-design :is(.rk36-actions,.rk34-cardfoot,.v27-card-footer,.v31-company-actions,.rk-account-actions),
+#view[data-rk36-page="malaa"] .rk-malaa-tabs,
+#view[data-rk36-page="assets"] .rk-account-actions,
+#view[data-rk36-page="settings"] .settings-tabs,
+#view[data-rk36-page="ledger"] .v29-journal-footer{
+ display:flex!important;
+ flex-direction:row!important;
+ flex-wrap:nowrap!important;
+ align-items:stretch!important;
+ gap:8px!important;
+ min-width:0!important;
+ max-width:100%!important;
+ box-sizing:border-box!important;
+}
+#view :is(.rk-row-buttons,.rk-work-actions,.rk-record-actions,.rk-inline-toolbar,.v19-card-actions,.rk39-controls,.rk39-entry-controls,.rk-account-actions,.rk-malaa-tabs,.settings-tabs):has(>button:nth-of-type(5)){
+ overflow-x:auto!important;
+ overscroll-behavior-inline:contain!important;
+ scroll-snap-type:x proximity;
+}
+#view :is(.rk-row-buttons,.rk-work-actions,.rk-record-actions,.rk-inline-toolbar,.v19-card-actions,.rk39-controls,.rk39-entry-controls,.rk-account-actions,.rk-malaa-tabs,.settings-tabs):has(>button:nth-of-type(5))>button{
+ flex:0 0 31%!important;
+ scroll-snap-align:start;
+}
+#view :is(.rk-row-buttons,.rk-work-actions,.rk-record-actions,.v19-card-actions,.rk39-controls,.rk39-entry-controls,.rk-account-actions,.rk-malaa-tabs,.settings-tabs)>button{
+ flex:1 1 0!important;
+ min-width:0!important;
+ max-width:100%!important;
+ margin:0!important;
+ padding:7px 5px!important;
+ white-space:normal!important;
+ overflow-wrap:anywhere!important;
+ border-radius:9px!important;
+ box-sizing:border-box!important;
+}
+#view :is(.crudactions,.rk-record-action-flex,.rk-work-actions,.rk-row-buttons):has(>button){
+ display:flex!important;
+ flex-direction:row!important;
+ flex-wrap:nowrap!important;
+ align-items:stretch!important;
+ min-width:0!important;
+ max-width:100%!important;
+ gap:7px!important;
+}
+#view :is(.crudactions,.rk-record-action-flex,.rk-work-actions,.rk-row-buttons)>button{
+ flex:1 1 0!important;
+ min-width:0!important;
+ max-width:100%!important;
+ margin:0!important;
+ white-space:normal!important;
+ overflow-wrap:anywhere!important;
+ text-align:center!important;
+}
+#view .tablewrap tbody td.rk-table-actions,
+#view .tablewrap tbody td.rk-table-actions>.row{
+ display:flex!important;
+ flex-direction:row!important;
+ flex-wrap:nowrap!important;
+ min-width:0!important;
+ max-width:100%!important;
+ gap:7px!important;
+}
+#view .tablewrap tbody td.rk-table-actions>.row>button,
+#view .tablewrap tbody td.rk-table-actions>button{
+ flex:1 1 0!important;
+ min-width:0!important;
+ max-width:100%!important;
+ white-space:normal!important;
+ overflow-wrap:anywhere!important;
+}
+#modalRoot :is(.rk-compact-footer,.rk-record-action-flex,.rk-simple-dialog .rk-compact-footer,.rk-v22-detail-actions){
+ display:flex!important;
+ flex-direction:row!important;
+ flex-wrap:nowrap!important;
+ align-items:stretch!important;
+ justify-content:stretch!important;
+ min-width:0!important;
+ max-width:100%!important;
+ gap:9px!important;
+ box-sizing:border-box!important;
+}
+#modalRoot :is(.rk-compact-footer,.rk-record-action-flex,.rk-v22-detail-actions)>button{
+ flex:1 1 0!important;
+ min-width:0!important;
+ max-width:100%!important;
+ width:100%!important;
+ min-height:42px!important;
+ border-radius:9px!important;
+ white-space:normal!important;
+ overflow-wrap:anywhere!important;
+ text-align:center!important;
+}
+#modalRoot .rk37-modal-nav{
+ display:flex!important;
+ flex-direction:row!important;
+ flex-wrap:nowrap!important;
+ align-items:center!important;
+ gap:5px!important;
+ max-width:100%!important;
+ overflow-x:auto!important;
+ overscroll-behavior-inline:contain!important;
+}
+#view .rk39-controls>button,#view .rk39-entry-controls>button{
+ min-width:0!important;
+ max-width:100%!important;
+ flex:1 1 0!important;
+ border:1px solid var(--line)!important;
+ border-radius:9px!important;
+ box-sizing:border-box!important;
+ white-space:normal!important;
+ overflow-wrap:anywhere!important;
+}
