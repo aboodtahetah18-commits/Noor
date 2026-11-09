@@ -307,3 +307,352 @@
  #view .rk39-page .rk39-ring{width:59px!important;height:59px!important;min-width:59px!important;flex-basis:59px!important}
  #view .rk39-page .rk39-ring:before{width:43px!important;height:43px!important}
 }
+
+
+/* RK39 Focus Layout — progressive disclosure instead of stacked finance cards */
+#view .rk39-focus-page{
+ display:grid!important;gap:12px!important;
+ max-width:1050px!important;min-width:0!important;margin:auto!important;
+}
+#view .rk39-focus-page .rk39-header{
+ display:flex!important;flex-direction:row!important;
+ justify-content:space-between!important;align-items:center!important;
+ gap:8px!important;flex-wrap:nowrap!important;
+ margin:0!important;padding:0 2px!important;
+}
+#view .rk39-focus-page .rk39-bank-identity{
+ display:inline-flex!important;align-items:center!important;
+ flex-wrap:nowrap!important;gap:6px!important;min-width:0!important;
+}
+#view .rk39-focus-page .rk39-bank-identity h2{
+ font-size:clamp(15px,3.9vw,19px)!important;
+ overflow:hidden!important;white-space:nowrap!important;text-overflow:ellipsis!important;
+ margin:0!important;
+}
+#view .rk39-focus-page .rk39-period{
+ display:inline-flex!important;align-items:center!important;
+ gap:5px!important;flex-wrap:nowrap!important;min-width:0!important;
+}
+#view .rk39-focus-page .rk39-period select{
+ width:109px!important;min-width:0!important;min-height:37px!important;
+ font-size:12px!important;
+}
+#view .rk39-focus-page .rk39-focus{
+ background:var(--white)!important;border:1px solid var(--line)!important;
+ border-radius:13px!important;
+ display:grid!important;gap:0!important;
+ min-width:0!important;max-width:100%!important;overflow:visible!important;
+ box-shadow:none!important;
+}
+#view .rk39-focus-page .rk39-focus-head{
+ display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;
+ justify-content:space-between!important;align-items:center!important;
+ gap:8px!important;padding:13px 16px 0!important;
+ font-size:11px!important;color:var(--muted)!important;
+}
+#view .rk39-focus-page .rk39-focus-head>b{
+ display:inline-flex!important;font-size:11px!important;font-weight:800!important;
+ background:var(--paper)!important;border-radius:7px!important;
+ padding:4px 9px!important;max-width:55%!important;
+ text-align:center!important;overflow-wrap:anywhere!important;
+}
+#view .rk39-focus-page .rk39-focus-balance{
+ display:flex!important;flex-flow:row nowrap!important;
+ align-items:center!important;justify-content:space-between!important;
+ gap:10px!important;min-width:0!important;
+ padding:14px 16px 13px!important;
+}
+#view .rk39-focus-page .rk39-focus-balance>div{
+ display:inline-flex!important;align-items:center!important;
+ flex-flow:row nowrap!important;gap:4px!important;min-width:0!important;
+}
+#view .rk39-focus-page .rk39-focus-balance small{
+ color:var(--muted)!important;font-size:12px!important;font-weight:750!important;
+ white-space:normal!important;
+}
+#view .rk39-focus-page .rk39-focus-balance>strong{
+ display:block!important;flex:0 1 auto!important;
+ min-width:0!important;max-width:58%!important;
+ color:var(--navy);font-size:clamp(18px,4.7vw,29px)!important;
+ font-weight:900!important;text-align:left!important;
+ line-height:1.35!important;white-space:normal!important;
+ overflow-wrap:anywhere!important;
+}
+#view .rk39-focus-page .rk39-focus-note{
+ font-size:11px!important;margin:0 16px 12px!important;
+ line-height:1.6!important;color:var(--gold)!important;
+ padding:5px 0!important;border-top:1px solid var(--line)!important;
+}
+#view .rk39-focus-page .rk39-focus-figures{
+ display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ margin:0 16px!important;padding:9px 0 12px!important;
+ border-block:1px solid var(--line)!important;min-width:0!important;
+}
+#view .rk39-focus-page .rk39-focus-figures>.rk39-number{
+ display:flex!important;flex-direction:column!important;
+ justify-content:center!important;align-items:center!important;
+ gap:5px!important;min-width:0!important;padding:6px 4px!important;
+ text-align:center!important;
+}
+#view .rk39-focus-page .rk39-focus-figures>.rk39-number+.rk39-number{
+ border-right:1px solid var(--line)!important;
+}
+#view .rk39-focus-page .rk39-focus-figures .rk39-number>span{
+ font-size:11px!important;color:var(--muted)!important;line-height:1.4!important;
+}
+#view .rk39-focus-page .rk39-focus-figures .rk39-number>strong{
+ font-size:clamp(12px,3.3vw,16px)!important;white-space:normal!important;
+ text-align:center!important;
+}
+#view .rk39-focus-page .rk39-focus-actions{
+ display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ gap:9px!important;min-width:0!important;
+ padding:15px 16px!important;margin:0!important;
+}
+#view .rk39-focus-page .rk39-focus-actions>button{
+ display:inline-flex!important;align-items:center!important;
+ justify-content:center!important;gap:8px!important;
+ min-width:0!important;width:100%!important;max-width:100%!important;
+ min-height:44px!important;padding:9px 8px!important;
+ border:1px solid var(--line)!important;border-radius:9px!important;
+ background:var(--white)!important;color:var(--navy)!important;
+ box-sizing:border-box!important;
+ font:inherit!important;font-size:12px!important;font-weight:800!important;
+ text-align:center!important;white-space:normal!important;
+ overflow-wrap:anywhere!important;
+}
+#view .rk39-focus-page .rk39-focus-actions>button.rk39-primary,
+#view .rk39-focus-page .rk39-focus-actions>button:first-child:not(.rk39-manage-btn){
+ background:var(--teal)!important;color:var(--white)!important;
+ border-color:var(--teal)!important;
+}
+#view .rk39-focus-page .rk39-focus-actions>button:disabled{
+ opacity:.50!important;cursor:not-allowed!important;
+}
+#view .rk39-focus-page .rk39-focus-actions .rk-ui-icon{
+ width:16px!important;height:16px!important;flex:0 0 16px!important;
+}
+#view .rk39-focus-page .rk39-focus-actions>button>span{min-width:0!important}
+#view .rk39-focus-page .rk39-focus-footer{
+ display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;
+ align-items:center!important;gap:9px!important;
+ width:100%!important;min-width:0!important;max-width:100%!important;
+ box-sizing:border-box!important;
+ background:transparent!important;color:var(--navy)!important;
+ border:1px solid var(--line)!important;border-radius:9px!important;
+ text-align:right!important;padding:10px 14px!important;
+ font:inherit!important;font-size:12px!important;font-weight:750!important;
+}
+#view .rk39-focus-page .rk39-focus-footer>.rk-ui-icon{
+ width:16px!important;height:16px!important;flex:0 0 16px!important;
+}
+#view .rk39-focus-page .rk39-focus-footer>span{
+ min-width:0!important;white-space:normal!important;
+}
+#view .rk39-focus-page .rk39-focus-footer>small{
+ margin-inline-start:auto!important;color:var(--muted)!important;
+ font-size:10px!important;white-space:nowrap!important;
+}
+#view .rk39-focus-page .rk39-hint{align-self:center!important}
+/* The management dialog belongs to the existing root, with one header and
+   three pages; hidden pages do not consume space on the bank screen. */
+#modalRoot .rk39-ws-overlay{
+ position:fixed!important;inset:0!important;z-index:350!important;
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ box-sizing:border-box!important;padding:12px!important;
+ background:color-mix(in srgb,var(--navy) 70%,transparent)!important;
+ pointer-events:auto!important;overflow-y:auto!important;
+}
+#modalRoot .rk39-workspace{
+ direction:rtl!important;display:flex!important;flex-direction:column!important;
+ flex:0 1 680px!important;position:relative!important;
+ min-width:0!important;width:min(680px,100%)!important;
+ max-width:100%!important;max-height:calc(100dvh - 24px)!important;
+ margin:auto!important;background:var(--white)!important;
+ border:2px solid var(--gold)!important;border-radius:15px!important;
+ box-sizing:border-box!important;overflow:hidden!important;
+ box-shadow:0 18px 45px color-mix(in srgb,var(--navy) 22%,transparent)!important;
+}
+#modalRoot .rk39-ws-header{
+ direction:rtl!important;display:grid!important;
+ grid-template-columns:44px minmax(0,1fr) 44px!important;
+ gap:8px!important;align-items:center!important;
+ padding:11px 14px!important;min-height:66px!important;
+ background:var(--navy)!important;color:var(--white)!important;
+ border-bottom:3px solid var(--gold)!important;
+}
+#modalRoot .rk39-ws-header>h2{
+ display:block!important;margin:0!important;color:var(--white)!important;
+ font-size:17px!important;font-weight:850!important;text-align:center!important;
+ min-width:0!important;
+}
+#modalRoot .rk39-ws-header>.rk39-ws-close{
+ display:grid!important;place-items:center!important;
+ width:44px!important;height:44px!important;min-width:44px!important;
+ margin:0!important;padding:0!important;
+ border:1px solid var(--line)!important;border-radius:9px!important;
+ background:var(--white)!important;color:var(--navy)!important;
+ font-size:24px!important;font-weight:850!important;line-height:1!important;
+}
+#modalRoot .rk39-ws-tabs{
+ display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ gap:5px!important;align-items:stretch!important;
+ padding:10px 12px!important;border-bottom:1px solid var(--line)!important;
+ background:var(--white)!important;
+}
+#modalRoot .rk39-ws-tabs>button{
+ min-width:0!important;min-height:42px!important;
+ background:var(--white)!important;color:var(--navy)!important;
+ padding:7px 4px!important;border:1px solid var(--line)!important;
+ border-radius:8px!important;font:inherit!important;
+ font-size:12px!important;font-weight:750!important;
+ white-space:normal!important;text-align:center!important;
+}
+#modalRoot .rk39-ws-tabs>button.active{
+ background:var(--navy)!important;color:var(--white)!important;
+ border-color:var(--navy)!important;
+}
+#modalRoot .rk39-ws-content{
+ display:block!important;flex:1 1 auto!important;min-height:0!important;
+ overflow-y:auto!important;overscroll-behavior:contain!important;
+ padding:14px!important;box-sizing:border-box!important;
+}
+#modalRoot .rk39-ws-section{display:grid!important;gap:15px!important;min-width:0!important}
+#modalRoot .rk39-ws-section-title{
+ display:flex!important;flex-flow:row nowrap!important;align-items:center!important;
+ gap:7px!important;min-width:0!important;
+ padding-bottom:8px!important;border-bottom:1px solid var(--line)!important;
+}
+#modalRoot .rk39-ws-section-title h3{
+ margin:0!important;font-size:15px!important;color:var(--navy)!important;
+ font-weight:850!important;
+}
+#modalRoot .rk39-ws-reserve-stats{
+ display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ min-width:0!important;gap:0!important;
+ border-block:1px solid var(--line)!important;
+}
+#modalRoot .rk39-ws-reserve-stats .rk39-number{
+ display:grid!important;gap:5px!important;padding:11px 5px!important;
+ min-width:0!important;text-align:center!important;
+}
+#modalRoot .rk39-ws-reserve-stats .rk39-number+.rk39-number{
+ border-right:1px solid var(--line)!important;
+}
+#modalRoot .rk39-ws-reserve-stats .rk39-number>span{
+ font-size:10px!important;color:var(--muted)!important;
+}
+#modalRoot .rk39-ws-reserve-stats .rk39-number>strong{
+ font-size:clamp(12px,3.4vw,16px)!important;
+ overflow-wrap:anywhere!important;
+}
+#modalRoot .rk39-ws-meter{
+ height:6px!important;min-width:0!important;
+ background:var(--paper)!important;border-radius:99px!important;overflow:hidden!important;
+}
+#modalRoot .rk39-ws-meter>span{
+ display:block!important;height:100%!important;border-radius:99px!important;
+ background:var(--teal)!important;
+}
+#modalRoot .rk39-workspace .rk39-quick-actions{
+ display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
+ gap:6px!important;min-width:0!important;max-width:100%!important;
+}
+#modalRoot .rk39-workspace .rk39-quick-actions>button{
+ display:inline-flex!important;align-items:center!important;justify-content:center!important;
+ flex-flow:row nowrap!important;gap:4px!important;
+ min-width:0!important;max-width:100%!important;width:100%!important;
+ min-height:42px!important;margin:0!important;padding:6px 4px!important;
+ border:1px solid var(--line)!important;border-radius:8px!important;
+ background:var(--white)!important;color:var(--navy)!important;
+ font:inherit!important;font-size:11px!important;font-weight:750!important;
+ white-space:normal!important;text-align:center!important;
+ box-sizing:border-box!important;overflow-wrap:anywhere!important;
+}
+#modalRoot .rk39-workspace .rk39-quick-actions>button.rk39-primary,
+#modalRoot .rk39-workspace .rk39-ws-subaction>button.rk39-primary{
+ background:var(--teal)!important;color:var(--white)!important;
+ border-color:var(--teal)!important;
+}
+#modalRoot .rk39-workspace .rk39-quick-actions .rk-ui-icon{
+ display:block!important;width:14px!important;height:14px!important;flex:0 0 14px!important;
+}
+#modalRoot .rk39-workspace .rk39-quick-actions>button:disabled{opacity:.45!important;cursor:not-allowed!important}
+#modalRoot .rk39-workspace .rk39-ws-subaction{
+ display:flex!important;align-items:center!important;flex-flow:row nowrap!important;
+ gap:10px!important;min-width:0!important;justify-content:space-between!important;
+ border-top:1px solid var(--line)!important;padding-top:12px!important;
+}
+#modalRoot .rk39-workspace .rk39-ws-subaction button{
+ display:inline-flex!important;align-items:center!important;justify-content:center!important;
+ flex:1 1 0!important;min-height:41px!important;min-width:0!important;
+ padding:6px!important;margin:0!important;
+ border:1px solid var(--line)!important;border-radius:8px!important;
+ font:inherit!important;font-size:11px!important;font-weight:750!important;
+ white-space:normal!important;
+}
+#modalRoot .rk39-workspace .rk39-ws-subaction .rk-ui-icon{
+ width:14px!important;height:14px!important;flex:0 0 14px!important;
+}
+#modalRoot .rk39-workspace .rk39-ws-status{
+ display:inline-flex!important;align-items:center!important;
+ color:var(--muted)!important;font-size:11px!important;
+}
+#modalRoot .rk39-workspace .rk39-ws-status.rk39-ws-done{color:var(--teal)!important}
+#modalRoot .rk39-workspace .rk39-ws-records{
+ display:grid!important;gap:12px!important;min-width:0!important;
+}
+#modalRoot .rk39-workspace .rk39-history,
+#modalRoot .rk39-workspace .rk39-audit{
+ border:1px solid var(--line)!important;border-radius:11px!important;
+ padding:12px!important;background:var(--white)!important;min-width:0!important;
+}
+#modalRoot .rk39-workspace .rk39-ws-records h3{
+ font-size:14px!important;color:var(--navy)!important;margin:0!important;
+}
+#modalRoot .rk39-workspace .rk39-existing-budget>summary{
+ padding:11px 12px!important;
+}
+#modalRoot .rk39-workspace .rk39-hint{
+ display:inline-flex!important;position:relative!important;flex:0 0 22px!important;
+ width:22px!important;height:24px!important;
+}
+#modalRoot .rk39-workspace .rk39-hint>summary{
+ display:grid!important;place-items:center!important;
+ width:22px!important;height:24px!important;
+ background:transparent!important;border:0!important;padding:0!important;
+ list-style:none!important;color:var(--teal)!important;
+}
+#modalRoot .rk39-workspace .rk39-hint>summary::-webkit-details-marker{display:none!important}
+#modalRoot .rk39-workspace .rk39-hint>summary .rk-ui-icon{
+ width:16px!important;height:16px!important;
+}
+#modalRoot .rk39-workspace .rk39-hint-body{
+ display:block!important;position:absolute!important;z-index:80!important;
+ top:calc(100% + 5px)!important;inset-inline-start:0!important;
+ width:min(275px,72vw)!important;padding:10px!important;
+ background:var(--white)!important;color:var(--navy)!important;
+ border:1px solid var(--line)!important;border-radius:9px!important;
+ box-shadow:0 5px 15px color-mix(in srgb,var(--navy) 12%,transparent)!important;
+ font-size:11px!important;line-height:1.75!important;
+}
+#modalRoot .rk39-workspace .rk39-hint:not([open])>.rk39-hint-body{display:none!important}
+#modalRoot .rk39-workspace :is(button,summary):focus-visible{
+ outline:2px solid var(--teal)!important;outline-offset:2px!important;
+}
+@media(max-width:390px){
+ #view .rk39-focus-page .rk39-focus-head{padding:10px 12px 0!important}
+ #view .rk39-focus-page .rk39-focus-balance{padding:12px!important}
+ #view .rk39-focus-page .rk39-focus-figures{margin:0 12px!important}
+ #view .rk39-focus-page .rk39-focus-actions{padding:12px!important;gap:7px!important}
+ #view .rk39-focus-page .rk39-focus-footer>small{display:none!important}
+ #modalRoot .rk39-ws-header{min-height:60px!important;padding:8px 12px!important}
+ #modalRoot .rk39-ws-header h2{font-size:15px!important}
+ #modalRoot .rk39-ws-content{padding:12px!important}
+ #modalRoot .rk39-workspace .rk39-quick-actions>button{
+  font-size:10px!important;padding:6px 2px!important;
+ }
+ #modalRoot .rk39-workspace .rk39-quick-actions .rk-ui-icon{
+  width:12px!important;height:12px!important;flex-basis:12px!important;
+ }
+}
