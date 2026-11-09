@@ -161,8 +161,10 @@
    footer.classList.add('rk43-action-strip');
    // Two equal actions fill the full footer; one action fills the entire width.
    const count=active.length;
-   footer.style.setProperty('--rk43-cols',String(Math.min(count,2)));
-   footer.classList.toggle('rk43-three-actions',count===3);
+   // Keep all footer actions on a single row; >4 scroll within footer only.
+   footer.style.setProperty('--rk43-cols',String(Math.max(1,Math.min(count,4))));
+   footer.classList.toggle('rk43-many-actions',count>4);
+   footer.classList.remove('rk43-three-actions');
   }
  }
  function normalize(){
