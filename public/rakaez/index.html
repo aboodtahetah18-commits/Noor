@@ -1607,12 +1607,12 @@ function rkAssetsFilter(value){
   if(matches)visible++;
  });
  const empty=root.querySelector('.rk-assets-no-results');
- if(empty)empty.hidden=visible!==0;
+ if(empty)empty.hidden=visible!==0||root.querySelectorAll('.rk-study-card').length===0;
 }
 function rkDemoAccountDisplay(account){
  const name=String(account?.name||'');
  if(typeof v11ExamplesMode!=='undefined'&&v11ExamplesMode){
-  if(name==='محفظة سهم واحد — بيانات تجريبية')return 'محفظة شركة واحدة — نموذج تجريبي';
+  if(name==='محفظة سهم واحد — بيانات تجريبية'||name==='محفظة شركة واحدة — بيانات تجريبية')return 'محفظة شركة واحدة — نموذج تجريبي';
   if(name==='محفظة المستقبل — بيانات تجريبية')return 'محفظة المستقبل — نموذج تجريبي';
  }
  return name;
@@ -1656,7 +1656,7 @@ function assets(){
  const selected=['cash','portfolios','study'].includes(rkAssetsArea)?rkAssetsArea:'cash';
  const nav=[['cash','النقد والحركة','wallet'],['portfolios','المحافظ','portfolio'],['study','فرص الدراسة','analysis']];
  const navigation='<nav class="rk-assets-main-tabs" aria-label="أقسام بنك الأصول" role="tablist">'+
-  nav.map(([id,label,icon])=>'<button type="button" role="tab" aria-controls="rk-assets-panel" aria-selected="'+(selected===id)+'" tabindex="'+(selected===id?'0':'-1')+'" class="'+(selected===id?'active':'')+'" onclick="rkAssetsSetArea(\''+id+'\')">'+ico(icon)+'<span>'+label+'</span></button>').join('')+
+  nav.map(([id,label,icon])=>'<button type="button" role="tab" aria-controls="rk-assets-panel" aria-selected="'+(selected===id)+'" tabindex="0" class="'+(selected===id?'active':'')+'" onclick="rkAssetsSetArea(\''+id+'\')">'+ico(icon)+'<span>'+label+'</span></button>').join('')+
  '</nav>';
  let body='';
  if(selected==='cash'){
