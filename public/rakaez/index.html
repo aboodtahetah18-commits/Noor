@@ -1618,13 +1618,58 @@ function rkDemoAccountDisplay(account){
  return name;
 }
 function rkDemoCompanyReference(account){
- if(typeof v11ExamplesMode==='undefined'||!v11ExamplesMode)return '';
  const name=String(account?.name||'');
- if(name==='محفظة سهم واحد — بيانات تجريبية'||name==='محفظة شركة واحدة — بيانات تجريبية')
-  return '<p class="rk-assets-demo-note">مثال تعليمي لشركة حقيقية: الراجحي (1120). لا يعني ذلك امتلاك أسهم أو التحقق من قيمتها السوقية.</p>';
- if(name==='محفظة المستقبل — بيانات تجريبية')
-  return '<p class="rk-assets-demo-note">أمثلة تعليمية لشركات مدرجة: مايكروسوفت (MSFT) وإنفيديا (NVDA). ليست استثمارات مؤكدة؛ حدّد المكونات الفعلية بنفسك.</p>';
- return '';
+ if(!/بيانات تجريبية|نموذج تجريبي/.test(name))return '';
+ const message=/محفظة سهم واحد|محفظة شركة واحدة/.test(name)?
+  'شركة المثال: الراجحي (1120) — لا يعني امتلاك أسهم.':
+  /محفظة المستقبل/.test(name)?
+  'أمثلة تعليمية: مايكروسوفت (MSFT) وإنفيديا (NVDA) — ليست ملكيات مؤكدة.':
+  'هذه محفظة تجريبية، ولم تُثبت ملكية أوراق مالية.';
+ return '<div class="rk-assets-demo-note"><span>'+esc(message)+'</span>'+
+  '<button type="button" class="rk-assets-company-link" onclick="event.preventDefault();rkAssetConnectCompany(\''+esc(account.id)+'\')" aria-label="ربط هذه المحفظة بشركة مدخلة في سجلات الدراسة">'+ico('analysis')+' ربط شركة</button></div>';
+}
+function rkAssetEligibleCompanies(){
+ return (Array.isArray(db.watchlist)?db.watchlist:[]).filter(x=>
+  x&&String(x.name||'').trim()&&
+  !/تجريبي|افتراضي|DEMO/i.test(String(x.name||'')+' '+String(x.symbol||'')+' '+String(x.source||'')));
+}
+function rkAssetConnectCompany(accountId){
+ rkEnsureAssets();
+ const account=db.assetAccounts.find(x=>x.id===accountId);if(!account)return;
+ const companies=rkAssetEligibleCompanies();
+ const info=companies.length?
+  '<label class="rk-asset-company-field">الشركة المسجلة في دراسة الشركات<select id="rkAssetCompanyChoice">'+
+   companies.map(x=>'<option value="'+esc(x.id)+'">'+esc(x.name)+(x.symbol?' · '+esc(x.symbol):'')+'</option>').join('')+
+  '</select></label><p class="rk-assets-small-note">الربط تعريفي فقط ولا يثبت شراء سهم أو سعرًا سوقيًا.</p>':
+  '<p class="rk-assets-small-note">لا توجد شركات غير تجريبية في سجلات الدراسة. أضف الشركة وبياناتها أولًا.</p>';
+ document.getElementById('modalRoot').innerHTML='<div class="modalbg" onclick="if(event.target===this)closeModal()">'+
+  '<div class="modal rk-simple-dialog rk-assets-link-dialog" data-v8wizard="1" role="dialog" aria-modal="true" aria-label="ربط شركة بمحفظة">'+
+  '<div class="modalhead"><h2>ربط شركة بمحفظة</h2><button type="button" class="btn" aria-label="إغلاق" onclick="closeModal()">'+ico('close')+'</button></div>'+
+  '<div class="modalbody">'+info+'</div><div class="rk-compact-footer">'+
+  (companies.length?
+   '<button type="button" class="btn primary" onclick="rkAssetSaveCompanyLink(\''+esc(accountId)+'\')">'+ico('check')+' اعتماد الربط</button>':
+   '<button type="button" class="btn primary" onclick="closeModal();navigate(\'research\')">'+ico('analysis')+' دراسة الشركات</button>')+
+  '<button type="button" class="btn" onclick="closeModal()">إلغاء</button></div></div></div>';
+ if(typeof v10RepairDialogs==='function')v10RepairDialogs();
+}
+function rkAssetSaveCompanyLink(accountId){
+ const account=db.assetAccounts.find(x=>x.id===accountId);
+ const company=rkAssetEligibleCompanies().find(x=>x.id===document.getElementById('rkAssetCompanyChoice')?.value);
+ if(!account||!company)return alert('اختر شركة من سجلات الدراسة.');
+ const previous=Array.isArray(account.components)?account.components:[];
+ const demo=x=>/تجريبي|افتراضي|DEMO/i.test(String(x.name||'')+' '+String(x.symbol||''));
+ if(previous.some(x=>x.watchlistId===company.id||(x.symbol&&company.symbol&&x.symbol===company.symbol)))
+  return alert('هذه الشركة مرتبطة بالمحفظة بالفعل.');
+ if(previous.some(x=>!demo(x)&&x.weight!==null&&x.weight!==undefined&&x.weight!==''))
+  return alert('المحفظة تحتوي نسبًا للمكونات. راجع التوزيع قبل ربط شركة جديدة.');
+ const replacing=previous.length>0&&previous.every(demo);
+ if(replacing&&!confirm('هل تعتمد استبدال المكونات التجريبية بالشركة المختارة دون أي عملية مالية؟'))return;
+ const component={id:rid(),name:String(company.name),kind:'سهم شركة',symbol:String(company.symbol||''),
+  note:'مرجع من دراسة الشركات؛ لا يمثل إثبات ملكية',weight:null,watchlistId:company.id};
+ account.components=replacing?[component]:[...previous,component];
+ if(/^محفظة سهم واحد\s*—\s*بيانات تجريبية$/.test(String(account.name||'')))account.name='محفظة '+company.name;
+ audit('ربط محفظة بسجل شركة',account.name+' · '+company.name);
+ save();closeModal();render();toast('تم الربط التعريفي دون إنشاء أموال أو استثمارات');
 }
 function rkOpportunityCard(p){
  const watching=!!p.symbol,fund=p.category==='صندوق';
@@ -1651,6 +1696,22 @@ function rkOpportunityCard(p){
  </button>`;
 }
 
+function rkAssetCashMovements(){
+ const records=Array.isArray(db.ledgerEntries)?db.ledgerEntries:[];
+ const moves=records.map(entry=>{
+  const lines=Array.isArray(entry.lines)?entry.lines.filter(l=>l.account==='assets'):[];
+  const change=lines.reduce((sum,l)=>sum+(Number(l.debit)||0)-(Number(l.credit)||0),0);
+  return {entry,change,count:lines.length};
+ }).filter(x=>x.count>0).sort((a,b=>
+  (String(b.entry.date||'')+' '+String(b.entry.createdAt||'')).localeCompare(String(a.entry.date||'')+' '+String(a.entry.createdAt||''))));
+ const lines=moves.slice(0,6).map(({entry,change})=>
+  '<div class="rk-assets-movement-line"><span class="rk-assets-movement-info"><strong>'+esc(entry.description||'حركة مالية مسجلة')+'</strong>'+
+   '<small>'+esc(entry.date||'تاريخ غير محدد')+'</small></span>'+
+   '<strong class="'+(change<0?'rk-assets-negative':'rk-assets-positive')+'">'+(change>0?'+':change<0?'−':'')+money(Math.abs(change))+'</strong></div>').join('');
+ return '<section class="rk-assets-movements" aria-label="حركة النقد في دفتر بنك الأصول">'+
+  '<div class="rk-assets-movement-title"><h3>حركة الأموال</h3><span>'+moves.length+' قيد</span></div>'+
+  (lines||'<p class="rk-assets-movement-empty">لم تُسجل حركة لهذا البنك في دفتر الأستاذ.</p>')+'</section>';
+}
 function assets(){
  rkEnsureAssets();
  const selected=['cash','portfolios','study'].includes(rkAssetsArea)?rkAssetsArea:'cash';
@@ -1663,6 +1724,7 @@ function assets(){
   body='<section class="rk-assets-cash-panel" aria-label="نقد بنك الأصول وحركة أمواله">'+
     '<header class="rk-assets-section-head"><h2>نقد بنك الأصول</h2><span class="rk-assets-section-status">سجل داخلي</span></header>'+
     '<div id="rk-assets-cash-slot" aria-label="النقد المتاح في دفتر الأستاذ"></div>'+
+    rkAssetCashMovements()+
     '<div class="rk-assets-actionbar" role="group" aria-label="متابعة حركة النقد">'+
      '<button type="button" class="btn" onclick="navigate(\'ledger\')">'+ico('list')+'<span>دفتر الأستاذ</span></button>'+
      '<button type="button" class="btn" onclick="navigate(\'interbank\')">'+ico('refresh')+'<span>التحويلات</span></button>'+
@@ -1698,6 +1760,8 @@ function assets(){
   ];
   const filter=choices.find(x=>x[0]===rkAssetStudyTab)||choices[0];
   const opportunities=filter[2];
+  const term=rkAssetSearch.trim().toLocaleLowerCase('ar');
+  const shown=opportunities.filter(p=>!term||String([p.name,p.symbol,p.manager,p.category].join(' ')).toLocaleLowerCase('ar').includes(term));
   body='<section class="rk-assets-study-content" aria-label="فرص الاستثمار قيد الدراسة">'+
     '<header class="rk-assets-section-head"><h2>فرص قيد الدراسة</h2><span class="rk-assets-section-status">'+all.length+' فرصة</span></header>'+
     '<div class="rk-assets-actionbar rk-assets-study-actions" role="group" aria-label="أدوات فرص الدراسة">'+
@@ -1712,9 +1776,9 @@ function assets(){
        '<input id="rkAssetsQuery" type="search" placeholder="اسم الفرصة أو الشركة" value="'+esc(rkAssetSearch)+'" oninput="rkAssetsFilter(this.value)">'+
       '</div></details>'+
     '</div>'+
-    '<div class="rk-candidate-list">'+
-     (opportunities.length?opportunities.map(rkOpportunityCard).join(''):'<div class="rk-empty-section">لا توجد فرص في هذا التصنيف.</div>')+
-    '</div><div class="rk-assets-no-results" '+(opportunities.length?'hidden':'')+'>لا توجد نتائج تطابق البحث.</div></section>';
+    '<div class="rk-candidate-list">'+shown.map(rkOpportunityCard).join('')+
+    '</div><div class="rk-assets-no-results" '+(shown.length?'hidden':'')+'>'+
+    (opportunities.length?'لا توجد نتائج تطابق البحث.':'لا توجد فرص في هذا التصنيف.')+'</div></section>';
  }
  return '<section class="rk-assets-workspace" dir="rtl">'+navigation+
     '<div id="rk-assets-panel" class="rk-assets-panel" role="tabpanel" aria-label="'+(selected==='cash'?'النقد والحركة':selected==='portfolios'?'المحافظ الاستثمارية':'فرص الدراسة')+'">'+body+'</div>'+
