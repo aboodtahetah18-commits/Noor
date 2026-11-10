@@ -735,6 +735,10 @@
     }
    }catch(err){/* Does not block reading legacy bank pages. */}
   }
+  // Apply retained study search after switching an internal tab; not a new data source.
+  if(page==='assets'&&typeof rkAssetsFilter==='function'&&root?.querySelector('.rk-assets-study-content')){
+   rkAssetsFilter(rkAssetSearch);
+  }
   if(root&&page==='interbank'&&!root.querySelector('.rk44-cash-link')){
    const strip=document.createElement('div');
    strip.className='rk44-cash-link';
