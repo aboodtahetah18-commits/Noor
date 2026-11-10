@@ -697,7 +697,7 @@
        'تنبيه الحماية: النقد المتاح في الدفتر لا يغطي هدف السيولة المطلوب؛ أُوقف ترشيح الاستثمار.';
       banner.innerHTML='<span>'+warning+'</span>'+
        '<button type="button" data-rk44-page="reserves">مراجعة الحماية</button>';
-      root.prepend(banner);
+      (page==='assets'?(root.querySelector('#rk-assets-panel')||root):root).prepend(banner);
      }
     }catch(error){/* A bad financial entry must never hide the page. */}
    }
@@ -705,7 +705,7 @@
 
   // Bank-specific cash reconciliation is derived from V5, never added to savings or investments.
   const root=document.getElementById('view');
-  if(root&&['hilal','malaa','assets'].includes(page)&&!root.querySelector('.rk44-cash-link')){
+  if(root&&['hilal','malaa','assets'].includes(page)&&!root.querySelector('.rk44-cash-link')&&(page!=='assets'||!!root.querySelector('#rk-assets-cash-slot'))){
    try{
     const cash=adaptive.cashBalance(db,page),free=adaptive.availableBankCash(db,page);
     const labels={hilal:'نقد بنك الهلال في دفتر الأستاذ',malaa:'نقد بنك ملاءة في دفتر الأستاذ',assets:'نقد بنك الأصول في دفتر الأستاذ'};
@@ -719,6 +719,13 @@
       '<div><small>المتاح للتحويل بعد الحجوزات: '+fmt(free)+'</small>'+
       '<button type="button" data-rk44-page="reserves">حركة الحماية</button></div></details>';
      root.querySelector('.rk39-focus-figures').after(strip);
+    }else if(page==='assets'){
+     // The cash area is a dedicated internal page. Never duplicate the ledger strip
+     // above the portfolios or research area; do not alter any financial values.
+     strip.className='rk44-cash-link rk-assets-cash-strip';
+     strip.innerHTML='<span>'+safe(labels.assets)+'</span><strong class="'+(cash<0?'rk44-ledger-negative':'')+'">'+fmt(cash)+
+      '</strong><small>المتاح لطلبات التحويل بعد الحجوزات: '+fmt(free)+'</small>';
+     root.querySelector('#rk-assets-cash-slot').append(strip);
     }else{
      strip.className='rk44-cash-link';
      strip.innerHTML='<span>'+safe(labels[page])+'</span><strong class="'+(cash<0?'rk44-ledger-negative':'')+'">'+fmt(cash)+
