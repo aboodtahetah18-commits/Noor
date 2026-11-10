@@ -1702,8 +1702,10 @@ function rkAssetCashMovements(){
   const lines=Array.isArray(entry.lines)?entry.lines.filter(l=>l.account==='assets'):[];
   const change=lines.reduce((sum,l)=>sum+(Number(l.debit)||0)-(Number(l.credit)||0),0);
   return {entry,change,count:lines.length};
- }).filter(x=>x.count>0).sort((a,b)=>
-  (String(b.entry.date||'')+' '+String(b.entry.createdAt||'')).localeCompare(String(a.entry.date||'')+' '+String(a.entry.createdAt||''))));
+ }).filter(x=>x.count>0).sort((first,second)=>{
+  const key=row=>String(row.entry.date||'')+'|'+String(row.entry.createdAt||'');
+  return key(second).localeCompare(key(first));
+ });
  const lines=moves.slice(0,6).map(({entry,change})=>
   '<div class="rk-assets-movement-line"><span class="rk-assets-movement-info"><strong>'+esc(entry.description||'حركة مالية مسجلة')+'</strong>'+
    '<small>'+esc(entry.date||'تاريخ غير محدد')+'</small></span>'+
